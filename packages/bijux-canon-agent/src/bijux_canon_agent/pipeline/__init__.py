@@ -20,12 +20,12 @@ __all__ = [
 if TYPE_CHECKING:
     from .canonical import AuditableDocPipeline
     from .definition import PipelineDefinition
-    from .pipeline import Pipeline
+    from .runtime import Pipeline
 
 
 def __getattr__(name: str) -> Any:
     if name == "Pipeline":
-        from .pipeline import Pipeline
+        from .runtime import Pipeline
 
         return Pipeline
     if name == "AuditableDocPipeline":

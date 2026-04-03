@@ -1,4 +1,4 @@
-"""Experimental pipeline facade; prefer the canonical AuditableDocPipeline."""
+"""Canonical pipeline runtime facade."""
 
 from __future__ import annotations
 

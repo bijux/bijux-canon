@@ -6,7 +6,7 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from bijux_canon_agent.agents.file_reader import FileReaderAgent
-from bijux_canon_agent.pipeline.pipeline import Pipeline
+from bijux_canon_agent.pipeline.runtime import Pipeline
 
 if TYPE_CHECKING:
     from bijux_canon_agent.agents.critique import CritiqueAgent

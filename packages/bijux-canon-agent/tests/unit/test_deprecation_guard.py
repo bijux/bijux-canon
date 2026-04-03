@@ -11,7 +11,7 @@ MODULES_TO_CHECK = (
     "bijux_canon_agent.agents.planner",
     "bijux_canon_agent.agents.judge",
     "bijux_canon_agent.agents.verifier",
-    "bijux_canon_agent.pipeline.pipeline",
+    "bijux_canon_agent.pipeline.runtime",
     "bijux_canon_agent.pipeline.control.controller",
     "bijux_canon_agent.traces.trace",
 )
