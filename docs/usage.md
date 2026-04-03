@@ -8,7 +8,7 @@ This repository is organized for package-focused development.
 - `packages/bijux-agent`
 - `packages/bijux-llm-rag`
 - `packages/bijux-llm-rar`
-- `packages/bijux-vex`
+- `packages/bijux-llm-vex`
 
 ## Typical Workflows
 
@@ -16,7 +16,7 @@ Run a package command from the repository root:
 
 ```bash
 make -C packages/bijux-llm-rag test
-make -C packages/bijux-vex docs
+make -C packages/bijux-llm-vex docs
 ```
 
 Inspect shared tooling:

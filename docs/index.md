@@ -9,7 +9,7 @@ that share repository-wide tooling, governance, and automation.
 - `packages/bijux-agent`
 - `packages/bijux-llm-rag`
 - `packages/bijux-llm-rar`
-- `packages/bijux-vex`
+- `packages/bijux-llm-vex`
 
 ## Shared Ownership Model
 

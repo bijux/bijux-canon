@@ -1,0 +1,119 @@
+# SPDX-License-Identifier: MIT
+# Copyright © 2025 Bijan Mousavi
+# Testing policy: gates (lint/quality/security/typing) intentionally run on lowest supported Python (3.11); full matrix via tox.
+
+PROJECT_SLUG := bijux-llm-vex
+
+include ../../makes/shared/python-package.mk
+
+.NOTPARALLEL: all clean
+
+LINT_DIRS         := src/bijux_vex
+FMT_DIRS          := src tests
+ENABLE_MYPY       := 0
+ENABLE_CODESPELL  := 1
+CODESPELL         := $(if $(ACT),$(ACT)/codespell,codespell) --ignore-words-list=ND,nd
+ENABLE_RADON      := 1
+ENABLE_PYDOCSTYLE := 0
+ENABLE_PYTYPE     := 0
+RUFF_CHECK_FIX    := 1
+INTERROGATE_PATHS := src/bijux_vex
+QUALITY_PATHS     := src/bijux_vex
+QUALITY_VULTURE_MIN_CONFIDENCE := 80
+QUALITY_CLEAN_SITE := 1
+SECURITY_PATHS    := src/bijux_vex
+SECURITY_IGNORE_IDS := PYSEC-2022-42969
+SECURITY_AUDIT_PREPARE_MODE := pyproject
+PIP_AUDIT_INPUTS = -r "$(SECURITY_REQS)"
+DOCS_DEV_ADDR    := 0.0.0.0:8000
+DOCS_EXTRA_CLEAN_PATHS := site docs/site
+API_MODE         := freeze
+API_LOG          = $(API_ARTIFACTS_DIR)/openapi_drift.log
+API_DRIFT_COMMAND = $(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/bijux-llm-vex/openapi_drift.py" --mode check >"$(API_LOG)" 2>&1 || true
+PUBLISH_DIST_DIR := $(PROJECT_ARTIFACTS_DIR)/release
+PUBLISH_UPLOAD_ENABLED := 0
+TEST_COVERAGE_TARGETS := $(abspath src/bijux_vex/core) $(abspath src/bijux_vex/contracts) $(abspath src/bijux_vex/domain)
+TEST_MAIN_ARGS := --maxfail=1
+
+# Modular Includes
+include $(ROOT_MAKE_DIR)/lint.mk
+include $(ROOT_MAKE_DIR)/test.mk
+include $(ROOT_MAKE_DIR)/docs.mk
+include $(ROOT_MAKE_DIR)/api.mk
+include $(ROOT_MAKE_DIR)/security.mk
+include $(ROOT_MAKE_DIR)/sbom.mk
+include $(ROOT_MAKE_DIR)/quality.mk
+include $(ROOT_MAKE_DIR)/publish.mk
+
+# Environment
+$(VENV):
+	@echo "[INFO] Creating virtualenv with '$$(which $(PYTHON))' ..."
+	@$(PYTHON) -m venv $(VENV)
+
+install: $(VENV)
+	@echo "[INFO] Installing dependencies..."
+	@$(VENV_PYTHON) -m pip install --upgrade pip setuptools wheel
+	@$(VENV_PYTHON) -m pip install -e ".[dev]"
+
+bootstrap: $(VENV)
+.PHONY: bootstrap
+
+# Cleanup
+clean:
+	@$(MAKE) clean-soft
+	@echo "[INFO] Cleaning (.venv) ..."
+	@rm -rf $(VENV)
+
+clean-soft:
+	@echo "[INFO] Cleaning (no .venv) ..."
+	@rm -rf \
+	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox \
+	  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
+	  spec.json openapitools.json node_modules session.sqlite site \
+	  docs/site artifacts "$(PROJECT_ARTIFACTS_DIR)" || true
+	@rm -rf $(CONFIG_DIR)/.ruff_cache || true
+	@if [ "$(OS)" != "Windows_NT" ]; then \
+	  find . -type d -name '__pycache__' -exec rm -rf {} +; \
+	  find . -type f -name '*.pyc' -delete; \
+	fi
+
+# Pipelines
+all: clean install fmt lint test quality docs api security sbom
+	@echo "[OK] All targets completed"
+
+# Run independent checks in parallel
+lint quality security api docs: | bootstrap
+.NOTPARALLEL:
+
+release: clean install fmt lint test quality security sbom
+	@echo "[INFO] Building release artifacts"
+	@mkdir -p "$(PROJECT_ARTIFACTS_DIR)/release"
+	@$(VENV_PYTHON) -m build --wheel --sdist --outdir "$(PROJECT_ARTIFACTS_DIR)/release"
+	@echo "[INFO] Generating SBOM"
+	@if ! command -v $(PIP_AUDIT) >/dev/null 2>&1; then \
+	  echo "→ Installing pip-audit into $(VENV)"; \
+	  $(VENV_PYTHON) -m pip install --upgrade pip-audit >/dev/null; \
+	fi
+	@$(PIP_AUDIT) $(PIP_AUDIT_FLAGS) --output "$(PROJECT_ARTIFACTS_DIR)/release/sbom.json" || true
+	@echo "[INFO] Refreshing OpenAPI v1"
+	@$(VENV_PYTHON) -c 'from pathlib import Path; import json; from bijux_vex.api.v1 import build_app; output = Path("$(API_DIR)/v1/openapi.v1.json"); output.parent.mkdir(parents=True, exist_ok=True); output.write_text(json.dumps(build_app().openapi(), indent=2), encoding="utf-8")'
+	@cd "$(PROJECT_ARTIFACTS_DIR)/release" && shasum -a 256 *.whl *.tar.gz > SHA256SUMS
+	@echo "[OK] Release artifacts ready under $(PROJECT_ARTIFACTS_DIR)/release"
+
+build: release
+	@echo "[OK] build target completed (alias for make release)"
+
+help:
+	@awk 'BEGIN{FS=":.*##"; OFS="";} \
+	  /^##@/ {gsub(/^##@ */,""); print "\n\033[1m" $$0 "\033[0m"; next} \
+	  /^[a-zA-Z0-9_.-]+:.*##/ {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' \
+	  $(MAKEFILE_LIST)
+.PHONY: help
+
+##@ Core
+clean: ## Remove virtualenv, caches, build, and artifacts
+clean-soft: ## Remove build artifacts but keep .venv
+install: ## Install project in editable mode into .venv
+bootstrap: ## Setup environment
+all: ## Run full pipeline
+help: ## Show this help

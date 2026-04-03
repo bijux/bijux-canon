@@ -22,7 +22,7 @@ known_first_party = ["bijux_rar"]
 ignore = ["DEP001"]
 per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom"], DEP003 = ["bijux_rar"] }
 
-[tool.repo_deptry.packages."bijux-vex"]
+[tool.repo_deptry.packages."bijux-llm-vex"]
 known_first_party = ["bijux_vex"]
 ignore = ["DEP001"]
 per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom", "faiss-cpu"], DEP003 = ["bijux_vex"] }

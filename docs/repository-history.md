@@ -8,7 +8,7 @@ Layout:
 - `packages/bijux-agent/`
 - `packages/bijux-llm-rag/`
 - `packages/bijux-llm-rar/`
-- `packages/bijux-vex/`
+- `packages/bijux-llm-vex/`
 
 Organization rule:
 
