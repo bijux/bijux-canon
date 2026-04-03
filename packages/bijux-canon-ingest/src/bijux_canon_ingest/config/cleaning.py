@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Configuration-as-data for deterministic document cleaning (Modules 02–05).
+"""Configuration-as-data for deterministic document cleaning.
 
-This is introduced in Bijux RAG and kept stable through Bijux RAG: represent
-cleaning as immutable data and bind it into a pure ``RawDoc -> CleanDoc`` stage.
+The module keeps cleaning behavior explicit and immutable so ingest pipelines
+can bind a stable ``RawDoc -> CleanDoc`` stage from named text rules.
 """
 
 from __future__ import annotations
@@ -18,10 +18,14 @@ TextRule = Callable[[str], str]
 
 
 def collapse_ws(text: str) -> str:
+    """Collapse repeated whitespace into single spaces."""
+
     return " ".join(text.split())
 
 
 def replace_newlines(text: str) -> str:
+    """Replace newlines with spaces without altering other characters."""
+
     return text.replace("\n", " ")
 
 
@@ -45,6 +49,8 @@ DEFAULT_CLEAN_CONFIG = CleanConfig()
 
 
 def clean_abstract(text: str, cfg: CleanConfig) -> str:
+    """Apply configured text rules in order."""
+
     for name in cfg.rule_names:
         rule = RULES[name]
         text = rule(text)
