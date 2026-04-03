@@ -138,15 +138,6 @@ dev = [
 "Security" = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
 
-[project.entry-points."bijux_canon_index.vectorstores"]
-example = "bijux_canon_index.plugins.example:register_vectorstore"
-
-[project.entry-points."bijux_canon_index.embeddings"]
-example = "bijux_canon_index.plugins.example:register_embedding"
-
-[project.entry-points."bijux_canon_index.runners"]
-example = "bijux_canon_index.plugins.example:register_runner"
-
 [tool.hatch.version]
 source = "vcs"
 fallback-version = "0.3.0"

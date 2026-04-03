@@ -7,12 +7,15 @@ import sys
 from pathlib import Path
 
 CLI_HELP = """                                                                                
- Usage: python -m bijux_canon_index.interfaces.cli.app [OPTIONS] COMMAND [ARGS]...      
+ Usage: python -m bijux_canon_index.interfaces.cli.app [OPTIONS] COMMAND        
+                                                       [ARGS]...                
                                                                                 
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --format          TEXT  Output format: json|table (default: json)            │
-│ --output          PATH  Write output to a file                               │
+│                         [default: None]                                      │
+│ --output          PATH  Write output to a file [default: None]               │
 │ --config          PATH  Load configuration from a TOML/YAML file             │
+│                         [default: None]                                      │
 │ --trace                 Emit trace metadata                                  │
 │ --quiet                 Suppress non-error output                            │
 │ --no-color              Disable colored output                               │
@@ -35,10 +38,10 @@ CLI_HELP = """
 │ bench                                                                        │
 │ metrics                                                                      │
 │ debug-bundle                                                                 │
-│ vdb             Vector DB utilities                                          │
-│ nd              ND utilities                                                 │
-│ config          Configuration utilities                                      │
-│ artifact        Artifact bundle utilities                                    │
+│ vdb              Vector DB utilities                                         │
+│ nd               ND utilities                                                │
+│ config           Configuration utilities                                     │
+│ artifact         Artifact bundle utilities                                   │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
 """

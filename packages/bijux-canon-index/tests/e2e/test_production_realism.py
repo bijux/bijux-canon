@@ -6,6 +6,14 @@ from pathlib import Path
 
 import pytest
 
+from bijux_canon_index.infra.embeddings.cache import embedding_config_hash
+from bijux_canon_index.infra.embeddings.registry import (
+    EMBEDDING_PROVIDERS,
+    EmbeddingBatch,
+    EmbeddingMetadata,
+    EmbeddingProvider,
+)
+from bijux_canon_index.infra.plugins.contract import PluginContract
 from bijux_canon_index.interfaces.schemas.models import (
     ExecutionArtifactRequest,
     ExecutionRequestPayload,
@@ -15,15 +23,46 @@ from bijux_canon_index.interfaces.schemas.models import (
 from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
-from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
-from bijux_canon_index.plugins.example import register_embedding
 from bijux_canon_index.application.engine import VectorExecutionEngine
 
 pytest.importorskip("faiss")
 
 
+class StaticTestEmbeddingProvider(EmbeddingProvider):
+    name = "static_test"
+
+    def embed(self, texts: list[str], model: str, options=None) -> EmbeddingBatch:
+        metadata = EmbeddingMetadata(
+            provider=self.name,
+            provider_version="tests",
+            model=model,
+            model_version="tests",
+            embedding_determinism="deterministic",
+            embedding_seed=0,
+            embedding_device="cpu",
+            embedding_dtype="float32",
+            embedding_normalization="false",
+            config_hash=embedding_config_hash(
+                self.name,
+                model,
+                options or {},
+                provider_version="tests",
+            ),
+        )
+        vectors = [tuple(0.0 for _ in range(3)) for _ in texts]
+        return EmbeddingBatch(vectors=vectors, metadata=metadata)
+
+
 def test_production_realism_flow(tmp_path: Path) -> None:
-    register_embedding(EMBEDDING_PROVIDERS)
+    EMBEDDING_PROVIDERS.register(
+        "static_test",
+        factory=StaticTestEmbeddingProvider,
+        contract=PluginContract(
+            determinism="deterministic",
+            randomness_sources=(),
+            approximation=False,
+        ),
+    )
     db_path = tmp_path / "state.sqlite"
     index_path = tmp_path / "index.faiss"
     config = ExecutionConfig(
@@ -34,8 +73,8 @@ def test_production_realism_flow(tmp_path: Path) -> None:
         IngestRequest(
             documents=["doc-a", "doc-b"],
             vectors=None,
-            embed_provider="example",
-            embed_model="example",
+            embed_provider="static_test",
+            embed_model="static_test",
         )
     )
     engine.materialize(
