@@ -7,7 +7,7 @@ edit_uri: ""
 strict: true
 use_directory_urls: true
 dev_addr: 127.0.0.0:8000
-docs_dir: docs
+docs_dir: ../../docs/packages/bijux-canon-ingest
 site_dir: ../../artifacts/bijux-canon-ingest/docs/site
 
 theme:
@@ -133,5 +133,5 @@ watch:
   - src
   - tests
   - mkdocs.yml
-  - docs
+  - ../../docs/packages/bijux-canon-ingest
   - ../../artifacts/bijux-canon-ingest

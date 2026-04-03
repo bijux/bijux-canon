@@ -1,13 +1,7 @@
-# Python API Reference
+# Python Reference
 
-The core entry points are documented via `mkdocstrings`. Key modules:
+The canonical Python API documentation for `bijux-canon-ingest` lives at
+`docs/packages/bijux-canon-ingest/reference/python.md`.
 
-::: bijux_canon_ingest.application.indexing
-::: bijux_canon_ingest.application.querying
-::: bijux_canon_ingest.application.index_runtime
-::: bijux_canon_ingest.application.service
-::: bijux_canon_ingest.application.pipeline
-::: bijux_canon_ingest.retrieval.indexes
-::: bijux_canon_ingest.retrieval.text_analysis
-::: bijux_canon_ingest.interfaces.cli.document_io
-::: bijux_canon_ingest.interfaces.http.app
+Keep this local page only as a package-adjacent anchor for public surface
+review.

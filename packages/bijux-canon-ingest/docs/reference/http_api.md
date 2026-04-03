@@ -1,11 +1,6 @@
-# HTTP API (FastAPI)
+# HTTP API Reference
 
-FastAPI app lives in `bijux_canon_ingest.interfaces.http.app`. The published OpenAPI schema is versioned at `../../apis/bijux-canon-ingest/v1/schema.yaml`.
+The canonical HTTP API documentation for `bijux-canon-ingest` lives at
+`docs/packages/bijux-canon-ingest/reference/http_api.md`.
 
-- `POST /v1/index/build` — build an index from documents (bm25 or numpy-cosine).
-- `POST /v1/retrieve` — retrieve top-k candidates from a saved index.
-- `POST /v1/ask` — generate an answer with citations grounded in retrieved chunks.
-- `POST /v1/chunks` — legacy chunk/embed endpoint.
-- `GET /v1/healthz` — health check.
-
-To view the full OpenAPI spec in docs, mkdocs renders `../../apis/bijux-canon-ingest/v1/schema.yaml`. Clients can be generated directly from that file.
+Keep this local page only as a package-adjacent anchor for boundary review.

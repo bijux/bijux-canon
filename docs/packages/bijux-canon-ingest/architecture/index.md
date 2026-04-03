@@ -9,7 +9,7 @@ This project follows a functional core / explicit-IO boundaries layout:
 - `src/bijux_canon_ingest/integrations` and `safeguards`: optional ecosystem adapters and cross-cutting runtime protection.
 - `src/bijux_canon_ingest/infra`: pluggable runtime adapters such as storage and clocks.
 - `tests/`: unit + e2e + eval suite gates.
-- `docs/ADR`: design decisions mirrored from bijux-cli standards (zero-root-pollution, lint/quality/security posture, docstring style).
+- `ADR/`: design decisions mirrored from bijux-cli standards (zero-root-pollution, lint/quality/security posture, docstring style).
 
 See ADRs for rationale and trade-offs.
 

@@ -64,4 +64,4 @@ Endpoints (v1 prefix):
 - `POST /ask`
 - `POST /chunks`
 
-Full schema in docs/reference/http_api.md (OpenAPI compliant).
+Full schema in `reference/http_api.md` (OpenAPI compliant).
