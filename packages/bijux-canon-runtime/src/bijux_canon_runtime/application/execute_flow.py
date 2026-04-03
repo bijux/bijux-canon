@@ -11,7 +11,7 @@ from dataclasses import dataclass, replace
 import os
 
 from bijux_canon_runtime.core.authority import authority_token, enforce_runtime_semantics
-from bijux_canon_runtime.core.errors import ConfigurationError, NonDeterminismViolationError
+from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.runtime.artifact_store import ArtifactStore, InMemoryArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState, ExecutionBudget
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
@@ -36,6 +36,10 @@ from bijux_canon_runtime.observability.storage.execution_store_protocol import (
 from bijux_canon_runtime.application.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
+from bijux_canon_runtime.application.execution_policy import (
+    ensure_non_determinism_policy,
+    validate_non_determinism_policy,
+)
 from bijux_canon_runtime.application.execution_seed import derive_seed_token
 from bijux_canon_runtime.application.planner import ExecutionPlanner
 from bijux_canon_runtime.model.artifact.artifact import Artifact
@@ -47,21 +51,14 @@ from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
-from bijux_canon_runtime.model.policy.non_determinism_policy import NonDeterminismPolicy
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
 from bijux_canon_runtime.model.verification.verification_result import VerificationResult
-from bijux_canon_runtime.ontology import (
-    CausalityTag,
-    DeterminismLevel,
-    EntropyMagnitude,
-    EventType,
-)
+from bijux_canon_runtime.ontology import CausalityTag, DeterminismLevel, EventType
 from bijux_canon_runtime.ontology.ids import ClaimID, FlowID, RunID, TenantID
-from bijux_canon_runtime.ontology.public import NonDeterminismIntentSource
 
 
 @dataclass(frozen=True)
@@ -227,10 +224,10 @@ class FlowPreparation:
         ):
             raise ValueError("verification_policy is required before execution")
         if execution_config.mode in {RunMode.LIVE, RunMode.OBSERVE, RunMode.UNSAFE}:
-            execution_config = _ensure_non_determinism_policy(
+            execution_config = ensure_non_determinism_policy(
                 resolved_flow, execution_config
             )
-            _validate_non_determinism_policy(resolved_flow, execution_config)
+            validate_non_determinism_policy(resolved_flow, execution_config)
 
         strategy = LiveExecutor()
         if execution_config.mode == RunMode.DRY_RUN:
@@ -432,89 +429,6 @@ def execute_flow(
     result = execution.run()
     finalization = FlowFinalization(prepared=prepared)
     return finalization.run(result)
-
-def _ensure_non_determinism_policy(
-    resolved_flow: ExecutionPlan, config: ExecutionConfig
-) -> ExecutionConfig:
-    """Internal helper; not part of the public API."""
-    if config.non_determinism_policy is not None:
-        return config
-    manifest = resolved_flow.manifest
-    budget = manifest.entropy_budget
-    allowed_variance = (
-        manifest.allowed_variance_class or budget.max_magnitude or EntropyMagnitude.LOW
-    )
-    policy = NonDeterminismPolicy(
-        spec_version="v1",
-        policy_id="implicit",
-        allowed_sources=budget.allowed_sources,
-        allowed_intent_sources=(
-            NonDeterminismIntentSource.LLM,
-            NonDeterminismIntentSource.RETRIEVAL,
-            NonDeterminismIntentSource.HUMAN,
-            NonDeterminismIntentSource.EXTERNAL,
-        ),
-        min_entropy_magnitude=budget.min_magnitude,
-        max_entropy_magnitude=budget.max_magnitude,
-        allowed_variance_class=allowed_variance,
-        require_justification=False,
-    )
-    return replace(config, non_determinism_policy=policy)
-
-
-def _validate_non_determinism_policy(
-    resolved_flow: ExecutionPlan, config: ExecutionConfig
-) -> None:
-    """Internal helper; not part of the public API."""
-    policy = config.non_determinism_policy
-    if policy is None:
-        return
-    policy.validate_intents(resolved_flow.manifest.nondeterminism_intent)
-    budget = resolved_flow.manifest.entropy_budget
-    if any(source not in policy.allowed_sources for source in budget.allowed_sources):
-        raise NonDeterminismViolationError(
-            "entropy budget includes forbidden entropy sources"
-        )
-    for slice_budget in budget.per_source:
-        if slice_budget.source not in budget.allowed_sources:
-            raise NonDeterminismViolationError(
-                "entropy budget slice source not in allowed sources"
-            )
-        if slice_budget.source not in policy.allowed_sources:
-            raise NonDeterminismViolationError(
-                "entropy budget slice includes forbidden entropy source"
-            )
-    order = {
-        EntropyMagnitude.LOW: 0,
-        EntropyMagnitude.MEDIUM: 1,
-        EntropyMagnitude.HIGH: 2,
-    }
-    if order[budget.min_magnitude] < order[policy.min_entropy_magnitude]:
-        raise NonDeterminismViolationError(
-            "entropy budget minimum below policy minimum"
-        )
-    if order[budget.max_magnitude] > order[policy.max_entropy_magnitude]:
-        raise NonDeterminismViolationError(
-            "entropy budget maximum exceeds policy maximum"
-        )
-    for slice_budget in budget.per_source:
-        if order[slice_budget.min_magnitude] < order[policy.min_entropy_magnitude]:
-            raise NonDeterminismViolationError(
-                "entropy budget slice minimum below policy minimum"
-            )
-        if order[slice_budget.max_magnitude] > order[policy.max_entropy_magnitude]:
-            raise NonDeterminismViolationError(
-                "entropy budget slice maximum exceeds policy maximum"
-            )
-    if resolved_flow.manifest.allowed_variance_class is not None and (
-        order[resolved_flow.manifest.allowed_variance_class]
-        > order[policy.allowed_variance_class]
-    ):
-        raise NonDeterminismViolationError(
-            "allowed variance class exceeds policy allowance"
-        )
-
-
 def _persist_run(result: FlowRunResult, config: ExecutionConfig) -> FlowRunResult:
     """Internal helper; not part of the public API."""
     store = config.execution_store
