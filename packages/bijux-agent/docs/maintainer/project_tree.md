@@ -6,8 +6,8 @@ High-signal directories:
 - `tests/` — unit + invariant tests
 - `docs/` — MkDocs sources (this directory)
 - `config/` — runtime-local configuration examples
-- `../configs/bijux-agent/` — root-managed tooling configuration
+- `../../configs/bijux-agent/` — root-managed tooling configuration
 - `api/` — OpenAPI schema and API assets
-- `makes/bijux-agent/` — Make targets used by CI and developers
+- `../../makes/bijux-agent/` — Make targets used by CI and developers
 
 Generated artifacts belong under `artifacts/` (or under the CLI `--out` directory).

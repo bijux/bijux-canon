@@ -4,11 +4,19 @@ This repository preserves the standalone history of each imported project.
 
 Layout:
 
-- `agentic-flows/`
-- `bijux-agent/`
-- `bijux-rag/`
-- `bijux-rar/`
-- `bijux-vex/`
+- `packages/agentic-flows/`
+- `packages/bijux-agent/`
+- `packages/bijux-rag/`
+- `packages/bijux-rar/`
+- `packages/bijux-vex/`
+
+Organization rule:
+
+- The monorepo uses `packages/` for independently publishable Python
+  distributions.
+- Each package keeps its own internal `src/`, `tests/`, and docs layout.
+- Shared build and quality assets remain centralized at the repository root
+  under `configs/` and `makes/`.
 
 History model:
 
