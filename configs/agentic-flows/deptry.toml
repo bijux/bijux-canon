@@ -1,4 +1,0 @@
-[tool.deptry]
-known_first_party = ["agentic_flows"]
-ignore = ["DEP002", "DEP003"]
-pep621_dev_dependency_groups = ["dev"]

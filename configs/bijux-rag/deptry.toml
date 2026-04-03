@@ -1,4 +1,0 @@
-[tool.deptry]
-known_first_party = ["bijux_rag"]
-pep621_dev_dependency_groups = ["dev", "docs"]
-per_rule_ignores = { DEP001 = ["dask", "apache_beam"], DEP002 = ["fastapi", "uvicorn", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "hypothesis", "schemathesis", "ruff", "mypy", "vulture", "deptry", "interrogate", "bandit", "pip-audit", "twine", "prance", "openapi-spec-validator", "types-PyYAML", "build", "mkdocs", "mkdocs-material", "pymdown-extensions", "mkdocs-git-revision-date-localized-plugin", "mkdocs-minify-plugin", "mkdocs-redirects", "mkdocs-include-markdown-plugin", "mkdocstrings", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-section-index", "mkdocs-click", "mkdocs-glightbox", "pytype"], DEP003 = ["bijux_rag"] }

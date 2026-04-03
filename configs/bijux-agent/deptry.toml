@@ -1,8 +1,0 @@
-[tool.deptry]
-known_first_party = ["bijux_agent"]
-extend_exclude = [
-  "docs",
-  "mkdocs",
-  "tooling",
-]
-ignore = ["DEP001", "DEP002", "DEP003"]

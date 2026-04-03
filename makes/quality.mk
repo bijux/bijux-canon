@@ -20,6 +20,7 @@ INTERROGATE ?= $(if $(ACT),$(ACT)/interrogate,interrogate)
 MYPY        ?= $(if $(ACT),$(ACT)/mypy,mypy)
 PYTHON      ?= $(shell command -v python3 || command -v python)
 DEPTRY_SCAN_SCRIPT ?= $(MONOREPO_ROOT)/scripts/deptry_scan.py
+DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
 
 SKIP_DEPTRY      ?= 0
 SKIP_INTERROGATE ?= 0
@@ -55,7 +56,7 @@ quality:
 	else \
 	  set -euo pipefail; \
 	    { $(DEPTRY) --version 2>/dev/null || true; } >"$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
-	    $(VENV_PYTHON) "$(DEPTRY_SCAN_SCRIPT)" --deptry-bin "$(DEPTRY)" --config "$(CONFIG_DIR)/deptry.toml" --project-dir . $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
+	    $(VENV_PYTHON) "$(DEPTRY_SCAN_SCRIPT)" --deptry-bin "$(DEPTRY)" --config "$(DEPTRY_CONFIG)" --project-dir . $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
 	fi
 	@echo "   - Static typing (Mypy)"
 	@if [ "$(SKIP_MYPY)" = "1" ] || [ -z "$(QUALITY_MYPY_CONFIG)" ]; then \
