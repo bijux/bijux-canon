@@ -159,7 +159,6 @@ python_files = ["test_*.py"]
 source = ["bijux_canon_agent"]
 omit = [
     "src/bijux_canon_agent/__main__.py",
-    "src/bijux_canon_agent/__all__.py",
     "src/bijux_canon_agent/schema/_pydantic_typing.py",
     "*/__all__.py",
     "*/_pydantic_typing.py",
