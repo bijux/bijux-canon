@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from bijux_rag.core.rag_types import RagEnv, RawDoc
-from bijux_rag.rag.stdlib_fp import rag_iter_stdlib
+from bijux_rag.processing.stdlib import rag_iter_stdlib
 
 
 def test_rag_iter_stdlib_smoke() -> None:

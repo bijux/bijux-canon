@@ -28,7 +28,7 @@ from bijux_rag.config.cleaning import (
     make_cleaner,
 )
 from bijux_rag.application.observability import DebugConfig, Observations, RagTaps
-from bijux_rag.rag.stages import embed_chunk
+from bijux_rag.processing.stages import embed_chunk
 from bijux_rag.result import Err, Ok, Result
 
 
@@ -96,7 +96,7 @@ def make_gen_rag_fn(
 ) -> Callable[[Iterable[RawDoc]], Iterator[ChunkWithoutEmbedding]]:
     """Pure configurator: build a streaming docs -> chunk stream function (Bijux RAG)."""
 
-    from bijux_rag.rag.streaming_rag import gen_bounded_chunks
+    from bijux_rag.processing.streaming import gen_bounded_chunks
 
     config = RagConfig(env=RagEnv(chunk_size), keep=keep, clean=clean_cfg)
     deps = get_deps(config)

@@ -16,7 +16,7 @@ from typing import Generic, Protocol, TypeVar
 
 from bijux_rag.core.rag_types import Chunk, ChunkWithoutEmbedding
 from bijux_rag.domain.effects import IOPlan, io_delay
-from bijux_rag.rag.stages import embed_chunk
+from bijux_rag.processing.stages import embed_chunk
 from bijux_rag.result.types import ErrInfo, Ok, Result
 
 K = TypeVar("K")

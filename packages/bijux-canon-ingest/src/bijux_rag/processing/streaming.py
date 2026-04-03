@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Streaming RAG helpers (Bijux RAG+; end-of-Bijux RAG).
+"""Streaming helpers for the document processing pipeline.
 
 These functions keep the core pipeline lazy while optionally fencing work,
 grouping by doc, and tracing samples.
@@ -19,8 +19,9 @@ from bijux_rag.core.rules_pred import eval_pred
 from bijux_rag.core.structural_dedup import structural_dedup_lazy
 from bijux_rag.streaming import TraceLens, ensure_contiguous, trace_iter
 
+from bijux_rag.config.rag import RagConfig, RagCoreDeps
+
 from .chunking import gen_chunk_doc
-from .config import RagConfig, RagCoreDeps
 
 T = TypeVar("T")
 

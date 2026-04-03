@@ -124,7 +124,7 @@ from bijux_rag.tree import (
     scan_tree,
 )
 
-from .chunking import (
+from ..processing.chunking import (
     gen_chunk_doc,
     gen_chunk_spans,
     gen_overlapping_chunks,
@@ -138,7 +138,7 @@ from ..application.api import (
     iter_rag,
     iter_rag_core,
 )
-from .streaming_rag import (
+from ..processing.streaming import (
     gen_bounded_chunks,
     gen_grouped_chunks,
     gen_stream_deduped,

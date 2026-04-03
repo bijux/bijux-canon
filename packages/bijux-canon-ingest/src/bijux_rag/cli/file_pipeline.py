@@ -7,7 +7,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
-from bijux_rag.rag.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
+from bijux_rag.processing.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
 from bijux_rag.result.types import Err, Ok, Result
 
 

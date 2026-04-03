@@ -20,11 +20,15 @@ from ..config.rag import (
     make_gen_rag_fn,
     make_rag_fn,
 )
-from .core import (
-    _trace_iter,
+from ..application.api import (
     full_rag_api,
     full_rag_api_docs,
     full_rag_api_path,
+    iter_chunks_from_cleaned,
+    iter_rag,
+    iter_rag_core,
+)
+from ..processing import (
     gen_bounded_chunks,
     gen_chunk_doc,
     gen_chunk_spans,
@@ -32,15 +36,12 @@ from .core import (
     gen_overlapping_chunks,
     gen_stream_deduped,
     gen_stream_embedded,
-    iter_chunks_from_cleaned,
-    iter_rag,
-    iter_rag_core,
-    multicast,
     safe_rag_pipeline,
     sliding_windows,
     stream_chunks,
-    throttle,
 )
+from ..streaming import multicast, throttle
+from ..streaming import trace_iter as _trace_iter
 from ..application.observability import (
     DebugConfig,
     DocRule,

@@ -10,11 +10,12 @@ pipelines stay reproducible.
 
 Core namespaces:
 - `bijux_rag.fp`: functional toolkit and error primitives.
-- `bijux_rag.rag`: domain models and pipeline stages (clean/chunk/embed/dedup + config-driven builders).
+- `bijux_rag.rag`: retrieval backends, ports, and ranking internals.
 - `bijux_rag.domain`/`bijux_rag.infra`: capabilities, async effects, logging, retries, storage adapters.
 - `bijux_rag.http`: FastAPI transport.
 - `bijux_rag.boundaries`: boundary exception helpers.
 - `bijux_rag.application`: orchestration, services, and pipeline builders.
+- `bijux_rag.processing`: pure chunking, embedding, and streaming transforms.
 - `bijux_rag.serde`: serialization codecs and Pydantic edge models.
 - `bijux_rag.config`: package configuration models.
 """
@@ -155,11 +156,15 @@ from .config.rag import (
     make_gen_rag_fn,
     make_rag_fn,
 )
-from .rag.core import (
-    _trace_iter,
+from .application.api import (
     full_rag_api,
     full_rag_api_docs,
     full_rag_api_path,
+    iter_chunks_from_cleaned,
+    iter_rag,
+    iter_rag_core,
+)
+from .processing import (
     gen_bounded_chunks,
     gen_chunk_doc,
     gen_chunk_spans,
@@ -167,16 +172,14 @@ from .rag.core import (
     gen_overlapping_chunks,
     gen_stream_deduped,
     gen_stream_embedded,
-    iter_chunks_from_cleaned,
-    iter_rag,
-    iter_rag_core,
     safe_rag_pipeline,
     sliding_windows,
     stream_chunks,
 )
+from .streaming import trace_iter as _trace_iter
 
 # Pure pipeline stages – the building blocks
-from .rag.stages import (
+from .processing.stages import (
     chunk_doc,
     clean_doc,
     embed_chunk,

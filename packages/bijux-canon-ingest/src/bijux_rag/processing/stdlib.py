@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Bijux RAG Core 1: stdlib-first RAG composition examples (end-of-Bijux RAG).
+"""Stdlib-first composition examples for the processing pipeline.
 
 This module exists to demonstrate a pragmatic "stdlib-first" style:
 - `functools.partial` for configurators
 - `itertools.chain.from_iterable` for flat-mapping
 - `operator.attrgetter` for projections
 
-It intentionally reuses the existing pure stage functions from `bijux_rag.rag.stages`.
+It intentionally reuses the existing pure stage functions from `bijux_rag.processing.stages`.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from bijux_rag.core.rag_types import (
     RagEnv,
     RawDoc,
 )
-from bijux_rag.rag.stages import clean_doc, embed_chunk, iter_chunk_doc
+from bijux_rag.processing.stages import clean_doc, embed_chunk, iter_chunk_doc
 
 
 def clean_docs(docs: Iterable[RawDoc]) -> Iterator[CleanDoc]:

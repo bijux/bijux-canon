@@ -10,7 +10,7 @@ This package groups the Bijux RAG helpers by responsibility:
 - time-aware pacing
 - groupby contiguity guards
 
-RAG-specific streaming functions live in `bijux_rag.rag.streaming_rag`.
+RAG-specific streaming functions live in `bijux_rag.processing.streaming`.
 """
 
 from __future__ import annotations

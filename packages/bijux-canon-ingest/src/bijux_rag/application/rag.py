@@ -39,10 +39,7 @@ from bijux_rag.rag.indexes import (
 )
 from bijux_rag.rag.ports import Answer, Candidate, Embedder
 from bijux_rag.rag.rerankers import LexicalOverlapReranker
-from bijux_rag.rag.stages import (
-    clean_doc,
-    iter_chunk_doc,
-)
+from bijux_rag.processing.stages import clean_doc, iter_chunk_doc
 from bijux_rag.result.types import Err, Ok, Result, is_err, is_ok
 
 

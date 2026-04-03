@@ -27,11 +27,11 @@ from bijux_rag.core.rag_types import (
 from bijux_rag.core.rules_dsl import any_doc
 from bijux_rag.core.rules_pred import eval_pred
 from bijux_rag.fp import StageInstrumentation, instrument_stage
-from bijux_rag.rag.stages import embed_chunk, structural_dedup_chunks
+from bijux_rag.processing.chunking import gen_chunk_doc
+from bijux_rag.processing.stages import embed_chunk, structural_dedup_chunks
 from bijux_rag.result import Err, Ok, Result
 
 from bijux_rag.config.rag import RagBoundaryDeps, RagConfig, RagCoreDeps
-from bijux_rag.rag.chunking import gen_chunk_doc
 
 from .observability import Observations
 

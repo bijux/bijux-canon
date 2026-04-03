@@ -23,7 +23,7 @@ from bijux_rag.core.rag_types import (
     RagEnv,
     RawDoc,
 )
-from bijux_rag.rag.stages import clean_doc, embed_chunk, iter_chunk_doc
+from bijux_rag.processing.stages import clean_doc, embed_chunk, iter_chunk_doc
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result
 
 

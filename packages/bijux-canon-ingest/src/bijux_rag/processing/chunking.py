@@ -1,11 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Chunking adapters used by the public RAG APIs (end-of-Bijux RAG).
-
-`bijux_rag.rag.stages` holds the canonical pure stage implementations.
-This module provides generator-friendly wrappers used by the `rag` layer.
-"""
+"""Generator-friendly chunking helpers built on top of the core stages."""
 
 from __future__ import annotations
 
@@ -14,7 +10,7 @@ from collections.abc import Iterable, Iterator
 from typing import TypeVar
 
 from bijux_rag.core.rag_types import ChunkWithoutEmbedding, CleanDoc, RagEnv
-from bijux_rag.rag.stages import (
+from .stages import (
     iter_chunk_doc,
     iter_chunk_spans,
     iter_overlapping_chunks_text,

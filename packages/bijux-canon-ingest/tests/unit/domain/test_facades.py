@@ -6,7 +6,7 @@ from __future__ import annotations
 from bijux_rag.core.rag_types import ChunkWithoutEmbedding
 from bijux_rag.domain.effects import perform
 from bijux_rag.domain.facades import Keyed, deterministic_embedder_port
-from bijux_rag.rag.stages import embed_chunk
+from bijux_rag.processing.stages import embed_chunk
 from bijux_rag.result.types import Ok
 
 

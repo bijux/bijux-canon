@@ -12,7 +12,7 @@ from pathlib import Path
 from bijux_rag.cli.file_pipeline import RagFileShell
 from bijux_rag.core.rag_types import Chunk
 from bijux_rag.infra.adapters.file_storage import FileStorage
-from bijux_rag.rag.stages import ChunkAndEmbedConfig
+from bijux_rag.processing.stages import ChunkAndEmbedConfig
 from bijux_rag.result import Err, Ok, Result
 
 
