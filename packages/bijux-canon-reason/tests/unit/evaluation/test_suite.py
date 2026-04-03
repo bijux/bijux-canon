@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.rar.eval.suite import suite_summary
+from bijux_canon_reason.evaluation.suite import suite_summary
 
 
 def test_suite_summary_aggregates_metrics(tmp_path: Path) -> None:
