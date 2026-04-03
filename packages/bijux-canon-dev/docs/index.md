@@ -1,5 +1,15 @@
-# bijux-canon-dev
+# INDEX
 
-Internal developer tooling for the `bijux-canon` monorepo lives here.
+Package-local documentation for `bijux-canon-dev`:
 
-This package owns repo-run helpers such as dependency hygiene, SBOM support, OpenAPI drift checks, and package-specific maintenance checks that should not live in product packages.
+- [SCOPE](SCOPE.md)
+- [ARCHITECTURE](ARCHITECTURE.md)
+- [BOUNDARIES](BOUNDARIES.md)
+- [CONTRACTS](CONTRACTS.md)
+- [EFFECTS](EFFECTS.md)
+- [INVARIANTS](INVARIANTS.md)
+- [PUBLIC_API](PUBLIC_API.md)
+- [SSOT](SSOT.md)
+- [TESTS](TESTS.md)
+
+This package is the monorepo tooling home. Package-local docs here are the source for what belongs in tooling versus product packages.

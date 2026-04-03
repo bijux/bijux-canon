@@ -1,7 +1,15 @@
-STATUS: EXPLANATORY
-# bijux-canon-reason
+# INDEX
 
-`bijux-canon-reason` keeps its primary reader-facing documentation under
-`docs/packages/bijux-canon-reason/`.
+Package-local documentation for `bijux-canon-reason`:
 
-This local page remains only as the package readme anchor.
+- [SCOPE](SCOPE.md)
+- [ARCHITECTURE](ARCHITECTURE.md)
+- [BOUNDARIES](BOUNDARIES.md)
+- [CONTRACTS](CONTRACTS.md)
+- [EFFECTS](EFFECTS.md)
+- [INVARIANTS](INVARIANTS.md)
+- [PUBLIC_API](PUBLIC_API.md)
+- [SSOT](SSOT.md)
+- [TESTS](TESTS.md)
+
+Use this set for package-local ownership and stable reasoning-package intent.

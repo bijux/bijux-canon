@@ -1,6 +1,15 @@
-# bijux-canon-ingest
+# INDEX
 
-`bijux-canon-ingest` keeps its reader-facing documentation under
-`docs/packages/bijux-canon-ingest/`.
+Package-local documentation for `bijux-canon-ingest`:
 
-This local page remains only as the package readme anchor.
+- [SCOPE](SCOPE.md)
+- [ARCHITECTURE](ARCHITECTURE.md)
+- [BOUNDARIES](BOUNDARIES.md)
+- [CONTRACTS](CONTRACTS.md)
+- [EFFECTS](EFFECTS.md)
+- [INVARIANTS](INVARIANTS.md)
+- [PUBLIC_API](PUBLIC_API.md)
+- [SSOT](SSOT.md)
+- [TESTS](TESTS.md)
+
+These files are the package-local source for ingest package ownership and constraints.
