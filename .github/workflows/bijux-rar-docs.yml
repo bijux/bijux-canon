@@ -8,7 +8,7 @@ on:
       - "packages/bijux-rar/docs/**"
       - "packages/bijux-rar/README.md"
       - "packages/bijux-rar/CHANGELOG.md"
-      - "packages/bijux-rar/scripts/**"
+      - "scripts/bijux-rar/**"
       - "configs/bijux-rar/mkdocs.yml"
       - "makes/bijux-rar/docs.mk"
       - "makes/shared/**"

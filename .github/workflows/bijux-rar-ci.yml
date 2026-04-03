@@ -12,6 +12,7 @@ on:
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
+      - "scripts/bijux-rar/**"
   pull_request:
     paths:
       - ".github/workflows/bijux-rar-ci.yml"
@@ -22,6 +23,7 @@ on:
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
+      - "scripts/bijux-rar/**"
   workflow_dispatch:
 
 permissions:
