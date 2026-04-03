@@ -73,6 +73,7 @@ nav:
       - security_failure_modes: spec/security_failure_modes.md
       - benchmarks: spec/benchmarks.md
   - Maintainer:
+      - contributing: maintainer/contributing.md
       - maintainer_rules: maintainer/maintainer_rules.md
       - forbidden_changes: maintainer/forbidden_changes.md
       - glossary: maintainer/glossary.md
