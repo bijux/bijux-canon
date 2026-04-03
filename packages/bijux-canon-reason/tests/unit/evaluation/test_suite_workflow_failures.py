@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.evaluation.suite import suite_summary
+from bijux_canon_reason.evaluation.suite_workflow import suite_summary
 
 
 def test_suite_summary_handles_empty_and_taxonomy() -> None:
