@@ -18,6 +18,15 @@ import duckdb
 
 from bijux_canon_runtime.runtime.context import RunMode
 from bijux_canon_runtime.observability.storage import schema_contracts
+from bijux_canon_runtime.observability.storage.execution_store_lock import (
+    acquire_execution_store_lock,
+)
+from bijux_canon_runtime.observability.storage.execution_store_schema import (
+    default_migrations_dir,
+    default_schema_contract_path,
+    default_schema_hash_path,
+    load_migration_statements,
+)
 from bijux_canon_runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
     ExecutionWriteStoreProtocol,
@@ -74,9 +83,9 @@ from bijux_canon_runtime.ontology.public import (
 )
 
 SCHEMA_VERSION = 3
-DEFAULT_MIGRATIONS_DIR = Path(__file__).resolve().parents[1] / "migrations"
-DEFAULT_SCHEMA_CONTRACT_PATH = Path(__file__).resolve().parents[1] / "schema.sql"
-DEFAULT_SCHEMA_HASH_PATH = Path(__file__).resolve().parents[1] / "schema.hash"
+DEFAULT_MIGRATIONS_DIR = default_migrations_dir()
+DEFAULT_SCHEMA_CONTRACT_PATH = default_schema_contract_path()
+DEFAULT_SCHEMA_HASH_PATH = default_schema_hash_path()
 MIGRATIONS_DIR = DEFAULT_MIGRATIONS_DIR
 SCHEMA_CONTRACT_PATH = DEFAULT_SCHEMA_CONTRACT_PATH
 SCHEMA_HASH_PATH = DEFAULT_SCHEMA_HASH_PATH
@@ -84,31 +93,7 @@ SCHEMA_HASH_PATH = DEFAULT_SCHEMA_HASH_PATH
 
 def _acquire_lock(path: Path) -> int:
     """Internal helper; not part of the public API."""
-    payload = f"{os.getpid()}\n".encode("ascii")
-    try:
-        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_RDWR)
-        os.write(fd, payload)
-        return fd
-    except FileExistsError:
-        pass
-
-    try:
-        existing = path.read_text(encoding="ascii").strip()
-        existing_pid = int(existing) if existing else None
-    except Exception:
-        existing_pid = None
-
-    if existing_pid == os.getpid():
-        return os.open(path, os.O_RDWR)
-
-    if existing_pid is not None:
-        try:
-            os.kill(existing_pid, 0)
-        except OSError:
-            path.unlink(missing_ok=True)
-            return _acquire_lock(path)
-
-    raise RuntimeError("execution store lock already held")
+    return acquire_execution_store_lock(path)
 
 
 # Single-writer assumption; no concurrent mutation guarantees are provided.
@@ -1390,13 +1375,7 @@ class DuckDBExecutionStore:
     @staticmethod
     def _load_migrations() -> dict[int, str]:
         """Internal helper; not part of the public API."""
-        if not MIGRATIONS_DIR.exists():
-            raise RuntimeError("Migration directory missing.")
-        migrations: dict[int, str] = {}
-        for file in sorted(MIGRATIONS_DIR.glob("*.sql")):
-            version = int(file.name.split("_", 1)[0])
-            migrations[version] = file.read_text(encoding="utf-8")
-        return migrations
+        return load_migration_statements(MIGRATIONS_DIR)
 
 
 class DuckDBExecutionWriteStore(ExecutionWriteStoreProtocol):
