@@ -11,7 +11,7 @@ hygiene:
 	if [ -n "$$bad" ]; then \
 	  echo "✘ Root pollution detected:"; echo "$$bad"; exit 1; \
 	fi
-	@extra=$$(find . -type d -name '__pycache__' -not -path './.venv/*' -not -path './artifacts/*' -print | head -n 1); \
+	@extra=$$(find . -type d -name '__pycache__' -not -path './.venv/*' -print | head -n 1); \
 	if [ -n "$$extra" ]; then \
 	  echo "✘ __pycache__ outside $(PROJECT_ARTIFACTS_DIR) and .venv:"; echo "$$extra"; exit 1; \
 	fi

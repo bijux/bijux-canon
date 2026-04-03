@@ -26,7 +26,7 @@ def main() -> int:
     args = parser.parse_args()
 
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
-    artifacts_dir = Path("benchmarks/artifacts")
+    artifacts_dir = Path("artifacts/bijux-vex/benchmarks")
     folder = dataset_folder(artifacts_dir, 1000, DEFAULT_DIMENSION, DEFAULT_SEED)
     if not folder.exists():
         dataset = generate_dataset(

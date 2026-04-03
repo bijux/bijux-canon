@@ -18,7 +18,7 @@ from bijux_vex.bench.runner import run_benchmark
 
 
 def main() -> int:
-    artifacts_dir = Path("benchmarks/artifacts")
+    artifacts_dir = Path("artifacts/bijux-vex/benchmarks")
     baseline_path = Path("benchmarks/baselines/v0.2.0.json")
     folder = dataset_folder(artifacts_dir, 1000, DEFAULT_DIMENSION, DEFAULT_SEED)
     if not folder.exists():

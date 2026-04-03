@@ -30,7 +30,11 @@ class RunRecord:
 
 class RunStore:
     def __init__(self, base_dir: str | Path | None = None) -> None:
-        base = base_dir or os.getenv("BIJUX_VEX_RUN_DIR") or "runs"
+        base = (
+            base_dir
+            or os.getenv("BIJUX_VEX_RUN_DIR")
+            or "artifacts/bijux-vex/runs"
+        )
         self._base = Path(base)
 
     def start(self, run_id: str, metadata: dict[str, Any]) -> None:

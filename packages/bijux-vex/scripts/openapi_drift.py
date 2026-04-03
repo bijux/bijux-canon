@@ -26,10 +26,10 @@ def load_spec(path: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--expected", type=Path, default=Path("artifacts/api/expected.json")
+        "--expected", type=Path, default=Path("artifacts/bijux-vex/api/expected.json")
     )
     parser.add_argument(
-        "--actual", type=Path, default=Path("artifacts/api/current.json")
+        "--actual", type=Path, default=Path("artifacts/bijux-vex/api/current.json")
     )
     parser.add_argument("--mode", choices=["check", "print"], default="check")
     args = parser.parse_args()

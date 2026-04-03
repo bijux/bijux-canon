@@ -264,7 +264,7 @@ def make_pipeline(
         summarizer_agent=summarizer_stub,
         validator_agent=validator_stub,
         critique_agent=CritiqueStubAgent({}, logger_manager),
-        results_dir=str(Path("artifacts/test/pipeline_results")),
+        results_dir=str(Path("artifacts/bijux-agent/test/pipeline_results")),
     )
 
 

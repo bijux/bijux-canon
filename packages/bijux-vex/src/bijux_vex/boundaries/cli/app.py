@@ -359,13 +359,16 @@ model = "all-MiniLM-L6-v2"
         typer.echo("Config already exists. Use --force to overwrite.")
         sys.exit(1)
     config_path.write_text(config_template, encoding="utf-8")
-    for folder in (Path("artifacts"), Path("runs")):
+    for folder in (
+        Path("artifacts") / "bijux-vex",
+        Path("artifacts") / "bijux-vex" / "runs",
+    ):
         folder.mkdir(parents=True, exist_ok=True)
     gitignore = Path(".gitignore")
     lines = []
     if gitignore.exists():
         lines = gitignore.read_text(encoding="utf-8").splitlines()
-    for entry in ["artifacts/", "runs/", "*.sqlite", "*.faiss", "*.meta.json"]:
+    for entry in ["artifacts/", "*.sqlite", "*.faiss", "*.meta.json"]:
         if entry not in lines:
             lines.append(entry)
     gitignore.write_text("\n".join(lines) + "\n", encoding="utf-8")

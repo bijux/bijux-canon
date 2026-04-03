@@ -54,7 +54,7 @@ def main() -> None:
 
     if added or removed or changed:
         msg = [
-            "Root pollution detected (changes outside artifacts/ and allowed caches):"
+            "Root pollution detected (changes outside artifacts/bijux-rar and allowed caches):"
         ]
         if added:
             msg.append(f"  Added ({len(added)}):")

@@ -73,7 +73,7 @@ class RunArtifacts:
 class RunBuilder:
     """
     Artifact contract (unchanged):
-      artifacts/runs/<run_id>/
+      artifacts/bijux-rar/runs/<run_id>/
         spec.json
         plan.json
         trace.jsonl

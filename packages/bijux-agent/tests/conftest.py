@@ -12,8 +12,9 @@ import warnings
 from _pytest.monkeypatch import MonkeyPatch
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-ALLOWED_ARTIFACTS_ROOT = PROJECT_ROOT / "artifacts" / "test"
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+MONOREPO_ROOT = PACKAGE_ROOT.parents[1]
+ALLOWED_ARTIFACTS_ROOT = MONOREPO_ROOT / "artifacts" / "bijux-agent" / "test"
 PYCACHE_PREFIX = ALLOWED_ARTIFACTS_ROOT / "pycache"
 PYCACHE_PREFIX.mkdir(parents=True, exist_ok=True)
 sys.dont_write_bytecode = True
@@ -48,7 +49,7 @@ def _assert_within_allowed(path: Path) -> None:
     if any(segment in resolved.parts for segment in EXEMPT_PATH_SEGMENTS):
         return
     raise RuntimeError(
-        "Writes, temporary files, and artifacts must stay under 'artifacts/test/'"
+        "Writes, temporary files, and artifacts must stay under 'artifacts/bijux-agent/test/'"
     )
 
 
@@ -137,24 +138,28 @@ def _git_untracked(root: Path) -> set[str]:
 
 
 def _relocate_coverage_files() -> None:
-    for coverage_path in PROJECT_ROOT.glob(".coverage*"):
-        if ALLOWED_ARTIFACTS_ROOT in coverage_path.parents:
-            continue
-        destination = ALLOWED_ARTIFACTS_ROOT / coverage_path.name
-        coverage_path.rename(destination)
+    for search_root in (PACKAGE_ROOT, MONOREPO_ROOT):
+        for coverage_path in search_root.glob(".coverage*"):
+            if ALLOWED_ARTIFACTS_ROOT in coverage_path.parents:
+                continue
+            destination = ALLOWED_ARTIFACTS_ROOT / coverage_path.name
+            coverage_path.rename(destination)
 
 
 @pytest.fixture(scope="session", autouse=True)
 def enforce_git_clean() -> Generator[None, None, None]:
-    before = _git_untracked(PROJECT_ROOT)
+    before = _git_untracked(MONOREPO_ROOT)
     yield
     _relocate_coverage_files()
-    after = _git_untracked(PROJECT_ROOT)
+    after = _git_untracked(MONOREPO_ROOT)
     new = after - before
-    disallowed = [path for path in new if not path.startswith("artifacts/test/")]
+    disallowed = [
+        path for path in new if not path.startswith("artifacts/bijux-agent/test/")
+    ]
     if disallowed:
         pytest.fail(
-            "Untracked paths appeared outside artifacts/test/: " + ", ".join(disallowed)
+            "Untracked paths appeared outside artifacts/bijux-agent/test/: "
+            + ", ".join(disallowed)
         )
 
 

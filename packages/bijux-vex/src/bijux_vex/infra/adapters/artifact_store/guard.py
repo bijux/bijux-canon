@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 """
-Artifact path guard to prevent writes outside artifacts/ unless explicitly allowed.
+Artifact path guard to prevent writes outside artifacts/bijux-vex unless explicitly allowed.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ from pathlib import Path
 
 from bijux_vex.core.errors import ValidationError
 
-ARTIFACT_ROOT = Path("artifacts").resolve()
+ARTIFACT_ROOT = (Path("artifacts") / "bijux-vex").resolve()
 
 
 def assert_artifact_path(path: Path, *, allow_outside: bool = False) -> Path:
@@ -18,7 +18,9 @@ def assert_artifact_path(path: Path, *, allow_outside: bool = False) -> Path:
     if allow_outside:
         return resolved
     if ARTIFACT_ROOT not in resolved.parents and resolved != ARTIFACT_ROOT:
-        raise ValidationError(f"Write blocked outside artifacts/: {resolved}")
+        raise ValidationError(
+            f"Write blocked outside artifacts/bijux-vex: {resolved}"
+        )
     return resolved
 
 

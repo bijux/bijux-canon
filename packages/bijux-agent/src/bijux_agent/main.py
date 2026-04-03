@@ -109,7 +109,7 @@ async def main() -> None:
     task_goal = config.get("task_goal", DEFAULT_TASK_GOAL)
 
     logging_config = config.get("logging", {})
-    log_dir = logging_config.get("log_dir", "artifacts/test/logs")
+    log_dir = logging_config.get("log_dir", "artifacts/bijux-agent/test/logs")
     log_level = logging_config.get("log_level", "INFO")
     log_file_name = logging_config.get("log_file_name", "application.log")
     structured_logging = logging_config.get("structured_logging", True)

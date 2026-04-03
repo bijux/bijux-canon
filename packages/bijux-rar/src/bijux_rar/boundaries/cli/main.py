@@ -27,7 +27,7 @@ SPEC_PATH_OPTION = typer.Option(
 PRESET_OPTION = typer.Option("default", "--preset", help="Pipeline preset name.")
 SEED_OPTION = typer.Option(0, "--seed", help="Deterministic seed.")
 ARTIFACTS_DIR_OPTION = typer.Option(
-    Path("artifacts"), "--artifacts-dir", help="Base artifacts directory."
+    Path("artifacts/bijux-rar"), "--artifacts-dir", help="Base artifacts directory."
 )
 FAIL_ON_VERIFY_OPTION = typer.Option(
     False,

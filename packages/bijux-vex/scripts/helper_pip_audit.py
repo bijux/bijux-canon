@@ -7,7 +7,7 @@ Reads a pip-audit JSON report, filters out ignored vulnerability IDs (and aliase
 prints a concise, deterministic summary, and exits non-zero when problems remain.
 
 Environment variables:
-  PIPA_JSON             Path to pip-audit JSON (default: artifacts/security/pip-audit.json)
+  PIPA_JSON             Path to pip-audit JSON (default: artifacts/bijux-vex/security/pip-audit.json)
   SECURITY_IGNORE_IDS   Space-separated list of IDs to ignore (e.g., "CVE-2023-1234 GHSA-xxxx")
   SECURITY_STRICT       "1" to fail when report is missing/unreadable or vulns remain; else soft-pass
 """
@@ -19,7 +19,7 @@ import os
 import sys
 from typing import Any, Dict, Iterable, List, Sequence, Set, Tuple
 
-REPORT_PATH = os.getenv("PIPA_JSON", "artifacts/security/pip-audit.json")
+REPORT_PATH = os.getenv("PIPA_JSON", "artifacts/bijux-vex/security/pip-audit.json")
 IGNORE_IDS: Set[str] = set(filter(None, os.getenv("SECURITY_IGNORE_IDS", "").split()))
 IS_STRICT = os.getenv("SECURITY_STRICT", "1") == "1"
 

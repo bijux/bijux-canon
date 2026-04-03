@@ -689,7 +689,7 @@ def test_trace_meta_enforces_contractual_fields(test_artifacts_dir: Path) -> Non
     recorder.finish()
 
     project_root = Path(__file__).resolve().parents[2]
-    artifacts_root = project_root / "artifacts" / "test"
+    artifacts_root = project_root.parents[1] / "artifacts" / "bijux-agent" / "test"
     assert trace_path.resolve().is_relative_to(artifacts_root)
 
     data = json.loads(trace_path.read_text(encoding="utf-8"))

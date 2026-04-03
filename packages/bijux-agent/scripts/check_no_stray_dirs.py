@@ -13,7 +13,7 @@ ALLOWED_DIRS = {
     ".pytest_cache/",
     ".benchmarks/",
     ".ruff_cache/",
-    "artifacts/",
+    "../../artifacts/bijux-agent/",
     "../../configs/bijux-agent/.ruff_cache/",
     "scripts/__pycache__/",
     "src/bijux_agent/agents/critique/",

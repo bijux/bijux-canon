@@ -63,7 +63,10 @@ def hnsw_backend(
     diagnostics = dict(base.diagnostics or {})
     diagnostics["index_dir"] = lambda: str(
         Path(
-            index_dir or os.environ.get("BIJUX_VEX_HNSW_PATH", "artifacts/hnsw_index")
+            index_dir
+            or os.environ.get(
+                "BIJUX_VEX_HNSW_PATH", "artifacts/bijux-vex/hnsw_index"
+            )
         ).resolve()
     )
     return HnswFixture(
