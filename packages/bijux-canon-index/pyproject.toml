@@ -138,14 +138,14 @@ dev = [
 "Security" = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
 
-[project.entry-points."bijux_vex.vectorstores"]
-example = "bijux_vex.plugins.example:register_vectorstore"
+[project.entry-points."bijux_canon_index.vectorstores"]
+example = "bijux_canon_index.plugins.example:register_vectorstore"
 
-[project.entry-points."bijux_vex.embeddings"]
-example = "bijux_vex.plugins.example:register_embedding"
+[project.entry-points."bijux_canon_index.embeddings"]
+example = "bijux_canon_index.plugins.example:register_embedding"
 
-[project.entry-points."bijux_vex.runners"]
-example = "bijux_vex.plugins.example:register_runner"
+[project.entry-points."bijux_canon_index.runners"]
+example = "bijux_canon_index.plugins.example:register_runner"
 
 [tool.hatch.version]
 source = "vcs"
@@ -154,18 +154,18 @@ tag-pattern = "^bijux-canon-index/v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-canon-index/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/bijux_vex/_version.py"
+version-file = "src/bijux_canon_index/_version.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/bijux_vex"]
-include = ["src/bijux_vex/py.typed"]
+packages = ["src/bijux_canon_index"]
+include = ["src/bijux_canon_index/py.typed"]
 
 [tool.hatch.build.targets.sdist]
 include = [
   "docs/index.md",
   "CHANGELOG.md",
   "docs/maintainer/pypi.md",
-  "src/bijux_vex/py.typed",
+  "src/bijux_canon_index/py.typed",
 ]
 
 [tool.hatch.build]
@@ -173,7 +173,7 @@ include = [
   "docs/index.md",
   "CHANGELOG.md",
   "docs/maintainer/pypi.md",
-  "src/bijux_vex/py.typed",
+  "src/bijux_canon_index/py.typed",
 ]
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]

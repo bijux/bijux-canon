@@ -5,8 +5,8 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.failures import FailureKind, classify_failure, retry_with_policy
-from bijux_vex.core.errors import InvariantError, mark_retryable
+from bijux_canon_index.core.failures import FailureKind, classify_failure, retry_with_policy
+from bijux_canon_index.core.errors import InvariantError, mark_retryable
 
 
 def test_classify_and_retry():

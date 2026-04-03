@@ -4,21 +4,21 @@ from __future__ import annotations
 
 import json
 
-from bijux_vex.boundaries.pydantic_edges.models import (
+from bijux_canon_index.boundaries.pydantic_edges.models import (
     ExecutionArtifactRequest,
     IngestRequest,
 )
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.types import ExecutionRequest
-from bijux_vex.domain.execution_requests.execute import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.types import ExecutionRequest
+from bijux_canon_index.domain.execution_requests.execute import (
     execute_request,
     start_execution_session,
 )
-from bijux_vex.domain.provenance.lineage import explain_result
-from bijux_vex.infra.adapters.memory.backend import memory_backend
-from bijux_vex.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.domain.provenance.lineage import explain_result
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.services.execution_engine import VectorExecutionEngine
 
 
 def test_explain_provenance_key_order_is_stable() -> None:

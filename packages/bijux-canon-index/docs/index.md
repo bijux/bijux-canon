@@ -76,7 +76,7 @@ We use one term per concept: **replayable** (deterministic, bit-identical), **au
 
 ## Public surfaces
 - **CLI (Typer)**: `create`, `ingest`, `materialize`, `execute`, `explain`, `replay`, `compare`, `list-artifacts`, `vdb`.
-- **API (FastAPI)**: versioned under `bijux_vex.api.v1` with frozen OpenAPI (`apis/bijux-canon-index/v1/openapi.v1.json`), endpoints mirror CLI verbs.
+- **API (FastAPI)**: versioned under `bijux_canon_index.api.v1` with frozen OpenAPI (`apis/bijux-canon-index/v1/openapi.v1.json`), endpoints mirror CLI verbs.
 - **Core types**: `ExecutionContract`, `ExecutionRequest`, `ExecutionArtifact`, `ExecutionResources`, `ApproximationReport`, `RandomnessProfile`.
 
 ## Non-goals checksum

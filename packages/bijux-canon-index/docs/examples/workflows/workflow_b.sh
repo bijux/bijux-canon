@@ -14,7 +14,7 @@ if [ -z "${PYTHON_BIN:-}" ]; then
   fi
 fi
 
-BIN="${PYTHON_BIN} -m bijux_vex.boundaries.cli.app"
+BIN="${PYTHON_BIN} -m bijux_canon_index.boundaries.cli.app"
 
 if ! $PYTHON_BIN - <<'PY'; then
 import sys
@@ -27,7 +27,7 @@ PY
   exit 0
 fi
 
-$BIN init --config-path "$WORKDIR/bijux_vex.toml" --force
+$BIN init --config-path "$WORKDIR/bijux_canon_index.toml" --force
 $BIN ingest --doc "hello embeddings" \
   --embed-provider example --embed-model example \
   --vector-store faiss --vector-store-uri "$WORKDIR/index.faiss"

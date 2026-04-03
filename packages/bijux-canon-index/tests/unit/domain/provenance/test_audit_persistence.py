@@ -6,9 +6,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_vex.contracts.tx import Tx
-from bijux_vex.domain.provenance.audit import AuditRecord, chain_hash
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.contracts.tx import Tx
+from bijux_canon_index.domain.provenance.audit import AuditRecord, chain_hash
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 def _serialize(log: list[AuditRecord], path: Path) -> None:

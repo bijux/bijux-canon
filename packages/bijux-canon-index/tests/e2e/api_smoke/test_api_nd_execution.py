@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from bijux_vex.api.v1 import build_app
+from bijux_canon_index.api.v1 import build_app
 
 
 def test_api_nd_execution_path(tmp_path: Path, monkeypatch) -> None:

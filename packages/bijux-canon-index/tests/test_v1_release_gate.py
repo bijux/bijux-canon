@@ -11,13 +11,13 @@ from pathlib import Path
 import pytest
 from fastapi.encoders import jsonable_encoder
 
-from bijux_vex.boundaries.api.app import build_app
-from bijux_vex.core.canon import CANON_VERSION, canon
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.identity.ids import fingerprint
-from bijux_vex.core.invariants import ALLOWED_METRICS
-from bijux_vex.core.types import ExecutionArtifact
-from bijux_vex.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
+from bijux_canon_index.boundaries.api.app import build_app
+from bijux_canon_index.core.canon import CANON_VERSION, canon
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.identity.ids import fingerprint
+from bijux_canon_index.core.invariants import ALLOWED_METRICS
+from bijux_canon_index.core.types import ExecutionArtifact
+from bijux_canon_index.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
 from tests.e2e.api_smoke.test_openapi_freeze import EXPECTED_OPENAPI_FINGERPRINT
 from tests.e2e.cli_workflows.test_cli_contract_freeze import CLI_HELP
 
@@ -46,7 +46,7 @@ def test_v1_release_gate():
     repo_root = Path(__file__).resolve().parents[1]
     env = {**os.environ, "PYTHONPATH": str(repo_root / "src")}
     help_text = subprocess.check_output(
-        [sys.executable, "-m", "bijux_vex.boundaries.cli.app", "--help"],
+        [sys.executable, "-m", "bijux_canon_index.boundaries.cli.app", "--help"],
         text=True,
         env=env,
     )

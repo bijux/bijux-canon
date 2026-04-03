@@ -35,6 +35,6 @@ Classification lives in `FailureKind` and `FAILURE_ACTIONS`:
 
 Docs → code
 
-- `src/bijux_vex/core/errors/error_types.py`
-- `src/bijux_vex/core/failures.py`
-- `src/bijux_vex/domain/provenance/replay.py`
+- `src/bijux_canon_index/core/errors/error_types.py`
+- `src/bijux_canon_index/core/failures.py`
+- `src/bijux_canon_index/domain/provenance/replay.py`

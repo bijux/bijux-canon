@@ -5,7 +5,7 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
+from bijux_canon_index.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
 
 
 def test_all_exclusions_raise():

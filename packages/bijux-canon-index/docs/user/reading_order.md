@@ -2,7 +2,7 @@
 
 If you are new
 
-- `docs/user/what_is_bijux_vex.md`
+- `docs/user/what_is_bijux_canon_index.md`
 - `docs/user/start_here.md`
 - `docs/overview/architecture_walkthrough.md`
 - `docs/user/determinism_end_to_end.md`

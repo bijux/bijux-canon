@@ -2,12 +2,12 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.errors import InvariantError
-from bijux_vex.core.execution_result import ExecutionCost, ExecutionResult
-from bijux_vex.core.runtime.execution_plan import ExecutionPlan
-from bijux_vex.core.types import Result
-from bijux_vex.infra.adapters.memory.backend import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.errors import InvariantError
+from bijux_canon_index.core.execution_result import ExecutionCost, ExecutionResult
+from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
+from bijux_canon_index.core.types import Result
+from bijux_canon_index.infra.adapters.memory.backend import (
     MemoryExecutionLedger,
     memory_backend,
 )

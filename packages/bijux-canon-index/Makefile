@@ -9,7 +9,7 @@ include ../../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
-LINT_DIRS         := src/bijux_vex
+LINT_DIRS         := src/bijux_canon_index
 FMT_DIRS          := src tests
 ENABLE_MYPY       := 0
 ENABLE_CODESPELL  := 1
@@ -18,11 +18,11 @@ ENABLE_RADON      := 1
 ENABLE_PYDOCSTYLE := 0
 ENABLE_PYTYPE     := 0
 RUFF_CHECK_FIX    := 1
-INTERROGATE_PATHS := src/bijux_vex
-QUALITY_PATHS     := src/bijux_vex
+INTERROGATE_PATHS := src/bijux_canon_index
+QUALITY_PATHS     := src/bijux_canon_index
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
 QUALITY_CLEAN_SITE := 1
-SECURITY_PATHS    := src/bijux_vex
+SECURITY_PATHS    := src/bijux_canon_index
 SECURITY_IGNORE_IDS := PYSEC-2022-42969
 SECURITY_AUDIT_PREPARE_MODE := pyproject
 PIP_AUDIT_INPUTS = -r "$(SECURITY_REQS)"
@@ -33,7 +33,7 @@ API_LOG          = $(API_ARTIFACTS_DIR)/openapi_drift.log
 API_DRIFT_COMMAND = $(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/bijux-canon-index/openapi_drift.py" --mode check >"$(API_LOG)" 2>&1 || true
 PUBLISH_DIST_DIR := $(PROJECT_ARTIFACTS_DIR)/release
 PUBLISH_UPLOAD_ENABLED := 0
-TEST_COVERAGE_TARGETS := $(abspath src/bijux_vex/core) $(abspath src/bijux_vex/contracts) $(abspath src/bijux_vex/domain)
+TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_index/core) $(abspath src/bijux_canon_index/contracts) $(abspath src/bijux_canon_index/domain)
 TEST_MAIN_ARGS := --maxfail=1
 
 # Modular Includes
@@ -97,7 +97,7 @@ release: clean install fmt lint test quality security sbom
 	fi
 	@$(PIP_AUDIT) $(PIP_AUDIT_FLAGS) --output "$(PROJECT_ARTIFACTS_DIR)/release/sbom.json" || true
 	@echo "[INFO] Refreshing OpenAPI v1"
-	@$(VENV_PYTHON) -c 'from pathlib import Path; import json; from bijux_vex.api.v1 import build_app; output = Path("$(API_DIR)/v1/openapi.v1.json"); output.parent.mkdir(parents=True, exist_ok=True); output.write_text(json.dumps(build_app().openapi(), indent=2), encoding="utf-8")'
+	@$(VENV_PYTHON) -c 'from pathlib import Path; import json; from bijux_canon_index.api.v1 import build_app; output = Path("$(API_DIR)/v1/openapi.v1.json"); output.parent.mkdir(parents=True, exist_ok=True); output.write_text(json.dumps(build_app().openapi(), indent=2), encoding="utf-8")'
 	@cd "$(PROJECT_ARTIFACTS_DIR)/release" && shasum -a 256 *.whl *.tar.gz > SHA256SUMS
 	@echo "[OK] Release artifacts ready under $(PROJECT_ARTIFACTS_DIR)/release"
 

@@ -10,7 +10,7 @@ pytest.importorskip("fastapi")
 
 from fastapi.testclient import TestClient
 
-from bijux_vex.boundaries.api.app import build_app
+from bijux_canon_index.boundaries.api.app import build_app
 
 
 def test_api_execute_concurrency(tmp_path, monkeypatch) -> None:

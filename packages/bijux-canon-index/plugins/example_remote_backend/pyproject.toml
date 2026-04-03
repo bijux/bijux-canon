@@ -8,8 +8,8 @@ dependencies = [
   "qdrant-client>=1.9.0",
 ]
 
-[project.entry-points."bijux_vex.vectorstores"]
-qdrant_plugin_example = "bijux_vex_qdrant_plugin:register"
+[project.entry-points."bijux_canon_index.vectorstores"]
+qdrant_plugin_example = "bijux_canon_index_qdrant_plugin:register"
 
 [build-system]
 requires = ["hatchling"]

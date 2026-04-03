@@ -7,7 +7,7 @@ from dataclasses import replace
 
 import pytest
 
-from bijux_vex.domain.provenance.audit import AuditRecord, chain_hash
+from bijux_canon_index.domain.provenance.audit import AuditRecord, chain_hash
 
 
 def _record(record_id: str, prev: str | None) -> AuditRecord:

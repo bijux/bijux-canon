@@ -5,9 +5,9 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.errors import AtomicityViolationError
-from bijux_vex.infra.adapters.memory.backend import memory_backend
-from bijux_vex.infra.adapters.sqlite.backend import sqlite_backend
+from bijux_canon_index.core.errors import AtomicityViolationError
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 
 
 @pytest.fixture(params=["memory", "sqlite"])

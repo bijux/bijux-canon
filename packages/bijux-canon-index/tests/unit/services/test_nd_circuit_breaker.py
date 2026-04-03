@@ -4,20 +4,20 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_vex.boundaries.exception_bridge import refusal_payload
-from bijux_vex.boundaries.pydantic_edges.models import (
+from bijux_canon_index.boundaries.exception_bridge import refusal_payload
+from bijux_canon_index.boundaries.pydantic_edges.models import (
     ExecutionBudgetPayload,
     ExecutionRequestPayload,
     RandomnessProfilePayload,
 )
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.errors import BackendUnavailableError
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.types import Chunk, Document, ExecutionArtifact, Vector
-from bijux_vex.infra.adapters.ann_base import AnnExecutionRequestRunner
-from bijux_vex.infra.adapters.memory.backend import memory_backend
-from bijux_vex.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.errors import BackendUnavailableError
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.types import Chunk, Document, ExecutionArtifact, Vector
+from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.services.execution_engine import VectorExecutionEngine
 
 
 class FailingAnn(AnnExecutionRequestRunner):

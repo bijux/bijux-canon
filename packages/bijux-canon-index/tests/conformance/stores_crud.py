@@ -6,8 +6,8 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.types import Chunk, Document, ExecutionArtifact, Vector
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.types import Chunk, Document, ExecutionArtifact, Vector
 from tests.conformance.suite import default_backends, parametrize_backends
 
 

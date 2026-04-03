@@ -20,7 +20,7 @@ They apply to the deterministic execution contract only; ANN mode is documented 
 - Backends must not introduce hidden randomness; any deterministic seed must be part of the query spec.
 
 ## Example (executable)
->>> from bijux_vex.core.identity.ids import fingerprint
+>>> from bijux_canon_index.core.identity.ids import fingerprint
 >>> fp1 = fingerprint({"doc": 1})
 >>> fp2 = fingerprint({"doc": 1})
 >>> fp1 == fp2

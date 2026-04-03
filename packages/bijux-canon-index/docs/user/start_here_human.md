@@ -18,6 +18,6 @@ bijux vex execute --artifact-id art-1 --execution-contract deterministic \
 
 Once that works, read:
 
-- `docs/user/what_is_bijux_vex.md`
+- `docs/user/what_is_bijux_canon_index.md`
 - `docs/user/determinism_end_to_end.md`
 - `docs/user/nd_execution_model.md`

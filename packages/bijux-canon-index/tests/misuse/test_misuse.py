@@ -3,16 +3,16 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.errors import (
+from bijux_canon_index.core.errors import (
     InvariantError,
     NDExecutionUnavailableError,
     ValidationError,
 )
-from bijux_vex.core.execution_result import ApproximationReport
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.types import (
+from bijux_canon_index.core.execution_result import ApproximationReport
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.types import (
     Chunk,
     Document,
     ExecutionArtifact,
@@ -20,14 +20,14 @@ from bijux_vex.core.types import (
     ExecutionRequest,
     Vector,
 )
-from bijux_vex.domain.execution_requests.execute import (
+from bijux_canon_index.domain.execution_requests.execute import (
     ExecutionOutcome,
     execute_request_outcome,
     start_execution_session,
 )
-from bijux_vex.domain.provenance.replay import replay
-from bijux_vex.infra.adapters.ann_base import AnnExecutionRequestRunner
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.domain.provenance.replay import replay
+from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 class NoAnn(AnnExecutionRequestRunner):

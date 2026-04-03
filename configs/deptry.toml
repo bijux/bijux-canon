@@ -2,7 +2,7 @@
 pep621_dev_dependency_groups = ["dev"]
 ignore = ["DEP003"]
 extend_exclude = ["docs", "api", "artifacts"]
-package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-canon-agent" = "bijux_agent", "bijux-canon-ingest" = "bijux_rag", "bijux-canon-reason" = "bijux_rar", "bijux-canon-index" = "bijux_vex", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
+package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-canon-agent" = "bijux_agent", "bijux-canon-ingest" = "bijux_rag", "bijux-canon-reason" = "bijux_rar", "bijux-canon-index" = "bijux_canon_index", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
 
 [tool.repo_deptry.packages."bijux-canon-runtime"]
 known_first_party = ["agentic_flows"]
@@ -24,6 +24,6 @@ ignore = ["DEP001"]
 per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom"], DEP003 = ["bijux_rar"] }
 
 [tool.repo_deptry.packages."bijux-canon-index"]
-known_first_party = ["bijux_vex"]
+known_first_party = ["bijux_canon_index"]
 ignore = ["DEP001"]
-per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom", "faiss-cpu"], DEP003 = ["bijux_vex"] }
+per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom", "faiss-cpu"], DEP003 = ["bijux_canon_index"] }

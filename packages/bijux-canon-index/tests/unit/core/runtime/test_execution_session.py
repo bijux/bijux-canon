@@ -3,17 +3,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.runtime.execution_plan import ExecutionPlan
-from bijux_vex.core.runtime.execution_session import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
+from bijux_canon_index.core.runtime.execution_session import (
     ExecutionSession,
     ExecutionState,
     derive_session_id,
 )
-from bijux_vex.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
-from bijux_vex.core.runtime.vector_execution import VectorExecution
+from bijux_canon_index.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
+from bijux_canon_index.core.runtime.vector_execution import VectorExecution
 
 
 def test_session_id_is_deterministic():

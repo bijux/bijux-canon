@@ -2,11 +2,11 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.runtime.vector_execution import RandomnessProfile
-from bijux_vex.core.types import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
+from bijux_canon_index.core.types import (
     Chunk,
     Document,
     ExecutionArtifact,
@@ -15,11 +15,11 @@ from bijux_vex.core.types import (
     NDSettings,
     Vector,
 )
-from bijux_vex.domain.execution_requests.execute import (
+from bijux_canon_index.domain.execution_requests.execute import (
     execute_request,
     start_execution_session,
 )
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 def test_nd_approximation_metrics_include_witness() -> None:

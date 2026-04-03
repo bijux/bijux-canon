@@ -7,7 +7,7 @@
 ## Connect
 
 ```bash
-python -m bijux_vex.boundaries.cli.app ingest \
+python -m bijux_canon_index.boundaries.cli.app ingest \
   --doc "hello" --vector "[0.0,1.0,0.0]" \
   --vector-store qdrant --vector-store-uri http://localhost:6333
 ```

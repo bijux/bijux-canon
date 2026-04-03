@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 
 
 def test_contract_surface_matrix_and_levels():

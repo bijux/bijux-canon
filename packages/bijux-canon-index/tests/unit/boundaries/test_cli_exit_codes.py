@@ -6,8 +6,8 @@ from __future__ import annotations
 import pytest
 from typer.testing import CliRunner
 
-from bijux_vex.boundaries.cli import app as cli_app
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.boundaries.cli import app as cli_app
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 
 
 def test_cli_exit_code_for_misuse():

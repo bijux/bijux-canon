@@ -14,9 +14,9 @@ if [ -z "${PYTHON_BIN:-}" ]; then
   fi
 fi
 
-BIN="${PYTHON_BIN} -m bijux_vex.boundaries.cli.app"
+BIN="${PYTHON_BIN} -m bijux_canon_index.boundaries.cli.app"
 
-$BIN init --config-path "$WORKDIR/bijux_vex.toml" --force
+$BIN init --config-path "$WORKDIR/bijux_canon_index.toml" --force
 $BIN ingest --doc "hello" --vector "[0.0, 1.0, 0.0]" --vector-store memory
 $BIN materialize --execution-contract deterministic --vector-store memory
 $BIN execute --artifact-id art-1 --vector "[0.0, 1.0, 0.0]" \

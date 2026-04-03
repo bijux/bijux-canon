@@ -3,9 +3,9 @@
 from __future__ import annotations
 from fastapi.encoders import jsonable_encoder
 
-from bijux_vex.boundaries.api.app import build_app
-from bijux_vex.core.canon import canon
-from bijux_vex.core.identity.ids import fingerprint
+from bijux_canon_index.boundaries.api.app import build_app
+from bijux_canon_index.core.canon import canon
+from bijux_canon_index.core.identity.ids import fingerprint
 
 EXPECTED_OPENAPI_FINGERPRINT = (
     "3838a62cbe68daac9125a0974e6634cbfc5d3cb3a9489fca8f76cc7e00658cba"

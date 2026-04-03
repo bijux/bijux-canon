@@ -8,7 +8,7 @@ import inspect
 
 
 EXPECTED = {
-    "bijux_vex.core.types.base": {
+    "bijux_canon_index.core.types.base": {
         "Document",
         "Chunk",
         "Vector",
@@ -19,7 +19,7 @@ EXPECTED = {
         "Result",
         "ExecutionArtifact",
     },
-    "bijux_vex.core.errors": {
+    "bijux_canon_index.core.errors": {
         "BijuxError",
         "ValidationError",
         "InvariantError",
@@ -49,30 +49,30 @@ EXPECTED = {
         "FAILURE_ACTIONS",
         "action_for_failure",
     },
-    "bijux_vex.core.canon": {"canon", "CANON_VERSION"},
-    "bijux_vex.core.identity.ids": {"fingerprint", "make_id", "CANON_VERSION"},
-    "bijux_vex.core.contracts.execution_contract": {"ExecutionContract"},
-    "bijux_vex.core.runtime.vector_execution": {
+    "bijux_canon_index.core.canon": {"canon", "CANON_VERSION"},
+    "bijux_canon_index.core.identity.ids": {"fingerprint", "make_id", "CANON_VERSION"},
+    "bijux_canon_index.core.contracts.execution_contract": {"ExecutionContract"},
+    "bijux_canon_index.core.runtime.vector_execution": {
         "VectorExecution",
         "RandomnessProfile",
         "derive_execution_id",
         "execution_signature",
     },
-    "bijux_vex.domain.execution_requests.plan": {
+    "bijux_canon_index.domain.execution_requests.plan": {
         "build_execution_plan",
         "run_plan",
     },
-    "bijux_vex.domain.execution_requests.comparator": {"ExecutionComparator"},
-    "bijux_vex.core.invariants": {"ALLOWED_METRICS", "validate_execution_artifact"},
-    "bijux_vex.contracts.resources": {
+    "bijux_canon_index.domain.execution_requests.comparator": {"ExecutionComparator"},
+    "bijux_canon_index.core.invariants": {"ALLOWED_METRICS", "validate_execution_artifact"},
+    "bijux_canon_index.contracts.resources": {
         "ExecutionResources",
         "BackendCapabilities",
         "VectorSource",
         "ExecutionLedger",
     },
-    "bijux_vex.contracts.tx": {"Tx"},
-    "bijux_vex.contracts.authz": {"Authz", "AllowAllAuthz", "DenyAllAuthz"},
-    "bijux_vex.services.execution_engine": {"VectorExecutionEngine"},
+    "bijux_canon_index.contracts.tx": {"Tx"},
+    "bijux_canon_index.contracts.authz": {"Authz", "AllowAllAuthz", "DenyAllAuthz"},
+    "bijux_canon_index.services.execution_engine": {"VectorExecutionEngine"},
 }
 
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_vex.infra.run_store import RunStore
+from bijux_canon_index.infra.run_store import RunStore
 
 
 def test_run_store_records_refusal_details(tmp_path: Path) -> None:

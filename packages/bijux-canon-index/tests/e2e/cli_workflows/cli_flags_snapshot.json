@@ -931,7 +931,7 @@
     "command": "init",
     "params": [
       {
-        "default": "bijux_vex.toml",
+        "default": "bijux_canon_index.toml",
         "name": "config_path",
         "opts": [
           "--config-path"

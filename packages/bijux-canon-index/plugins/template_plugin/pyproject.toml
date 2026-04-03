@@ -5,8 +5,8 @@ description = "Template plugin for Bijux Vex"
 requires-python = ">=3.10"
 dependencies = ["bijux-canon-index"]
 
-[project.entry-points."bijux_vex.vectorstores"]
-template = "bijux_vex_plugin_example:register"
+[project.entry-points."bijux_canon_index.vectorstores"]
+template = "bijux_canon_index_plugin_example:register"
 
 [build-system]
 requires = ["hatchling"]

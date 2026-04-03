@@ -5,13 +5,13 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.compliance import ComparisonPolicy, enforce_policy
-from bijux_vex.domain.execution_requests.compare import VectorExecutionDiff
-from bijux_vex.core.execution_result import ExecutionResult, ExecutionCost
-from bijux_vex.core.types import Result
-from bijux_vex.core.runtime.execution_plan import ExecutionPlan
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.errors import InvariantError
+from bijux_canon_index.core.compliance import ComparisonPolicy, enforce_policy
+from bijux_canon_index.domain.execution_requests.compare import VectorExecutionDiff
+from bijux_canon_index.core.execution_result import ExecutionResult, ExecutionCost
+from bijux_canon_index.core.types import Result
+from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.errors import InvariantError
 
 
 def _dummy_execution(exec_id: str) -> ExecutionResult:

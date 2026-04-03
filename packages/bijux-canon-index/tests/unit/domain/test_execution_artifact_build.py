@@ -5,13 +5,13 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.contracts.resources import ExecutionResources
-from bijux_vex.contracts.tx import Tx
-from bijux_vex.core.errors import InvariantError
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.types import ExecutionArtifact
-from bijux_vex.domain.execution_artifacts import build
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.contracts.resources import ExecutionResources
+from bijux_canon_index.contracts.tx import Tx
+from bijux_canon_index.core.errors import InvariantError
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.types import ExecutionArtifact
+from bijux_canon_index.domain.execution_artifacts import build
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 def _artifact() -> ExecutionArtifact:

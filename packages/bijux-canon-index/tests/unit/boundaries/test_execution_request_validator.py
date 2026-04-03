@@ -6,12 +6,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from bijux_vex.boundaries.pydantic_edges.validators import (
+from bijux_canon_index.boundaries.pydantic_edges.validators import (
     validate_execution_request_payload,
 )
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
 
 
 def _payload(**overrides):

@@ -3,10 +3,10 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.errors import InvariantError
-from bijux_vex.core.types import ExecutionArtifact
-from bijux_vex.domain.execution_artifacts import lifecycle
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.errors import InvariantError
+from bijux_canon_index.core.types import ExecutionArtifact
+from bijux_canon_index.domain.execution_artifacts import lifecycle
 
 
 def _artifact() -> ExecutionArtifact:
@@ -53,7 +53,7 @@ def test_rebuild_rejects_contract_change():
 
 def test_ledger_retention_limits(monkeypatch):
     art = _artifact()
-    from bijux_vex.infra.adapters.memory.backend import (
+    from bijux_canon_index.infra.adapters.memory.backend import (
         memory_backend,
         MemoryExecutionLedger,
     )

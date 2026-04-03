@@ -1,20 +1,20 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 
 import pytest
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.boundaries.pydantic_edges.models import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.boundaries.pydantic_edges.models import (
     ExplainRequest,
     ExecutionArtifactRequest,
     ExecutionBudgetPayload,
     IngestRequest,
     ExecutionRequestPayload,
 )
-from bijux_vex.core.errors import AuthzDeniedError
-from bijux_vex.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.core.errors import AuthzDeniedError
+from bijux_canon_index.services.execution_engine import VectorExecutionEngine
 
 
 def test_read_only_blocks_mutations(monkeypatch):

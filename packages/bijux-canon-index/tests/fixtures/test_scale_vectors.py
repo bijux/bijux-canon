@@ -5,8 +5,8 @@
 from __future__ import annotations
 import random
 
-from bijux_vex.core.types import Chunk, Document, Vector
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.core.types import Chunk, Document, Vector
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 def build_scale_backend(count: int = 10000, dim: int = 8):

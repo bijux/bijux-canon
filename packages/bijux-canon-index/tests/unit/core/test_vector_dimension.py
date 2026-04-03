@@ -5,8 +5,8 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.errors import InvariantError
-from bijux_vex.core.types import Vector
+from bijux_canon_index.core.errors import InvariantError
+from bijux_canon_index.core.types import Vector
 
 
 def test_vector_dimension_must_match_values():

@@ -7,7 +7,7 @@ Freeze is allowed only when all gates are satisfied:
 - Test tree mirrors src tree 1:1.
 - Adversarial execution scenarios pass (drift-within-bounds, corruption replay refusal, budget exhaustion).
 - Failure semantics and invariants documented and enforced by tests.
-- No TODO/FIXME in `src/bijux_vex/core`.
+- No TODO/FIXME in `src/bijux_canon_index/core`.
 - Docs: mental_model, failure_semantics, vdb_profile present and linked in doc map.
 - All gates: `make test lint quality security` green.
 - Exclusions honored: `pgvector_backend` remains excluded (see `core/v1_exclusions.py`).

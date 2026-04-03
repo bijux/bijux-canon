@@ -1,6 +1,6 @@
 # ANN Runner Audit (reference implementation)
 
-Scope: `ReferenceAnnRunner` (`src/bijux_vex/infra/adapters/ann_reference.py`).
+Scope: `ReferenceAnnRunner` (`src/bijux_canon_index/infra/adapters/ann_reference.py`).
 
 ## Randomness sources
 - `hnswlib` index construction and search order (library-level nondeterminism).

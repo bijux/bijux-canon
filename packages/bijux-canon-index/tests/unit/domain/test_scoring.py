@@ -7,9 +7,9 @@ import math
 
 import pytest
 
-from bijux_vex.core.errors import ValidationError
-from bijux_vex.core.types import Result
-from bijux_vex.domain.execution_requests import scoring
+from bijux_canon_index.core.errors import ValidationError
+from bijux_canon_index.core.types import Result
+from bijux_canon_index.domain.execution_requests import scoring
 
 
 def test_l2_distance_deterministic():

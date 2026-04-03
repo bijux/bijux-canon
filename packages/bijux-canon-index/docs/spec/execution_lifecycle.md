@@ -26,8 +26,8 @@ Artifacts and provenance:
 
 Docs → code
 
-- `src/bijux_vex/core/runtime/execution_plan.py`
-- `src/bijux_vex/core/runtime/execution_session.py`
-- `src/bijux_vex/domain/execution_requests/plan.py`
-- `src/bijux_vex/domain/execution_requests/execute.py`
-- `src/bijux_vex/domain/provenance/replay.py`
+- `src/bijux_canon_index/core/runtime/execution_plan.py`
+- `src/bijux_canon_index/core/runtime/execution_session.py`
+- `src/bijux_canon_index/domain/execution_requests/plan.py`
+- `src/bijux_canon_index/domain/execution_requests/execute.py`
+- `src/bijux_canon_index/domain/provenance/replay.py`

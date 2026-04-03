@@ -1,19 +1,19 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 
 import pytest
 
 from pydantic import ValidationError
 
-from bijux_vex.boundaries.pydantic_edges.models import (
+from bijux_canon_index.boundaries.pydantic_edges.models import (
     CreateRequest,
     ExplainRequest,
     IngestRequest,
     ExecutionRequestPayload,
 )
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 
 
 def test_unknown_fields_rejected():

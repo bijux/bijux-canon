@@ -32,10 +32,10 @@
     "embeddings": [
       {
         "entrypoint": "example",
-        "group": "bijux_vex.embeddings",
+        "group": "bijux_canon_index.embeddings",
         "name": "bijux-canon-index",
         "status": "failed",
-        "warning": "partially initialized module 'bijux_vex.plugins.example' has no attribute 'register_embedding' (most likely due to a circular import)"
+        "warning": "partially initialized module 'bijux_canon_index.plugins.example' has no attribute 'register_embedding' (most likely due to a circular import)"
       }
     ],
     "runners": [
@@ -43,7 +43,7 @@
         "approximation": false,
         "determinism": "deterministic",
         "entrypoint": "example",
-        "group": "bijux_vex.runners",
+        "group": "bijux_canon_index.runners",
         "name": "example",
         "randomness_sources": [],
         "source": "bijux-canon-index",
@@ -61,7 +61,7 @@
         },
         "determinism": "deterministic_exact",
         "entrypoint": "example",
-        "group": "bijux_vex.vectorstores",
+        "group": "bijux_canon_index.vectorstores",
         "name": "example",
         "randomness_sources": [],
         "source": "bijux-canon-index",

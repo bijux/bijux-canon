@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.types import ExecutionArtifact
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.types import ExecutionArtifact
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 def test_abort_tx_does_not_emit_audit():

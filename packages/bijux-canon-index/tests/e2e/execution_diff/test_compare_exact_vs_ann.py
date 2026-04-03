@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_result import ApproximationReport
-from bijux_vex.core.types import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_result import ApproximationReport
+from bijux_canon_index.core.types import (
     Chunk,
     Document,
     ExecutionArtifact,
@@ -14,13 +14,13 @@ from bijux_vex.core.types import (
     ExecutionBudget,
     Vector,
 )
-from bijux_vex.domain.execution_requests.compare import compare_executions
-from bijux_vex.domain.execution_requests.execute import (
+from bijux_canon_index.domain.execution_requests.compare import compare_executions
+from bijux_canon_index.domain.execution_requests.execute import (
     execute_request,
     start_execution_session,
 )
-from bijux_vex.infra.adapters.ann_base import AnnExecutionRequestRunner
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 class ReversingAnn(AnnExecutionRequestRunner):
@@ -42,7 +42,7 @@ class ReversingAnn(AnnExecutionRequestRunner):
         for idx, vec in enumerate(vectors[: request.top_k], start=1):
             chunk = self.stores.vectors.get_chunk(vec.chunk_id)
             doc_id = chunk.document_id if chunk else ""
-            from bijux_vex.core.types import Result
+            from bijux_canon_index.core.types import Result
 
             results.append(
                 Result(

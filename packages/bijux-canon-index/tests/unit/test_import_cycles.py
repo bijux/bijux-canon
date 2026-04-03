@@ -11,10 +11,10 @@ import pytest
 
 
 def _core_import_graph() -> dict[str, set[str]]:
-    root = Path(__file__).parents[2] / "src" / "bijux_vex" / "core"
+    root = Path(__file__).parents[2] / "src" / "bijux_canon_index" / "core"
     graph: dict[str, set[str]] = {}
     for path in root.rglob("*.py"):
-        module = "bijux_vex.core." + ".".join(
+        module = "bijux_canon_index.core." + ".".join(
             path.relative_to(root).with_suffix("").parts
         )
         tree = ast.parse(path.read_text())
@@ -26,7 +26,7 @@ def _core_import_graph() -> dict[str, set[str]]:
                     continue
                 for alias in node.names:
                     if (
-                        alias.name.startswith("bijux_vex.core")
+                        alias.name.startswith("bijux_canon_index.core")
                         and alias.name not in _IGNORED
                     ):
                         deps.add(alias.name)
@@ -35,7 +35,7 @@ def _core_import_graph() -> dict[str, set[str]]:
                     continue
                 if (
                     node.module
-                    and node.module.startswith("bijux_vex.core")
+                    and node.module.startswith("bijux_canon_index.core")
                     and node.module not in _IGNORED
                 ):
                     deps.add(node.module)
@@ -60,8 +60,8 @@ def _attach_parents(tree: ast.AST) -> None:
 
 
 _IGNORED = {
-    "bijux_vex.core.runtime.vector_execution",  # wrapper imports ExecutionRequest
-    "bijux_vex.core.types",  # TYPE_CHECKING imports back into core
+    "bijux_canon_index.core.runtime.vector_execution",  # wrapper imports ExecutionRequest
+    "bijux_canon_index.core.types",  # TYPE_CHECKING imports back into core
 }
 
 

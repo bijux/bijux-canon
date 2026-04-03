@@ -37,12 +37,12 @@ nav:
       - Start Here: user/start_here.md
       - Start Here (Human): user/start_here_human.md
       - Start Here (10 Minutes): user/start_here_10_minutes.md
-      - What It Is: user/what_is_bijux_vex.md
+      - What It Is: user/what_is_bijux_canon_index.md
       - If You Only Read One Page: user/only_read_one_page.md
       - Reading Order: user/reading_order.md
       - v0.2 User Contract: user/v0_2_user_contract.md
       - Stability & Evolution: user/stability_evolution_policy.md
-      - Why Bijux-Vex Exists: user/why_bijux_vex_exists.md
+      - Why Bijux-Vex Exists: user/why_bijux_canon_index_exists.md
       - Who Should Use This: user/who_should_use.md
       - Tutorial: user/tutorial.md
       - Workflows: user/workflows.md
@@ -94,7 +94,7 @@ nav:
       - Security Posture: user/security_posture.md
       - Before Production: user/before_production_checklist.md
       - Project Values: user/project_values.md
-      - How To Think With Bijux-Vex: user/how_to_think_with_bijux_vex.md
+      - How To Think With Bijux-Vex: user/how_to_think_with_bijux_canon_index.md
       - Freeze Meanings: user/freeze_meanings.md
       - Known Limitations: user/known_limitations.md
       - Release Narrative: user/release_notes_narrative.md

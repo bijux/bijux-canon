@@ -5,7 +5,7 @@ Allowed:
 - New adapters implementing `contracts.resources.VectorSource`/`ExecutionLedger` respecting ExecutionContract capabilities.
 - New ANN runners subclassing `AnnExecutionRequestRunner` that declare randomness sources, bounds, and deterministic fallback policy.
 - New execution algorithms registered via `domain.execution_algorithms.base.register_algorithm` that respect contract compatibility.
-- Plugins discovered via entrypoints: `bijux_vex.vectorstores`, `bijux_vex.embeddings`, `bijux_vex.runners`.
+- Plugins discovered via entrypoints: `bijux_canon_index.vectorstores`, `bijux_canon_index.embeddings`, `bijux_canon_index.runners`.
 
 Forbidden:
 

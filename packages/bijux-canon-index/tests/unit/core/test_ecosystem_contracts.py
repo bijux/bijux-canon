@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.ecosystem_contracts import VEX_ECOSYSTEM_CONTRACT
+from bijux_canon_index.core.ecosystem_contracts import VEX_ECOSYSTEM_CONTRACT
 
 
 def test_ecosystem_contract_declared():

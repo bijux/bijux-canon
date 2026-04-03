@@ -5,8 +5,8 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.failures import classify_failure, FailureKind
-from bijux_vex.core.errors import InvariantError, mark_retryable
+from bijux_canon_index.core.failures import classify_failure, FailureKind
+from bijux_canon_index.core.errors import InvariantError, mark_retryable
 
 
 def test_invariant_retry_annotation_is_ignored():

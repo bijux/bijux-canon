@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.infra.adapters.memory.backend import memory_backend
-from bijux_vex.core.types import Document
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.core.types import Document
 
 
 def test_backends_are_isolated():

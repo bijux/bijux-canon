@@ -2,23 +2,23 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_vex.contracts.resources import (
+from bijux_canon_index.contracts.resources import (
     BackendCapabilities,
     ExecutionLedger,
     ExecutionResources,
     VectorSource,
 )
-from bijux_vex.contracts.tx import Tx
-from bijux_vex.contracts.authz import AllowAllAuthz
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.errors import NDExecutionUnavailableError
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.runtime.execution_plan import ExecutionPlan
-from bijux_vex.core.runtime.vector_execution import RandomnessProfile, VectorExecution
-from bijux_vex.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
-from bijux_vex.domain.execution_requests.plan import run_plan
-from bijux_vex.infra.adapters.memory.backend import (
+from bijux_canon_index.contracts.tx import Tx
+from bijux_canon_index.contracts.authz import AllowAllAuthz
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.errors import NDExecutionUnavailableError
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
+from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile, VectorExecution
+from bijux_canon_index.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
+from bijux_canon_index.domain.execution_requests.plan import run_plan
+from bijux_canon_index.infra.adapters.memory.backend import (
     MemoryExecutionLedger,
     MemoryState,
     MemoryVectorSource,

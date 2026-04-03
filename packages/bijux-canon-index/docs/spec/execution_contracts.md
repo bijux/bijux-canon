@@ -31,7 +31,7 @@ All MUST be named in the plan via `RandomnessSource`.
 - Schema versioning (API/OpenAPI) exists to keep external integrations honest; breaking changes require a new major API version.
 
 ## Doc → code map
-- Contracts: `src/bijux_vex/core/contracts/__init__.py`
-- Randomness profile: `src/bijux_vex/core/vector_execution.py`
-- Reports: `src/bijux_vex/core/execution_result.py`
-- Enforcement: `src/bijux_vex/domain/execution_requests/execute.py`, `plan.py`
+- Contracts: `src/bijux_canon_index/core/contracts/__init__.py`
+- Randomness profile: `src/bijux_canon_index/core/vector_execution.py`
+- Reports: `src/bijux_canon_index/core/execution_result.py`
+- Enforcement: `src/bijux_canon_index/domain/execution_requests/execute.py`, `plan.py`

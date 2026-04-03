@@ -5,8 +5,8 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.boundaries.exception_bridge import to_cli_exit, to_http_status
-from bijux_vex.core import errors
+from bijux_canon_index.boundaries.exception_bridge import to_cli_exit, to_http_status
+from bijux_canon_index.core import errors
 
 
 @pytest.mark.parametrize(

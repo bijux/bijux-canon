@@ -6,7 +6,7 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.types import Document
+from bijux_canon_index.core.types import Document
 from tests.conformance.suite import default_backends, parametrize_backends
 
 

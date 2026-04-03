@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from bijux_vex.core.errors import CorruptArtifactError
+from bijux_canon_index.core.errors import CorruptArtifactError
 
 faiss = pytest.importorskip("faiss")
 
-from bijux_vex.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
+from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
 
 
 def _make_adapter(path: Path) -> FaissVectorStoreAdapter:

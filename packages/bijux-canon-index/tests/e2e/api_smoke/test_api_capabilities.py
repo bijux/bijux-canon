@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from bijux_vex.boundaries.api.app import build_app
+from bijux_canon_index.boundaries.api.app import build_app
 
 
 def test_api_capabilities_reports_backend():

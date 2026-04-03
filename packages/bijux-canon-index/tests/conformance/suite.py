@@ -6,9 +6,9 @@
 from __future__ import annotations
 from typing import Callable, Iterable, NamedTuple
 
-from bijux_vex.contracts.authz import Authz
-from bijux_vex.contracts.resources import ExecutionResources
-from bijux_vex.contracts.tx import Tx
+from bijux_canon_index.contracts.authz import Authz
+from bijux_canon_index.contracts.resources import ExecutionResources
+from bijux_canon_index.contracts.tx import Tx
 
 
 class ConformanceFixture(NamedTuple):
@@ -31,8 +31,8 @@ def parametrize_backends(backends: Iterable[BackendCase]):
 
 
 def default_backends() -> Iterable[BackendCase]:
-    from bijux_vex.infra.adapters.memory.backend import memory_backend
-    from bijux_vex.infra.adapters.sqlite.backend import sqlite_backend
+    from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+    from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 
     return [
         BackendCase(name="memory", factory=memory_backend),

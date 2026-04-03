@@ -7,7 +7,7 @@ import pytest
 
 
 def test_core_has_no_todo_fixme():
-    root = Path(__file__).parents[2] / "src" / "bijux_vex" / "core"
+    root = Path(__file__).parents[2] / "src" / "bijux_canon_index" / "core"
     offenders = []
     for path in root.rglob("*.py"):
         text = path.read_text()
@@ -28,7 +28,7 @@ def test_freeze_docs_exist():
 
 
 def test_structure_parity_submodules():
-    src_root = Path(__file__).parents[2] / "src" / "bijux_vex"
+    src_root = Path(__file__).parents[2] / "src" / "bijux_canon_index"
     tests_root = Path(__file__).parents[1] / "unit"
     src_dirs = {
         rel.parts[0]

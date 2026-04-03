@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.canon import CANON_VERSION, canon
-from bijux_vex.core.identity.ids import fingerprint
+from bijux_canon_index.core.canon import CANON_VERSION, canon
+from bijux_canon_index.core.identity.ids import fingerprint
 
 
 def test_canon_version_constant_default():

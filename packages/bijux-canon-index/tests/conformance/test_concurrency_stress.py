@@ -5,8 +5,8 @@
 from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 
-from bijux_vex.infra.adapters.memory.backend import memory_backend
-from bijux_vex.core.types import Document
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.core.types import Document
 
 
 def _write_doc(name: str) -> str:

@@ -6,16 +6,16 @@ import pytest
 
 pytest.importorskip("faiss")
 
-from bijux_vex.core.config import ExecutionConfig, VectorStoreConfig
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.boundaries.pydantic_edges.models import (
+from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.boundaries.pydantic_edges.models import (
     ExecutionArtifactRequest,
     ExecutionRequestPayload,
     IngestRequest,
 )
-from bijux_vex.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.services.execution_engine import VectorExecutionEngine
 
 
 def _ingest(engine: VectorExecutionEngine) -> None:

@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.types import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.types import (
     Chunk,
     Document,
     ExecutionArtifact,
     ExecutionRequest,
     Vector,
 )
-from bijux_vex.domain.provenance.replay import replay
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.domain.provenance.replay import replay
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 def test_replay_produces_identical_fingerprint():
@@ -48,7 +48,7 @@ def test_replay_produces_identical_fingerprint():
         backend.stores.vectors.put_vector(tx, vector)
         backend.stores.ledger.put_artifact(tx, artifact)
 
-    from bijux_vex.domain.execution_requests.execute import (
+    from bijux_canon_index.domain.execution_requests.execute import (
         execute_request,
         start_execution_session,
     )
@@ -57,7 +57,7 @@ def test_replay_produces_identical_fingerprint():
     first_result, _ = execute_request(session, backend.stores)
     with backend.tx_factory() as tx:
         backend.stores.ledger.put_execution_result(tx, first_result)
-    from bijux_vex.domain.provenance.replay import _results_fingerprint
+    from bijux_canon_index.domain.provenance.replay import _results_fingerprint
 
     baseline_fp = _results_fingerprint(first_result.results)
     first = replay(query, artifact, backend.stores, baseline_fingerprint=baseline_fp)

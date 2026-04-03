@@ -1,20 +1,20 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 
 from dataclasses import asdict
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.types import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.types import (
     Chunk,
     Document,
     ExecutionArtifact,
     ExecutionRequest,
     Vector,
 )
-from bijux_vex.infra.adapters.memory.backend import memory_backend
-from bijux_vex.infra.adapters.sqlite.backend import sqlite_backend
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 
 
 def _ingest(

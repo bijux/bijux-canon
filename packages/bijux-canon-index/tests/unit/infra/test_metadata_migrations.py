@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_vex.core.errors import ValidationError
-from bijux_vex.infra.adapters.metadata_migrations import (
+from bijux_canon_index.core.errors import ValidationError
+from bijux_canon_index.infra.adapters.metadata_migrations import (
     CURRENT_VECTOR_METADATA_VERSION,
     migrate_vector_metadata,
 )

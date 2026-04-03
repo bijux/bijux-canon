@@ -6,8 +6,8 @@ import pytest
 
 pytest.importorskip("faiss")
 
-from bijux_vex.core.errors import ConflictError
-from bijux_vex.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
+from bijux_canon_index.core.errors import ConflictError
+from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
 
 
 def test_faiss_rejects_duplicate_vector_ids(tmp_path) -> None:

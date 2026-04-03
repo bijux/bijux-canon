@@ -21,6 +21,6 @@ Mutation rules:
 
 Docs → code
 
-- `src/bijux_vex/core/execution_result.py`
-- `src/bijux_vex/core/abi/__init__.py`
-- `src/bijux_vex/domain/execution_artifacts/`
+- `src/bijux_canon_index/core/execution_result.py`
+- `src/bijux_canon_index/core/abi/__init__.py`
+- `src/bijux_canon_index/domain/execution_artifacts/`

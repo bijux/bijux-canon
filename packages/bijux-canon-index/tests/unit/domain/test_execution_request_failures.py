@@ -5,19 +5,19 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.errors import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.errors import (
     BackendCapabilityError,
     InvariantError,
     NotFoundError,
     ValidationError,
 )
-from bijux_vex.core.types import ExecutionArtifact, ExecutionRequest, ExecutionBudget
-from bijux_vex.contracts.resources import BackendCapabilities, ExecutionResources
-from bijux_vex.domain.execution_requests.plan import build_execution_plan
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, ExecutionBudget
+from bijux_canon_index.contracts.resources import BackendCapabilities, ExecutionResources
+from bijux_canon_index.domain.execution_requests.plan import build_execution_plan
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 def _prepare_artifact(backend):

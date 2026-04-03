@@ -6,18 +6,18 @@ from pathlib import Path
 
 import pytest
 
-from bijux_vex.boundaries.pydantic_edges.models import (
+from bijux_canon_index.boundaries.pydantic_edges.models import (
     ExecutionArtifactRequest,
     ExecutionRequestPayload,
     ExplainRequest,
     IngestRequest,
 )
-from bijux_vex.core.config import ExecutionConfig, VectorStoreConfig
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.infra.embeddings.registry import EMBEDDING_PROVIDERS
-from bijux_vex.plugins.example import register_embedding
-from bijux_vex.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
+from bijux_canon_index.plugins.example import register_embedding
+from bijux_canon_index.services.execution_engine import VectorExecutionEngine
 
 pytest.importorskip("faiss")
 

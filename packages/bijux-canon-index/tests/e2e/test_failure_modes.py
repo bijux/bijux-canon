@@ -1,29 +1,29 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 
 import pytest
 from typer.testing import CliRunner
 
-from bijux_vex.boundaries.cli import app as cli_app
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.errors import (
+from bijux_canon_index.boundaries.cli import app as cli_app
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.errors import (
     BackendDivergenceError,
     InvariantError,
     NDExecutionUnavailableError,
     ValidationError,
 )
-from bijux_vex.core.failures import retry_with_policy
-from bijux_vex.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
-from bijux_vex.domain.execution_requests.execute import (
+from bijux_canon_index.core.failures import retry_with_policy
+from bijux_canon_index.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
+from bijux_canon_index.domain.execution_requests.execute import (
     execute_request,
     start_execution_session,
 )
-from bijux_vex.domain.monitoring.divergence import detect_backend_drift
-from bijux_vex.domain.provenance.replay import replay
-from bijux_vex.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.domain.monitoring.divergence import detect_backend_drift
+from bijux_canon_index.domain.provenance.replay import replay
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 def test_cli_help_snapshot():

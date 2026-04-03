@@ -10,8 +10,8 @@ from pathlib import Path
 import schemathesis
 from starlette.testclient import TestClient
 
-from bijux_vex.boundaries.api.app import build_app
-from bijux_vex.core.identity.ids import fingerprint
+from bijux_canon_index.boundaries.api.app import build_app
+from bijux_canon_index.core.identity.ids import fingerprint
 
 
 def test_api_responses_are_deterministic(tmp_path: Path, monkeypatch):

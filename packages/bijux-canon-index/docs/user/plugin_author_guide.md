@@ -6,7 +6,7 @@
 template_plugin/
   pyproject.toml
   src/
-    bijux_vex_plugin_example/
+    bijux_canon_index_plugin_example/
       __init__.py
   tests/
     test_plugin_contracts.py
@@ -16,9 +16,9 @@ template_plugin/
 
 Register entrypoints under:
 
-- `bijux_vex.vectorstores`
-- `bijux_vex.embeddings`
-- `bijux_vex.runners`
+- `bijux_canon_index.vectorstores`
+- `bijux_canon_index.embeddings`
+- `bijux_canon_index.runners`
 
 ## Test Kit
 

@@ -50,7 +50,7 @@ Target recall
 When to tune
 
 - Use `bijux vex nd tune` on a representative dataset.
-- Apply the recommended config in your `bijux_vex.toml`.
+- Apply the recommended config in your `bijux_canon_index.toml`.
 
 When to refuse
 

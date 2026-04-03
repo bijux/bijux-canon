@@ -2,9 +2,9 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
-from bijux_vex.infra.adapters.qdrant.adapter import QdrantVectorStoreAdapter
-from bijux_vex.infra.adapters.vectorstore_registry import VectorStoreDescriptor
-from bijux_vex.infra.plugins.contract import PluginContract
+from bijux_canon_index.infra.adapters.qdrant.adapter import QdrantVectorStoreAdapter
+from bijux_canon_index.infra.adapters.vectorstore_registry import VectorStoreDescriptor
+from bijux_canon_index.infra.plugins.contract import PluginContract
 
 
 def register(registry) -> None:

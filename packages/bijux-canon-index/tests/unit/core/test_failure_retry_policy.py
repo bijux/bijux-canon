@@ -5,9 +5,9 @@
 from __future__ import annotations
 import pytest
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.failures import FailureKind, classify_failure, retry_with_policy
-from bijux_vex.core.errors import InvariantError, ValidationError, mark_retryable
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.failures import FailureKind, classify_failure, retry_with_policy
+from bijux_canon_index.core.errors import InvariantError, ValidationError, mark_retryable
 
 
 def test_invariant_is_terminal():

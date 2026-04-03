@@ -2,16 +2,16 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
-from bijux_vex.core.contracts.execution_contract import ExecutionContract
-from bijux_vex.core.execution_intent import ExecutionIntent
-from bijux_vex.core.execution_mode import ExecutionMode
-from bijux_vex.core.types import Chunk, Document, ExecutionRequest, Vector
-from bijux_vex.infra.adapters.memory.backend import memory_backend
-from bijux_vex.infra.adapters.vectorstore_registry import (
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.types import Chunk, Document, ExecutionRequest, Vector
+from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.infra.adapters.vectorstore_registry import (
     VectorStoreDescriptor,
     VectorStoreResolution,
 )
-from bijux_vex.infra.adapters.vectorstore_source import VectorStoreVectorSource
+from bijux_canon_index.infra.adapters.vectorstore_source import VectorStoreVectorSource
 
 
 class _TieAdapter:

@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 
-CLI = [sys.executable, "-m", "bijux_vex.boundaries.cli.app"]
+CLI = [sys.executable, "-m", "bijux_canon_index.boundaries.cli.app"]
 
 
 def run_cmd(args):

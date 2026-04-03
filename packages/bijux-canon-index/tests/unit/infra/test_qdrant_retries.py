@@ -6,7 +6,7 @@ import pytest
 
 pytest.importorskip("qdrant_client")
 
-from bijux_vex.infra.adapters.qdrant.adapter import QdrantVectorStoreAdapter
+from bijux_canon_index.infra.adapters.qdrant.adapter import QdrantVectorStoreAdapter
 
 
 class _StubClient:

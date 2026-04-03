@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def test_src_tests_directory_parity():
-    src_root = Path(__file__).parents[2] / "src" / "bijux_vex"
+    src_root = Path(__file__).parents[2] / "src" / "bijux_canon_index"
     tests_root = Path(__file__).parents[1] / "unit"
     src_dirs = {
         p.relative_to(src_root).parts[0]
