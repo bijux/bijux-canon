@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 from fastapi.encoders import jsonable_encoder
 
-from bijux_canon_index.interfaces.api.app import build_app
+from bijux_canon_index.api.v1.app import build_app
 from bijux_canon_index.core.canon import CANON_VERSION, canon
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.identity.ids import fingerprint

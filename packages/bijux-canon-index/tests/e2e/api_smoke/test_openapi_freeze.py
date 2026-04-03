@@ -3,12 +3,12 @@
 from __future__ import annotations
 from fastapi.encoders import jsonable_encoder
 
-from bijux_canon_index.interfaces.api.app import build_app
+from bijux_canon_index.api.v1.app import build_app
 from bijux_canon_index.core.canon import canon
 from bijux_canon_index.core.identity.ids import fingerprint
 
 EXPECTED_OPENAPI_FINGERPRINT = (
-    "3838a62cbe68daac9125a0974e6634cbfc5d3cb3a9489fca8f76cc7e00658cba"
+    "892b5bbe59443c641e778c4998b67ec949dc6b20eee8bbde8bb6c8008f83e4b9"
 )
 
 

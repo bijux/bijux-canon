@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from bijux_canon_index.interfaces.api.app import build_app
+from bijux_canon_index.api.v1.app import build_app
 
 
 def _assert_expected_subset(actual: object, expected: object) -> None:

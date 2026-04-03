@@ -8,6 +8,6 @@ This module is the only supported import path for the public FastAPI app in v1.
 
 from __future__ import annotations
 
-from bijux_canon_index.interfaces.api.app import build_app
+from .app import build_app
 
 __all__ = ["build_app"]

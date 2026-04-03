@@ -6,7 +6,7 @@ from pathlib import Path
 
 from starlette.testclient import TestClient
 
-from bijux_canon_index.interfaces.api.app import build_app
+from bijux_canon_index.api.v1.app import build_app
 
 
 def test_list_artifacts_and_runs(tmp_path: Path, monkeypatch) -> None:

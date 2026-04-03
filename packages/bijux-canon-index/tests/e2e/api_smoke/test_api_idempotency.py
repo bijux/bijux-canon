@@ -6,7 +6,7 @@ from pathlib import Path
 
 from starlette.testclient import TestClient
 
-from bijux_canon_index.interfaces.api.app import build_app
+from bijux_canon_index.api.v1.app import build_app
 
 
 def test_ingest_idempotency_key(tmp_path: Path, monkeypatch) -> None:
