@@ -12,7 +12,8 @@ If you are a user of the CLI/API, you probably want `docs/user/usage.md` instead
 
 ## Start here
 
-1. `docs/maintainer/tooling.md`
-2. `docs/maintainer/testing.md`
-3. `docs/maintainer/code-map.md`
-4. `docs/maintainer/documentation-invariant.md`
+1. `docs/maintainer/contributing.md`
+2. `docs/maintainer/tooling.md`
+3. `docs/maintainer/testing.md`
+4. `docs/maintainer/code-map.md`
+5. `docs/maintainer/documentation-invariant.md`

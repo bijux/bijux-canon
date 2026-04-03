@@ -74,6 +74,7 @@ nav:
       - Spec Index: maintainer/spec.md
       - Anti-Features: maintainer/anti-features.md
       - Code Map: maintainer/code-map.md
+      - Contributing: maintainer/contributing.md
       - Docs Parity: maintainer/docs-parity.md
       - Docstring Policy: maintainer/docstring-policy.md
       - Documentation Invariant: maintainer/documentation-invariant.md

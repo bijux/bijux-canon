@@ -43,6 +43,7 @@ Docs are treated as part of the runtime contract. Every markdown file under `doc
 - docs/maintainer/anti-features.md — Anti-features (maintainer)
 - docs/maintainer/breaking_refactor.md — Breaking refactor policy (maintainer)
 - docs/maintainer/code-map.md — Code map
+- docs/maintainer/contributing.md — Contributing guide (maintainer)
 - docs/maintainer/docs-parity.md — Docs ↔ code parity
 - docs/maintainer/docs_contract.md — Documentation contract (maintainer)
 - docs/maintainer/docs_voice.md — Documentation voice (maintainer)
