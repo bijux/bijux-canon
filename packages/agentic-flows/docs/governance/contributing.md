@@ -67,14 +67,14 @@ make lint test docs api
 
 | Target          | What it does                                                                 |
 | --------------- | ---------------------------------------------------------------------------- |
-| `make test`     | `pytest` + coverage (HTML in `artifacts/test/htmlcov/`)                      |
+| `make test`     | `pytest` + coverage (HTML in `artifacts/agentic-flows/test/htmlcov/`)                      |
 | `make lint`     | Format (ruff), lint (ruff), type-check (mypy), complexity (radon)            |
 | `make quality`  | Dead code (vulture), deps hygiene (deptry), docstrings (interrogate)          |
 | `make security` | Bandit + pip-audit                                                           |
 | `make api`      | OpenAPI lint + generator compat + Schemathesis contract tests                |
 | `make docs`     | Build MkDocs (strict)                                                        |
 | `make build`    | Build sdist + wheel                                                          |
-| `make sbom`     | CycloneDX SBOM → `artifacts/sbom/`                                           |
+| `make sbom`     | CycloneDX SBOM → `artifacts/agentic-flows/sbom/`                                           |
 
 **Handy helpers**
 
@@ -131,7 +131,7 @@ make api
 
 * Run all tests: `make test`
 * Focused run: `pytest -k "<expr>" -q`
-* Coverage report: HTML in `artifacts/test/htmlcov/`
+* Coverage report: HTML in `artifacts/agentic-flows/test/htmlcov/`
 * **Project bar:** keep coverage thresholds green and benchmarks within the regression gate.
 
 

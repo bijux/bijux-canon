@@ -15,7 +15,7 @@ Architecture components are defined in [Architecture](../architecture/architectu
 ## Contracts  
 Install with `pipx install agentic-proteins`.  
 Run with `agentic-proteins run --sequence "ACDEFGHIKLMNPQRSTVWY"`.  
-Artifacts are stored under `artifacts/<run_id>/`.  
+Artifacts are stored under `artifacts/agentic-flows/<run_id>/`.  
 
 ## Invariants  
 Local filesystem permissions prevent cross-tenant access.  
