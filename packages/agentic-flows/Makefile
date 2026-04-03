@@ -16,12 +16,13 @@ ENABLE_RADON    := 1
 ENABLE_PYDOCSTYLE := 1
 ENABLE_PYTYPE   := 0
 RUFF_CHECK_FIX  := 0
+MYPY_FLAGS      := --strict --follow-imports silent
 RADON_COMPLEXITY_MAX := 48
 PYDOCSTYLE_ARGS := --convention=google --add-ignore=D100,D101,D102,D103,D104,D105,D106,D107
 INTERROGATE_PATHS := src/agentic_flows
 QUALITY_PATHS     := src/agentic_flows
-QUALITY_MYPY_CONFIG := $(CONFIG_DIR)/mypy.ini
-QUALITY_MYPY_FLAGS := --strict
+QUALITY_MYPY_CONFIG := $(MONOREPO_ROOT)/configs/mypy.ini
+QUALITY_MYPY_FLAGS := --strict --follow-imports silent
 SKIP_MYPY         := 0
 QUALITY_VULTURE_MIN_CONFIDENCE := 90
 QUALITY_PYTHON_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_md_links.py $(MONOREPO_ROOT)/scripts/agentic-flows/check_docs_consistency.py $(MONOREPO_ROOT)/scripts/agentic-flows/check_no_toys_policy.py

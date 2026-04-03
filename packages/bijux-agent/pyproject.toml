@@ -143,10 +143,10 @@ allow-direct-references = true
 packages = ["src/bijux_agent"]
 
 [tool.mypy-core]
-config-file = "../../configs/bijux-agent/mypy-core.ini"
+config-file = "../../configs/mypy.ini"
 
 [tool.mypy-extended]
-config-file = "../../configs/bijux-agent/mypy-extended.ini"
+config-file = "../../configs/mypy.ini"
 python_files = ["test_*.py"]
 
 [tool.coverage.run]

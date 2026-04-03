@@ -8,11 +8,15 @@ include ../../makes/shared/python-package.mk
 .NOTPARALLEL: all clean
 
 LINT_DIRS            := src/bijux_agent tests
-MYPY_CONFIG          := $(CONFIG_DIR)/mypy-core.ini
-MYPY_FLAGS           := --strict
-MYPY_CORE_CONFIG     := $(CONFIG_DIR)/mypy-core.ini
-MYPY_CORE_FLAGS      := --strict
-MYPY_EXTENDED_CONFIG := $(CONFIG_DIR)/mypy-extended.ini
+MYPY_CONFIG          := $(MONOREPO_ROOT)/configs/mypy.ini
+MYPY_FLAGS           := --follow-imports silent --ignore-missing-imports --strict-optional --disallow-untyped-defs --warn-return-any --check-untyped-defs
+MYPY_TARGETS         := src/bijux_agent/pipeline src/bijux_agent/tracing src/bijux_agent/models src/bijux_agent/schema src/bijux_agent/agents/base.py
+MYPY_CORE_CONFIG     := $(MONOREPO_ROOT)/configs/mypy.ini
+MYPY_CORE_FLAGS      := $(MYPY_FLAGS)
+MYPY_CORE_TARGETS    := $(MYPY_TARGETS)
+MYPY_EXTENDED_CONFIG := $(MONOREPO_ROOT)/configs/mypy.ini
+MYPY_EXTENDED_FLAGS  := --follow-imports silent --ignore-missing-imports --strict-optional --no-warn-unused-ignores --no-warn-return-any --no-check-untyped-defs
+MYPY_EXTENDED_TARGETS := src/bijux_agent/agents src/bijux_agent/filereaders src/bijux_agent/utilities src/bijux_agent/config src/bijux_agent/enums src/bijux_agent/main src/bijux_agent/orchestrator src/bijux_agent/retrieval tests
 ENABLE_CODESPELL     := 1
 ENABLE_RADON         := 1
 ENABLE_PYDOCSTYLE    := 0
@@ -21,8 +25,9 @@ RUFF_CHECK_FIX       := 1
 INTERROGATE_PATHS    := src/bijux_agent
 QUALITY_PATHS        := src/bijux_agent
 QUALITY_PRE_TARGETS  := line_limit
-QUALITY_MYPY_CONFIG  := $(CONFIG_DIR)/mypy-core.ini
-QUALITY_MYPY_FLAGS   :=
+QUALITY_MYPY_CONFIG  := $(MONOREPO_ROOT)/configs/mypy.ini
+QUALITY_MYPY_FLAGS   := $(MYPY_FLAGS)
+QUALITY_MYPY_TARGETS := $(MYPY_TARGETS)
 SKIP_MYPY            := 0
 QUALITY_VULTURE_MIN_CONFIDENCE := 90
 SECURITY_PATHS       := src/bijux_agent

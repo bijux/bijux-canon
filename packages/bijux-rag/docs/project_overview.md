@@ -73,7 +73,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../../configs/bijux-rag/pytest.ini` — repo-owned pytest config (paths, markers, asyncio, timeouts).
 - `../../configs/bijux-rag/mkdocs.yml` — repo-owned MkDocs setup (theme, plugins, nav, extensions).
 - `../../configs/bijux-rag/coveragerc.ini` — coverage omit/includes.
-- `../../configs/bijux-rag/mypy.ini` — mypy strict settings.
+- `../../configs/mypy.ini` — repo-wide mypy configuration.
 - `../../configs/bijux-rag/package.json` — repo-owned Node manifest for OpenAPI tooling.
 - `../../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
 - `../../configs/ruff.toml` — repo-wide Ruff configuration.

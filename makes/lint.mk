@@ -23,7 +23,7 @@ MYPY_CACHE_DIR         ?= $(LINT_ARTIFACTS_DIR)/.mypy_cache
 PYTYPE_OUT_DIR         ?= $(LINT_ARTIFACTS_DIR)/.pytype
 
 RUFF_CONFIG            ?= $(MONOREPO_ROOT)/configs/ruff.toml
-MYPY_CONFIG            ?= $(CONFIG_DIR)/mypy.ini
+MYPY_CONFIG            ?= $(MONOREPO_ROOT)/configs/mypy.ini
 MYPY_FLAGS             ?= --strict
 MYPY_CORE_CONFIG       ?=
 MYPY_CORE_FLAGS        ?= --strict

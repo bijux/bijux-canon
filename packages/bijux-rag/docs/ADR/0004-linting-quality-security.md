@@ -83,10 +83,10 @@ The toolchain is driven by unified configs:
 </details>
 
 <details>
-<summary>Mypy (<code>../../configs/bijux-rag/mypy.ini</code>)</summary>
+<summary>Mypy (<code>../../configs/mypy.ini</code>)</summary>
 
 ```ini
---8<-- "../../configs/bijux-rag/mypy.ini"
+--8<-- "../../configs/mypy.ini"
 ```
 
 </details>

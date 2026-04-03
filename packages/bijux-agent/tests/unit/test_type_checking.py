@@ -19,9 +19,14 @@ def test_pipeline_mypy_has_no_regressions() -> None:
             "-m",
             "mypy",
             "--config-file",
-            "../../configs/bijux-agent/mypy-core.ini",
+            "../../configs/mypy.ini",
             "--cache-dir",
             str(cache_dir),
+            "src/bijux_agent/pipeline",
+            "src/bijux_agent/tracing",
+            "src/bijux_agent/models",
+            "src/bijux_agent/schema",
+            "src/bijux_agent/agents/base.py",
         ],
         capture_output=True,
         text=True,
@@ -31,5 +36,5 @@ def test_pipeline_mypy_has_no_regressions() -> None:
         pytest.fail(
             "Mypy regression detected:\n"
             f"{completed.stdout}\n"
-            "Check ../../configs/bijux-agent/mypy-core.ini scope if this is intentional."
+            "Check ../../configs/mypy.ini and the focused mypy targets if this is intentional."
         )
