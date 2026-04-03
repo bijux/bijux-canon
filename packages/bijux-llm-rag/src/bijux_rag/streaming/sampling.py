@@ -22,7 +22,7 @@ def make_sampler_bernoulli(rate: float, *, seed: int = 0) -> Transform[T, T]:
         raise ValueError("rate must be in [0.0, 1.0]")
 
     def stage(items: Iterable[T]) -> Iterator[T]:
-        rng = random.Random(seed)
+        rng = random.Random(seed)  # noqa: S311 - deterministic sampling, not crypto
         for item in items:
             if rng.random() < rate:
                 yield item

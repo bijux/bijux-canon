@@ -12,6 +12,7 @@ Bijux RAG–03 helpers are re-exported at the package root for convenience.
 Bijux RAG functionality is organized into submodules (e.g. `functor`,
 `validation`, `monoid`). Bijux RAG effect helpers live in `bijux_rag.fp.effects`.
 """
+
 from __future__ import annotations
 
 from .combinators import (

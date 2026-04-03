@@ -75,18 +75,17 @@ class OChunk:
 
 
 def to_optimized_batch(chunks: Sequence[Chunk]) -> OBatch:
-    rows: list[OChunk] = []
-    for chunk in chunks:
-        rows.append(
-            OChunk(
-                id=chunk.id,
-                text=chunk.text.content,
-                source=chunk.metadata.source,
-                tags=list(chunk.metadata.tags),
-                model=chunk.metadata.embedding_model,
-                expected_dim=chunk.metadata.expected_dim,
-            )
+    rows = [
+        OChunk(
+            id=chunk.id,
+            text=chunk.text.content,
+            source=chunk.metadata.source,
+            tags=list(chunk.metadata.tags),
+            model=chunk.metadata.embedding_model,
+            expected_dim=chunk.metadata.expected_dim,
         )
+        for chunk in chunks
+    ]
     return OBatch(rows=rows, embeddings=None)
 
 

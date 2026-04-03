@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import asdict, dataclass, field, is_dataclass
 from types import MappingProxyType
 from typing import Any, Generic, TypeVar
@@ -132,17 +132,25 @@ def _err_to_jsonable(e: Any) -> Any:
         return d
     if isinstance(e, BreakInfo):
         return asdict(e)
-    if hasattr(e, "_asdict"):
-        try:
-            return dict(e._asdict())
-        except Exception:
-            pass
+    namedtuple_asdict = getattr(e, "_asdict", None)
+    if callable(namedtuple_asdict):
+        converted = _try_convert(namedtuple_asdict, dict)
+        if converted is not None:
+            return converted
     if is_dataclass(e) and not isinstance(e, type):
-        try:
-            return asdict(e)
-        except Exception:
-            pass
+        converted = _try_convert(lambda: asdict(e))
+        if converted is not None:
+            return converted
     return {"repr": repr(e)}
+
+
+def _try_convert(
+    factory: Callable[[], Any], wrapper: Callable[[Any], Any] = lambda x: x
+) -> Any | None:
+    try:
+        return wrapper(factory())
+    except Exception:
+        return None
 
 
 def report_to_jsonable(report: ErrReport[E]) -> dict[str, Any]:

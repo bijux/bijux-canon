@@ -6,6 +6,7 @@
 `bijux_rag.fp` contains the module-05 type-driven toolkit. The RAG pipeline
 entrypoints live here instead.
 """
+
 from __future__ import annotations
 
 from .clean_cfg import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner

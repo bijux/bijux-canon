@@ -35,9 +35,7 @@ class Writer(Generic[T, LogEntryT]):
 
         return Writer(_run)
 
-    def and_then(
-        self, f: Callable[[T], Writer[U, LogEntryT]]
-    ) -> Writer[U, LogEntryT]:
+    def and_then(self, f: Callable[[T], Writer[U, LogEntryT]]) -> Writer[U, LogEntryT]:
         def _run() -> tuple[U, Log[LogEntryT]]:
             value, log1 = self.run()
             next_value, log2 = f(value).run()

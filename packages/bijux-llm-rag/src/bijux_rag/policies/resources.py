@@ -5,13 +5,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Sequence
 import contextlib
+from collections.abc import Callable, Iterator, Sequence
 from contextlib import AbstractContextManager
 from types import TracebackType
 from typing import (
     Any,
-    ContextManager,
     Generic,
     TypeVar,
     cast,
@@ -36,14 +35,12 @@ class _ResourceStream(Generic[R], AbstractContextManager[Iterator[R]]):
         del exc_type, exc, tb
         close = getattr(self._gen, "close", None)
         if callable(close):
-            try:
+            with contextlib.suppress(Exception):
                 close()
-            except Exception:  # noqa: BLE001 - never mask the original exception
-                pass
         return None
 
 
-def with_resource_stream(gen: Iterator[R]) -> ContextManager[Iterator[R]]:
+def with_resource_stream(gen: Iterator[R]) -> AbstractContextManager[Iterator[R]]:
     """Wrap an existing generator; guarantees .close() on all exit paths."""
 
     return _ResourceStream(gen)
@@ -68,26 +65,26 @@ class _ManagedStream(Generic[R], AbstractContextManager[Iterator[R]]):
         if self._gen is not None:
             close = getattr(self._gen, "close", None)
             if callable(close):
-                try:
+                with contextlib.suppress(Exception):
                     close()
-                except Exception:  # noqa: BLE001 - never mask the original exception
-                    pass
         return None
 
 
-def managed_stream(factory: Callable[[], Iterator[R]]) -> ContextManager[Iterator[R]]:
+def managed_stream(
+    factory: Callable[[], Iterator[R]],
+) -> AbstractContextManager[Iterator[R]]:
     """Create generator from factory inside context; guarantees cleanup."""
 
     return _ManagedStream(factory)
 
 
 def nested_managed(
-    managers: Sequence[ContextManager[Any]],
-) -> ContextManager[tuple[Any, ...]]:
+    managers: Sequence[AbstractContextManager[Any]],
+) -> AbstractContextManager[tuple[Any, ...]]:
     """Compose multiple context managers; returns tuple of entered values."""
 
     class _Nested(AbstractContextManager[tuple[Any, ...]]):
-        def __init__(self, managers: Sequence[ContextManager[Any]]) -> None:
+        def __init__(self, managers: Sequence[AbstractContextManager[Any]]) -> None:
             self._managers = managers
             self._stack: contextlib.ExitStack | None = None
 
@@ -101,18 +98,19 @@ def nested_managed(
             exc: BaseException | None,
             tb: TracebackType | None,
         ) -> None:
-            assert self._stack is not None
+            if self._stack is None:  # pragma: no cover - defensive invariant
+                raise RuntimeError("nested resource stack was not entered")
             self._stack.__exit__(exc_type, exc, tb)
             return None
 
     return _Nested(managers)
 
 
-def auto_close(obj: Any) -> ContextManager[Any]:
+def auto_close(obj: Any) -> AbstractContextManager[Any]:
     """Close obj if it has .close(); respect context protocol; otherwise no-op."""
 
     if hasattr(obj, "__enter__") and hasattr(obj, "__exit__"):
-        return cast(ContextManager[Any], obj)
+        return cast(AbstractContextManager[Any], obj)
 
     @contextlib.contextmanager
     def _cm() -> Iterator[Any]:
@@ -121,10 +119,8 @@ def auto_close(obj: Any) -> ContextManager[Any]:
         finally:
             close = getattr(obj, "close", None)
             if callable(close):
-                try:
+                with contextlib.suppress(Exception):
                     close()
-                except Exception:  # noqa: BLE001
-                    pass
 
     return _cm()
 

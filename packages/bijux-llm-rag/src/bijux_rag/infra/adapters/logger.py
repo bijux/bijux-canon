@@ -5,16 +5,16 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
+
 from bijux_rag.domain.capabilities import Logger
 from bijux_rag.domain.logging import LogEntry
 
 
 class ConsoleLogger(Logger):
     def log(self, entry: LogEntry) -> None:
-        try:
+        with suppress(OSError):
             print(f"[{entry.level}] {entry.msg}")
-        except OSError:
-            pass
 
 
 class CollectingLogger(Logger):

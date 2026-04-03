@@ -94,7 +94,8 @@ def fold_until_error_rate(
             n_err += 1
         total = n_ok + n_err
         if total >= min_samples and n_err / total > max_rate:
-            assert last_err is not None
+            if last_err is None:  # pragma: no cover - defensive invariant
+                raise RuntimeError("error rate exceeded without an error value")
             return Err((last_err, n_err / total, total))
     return Ok(acc)
 

@@ -14,6 +14,7 @@ Bijux RAG:
 Note: Bijux RAG introduces `IOPlan` and IOPlan-specific wrappers, but in this codebase they
 live under `bijux_rag.domain.effects` as domain-owned effect interfaces.
 """
+
 from __future__ import annotations
 
 from .configurable import toggle_logging, toggle_metrics, toggle_validation

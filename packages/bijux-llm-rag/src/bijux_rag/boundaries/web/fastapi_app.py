@@ -131,8 +131,8 @@ def create_app() -> FastAPI:
     app = FastAPI(title="bijux-rag", openapi_version="3.1.0")
     router = APIRouter(prefix="/v1")
 
-    _APP = RagApp()
-    _INDEX_STORE: dict[str, RagIndex] = {}
+    rag_app = RagApp()
+    index_store: dict[str, RagIndex] = {}
 
     @router.get("/healthz")
     async def healthz() -> dict[str, bool]:
@@ -182,7 +182,7 @@ def create_app() -> FastAPI:
             )
             for d in req.docs
         ]
-        res = _APP.build_index(
+        res = rag_app.build_index(
             docs=docs,
             backend=_backend_from_str(req.backend),
             chunk_size=req.chunk_size,
@@ -193,7 +193,7 @@ def create_app() -> FastAPI:
 
         idx = res.value
         index_id = f"idx_{idx.fingerprint}"
-        _INDEX_STORE[index_id] = idx
+        index_store[index_id] = idx
 
         return IndexBuildResponse(
             index_id=index_id,
@@ -203,11 +203,11 @@ def create_app() -> FastAPI:
 
     @router.post("/retrieve", response_model=RetrieveResponse)
     async def retrieve(req: RetrieveRequest) -> RetrieveResponse:
-        idx = _INDEX_STORE.get(req.index_id)
+        idx = index_store.get(req.index_id)
         if idx is None:
             raise HTTPException(status_code=404, detail="Unknown index_id")
 
-        res = _APP.retrieve(
+        res = rag_app.retrieve(
             index=idx, query=req.query, top_k=req.top_k, filters=req.filters
         )
         if isinstance(res, Err):
@@ -234,11 +234,11 @@ def create_app() -> FastAPI:
 
     @router.post("/ask", response_model=AskResponse)
     async def ask(req: AskRequest) -> AskResponse:
-        idx = _INDEX_STORE.get(req.index_id)
+        idx = index_store.get(req.index_id)
         if idx is None:
             raise HTTPException(status_code=404, detail="Unknown index_id")
 
-        res = _APP.ask(
+        res = rag_app.ask(
             index=idx,
             query=req.query,
             top_k=req.top_k,

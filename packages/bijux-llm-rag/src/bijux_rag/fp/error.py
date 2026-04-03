@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from bijux_rag.result.types import ErrInfo, make_errinfo
 
 
-class ErrorCode(str, Enum):
+class ErrorCode(StrEnum):
     RATE_LIMIT = "RATE_LIMIT"
     TIMEOUT = "TIMEOUT"
     TRANSIENT = "TRANSIENT"

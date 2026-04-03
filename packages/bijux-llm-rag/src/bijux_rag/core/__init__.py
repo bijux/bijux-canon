@@ -2,6 +2,7 @@
 # Copyright © 2025 Bijan Mousavi
 
 """Core helpers used across modules (rules, safety lint, streaming dedup)."""
+
 from __future__ import annotations
 
 from .rules_dsl import (

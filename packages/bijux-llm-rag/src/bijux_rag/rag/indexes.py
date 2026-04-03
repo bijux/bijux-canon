@@ -156,16 +156,14 @@ class NumpyCosineIndex:
         top_idxs = idxs[top_local]
         top_idxs = top_idxs[np.argsort(-scores[top_idxs])]
 
-        out: list[Candidate] = []
-        for i in top_idxs.tolist():
-            out.append(
-                Candidate(
-                    chunk=self.chunks[i],
-                    score=float(scores[i]),
-                    metadata={"backend": self.backend},
-                )
+        return [
+            Candidate(
+                chunk=self.chunks[i],
+                score=float(scores[i]),
+                metadata={"backend": self.backend},
             )
-        return out
+            for i in top_idxs.tolist()
+        ]
 
     def save(self, path: str) -> None:
         payload: dict[str, Any] = {
@@ -382,7 +380,7 @@ class BM25Index:
             denom_norm = self.k1 * (1.0 - self.b + self.b * (dl / self.avg_dl))
             tf_sparse = dict(self.tfs[i])
             s = 0.0
-            for bucket, _qtf in q_counts.items():
+            for bucket in q_counts:
                 tf = float(tf_sparse.get(bucket, 0))
                 if tf <= 0.0:
                     continue

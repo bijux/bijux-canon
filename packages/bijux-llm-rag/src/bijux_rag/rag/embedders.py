@@ -100,8 +100,8 @@ class SentenceTransformersEmbedder:
                 "sentence-transformers is not installed. Install extras or use --embedder hash16."
             ) from exc
 
-        SentenceTransformer = st.SentenceTransformer
-        model = SentenceTransformer(self.model_name)
+        sentence_transformer = st.SentenceTransformer
+        model = sentence_transformer(self.model_name)
         vecs = model.encode(list(texts), normalize_embeddings=self.normalize)
         arr = np.asarray(vecs, dtype=np.float32)
         # Safety: ensure finiteness.

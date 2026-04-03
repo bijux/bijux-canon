@@ -9,6 +9,7 @@ This subpackage groups all async-first primitives:
 - Bounded concurrency/backpressure, resilience, scheduling, and batching helpers
 - Lifts to run the synchronous core inside async pipelines without "async creep"
 """
+
 from __future__ import annotations
 
 from .concurrency import (

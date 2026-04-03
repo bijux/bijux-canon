@@ -6,6 +6,7 @@
 This package intentionally contains *optional* adapters (e.g., FastAPI) behind
 dynamic import guards so the core library remains dependency-light.
 """
+
 from __future__ import annotations
 
 from .fastapi_app import create_app

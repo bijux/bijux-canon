@@ -86,7 +86,7 @@ def v_ap(
     return v_failure(combined)
 
 
-def v_liftA2(
+def v_liftA2(  # noqa: N802 - public functional API
     f: Callable[[T, U], V],
     a: Validation[T, E],
     b: Validation[U, E],
@@ -102,7 +102,7 @@ def v_liftA2(
     return v_ap(v_map(curried)(a), b, combine=combine)
 
 
-def v_liftA3(
+def v_liftA3(  # noqa: N802 - public functional API
     f: Callable[[T, U, V], W],
     a: Validation[T, E],
     b: Validation[U, E],

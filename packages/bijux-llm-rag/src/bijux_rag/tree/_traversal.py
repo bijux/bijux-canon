@@ -45,8 +45,7 @@ def max_depth(tree: TreeDoc) -> int:
     while stack:
         node, depth = stack.pop()
         max_d = max(max_d, depth)
-        for child in node.children:
-            stack.append((child, depth + 1))
+        stack.extend((child, depth + 1) for child in node.children)
     return max_d
 
 

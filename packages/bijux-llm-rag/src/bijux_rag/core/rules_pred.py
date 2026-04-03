@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Union
+from typing import Any
 
 from bijux_rag.core.rag_types import RawDoc
 
@@ -44,7 +44,7 @@ class Not:
     rule: Pred
 
 
-Pred = Union[Eq, StartsWith, LenGt, All, AnyOf, Not]
+Pred = Eq | StartsWith | LenGt | All | AnyOf | Not
 
 
 @dataclass(frozen=True)

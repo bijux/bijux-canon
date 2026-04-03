@@ -12,7 +12,7 @@ This adapter is resource-safe:
 from __future__ import annotations
 
 from collections.abc import Iterator
-from contextlib import ExitStack
+from contextlib import ExitStack, suppress
 import csv
 from dataclasses import asdict
 import json
@@ -73,10 +73,8 @@ class FileStorage(Storage):
             return Ok(None)
         except Exception as ex:
             if tmp_path and os.path.exists(tmp_path):
-                try:
+                with suppress(OSError):
                     os.unlink(tmp_path)
-                except OSError:
-                    pass
             if isinstance(ex, OSError):
                 return Err(
                     ErrInfo(code="IO_WRITE", msg=str(ex), stage="storage.write_chunks")

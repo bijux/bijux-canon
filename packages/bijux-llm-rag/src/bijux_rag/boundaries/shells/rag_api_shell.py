@@ -57,8 +57,9 @@ def write_chunks_jsonl(path: str, chunks: list[Chunk]) -> Result[None, str]:
         with Path(path).open("w", encoding="utf-8") as f:
             for c in chunks:
                 f.write(
-                    '{"doc_id":"%s","text":"%s","start":%d,"end":%d}\n'
-                    % (c.doc_id, str(c.text).replace('"', '\\"'), c.start, c.end)
+                    '{{"doc_id":"{}","text":"{}","start":{},"end":{}}}\n'.format(
+                        c.doc_id, str(c.text).replace('"', '\\"'), c.start, c.end
+                    )
                 )
         return Ok(None)
     except Exception as exc:  # pragma: no cover

@@ -144,7 +144,9 @@ def unwrap_or(r: Result[T, E], default: T) -> T:
     return r.unwrap_or(default)
 
 
-def liftA2(f: Callable[[T, U], V], a: Result[T, E], b: Result[U, E]) -> Result[V, E]:
+def liftA2(  # noqa: N802 - public functional API
+    f: Callable[[T, U], V], a: Result[T, E], b: Result[U, E]
+) -> Result[V, E]:
     """Lift a pure 2-arg function into Results (fail-fast applicative)."""
 
     return a.map(curry2(f)).ap(b)

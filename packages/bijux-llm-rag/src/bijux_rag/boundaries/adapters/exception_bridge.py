@@ -91,7 +91,7 @@ def v_map_try(
         return VFailure((map_exc(ex),))
 
 
-class UnexpectedFailure(RuntimeError):
+class UnexpectedFailure(RuntimeError):  # noqa: N818 - stable public API
     """Raised by `unexpected_fail` for unrecoverable outer-boundary states."""
 
 

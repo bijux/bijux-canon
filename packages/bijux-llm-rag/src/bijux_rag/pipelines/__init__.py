@@ -2,6 +2,7 @@
 # Copyright © 2025 Bijan Mousavi
 
 """Bijux RAG: pipeline building and cross-process specs (end-of-Bijux RAG)."""
+
 from __future__ import annotations
 
 from .configured import PipelineConfig, StepConfig, build_rag_pipeline

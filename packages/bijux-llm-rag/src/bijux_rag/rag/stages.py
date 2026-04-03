@@ -170,9 +170,10 @@ def chunk_and_embed_docs(
     for doc_id, text, title, category in docs:
         cleaned = " ".join(text.split())
         # chunk with simple sliding window
-        idx = 0
-        for span in iter_overlapping_chunks_text(
-            doc_id=doc_id, text=cleaned, k=config.chunk_size, o=config.overlap
+        for idx, span in enumerate(
+            iter_overlapping_chunks_text(
+                doc_id=doc_id, text=cleaned, k=config.chunk_size, o=config.overlap
+            )
         ):
             chunk_we = ChunkWithoutEmbedding(
                 doc_id=doc_id,
@@ -210,7 +211,6 @@ def chunk_and_embed_docs(
             if isinstance(created, Err):
                 return Err(created.error)
             out.append(created.value)
-            idx += 1
     return Ok(out)
 
 

@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 import hashlib
 from pathlib import Path
 
@@ -250,7 +250,7 @@ __all__ = [
 # ---------------------------
 
 
-class IndexBackend(str, Enum):
+class IndexBackend(StrEnum):
     BM25 = "bm25"
     NUMPY_COSINE = "numpy-cosine"
 

@@ -196,7 +196,8 @@ def async_gather(
         first_err: ErrInfo | None = None
         values: list[A] = []
         for item in results:
-            assert item is not None
+            if item is None:  # pragma: no cover - defensive invariant
+                return Err(ErrInfo(code="INTERNAL", msg="missing async result"))
             if isinstance(item, Err):
                 if first_err is None:
                     first_err = item.error

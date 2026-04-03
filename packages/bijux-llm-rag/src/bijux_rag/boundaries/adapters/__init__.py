@@ -8,6 +8,7 @@ This subpackage groups reusable "edge adapters":
 - Pydantic-at-the-edges codecs (`pydantic_edges`)
 - Exception bridging to Result/Validation (`exception_bridge`)
 """
+
 from __future__ import annotations
 
 from .exception_bridge import (

@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator, Mapping
+from contextlib import suppress
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Generic, TypeVar, cast
@@ -19,10 +20,8 @@ E = TypeVar("E")
 def _close_if_possible(it: object) -> None:
     close = getattr(it, "close", None)
     if callable(close):
-        try:
+        with suppress(Exception):
             close()
-        except Exception:  # noqa: BLE001 - never mask the original termination
-            pass
 
 
 @dataclass(frozen=True)

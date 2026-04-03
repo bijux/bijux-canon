@@ -2,6 +2,7 @@
 # Copyright © 2025 Bijan Mousavi
 
 """Boundary shells (CLI / filesystem) for the end-of-Bijux RAG codebase."""
+
 from __future__ import annotations
 
 from .cli import main
