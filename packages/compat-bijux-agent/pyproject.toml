@@ -1,11 +1,10 @@
 [build-system]
-requires = ["hatchling>=1.25.0"]
+requires = ["hatchling>=1.25.0", "hatch-vcs>=0.4.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
 name = "bijux-agent"
-version = "0.1.0"
-dynamic = ["dependencies"]
+dynamic = ["version", "dependencies"]
 description = "Compatibility package for bijux-llm-agent."
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 readme = "overview.md"
@@ -32,6 +31,12 @@ Repository = "https://github.com/bijux/bijux-llm-nexus"
 Documentation = "https://bijux.github.io/bijux-agent/"
 Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
 Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-agent/docs/maintainer/CHANGELOG.md"
+
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = "^bijux-llm-agent/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-agent/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+fallback-version = "0.3.0"
 
 [tool.hatch.metadata.hooks.custom]
 canonical-name = "bijux-llm-agent"
