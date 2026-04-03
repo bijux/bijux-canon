@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_canon_agent.cli.helpers import load_trace
+from bijux_canon_agent.interfaces.cli.helpers import load_trace
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult
 
 

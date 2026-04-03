@@ -1,4 +1,4 @@
-"""Command-line driver for the Bijux Agent flagship pipeline."""
+"""Command-line driver for the Bijux Canon Agent pipeline."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import logging
 from pathlib import Path
 import sys
 
-from bijux_canon_agent.cli.helpers import (
+from bijux_canon_agent.interfaces.cli.helpers import (
     ensure_directory,
     handle_replay,
     load_config,
@@ -86,7 +86,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 async def main() -> None:
-    """Main entry point for Bijux Agent."""
+    """Main entry point for Bijux Canon Agent."""
     load_environment()
     try:
         validate_keys()

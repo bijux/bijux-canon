@@ -48,7 +48,7 @@ SCHEMATHESIS_OPTS    = --checks=all --max-failures=1 --report junit --report-jun
 BUILD_CHECK_DISTS    := 1
 BUILD_CLEAN_PATHS    := build dist *.egg-info
 BUILD_CLEAN_PYCACHE  := 1
-PUBLISH_VERIFY_INSTALL_CMD := python -m bijux_canon_agent.main --help >/dev/null 2>&1
+PUBLISH_VERIFY_INSTALL_CMD := python -m bijux_canon_agent --help >/dev/null 2>&1
 TEST_MAIN_ARGS       := -m "not integration and not e2e"
 TEST_UNIT_DIR_ARGS   := -m "not integration and not e2e and not slow" --maxfail=1 -q
 TEST_UNIT_FALLBACK_ARGS := -k "not e2e and not integration and not functional" -m "not integration and not e2e and not slow" --maxfail=1 -q

@@ -133,8 +133,8 @@ filereaders = [
 ]
 
 [project.scripts]
-bijux-canon-agent = "bijux_canon_agent.main:cli"
-bijux-agent = "bijux_canon_agent.main:cli"
+bijux-canon-agent = "bijux_canon_agent.interfaces.cli.entrypoint:cli"
+bijux-agent = "bijux_canon_agent.interfaces.cli.entrypoint:cli"
 
 [tool.hatch.metadata]
 allow-direct-references = true

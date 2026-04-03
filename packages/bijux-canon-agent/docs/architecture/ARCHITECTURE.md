@@ -4,7 +4,7 @@ This document is a module-level map of the codebase. It describes *where respons
 
 ## Top-level components
 
-### CLI (`src/bijux_canon_agent/main.py`, `src/bijux_canon_agent/cli/`)
+### CLI (`src/bijux_canon_agent/__main__.py`, `src/bijux_canon_agent/interfaces/cli/`)
 
 - Parses arguments (`run`, `replay`)
 - Loads config + environment

@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from tests.utils.trace_helpers import default_model_metadata
 
-from bijux_canon_agent.cli.helpers import load_trace
+from bijux_canon_agent.interfaces.cli.helpers import load_trace
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
