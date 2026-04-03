@@ -66,7 +66,7 @@ def _plan() -> ExecutionSteps:
             dataset_version="1.0.0",
             dataset_hash="hash-cli-failure",
             dataset_state=DatasetState.FROZEN,
-            storage_uri="file://datasets/retrieval_corpus.jsonl",
+            storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
         ),
         allow_deprecated_datasets=False,
         steps=(),
@@ -94,7 +94,7 @@ def _trace() -> ExecutionTrace:
             dataset_version="1.0.0",
             dataset_hash="hash-cli-failure",
             dataset_state=DatasetState.FROZEN,
-            storage_uri="file://datasets/retrieval_corpus.jsonl",
+            storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
         ),
         replay_envelope=ReplayEnvelope(
             spec_version="v1",

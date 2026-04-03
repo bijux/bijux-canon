@@ -50,7 +50,7 @@ def test_resolver_uses_lexical_tiebreak_for_ordering() -> None:
             dataset_version="1.0.0",
             dataset_hash="hash",
             dataset_state=DatasetState.FROZEN,
-            storage_uri="file://datasets/retrieval_corpus.jsonl",
+            storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
         ),
         allow_deprecated_datasets=False,
         agents=(AgentID("bravo"), AgentID("alpha"), AgentID("charlie")),

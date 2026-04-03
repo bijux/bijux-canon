@@ -64,7 +64,7 @@ def _build_trace() -> ExecutionTrace:
             dataset_version="1.0.0",
             dataset_hash="hash-trace",
             dataset_state=DatasetState.FROZEN,
-            storage_uri="file://datasets/retrieval_corpus.jsonl",
+            storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
         ),
         replay_envelope=ReplayEnvelope(
             spec_version="v1",

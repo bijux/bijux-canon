@@ -50,7 +50,7 @@ def build_plan() -> tuple[FlowManifest, ExecutionSteps]:
         dataset_version="1.0.0",
         dataset_hash="136275faf776ff9aae3823d7d6f928e9",
         dataset_state=DatasetState.FROZEN,
-        storage_uri="file://datasets/retrieval_corpus.jsonl",
+        storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
     )
     budget = EntropyBudget(
         spec_version="v1",

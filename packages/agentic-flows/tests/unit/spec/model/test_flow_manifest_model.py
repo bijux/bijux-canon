@@ -56,7 +56,7 @@ def test_flow_manifest_model_allows_invalid_state() -> None:
             dataset_version="",
             dataset_hash="",
             dataset_state=DatasetState.EXPERIMENTAL,
-            storage_uri="file://datasets/retrieval_corpus.jsonl",
+            storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
         ),
         allow_deprecated_datasets=False,
         agents=(AgentID(""),),

@@ -130,7 +130,7 @@ def test_unauthorized_entropy_intent(
                 evidence_id=EvidenceID("ev-unauthorized"),
                 tenant_id=TenantID("tenant-a"),
                 determinism=EvidenceDeterminism.DETERMINISTIC,
-                source_uri="file://datasets/retrieval_corpus.jsonl",
+                source_uri="file://examples/datasets/retrieval_corpus.jsonl",
                 content_hash=ContentHash("hash"),
                 score=1.0,
                 vector_contract_id=ContractID("contract-a"),

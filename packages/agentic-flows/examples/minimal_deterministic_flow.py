@@ -39,9 +39,7 @@ from agentic_flows.spec.ontology.public import EntropySource, ReplayAcceptabilit
 
 def build_manifest() -> FlowManifest:
     """Build a minimal deterministic manifest for a single-step flow."""
-    dataset_path = (
-        Path(__file__).resolve().parents[1] / "datasets" / "retrieval_corpus.jsonl"
-    )
+    dataset_path = Path(__file__).resolve().parent / "datasets" / "retrieval_corpus.jsonl"
     dataset = DatasetDescriptor(
         spec_version="v1",
         dataset_id=DatasetID("retrieval_corpus"),

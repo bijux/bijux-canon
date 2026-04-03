@@ -48,7 +48,7 @@ def test_dataset_evolution_blocks_replay(
         dataset_version="1.0.0",
         dataset_hash="48ac7966795722d2d0802c39f8c0c012",
         dataset_state=DatasetState.FROZEN,
-        storage_uri="file://datasets/evolution_v1.jsonl",
+        storage_uri="file://examples/datasets/evolution_v1.jsonl",
     )
     dataset_v2 = DatasetDescriptor(
         spec_version="v1",
@@ -57,7 +57,7 @@ def test_dataset_evolution_blocks_replay(
         dataset_version="2.0.0",
         dataset_hash="f6b9e312c56b0231a5e6ad414e089fde",
         dataset_state=DatasetState.FROZEN,
-        storage_uri="file://datasets/evolution_v2.jsonl",
+        storage_uri="file://examples/datasets/evolution_v2.jsonl",
     )
 
     step = ResolvedStep(

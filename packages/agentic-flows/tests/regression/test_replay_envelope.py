@@ -41,7 +41,7 @@ def test_statistical_envelope_rejects_low_claim_overlap() -> None:
         dataset_version="1.0.0",
         dataset_hash="hash-envelope",
         dataset_state=DatasetState.FROZEN,
-        storage_uri="file://datasets/retrieval_corpus.jsonl",
+        storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
     )
     expected = ExecutionTrace(
         spec_version="v1",

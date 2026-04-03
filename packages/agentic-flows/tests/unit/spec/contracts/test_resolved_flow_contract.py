@@ -70,7 +70,7 @@ def _manifest(*, dependencies: tuple[str, ...]) -> FlowManifest:
             dataset_version="1.0.0",
             dataset_hash="hash",
             dataset_state=DatasetState.FROZEN,
-            storage_uri="file://datasets/retrieval_corpus.jsonl",
+            storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
         ),
         allow_deprecated_datasets=False,
         agents=(AgentID("agent-a"), AgentID("agent-b")),

@@ -40,7 +40,7 @@ def test_probabilistic_replay_accepts_reordered_events() -> None:
         dataset_version="1.0.0",
         dataset_hash="hash-prob",
         dataset_state=DatasetState.FROZEN,
-        storage_uri="file://datasets/retrieval_corpus.jsonl",
+        storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
     )
     event_one = ExecutionEvent(
         spec_version="v1",
