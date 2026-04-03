@@ -29,7 +29,7 @@ This code of conduct applies to:
 ## Reporting
 
 To report a code of conduct issue, contact
-[`mousavi.bijan@gmail.com`](mailto:mousavi.bijan@gmail.com).
+[`bijan@bijux.io`](mailto:bijan@bijux.io).
 
 All reports will be reviewed as promptly and fairly as possible.
 

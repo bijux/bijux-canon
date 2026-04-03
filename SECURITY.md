@@ -17,7 +17,7 @@ Security reports may cover:
 Please report security issues privately through one of these channels:
 
 - GitHub private vulnerability reporting for the affected package or repository
-- Email: [`mousavi.bijan@gmail.com`](mailto:mousavi.bijan@gmail.com)
+- Email: [`bijan@bijux.io`](mailto:bijan@bijux.io)
 
 Please include:
 
