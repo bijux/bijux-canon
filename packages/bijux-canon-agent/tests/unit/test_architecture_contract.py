@@ -1,4 +1,4 @@
-"""Ensure critical public shape stays stable after refactors."""
+"""Ensure critical public shape stays stable across structural changes."""
 
 from __future__ import annotations
 
@@ -14,12 +14,12 @@ from bijux_canon_agent.tracing.trace import RunFingerprint, TraceEntry
 
 def _load_snapshot() -> dict[str, object]:
     snapshot_path = (
-        Path(__file__).resolve().parents[1] / "snapshots" / "refactor_safety_net.json"
+        Path(__file__).resolve().parents[1] / "snapshots" / "architecture_contract.json"
     )
     return json.loads(snapshot_path.read_text(encoding="utf-8"))
 
 
-def test_refactor_safety_net_matches_snapshot() -> None:
+def test_architecture_contract_matches_snapshot() -> None:
     snapshot = _load_snapshot()
     config = {"pipeline": {"parameters": {}}, "agents": ["file_reader", "stage_runner"]}
     fingerprint = RunFingerprint.create(standard_pipeline_definition(), config)
