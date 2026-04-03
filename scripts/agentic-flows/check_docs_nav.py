@@ -8,9 +8,10 @@ from pathlib import Path
 
 import yaml
 
-DOCS_DIR = Path("docs")
-REPO_ROOT = Path(__file__).resolve().parents[3]
-MKDOCS_PATH = REPO_ROOT / "configs" / "agentic-flows" / "mkdocs.yml"
+MONOREPO_ROOT = Path(__file__).resolve().parents[2]
+PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "agentic-flows"
+DOCS_DIR = PACKAGE_ROOT / "docs"
+MKDOCS_PATH = MONOREPO_ROOT / "configs" / "agentic-flows" / "mkdocs.yml"
 
 LINK_RE = re.compile(r"\[[^\\]]+\\]\\(([^)]+)\\)")
 
@@ -57,7 +58,7 @@ def main() -> int:
     if missing_in_nav:
         print("Docs not in MkDocs nav:")
         for path in missing_in_nav:
-            print(f"- {path}")
+            print(f"- {path.relative_to(PACKAGE_ROOT)}")
         return 1
 
     missing_links: list[str] = []
@@ -70,10 +71,10 @@ def main() -> int:
             if target_path.is_dir():
                 target_path = target_path / "index.md"
             if not target_path.exists():
-                missing_links.append(f"{doc}: {link}")
+                missing_links.append(f"{doc.relative_to(PACKAGE_ROOT)}: {link}")
                 continue
             if DOCS_DIR not in target_path.parents and target_path != DOCS_DIR:
-                missing_links.append(f"{doc}: {link}")
+                missing_links.append(f"{doc.relative_to(PACKAGE_ROOT)}: {link}")
 
     if missing_links:
         print("Broken internal doc links:")

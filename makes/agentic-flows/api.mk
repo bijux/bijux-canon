@@ -57,6 +57,8 @@ API_NODE_DIR_ABS        := $(abspath $(API_NODE_DIR))
 HYPOTHESIS_DB_API_ABS   := $(abspath $(HYPOTHESIS_DB_API))
 REDOCLY_ABS             := $(API_NODE_DIR_ABS)/node_modules/.bin/redocly
 OPENAPI_GENERATOR_ABS   := $(API_NODE_DIR_ABS)/node_modules/.bin/openapi-generator-cli
+PACKAGE_SCRIPTS_DIR     ?= $(MONOREPO_ROOT)/scripts/agentic-flows
+OPENAPI_DRIFT_CHECK     ?= $(PACKAGE_SCRIPTS_DIR)/check_openapi_drift.py
 
 # ── Uvicorn runner (force import from src/; tolerate unset PYTHONPATH)
 ifneq ($(strip $(API_FACTORY)),)
@@ -92,10 +94,10 @@ endef
 api: api-install api-lint api-test
 
 openapi-drift:
-	@if [ -f scripts/check_openapi_drift.py ]; then \
-		$(PYTHON) scripts/check_openapi_drift.py; \
+	@if [ -f "$(OPENAPI_DRIFT_CHECK)" ]; then \
+		$(PYTHON) "$(OPENAPI_DRIFT_CHECK)"; \
 	else \
-		echo "Skipping openapi-drift (scripts/check_openapi_drift.py missing)"; \
+		echo "Skipping openapi-drift ($(OPENAPI_DRIFT_CHECK) missing)"; \
 	fi
 
 # ── Install toolchain (Python + Node sandbox)

@@ -12,6 +12,7 @@ PYTHON      := $(shell command -v python3 || command -v python)
 QUALITY_ARTIFACTS_DIR ?= $(PROJECT_ARTIFACTS_DIR)/quality
 QUALITY_OK_MARKER     := $(QUALITY_ARTIFACTS_DIR)/_passed
 MYPY_CACHE_DIR        ?= $(QUALITY_ARTIFACTS_DIR)/.mypy_cache
+PACKAGE_SCRIPTS_DIR   ?= $(MONOREPO_ROOT)/scripts/agentic-flows
 
 SKIP_DEPTRY       ?= 0
 SKIP_INTERROGATE  ?= 0
@@ -62,13 +63,13 @@ quality:
 	fi
 
 	@echo "   - Markdown link check"
-	@$(PYTHON) scripts/check_md_links.py
+	@$(PYTHON) "$(PACKAGE_SCRIPTS_DIR)/check_md_links.py"
 
 	@echo "   - Documentation consistency"
-	@$(PYTHON) scripts/check_docs_consistency.py
+	@$(PYTHON) "$(PACKAGE_SCRIPTS_DIR)/check_docs_consistency.py"
 
 	@echo "   - No Toys policy"
-	@$(PYTHON) scripts/check_no_toys_policy.py
+	@$(PYTHON) "$(PACKAGE_SCRIPTS_DIR)/check_no_toys_policy.py"
 
 	@echo "   - MkDocs build"
 	@$(PYTHON) -m mkdocs build --strict --config-file "$(MKDOCS_CFG)"
@@ -92,7 +93,7 @@ interrogate-report:
 	  exit $$rc
 
 docs-links:
-	@$(PYTHON) scripts/check_md_links.py
+	@$(PYTHON) "$(PACKAGE_SCRIPTS_DIR)/check_md_links.py"
 
 quality-clean:
 	@echo "→ Cleaning quality artifacts"

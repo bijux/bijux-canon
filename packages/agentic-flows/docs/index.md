@@ -183,7 +183,7 @@ api/            # OpenAPI schemas
 ../../configs/agentic-flows/  # Root-managed lint/type/security configs
 docs/           # MkDocs site
 ../../makes/agentic-flows/  # Root-managed task modules (docs, test, lint, etc.)
-scripts/        # Helper scripts
+../../scripts/agentic-flows/  # Root-managed helper scripts
 src/agentic_flows/  # Runtime + CLI implementation
 tests/          # unit / regression / e2e
 ```

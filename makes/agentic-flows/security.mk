@@ -19,6 +19,7 @@ SECURITY_STRICT          ?= 1
 
 BANDIT_EXCLUDES          ?= .venv,venv,build,dist,.tox,.mypy_cache,.pytest_cache
 BANDIT_THREADS           ?= 0
+PACKAGE_SCRIPTS_DIR      ?= $(MONOREPO_ROOT)/scripts/agentic-flows
 
 .PHONY: security security-bandit security-audit security-deps security-clean
 
@@ -44,10 +45,10 @@ security-audit:
 	PIPA_JSON="$(PIPA_JSON)" \
 	SECURITY_STRICT="$(SECURITY_STRICT)" \
 	SECURITY_IGNORE_IDS="$(SECURITY_IGNORE_IDS)" \
-	"$(VENV_PYTHON)" scripts/helper_pip_audit.py | tee "$(PIPA_TXT)"
+	"$(VENV_PYTHON)" "$(PACKAGE_SCRIPTS_DIR)/helper_pip_audit.py" | tee "$(PIPA_TXT)"
 
 security-deps:
-	@$(VENV_PYTHON) scripts/check_dependency_allowlist.py
+	@$(VENV_PYTHON) "$(PACKAGE_SCRIPTS_DIR)/check_dependency_allowlist.py"
 
 security-clean:
 	@rm -rf "$(SECURITY_REPORT_DIR)"
@@ -55,5 +56,5 @@ security-clean:
 ##@ Security
 security:        ## Run Bandit and pip-audit; save reports to $(SECURITY_REPORT_DIR)
 security-bandit: ## Run Bandit (screen + JSON artifact)
-security-audit:  ## Run pip-audit (JSON once) and gate via scripts/helper_pip_audit.py; prints concise summary
+security-audit:  ## Run pip-audit (JSON once) and gate via scripts/agentic-flows/helper_pip_audit.py; prints concise summary
 security-clean:  ## Remove security reports

@@ -6,9 +6,11 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
+PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "agentic-flows"
+
 
 def main() -> int:
-    path = Path("docs/architecture/design_debt.md")
+    path = PACKAGE_ROOT / "docs" / "architecture" / "design_debt.md"
     if not path.exists():
         print(
             "Missing design debt ledger: docs/architecture/design_debt.md",

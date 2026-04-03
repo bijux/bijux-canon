@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "agentic-flows"
+
 ALLOWED = {
     "CHANGELOG.md",
     "README.md",
@@ -12,8 +14,7 @@ ALLOWED = {
 
 
 def main() -> int:
-    repo_root = Path(__file__).resolve().parents[1]
-    found = sorted(path.name for path in repo_root.glob("*.md") if path.is_file())
+    found = sorted(path.name for path in PACKAGE_ROOT.glob("*.md") if path.is_file())
     extras = sorted(name for name in found if name not in ALLOWED)
     if extras:
         print("Root markdown whitelist violation:")

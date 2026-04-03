@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "agentic-flows"
 
 
 def _iter_markdown_files(root: Path) -> list[Path]:
@@ -40,7 +41,7 @@ def _resolve_path(base: Path, target: str, repo_root: Path) -> Path:
 
 
 def main() -> int:
-    repo_root = Path(__file__).resolve().parents[1]
+    repo_root = PACKAGE_ROOT
     missing: list[str] = []
 
     for md_file in _iter_markdown_files(repo_root):

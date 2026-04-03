@@ -71,10 +71,12 @@ all: clean install test lint quality security sbom build docs api ## Full pipeli
 	@echo "✔ All targets completed"
 
 manage_examples:
-	"$(VENV_PYTHON)" scripts/manage_examples.py
+	@echo "manage_examples has no root script implementation."
+	@exit 1
 
 manage_models:
-	"$(VENV_PYTHON)" scripts/manage_models.py
+	@echo "manage_models has no root script implementation."
+	@exit 1
 
 help: ## Show this help
 	@awk 'BEGIN{FS=":.*##"; OFS="";} \

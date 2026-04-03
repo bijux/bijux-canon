@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "agentic-flows"
+
 REQUIRED_PHRASES = (
     "This doc lists rejected patterns.",
     "Anti-patterns align with [Core](core.md).",
@@ -13,8 +15,7 @@ REQUIRED_PHRASES = (
 
 
 def main() -> int:
-    repo_root = Path(__file__).resolve().parents[1]
-    policy_path = repo_root / "docs" / "governance" / "anti_patterns.md"
+    policy_path = PACKAGE_ROOT / "docs" / "governance" / "anti_patterns.md"
     if not policy_path.exists():
         print("Policy doc missing: docs/governance/anti_patterns.md")
         return 1

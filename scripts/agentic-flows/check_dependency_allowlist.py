@@ -6,6 +6,9 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+MONOREPO_ROOT = Path(__file__).resolve().parents[2]
+PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "agentic-flows"
+
 
 def _read_allowlist(path: Path) -> set[str]:
     return {
@@ -16,8 +19,7 @@ def _read_allowlist(path: Path) -> set[str]:
 
 
 def main() -> int:
-    repo_root = Path(__file__).resolve().parents[1]
-    allowlist_path = repo_root / "config" / "dependency_allowlist.txt"
+    allowlist_path = MONOREPO_ROOT / "configs" / "agentic-flows" / "dependency_allowlist.txt"
     if not allowlist_path.exists():
         print("No dependency allowlist found; skipping")
         return 0
@@ -32,6 +34,7 @@ def main() -> int:
         check=False,
         capture_output=True,
         text=True,
+        cwd=PACKAGE_ROOT,
     )
     installed = {
         line.split("==")[0] for line in result.stdout.splitlines() if "==" in line

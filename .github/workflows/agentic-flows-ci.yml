@@ -13,6 +13,7 @@ on:
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
+      - "scripts/agentic-flows/**"
   pull_request:
     paths:
       - ".github/workflows/agentic-flows-ci.yml"
@@ -23,6 +24,7 @@ on:
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
+      - "scripts/agentic-flows/**"
   workflow_dispatch:
 
 permissions:

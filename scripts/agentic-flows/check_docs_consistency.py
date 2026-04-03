@@ -7,6 +7,9 @@ from pathlib import Path
 
 import yaml
 
+MONOREPO_ROOT = Path(__file__).resolve().parents[2]
+PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "agentic-flows"
+
 
 def _collect_nav_paths(nav) -> list[str]:
     paths: list[str] = []
@@ -22,9 +25,7 @@ def _collect_nav_paths(nav) -> list[str]:
 
 
 def main() -> int:
-    repo_root = Path(__file__).resolve().parents[1]
-    monorepo_root = repo_root.parents[1]
-    mkdocs_path = monorepo_root / "configs" / repo_root.name / "mkdocs.yml"
+    mkdocs_path = MONOREPO_ROOT / "configs" / PACKAGE_ROOT.name / "mkdocs.yml"
     if not mkdocs_path.exists():
         print("mkdocs.yml not found; skipping doc consistency check")
         return 0
@@ -37,7 +38,7 @@ def main() -> int:
     for rel in nav_paths:
         target = docs_dir / rel
         if not target.exists():
-            missing.append(str(target.relative_to(repo_root)))
+            missing.append(str(target.relative_to(PACKAGE_ROOT)))
 
     if missing:
         print("Missing MkDocs nav files:")
