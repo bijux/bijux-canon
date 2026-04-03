@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 MONOREPO_ROOT = Path(__file__).resolve().parents[2]
-PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "agentic-flows"
+PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "bijux-llm-flows"
 
 
 def _read_allowlist(path: Path) -> set[str]:
@@ -19,7 +19,7 @@ def _read_allowlist(path: Path) -> set[str]:
 
 
 def main() -> int:
-    allowlist_path = MONOREPO_ROOT / "configs" / "agentic-flows" / "dependency_allowlist.txt"
+    allowlist_path = MONOREPO_ROOT / "configs" / "bijux-llm-flows" / "dependency_allowlist.txt"
     if not allowlist_path.exists():
         print("No dependency allowlist found; skipping")
         return 0

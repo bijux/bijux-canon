@@ -8,7 +8,7 @@ from pathlib import Path
 import yaml
 
 MONOREPO_ROOT = Path(__file__).resolve().parents[2]
-PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "agentic-flows"
+PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "bijux-llm-flows"
 
 
 def _collect_nav_paths(nav) -> list[str]:

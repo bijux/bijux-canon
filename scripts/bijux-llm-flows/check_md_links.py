@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
-PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "agentic-flows"
+PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "bijux-llm-flows"
 
 
 def _iter_markdown_files(root: Path) -> list[Path]:

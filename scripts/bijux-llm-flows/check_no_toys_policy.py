@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "agentic-flows"
+PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "bijux-llm-flows"
 
 REQUIRED_PHRASES = (
     "This doc lists rejected patterns.",
