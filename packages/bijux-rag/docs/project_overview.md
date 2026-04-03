@@ -11,7 +11,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── data/                # sample datasets (arxiv abstracts CSV)
 ├── docs/                # MkDocs sources (includes ADRs and reference pages)
 ├── ../../makes/bijux-rag/ # root-managed Make modules (api, build, docs, hygiene, lint, publish, quality, sbom, security, test)
-├── scripts/             # helper scripts (download_data, openapi_drift)
+├── ../../scripts/bijux-rag/ # root-managed helper scripts (download_data, openapi_drift)
 ├── src/bijux_rag/       # library code (functional core + boundaries + effects)
 ├── tests/               # unit + e2e + strategies + eval assets
 ├── stubs/               # custom stubs (msgpack)
@@ -78,8 +78,8 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
 - `../../configs/bijux-rag/ruff.toml` — ruff line-length/target-version/selects.
 - `Makefile` + `../../makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make hygiene`, `make all`).
-- `scripts/download_data.sh` — data fetcher.
-- `scripts/openapi_drift.py` — API schema drift checker.
+- `../../scripts/bijux-rag/download_data.sh` — data fetcher.
+- `../../scripts/bijux-rag/openapi_drift.py` — API schema drift checker.
 
 ## Policies & Governance
 

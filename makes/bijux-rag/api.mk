@@ -13,6 +13,7 @@ PRANCE                ?= $(ACT)/prance
 OPENAPI_SPEC_VALIDATOR ?= $(ACT)/openapi-spec-validator
 SCHEMATHESIS          ?= $(ACT)/schemathesis
 UVICORN               ?= $(ACT)/uvicorn
+PACKAGE_SCRIPTS_DIR   ?= $(MONOREPO_ROOT)/scripts/bijux-rag
 
 .PHONY: api api-lint api-test api-clean api-drift
 
@@ -52,7 +53,7 @@ api-test:
 api-drift:
 	@mkdir -p "$(API_ARTIFACTS_DIR)"
 	@echo "→ Checking OpenAPI drift"
-	@$(VENV_PYTHON) scripts/openapi_drift.py --schema "$(API_SCHEMA)" --out "$(API_DRIFT_OUT)"
+	@$(VENV_PYTHON) "$(PACKAGE_SCRIPTS_DIR)/openapi_drift.py" --schema "$(API_SCHEMA)" --out "$(API_DRIFT_OUT)"
 
 api-clean:
 	@rm -rf "$(API_ARTIFACTS_DIR)" api/v1/__pycache__
