@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from enum import Enum, auto
+from enum import StrEnum, auto
 
 from agentic_flows.spec.ontology.ids import ActionID as Action
 from agentic_flows.spec.ontology.ids import AgentID as Agent
@@ -15,7 +15,7 @@ from agentic_flows.spec.ontology.ids import StepID as Step
 from agentic_flows.spec.ontology.ids import ToolID as Tool
 
 
-class ArtifactType(str, Enum):
+class ArtifactType(StrEnum):
     """Artifact types; mislabeling breaks artifact contracts."""
 
     FLOW_MANIFEST = "flow_manifest"
@@ -34,7 +34,7 @@ class ArtifactType(str, Enum):
     EXECUTOR_STATE = "executor_state"
 
 
-class ArtifactScope(str, Enum):
+class ArtifactScope(StrEnum):
     """Artifact scope boundary; mis-scoping breaks isolation."""
 
     EPHEMERAL = "ephemeral"
@@ -42,7 +42,7 @@ class ArtifactScope(str, Enum):
     AUDIT = "audit"
 
 
-class EventType(str, Enum):
+class EventType(StrEnum):
     """Execution event types; misuse breaks trace invariants."""
 
     def _generate_next_value_(name, start, count, last_values):  # noqa: N805
@@ -71,7 +71,7 @@ class EventType(str, Enum):
     TOOL_CALL_FAIL = auto()
 
 
-class CausalityTag(str, Enum):
+class CausalityTag(StrEnum):
     """Causality source tags; misuse breaks audit provenance."""
 
     AGENT = "agent"
@@ -81,7 +81,7 @@ class CausalityTag(str, Enum):
     HUMAN = "human"
 
 
-class StepType(str, Enum):
+class StepType(StrEnum):
     """Step types; misuse breaks step execution semantics."""
 
     AGENT = "agent"
@@ -90,14 +90,14 @@ class StepType(str, Enum):
     VERIFICATION = "verification"
 
 
-class VerificationPhase(str, Enum):
+class VerificationPhase(StrEnum):
     """Verification phases; misuse breaks gate ordering."""
 
     PRE_EXECUTION = "pre_execution"
     POST_EXECUTION = "post_execution"
 
 
-class ArbitrationRule(str, Enum):
+class ArbitrationRule(StrEnum):
     """Arbitration rules; misuse breaks verification decisions."""
 
     UNANIMOUS = "unanimous"
@@ -105,7 +105,7 @@ class ArbitrationRule(str, Enum):
     STRICT_FIRST_FAILURE = "strict_first_failure"
 
 
-class DeterminismLevel(str, Enum):
+class DeterminismLevel(StrEnum):
     """Determinism level; wrong value breaks enforcement."""
 
     STRICT = "strict"
@@ -114,7 +114,7 @@ class DeterminismLevel(str, Enum):
     UNCONSTRAINED = "unconstrained"
 
 
-class DeterminismClass(str, Enum):
+class DeterminismClass(StrEnum):
     """Determinism class; wrong value breaks classification."""
 
     STRUCTURAL = "structural"
@@ -124,7 +124,7 @@ class DeterminismClass(str, Enum):
     EXTERNAL = "external"
 
 
-class ReplayMode(str, Enum):
+class ReplayMode(StrEnum):
     """Replay modes; wrong value breaks replay governance."""
 
     STRICT = "strict"
@@ -132,7 +132,7 @@ class ReplayMode(str, Enum):
     OBSERVATIONAL = "observational"
 
 
-class FlowState(str, Enum):
+class FlowState(StrEnum):
     """Flow lifecycle state; misuse breaks flow governance."""
 
     DRAFT = "draft"
@@ -141,7 +141,7 @@ class FlowState(str, Enum):
     DEPRECATED = "deprecated"
 
 
-class DatasetState(str, Enum):
+class DatasetState(StrEnum):
     """Dataset lifecycle state; misuse breaks dataset governance."""
 
     EXPERIMENTAL = "experimental"
@@ -149,7 +149,7 @@ class DatasetState(str, Enum):
     DEPRECATED = "deprecated"
 
 
-class ReplayAcceptability(str, Enum):
+class ReplayAcceptability(StrEnum):
     """Replay acceptability; wrong value breaks replay contract."""
 
     EXACT_MATCH = "exact_match"
@@ -157,7 +157,7 @@ class ReplayAcceptability(str, Enum):
     STATISTICALLY_BOUNDED = "statistically_bounded"
 
 
-class EvidenceDeterminism(str, Enum):
+class EvidenceDeterminism(StrEnum):
     """Evidence determinism; wrong value breaks evidence trust."""
 
     DETERMINISTIC = "deterministic"
@@ -165,7 +165,7 @@ class EvidenceDeterminism(str, Enum):
     EXTERNAL = "external"
 
 
-class EntropySource(str, Enum):
+class EntropySource(StrEnum):
     """Entropy sources; misuse breaks nondeterminism tracking."""
 
     SEEDED_RNG = "seeded_rng"
@@ -174,7 +174,7 @@ class EntropySource(str, Enum):
     DATA = "data"
 
 
-class NonDeterminismIntentSource(str, Enum):
+class NonDeterminismIntentSource(StrEnum):
     """Declared nondeterminism sources; misuse breaks intent contracts."""
 
     LLM = "llm"
@@ -183,7 +183,7 @@ class NonDeterminismIntentSource(str, Enum):
     EXTERNAL = "external"
 
 
-class EntropyMagnitude(str, Enum):
+class EntropyMagnitude(StrEnum):
     """Entropy magnitude; wrong value breaks budget enforcement."""
 
     LOW = "low"
@@ -191,7 +191,7 @@ class EntropyMagnitude(str, Enum):
     HIGH = "high"
 
 
-class EntropySeverity(str, Enum):
+class EntropySeverity(StrEnum):
     """Entropy severity; wrong value breaks classification."""
 
     LOW = "low"
@@ -200,7 +200,7 @@ class EntropySeverity(str, Enum):
     CRITICAL = "critical"
 
 
-class EntropyExhaustionAction(str, Enum):
+class EntropyExhaustionAction(StrEnum):
     """Entropy exhaustion action; wrong value breaks governance."""
 
     HALT = "halt"
@@ -208,7 +208,7 @@ class EntropyExhaustionAction(str, Enum):
     MARK_NON_CERTIFIABLE = "mark_non_certifiable"
 
 
-class VerificationRandomness(str, Enum):
+class VerificationRandomness(StrEnum):
     """Verification randomness; wrong value breaks verification policy."""
 
     DETERMINISTIC = "deterministic"
@@ -216,7 +216,7 @@ class VerificationRandomness(str, Enum):
     STATISTICAL = "statistical"
 
 
-class ReasonCode(str, Enum):
+class ReasonCode(StrEnum):
     """Reason codes; misuse breaks failure classification."""
 
     CONTRADICTION_DETECTED = "contradiction_detected"

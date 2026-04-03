@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
 class ResolutionFailure(Exception):  # noqa: N818
@@ -40,7 +40,7 @@ class ConfigurationError(ValueError):
     """Configuration error; misuse breaks execution setup."""
 
 
-class FailureClass(str, Enum):
+class FailureClass(StrEnum):
     # Order is stable; ordinal values are part of the external contract. Reordering is forbidden.
     """Failure classes; misuse breaks failure taxonomy."""
 

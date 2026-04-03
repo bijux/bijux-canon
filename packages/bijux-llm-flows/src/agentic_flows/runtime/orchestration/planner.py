@@ -8,20 +8,6 @@ from __future__ import annotations
 
 from importlib.metadata import PackageNotFoundError, version
 
-
-def _distribution_version(*names: str) -> str:
-    """Resolve the first available distribution version from canonical and legacy names."""
-    for name in names:
-        try:
-            return version(name)
-        except PackageNotFoundError:
-            continue
-    return "0.0.0"
-
-
-bijux_agent_version = _distribution_version("bijux-llm-agent", "bijux-agent")
-bijux_cli_version = _distribution_version("bijux-cli")
-
 from agentic_flows.runtime.observability.capture.environment import (
     compute_environment_fingerprint,
 )
@@ -49,6 +35,20 @@ from agentic_flows.spec.ontology.ids import (
     ResolverID,
     VersionID,
 )
+
+
+def _distribution_version(*names: str) -> str:
+    """Resolve the first available distribution version from canonical and legacy names."""
+    for name in names:
+        try:
+            return version(name)
+        except PackageNotFoundError:
+            continue
+    return "0.0.0"
+
+
+bijux_agent_version = _distribution_version("bijux-llm-agent", "bijux-agent")
+bijux_cli_version = _distribution_version("bijux-cli")
 
 
 class ExecutionPlanner:

@@ -6,10 +6,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class ReplayVerdict(str, Enum):
+class ReplayVerdict(StrEnum):
     """Replay verdict; misuse breaks replay governance."""
 
     ACCEPTABLE = "acceptable"

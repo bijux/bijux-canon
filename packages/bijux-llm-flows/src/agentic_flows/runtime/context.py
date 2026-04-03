@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from agentic_flows.core.authority import AuthorityToken
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     )
 
 
-class RunMode(str, Enum):
+class RunMode(StrEnum):
     """Execution mode; misuse breaks mode-specific guarantees."""
 
     PLAN = "plan"
