@@ -183,9 +183,6 @@ class PipelineResultsMixin:
         self, result: Any, task_goal: str, context_id: str | None = None
     ) -> dict[str, Any]:
         critique_agent = self.critique
-        if critique_agent is None:
-            return {"is_valid": True, "issues": []}
-
         critique_context: dict[str, Any] = {
             "task_goal": task_goal,
             "result": result,

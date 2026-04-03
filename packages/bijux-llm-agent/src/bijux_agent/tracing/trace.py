@@ -321,9 +321,7 @@ class TraceRecorder:
         """Record the given trace entry while enforcing trace-level metadata."""
         entry.run_id = self.trace.run_id
         metadata: dict[str, Any] = {}
-        if isinstance(entry.output, AgentOutputSchema):
-            metadata = entry.output.metadata
-        elif isinstance(entry.output, dict):
+        if isinstance(entry.output, dict):
             metadata = entry.output.get("metadata", {})
         entry.replay_metadata.contract_version = (
             metadata.get("contract_version", CONTRACT_VERSION) or CONTRACT_VERSION

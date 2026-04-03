@@ -46,6 +46,7 @@ ROOT_CHECK_PACKAGES := \
 	pymdown-extensions \
 	radon \
 	ruff \
+	types-requests \
 	vulture
 
 export PYTHONDONTWRITEBYTECODE := 1
