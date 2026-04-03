@@ -258,7 +258,7 @@ class LintArtifactPage(StandardArtifactPage):
 
         usage = {
             "ruff.log": "Run `ruff --fix` for auto-fixes; justify any `# noqa`.",
-            "ruff-format.log": "Run `ruff format`; enforce via pre-commit.",
+            "ruff-format.log": "Run `ruff format`; enforce in `make lint`.",
             "codespell.log": "Accept valid suggestions; collect custom words.",
             "mypy.log": "Annotate public APIs; enable stricter flags gradually.",
             "pytype.log": "Prefer precise hints over `Any`; use pragmas sparingly.",

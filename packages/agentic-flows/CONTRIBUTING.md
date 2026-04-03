@@ -16,7 +16,6 @@ This guide is the single source of truth for local setup, workflows, API validat
 - [Security & Supply Chain](#security--supply-chain)
 - [Make Targets (Mirror CI)](#make-targets-mirror-ci)
 - [Commits & PRs](#commits--prs)
-- [Pre-Commit](#pre-commit)
 - [Troubleshooting](#troubleshooting)
 - [Community & Conduct](#community--conduct)
 
@@ -33,7 +32,6 @@ This guide is the single source of truth for local setup, workflows, API validat
 - Python **3.11+** (`pyenv` recommended)
 - **GNU Make**
 - **Node.js + npm** (for API validation tooling)
-- Optional: **pre-commit** (to catch issues before pushing)
 
 **Setup**
 
@@ -42,8 +40,6 @@ git clone https://github.com/bijux/bijux-llm-nexus.git
 cd bijux-llm-nexus/packages/agentic-flows
 make PYTHON=python3.11 install
 source .venv/bin/activate
-# optional but recommended
-pre-commit install
 ```
 
 **Sanity check**
@@ -227,7 +223,7 @@ feat(runtime): enforce artifact immutability checks
 BREAKING CHANGE: <explanation>
 ```
 
-> Commit messages are validated (Commitizen via pre-commit hook).
+> Commit messages should follow Commitizen-compatible conventional commit format.
 
 ### PR Checklist
 
@@ -239,20 +235,6 @@ BREAKING CHANGE: <explanation>
    ```
 3. Ensure Conventional Commits
 4. Open PR with clear summary & rationale
-
-
-
----
-
-<a id="pre-commit"></a>
-
-## Pre-Commit
-
-```bash
-pre-commit install
-```
-
-Runs critical checks locally (format, lint, commit message validation, etc.).
 
 
 

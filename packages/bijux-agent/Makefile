@@ -18,7 +18,6 @@ include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/security.mk
 include $(MAKE_DIR)/test.mk
 include $(MAKE_DIR)/publish.mk
-include $(MAKE_DIR)/hooks.mk
 
 # Environment
 $(VENV):
@@ -30,7 +29,7 @@ install: $(VENV)
 	@$(VENV_PYTHON) -m pip install --upgrade pip setuptools wheel
 	@$(VENV_PYTHON) -m pip install -e ".[dev]"
 
-bootstrap: $(VENV) install-git-hooks
+bootstrap: install
 .PHONY: bootstrap
 
 # Cleanup
@@ -63,16 +62,6 @@ all-parallel: clean install
 	@$(MAKE) -j4 quality security api docs
 	@$(MAKE) build sbom
 	@echo "✔ All targets completed (parallel mode)"
-
-# Pre-push Gate - Pre-Commit!
-pre-push:
-	@$(PYTEST) -q -m "not e2e and not slow"
-	@$(MAKE) quality
-	@$(MAKE) security
-	@$(MAKE) api
-	@$(MAKE) docs
-	@echo "✔ pre-push gate passed"
-.PHONY: pre-push
 
 ci-fast: lint test mypy-core
 .PHONY: ci-fast
@@ -112,8 +101,7 @@ help:
 clean: ## Remove virtualenv, caches, build, and artifacts
 clean-soft: ## Remove build artifacts but keep .venv
 install: ## Install project in editable mode into .venv
-bootstrap: ## Setup environment & install git hooks
+bootstrap: ## Setup environment
 all: ## Run full pipeline (clean → sbom)
 all-parallel: ## Run pipeline with parallelized lint, quality, security, api, and docs
-pre-push: ## Run pre-push gate: tests, quality, security, API, and docs
 help: ## Show this help
