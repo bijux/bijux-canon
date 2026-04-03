@@ -25,7 +25,7 @@ from bijux_canon_index.bench.dataset import (
     save_dataset,
 )
 from bijux_canon_index.bench.runner import format_table, run_benchmark
-from bijux_canon_index.interfaces.exception_bridge import (
+from bijux_canon_index.interfaces.errors import (
     is_refusal,
     record_failure,
     refusal_payload,

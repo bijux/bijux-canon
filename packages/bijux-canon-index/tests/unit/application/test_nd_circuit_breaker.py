@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_index.interfaces.exception_bridge import refusal_payload
+from bijux_canon_index.interfaces.errors import refusal_payload
 from bijux_canon_index.interfaces.schemas.models import (
     ExecutionBudgetPayload,
     ExecutionRequestPayload,

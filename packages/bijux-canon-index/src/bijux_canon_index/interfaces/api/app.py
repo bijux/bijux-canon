@@ -6,7 +6,7 @@ from typing import NoReturn, cast
 
 from fastapi import FastAPI, Header, HTTPException, Response
 
-from bijux_canon_index.interfaces.exception_bridge import (
+from bijux_canon_index.interfaces.errors import (
     is_refusal,
     record_failure,
     refusal_payload,

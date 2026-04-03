@@ -5,7 +5,7 @@
 from __future__ import annotations
 import pytest
 
-from bijux_canon_index.interfaces.exception_bridge import to_cli_exit, to_http_status
+from bijux_canon_index.interfaces.errors import to_cli_exit, to_http_status
 from bijux_canon_index.core import errors
 
 
