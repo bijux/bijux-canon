@@ -29,7 +29,7 @@ Missing evidence breaks [Docs Style](../meta/DOCS_STYLE.md).
 
 ## Extension Points  
 Claim updates follow [Docs Style](../meta/DOCS_STYLE.md).  
-Extensions align with [Experimental](../architecture/experimental.md).  
+Extensions align with [Extension Governance](../architecture/extension_governance.md).  
 Evidence updates align with [tests/unit/test_docs_contract.py](https://github.com/bijux/agentic-proteins/blob/main/tests/unit/test_docs_contract.py).  
 
 ## Exit Criteria  

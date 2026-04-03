@@ -30,7 +30,7 @@ Hidden entry points break [Core](../governance/core.md).
 Unlinked usage breaks [Docs Style](../meta/DOCS_STYLE.md).  
 
 ## Extension Points  
-Extension rules live in [Experimental](../architecture/experimental.md).  
+Extension rules live in [Extension Governance](../architecture/extension_governance.md).  
 Playground usage is described in [Sandbox](sandbox.md).  
 Review rules align with [Triage](../meta/TRIAGE.md).  
 

@@ -27,7 +27,7 @@ Mismatched versions break [../CHANGELOG.md](https://github.com/bijux/agentic-pro
 Untracked changes break [Invariants](../architecture/invariants.md).  
 
 ## Extension Points  
-Extensions follow [Experimental](../architecture/experimental.md).  
+Extensions follow [Extension Governance](../architecture/extension_governance.md).  
 Extension checks align with [tests/unit/test_module_stability.py](https://github.com/bijux/agentic-proteins/blob/main/tests/unit/test_module_stability.py).  
 Extension docs align with [Docs Style](../meta/DOCS_STYLE.md).  
 

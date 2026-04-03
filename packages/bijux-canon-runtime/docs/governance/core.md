@@ -27,7 +27,7 @@ Untracked changes break [Core Concepts](../concepts/core_concepts.md).
 Missing evidence breaks [Docs Style](../meta/DOCS_STYLE.md).  
 
 ## Extension Points  
-Extensions follow [Experimental](../architecture/experimental.md).  
+Extensions follow [Extension Governance](../architecture/extension_governance.md).  
 Extension rules align with [Docs Style](../meta/DOCS_STYLE.md).  
 Evidence updates align with [tests/unit/test_docs_contract.py](https://github.com/bijux/agentic-proteins/blob/main/tests/unit/test_docs_contract.py).  
 

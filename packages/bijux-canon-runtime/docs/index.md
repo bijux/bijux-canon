@@ -199,7 +199,7 @@ tests/          # unit / regression / e2e
 <a id="docs--resources"></a>
 ## Docs & Resources
 
-* **Overview**: [Why bijux-canon-runtime exists](https://bijux.github.io/bijux-canon-runtime/overview/why-bijux-canon-runtime/) · [Mental model](https://bijux.github.io/bijux-canon-runtime/overview/mental-model/) · [Minimal run](https://bijux.github.io/bijux-canon-runtime/overview/minimal-run/) · [Relationship to agentic-proteins](https://bijux.github.io/bijux-canon-runtime/overview/relationship-to-agentic-proteins/) · [Audience](https://bijux.github.io/bijux-canon-runtime/overview/audience/)
+* **Overview**: [Project overview](https://bijux.github.io/bijux-canon-runtime/project-overview/) · [Runtime motivation](https://bijux.github.io/bijux-canon-runtime/overview/runtime-motivation/) · [Runtime scope](https://bijux.github.io/bijux-canon-runtime/overview/runtime-scope/) · [Package boundaries](https://bijux.github.io/bijux-canon-runtime/overview/package-boundaries/) · [Mental model](https://bijux.github.io/bijux-canon-runtime/overview/mental-model/) · [Minimal run](https://bijux.github.io/bijux-canon-runtime/overview/minimal-run/) · [Audience](https://bijux.github.io/bijux-canon-runtime/overview/audience/)
 * **Concepts**: [Concepts index](https://bijux.github.io/bijux-canon-runtime/concepts/) · [Determinism](https://bijux.github.io/bijux-canon-runtime/concepts/determinism/) · [Failures](https://bijux.github.io/bijux-canon-runtime/concepts/failures/)
 * **Execution**: [Failure paths](https://bijux.github.io/bijux-canon-runtime/execution/failure-paths/)
 * **Site**: https://bijux.github.io/bijux-canon-runtime/

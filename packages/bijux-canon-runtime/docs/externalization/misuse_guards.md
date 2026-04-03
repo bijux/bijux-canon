@@ -27,7 +27,7 @@ Silent failures break [Core](../governance/core.md).
 Unlinked usage breaks [Docs Style](../meta/DOCS_STYLE.md).  
 
 ## Extension Points  
-Extensions follow [Experimental](../architecture/experimental.md).  
+Extensions follow [Extension Governance](../architecture/extension_governance.md).  
 Review rules align with [Triage](../meta/TRIAGE.md).  
 MPI changes align with [Surface Area](surface_area.md).  
 

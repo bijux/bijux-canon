@@ -71,7 +71,7 @@ Docs list:
 - [Why Not X](../externalization/why_not_x.md)  
 - [Architecture](../architecture/architecture.md)  
 - [Invariants](../architecture/invariants.md)  
-- [Experimental](../architecture/experimental.md)  
+- [Extension Governance](../architecture/extension_governance.md)  
 - [Llm Authority](../architecture/llm_authority.md)  
 - [Execution Model](../architecture/execution_model.md)  
 - [Execution Lifecycle](../architecture/execution_lifecycle.md)  

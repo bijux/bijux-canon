@@ -9,7 +9,7 @@ Why: This doc exists to record its single responsibility for review.
 ## Overview  
 This doc defines the sandbox split.  
 Core context lives in [Core](../governance/core.md).  
-Experimental context lives in [Experimental](../architecture/experimental.md).  
+Experimental context lives in [Extension Governance](../architecture/extension_governance.md).  
 
 ## Contracts  
 Core modules live under [src/agentic_proteins/core](https://github.com/bijux/agentic-proteins/blob/main/src/agentic_proteins/core).  
@@ -18,22 +18,22 @@ Sandbox code is marked experimental.
 
 ## Invariants  
 Core stability aligns with [Invariants](../architecture/invariants.md).  
-Sandbox usage aligns with [Experimental](../architecture/experimental.md).  
+Sandbox usage aligns with [Extension Governance](../architecture/extension_governance.md).  
 Evidence aligns with [tests/unit/test_module_stability.py](https://github.com/bijux/agentic-proteins/blob/main/tests/unit/test_module_stability.py).  
 
 ## Failure Modes  
 Mixing core and sandbox breaks [Core](../governance/core.md).  
-Unlabeled sandbox code breaks [Experimental](../architecture/experimental.md).  
+Unlabeled sandbox code breaks [Extension Governance](../architecture/extension_governance.md).  
 Unlinked usage breaks [Docs Style](../meta/DOCS_STYLE.md).  
 
 ## Extension Points  
-Extensions follow [Experimental](../architecture/experimental.md).  
+Extensions follow [Extension Governance](../architecture/extension_governance.md).  
 Review rules align with [Triage](../meta/TRIAGE.md).  
 MPI changes align with [Mpi](mpi.md).  
 
 ## Exit Criteria  
 This doc is obsolete when sandbox is removed.  
-The replacement is [Experimental](../architecture/experimental.md).  
+The replacement is [Extension Governance](../architecture/extension_governance.md).  
 Obsolete docs are removed.  
 
 Code refs: [src/agentic_proteins/sandbox/__init__.py](https://github.com/bijux/agentic-proteins/blob/main/src/agentic_proteins/sandbox/__init__.py).  

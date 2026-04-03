@@ -33,10 +33,11 @@ theme:
 
 nav:
   - Home: index.md
+  - Project Overview: project_overview.md
   - Overview:
       - getting_started: overview/getting_started.md
-      - why-bijux-canon-runtime: overview/why-bijux-canon-runtime.md
-      - why-bijux-canon-runtime-contract: overview/why_bijux_canon_runtime.md
+      - runtime_motivation: overview/runtime_motivation.md
+      - runtime_scope: overview/runtime_scope.md
       - mental-model: overview/mental-model.md
       - minimal-run: overview/minimal-run.md
       - boring-path: overview/boring-path.md
@@ -55,7 +56,7 @@ nav:
       - upgrade-policy: overview/upgrade-policy.md
       - versioning: overview/versioning.md
       - what-breaks-determinism: overview/what-breaks-determinism.md
-      - relationship-to-agentic-proteins: overview/relationship-to-agentic-proteins.md
+      - package_boundaries: overview/package_boundaries.md
       - audience: overview/audience.md
       - non-goals: overview/non-goals.md
       - stability: overview/stability.md
@@ -107,7 +108,7 @@ nav:
       - invariants: architecture/invariants.md
       - architecture-note: architecture/architecture-note.md
       - abstraction_removal: architecture/abstraction_removal.md
-      - experimental: architecture/experimental.md
+      - extension_governance: architecture/extension_governance.md
       - llm_authority: architecture/llm_authority.md
       - execution_model: architecture/execution_model.md
       - execution_lifecycle: architecture/execution_lifecycle.md

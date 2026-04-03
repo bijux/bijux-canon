@@ -18,7 +18,7 @@ The system avoids replacing contract locks in [src/agentic_proteins/core/api_loc
 
 ## Invariants  
 Ceilings align with [Invariants](../architecture/invariants.md).  
-Ceilings align with [Experimental](../architecture/experimental.md).  
+Ceilings align with [Extension Governance](../architecture/extension_governance.md).  
 Checks align with [tests/unit/test_core_api_lock.py](https://github.com/bijux/agentic-proteins/blob/main/tests/unit/test_core_api_lock.py).  
 
 ## Failure Modes  
@@ -27,7 +27,7 @@ Implicit expansion breaks [Invariants](../architecture/invariants.md).
 Untracked changes break [Docs Style](../meta/DOCS_STYLE.md).  
 
 ## Extension Points  
-Extensions follow [Experimental](../architecture/experimental.md).  
+Extensions follow [Extension Governance](../architecture/extension_governance.md).  
 Extension docs align with [Docs Style](../meta/DOCS_STYLE.md).  
 Extension checks align with [tests/unit/test_module_stability.py](https://github.com/bijux/agentic-proteins/blob/main/tests/unit/test_module_stability.py).  
 

@@ -68,7 +68,6 @@ export
 
 .PHONY: install ensure-venv nlenv \
         clean clean-soft clean-venv \
-        manage_examples manage_models \
         all help
 
 $(VENV):
@@ -116,14 +115,6 @@ clean: clean-soft clean-venv ## Remove venv + artifacts
 
 all: clean install test lint quality security sbom build docs api ## Full pipeline
 	@echo "✔ All targets completed"
-
-manage_examples:
-	@echo "manage_examples has no root script implementation."
-	@exit 1
-
-manage_models:
-	@echo "manage_models has no root script implementation."
-	@exit 1
 
 help: ## Show this help
 	@awk 'BEGIN{FS=":.*##"; OFS="";} \
