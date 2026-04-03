@@ -20,6 +20,7 @@ from .indexing import (
     ingest_csv_to_chunks,
     ingest_docs_to_chunks,
 )
+from .querying import ask, parse_filters, retrieve
 from .pipelines import (
     ErrorPolicy,
     OperatorSpec,
@@ -40,9 +41,6 @@ from .rag import (
     IndexBackend,
     RagApp,
     RagIndex,
-    ask,
-    parse_filters,
-    retrieve,
 )
 
 __all__ = [

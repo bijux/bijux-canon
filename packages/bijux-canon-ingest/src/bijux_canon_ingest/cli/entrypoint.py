@@ -28,9 +28,9 @@ from bijux_canon_ingest.application.pipelines.configured import (
     build_rag_pipeline,
 )
 from bijux_canon_ingest.application.indexing import IndexBuildConfig, build_index_from_csv
-from bijux_canon_ingest.application.rag import ask as rag_ask
-from bijux_canon_ingest.application.rag import retrieve as rag_retrieve
-from bijux_canon_ingest.application.rag import parse_filters
+from bijux_canon_ingest.application.querying import ask as rag_ask
+from bijux_canon_ingest.application.querying import parse_filters
+from bijux_canon_ingest.application.querying import retrieve as rag_retrieve
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 

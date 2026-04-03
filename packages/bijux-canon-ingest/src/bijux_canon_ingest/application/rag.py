@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 
 # mypy: ignore-errors
-"""Application services for the RAG ingestion flow.
+"""Application service facade for in-memory indexes.
 
 This module wires:
     clean -> chunk -> index -> retrieve -> (optional rerank) -> generate.
@@ -12,108 +12,19 @@ Both CLI and FastAPI boundary call into this layer to avoid drift.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import StrEnum
 import hashlib
-from pathlib import Path
 
 import msgpack
 
 from bijux_canon_ingest.core.types import Chunk, RawDoc
-from bijux_canon_ingest.retrieval.embedders import HashEmbedder, SentenceTransformersEmbedder
 from bijux_canon_ingest.retrieval.generators import ExtractiveGenerator
-from bijux_canon_ingest.retrieval.indexes import (
-    BM25Index,
-    NumpyCosineIndex,
-    load_index,
-)
-from bijux_canon_ingest.retrieval.ports import Answer, Candidate, Embedder
+from bijux_canon_ingest.retrieval.indexes import BM25Index, NumpyCosineIndex
+from bijux_canon_ingest.retrieval.ports import Answer
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
 from bijux_canon_ingest.result.types import Err, Ok, Result
-
-
-def retrieve(
-    *,
-    index_path: Path,
-    query: str,
-    top_k: int = 5,
-    filters: Mapping[str, str] | None = None,
-    embedder: Embedder | None = None,
-) -> list[Candidate]:
-    """Retrieve candidates from a persisted index."""
-
-    idx = load_index(str(index_path))
-
-    if isinstance(idx, NumpyCosineIndex) and embedder is None:
-        # Default embedder based on index spec.
-        if idx.spec.model.startswith("sbert:"):
-            embedder = SentenceTransformersEmbedder(
-                model_name=idx.spec.model.split(":", 1)[1]
-            )
-        else:
-            embedder = HashEmbedder()
-
-    return idx.retrieve(
-        query=query, top_k=int(top_k), filters=filters, embedder=embedder
-    )
-
-
-def ask(
-    *,
-    index_path: Path,
-    query: str,
-    top_k: int = 5,
-    filters: Mapping[str, str] | None = None,
-    embedder: Embedder | None = None,
-    rerank: bool = True,
-) -> Answer:
-    """Retrieve and answer with citations."""
-
-    cands = retrieve(
-        index_path=index_path,
-        query=query,
-        top_k=max(20, int(top_k)),
-        filters=filters,
-        embedder=embedder,
-    )
-    if rerank:
-        cands = LexicalOverlapReranker().rerank(
-            query=query, candidates=cands, top_k=int(top_k)
-        )
-    else:
-        cands = cands[: int(top_k)]
-    return ExtractiveGenerator().generate(query=query, candidates=cands)
-
-
-def parse_filters(filters: list[str] | None) -> dict[str, str]:
-    """Parse CLI/API filters.
-
-    Args:
-        filters: list like ["category=cs.AI", "doc_id=foo"].
-    """
-
-    out: dict[str, str] = {}
-    for f in filters or []:
-        if "=" not in f:
-            raise ValueError(f"invalid filter: {f}")
-        k, v = f.split("=", 1)
-        k = k.strip()
-        v = v.strip()
-        if not k or not v:
-            raise ValueError(f"invalid filter: {f}")
-        out[k] = v
-    return out
-
-
-__all__ = [
-    "IndexBackend",
-    "RagIndex",
-    "ask",
-    "parse_filters",
-    "retrieve",
-    "RagApp",
-]
 
 
 # ---------------------------
