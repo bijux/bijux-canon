@@ -9,10 +9,8 @@ fully integrated with LoggerManager for structured logging.
 from __future__ import annotations
 
 import asyncio
-from collections import Counter
 from collections.abc import Callable
 import hashlib
-import math
 from pathlib import Path
 import time
 from typing import Any
@@ -20,6 +18,19 @@ from typing import Any
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
+from .reporting import (
+    build_coverage_report,
+    build_file_agent_audit,
+    build_file_reader_error_payload,
+    build_self_report_schema,
+)
+from .telemetry_support import (
+    build_auto_enrichments,
+    emit_cache_key_metric,
+    flush_agent_logs,
+    get_agent_telemetry,
+    reset_agent_telemetry,
+)
 from .capabilities.universal_file_reader_core import UniversalFileReader
 
 
@@ -369,14 +380,15 @@ class FileReaderAgent(BaseAgent):
 
         # Audit trail
         read_result["file_agent_audit"] = {
-            "file_path": str(file_path),
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
-            "agent_version": self.version,
-            "agent_id": self.id,
-            "cache_enabled": self.cache_enabled,
-            "async_io": self.async_io,
-            "context_id": context_id,
-            "file_type": file_suffix,
+            **build_file_agent_audit(
+                str(file_path),
+                agent_version=self.version,
+                agent_id=self.id,
+                cache_enabled=self.cache_enabled,
+                async_io=self.async_io,
+                context_id=context_id,
+                file_type=file_suffix,
+            )
         }
 
         # Cache result
@@ -449,28 +461,16 @@ class FileReaderAgent(BaseAgent):
         attempt = 1
         if extra and "attempt" in extra:
             attempt = int(extra["attempt"])
-        file_path = context.get("file_path", "unknown")
-        return {
-            "error": msg,
-            "stage": stage,
-            "input": context,
-            "attempt": attempt,
-            "file_info": {},
-            "structure_preview": {},
-            "enrichments": {},
-            "file_agent_audit": {
-                "file_path": str(file_path),
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
-                "agent_version": str(self.version),
-                "agent_id": str(self.id),
-                "cache_enabled": self.cache_enabled,
-                "async_io": self.async_io,
-                "context_id": (str(context.get("context_id", "unknown"))),
-                "file_type": Path(file_path).suffix.lstrip(".").lower(),
-            },
-            "cache_hit": False,
-            "action_plan": [f"Fix file read error: {msg}"],
-        }
+        return build_file_reader_error_payload(
+            msg,
+            context,
+            stage,
+            attempt=attempt,
+            agent_version=str(self.version),
+            agent_id=str(self.id),
+            cache_enabled=self.cache_enabled,
+            async_io=self.async_io,
+        )
 
     def _calculate_backoff(self, attempt: int) -> float:
         """Calculate backoff delay based on the strategy.
@@ -495,236 +495,12 @@ class FileReaderAgent(BaseAgent):
         Returns:
             Dictionary of enrichments.
         """
-        enrich = {}
-        text = result.get("text", "")
-        file_info = result.get("file_info", {})
-        structure = result.get("structure_preview", {})
-        file_path = file_info.get("file_path", "unknown") if file_info else "unknown"
-        file_type = Path(file_path).suffix.lstrip(".").lower()
-        tags = {
-            "stage": "auto_enrichments",
-            "agent": "FileReaderAgent",
-            "file_type": file_type,
-        }
-
-        # Text-based enrichments
-        if isinstance(text, str) and text:
-            try:
-                text_head = text[:400]
-                text_tail = text[-200:] if len(text) > 600 else ""
-                n_chars = len(text)
-                n_lines = text.count("\n") + 1
-                n_words = len(text.split())
-                avg_word_length = sum(len(word) for word in text.split()) / max(
-                    n_words, 1
-                )
-                entropy = self._text_entropy(text)
-                text_complexity = self._text_complexity(text)
-
-                enrich["text_head"] = text_head
-                enrich["text_tail"] = text_tail
-                enrich["n_chars"] = n_chars
-                enrich["n_lines"] = n_lines
-                enrich["n_words"] = n_words
-                enrich["avg_word_length"] = avg_word_length
-                enrich["entropy"] = entropy
-                enrich["text_complexity"] = text_complexity
-
-                # Log metrics with tags
-                self.logger_manager.log_metric(
-                    "text_length_chars", enrich["n_chars"], MetricType.GAUGE, tags=tags
-                )
-                self.logger_manager.log_metric(
-                    "text_lines", enrich["n_lines"], MetricType.GAUGE, tags=tags
-                )
-                self.logger_manager.log_metric(
-                    "text_words", enrich["n_words"], MetricType.GAUGE, tags=tags
-                )
-                self.logger_manager.log_metric(
-                    "avg_word_length",
-                    enrich["avg_word_length"],
-                    MetricType.HISTOGRAM,
-                    tags=tags,
-                )
-                self.logger_manager.log_metric(
-                    "text_entropy", enrich["entropy"], MetricType.HISTOGRAM, tags=tags
-                )
-                self.logger_manager.log_metric(
-                    "text_complexity",
-                    enrich["text_complexity"],
-                    MetricType.HISTOGRAM,
-                    tags=tags,
-                )
-
-                self.logger.debug(
-                    "Text enrichments computed",
-                    extra={
-                        "context": {
-                            "stage": "auto_enrichments",
-                            "metrics": {
-                                "n_chars": enrich["n_chars"],
-                                "n_lines": enrich["n_lines"],
-                                "n_words": enrich["n_words"],
-                                "avg_word_length": enrich["avg_word_length"],
-                                "entropy": enrich["entropy"],
-                                "text_complexity": enrich["text_complexity"],
-                            },
-                            "tags": tags,
-                        }
-                    },
-                )
-            except Exception as e:
-                self.logger.error(
-                    f"Text enrichment failed: {e!s}",
-                    extra={
-                        "context": {
-                            "stage": "auto_enrichments",
-                            "error": str(e),
-                            "tags": tags,
-                        }
-                    },
-                )
-                self.logger_manager.log_metric(
-                    "text_enrichment_errors", 1, MetricType.COUNTER, tags=tags
-                )
-
-        # File metadata enrichments
-        if file_info:
-            try:
-                file_size_bytes = file_info.get("file_size_bytes", 0)
-                file_size_kb = round(file_size_bytes / 1024, 2)
-                file_size_mb = round(file_size_kb / 1024, 2)
-                enrich["file_size_kb"] = file_size_kb
-                enrich["file_size_mb"] = file_size_mb
-                enrich["file_type"] = file_info.get("file_type", file_type)
-                enrich["last_modified"] = str(file_info.get("last_modified", ""))
-
-                file_tags = {"file_type": enrich["file_type"], **tags}
-                self.logger_manager.log_metric(
-                    "file_size_mb",
-                    enrich["file_size_mb"],
-                    MetricType.GAUGE,
-                    tags=file_tags,
-                )
-                self.logger.debug(
-                    "File metadata enrichments computed",
-                    extra={
-                        "context": {
-                            "stage": "auto_enrichments",
-                            "metrics": {
-                                "file_size_mb": enrich["file_size_mb"],
-                                "file_type": enrich["file_type"],
-                            },
-                            "tags": file_tags,
-                        }
-                    },
-                )
-            except Exception as e:
-                self.logger.error(
-                    f"File metadata enrichment failed: {e!s}",
-                    extra={
-                        "context": {
-                            "stage": "auto_enrichments",
-                            "error": str(e),
-                            "tags": tags,
-                        }
-                    },
-                )
-                self.logger_manager.log_metric(
-                    "file_metadata_errors", 1, MetricType.COUNTER, tags=tags
-                )
-
-        # Structural preview
-        if structure:
-            try:
-                structure_sections = structure.get("sections", [])
-                structure_tables = structure.get("tables", [])
-                structure_images = structure.get("images", [])
-                section_depths = [
-                    section.get("depth", 1) for section in structure_sections
-                ]
-                max_section_depth = max(section_depths, default=1)
-                enrich["structure_summary"] = {
-                    "n_sections": len(structure_sections),
-                    "has_tables": bool(structure_tables),
-                    "has_images": bool(structure_images),
-                    "max_section_depth": max_section_depth,
-                }
-                self.logger_manager.log_metric(
-                    "n_sections",
-                    enrich["structure_summary"]["n_sections"],
-                    MetricType.GAUGE,
-                    tags=tags,
-                )
-                self.logger_manager.log_metric(
-                    "max_section_depth",
-                    enrich["structure_summary"]["max_section_depth"],
-                    MetricType.GAUGE,
-                    tags=tags,
-                )
-                self.logger.debug(
-                    "Structure summary computed",
-                    extra={
-                        "context": {
-                            "stage": "auto_enrichments",
-                            "structure_summary": enrich["structure_summary"],
-                            "tags": tags,
-                        }
-                    },
-                )
-            except Exception as e:
-                self.logger.error(
-                    f"Structure enrichment failed: {e!s}",
-                    extra={
-                        "context": {
-                            "stage": "auto_enrichments",
-                            "error": str(e),
-                            "tags": tags,
-                        }
-                    },
-                )
-                self.logger_manager.log_metric(
-                    "structure_enrichment_errors", 1, MetricType.COUNTER, tags=tags
-                )
-
-        return enrich
-
-    @staticmethod
-    def _text_entropy(text: str) -> float:
-        """Calculate Shannon entropy of text.
-
-        Args:
-            text: Input text to analyze.
-
-        Returns:
-            Entropy value.
-        """
-        if not text:
-            return 0.0
-        counts = Counter(text)
-        total = len(text)
-        return round(
-            -sum((n / total) * math.log2(n / total) for n in counts.values()), 4
+        return build_auto_enrichments(
+            result,
+            logger=self.logger,
+            logger_manager=self.logger_manager,
+            agent_name="FileReaderAgent",
         )
-
-    @staticmethod
-    def _text_complexity(text: str) -> float:
-        """Estimate text complexity based on word length and uniqueness.
-
-        Args:
-            text: Input text to analyze.
-
-        Returns:
-            Complexity score.
-        """
-        if not text:
-            return 0.0
-        words = [w for w in text.split() if w.strip()]
-        if not words:
-            return 0.0
-        avg_word_length = sum(len(w) for w in words) / len(words)
-        unique_words = len(set(words))
-        return round(avg_word_length * (unique_words / len(words)), 2)
 
     def _generate_cache_key(self, context: dict[str, Any]) -> str:
         """Generate a cache key based on context.
@@ -743,17 +519,10 @@ class FileReaderAgent(BaseAgent):
             )
         )
         cache_key = str(hashlib.sha256(context_str.encode()).hexdigest())
-        self.logger.debug(
-            "Generated cache key",
-            extra={
-                "context": {"stage": "cache_key_generation", "cache_key": cache_key}
-            },
-        )
-        self.logger_manager.log_metric(
-            "cache_key_generated",
-            1,
-            MetricType.COUNTER,
-            tags={"stage": "cache_key_generation"},
+        emit_cache_key_metric(
+            cache_key,
+            logger=self.logger,
+            logger_manager=self.logger_manager,
         )
         return cache_key
 
@@ -809,152 +578,30 @@ class FileReaderAgent(BaseAgent):
     @classmethod
     def self_report_schema(cls) -> dict[str, Any]:
         """Return the output schema for documentation and validation."""
-        return {
-            "file_path": "str (required)",
-            "text": "str (if applicable)",
-            "warnings": "list[str]",
-            "error": "str (if error occurred)",
-            "file_info": {
-                "file_size_bytes": "int",
-                "file_type": "str",
-                "last_modified": "str",
-            },
-            "structure_preview": {
-                "sections": "list",
-                "tables": "list",
-                "images": "list",
-            },
-            "enrichments": {
-                "text_head": "str",
-                "text_tail": "str",
-                "n_chars": "int",
-                "n_lines": "int",
-                "n_words": "int",
-                "avg_word_length": "float",
-                "entropy": "float",
-                "text_complexity": "float",
-                "file_size_kb": "float",
-                "file_size_mb": "float",
-                "file_type": "str",
-                "last_modified": "str",
-                "structure_summary": {
-                    "n_sections": "int",
-                    "has_tables": "bool",
-                    "has_images": "bool",
-                    "max_section_depth": "int",
-                },
-            },
-            "file_agent_audit": {
-                "file_path": "str",
-                "timestamp": "str",
-                "agent_version": "str",
-                "agent_id": "str",
-                "cache_enabled": "bool",
-                "async_io": "bool",
-                "context_id": "str",
-                "file_type": "str",
-            },
-            "read_duration_sec": "float",
-            "attempt": "int",
-            "cache_hit": "bool",
-            "action_plan": "list[str]",
-        }
+        return build_self_report_schema()
 
     @classmethod
     def coverage_report(cls, context: dict[str, Any] | None = None) -> dict[str, Any]:
         """Describe the parts of the context this agent consumes or modifies."""
-        consumes = ["file_path"]
-        produces = [
-            "text",
-            "page_count",
-            "ocr_used",
-            "warnings",
-            "file_info",
-            "processing_profile",
-            "structure_preview",
-            "audit_trail",
-            "read_duration_sec",
-            "attempt",
-            "text_head",
-            "text_tail",
-            "n_chars",
-            "n_lines",
-            "n_words",
-            "avg_word_length",
-            "entropy",
-            "text_complexity",
-            "file_size_kb",
-            "file_size_mb",
-            "file_type",
-            "last_modified",
-            "structure_summary",
-            "file_agent_audit",
-        ]
-        return {"consumes": consumes, "modifies": [], "produces": produces}
+        return build_coverage_report()
 
     def flush_logs(self) -> None:
         """Flush all log handlers."""
-        try:
-            # LoggerManager.flush() is synchronous and returns None
-            self.logger_manager.flush()
-            self.logger.debug("Logs flushed", extra={"context": {"stage": "log_flush"}})
-            self.logger_manager.log_metric(
-                "log_flush", 1, MetricType.COUNTER, tags={"stage": "log_flush"}
-            )
-        except Exception as e:
-            self.logger.error(
-                f"Failed to flush logs: {e!s}",
-                extra={"context": {"stage": "log_flush", "error": str(e)}},
-            )
+        flush_agent_logs(logger=self.logger, logger_manager=self.logger_manager)
 
     async def get_telemetry(self) -> dict[str, dict[str, Any]]:
         """Retrieve telemetry metrics."""
-        try:
-            # LoggerManager.get_metrics() is synchronous and returns a dict
-            metrics = self.logger_manager.get_metrics()
-            self.logger.debug(
-                "Telemetry metrics retrieved",
-                extra={
-                    "context": {
-                        "stage": "telemetry",
-                        "metric_names": list(metrics.keys()),
-                    }
-                },
-            )
-            self.logger_manager.log_metric(
-                "telemetry_retrieved",
-                1,
-                MetricType.COUNTER,
-                tags={"stage": "telemetry"},
-            )
-            return metrics
-        except Exception as e:
-            self.logger.error(
-                f"Failed to retrieve telemetry: {e!s}",
-                extra={"context": {"stage": "telemetry", "error": str(e)}},
-            )
-            return {}
+        return await get_agent_telemetry(
+            logger=self.logger,
+            logger_manager=self.logger_manager,
+        )
 
     def reset_telemetry(self) -> None:
         """Reset telemetry metrics."""
-        try:
-            # LoggerManager.reset_metrics() is synchronous and returns None
-            self.logger_manager.reset_metrics()
-            self.logger.debug(
-                "Telemetry metrics reset",
-                extra={"context": {"stage": "reset_telemetry"}},
-            )
-            self.logger_manager.log_metric(
-                "metrics_reset",
-                1,
-                MetricType.COUNTER,
-                tags={"stage": "reset_telemetry"},
-            )
-        except Exception as e:
-            self.logger.error(
-                f"Failed to reset telemetry: {e!s}",
-                extra={"context": {"stage": "reset_telemetry", "error": str(e)}},
-            )
+        reset_agent_telemetry(
+            logger=self.logger,
+            logger_manager=self.logger_manager,
+        )
 
     async def shutdown(self) -> None:
         """Shutdown the agent and flush logs."""
