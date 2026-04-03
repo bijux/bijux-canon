@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-rar"
 dynamic = ["version", "dependencies"]
-description = "Compatibility package for bijux-llm-rar."
+description = "Compatibility package for bijux-canon-reason."
 readme = "overview.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -25,20 +25,20 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-rar"
-Repository = "https://github.com/bijux/bijux-llm-nexus"
-Documentation = "https://bijux.github.io/bijux-rar/"
-Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
-Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-rar/CHANGELOG.md"
+Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason"
+Repository = "https://github.com/bijux/bijux-canon"
+Documentation = "https://bijux.github.io/bijux-canon-reason/"
+Issues = "https://github.com/bijux/bijux-canon/issues"
+Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md"
 
 [tool.hatch.version]
 source = "vcs"
-tag-pattern = "^bijux-llm-rar/v(?P<version>.*)$"
-raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-rar/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+tag-pattern = "^bijux-canon-reason/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-canon-reason/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 fallback-version = "0.3.0"
 
 [tool.hatch.metadata.hooks.custom]
-canonical-name = "bijux-llm-rar"
+canonical-name = "bijux-canon-reason"
 
 [tool.hatch.build.targets.wheel]
 bypass-selection = true
