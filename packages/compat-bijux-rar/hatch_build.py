@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from hatchling.metadata.plugin.interface import MetadataHookInterface
 
 
