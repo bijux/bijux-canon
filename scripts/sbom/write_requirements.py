@@ -4,6 +4,41 @@ import argparse
 import subprocess
 import tomllib
 from pathlib import Path
+from packaging.requirements import Requirement
+
+
+def repo_root_for(pyproject_path: Path) -> Path:
+    return pyproject_path.resolve().parents[2]
+
+
+def local_package_map(pyproject_path: Path) -> dict[str, Path]:
+    packages_dir = repo_root_for(pyproject_path) / "packages"
+    package_map: dict[str, Path] = {}
+
+    for candidate in packages_dir.glob("*/pyproject.toml"):
+        project = tomllib.loads(candidate.read_text()).get("project", {})
+        name = project.get("name")
+        if isinstance(name, str):
+            package_map[name] = candidate.parent.resolve()
+
+    return package_map
+
+
+def render_local_requirement(requirement_text: str, package_map: dict[str, Path]) -> str:
+    requirement = Requirement(requirement_text)
+    package_dir = package_map.get(requirement.name)
+    if package_dir is None or requirement.url is not None:
+        return requirement_text
+
+    extras = ""
+    if requirement.extras:
+        extras = "[" + ",".join(sorted(requirement.extras)) + "]"
+
+    marker = ""
+    if requirement.marker is not None:
+        marker = f"; {requirement.marker}"
+
+    return f"{requirement.name}{extras} @ {package_dir.as_uri()}{marker}"
 
 
 def parse_args() -> argparse.Namespace:
@@ -58,16 +93,22 @@ def load_project(pyproject_path: str) -> dict:
 def write_requirements(
     pyproject_path: str, output_path: str, group: str, optional_group: str
 ) -> int:
+    pyproject = Path(pyproject_path)
     project = load_project(pyproject_path)
     dependencies = list(project.get("dependencies", []))
     optional = project.get("optional-dependencies", {})
+    package_map = local_package_map(pyproject)
 
     if group == "dev":
         dependencies.extend(optional.get(optional_group, []))
 
+    resolved_dependencies = [
+        render_local_requirement(dependency, package_map) for dependency in dependencies
+    ]
+
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
-    payload = "\n".join(dedupe(dependencies)).strip()
+    payload = "\n".join(dedupe(resolved_dependencies)).strip()
     output.write_text(f"{payload}\n" if payload else "", encoding="utf-8")
     return 0
 
