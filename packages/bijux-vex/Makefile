@@ -32,6 +32,7 @@ API_DRIFT_COMMAND = $(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/bijux-vex/openapi_d
 PUBLISH_DIST_DIR := $(PROJECT_ARTIFACTS_DIR)/release
 PUBLISH_UPLOAD_ENABLED := 0
 TEST_COVERAGE_TARGETS := $(abspath src/bijux_vex/core) $(abspath src/bijux_vex/contracts) $(abspath src/bijux_vex/domain)
+TEST_MAIN_ARGS := --maxfail=1
 
 # Modular Includes
 include $(ROOT_MAKE_DIR)/lint.mk
