@@ -259,6 +259,7 @@ _LAZY_EXPORTS = {
 }
 
 __all__ = [
+    "__version__",
     "assert_never",
     "RawDoc",
     "CleanDoc",
