@@ -1,16 +1,14 @@
-name: agentic-flows CI
+name: bijux-llm-flows CI
 
 on:
   push:
     branches: [main]
     tags: ["v*"]
     paths:
-      - ".github/workflows/agentic-flows-ci.yml"
-      - "packages/agentic-flows/**"
-      - "packages/agentic-flows-compat/**"
-      - "apis/agentic-flows/**"
-      - "configs/agentic-flows/**"
-      - "makes/agentic-flows/**"
+      - ".github/workflows/bijux-llm-flows-ci.yml"
+      - "packages/bijux-llm-flows/**"
+      - "packages/compat-agentic-flows/**"
+      - "apis/bijux-llm-flows/**"
       - "makes/lint.mk"
       - "makes/test.mk"
       - "makes/api.mk"
@@ -26,15 +24,13 @@ on:
       - "scripts/security/**"
       - "scripts/sbom/**"
       - "scripts/release/**"
-      - "scripts/agentic-flows/**"
+      - "scripts/bijux-llm-flows/**"
   pull_request:
     paths:
-      - ".github/workflows/agentic-flows-ci.yml"
-      - "packages/agentic-flows/**"
-      - "packages/agentic-flows-compat/**"
-      - "apis/agentic-flows/**"
-      - "configs/agentic-flows/**"
-      - "makes/agentic-flows/**"
+      - ".github/workflows/bijux-llm-flows-ci.yml"
+      - "packages/bijux-llm-flows/**"
+      - "packages/compat-agentic-flows/**"
+      - "apis/bijux-llm-flows/**"
       - "makes/lint.mk"
       - "makes/test.mk"
       - "makes/api.mk"
@@ -50,18 +46,18 @@ on:
       - "scripts/security/**"
       - "scripts/sbom/**"
       - "scripts/release/**"
-      - "scripts/agentic-flows/**"
+      - "scripts/bijux-llm-flows/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: agentic-flows-ci-${{ github.ref }}
+  group: bijux-llm-flows-ci-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  ARTIFACTS_DIR: artifacts/agentic-flows
+  ARTIFACTS_DIR: artifacts/bijux-llm-flows
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PYTHONUNBUFFERED: "1"
 
@@ -77,35 +73,35 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: |
-            packages/agentic-flows/pyproject.toml
+            packages/bijux-llm-flows/pyproject.toml
             tox.ini
 
       - name: Run tests
-        run: make -C packages/agentic-flows test
+        run: make -C packages/bijux-llm-flows test
 
       - name: Enforce coverage floors
         shell: bash
         run: |
           set -euo pipefail
-          if compgen -G "packages/agentic-flows/src/agentic_flows/providers/*" > /dev/null; then
+          if compgen -G "packages/bijux-llm-flows/src/agentic_flows/providers/*" > /dev/null; then
             python -m coverage report \
               --rcfile configs/coveragerc.ini \
               --data-file "${ARTIFACTS_DIR}/test/.coverage" \
-              --include "packages/agentic-flows/src/agentic_flows/providers/*" \
+              --include "packages/bijux-llm-flows/src/agentic_flows/providers/*" \
               --fail-under=65
           fi
-          if [ -f "packages/agentic-flows/src/agentic_flows/interfaces/cli.py" ]; then
+          if [ -f "packages/bijux-llm-flows/src/agentic_flows/interfaces/cli.py" ]; then
             python -m coverage report \
               --rcfile configs/coveragerc.ini \
               --data-file "${ARTIFACTS_DIR}/test/.coverage" \
-              --include "packages/agentic-flows/src/agentic_flows/interfaces/cli.py" \
+              --include "packages/bijux-llm-flows/src/agentic_flows/interfaces/cli.py" \
               --fail-under=60
           fi
-          if compgen -G "packages/agentic-flows/src/agentic_flows/api/*" > /dev/null; then
+          if compgen -G "packages/bijux-llm-flows/src/agentic_flows/api/*" > /dev/null; then
             python -m coverage report \
               --rcfile configs/coveragerc.ini \
               --data-file "${ARTIFACTS_DIR}/test/.coverage" \
-              --include "packages/agentic-flows/src/agentic_flows/api/*" \
+              --include "packages/bijux-llm-flows/src/agentic_flows/api/*" \
               --fail-under=75
           fi
 
@@ -113,7 +109,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: agentic-flows-test
+          name: bijux-llm-flows-test
           path: ${{ env.ARTIFACTS_DIR }}/test
           if-no-files-found: ignore
           retention-days: 14
@@ -140,7 +136,7 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: |
-            packages/agentic-flows/pyproject.toml
+            packages/bijux-llm-flows/pyproject.toml
             tox.ini
 
       - uses: actions/setup-node@v4
@@ -155,13 +151,13 @@ jobs:
           java-version: "17"
 
       - name: Run ${{ matrix.target }}
-        run: make -C packages/agentic-flows ${{ matrix.target }}
+        run: make -C packages/bijux-llm-flows ${{ matrix.target }}
 
       - name: Upload artifacts
         if: ${{ always() && hashFiles(format('{0}/{1}/**', env.ARTIFACTS_DIR, matrix.target)) != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: agentic-flows-${{ matrix.target }}
+          name: bijux-llm-flows-${{ matrix.target }}
           path: ${{ env.ARTIFACTS_DIR }}/${{ matrix.target }}
           if-no-files-found: ignore
           retention-days: 14
@@ -178,17 +174,17 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: |
-            packages/agentic-flows/pyproject.toml
+            packages/bijux-llm-flows/pyproject.toml
             tox.ini
 
       - name: Run lint
-        run: make -C packages/agentic-flows lint
+        run: make -C packages/bijux-llm-flows lint
 
       - name: Upload lint artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: agentic-flows-lint
+          name: bijux-llm-flows-lint
           path: ${{ env.ARTIFACTS_DIR }}/lint
           if-no-files-found: ignore
           retention-days: 14

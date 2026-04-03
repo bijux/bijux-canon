@@ -1,4 +1,4 @@
-PROJECT_SLUG := agentic-flows-compat
+PROJECT_SLUG := compat-agentic-flows
 
 include ../../makes/shared/python-package.mk
 

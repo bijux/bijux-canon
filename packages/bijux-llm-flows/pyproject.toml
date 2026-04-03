@@ -10,7 +10,7 @@ build-backend = "hatchling.build"
 name = "bijux-llm-flows"
 dynamic = ["version"]
 description = "Governed execution and replay with auditable non-determinism"
-readme = { file = "README.md", content-type = "text/markdown" }
+readme = { file = "docs/index.md", content-type = "text/markdown" }
 license = { text = "MIT" }
 requires-python = ">=3.11"
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -56,7 +56,7 @@ dependencies = [
 Documentation = "https://bijux.github.io/agentic-flows/"
 Repository = "https://github.com/bijux/bijux-llm-nexus"
 Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
-Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/agentic-flows/CHANGELOG.md"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-flows/CHANGELOG.md"
 
 [project.optional-dependencies]
 api = [
@@ -105,15 +105,15 @@ agentic-flows = "agentic_flows.cli.main:main"
 
 [tool.hatch.build]
 include = [
-  "README.md",
+  "docs/index.md",
   "CHANGELOG.md",
   "src/agentic_flows/py.typed",
 ]
 
 [tool.hatch.version]
 source = "vcs"
-tag-pattern = "^(?:agentic-flows/)?v(?P<version>.*)$"
-raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'agentic-flows/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+tag-pattern = "^bijux-llm-flows/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-flows/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 fallback-version = "0.1.0"
 
 [tool.hatch.build.targets.wheel]
@@ -124,12 +124,12 @@ zip-safe = false
 "agentic_flows" = ["py.typed", "http_api/v1/schema.hash"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"../../apis/agentic-flows/v1/schema.hash" = "agentic_flows.schema.hash"
+"../../apis/bijux-llm-flows/v1/schema.hash" = "agentic_flows.schema.hash"
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"
 fragments = [
-  { path = "README.md" },
+  { path = "docs/index.md" },
   { path = "CHANGELOG.md" },
 ]
 

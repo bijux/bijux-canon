@@ -37,7 +37,7 @@ This guide is the single source of truth for local setup, workflows, API validat
 
 ```bash
 git clone https://github.com/bijux/bijux-llm-nexus.git
-cd bijux-llm-nexus/packages/agentic-flows
+cd bijux-llm-nexus/packages/bijux-llm-flows
 make PYTHON=python3.11 install
 source .venv/bin/activate
 ```
@@ -67,14 +67,14 @@ make lint test docs api
 
 | Target          | What it does                                                                 |
 | --------------- | ---------------------------------------------------------------------------- |
-| `make test`     | `pytest` + coverage (HTML in `artifacts/agentic-flows/test/htmlcov/`)                      |
+| `make test`     | `pytest` + coverage (HTML in `artifacts/bijux-llm-flows/test/htmlcov/`)                      |
 | `make lint`     | Format (ruff), lint (ruff), type-check (mypy), complexity (radon)            |
 | `make quality`  | Dead code (vulture), deps hygiene (deptry), docstrings (interrogate)          |
 | `make security` | Bandit + pip-audit                                                           |
 | `make api`      | OpenAPI lint + generator compat + Schemathesis contract tests                |
 | `make docs`     | Build MkDocs (strict)                                                        |
 | `make build`    | Build sdist + wheel                                                          |
-| `make sbom`     | CycloneDX SBOM → `artifacts/agentic-flows/sbom/`                                           |
+| `make sbom`     | CycloneDX SBOM → `artifacts/bijux-llm-flows/sbom/`                                           |
 
 **Handy helpers**
 
@@ -92,7 +92,7 @@ make docs-serve    # local docs server
 
 ## API Development
 
-**Schema:** `../../apis/agentic-flows/v1/schema.yaml`  
+**Schema:** `../../apis/bijux-llm-flows/v1/schema.yaml`  
 **Tooling:** Prance, OpenAPI Spec Validator, Redocly, OpenAPI Generator, Schemathesis
 
 **Validate locally**
@@ -131,7 +131,7 @@ make api
 
 * Run all tests: `make test`
 * Focused run: `pytest -k "<expr>" -q`
-* Coverage report: HTML in `artifacts/agentic-flows/test/htmlcov/`
+* Coverage report: HTML in `artifacts/bijux-llm-flows/test/htmlcov/`
 * **Project bar:** keep coverage thresholds green and benchmarks within the regression gate.
 
 

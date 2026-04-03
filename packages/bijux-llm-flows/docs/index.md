@@ -184,11 +184,11 @@ Artifacts: Generated in CI; see GitHub Actions for logs and reports.
 ## Project Tree
 
 ```
-../../apis/agentic-flows/  # Root-managed OpenAPI schemas
+../../apis/bijux-llm-flows/  # Root-managed OpenAPI schemas
 ../../configs/agentic-flows/  # Root-managed lint/type/security configs
 docs/           # MkDocs site
 ../../makes/agentic-flows/  # Root-managed task modules (docs, test, lint, etc.)
-../../scripts/agentic-flows/  # Root-managed helper scripts
+../../scripts/bijux-llm-flows/  # Root-managed helper scripts
 src/agentic_flows/  # Runtime + CLI implementation
 tests/          # unit / regression / e2e
 ```
@@ -204,8 +204,8 @@ tests/          # unit / regression / e2e
 * **Concepts**: [Concepts index](https://bijux.github.io/agentic-flows/concepts/) · [Determinism](https://bijux.github.io/agentic-flows/concepts/determinism/) · [Failures](https://bijux.github.io/agentic-flows/concepts/failures/)
 * **Execution**: [Failure paths](https://bijux.github.io/agentic-flows/execution/failure-paths/)
 * **Site**: https://bijux.github.io/agentic-flows/
-* **Changelog**: https://github.com/bijux/bijux-llm-nexus/blob/main/packages/agentic-flows/CHANGELOG.md
-* **Repository**: https://github.com/bijux/bijux-llm-nexus/tree/main/packages/agentic-flows
+* **Changelog**: https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-flows/CHANGELOG.md
+* **Repository**: https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-flows
 * **Issues**: https://github.com/bijux/bijux-llm-nexus/issues
 * **Security** (private reports): https://github.com/bijux/bijux-llm-nexus/security/advisories/new
 * **Artifacts**: https://bijux.github.io/agentic-flows/artifacts/

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
-PROJECT_SLUG := agentic-flows
+PROJECT_SLUG := bijux-llm-flows
 PYTHON := python3.11
 
 include ../../makes/shared/python-package.mk
@@ -25,19 +25,19 @@ QUALITY_MYPY_CONFIG := $(MONOREPO_ROOT)/configs/mypy.ini
 QUALITY_MYPY_FLAGS := --strict --follow-imports silent
 SKIP_MYPY         := 0
 QUALITY_VULTURE_MIN_CONFIDENCE := 90
-QUALITY_PYTHON_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_md_links.py $(MONOREPO_ROOT)/scripts/agentic-flows/check_docs_consistency.py $(MONOREPO_ROOT)/scripts/agentic-flows/check_no_toys_policy.py
-QUALITY_DOCS_LINK_SCRIPT := $(MONOREPO_ROOT)/scripts/agentic-flows/check_md_links.py
+QUALITY_PYTHON_CHECKS := $(MONOREPO_ROOT)/scripts/bijux-llm-flows/check_md_links.py $(MONOREPO_ROOT)/scripts/bijux-llm-flows/check_docs_consistency.py $(MONOREPO_ROOT)/scripts/bijux-llm-flows/check_no_toys_policy.py
+QUALITY_DOCS_LINK_SCRIPT := $(MONOREPO_ROOT)/scripts/bijux-llm-flows/check_md_links.py
 QUALITY_RUN_MKDOCS := 1
 SECURITY_PATHS     := src/agentic_flows
 SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
 SECURITY_BANDIT_SKIP_IDS := B311
-SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_dependency_allowlist.py
+SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/scripts/bijux-llm-flows/check_dependency_allowlist.py
 API_MODE := contract
 API_BASE_PATH := /api/v1
 API_MODULE := agentic_flows.http_api.app
 API_DYNAMIC_PORT := 1
 OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@7.14.0
-API_OPENAPI_DRIFT_CHECK := $(MONOREPO_ROOT)/scripts/agentic-flows/check_openapi_drift.py
+API_OPENAPI_DRIFT_CHECK := $(MONOREPO_ROOT)/scripts/bijux-llm-flows/check_openapi_drift.py
 SCHEMATHESIS_OPTS = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --exclude-checks=positive_data_acceptance,not_a_server_error --suppress-health-check=filter_too_much
 BUILD_CHECK_DISTS := 0
 BUILD_TEMP_CLEAN_PATHS := build dist src/*.egg-info

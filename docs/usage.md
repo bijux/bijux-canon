@@ -4,7 +4,7 @@ This repository is organized for package-focused development.
 
 ## Explore Packages
 
-- `packages/agentic-flows`
+- `packages/bijux-llm-flows`
 - `packages/bijux-llm-agent`
 - `packages/bijux-llm-rag`
 - `packages/bijux-llm-rar`

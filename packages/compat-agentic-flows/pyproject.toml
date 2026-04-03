@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "agentic-flows"
 dynamic = ["version", "dependencies"]
 description = "Compatibility package for bijux-llm-flows."
-readme = "README.md"
+readme = "overview.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "MIT" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -31,16 +31,16 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/agentic-flows"
+Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-flows"
 Repository = "https://github.com/bijux/bijux-llm-nexus"
 Documentation = "https://bijux.github.io/agentic-flows/"
 Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
-Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/agentic-flows/CHANGELOG.md"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-flows/CHANGELOG.md"
 
 [tool.hatch.version]
 source = "vcs"
-tag-pattern = "^(?:agentic-flows/)?v(?P<version>.*)$"
-raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'agentic-flows/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+tag-pattern = "^bijux-llm-flows/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-flows/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 fallback-version = "0.1.0"
 
 [tool.hatch.metadata.hooks.custom]
@@ -50,4 +50,4 @@ canonical-name = "bijux-llm-flows"
 bypass-selection = true
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "hatch_build.py"]
+include = ["pyproject.toml", "overview.md", "hatch_build.py"]
