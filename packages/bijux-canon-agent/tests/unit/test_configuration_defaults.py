@@ -46,7 +46,8 @@ def test_failure_policy_default_path_uses_repo_config() -> None:
         Path(__file__).resolve().parents[4]
         / "packages"
         / "bijux-canon-agent"
-        / "failure_policy.yaml"
+        / "config"
+        / "execution_policy.yaml"
     )
     assert policy_path == expected
     assert policy_path.is_file()
@@ -57,7 +58,8 @@ def test_failure_policy_load_default_matches_repo_config() -> None:
         Path(__file__).resolve().parents[4]
         / "packages"
         / "bijux-canon-agent"
-        / "failure_policy.yaml"
+        / "config"
+        / "execution_policy.yaml"
     )
     assert FailurePolicy.load_default() == FailurePolicy.load(
         policy_path

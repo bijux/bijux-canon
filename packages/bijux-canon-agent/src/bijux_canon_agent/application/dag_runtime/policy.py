@@ -1,4 +1,4 @@
-"""Failure and retry rules parsed from `packages/bijux-canon-agent/failure_policy.yaml`."""
+"""Failure and retry rules parsed from `packages/bijux-canon-agent/config/execution_policy.yaml`."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 import yaml
 
 FAILURE_POLICY_RELATIVE_PATH = (
-    Path("packages") / "bijux-canon-agent" / "failure_policy.yaml"
+    Path("packages") / "bijux-canon-agent" / "config" / "execution_policy.yaml"
 )
 DEFAULT_TRANSIENT_CODES = ("TIMEOUT", "TRANSIENT")
 DEFAULT_FALLBACK_MODELS = ("gpt-4o-mini", "gpt-4o-mini-0", "gpt-3.5-turbo-1106")

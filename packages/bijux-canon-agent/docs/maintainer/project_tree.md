@@ -6,7 +6,7 @@ High-signal directories:
 - `tests/` — unit + invariant tests
 - `docs/` — MkDocs sources (this directory)
 - `examples/default-config.yml` — example runtime configuration for CLI runs
-- `failure_policy.yaml` — package-managed retry, fallback, scope, and abort rules
+- `config/execution_policy.yaml` — package-managed retry, fallback, scope, and abort rules
 - `../../apis/bijux-canon-agent/` — root-managed OpenAPI schema and API assets
 - `../../makes/` — shared Make targets used by CI and developers
 
