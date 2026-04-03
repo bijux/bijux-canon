@@ -3,7 +3,7 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/bijux-canon-index.svg)](https://pypi.org/project/bijux-canon-index/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Typing: typed (PEP 561)](https://img.shields.io/badge/typing-typed-4F8CC9.svg)](https://peps.python.org/pep-0561/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-brightgreen)](https://bijux.github.io/bijux-canon-index/)
 
 bijux-canon-index executes vector workloads under **contracts**. Deterministic runs are replayable; non-deterministic runs are bounded, audited, and comparable.
@@ -102,4 +102,4 @@ Aggressive invariants, terminal failures, and refusal to fallback exist to keep 
 - Keep invariants terminal; ND without metadata is forbidden.
 - Run `make lint quality security test` before any PR.
 - Release process: see `docs/maintainer/release_process.md`; tags drive package versions, SBOM, and wheels.
-- Licensing: code under MIT; docs/config under CC0. See `docs/legal/licensing.md`.
+- Licensing: code under Apache License 2.0; docs/config under CC0. See `docs/legal/licensing.md`.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-FileCopyrightText: Copyright © 2025 Bijan Mousavi
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 set -euo pipefail
 
 MONOREPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

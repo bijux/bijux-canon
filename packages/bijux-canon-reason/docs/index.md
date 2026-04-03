@@ -142,4 +142,4 @@ Code and docs are tested for drift.
 
 ## License
 
-MIT. See [LICENSE](https://github.com/bijux/bijux-canon/blob/main/LICENSE).
+Apache License 2.0. See [LICENSE](https://github.com/bijux/bijux-canon/blob/main/LICENSE).

@@ -86,6 +86,6 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../../CODE_OF_CONDUCT.md` — repository-wide community standards.
 - `docs/contributing.md` — package setup/workflow/PR guide.
 - `../../SECURITY.md` — repository-wide vulnerability reporting.
-- `../../LICENSE` — repository-wide MIT license text.
+- `../../LICENSE` — repository-wide Apache 2.0 license text.
 
 [Back to top](#project-tree--guide)

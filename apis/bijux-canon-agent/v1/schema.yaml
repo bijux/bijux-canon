@@ -4,8 +4,8 @@ info:
   version: v1
   description: Execution-only, deterministic, stateless API for running the canonical pipeline.
   license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
   - url: /
 security: []

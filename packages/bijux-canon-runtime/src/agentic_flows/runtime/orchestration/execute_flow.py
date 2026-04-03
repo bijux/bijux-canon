@@ -1,5 +1,5 @@
 # INTERNAL — NOT A PUBLIC EXTENSION POINT
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 # INTERNAL CORE — CHANGES REQUIRE REPLAY REVIEW
 

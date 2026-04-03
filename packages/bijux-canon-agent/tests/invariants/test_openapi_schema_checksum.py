@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Bijan Mousavi
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 """Invariant: OpenAPI schema checksum must stay in sync with committed checksum."""
 
 from __future__ import annotations

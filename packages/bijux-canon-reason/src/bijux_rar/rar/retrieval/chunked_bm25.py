@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 """
 Persisted chunk-level BM25 index with provenance fingerprints.
 
 SPDX-FileCopyrightText: © 2025 Bijan Mousavi
-SPDX-License-Identifier: MIT
+SPDX-License-Identifier: Apache-2.0
 """
 
 from __future__ import annotations

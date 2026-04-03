@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Bijan Mousavi
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 """Smoke test verifying CLI and HTTP outputs stay in sync."""
 
 from __future__ import annotations

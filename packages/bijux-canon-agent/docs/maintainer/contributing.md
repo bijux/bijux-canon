@@ -21,7 +21,7 @@ Keep the process boring and predictable.
 ## Commit/tag hygiene
 - Versions are derived from git tags via `hatch-vcs`; never hard-code.
 - Breaking changes require explicit ABI/public API version bumps and doc updates.
-- Licensing: repository content is MIT; see `LICENSE`.
+- Licensing: repository content is Apache License 2.0; see `LICENSE`.
 
 ## Questions
 File an issue or start a discussion on GitHub. Be explicit about contracts and invariants you’re touching.

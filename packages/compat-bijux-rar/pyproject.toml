@@ -8,11 +8,11 @@ dynamic = ["version", "dependencies"]
 description = "Compatibility package for bijux-canon-reason."
 readme = "overview.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: Apache Software License",
   "Intended Audience :: Developers",
   "Natural Language :: English",
   "Programming Language :: Python :: 3 :: Only",

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Bijux RAG Core 3: optional dataframe-style processing helpers (end-of-Bijux RAG).

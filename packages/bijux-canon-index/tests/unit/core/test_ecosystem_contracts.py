@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 from __future__ import annotations
 from bijux_vex.core.ecosystem_contracts import VEX_ECOSYSTEM_CONTRACT

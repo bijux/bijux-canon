@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Bijux RAG core ADTs (products + tagged sums) and stable JSON helpers (end-of-Bijux RAG)."""

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Bijux RAG Core 1: stdlib-first RAG composition examples (end-of-Bijux RAG).

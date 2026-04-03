@@ -3,7 +3,7 @@ info:
   title: bijux-canon-runtime API schemas
   version: v1
   license:
-    name: MIT
+    name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
   - url: /

@@ -29,7 +29,7 @@ All quality gates—enforced via Tox and Make—remain green: comprehensive test
 - **Resilience Features**: Policy-driven retries (with exponential backoff and jitter), timeouts, transactions, and fakes for testing (clocks, sleepers).
 - **Interfaces**: CLI for batch processing, HTTP API via FastAPI for serving, and Python API for custom pipelines.
 - **Dependencies**: Minimal runtime (Pydantic, NumPy, FastAPI, Uvicorn); dev extras for testing (Pytest, Hypothesis) and docs (MkDocs).
-- **Version & Compatibility**: v0.1.0; Python 3.11–3.13; MIT-licensed.
+- **Version & Compatibility**: v0.1.0; Python 3.11–3.13; Apache-2.0-licensed.
 - **Quality Metrics**: 100% coverage; strict typing; security-scanned.
 
 [↑ Back to Top](#bijux-canon-ingest)
@@ -228,7 +228,7 @@ Follow the package guide in [docs/contributing.md](docs/contributing.md).
 
 ## License
 
-MIT License—see [LICENSE](https://github.com/bijux/bijux-canon/blob/main/LICENSE).
+Apache License 2.0. See [LICENSE](https://github.com/bijux/bijux-canon/blob/main/LICENSE).
 
 [↑ Back to Top](#bijux-canon-ingest)
 

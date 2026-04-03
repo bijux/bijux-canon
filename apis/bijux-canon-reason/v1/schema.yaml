@@ -14,8 +14,8 @@ info:
     url: https://bijux.dev/bijux-canon-reason/support
     email: bijan@bijux.io
   license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
 tags:
 - name: Items
   description: Operations related to items

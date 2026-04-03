@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Bijux RAG: interop helpers for FP across Python ecosystems (end-of-Bijux RAG).

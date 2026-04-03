@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Bijux RAG Core 2: optional `toolz` interop with stdlib fallbacks (end-of-Bijux RAG).

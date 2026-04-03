@@ -1,5 +1,5 @@
 # INTERNAL — NOT A PUBLIC EXTENSION POINT
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Module definitions for runtime/orchestration/__init__.py."""

@@ -9,7 +9,7 @@ description = "Compatibility package for bijux-canon-agent."
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 readme = "overview.md"
 requires-python = ">=3.11,<4"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 keywords = ["pipeline", "multi-agent", "file-processing", "summarization", "AI", "LLM"]
 classifiers = [
     "Programming Language :: Python :: 3.11",
@@ -17,7 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "Development Status :: 4 - Beta",

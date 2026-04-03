@@ -9,7 +9,7 @@ Legacy compatibility package: `agentic-flows`
 [![PyPI - Version](https://img.shields.io/pypi/v/bijux-canon-runtime.svg)](https://pypi.org/project/bijux-canon-runtime/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://pypi.org/project/bijux-canon-runtime/)
 [![Typing: typed (PEP 561)](https://img.shields.io/badge/typing-typed-4F8CC9.svg)](https://peps.python.org/pep-0561/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-brightgreen)](https://bijux.github.io/bijux-canon-runtime/)
 
 > **At a glance:** deterministic execution • invariant enforcement • replayable traces • CLI surface • API schema only • structured telemetry  
@@ -226,5 +226,5 @@ Welcome. See **[governance/contributing.md](governance/contributing.md)** for pa
 <a id="license"></a>
 ## License
 
-MIT — see **[LICENSE](https://github.com/bijux/bijux-canon/blob/main/LICENSE)**.
+Apache License 2.0. See **[LICENSE](https://github.com/bijux/bijux-canon/blob/main/LICENSE)**.
 © 2025 Bijan Mousavi.

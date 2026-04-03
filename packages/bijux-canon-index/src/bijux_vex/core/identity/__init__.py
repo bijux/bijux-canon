@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
 from bijux_vex.core.identity.fingerprints import corpus_fingerprint, vectors_fingerprint

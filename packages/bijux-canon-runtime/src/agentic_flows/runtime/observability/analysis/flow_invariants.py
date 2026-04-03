@@ -1,5 +1,5 @@
 # ANALYSIS ONLY — NOT REQUIRED FOR EXECUTION OR REPLAY
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Module definitions for runtime/observability/analysis/flow_invariants.py."""

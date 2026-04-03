@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 """
 Corpus helpers for deterministic local retrieval.
 
 SPDX-FileCopyrightText: © 2025 Bijan Mousavi
-SPDX-License-Identifier: MIT
+SPDX-License-Identifier: Apache-2.0
 """
 
 from __future__ import annotations

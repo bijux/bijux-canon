@@ -1,5 +1,5 @@
 """Schema evolution rules: public contracts may only expand additively, core invariants must never change, and replay equivalence semantics are immutable once published."""
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 # INTERNAL — SUBJECT TO CHANGE WITHOUT NOTICE
 # INTERNAL API — NOT STABLE
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Module definitions for runtime/execution/live_executor.py."""

@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: MIT
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 from bijux_vex.core.contracts.execution_contract import ExecutionContract
 from bijux_vex.core.types import ExecutionArtifact

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
 """Stack-safe, fully-lazy traversal of TreeDoc (end-of-Bijux RAG)."""
