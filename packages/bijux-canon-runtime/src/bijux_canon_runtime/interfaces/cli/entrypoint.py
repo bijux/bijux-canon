@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for cli/main.py."""
+"""Module definitions for cli/entrypoint.py."""
 
 from __future__ import annotations
 
