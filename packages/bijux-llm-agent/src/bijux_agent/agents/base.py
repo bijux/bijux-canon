@@ -10,9 +10,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from typing import Any, Generic, final
-
-from typing_extensions import TypeVar
+from typing import Any, Generic, TypeVar, final
 
 from bijux_agent.agents.kernel.execution_kernel import AgentExecutionKernel
 from bijux_agent.agents.kernel.lifecycle import LifecyclePhase

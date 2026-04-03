@@ -148,6 +148,7 @@ clean-root-artifacts:
 	  "$(CURDIR)/.mypy_cache" \
 	  "$(CURDIR)/.coverage" \
 	  "$(CURDIR)/.coverage."* \
+	  "$(CURDIR)/.benchmarks" \
 	  "$(CURDIR)/htmlcov" \
 	  "$(CURDIR)/configs/.pytest_cache" \
 	  "$(CURDIR)/configs/.ruff_cache" \
