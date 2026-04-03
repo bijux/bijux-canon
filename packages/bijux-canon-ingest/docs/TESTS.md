@@ -4,5 +4,6 @@
 - `tests/unit/` for local module behavior
 - `tests/e2e/` for package-facing flows
 - `tests/eval/` for pinned corpus and retrieval assets
+- `tests/invariants/` for package layout and repository hygiene rules
 
 Changes to transforms, retrieval behavior, or public boundaries should land with focused tests in the matching layer.
