@@ -40,5 +40,7 @@ tox -av
 - [Tests](tests.md)
 - [Tooling](tooling.md)
 - [Governance](governance.md)
+- [Docs Ownership](docs-ownership.md)
+- [Package Docs](packages/index.md)
 - [Repository History](repository-history.md)
 - [Project Tree](project-tree.md)
