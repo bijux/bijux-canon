@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_reason.core.rar_types import Plan, PlanNode, StepSpec
+from bijux_canon_reason.core.types import Plan, PlanNode, StepSpec
 from bijux_canon_reason.execution.executor import _topo
 
 

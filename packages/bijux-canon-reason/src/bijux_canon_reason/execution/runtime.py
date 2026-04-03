@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from bijux_canon_reason.core.rar_types import RuntimeDescriptor, ToolDescriptor, ToolResult
+from bijux_canon_reason.core.types import RuntimeDescriptor, ToolDescriptor, ToolResult
 from bijux_canon_reason.execution.tools import (
     BM25Retriever,
     FakeTool,

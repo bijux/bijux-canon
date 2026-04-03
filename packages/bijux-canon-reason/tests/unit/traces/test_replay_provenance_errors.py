@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from bijux_canon_reason.core.rar_types import Trace
+from bijux_canon_reason.core.types import Trace
 from bijux_canon_reason.traces.replay import replay_from_artifacts
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import write_trace_jsonl
 

@@ -13,7 +13,7 @@ from bijux_canon_reason.core.invariants import (
     validate_trace,
     validate_verification_report,
 )
-from bijux_canon_reason.core.rar_types import (
+from bijux_canon_reason.core.types import (
     Claim,
     ClaimStatus,
     ClaimType,

@@ -9,7 +9,7 @@ from pathlib import Path
 import re
 
 from bijux_canon_reason.core.invariants import validate_plan, validate_trace
-from bijux_canon_reason.core.rar_types import (
+from bijux_canon_reason.core.types import (
     ClaimType,
     JsonValue,
     Plan,

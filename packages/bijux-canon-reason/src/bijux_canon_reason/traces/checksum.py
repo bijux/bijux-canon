@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.fingerprints import canonical_dumps, fingerprint_bytes
-from bijux_canon_reason.core.rar_types import Plan, RuntimeDescriptor, Trace, TraceEventKind
+from bijux_canon_reason.core.types import Plan, RuntimeDescriptor, Trace, TraceEventKind
 
 
 def _evidence_order(trace: Trace) -> list[str]:

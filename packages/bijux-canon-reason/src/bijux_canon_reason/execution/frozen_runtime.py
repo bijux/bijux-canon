@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from bijux_canon_reason.core.rar_types import (
+from bijux_canon_reason.core.types import (
     RuntimeDescriptor,
     ToolCall,
     ToolDescriptor,

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from bijux_canon_reason.core.rar_types import ProblemSpec
+from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.application.runs import RunArtifacts, RunBuilder, RunInputs
 from bijux_canon_reason.verification.types import Severity
 

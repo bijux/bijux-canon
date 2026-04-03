@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from bijux_canon_reason.core.rar_types import (
+from bijux_canon_reason.core.types import (
     Plan,
     ProblemSpec,
     RuntimeDescriptor,

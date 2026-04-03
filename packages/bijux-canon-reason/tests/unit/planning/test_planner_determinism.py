@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.core.rar_types import ProblemSpec
+from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.planning.planner import plan_problem
 
 

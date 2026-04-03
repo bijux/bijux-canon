@@ -9,7 +9,7 @@ import pytest
 from bijux_canon_reason.interfaces.serialization.json_canonical import canonical_json_line
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl, write_trace_jsonl
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
-from bijux_canon_reason.core.rar_types import (
+from bijux_canon_reason.core.types import (
     Claim,
     ClaimEmittedEvent,
     ClaimStatus,

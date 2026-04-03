@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from bijux_canon_reason.core.rar_types import EvidenceRef
+from bijux_canon_reason.core.types import EvidenceRef
 
 
 @pytest.mark.parametrize(

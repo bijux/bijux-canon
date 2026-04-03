@@ -9,7 +9,7 @@ from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
     read_trace_jsonl,
 )
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
-from bijux_canon_reason.core.rar_types import ProblemSpec
+from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.application.runs import RunBuilder, RunInputs
 
 

@@ -12,7 +12,7 @@ import typer.main
 
 from bijux_canon_reason import __version__
 from bijux_canon_reason.interfaces.cli.main import app
-from bijux_canon_reason.core.rar_types import Claim, EvidenceRef, ProblemSpec, SupportRef
+from bijux_canon_reason.core.types import Claim, EvidenceRef, ProblemSpec, SupportRef
 
 
 def test_version_matches_pyproject() -> None:

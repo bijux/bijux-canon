@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.core.rar_types import RuntimeDescriptor, ToolCall, ToolDescriptor, ToolResult
+from bijux_canon_reason.core.types import RuntimeDescriptor, ToolCall, ToolDescriptor, ToolResult
 from bijux_canon_reason.execution.frozen_runtime import FrozenRuntime, RecordedCall
 
 

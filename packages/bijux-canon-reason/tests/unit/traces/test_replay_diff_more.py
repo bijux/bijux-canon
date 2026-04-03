@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.core.rar_types import Trace
+from bijux_canon_reason.core.types import Trace
 from bijux_canon_reason.traces.replay import diff_traces
 
 
@@ -15,7 +15,7 @@ def test_diff_traces_identical_short_circuit() -> None:
 
 
 def test_diff_traces_reports_length_mismatch() -> None:
-    from bijux_canon_reason.core.rar_types import StepStartedEvent, TraceEventKind
+    from bijux_canon_reason.core.types import StepStartedEvent, TraceEventKind
 
     ev_a = StepStartedEvent(
         idx=0, kind=TraceEventKind.step_started, step_id="step-A"

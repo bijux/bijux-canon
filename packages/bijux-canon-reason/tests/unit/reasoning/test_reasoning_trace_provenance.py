@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import hashlib
 
-from bijux_canon_reason.core.rar_types import (
+from bijux_canon_reason.core.types import (
     Claim,
     ClaimEmittedEvent,
     ClaimStatus,

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Protocol, cast
 
 from bijux_canon_reason.core.fingerprints import canonical_dumps, stable_id
-from bijux_canon_reason.core.rar_types import JsonValue, ToolCall, ToolDescriptor, ToolResult
+from bijux_canon_reason.core.types import JsonValue, ToolCall, ToolDescriptor, ToolResult
 from bijux_canon_reason.retrieval.chunked_bm25 import SCHEMA_VERSION as BM25_SCHEMA_VERSION
 from bijux_canon_reason.retrieval.chunked_bm25 import build_or_load_index
 from bijux_canon_reason.retrieval.corpus import load_corpus_jsonl

@@ -15,7 +15,7 @@ from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
     write_trace_jsonl,
 )
 from bijux_canon_reason.core.fingerprints import fingerprint_obj, stable_id
-from bijux_canon_reason.core.rar_types import (
+from bijux_canon_reason.core.types import (
     Plan,
     ProblemSpec,
     RuntimeDescriptor,

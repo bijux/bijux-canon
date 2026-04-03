@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.invariants import validate_trace
-from bijux_canon_reason.core.rar_types import Trace
+from bijux_canon_reason.core.types import Trace
 
 
 def test_validate_trace_rejects_unknown_schema_version() -> None:

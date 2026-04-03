@@ -6,7 +6,7 @@ import hashlib
 from pathlib import Path
 
 
-from bijux_canon_reason.core.rar_types import (
+from bijux_canon_reason.core.types import (
     Claim,
     ClaimEmittedEvent,
     ClaimStatus,

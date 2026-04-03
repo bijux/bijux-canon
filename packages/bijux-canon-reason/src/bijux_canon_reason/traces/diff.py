@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.core.rar_types import Trace
+from bijux_canon_reason.core.types import Trace
 
 
 def diff_traces(a: Trace, b: Trace) -> dict[str, object]:
