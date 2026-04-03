@@ -57,7 +57,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     run_parser.add_argument(
         "--config",
         type=str,
-        default="examples/default-config.yml",
+        default="examples/reference-config.yml",
         help="Path to the configuration file (YAML).",
     )
     run_parser.add_argument(

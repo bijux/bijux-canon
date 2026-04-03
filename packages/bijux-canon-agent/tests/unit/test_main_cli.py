@@ -17,7 +17,7 @@ def test_parse_args_run_command(monkeypatch) -> None:
     assert args.command == "run"
     assert args.input_path == "dummy.txt"
     assert args.results_dir == "results-dir"
-    assert args.config == "examples/default-config.yml"
+    assert args.config == "examples/reference-config.yml"
     assert args.dry_run is False
     assert args.replay is None
 

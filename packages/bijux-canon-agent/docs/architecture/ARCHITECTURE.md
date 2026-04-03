@@ -50,7 +50,7 @@ This document is a module-level map of the codebase. It describes *where respons
 
 - Defaults and minimal example configs
 - Environment key loading/validation (`src/bijux_canon_agent/config/env.py`)
-- Example runtime YAML (`examples/default-config.yml`)
+- Example runtime YAML (`examples/reference-config.yml`)
 
 ### Examples (`src/bijux_canon_agent/reference_pipelines/`)
 

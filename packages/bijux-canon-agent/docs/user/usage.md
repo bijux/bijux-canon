@@ -44,19 +44,19 @@ Put them in a `.env` file at the repository root, or export them in your shell.
 Process a single file:
 
 ```bash
-python -m bijux_canon_agent run path/to/file.txt --out artifacts/bijux-canon-agent/run1 --config examples/default-config.yml
+python -m bijux_canon_agent run path/to/file.txt --out artifacts/bijux-canon-agent/run1 --config examples/reference-config.yml
 ```
 
 Process a directory (non-recursive; files directly under the directory):
 
 ```bash
-python -m bijux_canon_agent run path/to/dir --out artifacts/bijux-canon-agent/run1 --config examples/default-config.yml
+python -m bijux_canon_agent run path/to/dir --out artifacts/bijux-canon-agent/run1 --config examples/reference-config.yml
 ```
 
 Dry-run (no model calls; validates discovery + wiring only):
 
 ```bash
-python -m bijux_canon_agent run path/to/file.txt --out artifacts/bijux-canon-agent/run1 --config examples/default-config.yml --dry-run
+python -m bijux_canon_agent run path/to/file.txt --out artifacts/bijux-canon-agent/run1 --config examples/reference-config.yml --dry-run
 ```
 
 ## Outputs
@@ -100,4 +100,4 @@ For the normative contract (what is guaranteed vs best-effort), see `docs/spec/r
 
 - **“Missing API keys …”**: the current CLI is intentionally strict. Configure all keys or change `bijux_canon_agent.config.env.validate_keys()` to validate only the selected backend.
 - **Empty input directory**: the CLI only processes files directly under the directory; it does not recurse.
-- **Where are the logs?**: check `logging.log_dir` in the YAML config (default in `examples/default-config.yml`).
+- **Where are the logs?**: check `logging.log_dir` in the YAML config (default in `examples/reference-config.yml`).

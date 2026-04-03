@@ -5,7 +5,7 @@ High-signal directories:
 - `src/bijux_canon_agent/` — library and runtime code
 - `tests/` — unit + invariant tests
 - `docs/` — MkDocs sources (this directory)
-- `examples/default-config.yml` — example runtime configuration for CLI runs
+- `examples/reference-config.yml` — example runtime configuration for CLI runs
 - `config/execution_policy.yaml` — package-managed retry, fallback, scope, and abort rules
 - `../../apis/bijux-canon-agent/` — root-managed OpenAPI schema and API assets
 - `../../makes/` — shared Make targets used by CI and developers
