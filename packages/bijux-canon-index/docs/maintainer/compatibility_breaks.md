@@ -3,7 +3,7 @@
 Changes that REQUIRE a major version bump:
 
 - Changing deterministic execution semantics or ABI.
-- Removing or renaming public API modules: `bijux_canon_index.core.types`, `bijux_canon_index.core.contracts.execution_contract`, `bijux_canon_index.core.runtime.vector_execution`, `bijux_canon_index.contracts.resources`, `bijux_canon_index.application.execution_engine`, `bijux_canon_index.api.v1`.
+- Removing or renaming public API modules: `bijux_canon_index.core.types`, `bijux_canon_index.core.contracts.execution_contract`, `bijux_canon_index.core.runtime.vector_execution`, `bijux_canon_index.contracts.resources`, `bijux_canon_index.application.engine`, `bijux_canon_index.api.v1`.
 - Changing public error types or their messages for deterministic paths.
 - Changing OpenAPI v1 schema in a non-additive way.
 - Altering provenance structure such that existing artifacts cannot be replayed/validated.

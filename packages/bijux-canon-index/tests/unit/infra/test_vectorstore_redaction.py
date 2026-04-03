@@ -13,7 +13,7 @@ from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.types import ExecutionRequest
 from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.infra.adapters.vectorstore_registry import _redact_uri
-from bijux_canon_index.application.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.engine import VectorExecutionEngine
 
 
 def test_redact_uri_masks_password() -> None:

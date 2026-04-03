@@ -27,7 +27,7 @@ from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.identity.fingerprints import determinism_fingerprint
 from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
-from bijux_canon_index.application.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.engine import VectorExecutionEngine
 
 
 @dataclass(frozen=True)

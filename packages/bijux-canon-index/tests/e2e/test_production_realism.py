@@ -17,7 +17,7 @@ from bijux_canon_index.core.contracts.execution_contract import ExecutionContrac
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.plugins.example import register_embedding
-from bijux_canon_index.application.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.engine import VectorExecutionEngine
 
 pytest.importorskip("faiss")
 

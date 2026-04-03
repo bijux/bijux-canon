@@ -13,7 +13,7 @@ class SpyAuthz:
 
 
 def test_ingest_uses_authz_and_tx(monkeypatch):
-    from bijux_canon_index.application.execution_engine import VectorExecutionEngine
+    from bijux_canon_index.application.engine import VectorExecutionEngine
     from bijux_canon_index.infra.adapters.memory.backend import memory_backend
     from bijux_canon_index.boundaries.pydantic_edges.models import IngestRequest
 

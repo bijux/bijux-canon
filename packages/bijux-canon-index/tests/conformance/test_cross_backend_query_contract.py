@@ -15,7 +15,7 @@ from bijux_canon_index.boundaries.pydantic_edges.models import (
     ExecutionRequestPayload,
     IngestRequest,
 )
-from bijux_canon_index.application.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.engine import VectorExecutionEngine
 
 
 def _ingest(engine: VectorExecutionEngine) -> None:
