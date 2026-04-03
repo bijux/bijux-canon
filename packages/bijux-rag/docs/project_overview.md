@@ -74,7 +74,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../mkdocs.yml` — package-owned MkDocs setup (theme, plugins, nav, extensions).
 - `../../configs/coveragerc.ini` — repo-wide coverage configuration.
 - `../../configs/mypy.ini` — repo-wide mypy configuration.
-- `../../configs/bijux-rag/package.json` — repo-owned Node manifest for OpenAPI tooling.
+- `../../configs/package.json` — repo-wide Node manifest for OpenAPI tooling.
 - `../../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
 - `../../configs/ruff.toml` — repo-wide Ruff configuration.
 - `Makefile` + `../../makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make all`).
