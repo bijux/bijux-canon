@@ -5,14 +5,14 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-canon-agent"
 dynamic = ["version"]
-description = "bijux-canon-agent: a composable, multi-agentic pipeline for advanced file processing and summarization."
+description = "bijux-canon-agent: a deterministic, auditable agent pipeline for document processing and replayable traces."
 authors = [
     { name = "Bijan Mousavi", email = "bijan@bijux.io" }
 ]
 readme = "docs/index.md"
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
-keywords = ["pipeline", "multi-agent", "file-processing", "summarization", "AI", "LLM"]
+keywords = ["pipeline", "agent-runtime", "document-processing", "audit-trace", "replay", "llm"]
 classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -123,7 +123,7 @@ profiling = [
     "psutil>=6.0.0,<7.0.0"
 ]
 
-filereaders = [
+document_readers = [
     "pandas>=2.0.3,<3.0",
     "PyPDF2>=3.0.1,<4.0",
     "pdfminer.six>=20221105,<20240000",
@@ -185,7 +185,7 @@ exclude = [
     "tests",
     "src/bijux_canon_agent/agents/critique.py",
     "src/bijux_canon_agent/agents/summarizer.py",
-    "src/bijux_canon_agent/filereaders/universal_file_reader.py",
+    "src/bijux_canon_agent/agents/file_reader/capabilities/universal_file_reader_core.py",
 ]
 
 [tool.black]
