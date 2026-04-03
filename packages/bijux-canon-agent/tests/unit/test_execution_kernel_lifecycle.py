@@ -6,11 +6,11 @@ from typing import Any
 
 import pytest
 
-from bijux_agent.agents.base import BaseAgent
-from bijux_agent.agents.kernel.lifecycle import LifecyclePhase
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.enums import FailureMode
-from bijux_agent.models.contract import AgentOutputSchema
+from bijux_canon_agent.agents.base import BaseAgent
+from bijux_canon_agent.agents.kernel.lifecycle import LifecyclePhase
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.enums import FailureMode
+from bijux_canon_agent.models.contract import AgentOutputSchema
 
 
 class _LifecycleProbeAgent(BaseAgent[dict[str, Any], AgentOutputSchema]):

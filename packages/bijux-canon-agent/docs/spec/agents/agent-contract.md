@@ -35,4 +35,4 @@ Agent outputs must satisfy `AgentOutputSchema`:
 
 This strictness is deliberate: it keeps downstream decisions stable even as prompts or models evolve.
 
-(Implementation reference: `src/bijux_agent/models/contract.py`.)
+(Implementation reference: `src/bijux_canon_agent/models/contract.py`.)

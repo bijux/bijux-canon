@@ -9,7 +9,7 @@ FORBIDDEN_METHODS = {"run", "revise", "fail"}
 
 
 def _iter_agent_files(root: Path) -> list[Path]:
-    agents_root = root / "src" / "bijux_agent" / "agents"
+    agents_root = root / "src" / "bijux_canon_agent" / "agents"
     excluded = {"base.py", "execution_kernel.py"}
     return [
         path

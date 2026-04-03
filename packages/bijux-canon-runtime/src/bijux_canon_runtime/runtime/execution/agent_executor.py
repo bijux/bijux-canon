@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-import bijux_agent
+import bijux_canon_agent
 
 from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.state_tracker import ExecutionStateTracker
@@ -37,11 +37,11 @@ class AgentExecutor:
         if self._state_tracker is None:
             self._state_tracker = ExecutionStateTracker(context.seed)
         seed = deterministic_seed(step.step_index, step.inputs_fingerprint)
-        if not hasattr(bijux_agent, "run"):
-            raise RuntimeError("bijux_agent.run is required for agent execution")
+        if not hasattr(bijux_canon_agent, "run"):
+            raise RuntimeError("bijux_canon_agent.run is required for agent execution")
 
         evidence = list(context.evidence_for_step(step.step_index))
-        outputs = bijux_agent.run(
+        outputs = bijux_canon_agent.run(
             agent_id=step.agent_invocation.agent_id,
             seed=seed,
             inputs_fingerprint=step.inputs_fingerprint,

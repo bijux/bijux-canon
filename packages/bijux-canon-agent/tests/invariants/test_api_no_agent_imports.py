@@ -5,9 +5,9 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-FORBIDDEN_PREFIXES = ("bijux_agent.agents",)
+FORBIDDEN_PREFIXES = ("bijux_canon_agent.agents",)
 FORBIDDEN_MODULES = {
-    "bijux_agent.agents.kernel.execution_kernel",
+    "bijux_canon_agent.agents.kernel.execution_kernel",
 }
 FORBIDDEN_NAMES = {"AgentExecutionKernel"}
 
@@ -17,7 +17,7 @@ def _matches_forbidden(module: str) -> bool:
 
 
 def test_api_has_no_agent_imports() -> None:
-    api_root = Path(__file__).resolve().parents[2] / "src" / "bijux_agent" / "api"
+    api_root = Path(__file__).resolve().parents[2] / "src" / "bijux_canon_agent" / "api"
     violations: list[str] = []
     for path in api_root.rglob("*.py"):
         source = path.read_text(encoding="utf-8")

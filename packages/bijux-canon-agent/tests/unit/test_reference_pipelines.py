@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 
-from bijux_agent.reference import document_review, minimal
+from bijux_canon_agent.reference import document_review, minimal
 
 
 def test_reference_exports_are_coroutines() -> None:

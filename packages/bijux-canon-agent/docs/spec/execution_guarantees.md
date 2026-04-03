@@ -4,7 +4,7 @@ This document describes what a caller can rely on after invoking a run.
 
 ## CLI guarantees (normal run)
 
-For `python -m bijux_agent.main run …` without `--dry-run`:
+For `python -m bijux_canon_agent.main run …` without `--dry-run`:
 
 - The CLI MUST create a run directory at `--out`.
 - The CLI MUST write `result/final_result.json`.

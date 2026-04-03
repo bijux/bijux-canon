@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_agent.models.contract import AgentOutputSchema
-from bijux_agent.pipeline.results.outcome import PipelineResult
+from bijux_canon_agent.models.contract import AgentOutputSchema
+from bijux_canon_agent.pipeline.results.outcome import PipelineResult
 
 
 def test_agent_output_schema_is_final() -> None:

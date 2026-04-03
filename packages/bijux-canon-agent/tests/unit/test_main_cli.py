@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from types import SimpleNamespace
 
-from bijux_agent.main import load_config, parse_args
+from bijux_canon_agent.main import load_config, parse_args
 
 
 def test_parse_args_run_command(monkeypatch) -> None:

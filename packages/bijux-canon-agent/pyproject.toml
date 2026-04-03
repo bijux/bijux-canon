@@ -133,8 +133,8 @@ filereaders = [
 ]
 
 [project.scripts]
-bijux-canon-agent = "bijux_agent.main:cli"
-bijux-agent = "bijux_agent.main:cli"
+bijux-canon-agent = "bijux_canon_agent.main:cli"
+bijux-agent = "bijux_canon_agent.main:cli"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -146,7 +146,7 @@ raw-options = { git_describe_command = "git describe --dirty --tags --long --mat
 fallback-version = "0.3.0"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/bijux_agent"]
+packages = ["src/bijux_canon_agent"]
 
 [tool.mypy-core]
 config-file = "../../configs/mypy.ini"
@@ -156,11 +156,11 @@ config-file = "../../configs/mypy.ini"
 python_files = ["test_*.py"]
 
 [tool.coverage.run]
-source = ["bijux_agent"]
+source = ["bijux_canon_agent"]
 omit = [
-    "src/bijux_agent/__main__.py",
-    "src/bijux_agent/__all__.py",
-    "src/bijux_agent/schema/_pydantic_typing.py",
+    "src/bijux_canon_agent/__main__.py",
+    "src/bijux_canon_agent/__all__.py",
+    "src/bijux_canon_agent/schema/_pydantic_typing.py",
     "*/__all__.py",
     "*/_pydantic_typing.py",
     "tests/*"
@@ -185,9 +185,9 @@ ignore_semiprivate = true
 ignore_nested_functions = true
 exclude = [
     "tests",
-    "src/bijux_agent/agents/critique.py",
-    "src/bijux_agent/agents/summarizer.py",
-    "src/bijux_agent/filereaders/universal_file_reader.py",
+    "src/bijux_canon_agent/agents/critique.py",
+    "src/bijux_canon_agent/agents/summarizer.py",
+    "src/bijux_canon_agent/filereaders/universal_file_reader.py",
 ]
 
 [tool.black]

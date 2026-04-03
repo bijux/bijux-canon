@@ -4,18 +4,18 @@ from datetime import UTC, datetime, timedelta
 import hashlib
 import json
 
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.enums import AgentType, DecisionOutcome
-from bijux_agent.pipeline.control.phases import PipelinePhase
-from bijux_agent.pipeline.convergence.monitor import (
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.enums import AgentType, DecisionOutcome
+from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceMonitor,
     default_convergence_config,
 )
-from bijux_agent.pipeline.definition import standard_pipeline_definition
-from bijux_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_agent.pipeline.results.decision import DecisionArtifact
-from bijux_agent.tracing.dry_run import generate_dry_run_trace
-from bijux_agent.tracing.trace import TRACE_SCHEMA_VERSION
+from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
+from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
+from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
+from bijux_canon_agent.tracing.dry_run import generate_dry_run_trace
+from bijux_canon_agent.tracing.trace import TRACE_SCHEMA_VERSION
 
 
 def test_dry_run_trace_generator_snapshot() -> None:

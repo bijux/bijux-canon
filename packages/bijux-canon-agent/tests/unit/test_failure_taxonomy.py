@@ -4,8 +4,8 @@ from typing import cast
 
 import pytest
 
-from bijux_agent.pipeline.control.phases import PipelinePhase
-from bijux_agent.pipeline.results.failure import (
+from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.results.failure import (
     FailureArtifact,
     FailureCategory,
     FailureClass,

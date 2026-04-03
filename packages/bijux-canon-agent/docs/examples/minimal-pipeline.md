@@ -14,7 +14,7 @@ EOF
 ## 2) Run the pipeline
 
 ```bash
-python -m bijux_agent.main run examples/tmp/input.txt --out artifacts/bijux-canon-agent/minimal --config examples/default-config.yml
+python -m bijux_canon_agent.main run examples/tmp/input.txt --out artifacts/bijux-canon-agent/minimal --config examples/default-config.yml
 ```
 
 If processing exactly one file and the run succeeds, the CLI prints the computed JSON result to stdout.

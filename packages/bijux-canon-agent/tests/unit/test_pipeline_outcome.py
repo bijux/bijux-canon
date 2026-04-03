@@ -15,12 +15,12 @@ from tests.utils.trace_helpers import (
     build_trace_header,
 )
 
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.pipeline.control.stop_conditions import StopReason
-from bijux_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
-from bijux_agent.tracing import RunTrace, TraceEntry
-from bijux_agent.tracing.trace import ModelMetadata
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
+from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
+from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
+from bijux_canon_agent.tracing import RunTrace, TraceEntry
+from bijux_canon_agent.tracing.trace import ModelMetadata
 
 
 def _validate_pipeline_result(data: dict[str, Any]) -> PipelineResult:

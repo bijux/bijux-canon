@@ -22,8 +22,8 @@ import asyncio
 import os
 from pathlib import Path
 
-from bijux_agent.reference.minimal import run_minimal
-from bijux_agent.tracing.dry_run import write_dry_run_trace
+from bijux_canon_agent.reference.minimal import run_minimal
+from bijux_canon_agent.tracing.dry_run import write_dry_run_trace
 
 
 async def main() -> None:

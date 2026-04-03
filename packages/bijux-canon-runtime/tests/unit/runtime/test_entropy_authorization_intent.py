@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import bijux_agent
+import bijux_canon_agent
 import pytest
 
 from bijux_canon_runtime.core.errors import NonDeterminismViolationError
@@ -141,7 +141,7 @@ def test_unauthorized_entropy_intent(
         "bijux_canon_runtime.runtime.execution.retrieval_executor.RetrievalExecutor.execute",
         _retrieval_execute,
     )
-    bijux_agent.run = lambda **_kwargs: [
+    bijux_canon_agent.run = lambda **_kwargs: [
         {
             "artifact_id": "artifact-entropy",
             "artifact_type": "agent_invocation",

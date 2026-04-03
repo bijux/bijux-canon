@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.pipeline.convergence.monitor import (
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceConfig,
     ConvergenceMonitor,
     ConvergenceReason,

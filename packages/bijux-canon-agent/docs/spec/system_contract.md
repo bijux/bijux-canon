@@ -5,7 +5,7 @@
 This contract applies to:
 
 - the canonical pipeline (`AuditableDocPipeline`)
-- the CLI driver (`python -m bijux_agent.main run …`)
+- the CLI driver (`python -m bijux_canon_agent.main run …`)
 - the API v1 handler (`POST /v1/run`)
 - produced artifacts (result + trace)
 

@@ -5,12 +5,12 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-FORBIDDEN_PREFIXES = ("bijux_agent.pipeline", "bijux_agent.orchestrator")
+FORBIDDEN_PREFIXES = ("bijux_canon_agent.pipeline", "bijux_canon_agent.orchestrator")
 FORBIDDEN_RELATIVE = ("pipeline", "orchestrator")
 
 
 def _iter_agent_files(root: Path) -> list[Path]:
-    agents_root = root / "src" / "bijux_agent" / "agents"
+    agents_root = root / "src" / "bijux_canon_agent" / "agents"
     return [path for path in agents_root.rglob("*.py") if path.is_file()]
 
 
@@ -43,10 +43,10 @@ def test_agents_no_orchestration_imports() -> None:
             elif isinstance(node, ast.ImportFrom):
                 if node.module and _matches_forbidden(node.module, node.level):
                     violations.append(f"{path}:{node.lineno} from {node.module} import")
-                elif node.module == "bijux_agent":
+                elif node.module == "bijux_canon_agent":
                     violations.extend(
                         [
-                            f"{path}:{node.lineno} from bijux_agent import {alias.name}"
+                            f"{path}:{node.lineno} from bijux_canon_agent import {alias.name}"
                             for alias in node.names
                             if alias.name in FORBIDDEN_RELATIVE
                         ]

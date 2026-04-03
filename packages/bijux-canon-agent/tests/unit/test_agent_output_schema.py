@@ -5,8 +5,8 @@ from __future__ import annotations
 from pydantic import ValidationError
 import pytest
 
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.models.contract import AgentOutputSchema
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.models.contract import AgentOutputSchema
 
 
 def test_agent_output_schema_accessors() -> None:

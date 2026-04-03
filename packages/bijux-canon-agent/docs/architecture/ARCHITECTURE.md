@@ -4,20 +4,20 @@ This document is a module-level map of the codebase. It describes *where respons
 
 ## Top-level components
 
-### CLI (`src/bijux_agent/main.py`, `src/bijux_agent/cli/`)
+### CLI (`src/bijux_canon_agent/main.py`, `src/bijux_canon_agent/cli/`)
 
 - Parses arguments (`run`, `replay`)
 - Loads config + environment
 - Invokes the canonical pipeline (`AuditableDocPipeline`)
 - Writes run artifacts (`final_result.json`, `run_trace.json`)
 
-### HTTP API (`src/bijux_agent/httpapi/`, `src/bijux_agent/api/v1/`)
+### HTTP API (`src/bijux_canon_agent/httpapi/`, `src/bijux_canon_agent/api/v1/`)
 
 - `httpapi/v1.py` exposes a small FastAPI router (when FastAPI is installed)
-- `src/bijux_agent/api/v1/*` owns request/response schemas and the execution handler
+- `src/bijux_canon_agent/api/v1/*` owns request/response schemas and the execution handler
 - The v1 handler is intentionally narrow: it runs the canonical pipeline with a minimal config baseline
 
-### Pipeline core (`src/bijux_agent/pipeline/`)
+### Pipeline core (`src/bijux_canon_agent/pipeline/`)
 
 - **Canonical pipeline**: `pipeline/canonical.py` defines `AuditableDocPipeline`
 - **Lifecycle semantics**: `pipeline/control/*` defines phases and stop reasons
@@ -25,21 +25,21 @@ This document is a module-level map of the codebase. It describes *where respons
 - **Results**: `pipeline/results/*` defines structured decision/failure artifacts
 - **Convergence**: `pipeline/convergence/*` defines convergence detection semantics
 
-### Tracing (`src/bijux_agent/tracing/`)
+### Tracing (`src/bijux_canon_agent/tracing/`)
 
 - Trace schema, validation, and upgrades
 - Field classification (deterministic vs observational)
 - Run fingerprinting (pipeline definition + config snapshot hashing)
 
-### Models (`src/bijux_agent/models/`)
+### Models (`src/bijux_canon_agent/models/`)
 
 - Adapter registry and contracts for LLM backends
 - A strict output contract (`AgentOutputSchema`) to keep downstream logic stable
 
-### Configuration (`src/bijux_agent/config/`)
+### Configuration (`src/bijux_canon_agent/config/`)
 
 - Defaults and minimal reference configs
-- Environment key loading/validation (`src/bijux_agent/config/env.py`)
+- Environment key loading/validation (`src/bijux_canon_agent/config/env.py`)
 - Example runtime YAML (`examples/default-config.yml`)
 
 ## Data flow

@@ -6,10 +6,10 @@ from typing import Any
 
 import pytest
 
-from bijux_agent.models.contract import AgentOutputSchema
-from bijux_agent.pipeline.results.decision import DecisionArtifact
-from bijux_agent.pipeline.results.failure import FailureArtifact
-from bijux_agent.pipeline.results.outcome import PipelineResult
+from bijux_canon_agent.models.contract import AgentOutputSchema
+from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
+from bijux_canon_agent.pipeline.results.failure import FailureArtifact
+from bijux_canon_agent.pipeline.results.outcome import PipelineResult
 
 
 def _assert_cannot_subclass(cls: type[Any]) -> None:

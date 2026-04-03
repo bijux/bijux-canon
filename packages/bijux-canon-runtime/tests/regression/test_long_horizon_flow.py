@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import bijux_agent
+import bijux_canon_agent
 import bijux_rag
 import bijux_canon_reason
 import bijux_canon_index
@@ -53,7 +53,7 @@ def test_long_horizon_flow_is_stable(
     dataset_descriptor,
     execution_store,
 ) -> None:
-    bijux_agent.run = lambda agent_id, **_kwargs: [
+    bijux_canon_agent.run = lambda agent_id, **_kwargs: [
         {
             "artifact_id": f"artifact-{agent_id}",
             "artifact_type": "agent_invocation",

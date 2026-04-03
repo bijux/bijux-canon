@@ -9,12 +9,12 @@ import sys
 MAX_LINES = 600
 EXCLUDED_DIRS = {"artifacts", ".venv", "htmlcov", "build", "dist", "node_modules", ".tox"}
 EXEMPT_PATHS = {
-    "src/bijux_agent/agents/critique/core.py",
-    "src/bijux_agent/agents/file_reader/agent.py",
-    "src/bijux_agent/agents/summarizer/core.py",
-    "src/bijux_agent/agents/validator/agent.py",
-    "src/bijux_agent/agents/file_reader/capabilities/universal_file_reader_core.py",
-    "src/bijux_agent/pipeline/pipeline.py",
+    "src/bijux_canon_agent/agents/critique/core.py",
+    "src/bijux_canon_agent/agents/file_reader/agent.py",
+    "src/bijux_canon_agent/agents/summarizer/core.py",
+    "src/bijux_canon_agent/agents/validator/agent.py",
+    "src/bijux_canon_agent/agents/file_reader/capabilities/universal_file_reader_core.py",
+    "src/bijux_canon_agent/pipeline/pipeline.py",
     "tests/unit/test_pipeline_flow.py",
 }
 

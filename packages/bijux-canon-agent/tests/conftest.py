@@ -30,7 +30,7 @@ EXEMPT_PATH_SEGMENTS = {
     "__pycache__",
 }
 
-from bijux_agent.utilities.logger_manager import (  # noqa: E402
+from bijux_canon_agent.utilities.logger_manager import (  # noqa: E402
     LoggerConfig,
     LoggerManager,
 )

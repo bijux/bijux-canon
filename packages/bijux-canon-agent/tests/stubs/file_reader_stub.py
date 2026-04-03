@@ -6,9 +6,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from bijux_agent.agents.file_reader import FileReaderAgent
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.utilities.logger_manager import LoggerManager
+from bijux_canon_agent.agents.file_reader import FileReaderAgent
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.utilities.logger_manager import LoggerManager
 
 
 class FileReaderStub(FileReaderAgent):

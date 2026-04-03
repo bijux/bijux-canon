@@ -14,31 +14,31 @@ from tests.utils.trace_helpers import (
     default_model_metadata,
 )
 
-from bijux_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
-from bijux_agent.enums import AgentType, DecisionOutcome
-from bijux_agent.pipeline.control.controller import PipelineController
-from bijux_agent.pipeline.control.phases import PHASE_SEQUENCE, PipelinePhase
-from bijux_agent.pipeline.control.stop_conditions import StopReason
-from bijux_agent.pipeline.convergence.monitor import (
+from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
+from bijux_canon_agent.enums import AgentType, DecisionOutcome
+from bijux_canon_agent.pipeline.control.controller import PipelineController
+from bijux_canon_agent.pipeline.control.phases import PHASE_SEQUENCE, PipelinePhase
+from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
+from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceConfig,
     ConvergenceMonitor,
     ConvergenceReason,
 )
-from bijux_agent.pipeline.definition import (
+from bijux_canon_agent.pipeline.definition import (
     PipelineDefinition,
     standard_pipeline_definition,
 )
-from bijux_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_agent.pipeline.execution.interrupt import InterruptMonitor
-from bijux_agent.pipeline.results.decision import DecisionArtifact
-from bijux_agent.pipeline.results.failure import (
+from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
+from bijux_canon_agent.pipeline.execution.interrupt import InterruptMonitor
+from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
+from bijux_canon_agent.pipeline.results.failure import (
     FailureArtifact,
     FailureCategory,
     FailureClass,
 )
-from bijux_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
-from bijux_agent.pipeline.tracing.trace_validator import TraceValidator
-from bijux_agent.tracing import (
+from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
+from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
+from bijux_canon_agent.tracing import (
     ReplayMetadata,
     RunFingerprint,
     RunTrace,
@@ -46,7 +46,7 @@ from bijux_agent.tracing import (
     TraceEntry,
     TraceRecorder,
 )
-from bijux_agent.utilities.prompt_hash import prompt_hash
+from bijux_canon_agent.utilities.prompt_hash import prompt_hash
 
 STANDARD_TRANSITIONS = [
     (PipelinePhase.PLAN, AgentType.PLANNER),

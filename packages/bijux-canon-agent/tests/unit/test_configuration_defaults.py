@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_agent.orchestrator.policy import FailurePolicy, RetryPolicy
-from bijux_agent.pipeline.convergence.monitor import (
+from bijux_canon_agent.orchestrator.policy import FailurePolicy, RetryPolicy
+from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceMonitor,
     default_convergence_config,
 )

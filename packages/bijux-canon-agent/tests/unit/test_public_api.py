@@ -5,8 +5,8 @@ from __future__ import annotations
 import importlib
 
 MODULE_SNAPSHOT = {
-    "bijux_agent": ("API_VERSION",),
-    "bijux_agent.agents": (
+    "bijux_canon_agent": ("API_VERSION",),
+    "bijux_canon_agent.agents": (
         "CritiqueAgent",
         "FileReaderAgent",
         "PlannerAgent",
@@ -16,12 +16,12 @@ MODULE_SNAPSHOT = {
         "JudgeAgent",
         "VerifierAgent",
     ),
-    "bijux_agent.pipeline": (
+    "bijux_canon_agent.pipeline": (
         "AuditableDocPipeline",
         "Pipeline",
         "PipelineDefinition",
     ),
-    "bijux_agent.reference": (
+    "bijux_canon_agent.reference": (
         "MinimalPipeline",
         "run_minimal",
         "DocumentReviewPipeline",
@@ -43,10 +43,10 @@ def test_public_api_snapshot() -> None:
     assert actual == MODULE_SNAPSHOT
 
     critical_map = {
-        "CritiqueAgent": "bijux_agent.agents",
-        "SummarizerAgent": "bijux_agent.agents",
-        "Pipeline": "bijux_agent.pipeline",
-        "PipelineDefinition": "bijux_agent.pipeline",
+        "CritiqueAgent": "bijux_canon_agent.agents",
+        "SummarizerAgent": "bijux_canon_agent.agents",
+        "Pipeline": "bijux_canon_agent.pipeline",
+        "PipelineDefinition": "bijux_canon_agent.pipeline",
     }
     for class_name, module_name in critical_map.items():
         module = importlib.import_module(module_name)

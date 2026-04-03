@@ -21,11 +21,11 @@ from _pytest.monkeypatch import MonkeyPatch
 from tests.utils.trace_helpers import default_model_metadata
 import yaml
 
-from bijux_agent.cli.helpers import build_trace_from_result
-from bijux_agent.config.defaults import MINIMAL_REFERENCE_CONFIG
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.httpapi import create_app
-import bijux_agent.main as cli_main
+from bijux_canon_agent.cli.helpers import build_trace_from_result
+from bijux_canon_agent.config.defaults import MINIMAL_REFERENCE_CONFIG
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.httpapi import create_app
+import bijux_canon_agent.main as cli_main
 
 DEFAULT_HTTP_AGENTS = [
     "file_reader",
@@ -212,12 +212,12 @@ def test_cli_http_parity(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
         return {"is_valid": True, "issues": []}
 
     monkeypatch.setattr(
-        "bijux_agent.pipeline.results.results.PipelineResultsMixin._validate_final_result",
+        "bijux_canon_agent.pipeline.results.results.PipelineResultsMixin._validate_final_result",
         patched_validate,
     )
-    monkeypatch.setattr("bijux_agent.cli.helpers.datetime", FixedDatetime)
+    monkeypatch.setattr("bijux_canon_agent.cli.helpers.datetime", FixedDatetime)
     monkeypatch.setattr(
-        "bijux_agent.cli.helpers.uuid.uuid4",
+        "bijux_canon_agent.cli.helpers.uuid.uuid4",
         lambda: uuid.UUID(int=0),
     )
 

@@ -47,7 +47,7 @@ def _distribution_version(*names: str) -> str:
     return "0.0.0"
 
 
-bijux_agent_version = _distribution_version("bijux-canon-agent", "bijux-agent")
+bijux_canon_agent_version = _distribution_version("bijux-canon-agent", "bijux-agent")
 bijux_cli_version = _distribution_version("bijux-cli")
 
 
@@ -56,7 +56,7 @@ class ExecutionPlanner:
 
     resolver_id: ResolverID = ResolverID("agentic-flows:v0")
     _bijux_cli_version: str = bijux_cli_version
-    _bijux_agent_version: str = bijux_agent_version
+    _bijux_canon_agent_version: str = bijux_canon_agent_version
 
     def resolve(self, manifest: FlowManifest) -> ExecutionPlan:
         """Execute resolve and enforce its contract."""
@@ -89,7 +89,7 @@ class ExecutionPlanner:
                     agent_invocation=AgentInvocation(
                         spec_version="v1",
                         agent_id=AgentID(agent_id),
-                        agent_version=VersionID(self._bijux_agent_version),
+                        agent_version=VersionID(self._bijux_canon_agent_version),
                         inputs_fingerprint=inputs_fingerprint,
                         declared_outputs=(),
                         execution_mode="seeded",

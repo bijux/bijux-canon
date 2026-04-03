@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from bijux_agent.tracing.trace import TraceEntry
+from bijux_canon_agent.tracing.trace import TraceEntry
 
 EXPECTED_TRACE_SCHEMA = {
     "FIELD_CLASSIFICATIONS": "ClassVar[dict[str, TraceFieldClassification]]",

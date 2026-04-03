@@ -11,23 +11,23 @@ from tests.utils.trace_helpers import (
     build_trace_header,
 )
 
-from bijux_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
-from bijux_agent.agents.base import BaseAgent
-from bijux_agent.config.env import key_for_provider, load_environment
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.enums import AgentType, DecisionOutcome
-from bijux_agent.models.llm_adapter import AdapterConfig, OpenAIAdapter
-from bijux_agent.pipeline.control.controller import PipelineController
-from bijux_agent.pipeline.control.phases import PipelinePhase
-from bijux_agent.pipeline.convergence.monitor import (
+from bijux_canon_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
+from bijux_canon_agent.agents.base import BaseAgent
+from bijux_canon_agent.config.env import key_for_provider, load_environment
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.enums import AgentType, DecisionOutcome
+from bijux_canon_agent.models.llm_adapter import AdapterConfig, OpenAIAdapter
+from bijux_canon_agent.pipeline.control.controller import PipelineController
+from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceMonitor,
     ConvergenceReason,
     default_convergence_config,
 )
-from bijux_agent.pipeline.definition import standard_pipeline_definition
-from bijux_agent.pipeline.tracing.trace_validator import TraceValidator
-from bijux_agent.tracing import RunTrace, TraceEntry
-from bijux_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
+from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
+from bijux_canon_agent.tracing import RunTrace, TraceEntry
+from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
 
 RUN_REAL_MODEL_TESTS = os.getenv("RUN_REAL_MODEL_TESTS") == "1"
 

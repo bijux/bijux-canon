@@ -4,22 +4,22 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from typing import Any
 
-from bijux_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.pipeline.control.phases import PipelinePhase
-from bijux_agent.pipeline.definition import (
+from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.definition import (
     PipelineDefinition,
     standard_pipeline_definition,
 )
-from bijux_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_agent.tracing import (
+from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
+from bijux_canon_agent.tracing import (
     ReplayMetadata,
     RunFingerprint,
     RunTraceHeader,
     TraceEntry,
 )
-from bijux_agent.tracing.trace import ModelMetadata
-from bijux_agent.utilities.prompt_hash import prompt_hash
+from bijux_canon_agent.tracing.trace import ModelMetadata
+from bijux_canon_agent.utilities.prompt_hash import prompt_hash
 
 DEFAULT_PIPELINE_DEFINITION: PipelineDefinition = standard_pipeline_definition()
 

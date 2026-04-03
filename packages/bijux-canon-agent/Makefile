@@ -7,35 +7,35 @@ include ../../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
-LINT_DIRS            := src/bijux_agent tests
+LINT_DIRS            := src/bijux_canon_agent tests
 MYPY_CONFIG          := $(MONOREPO_ROOT)/configs/mypy.ini
 MYPY_FLAGS           := --follow-imports silent --ignore-missing-imports --strict-optional --disallow-untyped-defs --warn-return-any --check-untyped-defs
-MYPY_TARGETS         := src/bijux_agent/pipeline src/bijux_agent/tracing src/bijux_agent/models src/bijux_agent/schema src/bijux_agent/agents/base.py
+MYPY_TARGETS         := src/bijux_canon_agent/pipeline src/bijux_canon_agent/tracing src/bijux_canon_agent/models src/bijux_canon_agent/schema src/bijux_canon_agent/agents/base.py
 MYPY_CORE_CONFIG     := $(MONOREPO_ROOT)/configs/mypy.ini
 MYPY_CORE_FLAGS      := $(MYPY_FLAGS)
 MYPY_CORE_TARGETS    := $(MYPY_TARGETS)
 MYPY_EXTENDED_CONFIG := $(MONOREPO_ROOT)/configs/mypy.ini
 MYPY_EXTENDED_FLAGS  := --follow-imports silent --ignore-missing-imports --strict-optional --no-warn-unused-ignores --no-warn-return-any --no-check-untyped-defs
-MYPY_EXTENDED_TARGETS := src/bijux_agent/agents src/bijux_agent/filereaders src/bijux_agent/utilities src/bijux_agent/config src/bijux_agent/enums src/bijux_agent/main src/bijux_agent/orchestrator src/bijux_agent/retrieval tests
+MYPY_EXTENDED_TARGETS := src/bijux_canon_agent/agents src/bijux_canon_agent/filereaders src/bijux_canon_agent/utilities src/bijux_canon_agent/config src/bijux_canon_agent/enums src/bijux_canon_agent/main src/bijux_canon_agent/orchestrator src/bijux_canon_agent/retrieval tests
 ENABLE_CODESPELL     := 1
 ENABLE_RADON         := 1
 ENABLE_PYDOCSTYLE    := 0
 ENABLE_PYTYPE        := 1
 RUFF_CHECK_FIX       := 1
-INTERROGATE_PATHS    := src/bijux_agent
-QUALITY_PATHS        := src/bijux_agent
+INTERROGATE_PATHS    := src/bijux_canon_agent
+QUALITY_PATHS        := src/bijux_canon_agent
 QUALITY_PRE_TARGETS  := line_limit
 QUALITY_MYPY_CONFIG  := $(MONOREPO_ROOT)/configs/mypy.ini
 QUALITY_MYPY_FLAGS   := $(MYPY_FLAGS)
 QUALITY_MYPY_TARGETS := $(MYPY_TARGETS)
 SKIP_MYPY            := 0
 QUALITY_VULTURE_MIN_CONFIDENCE := 90
-SECURITY_PATHS       := src/bijux_agent
+SECURITY_PATHS       := src/bijux_canon_agent
 SECURITY_IGNORE_IDS  := PYSEC-2022-42969 CVE-2026-21860
 DOCS_DEV_ADDR        := 127.0.0.1:8000
 DOCS_SITE_URL        := http://127.0.0.1:8000/
 API_MODE             := contract
-API_MODULE           := bijux_agent.httpapi
+API_MODULE           := bijux_canon_agent.httpapi
 API_FACTORY          := create_app
 API_SKIP_IF_NO_SCHEMAS := 1
 API_LINT_MISSING_MESSAGE := → No API schemas found under $(API_DIR); skipping API lint
@@ -48,7 +48,7 @@ SCHEMATHESIS_OPTS    = --checks=all --max-failures=1 --report junit --report-jun
 BUILD_CHECK_DISTS    := 1
 BUILD_CLEAN_PATHS    := build dist *.egg-info
 BUILD_CLEAN_PYCACHE  := 1
-PUBLISH_VERIFY_INSTALL_CMD := python -m bijux_agent.main --help >/dev/null 2>&1
+PUBLISH_VERIFY_INSTALL_CMD := python -m bijux_canon_agent.main --help >/dev/null 2>&1
 TEST_MAIN_ARGS       := -m "not integration and not e2e"
 TEST_UNIT_DIR_ARGS   := -m "not integration and not e2e and not slow" --maxfail=1 -q
 TEST_UNIT_FALLBACK_ARGS := -k "not e2e and not integration and not functional" -m "not integration and not e2e and not slow" --maxfail=1 -q

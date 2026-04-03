@@ -10,8 +10,8 @@ from tests.utils.trace_helpers import (
     default_model_metadata,
 )
 
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.tracing import ReplayMetadata, TraceEntry, TraceRecorder
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.tracing import ReplayMetadata, TraceEntry, TraceRecorder
 
 
 def test_run_id_propagates_to_trace_entries_and_final_output(tmp_path: Path) -> None:

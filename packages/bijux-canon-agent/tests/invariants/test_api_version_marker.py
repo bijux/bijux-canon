@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from bijux_agent.api import v1
+from bijux_canon_agent.api import v1
 
 
 def test_api_version_marker_exists() -> None:

@@ -6,13 +6,13 @@ import ast
 from pathlib import Path
 
 FORBIDDEN = {
-    "execution": ("bijux_agent.pipeline.results",),
-    "results": ("bijux_agent.pipeline.execution",),
+    "execution": ("bijux_canon_agent.pipeline.results",),
+    "results": ("bijux_canon_agent.pipeline.execution",),
 }
 
 
 def _iter_package_files(root: Path, package: str) -> list[Path]:
-    base = root / "src" / "bijux_agent" / "pipeline" / package
+    base = root / "src" / "bijux_canon_agent" / "pipeline" / package
     return [path for path in base.rglob("*.py") if path.is_file()]
 
 
@@ -21,7 +21,7 @@ def _resolve_relative(module: str | None, level: int, package: str) -> str | Non
         module = ""
     if level == 0:
         return module or None
-    base_parts = ["bijux_agent", "pipeline", package]
+    base_parts = ["bijux_canon_agent", "pipeline", package]
     if level > len(base_parts):
         return None
     resolved = base_parts[:-level]

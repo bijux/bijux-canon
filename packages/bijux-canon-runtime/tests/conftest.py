@@ -67,11 +67,11 @@ def pytest_configure() -> None:
         stub = types.ModuleType("bijux_cli")
         stub.__version__ = "0.0.0"
         sys.modules["bijux_cli"] = stub
-    if "bijux_agent" not in sys.modules:
-        stub = types.ModuleType("bijux_agent")
+    if "bijux_canon_agent" not in sys.modules:
+        stub = types.ModuleType("bijux_canon_agent")
         stub.__version__ = "0.0.0"
         stub.run = lambda **_kwargs: []
-        sys.modules["bijux_agent"] = stub
+        sys.modules["bijux_canon_agent"] = stub
     if "bijux_rag" not in sys.modules:
         stub = types.ModuleType("bijux_rag")
         stub.retrieve = lambda **_kwargs: []
@@ -94,7 +94,7 @@ def _stable_bijux_versions(monkeypatch: pytest.MonkeyPatch) -> None:
         raising=False,
     )
     monkeypatch.setattr(
-        "bijux_canon_runtime.application.planner.ExecutionPlanner._bijux_agent_version",
+        "bijux_canon_runtime.application.planner.ExecutionPlanner._bijux_canon_agent_version",
         "0.0.0",
         raising=False,
     )

@@ -9,7 +9,7 @@
 ## Linking
 
 - Prefer relative links inside `docs/`.
-- When referencing code, include a path (e.g. `src/bijux_agent/tracing/trace.py`).
+- When referencing code, include a path (e.g. `src/bijux_canon_agent/tracing/trace.py`).
 
 ## Code blocks
 

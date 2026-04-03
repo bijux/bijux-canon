@@ -5,7 +5,7 @@ import os
 import pytest
 import requests
 
-from bijux_agent.config.env import KEY_REGISTRY, APIKeySpec, load_environment
+from bijux_canon_agent.config.env import KEY_REGISTRY, APIKeySpec, load_environment
 
 RUN_LIVE_KEY_TESTS = os.getenv("RUN_LIVE_KEY_TESTS") == "1"
 ENDPOINTS = {

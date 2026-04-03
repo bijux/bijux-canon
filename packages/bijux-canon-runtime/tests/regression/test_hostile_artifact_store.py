@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import bijux_agent
+import bijux_canon_agent
 import bijux_rag
 import bijux_canon_reason
 import bijux_canon_index
@@ -60,7 +60,7 @@ def test_hostile_artifact_store_triggers_verification_failure(
     dataset_descriptor,
     execution_store,
 ) -> None:
-    bijux_agent.run = lambda **_kwargs: [
+    bijux_canon_agent.run = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,

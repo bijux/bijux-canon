@@ -31,7 +31,7 @@ def _function_complexity(node: ast.AST) -> int:
 
 
 def test_api_v1_stays_small() -> None:
-    api_v1 = Path(__file__).resolve().parents[2] / "src" / "bijux_agent" / "api" / "v1"
+    api_v1 = Path(__file__).resolve().parents[2] / "src" / "bijux_canon_agent" / "api" / "v1"
     complexities: list[int] = []
     for path in api_v1.glob("*.py"):
         lines = path.read_text(encoding="utf-8").splitlines()

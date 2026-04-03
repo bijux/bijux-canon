@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.pipeline.control.stop_conditions import StopReason
-from bijux_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
-from bijux_agent.replay import (
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
+from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
+from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
+from bijux_canon_agent.replay import (
     ReplayMismatchCategory,
     classify_replay_mismatch,
 )
-from bijux_agent.tracing.trace import ModelMetadata
+from bijux_canon_agent.tracing.trace import ModelMetadata
 
 
 def _default_model_metadata() -> ModelMetadata:

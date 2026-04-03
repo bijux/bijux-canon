@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from bijux_agent.config.defaults import MINIMAL_REFERENCE_CONFIG, PIPELINE_DEFAULTS
+from bijux_canon_agent.config.defaults import MINIMAL_REFERENCE_CONFIG, PIPELINE_DEFAULTS
 
 
 def _hash_defaults() -> str:

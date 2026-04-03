@@ -6,14 +6,14 @@ from pathlib import Path
 import pytest
 from tests.utils.trace_helpers import default_model_metadata
 
-from bijux_agent.cli.helpers import load_trace
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.models.contract import AgentInputSchema, AgentOutputSchema
-from bijux_agent.orchestrator.engine import AgentNode, Orchestrator
-from bijux_agent.orchestrator.policy import FailurePolicy
-from bijux_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
+from bijux_canon_agent.cli.helpers import load_trace
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
+from bijux_canon_agent.orchestrator.engine import AgentNode, Orchestrator
+from bijux_canon_agent.orchestrator.policy import FailurePolicy
+from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
+from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
 
 
 @pytest.mark.asyncio

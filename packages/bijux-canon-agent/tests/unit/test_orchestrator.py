@@ -6,16 +6,16 @@ from typing import Any
 import pytest
 from tests.utils.trace_helpers import default_model_metadata
 
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.enums import PipelineState
-from bijux_agent.models.contract import AgentInputSchema, AgentOutputSchema
-from bijux_agent.orchestrator.engine import AgentNode, Orchestrator
-from bijux_agent.orchestrator.policy import (
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.enums import PipelineState
+from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
+from bijux_canon_agent.orchestrator.engine import AgentNode, Orchestrator
+from bijux_canon_agent.orchestrator.policy import (
     FailurePolicy,
     ScopeReductionPolicy,
 )
-from bijux_agent.orchestrator.state_machine import OrchestratorStateMachine
-from bijux_agent.pipeline.control.stop_conditions import StopReason
+from bijux_canon_agent.orchestrator.state_machine import OrchestratorStateMachine
+from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 
 
 @pytest.mark.asyncio

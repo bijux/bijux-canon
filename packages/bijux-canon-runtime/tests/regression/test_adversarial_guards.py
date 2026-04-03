@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import bijux_agent
+import bijux_canon_agent
 import bijux_rag
 import bijux_canon_reason
 import bijux_canon_index
@@ -146,7 +146,7 @@ def test_reused_artifact_id_rejected(
     dataset_descriptor,
     execution_store,
 ) -> None:
-    bijux_agent.run = lambda **_kwargs: [
+    bijux_canon_agent.run = lambda **_kwargs: [
         {
             "artifact_id": "dup-artifact",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,
@@ -286,7 +286,7 @@ def test_fake_evidence_id_rejected(
     dataset_descriptor,
     execution_store,
 ) -> None:
-    bijux_agent.run = lambda **_kwargs: [
+    bijux_canon_agent.run = lambda **_kwargs: [
         {
             "artifact_id": "agent-output",
             "artifact_type": ArtifactType.AGENT_INVOCATION.value,

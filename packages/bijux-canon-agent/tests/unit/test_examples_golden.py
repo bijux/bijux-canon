@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_agent.cli.helpers import load_trace
-from bijux_agent.pipeline.results.outcome import PipelineResult
+from bijux_canon_agent.cli.helpers import load_trace
+from bijux_canon_agent.pipeline.results.outcome import PipelineResult
 
 
 def test_examples_golden_output_matches_trace() -> None:

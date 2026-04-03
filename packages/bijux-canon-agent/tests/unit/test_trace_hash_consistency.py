@@ -13,9 +13,9 @@ import uuid
 
 from tests.utils.trace_helpers import default_model_metadata
 
-from bijux_agent.cli.helpers import build_trace_from_result
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.pipeline.termination import ExecutionTerminationReason
+from bijux_canon_agent.cli.helpers import build_trace_from_result
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
 
 
 class FixedDatetime(real_datetime):  # reuse as base for patched datetime
@@ -50,9 +50,9 @@ def _trace_hash(trace_dict: dict[str, Any]) -> str:
 def test_trace_reproducible_hash(monkeypatch, tmp_path: Path) -> None:
     """Identical pipeline outputs must yield identical trace hashes."""
 
-    monkeypatch.setattr("bijux_agent.cli.helpers.datetime", FixedDatetime)
+    monkeypatch.setattr("bijux_canon_agent.cli.helpers.datetime", FixedDatetime)
     monkeypatch.setattr(
-        "bijux_agent.cli.helpers.uuid.uuid4",
+        "bijux_canon_agent.cli.helpers.uuid.uuid4",
         lambda: uuid.UUID(int=0),
     )
 
@@ -98,14 +98,14 @@ def test_trace_runtime_version_changes_with_git(monkeypatch, tmp_path: Path) -> 
     """Trace header should track the runtime version from git."""
 
     monkeypatch.setattr(
-        "bijux_agent.cli.helpers.uuid.uuid4",
+        "bijux_canon_agent.cli.helpers.uuid.uuid4",
         lambda: uuid.UUID(int=0),
     )
-    monkeypatch.setattr("bijux_agent.cli.helpers.datetime", FixedDatetime)
+    monkeypatch.setattr("bijux_canon_agent.cli.helpers.datetime", FixedDatetime)
 
     def build_with_version(version: str) -> dict[str, Any]:
         monkeypatch.setattr(
-            "bijux_agent.utilities.version.get_runtime_version",
+            "bijux_canon_agent.utilities.version.get_runtime_version",
             lambda: version,
         )
         pipeline_result = _pipeline_result_template()

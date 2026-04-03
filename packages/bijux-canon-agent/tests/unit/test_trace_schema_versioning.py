@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-import bijux_agent.tracing.schema_versioning as schema_versioning
-from bijux_agent.tracing.schema_versioning import (
+import bijux_canon_agent.tracing.schema_versioning as schema_versioning
+from bijux_canon_agent.tracing.schema_versioning import (
     TRACE_SCHEMA_VERSION,
     TraceValidatorV2,
     assert_runtime_trace_compatibility,

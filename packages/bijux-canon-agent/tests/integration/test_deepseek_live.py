@@ -8,17 +8,17 @@ from typing import Any
 
 import pytest
 
-from bijux_agent.constants import AGENT_CONTRACT_VERSION
-from bijux_agent.models.adapter_factory import build_adapter
-from bijux_agent.models.llm_adapter import DeepSeekAdapter
-from bijux_agent.pipeline.control.phases import PipelinePhase
-from bijux_agent.tracing import (
+from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION
+from bijux_canon_agent.models.adapter_factory import build_adapter
+from bijux_canon_agent.models.llm_adapter import DeepSeekAdapter
+from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.tracing import (
     ReplayMetadata,
     ReplayStatus,
     TraceEntry,
     TraceRecorder,
 )
-from bijux_agent.utilities.prompt_hash import prompt_hash
+from bijux_canon_agent.utilities.prompt_hash import prompt_hash
 
 
 @pytest.mark.live

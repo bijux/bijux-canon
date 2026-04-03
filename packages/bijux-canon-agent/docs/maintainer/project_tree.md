@@ -2,7 +2,7 @@
 
 High-signal directories:
 
-- `src/bijux_agent/` — library and runtime code
+- `src/bijux_canon_agent/` — library and runtime code
 - `tests/` — unit + invariant tests
 - `docs/` — MkDocs sources (this directory)
 - `examples/default-config.yml` — example runtime configuration for CLI runs

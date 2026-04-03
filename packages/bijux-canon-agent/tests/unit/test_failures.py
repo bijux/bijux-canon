@@ -5,10 +5,10 @@ from typing import Any
 from pydantic import ValidationError
 import pytest
 
-from bijux_agent.agents.base import BaseAgent
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.enums import FailureMode
-from bijux_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.agents.base import BaseAgent
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.enums import FailureMode
+from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
 
 
 class MalformedAgent(BaseAgent):

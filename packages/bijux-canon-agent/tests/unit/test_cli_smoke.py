@@ -28,6 +28,6 @@ def _assert_help(command: list[str]) -> None:
 
 def test_cli_help_commands() -> None:
     exe = shutil.which("bijux-agent")
-    base_cmd = [sys.executable, "-m", "bijux_agent.main"] if exe is None else [exe]
+    base_cmd = [sys.executable, "-m", "bijux_canon_agent.main"] if exe is None else [exe]
     _assert_help([*base_cmd, "run", "--help"])
     _assert_help([*base_cmd, "replay", "--help"])

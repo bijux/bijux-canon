@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import bijux_agent
+import bijux_canon_agent
 import pytest
 
 from bijux_canon_runtime.observability.capture.observed_run import ObservedRun
@@ -19,7 +19,7 @@ pytestmark = pytest.mark.regression
 def test_observer_mode_does_not_execute(
     resolved_flow, baseline_policy, execution_store
 ) -> None:
-    bijux_agent.run = lambda **_kwargs: (_ for _ in ()).throw(
+    bijux_canon_agent.run = lambda **_kwargs: (_ for _ in ()).throw(
         AssertionError("observer mode must not execute agents")
     )
 

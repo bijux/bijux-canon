@@ -5,12 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from bijux_agent.agents.file_reader.capabilities.binary import BinaryExtractor
-from bijux_agent.agents.file_reader.capabilities.structured import (
+from bijux_canon_agent.agents.file_reader.capabilities.binary import BinaryExtractor
+from bijux_canon_agent.agents.file_reader.capabilities.structured import (
     HAS_PANDAS,
     StructuredExtractor,
 )
-from bijux_agent.agents.file_reader.capabilities.text import TextExtractor
+from bijux_canon_agent.agents.file_reader.capabilities.text import TextExtractor
 
 
 async def _audit_stub(path: str | Path) -> dict[str, str]:

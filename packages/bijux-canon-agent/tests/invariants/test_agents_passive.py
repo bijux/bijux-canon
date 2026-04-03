@@ -6,18 +6,18 @@ import ast
 from pathlib import Path
 
 FORBIDDEN_IMPORT_PREFIXES = (
-    "bijux_agent.pipeline",
-    "bijux_agent.orchestrator",
+    "bijux_canon_agent.pipeline",
+    "bijux_canon_agent.orchestrator",
 )
 FORBIDDEN_IMPORT_MODULES = {
-    "bijux_agent.agents.kernel.execution_kernel",
-    "bijux_agent.agents.kernel.lifecycle",
+    "bijux_canon_agent.agents.kernel.execution_kernel",
+    "bijux_canon_agent.agents.kernel.lifecycle",
 }
 FORBIDDEN_SELF_CALLS = {"run", "revise", "fail"}
 
 
 def _iter_agent_files(root: Path) -> list[Path]:
-    agents_root = root / "src" / "bijux_agent" / "agents"
+    agents_root = root / "src" / "bijux_canon_agent" / "agents"
     excluded = {"base.py", "execution_kernel.py", "lifecycle.py"}
     return [
         path

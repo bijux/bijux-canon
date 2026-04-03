@@ -10,14 +10,14 @@ from tests.utils.trace_helpers import (
     default_model_metadata,
 )
 
-from bijux_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.models.llm_adapter import AdapterConfig, MockAdapter
-from bijux_agent.models.registry import Provider
-from bijux_agent.pipeline.control.phases import PipelinePhase
-from bijux_agent.tracing import TraceEntry, TraceRecorder
-from bijux_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.models.llm_adapter import AdapterConfig, MockAdapter
+from bijux_canon_agent.models.registry import Provider
+from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.tracing import TraceEntry, TraceRecorder
+from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
 
 
 @pytest.mark.asyncio

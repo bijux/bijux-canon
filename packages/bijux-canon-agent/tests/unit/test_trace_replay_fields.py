@@ -5,13 +5,13 @@ from datetime import UTC, datetime
 import pytest
 from tests.utils.trace_helpers import build_trace_header
 
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.enums import DecisionOutcome
-from bijux_agent.pipeline.control.phases import PipelinePhase
-from bijux_agent.pipeline.definition import PipelineDefinition
-from bijux_agent.pipeline.results.decision import DecisionArtifact
-from bijux_agent.pipeline.tracing.trace_validator import TraceValidator
-from bijux_agent.tracing import (
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.definition import PipelineDefinition
+from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
+from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
+from bijux_canon_agent.tracing import (
     ReplayMetadata,
     RunFingerprint,
     RunTraceHeader,

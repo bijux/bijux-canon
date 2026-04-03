@@ -6,12 +6,12 @@ import ast
 from pathlib import Path
 
 FORBIDDEN_PREFIXES = (
-    "bijux_agent.agents",
-    "bijux_agent.pipeline.convergence",
-    "bijux_agent.agents.kernel",
+    "bijux_canon_agent.agents",
+    "bijux_canon_agent.pipeline.convergence",
+    "bijux_canon_agent.agents.kernel",
 )
 FORBIDDEN_MODULES = {
-    "bijux_agent.agents.kernel.execution_kernel",
+    "bijux_canon_agent.agents.kernel.execution_kernel",
 }
 
 
@@ -20,7 +20,7 @@ def _matches_forbidden(module: str) -> bool:
 
 
 def test_httpapi_isolated_from_agents() -> None:
-    http_root = Path(__file__).resolve().parents[2] / "src" / "bijux_agent" / "httpapi"
+    http_root = Path(__file__).resolve().parents[2] / "src" / "bijux_canon_agent" / "httpapi"
     violations: list[str] = []
     for path in http_root.rglob("*.py"):
         source = path.read_text(encoding="utf-8")

@@ -35,4 +35,4 @@ The profile is the source of truth for how the runner and tooling may react.
 - A failure artifact’s `category` MUST match the profile’s category.
 - If `recoverable` is true, the profile MUST mark the class retryable.
 
-(Implementation reference: `src/bijux_agent/pipeline/results/failure.py`.)
+(Implementation reference: `src/bijux_canon_agent/pipeline/results/failure.py`.)

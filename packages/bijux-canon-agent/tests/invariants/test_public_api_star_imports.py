@@ -5,8 +5,8 @@ from __future__ import annotations
 import importlib
 
 PUBLIC_MODULES = {
-    "bijux_agent": ("API_VERSION",),
-    "bijux_agent.agents": (
+    "bijux_canon_agent": ("API_VERSION",),
+    "bijux_canon_agent.agents": (
         "CritiqueAgent",
         "FileReaderAgent",
         "PlannerAgent",
@@ -16,12 +16,12 @@ PUBLIC_MODULES = {
         "JudgeAgent",
         "VerifierAgent",
     ),
-    "bijux_agent.pipeline": (
+    "bijux_canon_agent.pipeline": (
         "AuditableDocPipeline",
         "Pipeline",
         "PipelineDefinition",
     ),
-    "bijux_agent.reference": (
+    "bijux_canon_agent.reference": (
         "MinimalPipeline",
         "run_minimal",
         "DocumentReviewPipeline",

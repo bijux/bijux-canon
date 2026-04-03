@@ -9,10 +9,10 @@ from typing import Any
 
 import pytest
 
-from bijux_agent.agents.base import BaseAgent
-from bijux_agent.enums import AgentType, ExecutionMode
-from bijux_agent.schema import AgentInput
-from bijux_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.agents.base import BaseAgent
+from bijux_canon_agent.enums import AgentType, ExecutionMode
+from bijux_canon_agent.schema import AgentInput
+from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
 
 
 def _load_snapshot() -> dict[str, Any]:

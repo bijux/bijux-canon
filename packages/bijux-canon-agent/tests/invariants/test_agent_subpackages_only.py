@@ -12,7 +12,7 @@ ALLOWED_TOP_LEVEL = {
 
 def test_agents_live_in_subpackages() -> None:
     repo_root = Path(__file__).resolve().parents[2]
-    agents_root = repo_root / "src" / "bijux_agent" / "agents"
+    agents_root = repo_root / "src" / "bijux_canon_agent" / "agents"
     top_level = {path.name for path in agents_root.glob("*.py") if path.is_file()}
     unexpected = sorted(top_level - ALLOWED_TOP_LEVEL)
     assert not unexpected, (

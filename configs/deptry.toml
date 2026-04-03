@@ -2,14 +2,14 @@
 pep621_dev_dependency_groups = ["dev"]
 ignore = ["DEP003"]
 extend_exclude = ["docs", "api", "artifacts"]
-package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-canon-agent" = "bijux_agent", "bijux-canon-ingest" = "bijux_rag", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
+package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-canon-agent" = "bijux_canon_agent", "bijux-canon-ingest" = "bijux_rag", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
 
 [tool.repo_deptry.packages."bijux-canon-runtime"]
 known_first_party = ["agentic_flows"]
 ignore = ["DEP002", "DEP003"]
 
 [tool.repo_deptry.packages."bijux-canon-agent"]
-known_first_party = ["bijux_agent"]
+known_first_party = ["bijux_canon_agent"]
 extend_exclude = ["docs", "mkdocs", "tooling"]
 ignore = ["DEP001", "DEP002", "DEP003"]
 

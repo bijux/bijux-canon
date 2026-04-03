@@ -5,10 +5,10 @@ import math
 from pydantic import ValidationError
 import pytest
 
-from bijux_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
-from bijux_agent.agents.base import BaseAgent
-from bijux_agent.constants import CONTRACT_VERSION
-from bijux_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
+from bijux_canon_agent.agents.base import BaseAgent
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
 
 
 def make_logger(tmp_path):

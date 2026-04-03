@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_agent.pipeline.agent_registry import determine_required_stages
-from bijux_agent.pipeline.stages import (
+from bijux_canon_agent.pipeline.agent_registry import determine_required_stages
+from bijux_canon_agent.pipeline.stages import (
     build_stage_definitions,
     filter_stages_for_goal,
 )

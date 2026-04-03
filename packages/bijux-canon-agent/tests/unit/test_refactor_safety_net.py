@@ -6,10 +6,10 @@ import json
 from pathlib import Path
 from typing import cast
 
-import bijux_agent
-from bijux_agent.models.contract import AgentOutputSchema
-from bijux_agent.pipeline.definition import standard_pipeline_definition
-from bijux_agent.tracing.trace import RunFingerprint, TraceEntry
+import bijux_canon_agent
+from bijux_canon_agent.models.contract import AgentOutputSchema
+from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
+from bijux_canon_agent.tracing.trace import RunFingerprint, TraceEntry
 
 
 def _load_snapshot() -> dict[str, object]:
@@ -23,7 +23,7 @@ def test_refactor_safety_net_matches_snapshot() -> None:
     snapshot = _load_snapshot()
     config = {"pipeline": {"parameters": {}}, "agents": ["file_reader", "task_handler"]}
     fingerprint = RunFingerprint.create(standard_pipeline_definition(), config)
-    public_imports = cast(list[str], list(bijux_agent.__all__))
+    public_imports = cast(list[str], list(bijux_canon_agent.__all__))
     actual = {
         "public_imports": sorted(public_imports),
         "run_fingerprint": fingerprint.fingerprint,
