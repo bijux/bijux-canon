@@ -6,19 +6,21 @@ bijux-llm-nexus/
 ├── CONTRIBUTING.md
 ├── CHANGELOG.md
 ├── LICENSE
-├── PROJECT_TREE.md
 ├── README.md
 ├── SECURITY.md
-├── TESTS.md
-├── TOOLING.md
-├── USAGE.md
 ├── .github/
 │   └── workflows/
 ├── configs/
 │   ├── shared/
 │   └── <package>/
 ├── docs/
-│   └── repository-history.md
+│   ├── governance.md
+│   ├── index.md
+│   ├── project-tree.md
+│   ├── repository-history.md
+│   ├── tests.md
+│   ├── tooling.md
+│   └── usage.md
 ├── makes/
 │   ├── shared/
 │   └── <package>/
@@ -35,5 +37,6 @@ bijux-llm-nexus/
 - `packages/` contains publishable distributions.
 - `.github/workflows/` contains repository-owned automation for each package.
 - `configs/` contains repo-owned tool configuration.
+- `docs/` contains repository handbook pages and shared reference material.
 - `makes/` contains repo-owned automation fragments.
 - root markdown files define repository-wide contracts and contributor guidance.

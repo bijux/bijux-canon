@@ -36,6 +36,9 @@ tox -av
 
 ## Next Reads
 
+- [Usage](usage.md)
+- [Tests](tests.md)
 - [Tooling](tooling.md)
 - [Governance](governance.md)
 - [Repository History](repository-history.md)
+- [Project Tree](project-tree.md)

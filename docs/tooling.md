@@ -1,4 +1,4 @@
-# Tooling
+# Repository Tooling
 
 The repository separates package code from repository-owned tooling.
 
@@ -22,7 +22,18 @@ Today this includes repository-owned configuration for:
 - `Makefile` at the repository root orchestrates package targets
 - `tox.ini` at the repository root orchestrates package validation environments
 
+## Current Tool Families
+
+- packaging and build metadata
+- test and coverage configuration
+- linting and type-checking
+- docs generation
+- security and dependency auditing
+
 ## Design Rule
 
 If a setting expresses repository policy or shared workflow, it belongs in
 `configs/` or `makes/`, not inside a package root.
+
+If a tool setting exists only to support local package runtime behavior, keep
+it with the package.

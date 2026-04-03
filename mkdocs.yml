@@ -16,9 +16,12 @@ theme:
 
 nav:
   - Home: index.md
+  - Usage: usage.md
+  - Tests: tests.md
   - Tooling: tooling.md
   - Governance: governance.md
   - History: repository-history.md
+  - Project Tree: project-tree.md
 
 plugins:
   - search
