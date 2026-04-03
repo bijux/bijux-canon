@@ -121,7 +121,7 @@ zip-safe = false
 "agentic_flows" = ["py.typed", "http_api/v1/schema.hash"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"api/v1/schema.hash" = "agentic_flows.schema.hash"
+"../../apis/agentic-flows/v1/schema.hash" = "agentic_flows.schema.hash"
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"

@@ -8,6 +8,7 @@ on:
       - "packages/agentic-flows/docs/**"
       - "packages/agentic-flows/README.md"
       - "packages/agentic-flows/CHANGELOG.md"
+      - "apis/agentic-flows/**"
       - "scripts/agentic-flows/**"
       - "configs/agentic-flows/mkdocs.yml"
       - "makes/agentic-flows/docs.mk"

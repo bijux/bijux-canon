@@ -6,9 +6,9 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_PATH = REPO_ROOT / "api" / "v1" / "schema.yaml"
-HASH_PATH = REPO_ROOT / "api" / "v1" / "schema.hash"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+SCHEMA_PATH = REPO_ROOT / "apis" / "agentic-flows" / "v1" / "schema.yaml"
+HASH_PATH = REPO_ROOT / "apis" / "agentic-flows" / "v1" / "schema.hash"
 
 
 def _extract_version(text: str) -> str:
@@ -59,6 +59,6 @@ def test_schema_hash_is_stable() -> None:
         "Schema version must match schema.hash before updating"
     )
     assert schema_hash == stored_hash, (
-        "Schema changed. Update api/v1/schema.hash and bump info.version "
+        "Schema changed. Update apis/agentic-flows/v1/schema.hash and bump info.version "
         "for breaking changes."
     )

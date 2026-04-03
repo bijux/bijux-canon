@@ -180,7 +180,7 @@ Artifacts: Generated in CI; see GitHub Actions for logs and reports.
 ## Project Tree
 
 ```
-api/            # OpenAPI schemas
+../../apis/agentic-flows/  # Root-managed OpenAPI schemas
 ../../configs/agentic-flows/  # Root-managed lint/type/security configs
 docs/           # MkDocs site
 ../../makes/agentic-flows/  # Root-managed task modules (docs, test, lint, etc.)

@@ -32,7 +32,7 @@ API_NODE_DIR          ?= $(API_ARTIFACTS_DIR)/node
 OPENAPI_GENERATOR_VERSION ?= 7.14.0
 
 # Find schemas
-ALL_API_SCHEMAS       := $(shell test -d api && find api -type f \( -name '*.yaml' -o -name '*.yml' \))
+ALL_API_SCHEMAS       := $(shell test -d "$(API_DIR)" && find "$(API_DIR)" -type f \( -name '*.yaml' -o -name '*.yml' \))
 ALL_API_SCHEMAS_ABS   := $(abspath $(ALL_API_SCHEMAS))
 
 # Python CLIs (prefer ACT if present)
@@ -109,7 +109,7 @@ api-install: | $(VENV) node_deps
 	@echo "✔ API toolchain ready."
 
 api-lint: | node_deps
-	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "✘ No API schemas found under api/*.y*ml"; exit 1; fi
+	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "✘ No API schemas found under $(API_DIR)"; exit 1; fi
 	@echo "→ Linting OpenAPI specs..."
 	$(foreach s,$(ALL_API_SCHEMAS),$(call VALIDATE_ONE_SCHEMA,$(s)))
 	@[ -f ./openapitools.json ] && echo "→ Removing stray openapitools.json (root)" && rm -f ./openapitools.json || true
@@ -117,7 +117,7 @@ api-lint: | node_deps
 
 # ── Start server, wait for readiness, run Schemathesis (sandboxed Hypothesis DB), stop server
 api-test: | $(VENV) node_deps
-	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "✘ No API schemas found under api/*.y*ml"; exit 1; fi
+	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "✘ No API schemas found under $(API_DIR)"; exit 1; fi
 	@mkdir -p "$(API_ARTIFACTS_DIR_ABS)" "$(API_TEST_DIR_ABS)"
 	@PORT_FILE="$(API_ARTIFACTS_DIR_ABS)/.api_port"; \
 	  $(VENV_PYTHON) -c 'import socket,sys; port=int(sys.argv[1]); s=socket.socket(); in_use=s.connect_ex(("127.0.0.1", port))==0; s.close(); s=socket.socket(); s.bind(("127.0.0.1", 0)); free=s.getsockname()[1]; s.close(); print(free if in_use else port)' "$(API_PORT)" >"$$PORT_FILE"; \

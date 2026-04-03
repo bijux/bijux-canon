@@ -92,7 +92,7 @@ make docs-serve    # local docs server
 
 ## API Development
 
-**Schema:** `api/v1/schema.yaml`  
+**Schema:** `../../apis/agentic-flows/v1/schema.yaml`  
 **Tooling:** Prance, OpenAPI Spec Validator, Redocly, OpenAPI Generator, Schemathesis
 
 **Validate locally**
