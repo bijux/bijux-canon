@@ -23,6 +23,7 @@ SECURITY_IGNORE_IDS := PYSEC-2022-42969
 DOCS_DEV_ADDR     := 127.0.0.1:8000
 DOCS_SITE_URL     := http://127.0.0.1:8000/
 DOCS_DEPLOY_FLAGS := --force --no-history --clean --remote-branch gh-pages
+PUBLISH_VERIFY_INSTALL_CMD := bijux --version
 
 # Modular Includes
 include $(MAKE_DIR)/api.mk
@@ -33,7 +34,7 @@ include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(MAKE_DIR)/test.mk
-include $(MAKE_DIR)/publish.mk
+include $(ROOT_MAKE_DIR)/publish.mk
 include $(MAKE_DIR)/hygiene.mk
 
 # Environment

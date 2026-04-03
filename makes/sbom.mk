@@ -1,7 +1,7 @@
 PACKAGE_NAME              ?= $(PROJECT_SLUG)
 SBOM_METADATA_PYTHON      ?= python3.11
 GIT_SHA                   ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
-SBOM_VERSION_RESOLVER     ?= $(MONOREPO_ROOT)/scripts/sbom/resolve_version.py
+SBOM_VERSION_RESOLVER     ?= $(MONOREPO_ROOT)/scripts/release/resolve_package_version.py
 SBOM_VERSION              ?= $(strip $(shell $(SBOM_METADATA_PYTHON) "$(SBOM_VERSION_RESOLVER)" --pyproject "$(SBOM_PYPROJECT)" --package-name "$(PACKAGE_NAME)" 2>/dev/null || echo 0.0.0))
 SBOM_VERSION_SAFE          = $(shell printf '%s' "$(SBOM_VERSION)" | tr ' /' '__' | tr -s '_' '_')
 

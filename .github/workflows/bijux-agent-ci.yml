@@ -13,12 +13,14 @@ on:
       - "makes/quality.mk"
       - "makes/security.mk"
       - "makes/sbom.mk"
+      - "makes/publish.mk"
       - "makes/shared/**"
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
       - "scripts/security/**"
       - "scripts/sbom/**"
+      - "scripts/release/**"
       - "scripts/bijux-agent/**"
   pull_request:
     paths:
@@ -31,12 +33,14 @@ on:
       - "makes/quality.mk"
       - "makes/security.mk"
       - "makes/sbom.mk"
+      - "makes/publish.mk"
       - "makes/shared/**"
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
       - "scripts/security/**"
       - "scripts/sbom/**"
+      - "scripts/release/**"
       - "scripts/bijux-agent/**"
   workflow_dispatch:
 

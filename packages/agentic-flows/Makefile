@@ -31,6 +31,7 @@ SECURITY_PATHS     := src/agentic_flows
 SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
 SECURITY_BANDIT_SKIP_IDS := B311
 SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_dependency_allowlist.py
+PUBLISH_UPLOAD_ENABLED := 0
 
 # ---- Includes ----
 include $(MAKE_DIR)/test.mk
@@ -42,6 +43,7 @@ include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/architecture.mk
+include $(ROOT_MAKE_DIR)/publish.mk
 
 -include .env
 export

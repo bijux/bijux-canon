@@ -27,6 +27,7 @@ SECURITY_BANDIT_SKIP_IDS       := B101,B311
 BANDIT_FLAGS                   := --severity-level high --confidence-level high
 BANDIT_EXCLUDES                := .venv,venv,build,dist,.tox,.mypy_cache,.pytest_cache,tests
 PIP_AUDIT_CONSOLE_FLAGS        := --progress-spinner off
+PUBLISH_UPLOAD_ENABLED         := 0
 
 .NOTPARALLEL: all clean
 
@@ -38,7 +39,7 @@ include $(MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
-include $(MAKE_DIR)/publish.mk
+include $(ROOT_MAKE_DIR)/publish.mk
 include $(MAKE_DIR)/hygiene.mk
 
 # Environment

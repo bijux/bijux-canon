@@ -27,6 +27,8 @@ SECURITY_AUDIT_PREPARE_MODE := pyproject
 PIP_AUDIT_INPUTS = -r "$(SECURITY_REQS)"
 DOCS_DEV_ADDR    := 0.0.0.0:8000
 DOCS_EXTRA_CLEAN_PATHS := site docs/site
+PUBLISH_DIST_DIR := $(PROJECT_ARTIFACTS_DIR)/release
+PUBLISH_UPLOAD_ENABLED := 0
 
 # Modular Includes
 include $(ROOT_MAKE_DIR)/lint.mk
@@ -38,6 +40,7 @@ include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/freeze.mk
+include $(ROOT_MAKE_DIR)/publish.mk
 
 # Environment
 $(VENV):
