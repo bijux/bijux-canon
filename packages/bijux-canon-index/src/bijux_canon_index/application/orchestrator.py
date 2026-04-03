@@ -61,7 +61,9 @@ from bijux_canon_index.domain.requests.request_execution import (
     execute_request,
     start_execution_session,
 )
-from bijux_canon_index.domain.nd.model import NDExecutionModel
+from bijux_canon_index.domain.non_determinism.execution_model import (
+    NonDeterministicExecutionModel,
+)
 from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.domain.provenance.replay import replay
 from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
@@ -912,7 +914,7 @@ class Orchestrator:
         str,
         ExecutionArtifact,
         RandomnessProfile | None,
-        NDExecutionModel,
+        NonDeterministicExecutionModel,
         ExecutionRequest,
     ]:
         self._validate_execute_limits(req)
@@ -920,7 +922,7 @@ class Orchestrator:
         run_id = f"{correlation_id}-{uuid.uuid4().hex}"
         artifact = self._resolve_execution_artifact(req)
         randomness_profile = self._build_randomness_profile(req)
-        nd_model = NDExecutionModel(
+        nd_model = NonDeterministicExecutionModel(
             stores=self.stores,
             ann_runner=getattr(self.backend, "ann", None),
             latest_vector_fingerprint=self._latest_vector_fingerprint,
@@ -945,7 +947,7 @@ class Orchestrator:
         artifact: ExecutionArtifact,
         request: ExecutionRequest,
         randomness_profile: RandomnessProfile | None,
-        nd_model: NDExecutionModel,
+        nd_model: NonDeterministicExecutionModel,
     ) -> tuple[Any, Any]:
         if req.execution_contract is ExecutionContract.NON_DETERMINISTIC:
             return nd_model.execute(

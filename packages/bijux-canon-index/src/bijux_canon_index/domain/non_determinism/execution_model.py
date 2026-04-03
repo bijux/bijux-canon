@@ -29,13 +29,15 @@ from bijux_canon_index.domain.requests.request_execution import (
     start_execution_session,
 )
 from bijux_canon_index.domain.requests.execution_plan import build_execution_plan
-from bijux_canon_index.domain.nd.randomness import require_randomness_for_nd
+from bijux_canon_index.domain.non_determinism.randomness import (
+    require_randomness_for_nd,
+)
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.logging import log_event
 
 
 @dataclass(frozen=True)
-class NDPlan:
+class NonDeterministicPlan:
     runner: AnnExecutionRequestRunner
     settings: NDSettings | None
     budget: ExecutionBudget | None
@@ -43,8 +45,8 @@ class NDPlan:
     reproducibility_bounds: str
 
 
-class NDExecutionModel:
-    """Central ND execution model for planning, execution, and verification."""
+class NonDeterministicExecutionModel:
+    """Central non-deterministic execution model for planning and verification."""
 
     def __init__(
         self,
@@ -129,7 +131,7 @@ class NDExecutionModel:
         artifact: ExecutionArtifact,
         request: ExecutionRequest,
         randomness: RandomnessProfile | None,
-    ) -> NDPlan:
+    ) -> NonDeterministicPlan:
         if artifact.execution_contract is not ExecutionContract.NON_DETERMINISTIC:
             raise InvariantError(
                 message="ND execution requires non_deterministic artifact"
@@ -158,7 +160,7 @@ class NDExecutionModel:
             if request.nd_settings
             else None,
         }
-        return NDPlan(
+        return NonDeterministicPlan(
             runner=self._ann_runner,
             settings=request.nd_settings,
             budget=request.execution_budget,

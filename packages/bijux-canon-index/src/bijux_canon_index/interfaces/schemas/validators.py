@@ -5,7 +5,9 @@ from __future__ import annotations
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
-from bijux_canon_index.domain.nd.randomness import validate_randomness_payload
+from bijux_canon_index.domain.non_determinism.randomness import (
+    validate_randomness_payload,
+)
 
 
 def validate_execution_request_payload(payload: object) -> None:

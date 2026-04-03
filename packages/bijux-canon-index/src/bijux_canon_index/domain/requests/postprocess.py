@@ -27,7 +27,9 @@ from bijux_canon_index.domain.requests.nd_quality import (
     compute_similarity_entropy,
     stability_signature,
 )
-from bijux_canon_index.domain.nd.randomness import enforce_randomness_contract
+from bijux_canon_index.domain.non_determinism.randomness import (
+    enforce_randomness_contract,
+)
 
 
 def randomness_audit(
