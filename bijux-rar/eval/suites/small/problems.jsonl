@@ -1,0 +1,3 @@
+{"description":"Return the capital of France.","constraints":{"domain":"geography"},"expected_output_type":"Claim","version":1}
+{"description":"Compute 2+2.","constraints":{"domain":"arithmetic"},"expected_output_type":"Claim","version":1}
+{"description":"Name one mammal that can fly.","constraints":{"domain":"biology"},"expected_output_type":"Claim","version":1}

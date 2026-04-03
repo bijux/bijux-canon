@@ -1,0 +1,16 @@
+{
+  "name": "bijux-rar",
+  "private": true,
+  "engines": {
+    "node": ">=20 <21"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "8.4.1",
+    "@openapitools/openapi-generator-cli": "2.27.0",
+    "@redocly/cli": "1.28.1",
+    "lodash": "4.17.21"
+  },
+  "scripts": {
+    "pyright": "pyright"
+  }
+}

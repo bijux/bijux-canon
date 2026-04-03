@@ -1,0 +1,24 @@
+# Bytecode and caches
+__pycache__/
+*.py[cod]
+
+# Virtual envs and dependencies
+.venv/
+venv/
+node_modules/
+
+# OS / editor noise
+.DS_Store
+.idea/
+
+# Build and tool outputs
+artifacts/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.tox/
+coverage.xml
+.coverage

@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: "bijux-rar"
+message: "If you use this software, please cite it."
+type: software
+version: 0.1.0
+authors:
+  - family-names: "Mousavi"
+    given-names: "Bijan"
+    email: "mousavi.bijan@gmail.com"

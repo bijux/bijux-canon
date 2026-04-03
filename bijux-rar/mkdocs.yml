@@ -1,0 +1,87 @@
+site_name: bijux RAR
+site_url: https://bijux.github.io/bijux-rar/
+repo_name: bijux/bijux-rar
+repo_url: https://github.com/bijux/bijux-rar
+
+theme:
+  name: material
+  language: en
+  logo: assets/bijux_logo_hq.png
+  favicon: assets/bijux_icon.png
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - content.code.copy
+    - navigation.footer
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: lime
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
+extra_css:
+  - assets/styles/extra.css
+
+extra:
+  version:
+    provider: manual
+    label: v0.1.0 (frozen)
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bijux/bijux-rar
+
+nav:
+  - Home: index.md
+  - User:
+      - start_here: user/start_here.md
+      - usage: user/usage.md
+      - not_rag: user/not_rag.md
+      - python_support: user/python_support.md
+      - non_goals_subsystems: user/non_goals_subsystems.md
+      - contributor_reading_order: user/contributor_reading_order.md
+  - Specification:
+      - read_this_first: spec/read_this_first.md
+      - mental_model: spec/mental_model.md
+      - execution_flow: spec/execution_flow.md
+      - state_and_artifacts: spec/state_and_artifacts.md
+      - trace_format: spec/trace_format.md
+      - trace_lifecycle: spec/trace_lifecycle.md
+      - core_contracts: spec/core_contracts.md
+      - determinism: spec/determinism.md
+      - verification_model: spec/verification_model.md
+      - failure_semantics: spec/failure_semantics.md
+      - security_model: spec/security_model.md
+      - system_contract: spec/system_contract.md
+      - versioning_compat: spec/versioning_compat.md
+      - release_scope_v0_1_0: spec/release_scope_v0_1_0.md
+      - architecture: spec/architecture.md
+      - misuse_cases: spec/misuse_cases.md
+      - doc_dependency: spec/doc_dependency.md
+      - doc_invariants: spec/doc_invariants.md
+      - doc_to_code_map: spec/doc_to_code_map.md
+      - invariant_ids: spec/invariant_ids.md
+      - security_failure_modes: spec/security_failure_modes.md
+      - benchmarks: spec/benchmarks.md
+  - Maintainer:
+      - maintainer_rules: maintainer/maintainer_rules.md
+      - forbidden_changes: maintainer/forbidden_changes.md
+      - glossary: maintainer/glossary.md
+      - why_this_is_hard: maintainer/why_this_is_hard.md
+      - project_tree: maintainer/project_tree.md
+      - security_policy: maintainer/security_policy.md
+      - tests: maintainer/tests.md
+      - tooling: maintainer/tooling.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true

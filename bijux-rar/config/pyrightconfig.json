@@ -1,0 +1,57 @@
+{
+  "include": [
+    "../src/bijux_rar",
+    "../tests"
+  ],
+  "extraPaths": [
+    "../src",
+    ".."
+  ],
+  "exclude": [
+    ".venv",
+    "build",
+    "dist",
+    "htmlcov",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".tox",
+    "**/__pycache__",
+    "node_modules"
+  ],
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "off",
+  "useLibraryCodeForTypes": true,
+  "reportMissingImports": "none",
+  "reportMissingTypeStubs": "none",
+  "reportUnusedImport": "none",
+  "reportPrivateUsage": "none",
+  "reportUnnecessaryTypeIgnoreComment": "none",
+  "reportUnnecessaryCast": "none",
+  "reportUnnecessaryIsInstance": "none",
+  "reportOptionalSubscript": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportOptionalCall": "none",
+  "reportOptionalIterable": "none",
+  "reportOptionalContextManager": "none",
+  "reportOptionalOperand": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportUntypedClassDecorator": "none",
+  "reportIncompatibleMethodOverride": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownParameterType": "none",
+  "reportUntypedFunctionDecorator": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownLambdaType": "none",
+  "reportUnusedVariable": "none",
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": [
+        "src"
+      ]
+    }
+  ]
+}
