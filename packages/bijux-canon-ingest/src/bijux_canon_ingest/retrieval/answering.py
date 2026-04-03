@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Answer generation backends.
+"""Grounded answer backends.
 
-For CI and deterministic evaluation, bijux-rag ships an extractive generator.
+For CI and deterministic evaluation, ingest ships an extractive answerer.
 It assembles an answer from retrieved evidence spans and always emits citations.
 """
 
@@ -16,10 +16,10 @@ from bijux_canon_ingest.retrieval.ports import Answer, Candidate, Citation
 
 
 @dataclass(frozen=True, slots=True)
-class ExtractiveGenerator:
-    """Deterministic, citation-only generator.
+class ExtractiveAnswerer:
+    """Deterministic, citation-only answerer.
 
-    This generator **never** invents information. It only selects snippets from
+    This answerer **never** invents information. It only selects snippets from
     retrieved chunks. That makes it stable for CI baselines.
 
     Args:
@@ -65,4 +65,4 @@ class ExtractiveGenerator:
         return Answer(text=text, citations=tuple(cites), candidates=tuple(candidates))
 
 
-__all__ = ["ExtractiveGenerator"]
+__all__ = ["ExtractiveAnswerer"]

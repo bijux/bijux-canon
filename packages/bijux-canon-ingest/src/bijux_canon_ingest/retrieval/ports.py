@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""RAG primitives: ports for embedders, indexes, retrieval, and generation.
+"""Retrieval ports for embedders, indexes, ranking, and answering.
 
 This module is deliberately dependency-light. Concrete backends live in sibling modules.
 
-The goal is to make bijux-rag *actually* RAG:
+The goal is to keep answer production grounded in retrieved evidence:
 ingest -> index -> retrieve (+ optional rerank) -> answer with citations.
 """
 
@@ -127,8 +127,8 @@ class Reranker(Protocol):
     ) -> list[Candidate]: ...
 
 
-class Generator(Protocol):
-    """Generator port."""
+class Answerer(Protocol):
+    """Answer-production port."""
 
     def generate(self, *, query: str, candidates: Sequence[Candidate]) -> Answer: ...
 
@@ -138,7 +138,7 @@ __all__ = [
     "Candidate",
     "Citation",
     "Embedder",
-    "Generator",
+    "Answerer",
     "Index",
     "Indexer",
     "Reranker",

@@ -8,8 +8,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from pathlib import Path
 
-from bijux_canon_ingest.retrieval.embedders import HashEmbedder, SentenceTransformersEmbedder
-from bijux_canon_ingest.retrieval.generators import ExtractiveGenerator
+from bijux_canon_ingest.retrieval.answering import ExtractiveAnswerer
+from bijux_canon_ingest.retrieval.embedders import (
+    HashEmbedder,
+    SentenceTransformersEmbedder,
+)
 from bijux_canon_ingest.retrieval.indexes import NumpyCosineIndex, load_index
 from bijux_canon_ingest.retrieval.ports import Answer, Candidate, Embedder
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
@@ -64,7 +67,7 @@ def ask(
         )
     else:
         candidates = candidates[: int(top_k)]
-    return ExtractiveGenerator().generate(query=query, candidates=candidates)
+    return ExtractiveAnswerer().generate(query=query, candidates=candidates)
 
 
 def parse_filters(filters: list[str] | None) -> dict[str, str]:

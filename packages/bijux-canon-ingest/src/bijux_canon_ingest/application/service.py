@@ -23,7 +23,7 @@ import msgpack
 from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc
 from bijux_canon_ingest.processing.stages import clean_doc, iter_chunk_doc
 from bijux_canon_ingest.retrieval.embedders import HashEmbedder, SentenceTransformersEmbedder
-from bijux_canon_ingest.retrieval.generators import ExtractiveGenerator
+from bijux_canon_ingest.retrieval.answering import ExtractiveAnswerer
 from bijux_canon_ingest.retrieval.indexes import (
     BM25Index,
     NumpyCosineIndex,
@@ -64,7 +64,7 @@ class StoredIndex:
 class IngestService:
     """Facade over index construction, persistence, retrieval, and answering."""
 
-    generator: ExtractiveGenerator = ExtractiveGenerator()
+    answerer: ExtractiveAnswerer = ExtractiveAnswerer()
     reranker: LexicalOverlapReranker = LexicalOverlapReranker()
     profile: str = "default"
 
@@ -301,7 +301,7 @@ class IngestService:
             cands = self.reranker.rerank(query=query, candidates=cands, top_k=top_k)
         else:
             cands = cands[:top_k]
-        return Ok(self.generator.generate(query=query, candidates=cands))
+        return Ok(self.answerer.generate(query=query, candidates=cands))
 
 
 __all__ = ["IndexBackend", "IngestService", "StoredIndex"]

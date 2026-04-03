@@ -21,8 +21,8 @@ from .domain import (
     try_set_embedding,
     upcast_metadata_v1,
 )
+from .answering import ExtractiveAnswerer
 from .embedders import HashEmbedder, SentenceTransformersEmbedder
-from .generators import ExtractiveGenerator
 from .indexes import (
     BM25Index,
     NumpyCosineIndex,
@@ -35,7 +35,7 @@ from .ports import (
     Candidate,
     Citation,
     Embedder,
-    Generator,
+    Answerer,
     Index,
     Indexer,
     Reranker,
@@ -47,7 +47,7 @@ __all__ = [
     "Candidate",
     "Citation",
     "Embedder",
-    "Generator",
+    "Answerer",
     "Index",
     "Indexer",
     "Reranker",
@@ -58,7 +58,7 @@ __all__ = [
     "build_bm25_index",
     "build_numpy_cosine_index",
     "load_index",
-    "ExtractiveGenerator",
+    "ExtractiveAnswerer",
     "LexicalOverlapReranker",
     "ChunkId",
     "ChunkText",
