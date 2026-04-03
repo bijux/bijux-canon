@@ -3,12 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import hashlib
-from pathlib import Path
 
 from pydantic import TypeAdapter
 
-from bijux_canon_reason.core.fingerprints import stable_id
 from bijux_canon_reason.core.invariants import validate_plan
 from bijux_canon_reason.core.types import (
     Claim,
@@ -26,14 +23,15 @@ from bijux_canon_reason.core.types import (
     StepOutput,
     SupportKind,
     SupportRef,
-    ToolCall,
     Trace,
     TraceEvent,
     TraceEventKind,
     UnderstandOutput,
     VerifyOutput,
 )
+from bijux_canon_reason.execution.evidence_records import coerce_reasoner_value
 from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.tool_dispatch import dispatch_tool_requests
 from bijux_canon_reason.reasoning.backend import BaselineReasoner
 
 
@@ -49,66 +47,6 @@ class ExecutionResult:
 
     def model_dump(self, mode: str = "json") -> dict[str, object]:
         return {"trace": self.trace.model_dump(mode=mode)}
-
-
-def _sha256_bytes(b: bytes) -> str:
-    return hashlib.sha256(b).hexdigest()
-
-
-def _ensure_dir(p: Path) -> None:
-    p.mkdir(parents=True, exist_ok=True)
-
-
-def _coerce_reasoner_value(v: object) -> JsonValue:
-    if isinstance(v, (str, int, float, bool)) or v is None:
-        return v
-    if isinstance(v, (list, dict)):
-        return v  # assume json-like
-    return str(v)
-
-
-def _write_evidence(
-    runtime: Runtime,
-    *,
-    uri: str,
-    content: bytes,
-    span: tuple[int, int],
-    chunk_id: str,
-) -> EvidenceRef:
-    sha = _sha256_bytes(content)
-    if runtime.artifacts_dir is None:
-        # In-memory runs have no filesystem; keep content_path empty (allowed)
-        return EvidenceRef(
-            uri=uri,
-            sha256=sha,
-            span=span,
-            chunk_id=chunk_id,
-            content_path="",
-        ).with_content_id()
-
-    ev_id = stable_id(
-        "ev", {"uri": uri, "sha256": sha, "span": span, "chunk_id": chunk_id}
-    )
-
-    rel = Path("evidence") / f"{ev_id}.txt"
-    abs_path = runtime.artifacts_dir / rel
-    _ensure_dir(abs_path.parent)
-    tmp = abs_path.with_suffix(".tmp")
-    tmp.write_bytes(content)
-    tmp.replace(abs_path)
-
-    ev = EvidenceRef(
-        id=ev_id,
-        uri=uri,
-        sha256=sha,
-        span=span,
-        chunk_id=chunk_id,
-        # Contract: content_path is a relative POSIX path (stable across OSes)
-        content_path=rel.as_posix(),
-    )
-    return ev
-
-
 def _validate_topology(plan: Plan) -> None:
     """Fail fast on topology violations before any execution starts."""
     nodes = {n.id for n in plan.nodes}
@@ -200,86 +138,17 @@ def execute_plan(
         )
         idx_counter += 1
 
-        for idx, tr in enumerate(node.step.tool_requests):
-            call = ToolCall(
-                id=stable_id(
-                    "call",
-                    {
-                        "step_id": node.id,
-                        "i": idx,
-                        "tool": tr.tool_name,
-                        "args": tr.arguments,
-                    },
-                ),
-                tool_name=tr.tool_name,
-                arguments=dict(tr.arguments),
-                step_id=node.id,
-                call_idx=idx,
-            )
-            _push_event(
-                {
-                    "kind": TraceEventKind.tool_called,
-                    "step_id": node.id,
-                    "call": call.model_dump(mode="json"),
-                }
-            )
-            result = runtime.tools.invoke(call, seed=runtime.seed)
-            _push_event(
-                {
-                    "kind": TraceEventKind.tool_returned,
-                    "step_id": node.id,
-                    "result": result.model_dump(mode="json"),
-                }
-            )
-
-            if (
-                tr.tool_name == "retrieve"
-                and result.success
-                and isinstance(result.result, dict)
-            ):
-                prov = result.result.get("provenance")
-                if isinstance(prov, dict):
-                    prov_mapping: dict[str, JsonValue] = {}
-                    for k, v in prov.items():
-                        prov_mapping[str(k)] = v
-                    retrieval_provenance = prov_mapping
-                raw = result.result.get("evidences", [])
-                if isinstance(raw, list):
-                    for item in raw:
-                        if not isinstance(item, dict):
-                            continue
-                        uri = str(item.get("uri", "mem://unknown"))
-                        text = str(item.get("text", ""))
-                        chunk_id = str(item.get("chunk_id", ""))
-                        span = item.get("span")
-                        tup_span: tuple[int, int] | None = None
-                        if isinstance(span, (list, tuple)) and len(span) == 2:
-                            s0, s1 = span
-                            if isinstance(s0, (int, float, str)) and isinstance(
-                                s1, (int, float, str)
-                            ):
-                                tup_span = (int(s0), int(s1))
-                        ev_bytes = text.encode("utf-8")
-                        if tup_span is None or not chunk_id:
-                            raise RuntimeError(
-                                "INV-EVD-001: retriever must return chunk span and chunk_id"
-                            )
-                        ev = _write_evidence(
-                            runtime,
-                            uri=uri,
-                            content=ev_bytes,
-                            span=tup_span,
-                            chunk_id=chunk_id,
-                        )
-                        evidence_ids.append(ev.id)
-                        evidence_bytes[ev.id] = ev_bytes
-                        _push_event(
-                            {
-                                "kind": TraceEventKind.evidence_registered,
-                                "step_id": node.id,
-                                "evidence": ev.model_dump(mode="json"),
-                            }
-                        )
+        tool_dispatch = dispatch_tool_requests(
+            node_id=node.id,
+            tool_requests=node.step.tool_requests,
+            runtime=runtime,
+            push_event=_push_event,
+        )
+        if tool_dispatch.retrieval_provenance:
+            retrieval_provenance = tool_dispatch.retrieval_provenance
+        for evidence_record in tool_dispatch.evidences:
+            evidence_ids.append(evidence_record.reference.id)
+            evidence_bytes[evidence_record.reference.id] = evidence_record.content
 
         out: StepOutput | None = None
         if node.kind == "understand":
@@ -336,7 +205,7 @@ def execute_plan(
                 rr: dict[str, JsonValue] = {}
                 if isinstance(deriv.raw_reasoner, dict):
                     for k, v_obj in deriv.raw_reasoner.items():
-                        rr[str(k)] = _coerce_reasoner_value(v_obj)
+                        rr[str(k)] = coerce_reasoner_value(v_obj)
 
                 claim = Claim(
                     id="",
@@ -364,7 +233,7 @@ def execute_plan(
                     "result_sha256": deriv.result_sha256,
                 }
                 reasoning_meta.update(
-                    {k: _coerce_reasoner_value(v) for k, v in reason_meta_local.items()}
+                    {k: coerce_reasoner_value(v) for k, v in reason_meta_local.items()}
                 )
                 out = DeriveOutput(claim_ids=[claim.id])
 
