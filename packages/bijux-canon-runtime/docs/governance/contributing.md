@@ -98,7 +98,7 @@ make docs-serve    # local docs server
 **Validate locally**
 
 ```bash
-.venv/bin/uvicorn bijux_canon_runtime.api.app:app --host 0.0.0.0 --port 8000 &
+.venv/bin/uvicorn bijux_canon_runtime.api.v1.app:app --host 0.0.0.0 --port 8000 &
 make api
 ```
 
