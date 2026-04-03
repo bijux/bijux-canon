@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi
+# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
 """Chunking adapters used by the public RAG APIs (end-of-Bijux RAG).
 

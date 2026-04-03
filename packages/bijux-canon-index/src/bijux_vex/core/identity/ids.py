@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi
+# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 """
 Versioned fingerprints and stable IDs built from canonical bytes.
 """

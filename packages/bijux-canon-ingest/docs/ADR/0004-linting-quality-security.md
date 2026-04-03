@@ -2,7 +2,7 @@
 
 * **Date:** 2025-08-01  
 * **Status:** Accepted  
-* **Author:** Bijan Mousavi  
+* **Author:** Bijan Mousavi <bijan@bijux.io>  
 
 ---
 

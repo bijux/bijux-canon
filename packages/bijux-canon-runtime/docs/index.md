@@ -227,4 +227,4 @@ Welcome. See **[governance/contributing.md](governance/contributing.md)** for pa
 ## License
 
 Apache License 2.0. See **[LICENSE](https://github.com/bijux/bijux-canon/blob/main/LICENSE)**.
-© 2025 Bijan Mousavi.
+© 2025 Bijan Mousavi <bijan@bijux.io>.

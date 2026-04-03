@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi
+# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
 # This implementation is provisional.
 # Semantic authority lives in docs/guarantees/system_guarantees.md.

@@ -121,7 +121,7 @@ extra:
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/bijux-canon-ingest/
   copyright:
-    text: "© 2025 Bijan Mousavi"
+    text: "© 2025 Bijan Mousavi <bijan@bijux.io>"
 
 extra_css:
   - assets/styles/bijux-rag.css

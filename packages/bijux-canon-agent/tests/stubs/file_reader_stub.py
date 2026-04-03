@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright © 2025 Bijan Mousavi
+# SPDX-FileCopyrightText: Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 # SPDX-License-Identifier: Apache-2.0
 """Typed stub for FileReaderAgent used by pipeline tests."""
 

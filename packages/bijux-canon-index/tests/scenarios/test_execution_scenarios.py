@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi
+# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 from bijux_vex.core.execution_mode import ExecutionMode
 from bijux_vex.core.execution_intent import ExecutionIntent

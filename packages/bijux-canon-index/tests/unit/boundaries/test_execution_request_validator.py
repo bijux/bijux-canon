@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
+# Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
 from types import SimpleNamespace

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi
+# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
 """Bijux RAG functors: curried mapping over Option, Result, and sequences (end-of-Bijux RAG)."""
 

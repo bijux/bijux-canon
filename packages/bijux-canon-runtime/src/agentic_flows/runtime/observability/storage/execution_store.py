@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi
+# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 # Never persists: in-memory executor state, transient runtime caches, or raw tool sessions.
 # Incorrect assumption: live process environment variables are persisted.
 

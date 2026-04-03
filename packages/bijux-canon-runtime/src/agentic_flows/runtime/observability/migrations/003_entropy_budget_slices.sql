@@ -1,6 +1,6 @@
 -- INTERNAL — NOT A PUBLIC EXTENSION POINT
 -- SPDX-License-Identifier: Apache-2.0
--- Copyright © 2025 Bijan Mousavi
+-- Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
 CREATE TABLE IF NOT EXISTS entropy_budget_slices (
     tenant_id TEXT NOT NULL,

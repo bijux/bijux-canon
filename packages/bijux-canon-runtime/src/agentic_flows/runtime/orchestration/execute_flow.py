@@ -1,6 +1,6 @@
 # INTERNAL — NOT A PUBLIC EXTENSION POINT
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi
+# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 # INTERNAL CORE — CHANGES REQUIRE REPLAY REVIEW
 
 """Module definitions for runtime/orchestration/execute_flow.py."""

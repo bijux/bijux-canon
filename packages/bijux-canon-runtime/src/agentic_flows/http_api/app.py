@@ -1,6 +1,6 @@
 # EXPERIMENTAL HTTP API — NOT PRODUCTION READY
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi
+# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 # API stability: v1 frozen; Backward compatibility rules apply.
 
 """EXPERIMENTAL HTTP API.

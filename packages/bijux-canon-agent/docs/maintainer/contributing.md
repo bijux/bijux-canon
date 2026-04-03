@@ -1,4 +1,4 @@
-Owner: Bijan Mousavi
+Owner: Bijan Mousavi <bijan@bijux.io>
 Status: stable
 Scope: Contributing to bijux-agent.
 
