@@ -67,6 +67,6 @@ def test_main_import_executes() -> None:
     import importlib
 
     importlib.import_module("bijux_canon_reason.__main__")
-    from bijux_canon_reason.application.fake_runtime import FakeRuntime
+    from bijux_canon_reason.execution.testing import FakeRuntime
 
     assert FakeRuntime(seed=1).seed == 1
