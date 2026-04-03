@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.rar_types import Trace
-from bijux_canon_reason.rar.traces.replay import diff_traces
+from bijux_canon_reason.traces.replay import diff_traces
 
 
 def test_diff_traces_identical_short_circuit() -> None:

@@ -23,8 +23,8 @@ from bijux_canon_reason.core.rar_types import (
 from bijux_canon_reason.application.runner import run_app
 from bijux_canon_reason.execution.frozen_runtime import RecordedCall
 from bijux_canon_reason.execution.runtime import Runtime
-from bijux_canon_reason.rar.traces.checksum import compute_invariant_checksum
-from bijux_canon_reason.rar.traces.diff import diff_traces
+from bijux_canon_reason.traces.checksum import compute_invariant_checksum
+from bijux_canon_reason.traces.diff import diff_traces
 
 
 def replay_from_artifacts(trace_path: Path) -> tuple[ReplayResult, Path]:

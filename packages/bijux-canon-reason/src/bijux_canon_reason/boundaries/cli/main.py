@@ -13,7 +13,7 @@ from bijux_canon_reason.boundaries.serde.trace_jsonl import read_trace_jsonl
 from bijux_canon_reason.core.rar_types import Plan, ProblemSpec
 from bijux_canon_reason.rar.eval.suite import run_eval_suite
 from bijux_canon_reason.application.runs import RunArtifacts, RunBuilder, RunInputs
-from bijux_canon_reason.rar.traces.replay import replay_from_artifacts
+from bijux_canon_reason.traces.replay import replay_from_artifacts
 from bijux_canon_reason.verification.verifier import verify_trace
 
 app = typer.Typer(

@@ -9,7 +9,7 @@ import pytest
 
 from bijux_canon_reason.core.rar_types import ProblemSpec
 from bijux_canon_reason.application.runs import RunBuilder, RunInputs
-from bijux_canon_reason.rar.traces.replay import replay_from_artifacts
+from bijux_canon_reason.traces.replay import replay_from_artifacts
 
 
 def test_replay_checksum_mismatch_fails(tmp_path: Path) -> None:

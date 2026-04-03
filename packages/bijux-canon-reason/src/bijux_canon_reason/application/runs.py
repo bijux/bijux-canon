@@ -25,7 +25,7 @@ from bijux_canon_reason.core.rar_types import (
 )
 from bijux_canon_reason.application.runner import run_app
 from bijux_canon_reason.execution.runtime import Runtime
-from bijux_canon_reason.rar.traces.checksum import compute_invariant_checksum
+from bijux_canon_reason.traces.checksum import compute_invariant_checksum
 
 SCHEMA_VERSION = 1
 RUN_DISK_QUOTA_BYTES = int(os.getenv("RAR_RUN_DISK_QUOTA_BYTES", "0"))

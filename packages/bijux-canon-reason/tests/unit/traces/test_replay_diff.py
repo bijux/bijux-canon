@@ -17,7 +17,7 @@ from bijux_canon_reason.core.rar_types import (
     Trace,
     TraceEventKind,
 )
-from bijux_canon_reason.rar.traces.replay import diff_traces
+from bijux_canon_reason.traces.replay import diff_traces
 
 
 def test_diff_traces_detects_first_mismatch() -> None:
