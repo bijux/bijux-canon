@@ -21,8 +21,12 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.routing import Match
 
+from bijux_canon_runtime.api.v1.http_contracts import (
+    authority_failure_response,
+    structural_failure_response,
+    validate_runtime_headers,
+)
 from bijux_canon_runtime.api.v1.schemas import (
-    FailureEnvelope,
     FlowRunRequest,
     ReplayRequest,
 )
@@ -63,16 +67,9 @@ async def method_guard(request: Request, call_next) -> JSONResponse:
 @app.exception_handler(RequestValidationError)
 def handle_validation_error(_: Request, __: RequestValidationError) -> JSONResponse:
     """Return a structural failure envelope for request validation errors."""
-    payload = FailureEnvelope(
-        failure_class="structural",
-        reason_code="contradiction_detected",
-        violated_contract="request_validation",
-        evidence_ids=[],
-        determinism_impact="structural",
-    )
-    return JSONResponse(
+    return structural_failure_response(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=payload.model_dump(),
+        violated_contract="request_validation",
     )
 
 
@@ -82,29 +79,15 @@ def handle_starlette_http_exception(
 ) -> JSONResponse:
     """Return a structural failure envelope for parse errors or pass through non-400s."""
     if exc.status_code == status.HTTP_501_NOT_IMPLEMENTED:
-        payload = FailureEnvelope(
-            failure_class="structural",
-            reason_code="contradiction_detected",
-            violated_contract="not_implemented",
-            evidence_ids=[],
-            determinism_impact="structural",
-        )
-        return JSONResponse(
+        return structural_failure_response(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            content=payload.model_dump(),
+            violated_contract="not_implemented",
         )
     if exc.status_code != status.HTTP_400_BAD_REQUEST:
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
-    payload = FailureEnvelope(
-        failure_class="structural",
-        reason_code="contradiction_detected",
-        violated_contract="request_parse",
-        evidence_ids=[],
-        determinism_impact="structural",
-    )
-    return JSONResponse(
+    return structural_failure_response(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content=payload.model_dump(),
+        violated_contract="request_parse",
     )
 
 
@@ -138,35 +121,13 @@ def run_flow(
     x_policy_fingerprint: str | None = Header(None, alias="X-Policy-Fingerprint"),
 ) -> JSONResponse:
     """Deterministic guarantees cover declared contracts and persisted envelopes only; runtime environment, external tools, and policy omissions are explicitly not guaranteed; replay equivalence is expected to fail when headers, policy fingerprints, or dataset identity diverge from the declared contract."""
-    if (
-        x_agentic_gate is None
-        or x_policy_fingerprint is None
-        or x_determinism_level in {None, "", "default"}
-    ):
-        payload = FailureEnvelope(
-            failure_class="authority",
-            reason_code="contradiction_detected",
-            violated_contract="headers_required",
-            evidence_ids=[],
-            determinism_impact="structural",
-        )
-        return JSONResponse(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            content=payload.model_dump(),
-        )
-    allowed_levels = {"strict", "bounded", "probabilistic", "unconstrained"}
-    if x_determinism_level not in allowed_levels:
-        payload = FailureEnvelope(
-            failure_class="authority",
-            reason_code="contradiction_detected",
-            violated_contract="determinism_level_invalid",
-            evidence_ids=[],
-            determinism_impact="structural",
-        )
-        return JSONResponse(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            content=payload.model_dump(),
-        )
+    failure = validate_runtime_headers(
+        x_agentic_gate=x_agentic_gate,
+        x_determinism_level=x_determinism_level,
+        x_policy_fingerprint=x_policy_fingerprint,
+    )
+    if failure is not None:
+        return failure
     raise StarletteHTTPException(status_code=501, detail="Not implemented")
 
 
@@ -178,33 +139,11 @@ def replay_flow(
     x_policy_fingerprint: str | None = Header(None, alias="X-Policy-Fingerprint"),
 ) -> JSONResponse:
     """Preconditions: required headers are present, determinism level is valid, and the replay request is well-formed; acceptable replay means differences stay within the declared acceptability threshold; mismatches return FailureEnvelope with failure_class set to authority."""
-    if (
-        x_agentic_gate is None
-        or x_policy_fingerprint is None
-        or x_determinism_level in {None, "", "default"}
-    ):
-        payload = FailureEnvelope(
-            failure_class="authority",
-            reason_code="contradiction_detected",
-            violated_contract="headers_required",
-            evidence_ids=[],
-            determinism_impact="structural",
-        )
-        return JSONResponse(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            content=payload.model_dump(),
-        )
-    allowed_levels = {"strict", "bounded", "probabilistic", "unconstrained"}
-    if x_determinism_level not in allowed_levels:
-        payload = FailureEnvelope(
-            failure_class="authority",
-            reason_code="contradiction_detected",
-            violated_contract="determinism_level_invalid",
-            evidence_ids=[],
-            determinism_impact="structural",
-        )
-        return JSONResponse(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            content=payload.model_dump(),
-        )
+    failure = validate_runtime_headers(
+        x_agentic_gate=x_agentic_gate,
+        x_determinism_level=x_determinism_level,
+        x_policy_fingerprint=x_policy_fingerprint,
+    )
+    if failure is not None:
+        return failure
     raise StarletteHTTPException(status_code=501, detail="Not implemented")
