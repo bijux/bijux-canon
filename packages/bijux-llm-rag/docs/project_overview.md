@@ -6,7 +6,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 
 ```
 .
-├── ../../.github/workflows/ # repository-owned CI/CD workflows (bijux-rag-ci, bijux-rag-docs, bijux-rag-publish)
+├── ../../.github/workflows/ # repository-owned CI/CD workflows (ci-bijux-llm-rag, docs-bijux-llm-rag, publish-bijux-llm-rag)
 ├── ../../configs/bijux-rag/ # root-managed lint/type/security configs
 ├── data/                # sample datasets (arxiv abstracts CSV)
 ├── docs/                # MkDocs sources (includes ADRs and reference pages)

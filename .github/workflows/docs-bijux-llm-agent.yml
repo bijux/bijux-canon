@@ -1,15 +1,15 @@
-name: bijux-llm-flows Docs
+name: docs-bijux-llm-agent
 
 on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/bijux-llm-flows-docs.yml"
-      - "packages/bijux-llm-flows/docs/**"
-      - "packages/bijux-llm-flows/CHANGELOG.md"
-      - "apis/bijux-llm-flows/**"
-      - "scripts/bijux-llm-flows/**"
-      - "packages/bijux-llm-flows/mkdocs.yml"
+      - ".github/workflows/docs-bijux-llm-agent.yml"
+      - "packages/bijux-llm-agent/docs/**"
+      - "packages/bijux-llm-agent/CHANGELOG.md"
+      - "apis/bijux-llm-agent/**"
+      - "scripts/bijux-llm-agent/**"
+      - "packages/bijux-llm-agent/mkdocs.yml"
       - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:
@@ -18,7 +18,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: bijux-llm-flows-docs-${{ github.ref }}
+  group: docs-bijux-llm-agent-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -34,10 +34,10 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: packages/bijux-llm-flows/pyproject.toml
+          cache-dependency-path: packages/bijux-llm-agent/pyproject.toml
 
       - name: Install package docs toolchain
-        run: make -C packages/bijux-llm-flows install
+        run: make -C packages/bijux-llm-agent install
 
       - name: Configure Git author
         run: |
@@ -45,4 +45,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Deploy docs
-        run: make -C packages/bijux-llm-flows docs-deploy
+        run: make -C packages/bijux-llm-agent docs-deploy
