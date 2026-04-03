@@ -70,6 +70,7 @@ nav:
   - Execution:
       - failure-paths: execution/failure-paths.md
   - Governance:
+      - contributing: governance/contributing.md
       - core: governance/core.md
       - semver: governance/semver.md
       - anti_patterns: governance/anti_patterns.md

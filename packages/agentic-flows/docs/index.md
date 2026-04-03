@@ -212,7 +212,7 @@ tests/          # unit / regression / e2e
 <a id="contributing"></a>
 ## Contributing
 
-Welcome. See **[CONTRIBUTING.md](https://github.com/bijux/bijux-llm-nexus/blob/main/CONTRIBUTING.md)** for repository-wide setup and workflow guidance.
+Welcome. See **[governance/contributing.md](governance/contributing.md)** for package workflow and contribution guidance.
 
 
 

@@ -7,14 +7,7 @@ from pathlib import Path
 
 ALLOWED = {
     "CHANGELOG.md",
-    "CODE_OF_CONDUCT.md",
-    "CONTRIBUTING.md",
-    "PROJECT_TREE.md",
     "README.md",
-    "SECURITY.md",
-    "TESTS.md",
-    "TOOLING.md",
-    "USAGE.md",
 }
 
 
