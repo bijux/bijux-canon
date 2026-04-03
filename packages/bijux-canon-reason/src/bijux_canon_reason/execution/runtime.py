@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Literal
 
 from bijux_canon_reason.core.types import RuntimeDescriptor, ToolDescriptor, ToolResult
-from bijux_canon_reason.execution.tools import (
+from bijux_canon_reason.execution.tool_runtime import (
     BM25Retriever,
     FakeTool,
     FrozenToolRegistry,

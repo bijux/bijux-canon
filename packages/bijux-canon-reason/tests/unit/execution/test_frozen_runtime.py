@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.types import ToolResult
-from bijux_canon_reason.execution.tools import FrozenToolRegistry
+from bijux_canon_reason.execution.tool_runtime import FrozenToolRegistry
 
 
 def test_frozen_tool_registry_missing_call_raises() -> None:

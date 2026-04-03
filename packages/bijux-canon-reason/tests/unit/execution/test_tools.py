@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.execution.tools import BM25Retriever, FakeTool
+from bijux_canon_reason.execution.tool_runtime import BM25Retriever, FakeTool
 
 
 def test_fake_tool_retrieve_returns_evidences() -> None:
