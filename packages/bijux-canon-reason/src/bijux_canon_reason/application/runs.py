@@ -33,6 +33,15 @@ RUN_TIME_BUDGET_SEC = float(os.getenv("RAR_RUN_TIME_BUDGET_SEC", "0"))
 RUN_CPU_BUDGET_SEC = float(os.getenv("RAR_RUN_CPU_BUDGET_SEC", "0"))
 
 
+def _default_corpus_fixture() -> Path:
+    module_path = Path(__file__).resolve()
+    for parent in module_path.parents:
+        candidate = parent / "tests" / "fixtures" / "corpus_small.jsonl"
+        if candidate.exists():
+            return candidate
+    return module_path.parents[3] / "tests" / "fixtures" / "corpus_small.jsonl"
+
+
 def _dir_size(root: Path) -> int:
     total = 0
     for path in root.rglob("*"):
@@ -106,12 +115,7 @@ class RunBuilder:
         raw_overlap = constraints.get("overlap_chars")
         if isinstance(raw_overlap, (int, float, str)):
             overlap_chars = int(raw_overlap)
-        default_corpus = (
-            Path(__file__).resolve().parents[4]
-            / "tests"
-            / "fixtures"
-            / "corpus_small.jsonl"
-        )
+        default_corpus = _default_corpus_fixture()
         use_corpus: Path | None = None
         if isinstance(corpus_path, str) and corpus_path.strip():
             use_corpus = Path(corpus_path)

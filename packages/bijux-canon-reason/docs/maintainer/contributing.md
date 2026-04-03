@@ -1,6 +1,8 @@
+STATUS: EXPLANATORY
+
 # Contributing
 
-bijux-rar is a deterministic core system. Contributions are accepted only if they
+bijux-canon-reason is a deterministic core system. Contributions are accepted only if they
 preserve determinism, invariants, and repository hygiene.
 
 All changes **must** pass `make all`.
@@ -13,7 +15,7 @@ All changes **must** pass `make all`.
 2. Install development dependencies:
    ```bash
    pip install -e ".[dev]"
-````
+   ```
 
 3. Run the full pipeline before submitting:
 
@@ -31,7 +33,7 @@ PRs that do not pass locally will be rejected.
 * Determinism is non-negotiable.
 * Do not relax invariants without explicit migration or versioning.
 * Configuration, tooling, and workflows must remain aligned with
-  **bijux-cli** and **bijux-rag** conventions.
+  **bijux-cli** and **bijux-canon-ingest** conventions.
 * Large or architectural changes require prior discussion via issues.
 
 ---
@@ -60,6 +62,6 @@ Include the following checklist in your PR description:
 
 ## Scope
 
-bijux-rar is a low-level execution and verification engine.
+bijux-canon-reason is a low-level execution and verification engine.
 Feature creep, convenience abstractions, and non-essential integrations
 will not be accepted.
