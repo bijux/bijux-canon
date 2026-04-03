@@ -13,7 +13,7 @@ from bijux_canon_reason.core.rar_types import (
     TraceEventKind,
     VerifyOutput,
 )
-from bijux_canon_reason.rar.verification.checks import VerificationContext, run_all_checks
+from bijux_canon_reason.verification.checks import VerificationContext, run_all_checks
 
 
 def _plan_with_single_step() -> Plan:

@@ -49,7 +49,7 @@ from bijux_canon_reason.boundaries.serde.trace_jsonl import read_trace_jsonl
 from bijux_canon_reason.core.rar_types import Plan, ProblemSpec
 from bijux_canon_reason.application.runs import RunBuilder, RunInputs
 from bijux_canon_reason.rar.traces.replay import replay_from_artifacts
-from bijux_canon_reason.rar.verification.verifier import verify_trace
+from bijux_canon_reason.verification.verifier import verify_trace
 from bijux_canon_reason.security import (
     rate_limit_per_key,
     sanitize_run_id,

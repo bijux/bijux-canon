@@ -8,7 +8,7 @@ from typing import Any
 
 from bijux_canon_reason.core.rar_types import ProblemSpec
 from bijux_canon_reason.application.runs import RunArtifacts, RunBuilder, RunInputs
-from bijux_canon_reason.rar.verification.types import Severity
+from bijux_canon_reason.verification.types import Severity
 
 
 class EvalResult(dict[str, object]):

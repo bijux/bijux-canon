@@ -17,7 +17,7 @@ from bijux_canon_reason.core.rar_types import (
     UnderstandOutput,
     VerifyOutput,
 )
-from bijux_canon_reason.rar.verification.verifier import verify_trace
+from bijux_canon_reason.verification.verifier import verify_trace
 
 
 def test_insufficient_evidence_allowed() -> None:

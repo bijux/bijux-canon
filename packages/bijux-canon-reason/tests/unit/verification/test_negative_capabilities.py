@@ -28,7 +28,7 @@ from bijux_canon_reason.core.rar_types import (
     TraceEventKind,
     VerificationPolicyMode,
 )
-from bijux_canon_reason.rar.verification.verifier import verify_trace
+from bijux_canon_reason.verification.verifier import verify_trace
 
 
 def _build_minimal_plan(plan_id: str, spec_id: str) -> Plan:
