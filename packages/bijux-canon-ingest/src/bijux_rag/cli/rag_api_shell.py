@@ -9,7 +9,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
-from bijux_rag.boundaries.shells.rag_file_shell import RagFileShell
+from bijux_rag.cli.rag_file_shell import RagFileShell
 from bijux_rag.core.rag_types import Chunk
 from bijux_rag.infra.adapters.file_storage import FileStorage
 from bijux_rag.rag.stages import ChunkAndEmbedConfig

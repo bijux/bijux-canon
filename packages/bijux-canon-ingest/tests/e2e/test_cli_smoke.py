@@ -10,7 +10,7 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 import pytest
 
-from bijux_rag.boundaries.shells.cli import main as cli_main
+from bijux_rag.cli.cli import main as cli_main
 
 doc_strategy = st.builds(
     lambda doc_id, title, abstract, categories: {

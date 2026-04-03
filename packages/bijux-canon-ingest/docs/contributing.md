@@ -69,7 +69,7 @@ make docs-serve # local docs server
 **Tooling:** Prance, OpenAPI Spec Validator, OpenAPI Generator, Schemathesis
 **Validate locally**
 ```bash
-.venv/bin/uvicorn bijux_rag.boundaries.shells.http:app --host 0.0.0.0 --port 8000 &
+.venv/bin/uvicorn bijux_rag.http.app:app --host 0.0.0.0 --port 8000 &
 make api
 ```
 **Contract rules**
