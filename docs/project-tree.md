@@ -1,7 +1,7 @@
 # Repository Tree
 
 ```text
-bijux-llm-nexus/
+bijux-canon/
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
 ├── CHANGELOG.md
@@ -25,11 +25,16 @@ bijux-llm-nexus/
 │   ├── shared/
 │   └── <package>/
 └── packages/
-    ├── agentic-flows/
-    ├── bijux-agent/
-    ├── bijux-rag/
-    ├── bijux-rar/
-    └── bijux-vex/
+    ├── bijux-canon-runtime/
+    ├── bijux-canon-agent/
+    ├── bijux-canon-ingest/
+    ├── bijux-canon-reason/
+    ├── bijux-canon-index/
+    ├── compat-agentic-flows/
+    ├── compat-bijux-agent/
+    ├── compat-bijux-rag/
+    ├── compat-bijux-rar/
+    └── compat-bijux-vex/
 ```
 
 ## Layout Rules

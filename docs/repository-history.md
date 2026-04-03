@@ -4,11 +4,11 @@ This repository preserves the standalone history of each imported project.
 
 Layout:
 
-- `packages/bijux-llm-flows/`
-- `packages/bijux-llm-agent/`
-- `packages/bijux-llm-rag/`
-- `packages/bijux-llm-rar/`
-- `packages/bijux-llm-vex/`
+- `packages/bijux-canon-runtime/`
+- `packages/bijux-canon-agent/`
+- `packages/bijux-canon-ingest/`
+- `packages/bijux-canon-reason/`
+- `packages/bijux-canon-index/`
 
 Organization rule:
 

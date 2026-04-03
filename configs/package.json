@@ -1,5 +1,5 @@
 {
-  "name": "bijux-llm-nexus-openapi-tooling",
+  "name": "bijux-canon-openapi-tooling",
   "private": true,
   "description": "Shared Node toolchain for repository OpenAPI validation.",
   "engines": {

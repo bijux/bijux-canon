@@ -1,15 +1,15 @@
-# bijux-llm-nexus
+# bijux-canon
 
-`bijux-llm-nexus` is a monorepo for independently publishable Python packages
+`bijux-canon` is a monorepo for independently publishable Python packages
 that share repository-wide tooling, governance, and automation.
 
 ## Packages
 
-- `packages/bijux-llm-flows`
-- `packages/bijux-llm-agent`
-- `packages/bijux-llm-rag`
-- `packages/bijux-llm-rar`
-- `packages/bijux-llm-vex`
+- `packages/bijux-canon-runtime`
+- `packages/bijux-canon-agent`
+- `packages/bijux-canon-ingest`
+- `packages/bijux-canon-reason`
+- `packages/bijux-canon-index`
 
 ## Shared Ownership Model
 
@@ -24,8 +24,8 @@ Run a package target through the root Makefile:
 
 ```bash
 make test
-make lint PACKAGE=bijux-rag
-make docs PACKAGE=bijux-vex
+make lint PACKAGE=bijux-canon-ingest
+make docs PACKAGE=bijux-canon-index
 ```
 
 List tox environments from the root:

@@ -4,18 +4,18 @@ major_version_zero = true
 annotated_tag = true
 update_changelog_on_bump = false
 
-[tool.bijux_llm_nexus]
+[tool.bijux_canon]
 packages = [
-  "bijux-llm-flows",
-  "bijux-llm-agent",
-  "bijux-llm-rag",
-  "bijux-llm-rar",
-  "bijux-llm-vex",
+  "bijux-canon-runtime",
+  "bijux-canon-agent",
+  "bijux-canon-ingest",
+  "bijux-canon-reason",
+  "bijux-canon-index",
 ]
 
-[tool.bijux_llm_nexus.package_dirs]
-"bijux-llm-flows" = "packages/bijux-llm-flows"
-"bijux-llm-agent" = "packages/bijux-llm-agent"
-"bijux-llm-rag" = "packages/bijux-llm-rag"
-"bijux-llm-rar" = "packages/bijux-llm-rar"
-"bijux-llm-vex" = "packages/bijux-llm-vex"
+[tool.bijux_canon.package_dirs]
+"bijux-canon-runtime" = "packages/bijux-canon-runtime"
+"bijux-canon-agent" = "packages/bijux-canon-agent"
+"bijux-canon-ingest" = "packages/bijux-canon-ingest"
+"bijux-canon-reason" = "packages/bijux-canon-reason"
+"bijux-canon-index" = "packages/bijux-canon-index"

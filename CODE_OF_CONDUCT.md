@@ -1,7 +1,7 @@
 # Code of Conduct
 
 We are committed to a welcoming, safe, and respectful community across the
-entire `bijux-llm-nexus` repository.
+entire `bijux-canon` repository.
 
 ## Scope
 

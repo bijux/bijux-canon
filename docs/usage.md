@@ -4,19 +4,19 @@ This repository is organized for package-focused development.
 
 ## Explore Packages
 
-- `packages/bijux-llm-flows`
-- `packages/bijux-llm-agent`
-- `packages/bijux-llm-rag`
-- `packages/bijux-llm-rar`
-- `packages/bijux-llm-vex`
+- `packages/bijux-canon-runtime`
+- `packages/bijux-canon-agent`
+- `packages/bijux-canon-ingest`
+- `packages/bijux-canon-reason`
+- `packages/bijux-canon-index`
 
 ## Typical Workflows
 
 Run a package command from the repository root:
 
 ```bash
-make -C packages/bijux-llm-rag test
-make -C packages/bijux-llm-vex docs
+make -C packages/bijux-canon-ingest test
+make -C packages/bijux-canon-index docs
 ```
 
 Inspect shared tooling:

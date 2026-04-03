@@ -1,9 +1,9 @@
 PRIMARY_PACKAGES := \
-	bijux-llm-flows \
-	bijux-llm-agent \
-	bijux-llm-rag \
-	bijux-llm-rar \
-	bijux-llm-vex
+	bijux-canon-runtime \
+	bijux-canon-agent \
+	bijux-canon-ingest \
+	bijux-canon-reason \
+	bijux-canon-index
 
 COMPAT_PACKAGES := \
 	compat-agentic-flows \
@@ -62,11 +62,11 @@ DEFAULT_GOAL := help
 define resolve_package
 $(strip \
 $(if $(filter $(1),$(ALL_PACKAGES)),$(1), \
-$(if $(filter $(1),agentic-flows),bijux-llm-flows, \
-$(if $(filter $(1),bijux-agent),bijux-llm-agent, \
-$(if $(filter $(1),bijux-rag),bijux-llm-rag, \
-$(if $(filter $(1),bijux-rar),bijux-llm-rar, \
-$(if $(filter $(1),bijux-vex),bijux-llm-vex)))))))
+$(if $(filter $(1),agentic-flows),bijux-canon-runtime, \
+$(if $(filter $(1),bijux-agent),bijux-canon-agent, \
+$(if $(filter $(1),bijux-rag),bijux-canon-ingest, \
+$(if $(filter $(1),bijux-rar),bijux-canon-reason, \
+$(if $(filter $(1),bijux-vex),bijux-canon-index)))))))
 endef
 
 define assert_package
@@ -133,7 +133,7 @@ help:
 	  "  all                 Run test, lint, quality, security, docs, api, build, sbom" \
 	  "" \
 	  "Use PACKAGE=<slug> to scope a target to one package." \
-	  "Legacy PACKAGE aliases still resolve to the canonical bijux-llm-* package names."
+	  "Legacy PACKAGE aliases still resolve to the canonical bijux-canon-* package names."
 
 list:
 	@printf "%s\n" $(PRIMARY_PACKAGES)

@@ -1,6 +1,6 @@
-# bijux-llm-nexus
+# bijux-canon
 
-Unified repository for Bijux LLM packages and applications.
+Unified repository for Bijux Canon packages and applications.
 
 Python distributions live under `packages/`, while shared repository assets stay
 at the root. This keeps each package independently publishable, preserves the
@@ -9,11 +9,11 @@ repo-wide `src/` tree.
 
 Projects:
 
-- `packages/bijux-llm-flows`
-- `packages/bijux-llm-agent`
-- `packages/bijux-llm-rag`
-- `packages/bijux-llm-rar`
-- `packages/bijux-llm-vex`
+- `packages/bijux-canon-runtime`
+- `packages/bijux-canon-agent`
+- `packages/bijux-canon-ingest`
+- `packages/bijux-canon-reason`
+- `packages/bijux-canon-index`
 
 Shared repository assets:
 
