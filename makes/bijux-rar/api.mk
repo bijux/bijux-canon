@@ -32,6 +32,8 @@ API_NODE_DIR          ?= $(API_ARTIFACTS_DIR)/node
 OPENAPI_GENERATOR_VERSION ?= 7.14.0
 NODE_REQUIRED        ?= 20
 NODE_DIST_VERSION    ?= v20.18.0
+NODE_PACKAGE_MANIFEST ?= $(CONFIG_DIR)/package.json
+NODE_LOCKFILE         ?= $(CONFIG_DIR)/package-lock.json
 
 # Find schemas
 ALL_API_SCHEMAS       := $(shell find api -type f \( -name '*.yaml' -o -name '*.yml' \))
@@ -58,6 +60,8 @@ SCHEMA_BUNDLE_DIR_ABS   := $(abspath $(SCHEMA_BUNDLE_DIR))
 API_LOG_ABS             := $(abspath $(API_LOG))
 API_NODE_DIR_ABS        := $(abspath $(API_NODE_DIR))
 HYPOTHESIS_DB_API_ABS   := $(abspath $(HYPOTHESIS_DB_API))
+NODE_PACKAGE_MANIFEST_ABS := $(abspath $(NODE_PACKAGE_MANIFEST))
+NODE_LOCKFILE_ABS         := $(abspath $(NODE_LOCKFILE))
 REDOCLY_ABS             := $(API_NODE_DIR_ABS)/node_modules/.bin/redocly
 OPENAPI_GENERATOR_ABS   := $(API_NODE_DIR_ABS)/node_modules/.bin/openapi-generator-cli
 
@@ -222,7 +226,9 @@ $(API_NODE_DIR_ABS)/.deps-ok:
 	  fi; \
 	  echo "→ Using node @ $$(command -v node)"; \
 	  echo "→ Bootstrapping Node toolchain in $(API_NODE_DIR_ABS) using npm ci"; \
-	  cp package.json package-lock.json "$(API_NODE_DIR_ABS)"/; \
+	  test -f "$(NODE_PACKAGE_MANIFEST_ABS)" || { echo "✘ missing $(NODE_PACKAGE_MANIFEST_ABS)"; exit 1; }; \
+	  test -f "$(NODE_LOCKFILE_ABS)" || { echo "✘ missing $(NODE_LOCKFILE_ABS)"; exit 1; }; \
+	  cp "$(NODE_PACKAGE_MANIFEST_ABS)" "$(NODE_LOCKFILE_ABS)" "$(API_NODE_DIR_ABS)"/; \
 	  cd "$(API_NODE_DIR_ABS)" && { \
 	    NPM_CONFIG_CACHE="$(API_NODE_DIR_ABS)/.npm-cache" \
 	    npm ci --ignore-scripts --no-fund --no-audit --loglevel=info \
