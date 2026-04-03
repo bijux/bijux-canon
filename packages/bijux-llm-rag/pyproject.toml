@@ -92,7 +92,8 @@ Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-l
 
 [tool.hatch.version]
 source = "vcs"
-tag-pattern = "v?(?P<version>.*)"
+tag-pattern = "^bijux-llm-rag/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-rag/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 fallback-version = "0.1.0"
 
 [tool.hatch.build.hooks.vcs]

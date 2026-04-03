@@ -41,7 +41,7 @@ artifacts/
 
 > Note: Locally we emit to `artifacts/bijux-llm-rag/build/`. In CI, the uploaded artifact named **`dist`** still represents that same build bundle after upload/download.
 
-Tracked sources (e.g., `pyproject.toml`, `docs/index.md`, `LICENSE`, `../../apis/bijux-rag/v1/schema.yaml`) remain in place and are **not** artifacts.
+Tracked sources (e.g., `pyproject.toml`, `docs/index.md`, `LICENSE`, `../../apis/bijux-llm-rag/v1/schema.yaml`) remain in place and are **not** artifacts.
 
 ## Rationale
 

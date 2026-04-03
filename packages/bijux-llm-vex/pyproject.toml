@@ -151,7 +151,7 @@ example = "bijux_vex.plugins.example:register_runner"
 source = "vcs"
 fallback-version = "0.1.0"
 tag-pattern = "^bijux-llm-vex/v(?P<version>.*)$"
-raw-options = { local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-vex/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/bijux_vex/_version.py"

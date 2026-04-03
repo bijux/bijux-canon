@@ -1,6 +1,6 @@
 # HTTP API (FastAPI)
 
-FastAPI app lives in `bijux_rag.boundaries.web.fastapi_app`. The published OpenAPI schema is versioned at `../../apis/bijux-rag/v1/schema.yaml`.
+FastAPI app lives in `bijux_rag.boundaries.web.fastapi_app`. The published OpenAPI schema is versioned at `../../apis/bijux-llm-rag/v1/schema.yaml`.
 
 - `POST /v1/index/build` — build an index from documents (bm25 or numpy-cosine).
 - `POST /v1/retrieve` — retrieve top-k candidates from a saved index.
@@ -8,4 +8,4 @@ FastAPI app lives in `bijux_rag.boundaries.web.fastapi_app`. The published OpenA
 - `POST /v1/chunks` — legacy chunk/embed endpoint.
 - `GET /v1/healthz` — health check.
 
-To view the full OpenAPI spec in docs, mkdocs renders `../../apis/bijux-rag/v1/schema.yaml`. Clients can be generated directly from that file.
+To view the full OpenAPI spec in docs, mkdocs renders `../../apis/bijux-llm-rag/v1/schema.yaml`. Clients can be generated directly from that file.

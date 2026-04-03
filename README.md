@@ -9,11 +9,11 @@ repo-wide `src/` tree.
 
 Projects:
 
-- `packages/agentic-flows`
-- `packages/bijux-agent`
-- `packages/bijux-rag`
-- `packages/bijux-rar`
-- `packages/bijux-vex`
+- `packages/bijux-llm-flows`
+- `packages/bijux-llm-agent`
+- `packages/bijux-llm-rag`
+- `packages/bijux-llm-rar`
+- `packages/bijux-llm-vex`
 
 Shared repository assets:
 

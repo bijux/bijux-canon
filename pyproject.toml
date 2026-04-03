@@ -6,16 +6,16 @@ update_changelog_on_bump = false
 
 [tool.bijux_llm_nexus]
 packages = [
-  "agentic-flows",
-  "bijux-agent",
-  "bijux-rag",
-  "bijux-rar",
-  "bijux-vex",
+  "bijux-llm-flows",
+  "bijux-llm-agent",
+  "bijux-llm-rag",
+  "bijux-llm-rar",
+  "bijux-llm-vex",
 ]
 
 [tool.bijux_llm_nexus.package_dirs]
-"agentic-flows" = "packages/agentic-flows"
-"bijux-agent" = "packages/bijux-agent"
-"bijux-rag" = "packages/bijux-rag"
-"bijux-rar" = "packages/bijux-rar"
-"bijux-vex" = "packages/bijux-vex"
+"bijux-llm-flows" = "packages/bijux-llm-flows"
+"bijux-llm-agent" = "packages/bijux-llm-agent"
+"bijux-llm-rag" = "packages/bijux-llm-rag"
+"bijux-llm-rar" = "packages/bijux-llm-rar"
+"bijux-llm-vex" = "packages/bijux-llm-vex"
