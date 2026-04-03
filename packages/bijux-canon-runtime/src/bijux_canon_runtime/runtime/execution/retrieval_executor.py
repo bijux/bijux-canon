@@ -9,7 +9,7 @@ import hashlib
 from typing import Any
 
 import bijux_rag
-import bijux_vex
+import bijux_canon_index
 
 from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
@@ -44,8 +44,8 @@ class RetrievalExecutor:
             return []
         if not hasattr(bijux_rag, "retrieve"):
             raise RuntimeError("bijux_rag.retrieve is required for retrieval")
-        if not hasattr(bijux_vex, "enforce_contract"):
-            raise RuntimeError("bijux_vex.enforce_contract is required for enforcement")
+        if not hasattr(bijux_canon_index, "enforce_contract"):
+            raise RuntimeError("bijux_canon_index.enforce_contract is required for enforcement")
 
         raw_evidence = bijux_rag.retrieve(
             query=request.query,
@@ -63,7 +63,7 @@ class RetrievalExecutor:
         ):
             raise ValueError("retrieval evidence vector contract mismatch")
 
-        if not bijux_vex.enforce_contract(request.vector_contract_id, evidence):
+        if not bijux_canon_index.enforce_contract(request.vector_contract_id, evidence):
             raise ValueError("retrieval evidence failed vector contract enforcement")
 
         if any(

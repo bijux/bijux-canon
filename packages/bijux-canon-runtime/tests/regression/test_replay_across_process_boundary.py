@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import bijux_agent
 import bijux_rag
-import bijux_rar
-import bijux_vex
+import bijux_canon_reason
+import bijux_canon_index
 import pytest
 
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
@@ -74,7 +74,7 @@ def test_replay_across_process_boundary(
             "vector_contract_id": "contract-a",
         }
     ]
-    bijux_vex.enforce_contract = lambda *_args, **_kwargs: True
+    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
 
     def _reason(agent_outputs, evidence, seed):
         evidence_item = evidence[0]
@@ -108,7 +108,7 @@ def test_replay_across_process_boundary(
             producer_agent_id=AgentID("agent-a"),
         )
 
-    bijux_rar.reason = _reason
+    bijux_canon_reason.reason = _reason
     request = RetrievalRequest(
         spec_version="v1",
         request_id=RequestID("req-1"),

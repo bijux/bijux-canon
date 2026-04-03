@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import bijux_agent
 import bijux_rag
-import bijux_rar
-import bijux_vex
+import bijux_canon_reason
+import bijux_canon_index
 import pytest
 
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
@@ -127,8 +127,8 @@ def test_step_budget_halts_flow(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_vex.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_rar.reason = lambda **_kwargs: ReasoningBundle(
+    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
+    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-1"),
         claims=(),
@@ -188,7 +188,7 @@ def test_token_budget_failure_is_deterministic(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_vex.enforce_contract = lambda *_args, **_kwargs: True
+    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
 
     def _reason(agent_outputs, evidence, seed):
         statement = build_claim_statement(agent_outputs, evidence)
@@ -217,7 +217,7 @@ def test_token_budget_failure_is_deterministic(
             producer_agent_id=AgentID("agent-a"),
         )
 
-    bijux_rar.reason = _reason
+    bijux_canon_reason.reason = _reason
 
     resolved_flow = _resolved_flow_for_budget(
         resolved_flow_factory, entropy_budget, replay_envelope, dataset_descriptor
@@ -276,8 +276,8 @@ def test_artifact_step_budget_halts_flow(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_vex.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_rar.reason = lambda **_kwargs: ReasoningBundle(
+    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
+    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-1"),
         claims=(),
@@ -337,8 +337,8 @@ def test_evidence_budget_halts_flow(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_vex.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_rar.reason = lambda **_kwargs: ReasoningBundle(
+    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
+    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-1"),
         claims=(),

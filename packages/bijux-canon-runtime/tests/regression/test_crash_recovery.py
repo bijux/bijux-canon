@@ -8,7 +8,8 @@ import os
 import signal
 from pathlib import Path
 
-import bijux_rar
+import bijux_canon_index
+import bijux_canon_reason
 import duckdb
 import pytest
 
@@ -31,7 +32,8 @@ pytestmark = pytest.mark.regression
 def _run_with_crash(db_path: str, resolved_flow, verification_policy) -> None:
     os.environ["AF_CRASH_AT_STEP"] = "0"
     resolved_flow = ExecutionPlanner().resolve(resolved_flow.manifest)
-    bijux_rar.reason = lambda **_kwargs: ReasoningBundle(
+    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
+    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-crash"),
         claims=(),

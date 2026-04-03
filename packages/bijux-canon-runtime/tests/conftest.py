@@ -76,14 +76,14 @@ def pytest_configure() -> None:
         stub = types.ModuleType("bijux_rag")
         stub.retrieve = lambda **_kwargs: []
         sys.modules["bijux_rag"] = stub
-    if "bijux_vex" not in sys.modules:
-        stub = types.ModuleType("bijux_vex")
+    if "bijux_canon_index" not in sys.modules:
+        stub = types.ModuleType("bijux_canon_index")
         stub.enforce_contract = lambda *_args, **_kwargs: True
-        sys.modules["bijux_vex"] = stub
-    if "bijux_rar" not in sys.modules:
-        stub = types.ModuleType("bijux_rar")
+        sys.modules["bijux_canon_index"] = stub
+    if "bijux_canon_reason" not in sys.modules:
+        stub = types.ModuleType("bijux_canon_reason")
         stub.reason = lambda **_kwargs: None
-        sys.modules["bijux_rar"] = stub
+        sys.modules["bijux_canon_reason"] = stub
 
 
 @pytest.fixture(autouse=True)

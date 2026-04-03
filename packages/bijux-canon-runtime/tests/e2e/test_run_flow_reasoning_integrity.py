@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import bijux_agent
-import bijux_rar
+import bijux_canon_reason
 import pytest
 
 from bijux_canon_runtime.application.execute_flow import (
@@ -88,7 +88,7 @@ def test_reasoning_references_missing_evidence(
             producer_agent_id=AgentID("agent-a"),
         )
 
-    bijux_rar.reason = _bad_reason
+    bijux_canon_reason.reason = _bad_reason
 
     step = ResolvedStep(
         spec_version="v1",

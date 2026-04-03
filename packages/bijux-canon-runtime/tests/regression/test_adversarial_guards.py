@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import bijux_agent
 import bijux_rag
-import bijux_rar
-import bijux_vex
+import bijux_canon_reason
+import bijux_canon_index
 import pytest
 
 from bijux_canon_runtime.core.authority import authority_token
@@ -164,7 +164,7 @@ def test_reused_artifact_id_rejected(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_vex.enforce_contract = lambda *_args, **_kwargs: True
+    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
 
     def _reason(agent_outputs, evidence, seed):
         statement = build_claim_statement(agent_outputs, evidence)
@@ -193,7 +193,7 @@ def test_reused_artifact_id_rejected(
             producer_agent_id=AgentID("agent-a"),
         )
 
-    bijux_rar.reason = _reason
+    bijux_canon_reason.reason = _reason
 
     request = RetrievalRequest(
         spec_version="v1",
@@ -304,8 +304,8 @@ def test_fake_evidence_id_rejected(
             "vector_contract_id": "contract-1",
         }
     ]
-    bijux_vex.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_rar.reason = lambda **_kwargs: ReasoningBundle(
+    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
+    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
         spec_version="v1",
         bundle_id=BundleID("bundle-1"),
         claims=(

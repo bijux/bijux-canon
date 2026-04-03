@@ -139,6 +139,14 @@ fragments = [
 fail-under = 100
 color = true
 
+[tool.pytest.ini_options]
+markers = [
+  "e2e: end-to-end runtime contract coverage",
+  "regression: regression coverage for replay and determinism guarantees",
+  "smoke: focused smoke coverage for storage and package wiring",
+  "unit: unit coverage for local runtime components",
+]
+
 [tool.bandit]
 skips = ["B404", "B311"]
 exclude_dirs = [".venv", "tests", "artifacts", ".pytest_cache", ".ruff_cache"]
