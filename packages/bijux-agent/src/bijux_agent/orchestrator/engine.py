@@ -63,7 +63,7 @@ class Orchestrator:
         failure_policy: FailurePolicy | None = None,
     ) -> None:
         self.nodes = list(nodes)
-        self.policy = failure_policy or FailurePolicy.load(Path("failure_policy.yaml"))
+        self.policy = failure_policy or FailurePolicy.load_default()
         self.trace_recorder = TraceRecorder(
             run_id=str(uuid.uuid4()), path=trace_path, model_metadata=model_metadata
         )
