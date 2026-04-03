@@ -13,7 +13,7 @@ from bijux_canon_runtime.application.execute_flow import (
 from bijux_canon_runtime.application.replay_store import replay_with_store
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.ontology import (
     DatasetState,

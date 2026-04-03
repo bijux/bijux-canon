@@ -8,7 +8,7 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from typing import Any
 
 __all__ = [

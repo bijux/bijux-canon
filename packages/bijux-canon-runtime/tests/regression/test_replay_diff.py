@@ -15,7 +15,7 @@ from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,

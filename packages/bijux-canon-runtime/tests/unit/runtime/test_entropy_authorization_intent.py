@@ -21,7 +21,7 @@ from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.ontology import (
     DeterminismLevel,

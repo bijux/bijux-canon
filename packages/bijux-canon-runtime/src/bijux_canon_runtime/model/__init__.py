@@ -8,7 +8,7 @@ from __future__ import annotations
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 
 # PUBLIC MODEL SURFACE — ADDING EXPORTS IS A BREAKING CHANGE
 __all__ = [

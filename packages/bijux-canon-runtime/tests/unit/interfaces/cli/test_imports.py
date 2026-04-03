@@ -11,7 +11,7 @@ from bijux_canon_runtime.application.execute_flow import (
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 
 pytestmark = pytest.mark.unit
 

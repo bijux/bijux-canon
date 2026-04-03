@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections import defaultdict, deque
 from collections.abc import Iterable
 
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.ontology import (
     DatasetState,
     DeterminismLevel,

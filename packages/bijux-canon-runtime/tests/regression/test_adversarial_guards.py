@@ -27,7 +27,7 @@ from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.artifact.reasoning_claim import ReasoningClaim
 from bijux_canon_runtime.model.datasets.retrieval_request import RetrievalRequest
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
 from bijux_canon_runtime.model.reasoning_step import ReasoningStep

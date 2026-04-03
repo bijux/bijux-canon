@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 
 
 @dataclass(frozen=True)
