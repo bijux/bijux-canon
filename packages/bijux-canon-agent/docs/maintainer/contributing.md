@@ -1,8 +1,8 @@
 Owner: Bijan Mousavi <bijan@bijux.io>
 Status: stable
-Scope: Contributing to bijux-agent.
+Scope: Contributing to bijux-canon-agent.
 
-# Contributing to bijux-agent
+# Contributing to bijux-canon-agent
 
 Keep the process boring and predictable.
 

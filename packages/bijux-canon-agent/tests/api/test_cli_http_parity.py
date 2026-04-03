@@ -222,7 +222,7 @@ def test_cli_http_parity(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
     )
 
     cli_args = [
-        "bijux-agent",
+        "bijux-canon-agent",
         "run",
         str(input_file),
         "--out",

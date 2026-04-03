@@ -11,7 +11,7 @@ def test_parse_args_run_command(monkeypatch) -> None:
     monkeypatch.setattr(
         sys,
         "argv",
-        ["bijux-agent", "run", "dummy.txt", "--out", "results-dir"],
+        ["bijux-canon-agent", "run", "dummy.txt", "--out", "results-dir"],
     )
     args = parse_args()
     assert args.command == "run"
@@ -28,7 +28,7 @@ def test_parse_args_all_flags(monkeypatch) -> None:
         sys,
         "argv",
         [
-            "bijux-agent",
+            "bijux-canon-agent",
             "run",
             "another.txt",
             "--out",
@@ -54,7 +54,7 @@ def test_parse_args_replay_command(monkeypatch) -> None:
     monkeypatch.setattr(
         sys,
         "argv",
-        ["bijux-agent", "replay", "trace.json"],
+        ["bijux-canon-agent", "replay", "trace.json"],
     )
     args = parse_args()
     assert args.command == "replay"

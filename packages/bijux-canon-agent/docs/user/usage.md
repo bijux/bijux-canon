@@ -16,12 +16,6 @@ Published package:
 python -m pip install bijux-canon-agent
 ```
 
-Compatibility package:
-
-```bash
-python -m pip install bijux-agent
-```
-
 Editable checkout (no dev tooling):
 
 ```bash
