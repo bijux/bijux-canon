@@ -78,8 +78,8 @@ dev = [
 ]
 
 [project.scripts]
-bijux-canon-ingest = "bijux_canon_ingest.cli.entrypoint:main"
-bijux-rag = "bijux_canon_ingest.cli.entrypoint:main"
+bijux-canon-ingest = "bijux_canon_ingest.interfaces.cli.entrypoint:main"
+bijux-rag = "bijux_canon_ingest.interfaces.cli.entrypoint:main"
 
 [project.urls]
 Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest"

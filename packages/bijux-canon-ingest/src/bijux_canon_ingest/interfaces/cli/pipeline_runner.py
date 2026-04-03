@@ -8,7 +8,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import replace
 
-from bijux_canon_ingest.cli.file_api import FSReader, write_chunks_jsonl
+from bijux_canon_ingest.interfaces.cli.file_api import FSReader, write_chunks_jsonl
 from bijux_canon_ingest.config.app import AppConfig
 from bijux_canon_ingest.config.cleaning import CleanConfig
 from bijux_canon_ingest.config.ingest import IngestConfig, build_ingest_deps

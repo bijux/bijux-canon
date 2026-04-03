@@ -32,7 +32,7 @@ from .boundaries.exception_bridge import (
     v_map_try,
     v_try,
 )
-from .cli.file_api import FSReader, write_chunks_jsonl
+from .interfaces.cli.file_api import FSReader, write_chunks_jsonl
 from .config.app import AppConfig
 
 # Domain value types – immutable, hashable where needed
