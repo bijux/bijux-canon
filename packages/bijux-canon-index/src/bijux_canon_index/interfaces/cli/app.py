@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, replace
+from dataclasses import replace
 import json
 import os
 from pathlib import Path
@@ -39,13 +39,7 @@ from bijux_canon_index.interfaces.schemas.models import (
     IngestRequest,
     RandomnessProfilePayload,
 )
-from bijux_canon_index.core.config import (
-    EmbeddingCacheConfig,
-    EmbeddingConfig,
-    ExecutionConfig,
-    ResourceLimits,
-    VectorStoreConfig,
-)
+from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BijuxError, ValidationError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -55,12 +49,27 @@ from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import ExecutionBudget, ExecutionRequest, NDSettings, Result
 from bijux_canon_index.domain.requests import scoring
 from bijux_canon_index.domain.requests.execution_diff import _rank_instability
-from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
 from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.infra.logging import enable_trace, trace_events
 from bijux_canon_index.infra.metrics import METRICS
 from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.interfaces.cli.configuration import (
+    build_config as _build_config,
+    load_config as _load_config,
+    parse_contract as _parse_contract,
+    parse_intent as _parse_intent,
+    parse_mode as _parse_mode,
+)
+from bijux_canon_index.interfaces.cli.rendering import (
+    OutputOptions,
+    config_to_dict as _config_to_dict,
+    emit as _emit,
+    load_bundle as _load_bundle,
+    redact_config as _redact_config,
+    render_table as _render_table,
+    resolve_correlation_id as _resolve_correlation_id,
+)
 
 app = typer.Typer(add_completion=False)
 vdb_app = typer.Typer(add_completion=False, help="Vector DB utilities")
@@ -81,16 +90,6 @@ ND_TUNE_CACHE_OPTION = typer.Option(
 ND_TUNE_DATASET_DIR_OPTION = typer.Option(
     None, "--dataset-dir", help="Path to dataset directory for tuning"
 )
-
-
-@dataclass(frozen=True)
-class OutputOptions:
-    fmt: str | None = None
-    output: Path | None = None
-    config_path: Path | None = None
-    trace: bool = False
-    quiet: bool = False
-    no_color: bool = False
 
 
 @app.callback()
@@ -123,193 +122,6 @@ def _main_callback(
         quiet=quiet,
         no_color=no_color,
     )
-
-
-def _render_table(data: object) -> str:
-    if isinstance(data, dict):
-        lines = ["key | value", "---- | -----"]
-        for key, value in data.items():
-            lines.append(f"{key} | {value}")
-        return "\n".join(lines)
-    if isinstance(data, list) and data and isinstance(data[0], dict):
-        keys = list(data[0].keys())
-        header = " | ".join(keys)
-        divider = " | ".join(["---"] * len(keys))
-        lines = [header, divider]
-        lines.extend(" | ".join(str(row.get(k, "")) for k in keys) for row in data)
-        return "\n".join(lines)
-    return str(data)
-
-
-def _resolve_correlation_id(raw: str | None) -> str:
-    return raw or f"req-{uuid.uuid4().hex}"
-
-
-def _emit(
-    ctx: typer.Context | None,
-    data: object,
-    *,
-    table: str | None = None,
-) -> None:
-    options: OutputOptions | None = getattr(ctx, "obj", None) if ctx else None
-    fmt = options.fmt if options else None
-    output = options.output if options else None
-    quiet = options.quiet if options else False
-    trace = options.trace if options else False
-    payload: object = data
-    if trace:
-        payload = {"data": data, "trace": trace_events()}
-    if fmt == "table":
-        payload = table or _render_table(data)
-        if not quiet:
-            typer.echo(payload)
-            if output:
-                output.write_text(payload, encoding="utf-8")
-        return
-    if fmt is None and table is not None and not quiet:
-        typer.echo(table)
-    serialized = json.dumps(payload, default=str)
-    if not quiet:
-        typer.echo(serialized)
-    if output:
-        output.write_text(serialized, encoding="utf-8")
-
-
-def _config_to_dict(config: ExecutionConfig | None) -> dict[str, object]:
-    if config is None:
-        return {}
-    return asdict(config)
-
-
-def _redact_config(config: ExecutionConfig | None) -> dict[str, object]:
-    payload = _config_to_dict(config)
-    vs = payload.get("vector_store")
-    if isinstance(vs, dict) and vs.get("uri"):
-        resolved = VECTOR_STORES.resolve(
-            vs.get("backend") or "memory", uri=str(vs.get("uri"))
-        )
-        vs["uri"] = resolved.uri_redacted
-    return payload
-
-
-def _load_bundle(path: Path) -> dict[str, object]:
-    with zipfile.ZipFile(path, "r") as zf:
-        metadata = json.loads(zf.read("metadata.json").decode("utf-8"))
-        result = json.loads(zf.read("result.json").decode("utf-8"))
-        return {"metadata": metadata, "result": result}
-
-
-def _parse_contract(raw: str) -> ExecutionContract:
-    try:
-        return ExecutionContract(raw)
-    except Exception:
-        typer.echo("execution-contract must be one of deterministic|non_deterministic")
-        sys.exit(1)
-
-
-def _parse_mode(raw: str) -> ExecutionMode:
-    try:
-        return ExecutionMode(raw)
-    except Exception:
-        typer.echo("execution-mode must be one of strict|bounded|exploratory")
-        sys.exit(1)
-
-
-ALLOWED_INTENTS = {intent.value for intent in ExecutionIntent}
-
-
-def _parse_intent(raw: str) -> ExecutionIntent:
-    if raw not in ALLOWED_INTENTS:
-        allowed = "|".join(sorted(ALLOWED_INTENTS))
-        typer.echo(f"execution-intent must be one of {allowed}")
-        sys.exit(1)
-    return ExecutionIntent(raw)
-
-
-def _load_config(config_path: Path | None) -> ExecutionConfig | None:
-    if not config_path:
-        return None
-    suffix = config_path.suffix.lower()
-    if suffix in {".toml", ".tml"}:
-        import tomllib
-
-        payload = tomllib.loads(config_path.read_text(encoding="utf-8"))
-    elif suffix in {".yaml", ".yml"}:
-        try:
-            import yaml
-        except Exception as exc:  # pragma: no cover
-            raise ValueError(
-                "YAML config requires PyYAML. Install with extras or use TOML."
-            ) from exc
-        payload = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
-    else:
-        raise ValueError("config file must be .toml or .yaml/.yml")
-    vector_store_cfg = payload.get("vector_store") or {}
-    embed_cfg = payload.get("embeddings") or {}
-    limits_cfg = payload.get("resource_limits") or {}
-    cache_cfg = embed_cfg.get("cache") or {}
-    vs_config = None
-    if vector_store_cfg.get("backend"):
-        vs_config = VectorStoreConfig(
-            backend=vector_store_cfg.get("backend"),
-            uri=vector_store_cfg.get("uri"),
-        )
-    embed_config = None
-    if embed_cfg.get("provider") or embed_cfg.get("model") or cache_cfg.get("uri"):
-        embed_config = EmbeddingConfig(
-            provider=embed_cfg.get("provider"),
-            model=embed_cfg.get("model"),
-            cache=(
-                EmbeddingCacheConfig(
-                    backend=cache_cfg.get("backend"),
-                    uri=cache_cfg.get("uri"),
-                )
-                if cache_cfg
-                else None
-            ),
-        )
-    limits = None
-    if limits_cfg:
-        limits = ResourceLimits(
-            max_vectors_per_ingest=limits_cfg.get("max_vectors_per_ingest"),
-            max_k=limits_cfg.get("max_k"),
-            max_query_size=limits_cfg.get("max_query_size"),
-            max_execution_time_ms=limits_cfg.get("max_execution_time_ms"),
-        )
-    return ExecutionConfig(
-        vector_store=vs_config, embeddings=embed_config, resource_limits=limits
-    )
-
-
-def _build_config(
-    *,
-    vector_store: str | None = None,
-    vector_store_uri: str | None = None,
-    embed_provider: str | None = None,
-    embed_model: str | None = None,
-    cache_embeddings: str | None = None,
-    base_config: ExecutionConfig | None = None,
-) -> ExecutionConfig:
-    vs_config = base_config.vector_store if base_config else None
-    if vector_store:
-        vs_config = VectorStoreConfig(backend=vector_store, uri=vector_store_uri)
-    embed_config = base_config.embeddings if base_config else None
-    if embed_model or embed_provider or cache_embeddings:
-        cache_cfg = (
-            EmbeddingCacheConfig(backend=None, uri=cache_embeddings)
-            if cache_embeddings
-            else None
-        )
-        embed_config = EmbeddingConfig(
-            provider=embed_provider,
-            model=embed_model,
-            cache=cache_cfg,
-        )
-    limits = base_config.resource_limits if base_config else None
-    return ExecutionConfig(
-        vector_store=vs_config, embeddings=embed_config, resource_limits=limits
-    )
-
 
 @app.command()
 @no_type_check
