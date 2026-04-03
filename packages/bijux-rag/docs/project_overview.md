@@ -14,7 +14,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── scripts/             # helper scripts (download_data, openapi_drift)
 ├── src/bijux_rag/       # library code (functional core + boundaries + effects)
 ├── tests/               # unit + e2e + strategies + eval assets
-├── typings/             # custom stubs (msgpack)
+├── stubs/               # custom stubs (msgpack)
 ├── .gitignore           # git ignores
 ├── CHANGELOG.md         # version history
 ├── Makefile             # main Makefile entrypoint
