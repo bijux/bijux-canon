@@ -15,6 +15,7 @@ Core namespaces:
 - `bijux_canon_ingest.interfaces.http`: FastAPI transport.
 - `bijux_canon_ingest.interfaces.errors`: boundary exception helpers.
 - `bijux_canon_ingest.application`: orchestration, services, and pipeline builders.
+- `bijux_canon_ingest.integrations`: optional adapters for adjacent Python ecosystems.
 - `bijux_canon_ingest.processing`: pure chunking, embedding, and streaming transforms.
 - `bijux_canon_ingest.interfaces.serialization`: serialization codecs and Pydantic edge models.
 - `bijux_canon_ingest.config`: package configuration models.
