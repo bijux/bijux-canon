@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import threading
 
-from bijux_canon_index.application._orchestrator import Orchestrator
+from bijux_canon_index.application.orchestrator import Orchestrator
 
 
 def test_backend_pool_reuses_sqlite_backend(tmp_path: Path, monkeypatch) -> None:

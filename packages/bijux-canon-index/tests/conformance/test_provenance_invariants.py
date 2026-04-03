@@ -13,7 +13,7 @@ from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.types import ExecutionRequest
 from bijux_canon_index.domain.provenance.lineage import explain_result
-from bijux_canon_index.application._orchestrator import Orchestrator
+from bijux_canon_index.application.orchestrator import Orchestrator
 
 
 def _setup_engine() -> Orchestrator:
