@@ -1,0 +1,2 @@
+Example document for the golden pipeline run.
+It contains a few sentences for summarization.

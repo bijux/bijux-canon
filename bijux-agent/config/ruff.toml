@@ -1,0 +1,37 @@
+target-version = "py311"
+line-length = 88
+fix = true
+respect-gitignore = true
+src = ["src", "tests"]
+
+exclude = [
+  ".git", ".hg", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".tox", ".venv",
+  "build", "dist", "docs", "htmlcov", "__pycache__", "migrations", "*.egg-info"
+]
+
+[lint]
+select = [
+  "E","F","I","B","UP","SIM","PT","N","A","C4","S","TID","PERF",
+  # "RUF","ARG","TRY","T20","BLE","ERA"
+]
+ignore = ["E501", "E203", "D203", "D213"]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "D", "S"]
+"__init__.py" = ["F401"]
+"src/bijux_agent/schema/models.py" = ["PT011"]
+"src/bijux_agent/models/contract.py" = ["PT011"]
+
+[lint.isort]
+force-sort-within-sections = true
+known-first-party = ["bijux_agent"]
+required-imports = ["from __future__ import annotations"]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+[lint.mccabe]
+max-complexity = 10

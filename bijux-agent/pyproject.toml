@@ -1,0 +1,228 @@
+[build-system]
+requires = ["hatchling>=1.25.0", "hatch-vcs>=0.4.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bijux-agent"
+dynamic = ["version"]
+description = "A composable, multi-agentic pipeline for advanced file processing and summarization."
+authors = [
+    { name = "Bijan Mousavi", email = "mousavi.bijan@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.11,<4"
+license = { file = "LICENSE" }
+keywords = ["pipeline", "multi-agent", "file-processing", "summarization", "AI", "LLM"]
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Development Status :: 4 - Beta",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: General"
+]
+dependencies = [
+    "typer>=0.12.5",
+    "click>=8.1.7",
+    "pydantic>=2.9.2,<3.0",
+    "pydantic-settings~=2.0",
+    "packaging>=23.0",
+    "injector>=0.20.1",
+    "fastapi>=0.110,<1.0",
+    "orjson>=3.9.0",
+    "pyyaml>=6.0.2",
+    "cookiecutter>=2.3.0",
+    "cryptography>=44.0.1",
+    "psutil>=6.0.0",
+    "rapidfuzz>=3.0.0",
+    "prompt_toolkit>=3.0.0",
+    "structlog>=24.4.0",
+    "colorama>=0.4.6",
+    "colorlog>=6.7.0,<7.0",
+    "pluggy>=1.0.0",
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.30.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "types-PyYAML>=6.0.12,<7.0",
+    "types-orjson>=3.6.0,<4.0",
+    "types-colorama>=0.0.14,<1.0",
+    "types-psutil>=6.0.0,<7.0",
+    "types-requests>=2.32.4,<3.0",
+    "typing-extensions>=4.5.0,<5.0",
+    "types-pexpect>=4.9.0,<5.0",
+
+    "pytest>=8.4.1,<9.0",
+    "pytest-cov>=6.2.1,<7.0",
+    "pytest-asyncio>=1.0.0,<2.0",
+    "pytest-timeout>=2.4.0,<3.0",
+    "pytest-rerunfailures>=13.0,<14.0",
+    "pytest-benchmark>=4.0.0,<5.0",
+    "hypothesis>=6.103.0,<7.0",
+    "hypothesis-jsonschema>=0.23.0,<1.0",
+    "pexpect>=4.8.0,<5.0",
+
+    "ruff>=0.6.8,<1.0",
+    "mypy>=1.11.2,<2.0",
+    "pytype>=2024.10.11",
+    "codespell>=2.3.0,<3.0",
+    "pyright>=1.1.320,<2.0",
+    "pydocstyle>=6.2.1,<7.0",
+    "radon>=6.0.0",
+
+    "vulture>=2.7,<3.0",
+    "deptry>=0.10.0,<1.0",
+    "reuse>=4.0.0,<6.0.0",
+
+    "build>=1.0.3,<2.0",
+    "bandit>=1.7.10,<2.0",
+    "pip-audit>=2.7.3,<3.0",
+    "commitizen>=4.0.0,<5.0",
+
+    "interrogate>=1.7.0,<2.0",
+    "mkdocs>=1.6.1,<2.0",
+    "mkdocs-material>=9.5.39,<10.0",
+    "mkdocstrings[python]>=0.26.1,<1.0",
+    "mkdocs-git-revision-date-localized-plugin>=1.2.0,<2.0",
+    "mkdocs-include-markdown-plugin",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-redirects>=1.2,<2.0",
+    "mkdocs-minify-plugin>=0.7,<1.0",
+    "mkdocs-glightbox>=0.3,<1.0",
+    "mkdocs-material[imaging]>=9.5.39,<10.0",
+
+    "prance>=25.4.0.0",
+    "openapi-spec-validator>=0.7.1,<1.0",
+    "schemathesis>=4.0,<5.0",
+    "anyio>=4.4.0,<5.0",
+    "uvicorn>=0.30.1,<1.0",
+
+    "pre-commit>=4.0",
+    "twine>=6.1.0,<7.0",
+    "towncrier>=23.0,<25.0",
+
+    "mutmut>=3.0",
+    "cosmic-ray>=4.0.0",
+]
+
+doc = [
+    "Sphinx>=7.0.0,<8.0.0",
+    "sphinx-rtd-theme>=2.0.0,<3.0.0",
+    "myst-parser>=3.0.0,<4.0.0"
+]
+extra = [
+    "python-docx>=1.1.0,<2.0.0",  # For DOCX support
+    "lxml>=5.3.0,<6.0.0",         # For XML support
+    "openpyxl>=3.1.0,<4.0.0"      # For Excel support (future)
+]
+profiling = [
+    "memory-profiler>=0.61.0,<0.62.0",
+    "psutil>=6.0.0,<7.0.0"
+]
+
+filereaders = [
+    "pandas>=2.0.3,<3.0",
+    "PyPDF2>=3.0.1,<4.0",
+    "pdfminer.six>=20221105,<20240000",
+    "pytesseract>=0.3.10,<0.4",
+    "python-docx>=1.1.0,<2.0.0",
+    "PyMuPDF>=1.23.0,<2.0",
+]
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.1.0"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bijux_agent"]
+
+[tool.pytest.ini_options]
+addopts = "-v --cov=bijux_agent --cov-report=term-missing --cov-report=html:artifacts/test/htmlcov --cov-report=xml:artifacts/test/coverage.xml --cov-fail-under=0"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = [
+    "unit: mark a test as a unit test",
+    "integration: mark a test as an integration test",
+    "e2e: mark a test as an end-to-end real-model run",
+    "live: mark a test as a live provider integration",
+]
+
+[tool.mypy-core]
+config-file = "config/mypy-core.ini"
+
+[tool.mypy-extended]
+config-file = "config/mypy-extended.ini"
+python_files = ["test_*.py"]
+
+[tool.deptry]
+extend_exclude = [
+    "docs",
+    "mkdocs",
+    "tooling",
+]
+ignore = ["DEP001", "DEP002", "DEP003"]
+
+[tool.coverage.run]
+source = ["bijux_agent"]
+omit = [
+    "src/bijux_agent/__main__.py",
+    "src/bijux_agent/__all__.py",
+    "src/bijux_agent/schema/_pydantic_typing.py",
+    "*/__all__.py",
+    "*/_pydantic_typing.py",
+    "tests/*"
+]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError"
+]
+fail_under = 60
+show_missing = true
+
+[tool.interrogate]
+fail_under = 70
+ignore_private = true
+ignore_init_method = true
+ignore_magic = true
+ignore_semiprivate = true
+ignore_nested_functions = true
+exclude = [
+    "tests",
+    "src/bijux_agent/agents/critique.py",
+    "src/bijux_agent/agents/summarizer.py",
+    "src/bijux_agent/filereaders/universal_file_reader.py",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py39", "py310", "py311"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''

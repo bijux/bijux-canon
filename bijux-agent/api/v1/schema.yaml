@@ -1,0 +1,173 @@
+openapi: 3.0.3
+info:
+  title: bijux-agent HTTP API
+  version: v1
+  description: Execution-only, deterministic, stateless API for running the canonical pipeline.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: /
+security: []
+paths:
+  /v1/run:
+    post:
+      operationId: runPipelineV1
+      summary: Run the canonical pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunRequestV1"
+            examples:
+              minimal:
+                summary: Minimal valid request (uses default context_id)
+                value:
+                  text: "Example document text to process."
+                  task_goal: "Summarize the key points and extract structured data."
+              with_context:
+                summary: Request with explicit context_id
+                value:
+                  text: "Example document text to process."
+                  task_goal: "Summarize the key points and extract structured data."
+                  context_id: "custom-execution-2026"
+      responses:
+        "200":
+          description: Successful pipeline run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunResponseV1"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseV1"
+        "422":
+          description: Execution or convergence failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseV1"
+        "500":
+          description: Internal execution failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseV1"
+  /v1/health:
+    get:
+      operationId: v1Health
+      summary: Health status for the API
+      responses:
+        "200":
+          description: Health check result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseV1"
+components:
+  schemas:
+    RunRequestV1:
+      type: object
+      additionalProperties: false
+      required:
+        - text
+        - task_goal
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 200000
+          description: Input text to process.
+        task_goal:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          description: Goal or task description for the pipeline.
+        context_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+          default: api-v1
+          description: Identifier for the execution context.
+    TraceMetadata:
+      type: object
+      additionalProperties: false
+      properties:
+        run_id:
+          type: string
+          nullable: true
+        trace_schema_version:
+          type: string
+          nullable: true
+    ErrorResponseV1:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+        - http_status
+      properties:
+        code:
+          type: string
+          enum:
+            - "INVALID_REQUEST"
+            - "VALIDATION_ERROR"
+            - "EXECUTION_FAILED"
+            - "CONVERGENCE_FAILED"
+            - "INTERNAL_ERROR"
+        message:
+          type: string
+        http_status:
+          type: integer
+    RunResponseV1:
+      type: object
+      additionalProperties: false
+      required:
+        - success
+        - context_id
+      properties:
+        success:
+          type: boolean
+        context_id:
+          type: string
+        result:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: Pipeline execution result (present on success).
+        error:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/ErrorResponseV1"
+          description: Structured error details (present on failure).
+        trace_metadata:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/TraceMetadata"
+          description: Optional tracing metadata.
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - version
+      properties:
+        status:
+          type: string
+          enum:
+            - "ok"
+        version:
+          type: string
+          description: Runtime version of the API server.

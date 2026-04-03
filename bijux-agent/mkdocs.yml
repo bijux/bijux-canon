@@ -1,0 +1,115 @@
+site_name: bijux agent
+site_url: https://bijux.github.io/bijux-agent/
+repo_name: bijux/bijux-agent
+repo_url: https://github.com/bijux/bijux-agent
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - search.highlight
+    - content.code.copy
+    - navigation.footer
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: lime
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  logo: assets/bijux_logo_hq.png
+  favicon: assets/bijux_icon.png
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - System Architecture: architecture/ARCHITECTURE.md
+  - User:
+      - Usage: user/usage.md
+      - Reading Paths: user/reading_paths.md
+  - Overview:
+      - Concepts: overview/concepts.md
+      - Documentation Orientation: overview/readme.md
+  - Reference:
+      - Read This First: spec/read_this_first.md
+      - System Contract: spec/system_contract.md
+      - Execution Guarantees: spec/execution_guarantees.md
+      - Execution Contracts: spec/execution_contracts.md
+      - Execution Lifecycle: spec/execution_lifecycle.md
+      - Trace Contract: spec/execution_artifacts.md
+      - Execution Intent Matrix: spec/execution_intent_matrix.md
+      - Failure Model: spec/failure_model.md
+      - Failure Semantics: spec/failure_semantics.md
+      - Identity: spec/identity.md
+      - Refusals: spec/refusals.md
+      - Vocabulary: spec/vocabulary.md
+      - Architecture Diagram: spec/architecture_diagram.md
+      - Trace Narrative: spec/tracing-replay/why-trace-exists.md
+      - Agent Contract: spec/agents/agent-contract.md
+      - Agent Output: spec/agents/agent-output.md
+      - Invariants: spec/invariants/core-invariants.md
+      - Determinism: spec/invariants/determinism.md
+      - Convergence Guarantees: spec/invariants/convergence-guarantees.md
+      - Architecture Invariants: spec/invariants/architecture-invariants.md
+      - Model Support: spec/models/deepseek.md
+  - Design:
+      - Determinism: design/determinism.md
+  - API:
+      - Overview: api/index.md
+  - Examples:
+      - Minimal Pipeline: examples/minimal-pipeline.md
+      - Document Review: examples/document-review.md
+  - Maintainer:
+      - Spec Index: maintainer/spec.md
+      - Anti-Features: maintainer/anti-features.md
+      - Code Map: maintainer/code-map.md
+      - Docs Parity: maintainer/docs-parity.md
+      - Docstring Policy: maintainer/docstring-policy.md
+      - Documentation Invariant: maintainer/documentation-invariant.md
+      - Evaluation: maintainer/evaluation.md
+      - Refactor Plan: maintainer/refactor-plan.md
+      - Refactor Invariants: maintainer/refactor-invariants.md
+      - Refactor Priority: maintainer/refactor-priority.md
+      - Refactor Scope: maintainer/refactor_scope.md
+      - Pipeline Refactor Rules: maintainer/pipeline_refactor_rules.md
+      - Breaking Refactor: maintainer/breaking_refactor.md
+      - First Refactor Plan: maintainer/first-refactor-plan.md
+      - Project Tree: maintainer/project_tree.md
+      - Testing: maintainer/testing.md
+      - Tooling: maintainer/tooling.md
+      - Typing Status: maintainer/typing-status.md
+      - Undefined Behavior: maintainer/undefined-behavior.md
+      - Vocabulary: maintainer/vocabulary.md
+      - System Boundaries: maintainer/system-boundaries.md
+      - Rejected Designs: maintainer/rejected-designs.md
+      - Docs Contract: maintainer/docs_contract.md
+      - Docs Voice: maintainer/docs_voice.md
+      - Shared Glossary: maintainer/shared/glossary.md
+      - Shared Structure: maintainer/shared/structure.md
+      - Shared Style: maintainer/shared/style.md
+      - Maintainer Changelog: maintainer/CHANGELOG.md
+  - Legal:
+      - Security: legal/security.md
+
+# Make broken links fail CI, and keep console output clean & deterministic.
+strict: true
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - tables
+  - def_list

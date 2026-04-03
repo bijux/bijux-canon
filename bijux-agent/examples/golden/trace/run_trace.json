@@ -1,0 +1,281 @@
+{
+  "run_id": "golden-run",
+  "started_at": "2024-01-01T00:00:00+00:00",
+  "completed_at": "2024-01-01T00:05:00+00:00",
+  "status": "completed",
+  "config_hash": "golden-config",
+  "pipeline_definition_hash": "golden-definition",
+  "agent_versions": {
+    "pipeline": "auditable-doc-pipeline"
+  },
+  "replay_status": "REPLAYABLE",
+  "convergence_hash": "golden-convergence",
+  "convergence_reason": "stability",
+  "model_metadata": {
+    "provider": "test-provider",
+    "model_name": "test-model",
+    "temperature": 0.0,
+    "max_tokens": 512
+  },
+  "entries": [
+    {
+      "agent_id": "PLAN-agent",
+      "node": "plan",
+      "status": "success",
+      "start_time": "2024-01-01T00:00:00+00:00",
+      "end_time": "2024-01-01T00:00:30+00:00",
+      "input": {
+        "phase": "PLAN"
+      },
+      "output": {
+        "text": "PLAN golden output",
+        "artifacts": {
+          "phase": "PLAN"
+        },
+        "scores": {
+          "quality": 0.8
+        },
+        "confidence": 0.8,
+        "metadata": {
+          "contract_version": "1.0"
+        },
+        "decision": "pass"
+      },
+      "error": null,
+      "scores": {
+        "quality": 0.8
+      },
+      "prompt_hash": "prompt-hash",
+      "model_hash": "model-hash",
+      "phase": "PLAN",
+      "run_id": "golden-run",
+      "stop_reason": null,
+      "failure_artifact": null,
+      "replay_metadata": {
+        "input_hash": "golden-input",
+        "config_hash": "golden-config",
+        "model_id": "golden-model",
+        "convergence_hash": "golden-convergence",
+        "contract_version": "1.0",
+        "model_metadata": {
+          "provider": "test-provider",
+          "model_name": "test-model",
+          "temperature": 0.0,
+          "max_tokens": 512
+        }
+      },
+      "epistemic_status": null,
+      "epistemic_verdict": null,
+      "decision_artifact": null,
+      "run_fingerprint": null
+    },
+    {
+      "agent_id": "EXECUTE-agent",
+      "node": "execute",
+      "status": "success",
+      "start_time": "2024-01-01T00:01:00+00:00",
+      "end_time": "2024-01-01T00:01:30+00:00",
+      "input": {
+        "phase": "EXECUTE"
+      },
+      "output": {
+        "text": "EXECUTE golden output",
+        "artifacts": {
+          "phase": "EXECUTE"
+        },
+        "scores": {
+          "quality": 0.81
+        },
+        "confidence": 0.81,
+        "metadata": {
+          "contract_version": "1.0"
+        },
+        "decision": "pass"
+      },
+      "error": null,
+      "scores": {
+        "quality": 0.81
+      },
+      "prompt_hash": "prompt-hash",
+      "model_hash": "model-hash",
+      "phase": "EXECUTE",
+      "run_id": "golden-run",
+      "stop_reason": null,
+      "failure_artifact": null,
+      "replay_metadata": {
+        "input_hash": "golden-input",
+        "config_hash": "golden-config",
+        "model_id": "golden-model",
+        "convergence_hash": "golden-convergence",
+        "contract_version": "1.0",
+        "model_metadata": {
+          "provider": "test-provider",
+          "model_name": "test-model",
+          "temperature": 0.0,
+          "max_tokens": 512
+        }
+      },
+      "epistemic_status": null,
+      "epistemic_verdict": null,
+      "decision_artifact": null,
+      "run_fingerprint": null
+    },
+    {
+      "agent_id": "JUDGE-agent",
+      "node": "judge",
+      "status": "success",
+      "start_time": "2024-01-01T00:02:00+00:00",
+      "end_time": "2024-01-01T00:02:30+00:00",
+      "input": {
+        "phase": "JUDGE"
+      },
+      "output": {
+        "text": "JUDGE golden output",
+        "artifacts": {
+          "phase": "JUDGE"
+        },
+        "scores": {
+          "quality": 0.8200000000000001
+        },
+        "confidence": 0.8200000000000001,
+        "metadata": {
+          "contract_version": "1.0"
+        },
+        "decision": "pass"
+      },
+      "error": null,
+      "scores": {
+        "quality": 0.8200000000000001
+      },
+      "prompt_hash": "prompt-hash",
+      "model_hash": "model-hash",
+      "phase": "JUDGE",
+      "run_id": "golden-run",
+      "stop_reason": null,
+      "failure_artifact": null,
+      "replay_metadata": {
+        "input_hash": "golden-input",
+        "config_hash": "golden-config",
+        "model_id": "golden-model",
+        "convergence_hash": "golden-convergence",
+        "contract_version": "1.0",
+        "model_metadata": {
+          "provider": "test-provider",
+          "model_name": "test-model",
+          "temperature": 0.0,
+          "max_tokens": 512
+        }
+      },
+      "epistemic_status": null,
+      "epistemic_verdict": null,
+      "decision_artifact": null,
+      "run_fingerprint": null
+    },
+    {
+      "agent_id": "VERIFY-agent",
+      "node": "verify",
+      "status": "success",
+      "start_time": "2024-01-01T00:03:00+00:00",
+      "end_time": "2024-01-01T00:03:30+00:00",
+      "input": {
+        "phase": "VERIFY"
+      },
+      "output": {
+        "text": "VERIFY golden output",
+        "artifacts": {
+          "phase": "VERIFY"
+        },
+        "scores": {
+          "quality": 0.8300000000000001
+        },
+        "confidence": 0.8300000000000001,
+        "metadata": {
+          "contract_version": "1.0"
+        },
+        "decision": "pass"
+      },
+      "error": null,
+      "scores": {
+        "quality": 0.8300000000000001
+      },
+      "prompt_hash": "prompt-hash",
+      "model_hash": "model-hash",
+      "phase": "VERIFY",
+      "run_id": "golden-run",
+      "stop_reason": null,
+      "failure_artifact": null,
+      "replay_metadata": {
+        "input_hash": "golden-input",
+        "config_hash": "golden-config",
+        "model_id": "golden-model",
+        "convergence_hash": "golden-convergence",
+        "contract_version": "1.0",
+        "model_metadata": {
+          "provider": "test-provider",
+          "model_name": "test-model",
+          "temperature": 0.0,
+          "max_tokens": 512
+        }
+      },
+      "epistemic_status": null,
+      "epistemic_verdict": null,
+      "decision_artifact": null,
+      "run_fingerprint": null
+    },
+    {
+      "agent_id": "FINALIZE-agent",
+      "node": "finalize",
+      "status": "success",
+      "start_time": "2024-01-01T00:04:00+00:00",
+      "end_time": "2024-01-01T00:04:30+00:00",
+      "input": {
+        "phase": "FINALIZE"
+      },
+      "output": {
+        "text": "FINALIZE golden output",
+        "artifacts": {
+          "phase": "FINALIZE"
+        },
+        "scores": {
+          "quality": 0.8400000000000001
+        },
+        "confidence": 0.8400000000000001,
+        "metadata": {
+          "contract_version": "1.0"
+        },
+        "decision": "pass"
+      },
+      "error": null,
+      "scores": {
+        "quality": 0.8400000000000001
+      },
+      "prompt_hash": "prompt-hash",
+      "model_hash": "model-hash",
+      "phase": "FINALIZE",
+      "run_id": "golden-run",
+      "stop_reason": null,
+      "failure_artifact": null,
+      "replay_metadata": {
+        "input_hash": "golden-input",
+        "config_hash": "golden-config",
+        "model_id": "golden-model",
+        "convergence_hash": "golden-convergence",
+        "contract_version": "1.0",
+        "model_metadata": {
+          "provider": "test-provider",
+          "model_name": "test-model",
+          "temperature": 0.0,
+          "max_tokens": 512
+        }
+      },
+      "epistemic_status": null,
+      "epistemic_verdict": "certain",
+      "decision_artifact": {
+        "verdict": "pass",
+        "justification": "golden run verification",
+        "supporting_trace_ids": []
+      },
+      "run_fingerprint": null
+    }
+  ]
+}

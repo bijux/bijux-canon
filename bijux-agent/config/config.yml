@@ -1,0 +1,44 @@
+# Bijux Agent Configuration File
+# Updated for task-centric pipeline as of June 01, 2025
+
+# Default task goal for the flagship pipeline
+task_goal: "summarize this document"
+
+# Pipeline Configuration
+pipeline:
+  parameters:
+    max_retries: 2         # Maximum number of retries for agent tasks
+    chunk_size: 1000        # Default chunk size for parallel processing
+    max_iterations: 3       # Maximum feedback loop iterations
+    stage_timeout: 300.0    # Timeout for each stage (seconds)
+    shard_threshold: 1000000  # Switch to sharded execution if text exceeds this size
+    concurrency_limit: 10     # Maximum number of simultaneous agents
+    retry_delay: 1.0          # Base delay between retries (seconds)
+    quality_threshold: 0.8    # Score threshold required by critique agent
+  policy:
+    retry_allowed: true      # Allow retries at all
+  feedback_rules:         # Custom feedback rules for stages
+    critique:
+      retry_threshold: 0.5  # Feedback score threshold to trigger retry
+    summarization:
+      retry_on_empty: true  # Retry if summary is empty
+
+# Logging Configuration
+logging:
+  log_dir: "../bijux-agent_test/logs"       # Directory for log files
+  log_level: "INFO"       # Default log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  structured_logging: true # Enable structured logging
+  async_logging: true     # Enable asynchronous logging
+  telemetry_enabled: true # Enable telemetry collection
+  histogram_buckets: [0.1, 0.5, 1, 5, 10, 30, 60]  # Buckets for duration histograms
+
+# Output Configuration
+output:
+  output_dir: "../bijux-agent_test/results" # Directory to save structured output (JSON)
+  output_format: "json"   # Output format (json)
+
+model_metadata:
+  provider: "local"
+  model_name: "auditable-doc-pipeline"
+  temperature: 0.0
+  max_tokens: 512

@@ -1,0 +1,45 @@
+version = 1
+
+# Config/docs/assets: public domain
+[[annotations]]
+path = [
+  "**/*.png", "**/*.svg", "**/*.ico", "**/*.gif", "**/*.jpg", "**/*.jpeg",
+  "**/*.html", "**/*.toml", "**/*.ini", "**/*.cfg", "**/*.conf", "**/*.lock",
+  "**/*.env", "**/*.env.*", "**/*.yaml", "**/*.yml", "**/*.json", "**/*.sqlite",
+  "**/*.cff", "**/*.dic", ".coverage*", ".gitattributes", ".gitignore", "**/*.sha256",
+  "changelog.d/**", "**/.editorconfig", "artifacts/**", "scripts/git-hooks/**",
+  "docs/assets/styles/**"
+]
+precedence = "override"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileCopyrightText = "Copyright © 2025 Bijan Mousavi"
+
+# Code: MIT
+[[annotations]]
+path = ["**/*.py", "**/*.pyi", "**/*.sh", "**/*.mk", "Makefile", "Dockerfile", "Dockerfile.*"]
+precedence = "closest"
+SPDX-License-Identifier = "MIT"
+SPDX-FileCopyrightText = "Copyright © 2025 Bijan Mousavi"
+
+# Markdown docs: MIT
+[[annotations]]
+path = ["**/*.md"]
+precedence = "closest"
+SPDX-License-Identifier = "MIT"
+SPDX-FileCopyrightText = "Copyright © 2025 Bijan Mousavi"
+
+[[annotations]]
+path = ["examples/golden/*.txt"]
+precedence = "override"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileCopyrightText = "Copyright © 2025 Bijan Mousavi"
+
+[ignore]
+paths = [
+  "**/__pycache__/**",
+  "**/*.pyc",
+  ".venv/**",
+  "artifacts/**",
+]
+[exclusions]
+paths = ["**/__pycache__/**", "**/*.pyc"]

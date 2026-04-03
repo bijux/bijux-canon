@@ -1,0 +1,1 @@
+bijux-agent run examples/golden/input.txt --out examples/golden

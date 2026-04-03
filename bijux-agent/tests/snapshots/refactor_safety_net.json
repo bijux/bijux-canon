@@ -1,0 +1,37 @@
+{
+  "public_imports": [
+    "API_VERSION"
+  ],
+  "run_fingerprint": "4d5a92f221022aa2d1ce68b3c95035e9ef41539040fd3ac829ba284b2808714d",
+  "trace_entry_fields": [
+    "FIELD_CLASSIFICATIONS",
+    "agent_id",
+    "decision_artifact",
+    "end_time",
+    "epistemic_status",
+    "epistemic_verdict",
+    "error",
+    "failure_artifact",
+    "input",
+    "model_hash",
+    "node",
+    "output",
+    "phase",
+    "prompt_hash",
+    "replay_metadata",
+    "run_fingerprint",
+    "run_id",
+    "scores",
+    "start_time",
+    "status",
+    "stop_reason",
+    "termination_reason"
+  ],
+  "agent_output_fields": [
+    "artifacts",
+    "confidence",
+    "metadata",
+    "scores",
+    "text"
+  ]
+}

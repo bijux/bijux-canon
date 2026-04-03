@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: Bijux Agent
+version: 0.1.0
+doi: 10.0000/bijux-agent
+message: If you use this software, please cite it using this metadata.
+authors:
+  - family-names: Mousavi
+    given-names: Bijan
+date-released: 2026-01-01
+url: https://github.com/bijux/bijux-agent
+license: MIT

@@ -1,0 +1,40 @@
+{
+  "revised_context": {
+    "agent_type": "planner",
+    "alpha": 1,
+    "context_id": "ctx-1",
+    "execution_mode": "sync",
+    "feedback": {
+      "message": "tighten"
+    },
+    "metadata": {
+      "origin": "unit"
+    },
+    "payload": {
+      "alpha": 1,
+      "feedback": {
+        "message": "tighten"
+      },
+      "touched": true
+    },
+    "task_goal": "unit-test",
+    "touched": true
+  },
+  "error_result": {
+    "error": "boom",
+    "input": {
+      "agent_type": "planner",
+      "alpha": 1,
+      "context_id": "ctx-1",
+      "execution_mode": "sync",
+      "metadata": {
+        "origin": "unit"
+      },
+      "payload": {
+        "alpha": 1
+      },
+      "task_goal": "unit-test"
+    },
+    "stage": "unit"
+  }
+}

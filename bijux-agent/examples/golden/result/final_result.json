@@ -1,0 +1,14 @@
+{
+  "verdict": "pass",
+  "confidence": 0.84,
+  "epistemic_status": "certain",
+  "stop_reason": null,
+  "trace_path": "trace/run_trace.json",
+  "runtime_version": "golden-runtime",
+  "model_metadata": {
+    "provider": "test-provider",
+    "model_name": "test-model",
+    "temperature": 0.0,
+    "max_tokens": 512
+  }
+}

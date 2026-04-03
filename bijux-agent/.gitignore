@@ -1,0 +1,133 @@
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+__pycache__/
+*.py[cod]
+**/*.pyc
+*.pyc
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Jupyter/IPython Notebook checkpoints
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+.history/
+
+# PyCharm / JetBrains IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# MacOS metadata files
+.DS_Store
+.DS_Store/
+*.DS_Store
+*.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# pytest/mypy cache
+.cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+.tox/
+
+# Test and coverage results
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pyre/
+
+# Logs
+*.log
+
+# Local configuration
+config/jetbrain.dic
+
+# Sphinx documentation
+docs/_build/
+build*/
+
+# Miscellaneous
+*.swp
+*.swo
+*~
+*.bak
+
+# Temporary files
+*.tmp
+*.temp
+*.orig
+*.old
+*.out
+
+# Ignore egg-info in src/ layout too
+src/**/*.egg-info/
+
+# Remove backup files created by editors
+*#
+
+# Ignore generated files for requirements or scripts
+scripts/__pycache__/
+
+# Ignore metadata
+*.pyo
+*.pyd
+
+# Ignore some other metadata
+agenticflow.egg-info/
+
+# Ignore credentials
+config/credentials.json
+.env
+
+logs/
+logs
+
+artifacts

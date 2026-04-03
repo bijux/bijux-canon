@@ -1,0 +1,45 @@
+# .pre-commit-config.yaml
+# ----------------------------------------------------------------------
+# Pre-commit configuration
+# See: https://pre-commit.com/
+# ----------------------------------------------------------------------
+
+repos:
+  # --- Ruff: Fast linter (replaces flake8/isort) ---
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+
+#  # --- mypy: Type checker (uses config/mypy.ini for full control) ---
+#  - repo: https://github.com/pre-commit/mirrors-mypy
+#    rev: v1.15.0
+#    hooks:
+#      - id: mypy
+#        args: ["--config-file=config/mypy.ini", "src"]
+#        pass_filenames: false  # Always typecheck the whole src, not just changed files
+
+  # --- Local hooks: project-specific CI checks (pytest, requirements) ---
+  - repo: local
+    hooks:
+#      # Run full pytest suite (PYTHONPATH=src to support editable installs and imports)
+#      - id: pytest
+#        name: Run tests (pytest)
+#        entry: bash -c "PYTHONPATH=src pytest"
+#        language: system
+#        pass_filenames: false
+#        types: [python]
+
+      # Check that all per-module .in requirement files exist and are up-to-date
+      - id: requirements
+        name: Ensure .in files exist and requirements are compiled
+        entry: python scripts/compile_requirements.py
+        language: system
+        pass_filenames: false
+        types: [ python ]
+      - id: syntax
+        name: Syntax check (compile tests)
+        entry: python -m compileall tests
+        language: system
+        pass_filenames: false
+        types: [python]
