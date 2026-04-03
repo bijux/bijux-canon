@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-vex"
 dynamic = ["version", "dependencies"]
-description = "Compatibility package for bijux-llm-vex."
+description = "Compatibility package for bijux-canon-index."
 readme = "overview.md"
 requires-python = ">=3.11,<4"
 license = { text = "MIT" }
@@ -28,22 +28,22 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-vex"
-"Repository" = "https://github.com/bijux/bijux-llm-nexus"
-"Bug Tracker" = "https://github.com/bijux/bijux-llm-nexus/issues"
-"Documentation" = "https://bijux.github.io/bijux-vex/"
-"Changelog" = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-vex/CHANGELOG.md"
-"Security" = "https://github.com/bijux/bijux-llm-nexus/blob/main/SECURITY.md"
+"Homepage" = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index"
+"Repository" = "https://github.com/bijux/bijux-canon"
+"Bug Tracker" = "https://github.com/bijux/bijux-canon/issues"
+"Documentation" = "https://bijux.github.io/bijux-canon-index/"
+"Changelog" = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md"
+"Security" = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
 
 [tool.hatch.version]
 source = "vcs"
-tag-pattern = "^bijux-llm-vex/v(?P<version>.*)$"
-raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-vex/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+tag-pattern = "^bijux-canon-index/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-canon-index/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 fallback-version = "0.3.0"
 
 [tool.hatch.metadata.hooks.custom]
-canonical-name = "bijux-llm-vex"
+canonical-name = "bijux-canon-index"
 
 [tool.hatch.build.targets.wheel]
 bypass-selection = true
