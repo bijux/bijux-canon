@@ -1,10 +1,9 @@
-# Agentic Flows
+# Bijux Canon Runtime
 <a id="top"></a>
 
 **A deterministic, contract-first execution and replay framework** — strict invariants, reproducible runs, and traceable outputs. Build audit-ready agent workflows with stable artifacts and replayable traces.
 
 Canonical package name: `bijux-canon-runtime`  
-Legacy compatibility package: `agentic-flows`
 
 [![PyPI - Version](https://img.shields.io/pypi/v/bijux-canon-runtime.svg)](https://pypi.org/project/bijux-canon-runtime/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://pypi.org/project/bijux-canon-runtime/)
@@ -19,7 +18,7 @@ Legacy compatibility package: `agentic-flows`
 
 ## Table of Contents
 
-* [Why Agentic Flows?](#why-agentic-flows)
+* [Why Bijux Canon Runtime?](#why-bijux-canon-runtime)
 * [Try It in 20 Seconds](#try-it-in-20-seconds)
 * [Key Features](#key-features)
 * [Installation](#installation)
@@ -37,10 +36,10 @@ Legacy compatibility package: `agentic-flows`
 
 ---
 
-<a id="why-agentic-flows"></a>
-## Why Agentic Flows?
+<a id="why-bijux-canon-runtime"></a>
+## Why Bijux Canon Runtime?
 
-Most agent tooling optimizes for velocity. Agentic Flows prioritizes **repeatability, traceability, and audit-ready execution**:
+Most agent tooling optimizes for velocity. Bijux Canon Runtime prioritizes **repeatability, traceability, and audit-ready execution**:
 
 * **Determinism first** for reliable experiments and CI validation.
 * **Invariant enforcement** with fail-fast execution semantics.
@@ -90,7 +89,7 @@ pipx install bijux-canon-runtime
 pip install bijux-canon-runtime
 ```
 
-Legacy installs via `agentic-flows` remain supported as a compatibility package.
+Install with `bijux-canon-runtime`; that is the supported distribution name.
 
 Upgrade: `pipx upgrade bijux-canon-runtime` or `pip install --upgrade bijux-canon-runtime`.
 
@@ -185,9 +184,9 @@ Artifacts: Generated in CI; see GitHub Actions for logs and reports.
 
 ```
 ../../apis/bijux-canon-runtime/  # Root-managed OpenAPI schemas
-../../configs/agentic-flows/  # Root-managed lint/type/security configs
+../../configs/bijux-canon-runtime/  # Root-managed lint/type/security configs
 docs/           # MkDocs site
-../../makes/agentic-flows/  # Root-managed task modules (docs, test, lint, etc.)
+../../makes/bijux-canon-runtime/  # Root-managed task modules (docs, test, lint, etc.)
 ../../scripts/bijux-canon-runtime/  # Root-managed helper scripts
 src/bijux_canon_runtime/  # Runtime + CLI implementation
 tests/          # unit / regression / e2e
@@ -200,7 +199,7 @@ tests/          # unit / regression / e2e
 <a id="docs--resources"></a>
 ## Docs & Resources
 
-* **Overview**: [Why agentic-flows exists](https://bijux.github.io/bijux-canon-runtime/overview/why-agentic-flows/) · [Mental model](https://bijux.github.io/bijux-canon-runtime/overview/mental-model/) · [Minimal run](https://bijux.github.io/bijux-canon-runtime/overview/minimal-run/) · [Relationship to agentic-proteins](https://bijux.github.io/bijux-canon-runtime/overview/relationship-to-agentic-proteins/) · [Audience](https://bijux.github.io/bijux-canon-runtime/overview/audience/)
+* **Overview**: [Why bijux-canon-runtime exists](https://bijux.github.io/bijux-canon-runtime/overview/why-bijux-canon-runtime/) · [Mental model](https://bijux.github.io/bijux-canon-runtime/overview/mental-model/) · [Minimal run](https://bijux.github.io/bijux-canon-runtime/overview/minimal-run/) · [Relationship to agentic-proteins](https://bijux.github.io/bijux-canon-runtime/overview/relationship-to-agentic-proteins/) · [Audience](https://bijux.github.io/bijux-canon-runtime/overview/audience/)
 * **Concepts**: [Concepts index](https://bijux.github.io/bijux-canon-runtime/concepts/) · [Determinism](https://bijux.github.io/bijux-canon-runtime/concepts/determinism/) · [Failures](https://bijux.github.io/bijux-canon-runtime/concepts/failures/)
 * **Execution**: [Failure paths](https://bijux.github.io/bijux-canon-runtime/execution/failure-paths/)
 * **Site**: https://bijux.github.io/bijux-canon-runtime/

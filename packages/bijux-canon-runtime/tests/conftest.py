@@ -375,7 +375,7 @@ def resolved_flow(
             dataset=manifest.dataset,
             allow_deprecated_datasets=manifest.allow_deprecated_datasets,
         ),
-        resolution_metadata=(("resolver_id", ResolverID("agentic-flows:v0")),),
+        resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
     )
     return ExecutionPlan(spec_version="v1", manifest=manifest, plan=plan)
 
@@ -419,7 +419,7 @@ def resolved_flow_factory(plan_hash_for, entropy_budget):
                 dataset=manifest.dataset,
                 allow_deprecated_datasets=manifest.allow_deprecated_datasets,
             ),
-            resolution_metadata=(("resolver_id", ResolverID("agentic-flows:v0")),),
+            resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
         )
         return ExecutionPlan(spec_version="v1", manifest=manifest, plan=plan)
 

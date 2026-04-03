@@ -54,7 +54,7 @@ bijux_cli_version = _distribution_version("bijux-cli")
 class ExecutionPlanner:
     """Behavioral contract for ExecutionPlanner."""
 
-    resolver_id: ResolverID = ResolverID("agentic-flows:v0")
+    resolver_id: ResolverID = ResolverID("bijux-canon-runtime:v1")
     _bijux_cli_version: str = bijux_cli_version
     _bijux_canon_agent_version: str = bijux_canon_agent_version
 

@@ -15,9 +15,9 @@ This is the boring path: one flow, one agent, deterministic replay, DuckDB-backe
 
 ## CLI  
 ```bash
-agentic-flows run examples/boring/flow.json --policy examples/boring/policy.json --db-path /tmp/flows.duckdb
-agentic-flows replay examples/boring/flow.json --policy examples/boring/policy.json --run-id <run_id> --tenant-id tenant-a --db-path /tmp/flows.duckdb
-agentic-flows inspect run <run_id> --tenant-id tenant-a --db-path /tmp/flows.duckdb
+bijux-canon-runtime run examples/boring/flow.json --policy examples/boring/policy.json --db-path /tmp/flows.duckdb
+bijux-canon-runtime replay examples/boring/flow.json --policy examples/boring/policy.json --run-id <run_id> --tenant-id tenant-a --db-path /tmp/flows.duckdb
+bijux-canon-runtime inspect run <run_id> --tenant-id tenant-a --db-path /tmp/flows.duckdb
 ```
 
 ## API  

@@ -90,7 +90,7 @@ def test_replay_diff_includes_artifacts_and_evidence(
         environment_fingerprint=plan.environment_fingerprint,
         plan_hash=PlanHash("mismatch"),
         verification_policy_fingerprint=None,
-        resolver_id=ResolverID("agentic-flows:v0"),
+        resolver_id=ResolverID("bijux-canon-runtime:v1"),
         events=(),
         tool_invocations=(),
         entropy_usage=(),

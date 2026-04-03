@@ -1,4 +1,4 @@
-# Contributing to Agentic Flows
+# Contributing to Bijux Canon Runtime
 <a id="top"></a>
 
 This guide is the single source of truth for local setup, workflows, API validation, and PR rules. Follow it to ensure your changes pass CI seamlessly.

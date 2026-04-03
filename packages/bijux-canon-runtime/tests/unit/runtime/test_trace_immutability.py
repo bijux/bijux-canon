@@ -75,7 +75,7 @@ def _build_trace() -> ExecutionTrace:
         environment_fingerprint=EnvironmentFingerprint("env-fingerprint"),
         plan_hash=PlanHash("plan-hash"),
         verification_policy_fingerprint=None,
-        resolver_id=ResolverID("agentic-flows:v0"),
+        resolver_id=ResolverID("bijux-canon-runtime:v1"),
         events=tuple(events),
         tool_invocations=(),
         entropy_usage=(),

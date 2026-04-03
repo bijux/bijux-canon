@@ -13,7 +13,7 @@ Determinism makes results trustworthy. If two runs cannot be compared, you canno
 Hidden randomness, mutable datasets, and silent retries erase causality. They make a run look consistent while changing the meaning of its outputs.  
 
 ## Enforcement  
-Agentic-flows requires explicit budgets, declared entropy sources, and immutable artifacts. The system records what happened and refuses to accept unverifiable output.  
+Bijux Canon Runtime requires explicit budgets, declared entropy sources, and immutable artifacts. The system records what happened and refuses to accept unverifiable output.  
 
 ## Failure Modes  
 When determinism is violated, replay diverges and the run is rejected. The system treats divergence as a signal, not a nuisance.  

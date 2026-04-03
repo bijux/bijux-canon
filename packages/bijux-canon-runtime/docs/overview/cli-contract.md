@@ -7,4 +7,5 @@ Exit code 2 means the command was invoked incorrectly or with invalid arguments.
 
 ## Environment
 
-- `AGENTIC_FLOWS_STRICT=1` forbids best-effort modes and enforces strict determinism.
+- `BIJUX_CANON_RUNTIME_STRICT=1` forbids best-effort modes and enforces strict determinism.
+- `AGENTIC_FLOWS_STRICT=1` remains accepted as a legacy compatibility alias.

@@ -48,5 +48,5 @@
 - Final artifacts only: wheel, sdist, SBOM (prod + dev), OpenAPI schema, test + API JUnit reports.
 - Remove intermediate builds, local-only outputs, and .dev artifacts.
 
-## 10. `agentic-flows --help` must succeed
+## 10. `bijux-canon-runtime --help` must succeed
 - Must work without editable installs, dev extras, local paths, or hidden assumptions.

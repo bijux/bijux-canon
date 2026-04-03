@@ -159,9 +159,14 @@ class FlowPreparation:
         execution_config = self._config
         manifest = self._manifest
         resolved_flow = self._resolved_flow
-        if os.environ.get("AGENTIC_FLOWS_STRICT") == "1":
+        strict_env = os.environ.get("BIJUX_CANON_RUNTIME_STRICT")
+        if strict_env is None:
+            strict_env = os.environ.get("AGENTIC_FLOWS_STRICT")
+        if strict_env == "1":
             if execution_config.mode in {RunMode.DRY_RUN, RunMode.UNSAFE}:
-                raise ValueError("AGENTIC_FLOWS_STRICT forbids best-effort execution")
+                raise ValueError(
+                    "BIJUX_CANON_RUNTIME_STRICT forbids best-effort execution"
+                )
             execution_config = replace(execution_config, strict_determinism=True)
         if (manifest is None) == (resolved_flow is None):
             raise ValueError("Provide exactly one of manifest or resolved_flow")

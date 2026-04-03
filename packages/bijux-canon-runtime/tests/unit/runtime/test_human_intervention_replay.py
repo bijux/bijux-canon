@@ -65,7 +65,7 @@ def test_human_intervention_event_breaks_replay() -> None:
         steps=(),
         environment_fingerprint=EnvironmentFingerprint("env"),
         plan_hash=PlanHash("plan"),
-        resolution_metadata=(("resolver_id", ResolverID("agentic-flows:v0")),),
+        resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
     )
     event = ExecutionEvent(
         spec_version="v1",
@@ -107,7 +107,7 @@ def test_human_intervention_event_breaks_replay() -> None:
         environment_fingerprint=EnvironmentFingerprint("env"),
         plan_hash=PlanHash("plan"),
         verification_policy_fingerprint=None,
-        resolver_id=ResolverID("agentic-flows:v0"),
+        resolver_id=ResolverID("bijux-canon-runtime:v1"),
         events=(event,),
         tool_invocations=(),
         entropy_usage=(),

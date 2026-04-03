@@ -118,7 +118,7 @@ def test_cli_delegates_to_api_run_flow(tmp_path: Path, monkeypatch) -> None:
         steps=(),
         environment_fingerprint=EnvironmentFingerprint("env"),
         plan_hash=PlanHash("plan"),
-        resolution_metadata=(("resolver_id", ResolverID("agentic-flows:v0")),),
+        resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
     )
     resolved = ExecutionPlan(
         spec_version="v1",
@@ -175,7 +175,7 @@ def test_cli_delegates_to_api_run_flow(tmp_path: Path, monkeypatch) -> None:
     cli_main_module = importlib.import_module("bijux_canon_runtime.interfaces.cli.entrypoint")
     monkeypatch.setattr(cli_main_module, "execute_flow", _fake_run_flow)
     monkeypatch.setattr(
-        "sys.argv", ["agentic-flows", "experimental", "plan", str(manifest_path)]
+        "sys.argv", ["bijux-canon-runtime", "experimental", "plan", str(manifest_path)]
     )
 
     cli_main()
@@ -283,7 +283,7 @@ def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
             steps=(),
             environment_fingerprint=EnvironmentFingerprint("env"),
             plan_hash=PlanHash("plan"),
-            resolution_metadata=(("resolver_id", ResolverID("agentic-flows:v0")),),
+            resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
         )
         trace = ExecutionTrace(
             spec_version="v1",
@@ -300,7 +300,7 @@ def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
             environment_fingerprint=plan.environment_fingerprint,
             plan_hash=plan.plan_hash,
             verification_policy_fingerprint=None,
-            resolver_id=ResolverID("agentic-flows:v0"),
+            resolver_id=ResolverID("bijux-canon-runtime:v1"),
             events=(),
             tool_invocations=(),
             entropy_usage=(),
@@ -330,7 +330,7 @@ def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(
         "sys.argv",
         [
-            "agentic-flows",
+            "bijux-canon-runtime",
             "run",
             str(manifest_path),
             "--policy",

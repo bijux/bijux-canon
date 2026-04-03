@@ -151,7 +151,7 @@ def test_execution_plan_rejects_inverted_dependencies() -> None:
         ),
         environment_fingerprint=EnvironmentFingerprint("env"),
         plan_hash=PlanHash("plan"),
-        resolution_metadata=(("resolver_id", ResolverID("agentic-flows:v0")),),
+        resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
     )
 
     with pytest.raises(ValueError, match="dependencies must precede dependent steps"):

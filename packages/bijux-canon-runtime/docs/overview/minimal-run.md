@@ -14,7 +14,7 @@ The flow has a single step that calls one agent, performs one retrieval, and emi
 
 ## Run  
 ```bash
-agentic-flows run examples/minimal/flow.json --db-path /tmp/flows.duckdb
+bijux-canon-runtime run examples/minimal/flow.json --db-path /tmp/flows.duckdb
 ```
 
 ## Persist  
@@ -22,12 +22,12 @@ The run persists automatically to DuckDB at the provided path.
 
 ## Replay  
 ```bash
-agentic-flows inspect run <run_id> --tenant-id <tenant> --db-path /tmp/flows.duckdb
+bijux-canon-runtime inspect run <run_id> --tenant-id <tenant> --db-path /tmp/flows.duckdb
 ```
 
 ## Diff  
 ```bash
-agentic-flows diff run <run_a> <run_b> --tenant-id <tenant> --db-path /tmp/flows.duckdb
+bijux-canon-runtime diff run <run_a> <run_b> --tenant-id <tenant> --db-path /tmp/flows.duckdb
 ```
 
 ## Verification Failure  

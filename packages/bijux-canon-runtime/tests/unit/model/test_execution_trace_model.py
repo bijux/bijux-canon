@@ -54,7 +54,7 @@ def test_trace_access_before_finalize_raises() -> None:
         environment_fingerprint=EnvironmentFingerprint("env"),
         plan_hash=PlanHash("plan-hash"),
         verification_policy_fingerprint=None,
-        resolver_id=ResolverID("agentic-flows:v0"),
+        resolver_id=ResolverID("bijux-canon-runtime:v1"),
         events=(),
         tool_invocations=(),
         entropy_usage=(),

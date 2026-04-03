@@ -1,9 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-# This implementation is provisional.
-# Semantic authority lives in docs/guarantees/system_guarantees.md.
-# Code must change to match semantics, never the reverse.
 """Public package exports for bijux-canon-runtime."""
 
 from __future__ import annotations

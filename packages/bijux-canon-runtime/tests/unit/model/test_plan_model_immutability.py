@@ -107,7 +107,7 @@ def test_plan_is_structurally_immutable(plan_hash_for) -> None:
             dataset=dataset,
             allow_deprecated_datasets=False,
         ),
-        resolution_metadata=(("resolver_id", ResolverID("agentic-flows:v0")),),
+        resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
     )
 
     assert isinstance(plan.steps, tuple)

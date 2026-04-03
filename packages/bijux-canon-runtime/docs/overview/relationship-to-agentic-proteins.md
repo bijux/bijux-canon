@@ -13,7 +13,7 @@ Both projects enforce determinism, provenance, and audit-ready outputs. Both tre
 Agentic-proteins focuses on protein design workflows and domain-specific artifacts. Agentic-flows generalizes the same execution guarantees to broader agent workflows and replayable traces.  
 
 ## Comparison  
-| Area | agentic-proteins | agentic-flows |
+| Area | agentic-proteins | bijux-canon-runtime |
 | --- | --- | --- |
 | Scope | Protein design runtime | General execution and replay framework |
 | Artifacts | Domain-specific design artifacts | Cross-domain execution artifacts |
