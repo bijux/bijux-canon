@@ -1,13 +1,19 @@
-# bijux-vex — vector execution engine with explicit determinism
+# bijux-llm-vex — vector execution engine with explicit determinism
 
-[![PyPI - Version](https://img.shields.io/pypi/v/bijux-vex.svg)](https://pypi.org/project/bijux-vex/)
+[![PyPI - Version](https://img.shields.io/pypi/v/bijux-llm-vex.svg)](https://pypi.org/project/bijux-llm-vex/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Typing: typed (PEP 561)](https://img.shields.io/badge/typing-typed-4F8CC9.svg)](https://peps.python.org/pep-0561/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-brightgreen)](https://bijux.github.io/bijux-vex/)
 
-bijux-vex executes vector workloads under **contracts**. Deterministic runs are replayable; non-deterministic runs are bounded, audited, and comparable.
+bijux-llm-vex executes vector workloads under **contracts**. Deterministic runs are replayable; non-deterministic runs are bounded, audited, and comparable.
 Nothing is implicit: no silent defaults, retries, or randomness.
+
+Install `bijux-llm-vex` for new projects. The legacy package name `bijux-vex` remains available as a compatibility shim.
+
+```bash
+pip install bijux-llm-vex
+```
 
 ## What bijux-vex is
 Vector execution engine with explicit determinism contracts. Deterministic paths are bit-stable and replayable; non-deterministic paths (ANN) are supported but **experimental** and always emit approximation + randomness provenance.

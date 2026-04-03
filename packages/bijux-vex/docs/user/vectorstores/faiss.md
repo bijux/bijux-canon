@@ -2,7 +2,7 @@
 
 ## Install
 
-- `pip install bijux-vex[vdb]` (or `pip install faiss-cpu`)
+- `pip install bijux-llm-vex[vdb]` (or `pip install faiss-cpu`)
 
 ## Connect
 

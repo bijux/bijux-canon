@@ -30,7 +30,7 @@ Where to learn more: <doc path>
 ```
 What happened: vector store backend unavailable.
 Why: 'faiss' is not installed.
-How to fix: pip install "bijux-vex[vdb]".
+How to fix: pip install "bijux-llm-vex[vdb]".
 Where to learn more: docs/spec/vectorstore_adapter.md
 ```
 

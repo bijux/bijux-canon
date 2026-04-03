@@ -7,8 +7,8 @@ requires = [
 build-backend = "hatchling.build"
 
 [project]
-name = "bijux-vex"
-description = "Vector execution runtime with replayable determinism and audited ANN (nothing implicit)."
+name = "bijux-llm-vex"
+description = "bijux-llm-vex: vector execution runtime with replayable determinism and audited ANN (nothing implicit)."
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.11,<4"
 license = { text = "MIT" }
@@ -149,7 +149,9 @@ example = "bijux_vex.plugins.example:register_runner"
 
 [tool.hatch.version]
 source = "vcs"
-raw-options = { local_scheme = "dirty-tag", version_scheme = "guess-next-dev" }
+fallback-version = "0.1.0"
+tag-pattern = "^bijux-vex/v(?P<version>.*)$"
+raw-options = { local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/bijux_vex/_version.py"

@@ -5,7 +5,7 @@
 **What happened**: The vector store backend could not connect.  
 **Fix**:
 
-1. Verify the backend is installed (`pip install "bijux-vex[vdb]"`).
+1. Verify the backend is installed (`pip install "bijux-llm-vex[vdb]"`).
 2. Check the URI or file path.
 3. Run `bijux vex vdb status --vector-store <name>`.
 
@@ -22,7 +22,7 @@
 **What happened**: `--embed-model` specified but provider not installed.  
 **Fix**:
 
-1. Install embeddings extras: `pip install "bijux-vex[embeddings]"`.
+1. Install embeddings extras: `pip install "bijux-llm-vex[embeddings]"`.
 2. Provide a registered provider name.
 
 ## Determinism Refused

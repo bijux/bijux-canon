@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "Example remote vector store plugin for Bijux-Vex"
 requires-python = ">=3.10"
 dependencies = [
-  "bijux-vex",
+  "bijux-llm-vex",
   "qdrant-client>=1.9.0",
 ]
 

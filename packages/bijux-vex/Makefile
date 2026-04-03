@@ -9,9 +9,10 @@ include ../../makes/shared/python-package.mk
 .NOTPARALLEL: all clean
 
 LINT_DIRS         := src/bijux_vex
-FMT_DIRS          := src tests scripts/bijux-vex
+FMT_DIRS          := src tests
 ENABLE_MYPY       := 0
 ENABLE_CODESPELL  := 1
+CODESPELL         := $(if $(ACT),$(ACT)/codespell,codespell) --ignore-words-list=ND,nd
 ENABLE_RADON      := 1
 ENABLE_PYDOCSTYLE := 0
 ENABLE_PYTYPE     := 0
@@ -61,18 +62,18 @@ bootstrap: $(VENV)
 clean:
 	@$(MAKE) clean-soft
 	@echo "[INFO] Cleaning (.venv) ..."
-	@$(RM) $(VENV)
+	@rm -rf $(VENV)
 
 clean-soft:
 	@echo "[INFO] Cleaning (no .venv) ..."
-	@$(RM) \
+	@rm -rf \
 	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox \
 	  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
 	  spec.json openapitools.json node_modules session.sqlite site \
 	  docs/site artifacts "$(PROJECT_ARTIFACTS_DIR)" || true
-	@$(RM) $(CONFIG_DIR)/.ruff_cache || true
+	@rm -rf $(CONFIG_DIR)/.ruff_cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
-	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
+	  find . -type d -name '__pycache__' -exec rm -rf {} +; \
 	  find . -type f -name '*.pyc' -delete; \
 	fi
 

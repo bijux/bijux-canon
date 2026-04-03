@@ -3,7 +3,7 @@
 1) Install
 
 ```bash
-pip install bijux-vex
+pip install bijux-llm-vex
 ```
 
 2) Deterministic example

@@ -2,7 +2,7 @@
 
 ## Install
 
-- `pip install bijux-vex[vdb]` (or `pip install qdrant-client`)
+- `pip install bijux-llm-vex[vdb]` (or `pip install qdrant-client`)
 
 ## Connect
 

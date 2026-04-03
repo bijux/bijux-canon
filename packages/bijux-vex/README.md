@@ -1,6 +1,6 @@
-# bijux-vex — explicit vector execution
+# bijux-llm-vex — explicit vector execution
 
-[![PyPI - Version](https://img.shields.io/pypi/v/bijux-vex.svg)](https://pypi.org/project/bijux-vex/)
+[![PyPI - Version](https://img.shields.io/pypi/v/bijux-llm-vex.svg)](https://pypi.org/project/bijux-llm-vex/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Typing: typed (PEP 561)](https://img.shields.io/badge/typing-typed-4F8CC9.svg)](https://peps.python.org/pep-0561/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
@@ -14,6 +14,13 @@ Production vector search drifts quietly. Bijux‑Vex makes correctness explicit 
 
 **Anti‑goals**  
 Not a vector DB. Not a RAG framework. Not a hosted service. No implicit “best‑effort” correctness.
+
+**Package name**
+Install `bijux-llm-vex` for new projects. The legacy package name `bijux-vex` remains available as a compatibility shim.
+
+```bash
+pip install bijux-llm-vex
+```
 
 ## Quickstart (deterministic)
 

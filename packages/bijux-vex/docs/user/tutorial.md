@@ -5,14 +5,14 @@ This tutorial is fully copy/pasteable. It shows an explicit, deterministic flow 
 ## Install
 
 ```
-pip install bijux-vex
+pip install bijux-llm-vex
 ```
 
 Optional extras:
 
 ```
-pip install "bijux-vex[embeddings]"
-pip install "bijux-vex[vdb]"
+pip install "bijux-llm-vex[embeddings]"
+pip install "bijux-llm-vex[vdb]"
 ```
 
 ## Workflow A (BYO Vectors)
