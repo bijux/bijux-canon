@@ -67,7 +67,7 @@ def test_option_functor_and_monad_laws(x: int) -> None:
 
 
 def test_some_none_forbidden() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"Some\(None\) forbidden"):
         Some(None)  # type: ignore[arg-type]
 
 

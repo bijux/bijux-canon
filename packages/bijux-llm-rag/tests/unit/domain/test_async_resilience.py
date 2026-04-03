@@ -54,7 +54,8 @@ def test_retry_bounded_attempts(attempts: int) -> None:
         plan = async_with_resilience(lambda: always_fail(), policy, None)
         res = await plan()
 
-        assert isinstance(res, Err) and res.error.code == "MAX_RETRIES"
+        assert isinstance(res, Err)
+        assert res.error.code == "MAX_RETRIES"
         assert call_count == attempts
 
     asyncio.run(run())
@@ -76,7 +77,11 @@ def test_backoff_cap_respected(base_ms: int) -> None:
         async def fake_sleep(d: float) -> None:
             delays.append(d)
 
-        env = ResilienceEnv(rng=Random(42), sleep=fake_sleep, clock=FakeClock())
+        env = ResilienceEnv(
+            rng=Random(42),  # noqa: S311 - deterministic test fixture
+            sleep=fake_sleep,
+            clock=FakeClock(),
+        )
 
         async def force_retry():
             return Err(ErrInfo(code="TRANSIENT", msg="retry"))
@@ -101,7 +106,11 @@ def test_timeout_triggers_correctly_with_fake_clock() -> None:
             clock.advance_s(seconds)
             await asyncio.sleep(0)
 
-        env = ResilienceEnv(rng=Random(0), sleep=advancing_sleep, clock=clock)
+        env = ResilienceEnv(
+            rng=Random(0),  # noqa: S311 - deterministic test fixture
+            sleep=advancing_sleep,
+            clock=clock,
+        )
         timeout_ctx = make_fake_timeout_ctx(clock)
 
         timeout_policy = TimeoutPolicy(timeout_ms=50)
@@ -119,7 +128,8 @@ def test_timeout_triggers_correctly_with_fake_clock() -> None:
         )
         res = await plan()
 
-        assert isinstance(res, Err) and res.error.code == "TIMEOUT"
+        assert isinstance(res, Err)
+        assert res.error.code == "TIMEOUT"
         assert clock.now_s() >= 0.05
 
     asyncio.run(run())

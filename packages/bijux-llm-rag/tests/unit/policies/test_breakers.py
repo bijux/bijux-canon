@@ -31,7 +31,8 @@ def test_emit_breakers_short_circuit(items: list[int]) -> None:
 
     results = list(short_circuit_on_err_emit(map_result_iter(f, items)))
     assert len(results) == first_err_pos + 2
-    assert isinstance(results[-1], Err) and isinstance(results[-1].error, BreakInfo)
+    assert isinstance(results[-1], Err)
+    assert isinstance(results[-1].error, BreakInfo)
     bi = results[-1].error
     assert bi.n_ok == first_err_pos
     assert bi.n_err == 1
@@ -77,7 +78,8 @@ def test_count_breaker_trips_after_limit() -> None:
     results = list(circuit_breaker_count_emit(xs, max_errs=1))
     assert len(results) == 3
     assert isinstance(results[0], Err)
-    assert isinstance(results[2], Err) and isinstance(results[2].error, BreakInfo)
+    assert isinstance(results[2], Err)
+    assert isinstance(results[2].error, BreakInfo)
     bi = results[2].error
     assert bi.n_err == 2
     assert bi.threshold["max_errs"] == 1

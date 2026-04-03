@@ -64,7 +64,7 @@ def test_chunk_time_bound(items: list[int]) -> None:
                 batch_first_ts.append(item_arrival_ts[0])
                 del item_arrival_ts[: len(batch_res.value)]
 
-        for first_ts, emit_ts in zip(batch_first_ts, batch_emit_ts):
+        for first_ts, emit_ts in zip(batch_first_ts, batch_emit_ts, strict=True):
             assert (emit_ts - first_ts) <= policy.max_delay_ms + 40
 
     asyncio.run(run())

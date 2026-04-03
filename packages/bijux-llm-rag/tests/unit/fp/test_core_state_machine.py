@@ -32,13 +32,13 @@ aware_dt = st.datetimes(timezones=st.just(UTC))
 @given(queued_at=aware_dt)
 def test_pending_naive_rejected(queued_at: datetime) -> None:
     naive = queued_at.replace(tzinfo=None)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="queued_at must be timezone-aware"):
         pending(queued_at=naive)
 
 
 @given(delta=st.integers(max_value=-1))
 def test_advance_negative_rejected(delta: int) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="delta_permille must be"):
         advance_event(delta_permille=delta)
 
 
@@ -91,5 +91,5 @@ def test_terminal_idempotent(state: Done | Failed) -> None:
 
 def test_transition_invalid_raises_with_context() -> None:
     s = pending(queued_at=datetime.now(UTC))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="invalid transition"):
         transition(s, EvAdvance(delta_permille=1))

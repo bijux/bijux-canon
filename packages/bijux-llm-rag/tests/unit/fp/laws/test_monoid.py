@@ -56,5 +56,5 @@ def test_metrics_monoid_laws(a: Metrics, b: Metrics, c: Metrics) -> None:
 
 
 def test_metrics_finite_guard() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="non-finite metric value"):
         METRICS.combine(Metrics(latency_sum_ms=float("nan")), Metrics())

@@ -170,7 +170,7 @@ def test_fork2_lockstep_mismatch_raises() -> None:
 
     shorter = compose_transforms(fence_k(2), identity_iter)
     stage = fork2_lockstep(inc, shorter)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="fork2_lockstep mismatch"):
         list(stage([1, 2, 3]))
 
 

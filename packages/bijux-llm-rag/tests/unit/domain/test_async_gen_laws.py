@@ -90,7 +90,8 @@ def test_async_gen_per_item_error_propagation() -> None:
 
         out = await collect(async_gen_map(src(), lambda x: x * 10))
         assert out[0] == Ok(10)
-        assert isinstance(out[1], Err) and out[1].error.code == "BOOM"
+        assert isinstance(out[1], Err)
+        assert out[1].error.code == "BOOM"
         assert out[2] == Ok(20)
 
     asyncio.run(run())

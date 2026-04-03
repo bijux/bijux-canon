@@ -29,7 +29,7 @@ def test_pure_vs_hybrid_equivalence(batch: list[Chunk]) -> None:
     pure = process_batch_hybrid(batch, mode="pure")
     hybrid = process_batch_hybrid(batch, mode="hybrid")
     assert len(pure) == len(hybrid)
-    for p, h in zip(pure, hybrid):
+    for p, h in zip(pure, hybrid, strict=True):
         if isinstance(p, VSuccess):
             assert isinstance(h, VSuccess)
             pc = p.value
@@ -38,7 +38,8 @@ def test_pure_vs_hybrid_equivalence(batch: list[Chunk]) -> None:
             assert pc.text.content == hc.text.content
             assert pc.metadata == hc.metadata
             assert (pc.embedding is None) == (hc.embedding is None)
-            assert pc.embedding is not None and hc.embedding is not None
+            assert pc.embedding is not None
+            assert hc.embedding is not None
             assert pc.embedding.model == hc.embedding.model
             assert np.allclose(
                 pc.embedding.vector, hc.embedding.vector, rtol=1e-6, atol=1e-8

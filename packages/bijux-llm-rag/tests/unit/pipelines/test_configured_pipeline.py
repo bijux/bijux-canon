@@ -54,5 +54,6 @@ def test_build_rag_pipeline_reports_embed_exceptions() -> None:
     pipeline = build_rag_pipeline(cfg, artifacts={"embed": {"embedder": bad_embedder}})
     docs = iter([RawDoc(doc_id="d1", title="t", abstract="hello", categories="cs.AI")])
     out = list(pipeline(docs))
-    assert out and not all(is_ok(r) for r in out)
+    assert out
+    assert not all(is_ok(r) for r in out)
     assert any((not is_ok(r) and r.error.code == "UNEXPECTED") for r in out)

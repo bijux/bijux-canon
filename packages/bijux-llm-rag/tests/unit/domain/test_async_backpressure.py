@@ -120,7 +120,8 @@ def test_bounded_err_propagation_without_calling_f() -> None:
         results = [r async for r in stream()]
 
         assert call_args == [1, 2]
-        assert isinstance(results[1], Err) and results[1].error.code == "BOOM"
+        assert isinstance(results[1], Err)
+        assert results[1].error.code == "BOOM"
 
     asyncio.run(run())
 

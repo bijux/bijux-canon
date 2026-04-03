@@ -44,10 +44,10 @@ def test_metadata_and_order_invariants(tree) -> None:
 
     assert all(isinstance(p, tuple) for p in paths)
     assert all(isinstance(d, int) for d in depths)
-    assert all(d == len(p) for d, p in zip(depths, paths))
+    assert all(d == len(p) for d, p in zip(depths, paths, strict=True))
     assert len(set(paths)) == len(paths)
     assert paths == sorted(paths)  # preorder monotonicity for tuple paths
 
-    for p, q in zip(paths, paths[1:]):
+    for p, q in zip(paths, paths[1:], strict=True):
         if len(p) == len(q) and len(p) > 0 and p[:-1] == q[:-1]:
             assert p[-1] < q[-1]

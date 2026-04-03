@@ -86,7 +86,7 @@ def test_boundary_rag_config_rejects_unknown_rule() -> None:
 
 
 def test_parse_rule_lints_unsafe_expr() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Forbidden"):
         assert_rule_is_safe_expr("__import__('os').system('echo nope')")
 
 

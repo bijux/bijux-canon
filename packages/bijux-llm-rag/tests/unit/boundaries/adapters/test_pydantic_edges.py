@@ -31,14 +31,16 @@ def test_chunk_roundtrip(text: str, metadata: dict[str, object]) -> None:
 @given(bad_emb=st.lists(nonfinite, min_size=1))
 @settings(deadline=None)
 def test_nonfinite_embedding_rejected(bad_emb: list[float]) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"embedding\[\d+\] not finite"):
         ChunkModel(text="x", embedding=bad_emb)
 
 
 @given(emb=st.lists(st.floats(allow_nan=False, allow_infinity=False), min_size=1))
 def test_large_embedding_rejected_if_out_of_range(emb: list[float]) -> None:
     if any(abs(x) > 100 for x in emb):
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError, match=r"embedding\[\d+\] out of reasonable range"
+        ):
             ChunkModel(text="x", embedding=emb)
 
 

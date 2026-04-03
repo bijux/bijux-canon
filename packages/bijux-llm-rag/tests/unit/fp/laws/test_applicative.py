@@ -81,5 +81,5 @@ def test_dedup_stable(errs1: list[str], errs2: list[str]) -> None:
 
 
 def test_v_failure_rejects_empty() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="VFailure must contain at least one error"):
         v_failure([])

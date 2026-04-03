@@ -45,10 +45,13 @@ def test_cleanup_on_consumer_exception() -> None:
         finally:
             closed = True
 
-    with with_resource_stream(gen()) as it, pytest.raises(ValueError):
+    def consume_until_error(it) -> None:
         for x in it:
             if x == 2:
                 raise ValueError("boom")
+
+    with with_resource_stream(gen()) as it, pytest.raises(ValueError, match="boom"):
+        consume_until_error(it)
     assert closed
 
 
@@ -79,7 +82,10 @@ def test_cleanup_on_producer_exception() -> None:
         finally:
             closed = True
 
-    with with_resource_stream(gen()) as it, pytest.raises(ValueError):
+    with (
+        with_resource_stream(gen()) as it,
+        pytest.raises(ValueError, match="producer fail"),
+    ):
         list(it)
     assert closed
 

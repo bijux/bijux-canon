@@ -51,7 +51,8 @@ def test_async_gen_gather_propagates_err_items() -> None:
 
         merged = async_gen_gather([src()], max_buffer=1)
         out = await collect(merged)
-        assert isinstance(out[1], Err) and out[1].error.code == "BOOM"
+        assert isinstance(out[1], Err)
+        assert out[1].error.code == "BOOM"
 
     asyncio.run(run())
 

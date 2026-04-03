@@ -35,14 +35,16 @@ def test_token_bucket_never_exceeds_policy(tps: float, burst: int, n: int) -> No
         async def fake_sleep(s: float) -> None:
             clock.advance_s(s)
 
-        env = ResilienceEnv(clock=clock, sleep=fake_sleep, rng=Random(0))
+        env = ResilienceEnv(
+            clock=clock,
+            sleep=fake_sleep,
+            rng=Random(0),  # noqa: S311 - deterministic test fixture
+        )
 
-        emission_times: list[float] = []
         src = async_gen_from_list(list(range(n)))
         stream = async_gen_rate_limited(src, policy, env=env)
 
-        async for _ in stream():
-            emission_times.append(clock.now_s())
+        emission_times = [clock.now_s() async for _ in stream()]
 
         elapsed = clock.now_s()
         assert n <= (elapsed * tps) + burst + 1

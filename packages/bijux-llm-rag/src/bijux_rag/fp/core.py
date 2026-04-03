@@ -119,11 +119,14 @@ def failure(*, code: str, msg: str, attempt: int) -> Failure:
 def chunk_state_to_dict(state: ChunkState) -> dict[str, JSON]:
     base: dict[str, JSON] = {"kind": state.kind, "version": 1}
     if isinstance(state, Success):
-        return base | {
-            "embedding": list(state.embedding),
-            "metadata": dict(state.metadata),
-        }
-    return base | {"code": state.code, "msg": state.msg, "attempt": state.attempt}
+        metadata: dict[str, JSON] = dict(state.metadata)
+        base["embedding"] = [float(value) for value in state.embedding]
+        base["metadata"] = metadata
+        return base
+    base["code"] = state.code
+    base["msg"] = state.msg
+    base["attempt"] = state.attempt
+    return base
 
 
 def chunk_state_from_dict(d: Mapping[str, JSON]) -> ChunkState:
