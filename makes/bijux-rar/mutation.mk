@@ -1,35 +1,24 @@
 # Mutation Configuration
 
 MUTMUT     := $(ACT)/mutmut
-COSMIC_RAY := $(ACT)/cosmic-ray
 
-.PHONY: mutation mutation-clean mutation-cosmic mutation-mutmut
+.PHONY: mutation mutation-clean mutation-mutmut
 
 mutation:
-	@echo "→ Running full mutation testing suite"
+	@echo "→ Running mutation testing"
 	@$(MAKE) mutation-clean
-	@$(MAKE) mutation-cosmic
 	@$(MAKE) mutation-mutmut
 	@echo "✔ Mutation testing completed"
 
 mutation-clean:
 	@echo "→ Cleaning mutation test artifacts"
-	@$(RM) session.sqlite .mutmut-cache
-
-mutation-cosmic:
-	@echo "→ [Cosmic-Ray] Initializing session"
-	@$(COSMIC_RAY) init $(CONFIG_DIR)/cosmic-ray.toml session.sqlite
-	@echo "→ [Cosmic-Ray] Executing mutation tests"
-	@$(COSMIC_RAY) exec $(CONFIG_DIR)/cosmic-ray.toml session.sqlite
-	@echo "→ [Cosmic-Ray] Generating report"
-	@$(COSMIC_RAY) report $(CONFIG_DIR)/cosmic-ray.toml session.sqlite
+	@$(RM) .mutmut-cache
 
 mutation-mutmut:
 	@echo "→ [Mutmut] Running mutation tests"
 	@$(MUTMUT) run
 
 ##@ Mutation
-mutation: ## Run all mutation tests (Cosmic-Ray + Mutmut)
-mutation-clean: ## Remove mutation testing artifacts (session.sqlite, .mutmut-cache)
-mutation-cosmic: ## Run mutation testing with Cosmic-Ray
+mutation: ## Run mutation tests with Mutmut
+mutation-clean: ## Remove mutation testing artifacts (.mutmut-cache)
 mutation-mutmut: ## Run mutation testing with Mutmut
