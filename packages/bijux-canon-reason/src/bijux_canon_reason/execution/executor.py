@@ -8,31 +8,17 @@ from pydantic import TypeAdapter
 
 from bijux_canon_reason.core.invariants import validate_plan
 from bijux_canon_reason.core.types import (
-    Claim,
-    ClaimStatus,
-    ClaimType,
-    DeriveOutput,
-    EvidenceRef,
-    FinalizeOutput,
-    GatherOutput,
-    InsufficientEvidenceOutput,
-    JsonValue,
     Plan,
     PlanNode,
     ProblemSpec,
-    StepOutput,
-    SupportKind,
-    SupportRef,
     Trace,
     TraceEvent,
     TraceEventKind,
-    UnderstandOutput,
-    VerifyOutput,
 )
-from bijux_canon_reason.execution.evidence_records import coerce_reasoner_value
 from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.step_execution import ExecutionState, build_step_output
+from bijux_canon_reason.execution.trace_metadata import build_trace_result
 from bijux_canon_reason.execution.tool_dispatch import dispatch_tool_requests
-from bijux_canon_reason.reasoning.backend import BaselineReasoner
 
 
 @dataclass(frozen=True)
@@ -104,14 +90,7 @@ def execute_plan(
 
     adapter: TypeAdapter[TraceEvent] = TypeAdapter(TraceEvent)
     events: list[TraceEvent] = []
-    claims: dict[str, Claim] = {}
-    evidence_ids: list[str] = []
-    evidence_bytes: dict[str, bytes] = {}
-    validated_claim_ids: list[str] = []
-    rejected_claim_ids: list[str] = []
-    missing_support_claim_ids: list[str] = []
-    retrieval_provenance: dict[str, JsonValue] = {}
-    reasoning_meta: dict[str, JsonValue] = {}
+    state = ExecutionState()
     min_supports = policy.min_supports_per_claim
     if isinstance(spec.constraints, dict):
         raw_min = spec.constraints.get("min_supports_per_claim")
@@ -145,122 +124,26 @@ def execute_plan(
             push_event=_push_event,
         )
         if tool_dispatch.retrieval_provenance:
-            retrieval_provenance = tool_dispatch.retrieval_provenance
+            state.retrieval_provenance = tool_dispatch.retrieval_provenance
         for evidence_record in tool_dispatch.evidences:
-            evidence_ids.append(evidence_record.reference.id)
-            evidence_bytes[evidence_record.reference.id] = evidence_record.content
+            state.evidence_ids.append(evidence_record.reference.id)
+            state.evidence_bytes[evidence_record.reference.id] = evidence_record.content
 
-        out: StepOutput | None = None
-        if node.kind == "understand":
-            out = UnderstandOutput(
-                normalized_question=spec.description.strip(), assumptions=[]
-            )
-
-        elif node.kind == "gather":
-            out = GatherOutput(
-                evidence_ids=list(evidence_ids),
-                retrieval_queries=[spec.description],
-                retrieval_provenance=retrieval_provenance,
-            )
-
-        elif node.kind == "derive":
-            ranked_evidence = [
-                (eid, evidence_bytes.get(eid, b"")) for eid in evidence_ids
-            ]
-            available = [ev for ev in ranked_evidence if ev[1]]
-            if len(available) < min_supports:
-                out = InsufficientEvidenceOutput(
-                    retrieved=len(available),
-                    required=min_supports,
-                )
-            else:
-                raw_max = (
-                    spec.constraints.get("max_citations", min_supports)
-                    if isinstance(spec.constraints, dict)
-                    else min_supports
-                )
-                try:
-                    max_citations = (
-                        max(min_supports, int(raw_max))
-                        if isinstance(raw_max, (int, float, str))
-                        else min_supports
-                    )
-                except Exception:  # noqa: BLE001
-                    max_citations = min_supports
-                reasoner = BaselineReasoner()
-                deriv = reasoner.derive(
-                    question=spec.description,
-                    evidence=ranked_evidence,
-                    max_citations=max_citations,
-                )
-                supports = [
-                    SupportRef(
-                        kind=SupportKind.evidence,
-                        ref_id=c.evidence_id,
-                        span=c.span,
-                        snippet_sha256=c.snippet_sha256,
-                    )
-                    for c in deriv.citations
-                ]
-                rr: dict[str, JsonValue] = {}
-                if isinstance(deriv.raw_reasoner, dict):
-                    for k, v_obj in deriv.raw_reasoner.items():
-                        rr[str(k)] = coerce_reasoner_value(v_obj)
-
-                claim = Claim(
-                    id="",
-                    statement=deriv.statement,
-                    status=ClaimStatus.proposed,
-                    confidence=0.7 if supports else 0.1,
-                    supports=supports,
-                    claim_type=ClaimType.derived,
-                    structured={
-                        "reasoner": rr,
-                        "result_sha256": deriv.result_sha256,
-                    },
-                ).with_content_id()
-                claims[claim.id] = claim
-                _push_event(
-                    {
-                        "kind": TraceEventKind.claim_emitted,
-                        "step_id": node.id,
-                        "claim": claim.model_dump(mode="json"),
-                    }
-                )
-                reason_meta_local = {
-                    "question": spec.description,
-                    "evidence_ids": [eid for eid, _ in ranked_evidence],
-                    "result_sha256": deriv.result_sha256,
+        out = build_step_output(
+            node=node,
+            spec=spec,
+            state=state,
+            min_supports=min_supports,
+        )
+        if node.kind == "derive" and getattr(out, "claim_ids", None):
+            claim_id = out.claim_ids[0]
+            _push_event(
+                {
+                    "kind": TraceEventKind.claim_emitted,
+                    "step_id": node.id,
+                    "claim": state.claims[claim_id].model_dump(mode="json"),
                 }
-                reasoning_meta.update(
-                    {k: coerce_reasoner_value(v) for k, v in reason_meta_local.items()}
-                )
-                out = DeriveOutput(claim_ids=[claim.id])
-
-        elif node.kind == "verify":
-            for cid, c in claims.items():
-                if c.claim_type == ClaimType.assumed or c.supports:
-                    validated_claim_ids.append(cid)
-                else:
-                    missing_support_claim_ids.append(cid)
-                    rejected_claim_ids.append(cid)
-            out = VerifyOutput(
-                validated_claim_ids=sorted(set(validated_claim_ids)),
-                rejected_claim_ids=sorted(set(rejected_claim_ids)),
-                missing_support_claim_ids=sorted(set(missing_support_claim_ids)),
             )
-
-        elif node.kind == "finalize":
-            final_ids = sorted(set(validated_claim_ids)) or sorted(claims.keys())
-            answer = claims[final_ids[0]].statement if final_ids else None
-            out = FinalizeOutput(
-                final_claim_ids=final_ids,
-                final_answer=answer,
-                uncertainty=None if final_ids else "No validated claim",
-            )
-
-        else:
-            raise RuntimeError(f"Unknown step kind: {node.kind}")
 
         _push_event(
             {
@@ -270,28 +153,13 @@ def execute_plan(
             }
         )
 
-    trace = Trace(
-        id="",
+    trace = build_trace_result(
         spec_id=spec.id,
         plan_id=plan.id,
         events=events,
-        metadata={
-            "run_meta": {
-                "seed": runtime.seed,
-                "runtime_kind": runtime.runtime_kind,
-                "mode": runtime.mode,
-            }
-        },
-    ).with_content_id()
-    meta_policy: dict[str, JsonValue] = {"min_supports_per_claim": min_supports}
-    if reasoning_meta and "result_sha256" in reasoning_meta:
-        reasoning_meta["reasoning_trace_sha256"] = str(reasoning_meta["result_sha256"])
-    meta = dict(trace.metadata)
-    meta["reasoning_policy"] = meta_policy
-    if retrieval_provenance:
-        meta["retrieval_provenance"] = retrieval_provenance
-    if reasoning_meta:
-        meta["reasoning_trace"] = reasoning_meta
-    trace = trace.model_copy(update={"metadata": meta}).with_content_id()
+        runtime=runtime,
+        state=state,
+        min_supports=min_supports,
+    )
 
     return ExecutionResult(trace=trace)
