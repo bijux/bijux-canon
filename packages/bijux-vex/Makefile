@@ -21,6 +21,10 @@ QUALITY_PATHS     := src/bijux_vex
 QUALITY_PRE_TARGETS := hygiene
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
 QUALITY_CLEAN_SITE := 1
+SECURITY_PATHS    := src/bijux_vex
+SECURITY_IGNORE_IDS := PYSEC-2022-42969
+SECURITY_AUDIT_PREPARE_MODE := pyproject
+PIP_AUDIT_INPUTS = -r "$(SECURITY_REQS)"
 
 # Modular Includes
 include $(ROOT_MAKE_DIR)/lint.mk
@@ -28,7 +32,7 @@ include $(MAKE_DIR)/test.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/hygiene.mk
-include $(MAKE_DIR)/security.mk
+include $(ROOT_MAKE_DIR)/security.mk
 include $(MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/freeze.mk

@@ -27,12 +27,16 @@ QUALITY_VULTURE_MIN_CONFIDENCE := 90
 QUALITY_PYTHON_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_md_links.py $(MONOREPO_ROOT)/scripts/agentic-flows/check_docs_consistency.py $(MONOREPO_ROOT)/scripts/agentic-flows/check_no_toys_policy.py
 QUALITY_DOCS_LINK_SCRIPT := $(MONOREPO_ROOT)/scripts/agentic-flows/check_md_links.py
 QUALITY_RUN_MKDOCS := 1
+SECURITY_PATHS     := src/agentic_flows
+SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
+SECURITY_BANDIT_SKIP_IDS := B311
+SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_dependency_allowlist.py
 
 # ---- Includes ----
 include $(MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
-include $(MAKE_DIR)/security.mk
+include $(ROOT_MAKE_DIR)/security.mk
 include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/docs.mk

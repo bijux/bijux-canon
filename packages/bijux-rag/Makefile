@@ -21,6 +21,12 @@ FMT_RUN_RUFF_CHECK_FIX         := 1
 INTERROGATE_PATHS              := src/bijux_rag
 QUALITY_PATHS                  := src/bijux_rag
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
+SECURITY_PATHS                 := src/bijux_rag
+SECURITY_IGNORE_IDS            := PYSEC-2022-42969
+SECURITY_BANDIT_SKIP_IDS       := B101,B311
+BANDIT_FLAGS                   := --severity-level high --confidence-level high
+BANDIT_EXCLUDES                := .venv,venv,build,dist,.tox,.mypy_cache,.pytest_cache,tests
+PIP_AUDIT_CONSOLE_FLAGS        := --progress-spinner off
 
 .NOTPARALLEL: all clean
 
@@ -30,7 +36,7 @@ include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/quality.mk
-include $(MAKE_DIR)/security.mk
+include $(ROOT_MAKE_DIR)/security.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/publish.mk
 include $(MAKE_DIR)/hygiene.mk

@@ -62,7 +62,7 @@ We enforce Makefile targets to run the full toolchain consistently.
 <summary>Security (<code>Makefile</code>)</summary>
 
 ```make
---8<-- "../../makes/bijux-rag/security.mk"
+--8<-- "../../makes/security.mk"
 ```
 
 </details>

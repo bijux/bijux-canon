@@ -18,6 +18,8 @@ INTERROGATE_PATHS := src/bijux_rar
 QUALITY_PATHS     := src/bijux_rar
 QUALITY_PRE_TARGETS := hygiene
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
+SECURITY_PATHS    := src/bijux_rar
+SECURITY_IGNORE_IDS := PYSEC-2022-42969
 
 # Modular Includes
 include $(MAKE_DIR)/api.mk
@@ -26,7 +28,7 @@ include $(MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/sbom.mk
-include $(MAKE_DIR)/security.mk
+include $(ROOT_MAKE_DIR)/security.mk
 include $(MAKE_DIR)/test.mk
 include $(MAKE_DIR)/publish.mk
 include $(MAKE_DIR)/hygiene.mk
