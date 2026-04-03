@@ -13,6 +13,7 @@ Core namespaces:
 - `bijux_rag.rag`: domain models and pipeline stages (clean/chunk/embed/dedup + config-driven builders).
 - `bijux_rag.domain`/`bijux_rag.infra`: capabilities, async effects, logging, retries, storage adapters.
 - `bijux_rag.boundaries`: CLI + Pydantic/serde edges for moving data across processes.
+- `bijux_rag.config`: package configuration models.
 """
 
 from __future__ import annotations
@@ -27,8 +28,8 @@ from .boundaries.adapters.exception_bridge import (
     v_map_try,
     v_try,
 )
-from .boundaries.app_config import AppConfig
 from .boundaries.shells.rag_api_shell import FSReader, write_chunks_jsonl
+from .config.app import AppConfig
 
 # Domain value types – immutable, hashable where needed
 from .core.rag_types import (

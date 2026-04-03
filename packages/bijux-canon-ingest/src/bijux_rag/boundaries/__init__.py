@@ -19,10 +19,8 @@ from .adapters.exception_bridge import (
     v_map_try,
     v_try,
 )
-from .app_config import AppConfig
 
 __all__ = [
-    "AppConfig",
     "try_result",
     "result_map_try",
     "v_try",

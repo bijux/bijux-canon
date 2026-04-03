@@ -8,8 +8,8 @@ from __future__ import annotations
 import argparse
 from dataclasses import replace
 
-from bijux_rag.boundaries.app_config import AppConfig
 from bijux_rag.boundaries.shells.rag_api_shell import FSReader, write_chunks_jsonl
+from bijux_rag.config.app import AppConfig
 from bijux_rag.core.rag_types import Chunk, RagEnv, RawDoc
 from bijux_rag.rag.clean_cfg import CleanConfig
 from bijux_rag.rag.config import RagConfig, get_deps

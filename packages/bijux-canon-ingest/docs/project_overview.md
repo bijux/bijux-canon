@@ -29,6 +29,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ## Source Code (high level)
 
 - `src/bijux_rag/boundaries/` — shells and adapters (CLI via typer_cli/rag_main, HTTP via fastapi_app/rag_api_shell, exception_bridge, pydantic_edges, serde).
+- `src/bijux_rag/config/` — package configuration models.
 - `src/bijux_rag/core/` — shared RAG types (rag_types), structural dedup, rules (DSL/lint/pred).
 - `src/bijux_rag/domain/` — effects and capabilities (async_ with concurrency/plan/resilience/stream, io_plan, io_retry, tx; facades, idempotent, logging, composition).
 - `src/bijux_rag/fp/` — functional primitives (core with chunk/state_machine, effects like reader/state/writer, laws, applicative/functor/monoid/option_result/validation).
