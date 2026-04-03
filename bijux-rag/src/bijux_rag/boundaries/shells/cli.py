@@ -3,8 +3,6 @@
 
 """Bijux RAG Core 6: minimal stdlib CLI shell (end-of-Bijux RAG).
 
-# pyright: reportUnknownArgumentType=false, reportUnknownMemberType=false, reportUnknownVariableType=false
-
 This CLI is intentionally small and dependency-free (argparse). It demonstrates:
 - thin shell adapter
 - config-as-data loading (JSON)

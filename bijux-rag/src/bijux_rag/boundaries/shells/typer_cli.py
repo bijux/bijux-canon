@@ -3,8 +3,6 @@
 
 """Bijux RAG Core 6: optional Typer CLI (end-of-Bijux RAG).
 
-# pyright: reportUnusedFunction=false
-
 This is an optional shell. It is behind a dynamic import guard so the repo does
 not require `typer` to be installed to import/run tests.
 """

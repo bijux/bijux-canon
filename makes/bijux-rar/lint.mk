@@ -4,7 +4,6 @@ RUFF        := $(ACT)/ruff
 MYPY        := $(ACT)/mypy
 PYTYPE      := $(ACT)/pytype
 CODESPELL   := $(ACT)/codespell
-PYRIGHT     := $(ACT)/pyright
 PYDOCSTYLE  := $(ACT)/pydocstyle
 RADON       := $(ACT)/radon
 MYPY_SKIP   ?= 0
@@ -21,7 +20,6 @@ PYTYPE_OUT_DIR      ?= $(LINT_ARTIFACTS_DIR)/.pytype
 
 # In case these are not defined elsewhere
 VENV_PYTHON         ?= python3
-PYRIGHT_SKIP        ?= 0
 PYDOCSTYLE_SKIP     ?= 1
 
 .PHONY: lint lint-artifacts lint-file lint-dir lint-clean
@@ -40,11 +38,6 @@ lint-artifacts: | $(VENV)
 	  echo "→ Skipping mypy (MYPY_SKIP=1)" | tee "$(LINT_ARTIFACTS_DIR)/mypy.log"; \
 	else \
 	  set -euo pipefail; $(MYPY) --version 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/mypy.log"; \
-	fi
-	@if [ "$(PYRIGHT_SKIP)" = "1" ]; then \
-	  echo "→ Skipping pyright (PYRIGHT_SKIP=1)" | tee "$(LINT_ARTIFACTS_DIR)/pyright.log"; \
-	else \
-	  set -euo pipefail; $(PYRIGHT) --version 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/pyright.log"; \
 	fi
 	@set -euo pipefail; $(CODESPELL) -I $(CONFIG_DIR)/bijux.dic $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/codespell.log"
 	@set -euo pipefail; $(RADON) cc -s -a $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/radon.log"
@@ -71,7 +64,6 @@ endif
 	@$(call run_tool,Ruff,$(RUFF) check --fix --config $(CONFIG_DIR)/ruff.toml --cache-dir "$(RUFF_CACHE_DIR)")
 	@$(call run_tool,Mypy,$(MYPY) --config-file $(CONFIG_DIR)/mypy.ini --strict --cache-dir "$(MYPY_CACHE_DIR)")
 	@$(call run_tool,Codespell,$(CODESPELL) -I $(CONFIG_DIR)/bijux.dic)
-	@$(call run_tool,Pyright,$(PYRIGHT) --project $(CONFIG_DIR)/pyrightconfig.json)
 	@$(call run_tool,Radon,$(RADON) cc -s -a)
 	@$(call run_tool,Pydocstyle,$(PYDOCSTYLE) --convention=google)
 	@if $(VENV_PYTHON) -c 'import sys; sys.exit(0 if sys.version_info < (3,13) else 1)'; then \

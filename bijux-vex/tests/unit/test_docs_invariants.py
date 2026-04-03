@@ -7,7 +7,6 @@ import pathlib
 from typing import Iterable
 
 import yaml
-# pyright: reportMissingModuleSource=false
 
 
 def _flatten_nav(nav: Iterable[dict | str]) -> set[pathlib.Path]:

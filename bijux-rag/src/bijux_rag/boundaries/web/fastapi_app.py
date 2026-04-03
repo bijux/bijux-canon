@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
-"""FastAPI adapter exposing chunking and RAG endpoints.
-
-# pyright: reportUnusedFunction=false
-"""
+"""FastAPI adapter exposing chunking and RAG endpoints."""
 
 from __future__ import annotations
 

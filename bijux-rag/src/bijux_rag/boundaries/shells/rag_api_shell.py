@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
-"""Back-compat shim for the historical file-based API shell.
-
-# pyright: reportUnknownArgumentType=false, reportUnknownMemberType=false, reportUnknownVariableType=false
-"""
+"""Back-compat shim for the historical file-based API shell."""
 
 from __future__ import annotations
 

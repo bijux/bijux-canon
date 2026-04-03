@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-# pyright: reportMissingModuleSource=false, reportMissingImports=false
 from __future__ import annotations
 
 from collections.abc import Iterable

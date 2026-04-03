@@ -21,7 +21,6 @@ ignore_not_used = [
   "mypy",
   "pytype",
   "codespell",
-  "pyright",
   "pydocstyle",
   "radon",
   "vulture",

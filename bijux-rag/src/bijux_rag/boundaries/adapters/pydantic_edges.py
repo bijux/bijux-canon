@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
-"""Bijux RAG Pydantic-at-the-edges models and codecs (end-of-Bijux RAG; adapters).
-
-# pyright: reportUnknownArgumentType=false
-"""
+"""Bijux RAG Pydantic-at-the-edges models and codecs (end-of-Bijux RAG; adapters)."""
 
 from __future__ import annotations
 

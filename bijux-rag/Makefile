@@ -52,7 +52,7 @@ clean-soft:
 	fi
 
 # Ensure core tasks run inside the managed virtualenv
-test lint fmt type quality security api docs build sbom hygiene: install
+test lint fmt quality security api docs build sbom hygiene: install
 
 # Pipelines
 all: clean install test lint quality security api docs build sbom hygiene

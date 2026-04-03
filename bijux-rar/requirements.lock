@@ -95,7 +95,6 @@ pymdown-extensions==10.19.1
 pyparsing==3.3.1
 pyproject_hooks==1.2.0
 pyrate-limiter==3.9.0
-pyright==1.1.407
 pytest==8.4.2
 pytest-benchmark==5.2.3
 pytest-cov==7.0.0

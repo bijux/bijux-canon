@@ -20,7 +20,6 @@ DEFAULT_EXCLUDES = {
     "build",
     ".pytest_cache",
     ".mypy_cache",
-    ".pyright",
     ".ruff_cache",
     ".idea",
     "TODO",

@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
-"""Bijux RAG serialization contracts: Envelope + JSON/MessagePack + migrations (end-of-Bijux RAG; adapters).
-
-# pyright: reportMissingTypeStubs=false, reportUnknownArgumentType=false, reportUnknownMemberType=false, reportUnknownVariableType=false
-"""
+"""Bijux RAG serialization contracts: Envelope + JSON/MessagePack + migrations (end-of-Bijux RAG; adapters)."""
 
 from __future__ import annotations
 

@@ -9,8 +9,5 @@
     "@openapitools/openapi-generator-cli": "2.27.0",
     "@redocly/cli": "1.28.1",
     "lodash": "4.17.21"
-  },
-  "scripts": {
-    "pyright": "pyright"
   }
 }

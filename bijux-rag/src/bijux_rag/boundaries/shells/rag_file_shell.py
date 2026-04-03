@@ -13,10 +13,7 @@ from bijux_rag.result.types import Err, Ok, Result
 
 @dataclass(frozen=True)
 class RagFileShell:
-    """File-based ingestion shell (NOT HTTP API).
-
-    # pyright: reportUnknownArgumentType=false, reportUnknownMemberType=false, reportUnknownVariableType=false
-    """
+    """File-based ingestion shell (NOT HTTP API)."""
 
     in_path: Path
     out_path: Path

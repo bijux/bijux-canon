@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
-# pyright: reportMissingImports=false
 from __future__ import annotations
 
 import json

@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
-"""Thin orchestrator example for the end-of-Bijux RAG codebase.
-
-# pyright: reportUnknownArgumentType=false, reportUnknownMemberType=false, reportUnknownVariableType=false
-"""
+"""Thin orchestrator example for the end-of-Bijux RAG codebase."""
 
 from __future__ import annotations
 
