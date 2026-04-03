@@ -1,0 +1,120 @@
+name: bijux-vex CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/bijux-vex-ci.yml"
+      - "packages/bijux-vex/**"
+      - "configs/bijux-vex/**"
+      - "makes/bijux-vex/**"
+      - "makes/shared/**"
+      - "Makefile"
+      - "tox.ini"
+      - "scripts/deptry_scan.py"
+  pull_request:
+    paths:
+      - ".github/workflows/bijux-vex-ci.yml"
+      - "packages/bijux-vex/**"
+      - "configs/bijux-vex/**"
+      - "makes/bijux-vex/**"
+      - "makes/shared/**"
+      - "Makefile"
+      - "tox.ini"
+      - "scripts/deptry_scan.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bijux-vex-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            packages/bijux-vex/pyproject.toml
+            tox.ini
+
+      - name: Run tests
+        run: make -C packages/bijux-vex test
+
+      - name: Upload test artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: bijux-vex-test
+          path: packages/bijux-vex/artifacts/test
+          if-no-files-found: ignore
+          retention-days: 14
+
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [quality, security, docs, api, sbom, hygiene]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            packages/bijux-vex/pyproject.toml
+            tox.ini
+
+      - name: Run ${{ matrix.target }}
+        run: make -C packages/bijux-vex ${{ matrix.target }}
+
+      - name: Upload artifacts
+        if: ${{ always() && hashFiles(format('packages/bijux-vex/artifacts/{0}/**', matrix.target)) != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: bijux-vex-${{ matrix.target }}
+          path: packages/bijux-vex/artifacts/${{ matrix.target }}
+          if-no-files-found: ignore
+          retention-days: 14
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: [tests, checks]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            packages/bijux-vex/pyproject.toml
+            tox.ini
+
+      - name: Run lint
+        run: make -C packages/bijux-vex lint
+
+      - name: Upload lint artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: bijux-vex-lint
+          path: packages/bijux-vex/artifacts/lint
+          if-no-files-found: ignore
+          retention-days: 14

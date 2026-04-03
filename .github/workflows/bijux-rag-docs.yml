@@ -1,0 +1,48 @@
+name: bijux-rag Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/bijux-rag-docs.yml"
+      - "packages/bijux-rag/docs/**"
+      - "packages/bijux-rag/README.md"
+      - "packages/bijux-rag/CHANGELOG.md"
+      - "packages/bijux-rag/scripts/**"
+      - "configs/bijux-rag/mkdocs.yml"
+      - "makes/bijux-rag/docs.mk"
+      - "makes/shared/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bijux-rag-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: packages/bijux-rag/pyproject.toml
+
+      - name: Install package docs toolchain
+        run: make -C packages/bijux-rag install
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy docs
+        run: packages/bijux-rag/.venv/bin/mkdocs gh-deploy --strict --force --config-file configs/bijux-rag/mkdocs.yml

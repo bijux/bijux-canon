@@ -1,0 +1,48 @@
+name: bijux-vex Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/bijux-vex-docs.yml"
+      - "packages/bijux-vex/docs/**"
+      - "packages/bijux-vex/README.md"
+      - "packages/bijux-vex/CHANGELOG.md"
+      - "packages/bijux-vex/scripts/**"
+      - "configs/bijux-vex/mkdocs.yml"
+      - "makes/bijux-vex/docs.mk"
+      - "makes/shared/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bijux-vex-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: packages/bijux-vex/pyproject.toml
+
+      - name: Install package docs toolchain
+        run: make -C packages/bijux-vex install
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy docs
+        run: packages/bijux-vex/.venv/bin/mkdocs gh-deploy --strict --force --config-file configs/bijux-vex/mkdocs.yml

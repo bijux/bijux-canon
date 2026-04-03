@@ -1,0 +1,56 @@
+name: bijux-rag Publish
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bijux-rag-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: packages/bijux-rag/pyproject.toml
+
+      - name: Build distribution and SBOM
+        run: |
+          make -C packages/bijux-rag build
+          make -C packages/bijux-rag sbom
+
+      - name: Stage publish artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .github/tmp/bijux-rag-dist
+          cp packages/bijux-rag/artifacts/build/*.whl .github/tmp/bijux-rag-dist/
+          cp packages/bijux-rag/artifacts/build/*.tar.gz .github/tmp/bijux-rag-dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: .github/tmp/bijux-rag-dist
+          skip-existing: true
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bijux-rag-release
+          path: |
+            packages/bijux-rag/artifacts/build/*
+            packages/bijux-rag/artifacts/sbom/*
+          if-no-files-found: ignore
+          retention-days: 14

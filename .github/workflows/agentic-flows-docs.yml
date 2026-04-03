@@ -1,0 +1,49 @@
+name: agentic-flows Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/agentic-flows-docs.yml"
+      - "packages/agentic-flows/docs/**"
+      - "packages/agentic-flows/README.md"
+      - "packages/agentic-flows/CHANGELOG.md"
+      - "packages/agentic-flows/CONTRIBUTING.md"
+      - "packages/agentic-flows/scripts/**"
+      - "configs/agentic-flows/mkdocs.yml"
+      - "makes/agentic-flows/docs.mk"
+      - "makes/shared/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agentic-flows-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: packages/agentic-flows/pyproject.toml
+
+      - name: Install package docs toolchain
+        run: make -C packages/agentic-flows install
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy docs
+        run: make -C packages/agentic-flows docs-deploy
