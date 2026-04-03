@@ -6,7 +6,7 @@ import pytest
 
 pytest.importorskip("numpy")
 
-from bijux_canon_index.bench.dataset import generate_dataset
+from bijux_canon_index.tooling.benchmarks.dataset import generate_dataset
 
 
 def test_dataset_generator_is_deterministic() -> None:

@@ -15,7 +15,7 @@ import zipfile
 
 import typer
 
-from bijux_canon_index.bench.dataset import (
+from bijux_canon_index.tooling.benchmarks.dataset import (
     DEFAULT_DIMENSION,
     DEFAULT_QUERY_COUNT,
     DEFAULT_SEED,
@@ -24,7 +24,7 @@ from bijux_canon_index.bench.dataset import (
     load_dataset,
     save_dataset,
 )
-from bijux_canon_index.bench.runner import format_table, run_benchmark
+from bijux_canon_index.tooling.benchmarks.runner import format_table, run_benchmark
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
     record_failure,
