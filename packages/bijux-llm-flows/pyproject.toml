@@ -116,7 +116,7 @@ include = [
 source = "vcs"
 tag-pattern = "^bijux-llm-flows/v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-flows/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
-fallback-version = "0.1.0"
+fallback-version = "0.3.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentic_flows"]
