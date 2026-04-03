@@ -10,7 +10,6 @@ include ../makes/shared/python-package.mk
 # Modular Includes
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
-include $(MAKE_DIR)/dictionary.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/lint.mk
 include $(MAKE_DIR)/mutation.mk
