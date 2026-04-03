@@ -38,6 +38,12 @@ def test_docs_index_has_no_missing_files() -> None:
     assert not extra, f"docs/index.md references missing files: {sorted(extra)}"
 
 
+def test_root_package_docs_home_exists() -> None:
+    repo_root = Path(__file__).resolve().parents[4]
+    docs_home = repo_root / "docs" / "packages" / "bijux-canon-agent" / "index.md"
+    assert docs_home.exists(), "root package docs home must exist"
+
+
 def test_root_markdown_whitelist() -> None:
     allowed = {
         "CHANGELOG.md",

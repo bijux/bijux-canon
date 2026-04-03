@@ -3,7 +3,7 @@ site_url: https://bijux.github.io/bijux-canon-agent/
 repo_name: bijux/bijux-canon
 repo_url: https://github.com/bijux/bijux-canon
 
-docs_dir: docs
+docs_dir: ../../docs/packages/bijux-canon-agent
 
 theme:
   name: material
