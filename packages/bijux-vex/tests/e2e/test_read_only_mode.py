@@ -28,8 +28,8 @@ def test_read_only_blocks_mutations(monkeypatch):
         )
 
 
-def test_read_only_allows_reads(monkeypatch):
-    db_path = "read-only.sqlite"
+def test_read_only_allows_reads(tmp_path, monkeypatch):
+    db_path = str(tmp_path / "read-only.sqlite")
     monkeypatch.setenv("BIJUX_VEX_STATE_PATH", db_path)
     setup = VectorExecutionEngine()
     setup.ingest(IngestRequest(documents=["hi"], vectors=[[0.0, 0.0]]))
