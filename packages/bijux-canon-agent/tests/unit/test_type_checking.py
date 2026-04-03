@@ -23,6 +23,7 @@ def test_pipeline_mypy_has_no_regressions() -> None:
             str(repo_root / "configs" / "mypy.ini"),
             "--cache-dir",
             str(cache_dir),
+            "--follow-imports=silent",
             "src/bijux_canon_agent/pipeline",
             "src/bijux_canon_agent/tracing",
             "src/bijux_canon_agent/models",

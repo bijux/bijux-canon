@@ -7,7 +7,7 @@ Bijux Agent is a deterministic, auditable document-processing pipeline (CLI + op
 - emit an audit trace suitable for replay validation and post-hoc inspection.
 
 Published package name: `bijux-canon-agent`
-Compatibility package: `bijux-agent`
+Compatibility CLI alias: `bijux-agent`
 
 ## Quickstart (CLI)
 

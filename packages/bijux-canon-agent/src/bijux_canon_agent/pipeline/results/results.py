@@ -13,7 +13,7 @@ from bijux_canon_agent.pipeline.results.types import (
     MergedShardResult,
     ShardResult,
 )
-from bijux_canon_agent.pipeline.execution_plan import merge_summary_outputs
+from bijux_canon_agent.pipeline.results.summary import merge_summary_outputs
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
 
 

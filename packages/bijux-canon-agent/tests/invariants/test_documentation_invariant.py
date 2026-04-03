@@ -41,6 +41,10 @@ def test_docs_index_has_no_missing_files() -> None:
 def test_root_markdown_whitelist() -> None:
     allowed = {
         "CHANGELOG.md",
+        "CODE_OF_CONDUCT.md",
+        "CONTRIBUTING.md",
+        "README.md",
+        "SECURITY.md",
     }
     markdown_files = {Path(p).name for p in Path().glob("*.md")}
     unexpected = markdown_files - allowed

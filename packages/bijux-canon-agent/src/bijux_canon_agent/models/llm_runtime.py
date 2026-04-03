@@ -379,9 +379,9 @@ class LLMUtils:
         tasks = [self.generate(prompt, max_tokens) for prompt in prompts]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        responses = []
+        responses: list[str] = []
         for idx, result in enumerate(results):
-            if isinstance(result, Exception):
+            if isinstance(result, BaseException):
                 self.logger.error(
                     f"Batch generation failed for prompt {idx}: {result!s}"
                 )
