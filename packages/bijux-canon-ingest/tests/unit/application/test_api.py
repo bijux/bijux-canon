@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""End-to-end tests for the Bijux RAG API surface."""
+"""End-to-end tests for the application API surface."""
 
 from __future__ import annotations
 

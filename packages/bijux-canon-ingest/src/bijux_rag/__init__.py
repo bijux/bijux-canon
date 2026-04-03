@@ -10,7 +10,7 @@ pipelines stay reproducible.
 
 Core namespaces:
 - `bijux_rag.fp`: functional toolkit and error primitives.
-- `bijux_rag.rag`: retrieval backends, ports, and ranking internals.
+- `bijux_rag.retrieval`: retrieval backends, ports, and ranking internals.
 - `bijux_rag.domain`/`bijux_rag.infra`: capabilities, async effects, logging, retries, storage adapters.
 - `bijux_rag.http`: FastAPI transport.
 - `bijux_rag.boundaries`: boundary exception helpers.

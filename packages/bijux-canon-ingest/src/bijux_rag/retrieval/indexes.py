@@ -25,7 +25,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from bijux_rag.core.rag_types import Chunk, EmbeddingSpec
-from bijux_rag.rag.ports import Candidate, Embedder
+from bijux_rag.retrieval.ports import Candidate, Embedder
 
 SCHEMA_VERSION = 1
 

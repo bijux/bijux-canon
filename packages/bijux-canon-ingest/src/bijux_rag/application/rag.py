@@ -28,17 +28,17 @@ from bijux_rag.core.rag_types import (
     RawDoc,
 )
 from bijux_rag.infra.adapters.file_storage import FileStorage
-from bijux_rag.rag.embedders import HashEmbedder, SentenceTransformersEmbedder
-from bijux_rag.rag.generators import ExtractiveGenerator
-from bijux_rag.rag.indexes import (
+from bijux_rag.retrieval.embedders import HashEmbedder, SentenceTransformersEmbedder
+from bijux_rag.retrieval.generators import ExtractiveGenerator
+from bijux_rag.retrieval.indexes import (
     BM25Index,
     NumpyCosineIndex,
     build_bm25_index,
     build_numpy_cosine_index,
     load_index,
 )
-from bijux_rag.rag.ports import Answer, Candidate, Embedder
-from bijux_rag.rag.rerankers import LexicalOverlapReranker
+from bijux_rag.retrieval.ports import Answer, Candidate, Embedder
+from bijux_rag.retrieval.rerankers import LexicalOverlapReranker
 from bijux_rag.processing.stages import clean_doc, iter_chunk_doc
 from bijux_rag.result.types import Err, Ok, Result, is_err, is_ok
 

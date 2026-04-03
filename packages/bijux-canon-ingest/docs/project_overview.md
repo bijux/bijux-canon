@@ -37,19 +37,19 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `src/bijux_rag/config/` — package and pipeline configuration models (`AppConfig`, `RagConfig`, `CleanConfig`).
 - `src/bijux_rag/core/` — shared RAG types (rag_types), structural dedup, rules (DSL/lint/pred).
 - `src/bijux_rag/processing/` — pure pipeline transforms (`chunking`, `stages`, `streaming`, `stdlib`).
+- `src/bijux_rag/retrieval/` — retrieval backends and domain types (`domain`, `embedders`, `generators`, `indexes`, `ports`, `rerankers`).
 - `src/bijux_rag/domain/` — effects and capabilities (async_ with concurrency/plan/resilience/stream, io_plan, io_retry, tx; facades, idempotent, logging, composition).
 - `src/bijux_rag/fp/` — functional primitives (core with chunk/state_machine, effects like reader/state/writer, laws, applicative/functor/monoid/option_result/validation).
 - `src/bijux_rag/infra/adapters/` — pluggable impls (async_runtime, atomic_storage, clock, file_storage, logger, memory_storage).
 - `src/bijux_rag/interop/` — compat layers (dataframes, returns_compat, stdlib_fp, toolz_compat).
 - `src/bijux_rag/policies/` — reusable behaviors (breakers, memo, reports, resources, retries).
-- `src/bijux_rag/rag/` — remaining retrieval internals during the split (`core`, `domain`, `embedders`, `generators`, `indexes`, `ports`, `rerankers`).
 - `src/bijux_rag/result/` — result monad (folds, stream, types).
 - `src/bijux_rag/streaming/` — streaming utils (compose, contiguity, fanin/fanout, observability, sampling, time, types).
 - `src/bijux_rag/tree/` — tree operations (_traversal, folds).
 
 ## Tests & Eval
 
-- `tests/unit/` — focused units and property tests (application, boundaries, processing, serde, domain async/io/retry/session, fp laws/core/iter/pattern, infra adapters, interop, policies, rag domain/api, result option/folds/stream, streaming, tree flatten/folds).
+- `tests/unit/` — focused units and property tests (application, boundaries, processing, retrieval, serde, domain async/io/retry/session, fp laws/core/iter/pattern, infra adapters, interop, policies, result option/folds/stream, streaming, tree flatten/folds).
 - `tests/e2e/` — end-to-end smoke/gates (cli_smoke, eval_suite, rag_truthfulness_gate, real_rag_smoke) with fixtures.
 - `tests/eval/` — pinned corpus/queries JSONL with licenses.
 - `tests/strategies.py` — Hypothesis strategies for trees/chains/results.

@@ -8,7 +8,12 @@ from hypothesis import strategies as st
 import numpy as np
 
 from bijux_rag.fp.validation import VFailure, VSuccess
-from bijux_rag.rag.domain import Chunk, ChunkMetadata, ChunkText, process_batch_hybrid
+from bijux_rag.retrieval.domain import (
+    Chunk,
+    ChunkMetadata,
+    ChunkText,
+    process_batch_hybrid,
+)
 
 chunk_strat = st.builds(
     Chunk,

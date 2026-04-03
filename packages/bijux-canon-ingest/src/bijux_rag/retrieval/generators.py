@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from bijux_rag.rag.ports import Answer, Candidate, Citation
+from bijux_rag.retrieval.ports import Answer, Candidate, Citation
 
 
 @dataclass(frozen=True, slots=True)
