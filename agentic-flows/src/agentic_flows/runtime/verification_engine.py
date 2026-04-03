@@ -1,7 +1,7 @@
 # INTERNAL — NOT A PUBLIC EXTENSION POINT
 # INTERNAL — SUBJECT TO CHANGE WITHOUT NOTICE
 # INTERNAL API — NOT STABLE
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
 # Verification must never call agents or modify artifact; epistemic truth is delegated to authority.

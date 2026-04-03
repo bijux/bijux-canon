@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
 """Planning phase helpers for LiveExecutor."""

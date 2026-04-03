@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
 """Module definitions for runtime/observability/storage/schema_contracts.py."""

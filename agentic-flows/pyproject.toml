@@ -11,7 +11,7 @@ name = "agentic-flows"
 dynamic = ["version"]
 description = "Governed execution and replay with auditable non-determinism"
 readme = { file = "README.md", content-type = "text/markdown" }
-license = { text = "Apache-2.0" }
+license = { file = "LICENSE" }
 requires-python = ">=3.11"
 authors = [{ name = "Bijan Mousavi", email = "mousavi.bijan@gmail.com" }]
 keywords = [
@@ -28,7 +28,7 @@ classifiers = [
   "Environment :: Console",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
+  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Operating System :: MacOS",
   "Operating System :: POSIX",

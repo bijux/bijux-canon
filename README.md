@@ -13,4 +13,10 @@ Projects:
 - `bijux-rar`
 - `bijux-vex`
 
+Shared repository assets:
+
+- `configs/` for root-managed tooling configuration
+- `makes/` for root-managed build and quality targets
+- `LICENSE` for the repository-wide MIT license
+
 History preservation details are documented in `docs/repository-history.md`.

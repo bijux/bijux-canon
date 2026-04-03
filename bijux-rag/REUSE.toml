@@ -9,7 +9,7 @@ path = [
   "artifacts/**"
 ]
 precedence = "override"
-SPDX-License-Identifier = "CC0-1.0"
+SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "© 2025 Bijan Mousavi"
 
 [[annotations]]

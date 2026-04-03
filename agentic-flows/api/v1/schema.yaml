@@ -3,7 +3,7 @@ info:
   title: agentic-flows API schemas
   version: v1
   license:
-    name: Apache-2.0
+    name: MIT
     url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
   - url: /

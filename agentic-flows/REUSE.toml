@@ -1,6 +1,6 @@
 version = 1
 
-# Config/docs/assets: public domain
+# Config/docs/assets: MIT
 [[annotations]]
 path = [
   "**/*.png", "**/*.svg", "**/*.ico", "**/*.gif", "**/*.jpg", "**/*.jpeg",
@@ -12,19 +12,19 @@ path = [
   "**/*.gitignore", "**/*.hash",
 ]
 precedence = "override"
-SPDX-License-Identifier = "CC0-1.0"
+SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "© 2025 Bijan Mousavi"
 
-# Code: Apache-2.0
+# Code: MIT
 [[annotations]]
 path = ["src/**", "scripts/**", "**/*.py", "**/*.pyi", "**/*.sh", "**/*.mk", "Makefile", "Dockerfile", "Dockerfile.*"]
 precedence = "closest"
-SPDX-License-Identifier = "Apache-2.0"
+SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "© 2025 Bijan Mousavi"
 
-# Markdown docs: Apache-2.0
+# Markdown docs: MIT
 [[annotations]]
 path = ["**/*.md"]
 precedence = "closest"
-SPDX-License-Identifier = "Apache-2.0"
+SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "© 2025 Bijan Mousavi"

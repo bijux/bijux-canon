@@ -21,7 +21,6 @@ Quick map of the bijux-rag repository (aligned with the bijux-cli documentation 
 ├── CODE_OF_CONDUCT.md   # community guidelines
 ├── CONTRIBUTING.md      # contributor guide
 ├── LICENSE              # MIT license
-├── LICENSES/            # full texts (CC0-1.0, MIT)
 ├── Makefile             # main Makefile entrypoint
 ├── PROJECT_TREE.md      # this file
 ├── README.md            # project overview
@@ -95,7 +94,7 @@ Quick map of the bijux-rag repository (aligned with the bijux-cli documentation 
 - `CODE_OF_CONDUCT.md` — Contributor Covenant.
 - `CONTRIBUTING.md` — setup/workflow/PR guide.
 - `SECURITY.md` — vulnerability reporting.
-- `REUSE.toml` — license annotations (CC0 for assets, MIT for code/docs).
-- `LICENSE`, `LICENSES/` — MIT + CC0 texts.
+- `REUSE.toml` — license annotations (MIT across current repository content).
+- `LICENSE` — MIT license text.
 
 [Back to top](#project-tree--guide)
