@@ -102,8 +102,8 @@ dev = [
 ]
 
 [project.scripts]
-bijux-canon-runtime = "bijux_canon_runtime.cli.main:main"
-agentic-flows = "bijux_canon_runtime.cli.main:main"
+bijux-canon-runtime = "bijux_canon_runtime.interfaces.cli.main:main"
+agentic-flows = "bijux_canon_runtime.interfaces.cli.main:main"
 
 [tool.hatch.build]
 include = [

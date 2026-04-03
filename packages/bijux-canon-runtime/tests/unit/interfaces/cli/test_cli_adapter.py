@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from bijux_canon_runtime.cli import main as cli_main
+from bijux_canon_runtime.interfaces.cli import main as cli_main
 from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     FlowRunResult,
@@ -172,7 +172,7 @@ def test_cli_delegates_to_api_run_flow(tmp_path: Path, monkeypatch) -> None:
             run_id=None,
         )
 
-    cli_main_module = importlib.import_module("bijux_canon_runtime.cli.main")
+    cli_main_module = importlib.import_module("bijux_canon_runtime.interfaces.cli.main")
     monkeypatch.setattr(cli_main_module, "execute_flow", _fake_run_flow)
     monkeypatch.setattr(
         "sys.argv", ["agentic-flows", "experimental", "plan", str(manifest_path)]
@@ -325,7 +325,7 @@ def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
             run_id=None,
         )
 
-    cli_main_module = importlib.import_module("bijux_canon_runtime.cli.main")
+    cli_main_module = importlib.import_module("bijux_canon_runtime.interfaces.cli.main")
     monkeypatch.setattr(cli_main_module, "execute_flow", _fake_run_flow)
     monkeypatch.setattr(
         "sys.argv",
@@ -385,6 +385,6 @@ def test_cli_replay_envelope_requires_fields(tmp_path: Path, missing_key: str) -
     payload["replay_envelope"].pop(missing_key)
     manifest_path.write_text(json.dumps(payload), encoding="utf-8")
 
-    cli_main_module = importlib.import_module("bijux_canon_runtime.cli.main")
+    cli_main_module = importlib.import_module("bijux_canon_runtime.interfaces.cli.main")
     with pytest.raises(KeyError):
         cli_main_module._load_manifest(manifest_path)

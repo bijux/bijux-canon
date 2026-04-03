@@ -7,7 +7,7 @@ import argparse
 import json
 from pathlib import Path
 
-from bijux_canon_runtime.cli import main as cli_main
+from bijux_canon_runtime.interfaces.cli import main as cli_main
 from bijux_canon_runtime.core.authority import finalize_trace
 from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
