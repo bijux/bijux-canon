@@ -18,13 +18,20 @@ ENABLE_RADON         := 1
 ENABLE_PYDOCSTYLE    := 0
 ENABLE_PYTYPE        := 1
 RUFF_CHECK_FIX       := 1
+INTERROGATE_PATHS    := src/bijux_agent
+QUALITY_PATHS        := src/bijux_agent
+QUALITY_PRE_TARGETS  := line_limit
+QUALITY_MYPY_CONFIG  := $(CONFIG_DIR)/mypy-core.ini
+QUALITY_MYPY_FLAGS   :=
+SKIP_MYPY            := 0
+QUALITY_VULTURE_MIN_CONFIDENCE := 90
 
 # Modular Includes
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk
-include $(MAKE_DIR)/quality.mk
+include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/security.mk
 include $(MAKE_DIR)/test.mk
@@ -80,18 +87,6 @@ ci-fast: lint test mypy-core
 line_limit:
 	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/bijux-agent/check_line_limit.py"
 .PHONY: line_limit
-
-# Utilities
-define run_tool
-	printf "→ %s %s\n" "$(1)" "$$file"; \
-	OUT=`$(2) "$$file" 2>&1`; \
-	if [ $$? -eq 0 ]; then \
-		printf "  ✔ %s OK\n" "$(1)"; \
-	else \
-		printf "  ✘ %s failed:\n" "$(1)"; \
-		printf "%s\n" "$$OUT" | head -10; \
-	fi
-endef
 
 define read_pyproject_version
 $(strip $(shell \

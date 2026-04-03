@@ -18,6 +18,9 @@ ENABLE_PYTYPE                  := 1
 PYTYPE_CONFIG                  := $(CONFIG_DIR)/pytype.cfg
 PYTYPE_TARGETS                 = $(if $(LINT_SCOPE),$(LINT_SCOPE),src/bijux_rag/boundaries)
 FMT_RUN_RUFF_CHECK_FIX         := 1
+INTERROGATE_PATHS              := src/bijux_rag
+QUALITY_PATHS                  := src/bijux_rag
+QUALITY_VULTURE_MIN_CONFIDENCE := 80
 
 .NOTPARALLEL: all clean
 
@@ -26,7 +29,7 @@ include $(ROOT_MAKE_DIR)/lint.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
-include $(MAKE_DIR)/quality.mk
+include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/security.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/publish.mk

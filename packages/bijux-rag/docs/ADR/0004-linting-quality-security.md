@@ -53,7 +53,7 @@ We enforce Makefile targets to run the full toolchain consistently.
 <summary>Quality (<code>Makefile</code>)</summary>
 
 ```make
---8<-- "../../makes/bijux-rag/quality.mk"
+--8<-- "../../makes/quality.mk"
 ```
 
 </details>

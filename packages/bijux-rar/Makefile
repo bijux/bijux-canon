@@ -14,13 +14,17 @@ ENABLE_RADON      := 1
 ENABLE_PYDOCSTYLE := 0
 ENABLE_PYTYPE     := 0
 RUFF_CHECK_FIX    := 1
+INTERROGATE_PATHS := src/bijux_rar
+QUALITY_PATHS     := src/bijux_rar
+QUALITY_PRE_TARGETS := hygiene
+QUALITY_VULTURE_MIN_CONFIDENCE := 80
 
 # Modular Includes
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk
-include $(MAKE_DIR)/quality.mk
+include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/security.mk
 include $(MAKE_DIR)/test.mk
@@ -71,18 +75,6 @@ all-parallel: clean install
 	@$(MAKE) -j4 quality security api docs
 	@$(MAKE) build sbom
 	@echo "✔ All targets completed (parallel mode)"
-
-# Utilities
-define run_tool
-	printf "→ %s %s\n" "$(1)" "$$file"; \
-	OUT=`$(2) "$$file" 2>&1`; \
-	if [ $$? -eq 0 ]; then \
-		printf "  ✔ %s OK\n" "$(1)"; \
-	else \
-		printf "  ✘ %s failed:\n" "$(1)"; \
-		printf "%s\n" "$$OUT" | head -10; \
-	fi
-endef
 
 define read_pyproject_version
 $(strip $(shell \

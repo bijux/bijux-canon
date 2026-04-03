@@ -16,6 +16,11 @@ ENABLE_RADON      := 1
 ENABLE_PYDOCSTYLE := 0
 ENABLE_PYTYPE     := 0
 RUFF_CHECK_FIX    := 1
+INTERROGATE_PATHS := src/bijux_vex
+QUALITY_PATHS     := src/bijux_vex
+QUALITY_PRE_TARGETS := hygiene
+QUALITY_VULTURE_MIN_CONFIDENCE := 80
+QUALITY_CLEAN_SITE := 1
 
 # Modular Includes
 include $(ROOT_MAKE_DIR)/lint.mk
@@ -25,7 +30,7 @@ include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/hygiene.mk
 include $(MAKE_DIR)/security.mk
 include $(MAKE_DIR)/sbom.mk
-include $(MAKE_DIR)/quality.mk
+include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/freeze.mk
 
 # Environment
@@ -85,18 +90,6 @@ release: clean install fmt lint test quality security sbom
 
 build: release
 	@echo "[OK] build target completed (alias for make release)"
-
-# Utilities
-define run_tool
-	printf "[INFO] %s %s\n" "$(1)" "$$file"; \
-	OUT=`$(2) "$$file" 2>&1`; \
-	if [ $$? -eq 0 ]; then \
-		printf "  [OK] %s\n" "$(1)"; \
-	else \
-		printf "  [ERR] %s failed:\n" "$(1)"; \
-		printf "%s\n" "$$OUT" | head -10; \
-	fi
-endef
 
 help:
 	@awk 'BEGIN{FS=":.*##"; OFS="";} \

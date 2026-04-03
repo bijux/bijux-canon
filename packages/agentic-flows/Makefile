@@ -18,11 +18,20 @@ ENABLE_PYTYPE   := 0
 RUFF_CHECK_FIX  := 0
 RADON_COMPLEXITY_MAX := 48
 PYDOCSTYLE_ARGS := --convention=google --add-ignore=D100,D101,D102,D103,D104,D105,D106,D107
+INTERROGATE_PATHS := src/agentic_flows
+QUALITY_PATHS     := src/agentic_flows
+QUALITY_MYPY_CONFIG := $(CONFIG_DIR)/mypy.ini
+QUALITY_MYPY_FLAGS := --strict
+SKIP_MYPY         := 0
+QUALITY_VULTURE_MIN_CONFIDENCE := 90
+QUALITY_PYTHON_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_md_links.py $(MONOREPO_ROOT)/scripts/agentic-flows/check_docs_consistency.py $(MONOREPO_ROOT)/scripts/agentic-flows/check_no_toys_policy.py
+QUALITY_DOCS_LINK_SCRIPT := $(MONOREPO_ROOT)/scripts/agentic-flows/check_md_links.py
+QUALITY_RUN_MKDOCS := 1
 
 # ---- Includes ----
 include $(MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
-include $(MAKE_DIR)/quality.mk
+include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/security.mk
 include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/sbom.mk
