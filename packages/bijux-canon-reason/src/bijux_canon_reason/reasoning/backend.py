@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol
 
-from bijux_canon_reason.rar.reasoning.extractive import (
+from bijux_canon_reason.reasoning.extractive import (
     Citation,
     Derivation,
     derive_extractive_answer,

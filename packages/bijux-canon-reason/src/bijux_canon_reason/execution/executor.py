@@ -34,7 +34,7 @@ from bijux_canon_reason.core.rar_types import (
     VerifyOutput,
 )
 from bijux_canon_reason.execution.runtime import Runtime
-from bijux_canon_reason.rar.reasoning.backend import BaselineReasoner
+from bijux_canon_reason.reasoning.backend import BaselineReasoner
 
 
 @dataclass(frozen=True)
