@@ -53,7 +53,7 @@ Leverage effects for resilience: wrap in `retry_idempotent` or `async_with_resil
 Launch the HTTP server:
 
 ```bash
-uvicorn bijux_rag.boundaries.web.fastapi_app:app --host 0.0.0.0 --port 8000 --reload
+uvicorn bijux_rag.http.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Endpoints (v1 prefix):

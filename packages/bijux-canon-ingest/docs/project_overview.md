@@ -12,7 +12,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── docs/                # MkDocs sources (includes ADRs and reference pages)
 ├── ../../makes/bijux-rag/ # root-managed Make modules (api, build, docs, lint, publish, quality, sbom, security, test)
 ├── ../../scripts/bijux-canon-ingest/ # root-managed helper scripts (download_data, openapi_drift)
-├── src/bijux_rag/       # library code (functional core + boundaries + effects)
+├── src/bijux_rag/       # library code (functional core + transports + effects)
 ├── tests/               # unit + e2e + strategies + eval assets
 ├── stubs/               # custom stubs (msgpack)
 ├── .gitignore           # git ignores
@@ -28,7 +28,8 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 
 ## Source Code (high level)
 
-- `src/bijux_rag/boundaries/` — edge adapters (exception_bridge, pydantic_edges, serde).
+- `src/bijux_rag/http/` — FastAPI transport entrypoint.
+- `src/bijux_rag/boundaries/` — boundary exception helpers during the remaining cleanup.
 - `src/bijux_rag/cli/` — CLI entrypoints and file-oriented command helpers (`entrypoint`, `pipeline_runner`, `file_api`, `file_pipeline`, `typer_app`).
 - `src/bijux_rag/config/` — package configuration models.
 - `src/bijux_rag/config/` — package and pipeline configuration models (`AppConfig`, `RagConfig`, `CleanConfig`).

@@ -12,7 +12,8 @@ Core namespaces:
 - `bijux_rag.fp`: functional toolkit and error primitives.
 - `bijux_rag.rag`: domain models and pipeline stages (clean/chunk/embed/dedup + config-driven builders).
 - `bijux_rag.domain`/`bijux_rag.infra`: capabilities, async effects, logging, retries, storage adapters.
-- `bijux_rag.boundaries`: CLI + Pydantic/serde edges for moving data across processes.
+- `bijux_rag.http`: FastAPI transport.
+- `bijux_rag.boundaries`: boundary exception helpers.
 - `bijux_rag.config`: package configuration models.
 """
 
