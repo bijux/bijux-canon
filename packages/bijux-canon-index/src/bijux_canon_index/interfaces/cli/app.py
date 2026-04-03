@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
 import json
 import os
 from pathlib import Path
@@ -13,11 +12,9 @@ from statistics import mean
 import sys
 import time
 from typing import no_type_check
-import zipfile
 
 import typer
 
-from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BijuxError, ValidationError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -27,11 +24,9 @@ from bijux_canon_index.core.types import ExecutionRequest, NDSettings, Result
 from bijux_canon_index.domain.requests import scoring
 from bijux_canon_index.domain.requests.execution_diff import _rank_instability
 from bijux_canon_index.infra.logging import enable_trace
-from bijux_canon_index.infra.metrics import METRICS
-from bijux_canon_index.infra.run_store import RunStore
-from bijux_canon_index.interfaces.cli.configuration import (
-    build_config as _build_config,
-    load_config as _load_config,
+from bijux_canon_index.interfaces.cli.artifact_commands import register_artifact_commands
+from bijux_canon_index.interfaces.cli.diagnostic_commands import (
+    register_diagnostic_commands,
 )
 from bijux_canon_index.interfaces.cli.execution_commands import (
     register_execution_commands,
@@ -40,10 +35,9 @@ from bijux_canon_index.interfaces.cli.options import (
     ND_TUNE_CACHE_OPTION,
     ND_TUNE_DATASET_DIR_OPTION,
 )
-from bijux_canon_index.interfaces.cli.rendering import (
-    OutputOptions,
-    emit as _emit,
-    redact_config as _redact_config,
+from bijux_canon_index.interfaces.cli.rendering import OutputOptions, emit as _emit
+from bijux_canon_index.interfaces.cli.vector_store_commands import (
+    register_vector_store_commands,
 )
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
@@ -72,7 +66,6 @@ config_app = typer.Typer(add_completion=False, help="Configuration utilities")
 app.add_typer(config_app, name="config")
 artifact_app = typer.Typer(add_completion=False, help="Artifact bundle utilities")
 app.add_typer(artifact_app, name="artifact")
-register_execution_commands(app)
 
 
 @app.callback()
@@ -80,13 +73,19 @@ register_execution_commands(app)
 def _main_callback(
     ctx: typer.Context,
     fmt: str | None = typer.Option(
-        None, "--format", help="Output format: json|table (default: json)"
+        None,
+        "--format",
+        help="Output format: json|table (default: json)",
+        show_default=True,
     ),
     output: Path | None = typer.Option(  # noqa: B008
-        None, "--output", help="Write output to a file"
+        None, "--output", help="Write output to a file", show_default=True
     ),
     config: Path | None = typer.Option(  # noqa: B008
-        None, "--config", help="Load configuration from a TOML/YAML file"
+        None,
+        "--config",
+        help="Load configuration from a TOML/YAML file",
+        show_default=True,
     ),
     trace: bool = typer.Option(False, "--trace", help="Emit trace metadata"),
     quiet: bool = typer.Option(False, "--quiet", help="Suppress non-error output"),
@@ -107,148 +106,9 @@ def _main_callback(
     )
 
 
-@vdb_app.command("status")
-@no_type_check
-def vdb_status(
-    ctx: typer.Context,
-    vector_store: str = typer.Option(..., "--vector-store"),
-    uri: str | None = typer.Option(None, "--uri"),
-) -> None:
-    try:
-        engine = VectorExecutionEngine(
-            config=_build_config(vector_store=vector_store, vector_store_uri=uri)
-        )
-        adapter = engine.vector_store_resolution.adapter
-        status = {
-            "backend": engine.vector_store_resolution.descriptor.name,
-            "reachable": True,
-            "version": engine.vector_store_resolution.descriptor.version,
-            "uri_redacted": engine.vector_store_resolution.uri_redacted,
-        }
-        if hasattr(adapter, "status"):
-            status.update(adapter.status())
-        ann_runner = getattr(engine.backend, "ann", None)
-        if ann_runner is not None and hasattr(ann_runner, "index_info"):
-            status["ann_index"] = ann_runner.index_info(engine.default_artifact_id)
-        _emit(ctx, status)
-    except BijuxError as exc:
-        record_failure(exc)
-        payload = {"backend": vector_store, "reachable": False}
-        if is_refusal(exc):
-            payload["error"] = refusal_payload(exc)
-        else:
-            payload["error"] = {"message": str(exc)}
-        _emit(ctx, payload)
-    except Exception:  # pragma: no cover
-        sys.exit(1)
-
-
-@vdb_app.command("rebuild")
-@no_type_check
-def vdb_rebuild(
-    ctx: typer.Context,
-    vector_store: str = typer.Option(..., "--vector-store"),
-    uri: str | None = typer.Option(None, "--uri"),
-    mode: str = typer.Option("exact", "--mode", help="exact|ann"),
-) -> None:
-    try:
-        engine = VectorExecutionEngine(
-            config=_build_config(vector_store=vector_store, vector_store_uri=uri)
-        )
-        index_type = "exact" if mode == "exact" else "ann"
-        if index_type == "ann":
-            ann_runner = getattr(engine.backend, "ann", None)
-            if ann_runner is None:
-                raise ValidationError(
-                    message="Selected backend does not support ANN rebuild"
-                )
-            artifact = engine.stores.ledger.get_artifact(engine.default_artifact_id)
-            if artifact is None:
-                raise ValidationError(message="No artifact available for ANN rebuild")
-            vectors = list(engine.stores.vectors.list_vectors())
-            index_info = ann_runner.build_index(
-                artifact.artifact_id, vectors, artifact.metric, None
-            )
-            index_hash = index_info.get("index_hash") if index_info else None
-            extra = (("ann_index_info", json.dumps(index_info, sort_keys=True)),)
-            if index_hash:
-                extra = extra + (("ann_index_hash", str(index_hash)),)
-            updated = replace(
-                artifact,
-                build_params=artifact.build_params + extra,
-                index_state="ready",
-            )
-            with engine._tx() as tx:
-                engine.stores.ledger.put_artifact(tx, updated)
-            _emit(ctx, {"status": "rebuilt", "ann_index": index_info})
-            return
-        adapter = engine.vector_store_resolution.adapter
-        if not hasattr(adapter, "rebuild"):
-            raise ValidationError(
-                message="Selected vector store does not support rebuild"
-            )
-        status = adapter.rebuild(index_type=index_type)
-        _emit(ctx, status)
-    except BijuxError as exc:
-        record_failure(exc)
-        payload = {"backend": vector_store, "reachable": False}
-        if is_refusal(exc):
-            payload["error"] = refusal_payload(exc)
-        else:
-            payload["error"] = {"message": str(exc)}
-        _emit(ctx, payload)
-    except Exception:  # pragma: no cover
-        sys.exit(1)
-
-
-@vdb_app.command("compact")
-@no_type_check
-def vdb_compact(
-    ctx: typer.Context,
-    vector_store: str = typer.Option(..., "--vector-store"),
-    uri: str | None = typer.Option(None, "--uri"),
-    mode: str = typer.Option("ann", "--mode", help="exact|ann"),
-) -> None:
-    try:
-        engine = VectorExecutionEngine(
-            config=_build_config(vector_store=vector_store, vector_store_uri=uri)
-        )
-        index_type = "exact" if mode == "exact" else "ann"
-        if index_type == "ann":
-            ann_runner = getattr(engine.backend, "ann", None)
-            if ann_runner is None or not getattr(
-                ann_runner, "supports_compaction", False
-            ):
-                raise ValidationError(
-                    message="Selected backend does not support ANN compaction"
-                )
-            artifact = engine.stores.ledger.get_artifact(engine.default_artifact_id)
-            if artifact is None:
-                raise ValidationError(
-                    message="No artifact available for ANN compaction"
-                )
-            vectors = list(engine.stores.vectors.list_vectors())
-            ann_runner.compact(artifact.artifact_id, vectors, artifact.metric)
-            _emit(ctx, {"status": "compacted", "backend": vector_store})
-            return
-        adapter = engine.vector_store_resolution.adapter
-        if not hasattr(adapter, "compact"):
-            raise ValidationError(
-                message="Selected vector store does not support compaction"
-            )
-        status = adapter.compact(index_type=index_type)
-        _emit(ctx, status)
-    except BijuxError as exc:
-        record_failure(exc)
-        payload = {"backend": vector_store, "reachable": False}
-        if is_refusal(exc):
-            payload["error"] = refusal_payload(exc)
-        else:
-            payload["error"] = {"message": str(exc)}
-        _emit(ctx, payload)
-    except Exception:  # pragma: no cover
-        sys.exit(1)
-
+register_execution_commands(app)
+register_vector_store_commands(vdb_app)
+register_artifact_commands(artifact_app)
 
 @nd_app.command("tune")
 @no_type_check
@@ -478,81 +338,6 @@ def nd_tune(
         sys.exit(1)
 
 
-@artifact_app.command("pack")
-@no_type_check
-def artifact_pack(
-    ctx: typer.Context,
-    run_id: str = typer.Argument(...),
-    out: Path = typer.Option(Path("bundle.zip"), "--out"),  # noqa: B008
-    include_vectors: bool = typer.Option(False, "--include-vectors"),
-) -> None:
-    try:
-        run = RunStore().load(run_id)
-        base_config = _load_config(ctx.obj.config_path) if ctx.obj else None
-        config_payload = _redact_config(base_config)
-        engine = VectorExecutionEngine()
-        vectors_payload: dict[str, object] = {}
-        if include_vectors:
-            vectors_payload["vectors"] = []
-            for vid in run.result.get("results", []) if run.result else []:
-                vec = engine.stores.vectors.get_vector(vid)
-                if vec:
-                    vectors_payload["vectors"].append(
-                        {"vector_id": vid, "values": list(vec.values)}
-                    )
-        vector_hashes = []
-        for vid in run.result.get("results", []) if run.result else []:
-            vec = engine.stores.vectors.get_vector(vid)
-            if vec:
-                vector_hashes.append(
-                    {"vector_id": vid, "hash": fingerprint(vec.values)}
-                )
-        bundle = {
-            "metadata": run.metadata,
-            "result": run.result or {},
-            "config": config_payload,
-            "vector_hashes": vector_hashes,
-        }
-        with zipfile.ZipFile(out, "w") as zf:
-            zf.writestr("metadata.json", json.dumps(bundle["metadata"], indent=2))
-            zf.writestr("result.json", json.dumps(bundle["result"], indent=2))
-            zf.writestr("config.json", json.dumps(bundle["config"], indent=2))
-            zf.writestr(
-                "vector_hashes.json", json.dumps(bundle["vector_hashes"], indent=2)
-            )
-            if include_vectors:
-                zf.writestr("vectors.json", json.dumps(vectors_payload, indent=2))
-        _emit(ctx, {"status": "packed", "bundle": str(out)})
-    except BijuxError as exc:
-        record_failure(exc)
-        if is_refusal(exc):
-            _emit(ctx, {"error": refusal_payload(exc)})
-        sys.exit(to_cli_exit(exc))
-    except Exception:  # pragma: no cover
-        sys.exit(1)
-
-
-@artifact_app.command("unpack")
-@no_type_check
-def artifact_unpack(
-    ctx: typer.Context,
-    bundle: Path = typer.Argument(...),  # noqa: B008
-    out_dir: Path = typer.Option(Path("bundle_out"), "--out-dir"),  # noqa: B008
-) -> None:
-    try:
-        out_dir.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(bundle, "r") as zf:
-            zf.extractall(out_dir)
-        _emit(ctx, {"status": "unpacked", "path": str(out_dir)})
-    except BijuxError as exc:
-        record_failure(exc)
-        if is_refusal(exc):
-            _emit(ctx, {"error": refusal_payload(exc)})
-        sys.exit(to_cli_exit(exc))
-    except Exception:  # pragma: no cover
-        sys.exit(1)
-
-
 @app.command()
 @no_type_check
 def bench(
@@ -640,84 +425,7 @@ def bench(
         sys.exit(to_cli_exit(exc))
     except Exception:  # pragma: no cover
         sys.exit(1)
-
-
-@config_app.command("show")
-@no_type_check
-def config_show(ctx: typer.Context) -> None:
-    try:
-        config = _load_config(ctx.obj.config_path) if ctx.obj else None
-        _emit(ctx, _redact_config(config))
-    except Exception:  # pragma: no cover
-        sys.exit(1)
-
-
-@app.command("metrics")
-@no_type_check
-def metrics_snapshot(ctx: typer.Context) -> None:
-    try:
-        snapshot = METRICS.snapshot()
-        _emit(
-            ctx,
-            {"counters": snapshot.counters, "timers_ms": snapshot.timers_ms},
-        )
-    except Exception:  # pragma: no cover
-        sys.exit(1)
-
-
-@app.command("debug-bundle")
-@no_type_check
-def debug_bundle(
-    ctx: typer.Context,
-    include_provenance: bool = typer.Option(False, "--include-provenance"),
-    vector_store: str | None = typer.Option(None, "--vector-store"),
-    vector_store_uri: str | None = typer.Option(None, "--vector-store-uri"),
-) -> None:
-    try:
-        base_config = _load_config(ctx.obj.config_path) if ctx.obj else None
-        config = _build_config(
-            vector_store=vector_store,
-            vector_store_uri=vector_store_uri,
-            base_config=base_config,
-        )
-        engine = VectorExecutionEngine(config=config)
-        status = {
-            "backend": engine.vector_store_resolution.descriptor.name,
-            "reachable": True,
-            "version": engine.vector_store_resolution.descriptor.version,
-            "uri_redacted": engine.vector_store_resolution.uri_redacted,
-        }
-        adapter = engine.vector_store_resolution.adapter
-        if hasattr(adapter, "status"):
-            status.update(adapter.status())
-        bundle: dict[str, object] = {
-            "config": _redact_config(config),
-            "capabilities": engine.capabilities(),
-            "vector_store_status": status,
-            "metrics": METRICS.snapshot().__dict__,
-        }
-        if include_provenance:
-            artifacts = tuple(engine.stores.ledger.list_artifacts())
-            latest_exec: dict[str, str] = {}
-            for artifact in artifacts:
-                stored = engine.stores.ledger.latest_execution_result(
-                    artifact.artifact_id
-                )
-                if stored is not None:
-                    latest_exec[artifact.artifact_id] = stored.execution_id
-            bundle["provenance"] = {
-                "artifacts": [a.artifact_id for a in artifacts],
-                "latest_execution_ids": latest_exec,
-            }
-        _emit(ctx, bundle)
-    except BijuxError as exc:
-        record_failure(exc)
-        if is_refusal(exc):
-            _emit(ctx, {"error": refusal_payload(exc)})
-        sys.exit(to_cli_exit(exc))
-    except Exception:  # pragma: no cover
-        sys.exit(1)
-
+register_diagnostic_commands(app, config_app)
 
 if __name__ == "__main__":
     app()
