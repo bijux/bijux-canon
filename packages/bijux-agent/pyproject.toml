@@ -1,11 +1,11 @@
 [build-system]
-requires = ["hatchling>=1.25.0", "hatch-vcs>=0.4.0"]
+requires = ["hatchling>=1.25.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "bijux-agent"
-dynamic = ["version"]
-description = "A composable, multi-agentic pipeline for advanced file processing and summarization."
+name = "bijux-llm-agent"
+version = "0.1.0"
+description = "bijux-llm-agent: a composable, multi-agentic pipeline for advanced file processing and summarization."
 authors = [
     { name = "Bijan Mousavi", email = "bijan@bijux.io" }
 ]
@@ -131,9 +131,9 @@ filereaders = [
     "PyMuPDF>=1.23.0,<2.0",
 ]
 
-[tool.hatch.version]
-source = "vcs"
-fallback-version = "0.1.0"
+[project.scripts]
+bijux-llm-agent = "bijux_agent.main:cli"
+bijux-agent = "bijux_agent.main:cli"
 
 [tool.hatch.metadata]
 allow-direct-references = true

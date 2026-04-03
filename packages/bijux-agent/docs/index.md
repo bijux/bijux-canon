@@ -6,6 +6,9 @@ Bijux Agent is a deterministic, auditable document-processing pipeline (CLI + op
 - produce structured outputs,
 - emit an audit trace suitable for replay validation and post-hoc inspection.
 
+Published package name: `bijux-llm-agent`
+Legacy compatibility package: `bijux-agent`
+
 ## Quickstart (CLI)
 
 ```bash

@@ -10,7 +10,19 @@ Development (recommended):
 make bootstrap
 ```
 
-Minimal (no dev tooling):
+Published package:
+
+```bash
+python -m pip install bijux-llm-agent
+```
+
+Legacy compatibility package:
+
+```bash
+python -m pip install bijux-agent
+```
+
+Editable checkout (no dev tooling):
 
 ```bash
 python -m pip install -e .

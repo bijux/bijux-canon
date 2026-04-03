@@ -222,7 +222,8 @@ async def main() -> None:
         logger.info("Bijux Agent pipeline shutdown complete")
 
 
-if __name__ == "__main__":
+def cli() -> None:
+    """Run the CLI entry point."""
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
@@ -231,3 +232,7 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Pipeline failed: {e}", file=sys.stderr)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    cli()

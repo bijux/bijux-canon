@@ -2,6 +2,9 @@
 
 This page MUST define the runtime contract for bijux-agent. It MUST exist to bind Orchestrator, TraceRecorder, and FailureArtifact behavior. It MUST apply to all users and integrators.
 
+Published package name: `bijux-llm-agent`
+Legacy compatibility package: `bijux-agent`
+
 ## Contract Scope
 
 - The contract MUST apply to runtime behavior only.

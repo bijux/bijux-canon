@@ -82,9 +82,12 @@ _TRACE_SCHEMA_MIN_VERSION: dict[int, Version] = {
 
 def _package_version() -> Version:
     try:
-        raw_version = metadata.version("bijux-agent")
-    except metadata.PackageNotFoundError as exc:  # pragma: no cover - env issue
-        raise RuntimeError("bijux-agent package version not found") from exc
+        raw_version = metadata.version("bijux-llm-agent")
+    except metadata.PackageNotFoundError:
+        try:
+            raw_version = metadata.version("bijux-agent")
+        except metadata.PackageNotFoundError as exc:  # pragma: no cover - env issue
+            raise RuntimeError("bijux-agent package version not found") from exc
     try:
         return Version(raw_version)
     except InvalidVersion as exc:  # pragma: no cover - env issue
