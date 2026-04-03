@@ -8,5 +8,4 @@ expected-statuses = [200, 422]
 expected-statuses = [400]
 
 [warnings]
-# Hide just this one warning, keep the others
 display = ["missing_auth", "missing_test_data"]

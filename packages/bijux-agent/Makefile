@@ -44,7 +44,6 @@ API_NODE_BOOTSTRAP_MODE := npm-install-pinned
 OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@2.27.0
 OPENAPI_GENERATOR_JAR_VERSION := 7.18.0
 API_VALIDATE_IN_NODE_DIR := 1
-SCHEMATHESIS_CFG     := $(CONFIG_DIR)/schemathesis.toml
 SCHEMATHESIS_OPTS    = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --suppress-health-check=filter_too_much
 BUILD_CHECK_DISTS    := 1
 BUILD_CLEAN_PATHS    := build dist *.egg-info
