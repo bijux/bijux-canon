@@ -1,12 +1,12 @@
-"""Agent loaders and stage resolution helpers."""
+"""Agent loaders and execution-plan resolution helpers."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from bijux_canon_agent.pipeline.stages import (
-    build_stage_definitions,
-    filter_stages_for_goal,
+from bijux_canon_agent.pipeline.execution_plan import (
+    build_execution_plan,
+    filter_execution_plan_for_goal,
 )
 
 if TYPE_CHECKING:
@@ -58,8 +58,8 @@ def load_universal_file_reader() -> type[UniversalFileReader]:
     return UniversalFileReader
 
 
-def determine_required_stages(pipeline: Any, task_goal: str) -> list[dict[str, Any]]:
-    """Return the set of required stages for the given task goal."""
+def determine_execution_plan(pipeline: Any, task_goal: str) -> list[dict[str, Any]]:
+    """Return the execution plan for the given task goal."""
 
-    stage_defs = build_stage_definitions(pipeline)
-    return filter_stages_for_goal(task_goal, pipeline, stage_defs)
+    execution_plan = build_execution_plan(pipeline)
+    return filter_execution_plan_for_goal(task_goal, execution_plan)

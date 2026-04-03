@@ -10,7 +10,7 @@ from pathlib import Path
 import time
 from typing import Any, Protocol, TypeAlias, cast
 
-from bijux_canon_agent.pipeline.agent_registry import determine_required_stages
+from bijux_canon_agent.pipeline.agent_registry import determine_execution_plan
 from bijux_canon_agent.pipeline.execution.io import PipelineIOMixin
 from bijux_canon_agent.pipeline.execution.shard_processing import process_shard, shard_input
 from bijux_canon_agent.pipeline.execution.telemetry import PipelineExecutionContext
@@ -250,7 +250,7 @@ class PipelineExecutionMixin(PipelineIOMixin):
         task_goal = context["task_goal"].lower()
 
         required_stages = (
-            self._stages if self._stages else determine_required_stages(self, task_goal)
+            self._stages if self._stages else determine_execution_plan(self, task_goal)
         )
         self.logger.info(
             "Determined required stages for task",

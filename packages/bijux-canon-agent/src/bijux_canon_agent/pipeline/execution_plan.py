@@ -1,4 +1,4 @@
-"""Stage helpers for composing pipeline execution plans."""
+"""Execution-plan helpers for composing pipeline runs."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ import time
 from typing import Any
 
 
-def build_stage_definitions(pipeline: Any) -> list[dict[str, Any]]:
-    """Return the base stage configuration for the pipeline run."""
+def build_execution_plan(pipeline: Any) -> list[dict[str, Any]]:
+    """Return the base execution plan for the pipeline run."""
 
     return [
         {
@@ -63,10 +63,11 @@ def build_stage_definitions(pipeline: Any) -> list[dict[str, Any]]:
     ]
 
 
-def filter_stages_for_goal(
-    task_goal: str, pipeline: Any, definitions: Sequence[dict[str, Any]]
+def filter_execution_plan_for_goal(
+    task_goal: str,
+    definitions: Sequence[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Return the subset of stages relevant to a particular task goal."""
+    """Return the subset of execution steps relevant to a task goal."""
 
     task_goal = task_goal.lower()
     if "summarize" in task_goal:
@@ -74,20 +75,20 @@ def filter_stages_for_goal(
     elif "answer" in task_goal:
         targets = {"file_extraction", "summarization", "critique"}
     else:
-        targets = {stage["name"] for stage in definitions}
+        targets = {step["name"] for step in definitions}
 
-    return [stage for stage in definitions if stage["name"] in targets]
+    return [step for step in definitions if step["name"] in targets]
 
 
-def build_summary_stage(stage_outputs: Sequence[dict[str, Any]]) -> dict[str, Any]:
-    """Construct the merged summary stage output from multiple shards."""
+def merge_summary_outputs(step_outputs: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """Construct the merged summary output from multiple shards."""
 
     executive_summaries = []
     key_points: list[Any] = []
     actionable_insights = []
     critical_risks = []
     missing_info = []
-    for output in stage_outputs:
+    for output in step_outputs:
         summary = output.get("summary", {})
         executive_summaries.append(summary.get("executive_summary", ""))
         key_points.extend(summary.get("key_points", []))
@@ -111,19 +112,19 @@ def build_summary_stage(stage_outputs: Sequence[dict[str, Any]]) -> dict[str, An
                 " ".join(s for s in missing_info if s) or "No missing information noted"
             ),
         },
-        "method": stage_outputs[0].get("method", "unknown")
-        if stage_outputs
+        "method": step_outputs[0].get("method", "unknown")
+        if step_outputs
         else "unknown",
-        "input_length": sum(output.get("input_length", 0) for output in stage_outputs),
-        "backend": stage_outputs[0].get("backend", "unknown")
-        if stage_outputs
+        "input_length": sum(output.get("input_length", 0) for output in step_outputs),
+        "backend": step_outputs[0].get("backend", "unknown")
+        if step_outputs
         else "unknown",
-        "strategy": stage_outputs[0].get("strategy", "unknown")
-        if stage_outputs
+        "strategy": step_outputs[0].get("strategy", "unknown")
+        if step_outputs
         else "unknown",
         "audit": {
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "shards_merged": len(stage_outputs),
+            "shards_merged": len(step_outputs),
         },
     }
     return merged_summary

@@ -13,7 +13,7 @@ from bijux_canon_agent.pipeline.results.types import (
     MergedShardResult,
     ShardResult,
 )
-from bijux_canon_agent.pipeline.stages import build_summary_stage
+from bijux_canon_agent.pipeline.execution_plan import merge_summary_outputs
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
 
 
@@ -99,7 +99,7 @@ class PipelineResultsMixin:
                     },
                 }
             elif stage_key == "summarization":
-                merged_stages[stage_key] = build_summary_stage(stage_outputs)
+                merged_stages[stage_key] = merge_summary_outputs(stage_outputs)
             else:
                 merged_stages[stage_key] = stage_outputs[-1]
                 audit_info = {
