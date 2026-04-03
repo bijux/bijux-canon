@@ -23,12 +23,15 @@ SECURITY_IGNORE_IDS := PYSEC-2022-42969
 DOCS_DEV_ADDR     := 127.0.0.1:8000
 DOCS_SITE_URL     := http://127.0.0.1:8000/
 DOCS_DEPLOY_FLAGS := --force --no-history --clean --remote-branch gh-pages
+BUILD_CHECK_DISTS := 1
+BUILD_CLEAN_PATHS := build dist *.egg-info
+BUILD_CLEAN_PYCACHE := 1
 PUBLISH_VERIFY_INSTALL_CMD := bijux --version
 TEST_COVERAGE_TARGETS := $(abspath src/bijux_rar/core) $(abspath src/bijux_rar/boundaries)
 
 # Modular Includes
 include $(MAKE_DIR)/api.mk
-include $(MAKE_DIR)/build.mk
+include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk

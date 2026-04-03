@@ -31,6 +31,10 @@ SECURITY_PATHS     := src/agentic_flows
 SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
 SECURITY_BANDIT_SKIP_IDS := B311
 SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_dependency_allowlist.py
+BUILD_CHECK_DISTS := 0
+BUILD_TEMP_CLEAN_PATHS := build dist src/*.egg-info
+BUILD_TEMP_CLEAN_PYCACHE := 1
+BUILD_RELEASE_DRY_RUN_CMD := $(VENV_PYTHON) -c 'from packaging.version import Version; import importlib.metadata as m; from pathlib import Path; import sys; version=m.version("agentic-flows"); base=Version(version).base_version; print(f"version={version} base={base}"); changelog=Path("CHANGELOG.md").read_text().splitlines(); header=f"## {base}"; sys.exit(f"Missing changelog header for {base}") if header not in changelog else None; idx=changelog.index(header); section_lines=changelog[idx + 1:]; end_idx=next((i for i, line in enumerate(section_lines) if line.startswith("## ")), None); section="\n".join(section_lines[:end_idx] if end_idx is not None else section_lines); required=["### Added","### Changed","### Fixed"]; missing=[h for h in required if h not in section]; sys.exit(f"Changelog {base} missing sections: {missing}") if missing else None; print("✔ Changelog sections present")'
 PUBLISH_UPLOAD_ENABLED := 0
 TEST_PRE_TARGETS := ensure-venv
 TEST_PATHS_E2E := tests/e2e
@@ -45,7 +49,7 @@ include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
-include $(MAKE_DIR)/build.mk
+include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk

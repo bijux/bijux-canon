@@ -27,6 +27,8 @@ SECURITY_BANDIT_SKIP_IDS       := B101,B311
 BANDIT_FLAGS                   := --severity-level high --confidence-level high
 BANDIT_EXCLUDES                := .venv,venv,build,dist,.tox,.mypy_cache,.pytest_cache,tests
 PIP_AUDIT_CONSOLE_FLAGS        := --progress-spinner off
+BUILD_CHECK_DISTS              := 1
+BUILD_CLEAN_PATHS              := dist build *.egg-info
 PUBLISH_UPLOAD_ENABLED         := 0
 
 .NOTPARALLEL: all clean
@@ -35,7 +37,7 @@ include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
-include $(MAKE_DIR)/build.mk
+include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
