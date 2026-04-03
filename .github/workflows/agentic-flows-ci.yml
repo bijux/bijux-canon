@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/agentic-flows-ci.yml"
       - "packages/agentic-flows/**"
+      - "packages/agentic-flows-compat/**"
       - "apis/agentic-flows/**"
       - "configs/agentic-flows/**"
       - "makes/agentic-flows/**"
@@ -30,6 +31,7 @@ on:
     paths:
       - ".github/workflows/agentic-flows-ci.yml"
       - "packages/agentic-flows/**"
+      - "packages/agentic-flows-compat/**"
       - "apis/agentic-flows/**"
       - "configs/agentic-flows/**"
       - "makes/agentic-flows/**"

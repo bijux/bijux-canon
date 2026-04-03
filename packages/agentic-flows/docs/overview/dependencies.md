@@ -5,7 +5,7 @@
 | Dependency | PyPI availability | Stability status | Required for |
 | --- | --- | --- | --- |
 | bijux-cli | unknown | unknown | core |
-| bijux-agent | unknown | unknown | core |
-| bijux-rag | unknown | unknown | core |
-| bijux-rar | unknown | unknown | core |
-| bijux-vex | unknown | unknown | core |
+| bijux-llm-agent | unknown | unknown | core |
+| bijux-llm-rag | unknown | unknown | core |
+| bijux-llm-rar | unknown | unknown | core |
+| bijux-llm-vex | unknown | unknown | core |

@@ -224,8 +224,9 @@ EXIT_CONTRACT_VIOLATION = 2
 
 def main() -> None:
     """Execute main and enforce its contract."""
+    prog_name = Path(sys.argv[0]).name if sys.argv and sys.argv[0] else "bijux-llm-flows"
     parser = argparse.ArgumentParser(
-        prog="agentic-flows",
+        prog=prog_name,
         description=(
             "All completed runs are expected to be replayable unless explicitly "
             "documented otherwise."

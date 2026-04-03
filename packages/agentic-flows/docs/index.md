@@ -3,8 +3,11 @@
 
 **A deterministic, contract-first execution and replay framework** — strict invariants, reproducible runs, and traceable outputs. Build audit-ready agent workflows with stable artifacts and replayable traces.
 
-[![PyPI - Version](https://img.shields.io/pypi/v/agentic-flows.svg)](https://pypi.org/project/agentic-flows/)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://pypi.org/project/agentic-flows/)
+Canonical package name: `bijux-llm-flows`  
+Legacy compatibility package: `agentic-flows`
+
+[![PyPI - Version](https://img.shields.io/pypi/v/bijux-llm-flows.svg)](https://pypi.org/project/bijux-llm-flows/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://pypi.org/project/bijux-llm-flows/)
 [![Typing: typed (PEP 561)](https://img.shields.io/badge/typing-typed-4F8CC9.svg)](https://peps.python.org/pep-0561/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-brightgreen)](https://bijux.github.io/agentic-flows/)
@@ -52,9 +55,9 @@ Most agent tooling optimizes for velocity. Agentic Flows prioritizes **repeatabi
 ## Try It in 20 Seconds
 
 ```bash
-pipx install agentic-flows  # Or: pip install agentic-flows
-agentic-flows --help
-agentic-flows plan path/to/manifest.json
+pipx install bijux-llm-flows  # Or: pip install bijux-llm-flows
+bijux-llm-flows --help
+bijux-llm-flows plan path/to/manifest.json
 ```
 
 
@@ -81,13 +84,15 @@ Requires **Python 3.11+**.
 
 ```bash
 # Isolated install (recommended)
-pipx install agentic-flows
+pipx install bijux-llm-flows
 
 # Standard
-pip install agentic-flows
+pip install bijux-llm-flows
 ```
 
-Upgrade: `pipx upgrade agentic-flows` or `pip install --upgrade agentic-flows`.
+Legacy installs via `agentic-flows` remain supported as a compatibility package.
+
+Upgrade: `pipx upgrade bijux-llm-flows` or `pip install --upgrade bijux-llm-flows`.
 
 
 
@@ -98,13 +103,13 @@ Upgrade: `pipx upgrade agentic-flows` or `pip install --upgrade agentic-flows`.
 
 ```bash
 # Discover commands/flags
-agentic-flows --help
+bijux-llm-flows --help
 
 # Plan a flow from a manifest
-agentic-flows plan path/to/manifest.json
+bijux-llm-flows plan path/to/manifest.json
 
 # Run a deterministic execution
-agentic-flows run path/to/manifest.json --db-path /tmp/execution.duckdb
+bijux-llm-flows run path/to/manifest.json --db-path /tmp/execution.duckdb
 ```
 
 
@@ -117,7 +122,7 @@ agentic-flows run path/to/manifest.json --db-path /tmp/execution.duckdb
 Artifacts are immutable and hash-addressed. Replaying a run verifies hashes before returning outputs.
 
 ```bash
-agentic-flows diff run <run_a> <run_b> --tenant-id <tenant> --db-path /tmp/execution.duckdb
+bijux-llm-flows diff run <run_a> <run_b> --tenant-id <tenant> --db-path /tmp/execution.duckdb
 ```
 
 Docs: [Execution Lifecycle](https://bijux.github.io/agentic-flows/architecture/execution_lifecycle/) · [Invariants](https://bijux.github.io/agentic-flows/architecture/invariants/)
@@ -142,11 +147,11 @@ Docs: [API Overview](https://bijux.github.io/agentic-flows/api/overview/) · [Sc
 
 | Command | Description | Example |
 | ------- | ----------- | ------- |
-| `plan` | Resolve a manifest into a plan | `agentic-flows plan manifest.json` |
-| `run` | Execute a flow | `agentic-flows run manifest.json --db-path /tmp/flow.duckdb` |
-| `dry-run` | Trace execution without calling tools | `agentic-flows dry-run manifest.json --db-path /tmp/flow.duckdb` |
-| `inspect run` | Inspect a stored run | `agentic-flows inspect run <run_id> --tenant-id <tenant> --db-path /tmp/flow.duckdb` |
-| `diff run` | Compare two runs | `agentic-flows diff run <a> <b> --tenant-id <tenant> --db-path /tmp/flow.duckdb` |
+| `plan` | Resolve a manifest into a plan | `bijux-llm-flows plan manifest.json` |
+| `run` | Execute a flow | `bijux-llm-flows run manifest.json --db-path /tmp/flow.duckdb` |
+| `dry-run` | Trace execution without calling tools | `bijux-llm-flows dry-run manifest.json --db-path /tmp/flow.duckdb` |
+| `inspect run` | Inspect a stored run | `bijux-llm-flows inspect run <run_id> --tenant-id <tenant> --db-path /tmp/flow.duckdb` |
+| `diff run` | Compare two runs | `bijux-llm-flows diff run <a> <b> --tenant-id <tenant> --db-path /tmp/flow.duckdb` |
 
 Full surface: [CLI Surface](https://bijux.github.io/agentic-flows/interface/cli_surface/)
 

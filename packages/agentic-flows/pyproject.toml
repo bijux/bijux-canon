@@ -7,7 +7,7 @@ requires = [
 build-backend = "hatchling.build"
 
 [project]
-name = "agentic-flows"
+name = "bijux-llm-flows"
 dynamic = ["version"]
 description = "Governed execution and replay with auditable non-determinism"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -44,10 +44,10 @@ classifiers = [
 ]
 dependencies = [
   "bijux-cli>=0.1.0,<0.2.0",
-  "bijux-agent>=0.1.0,<0.2.0",
-  "bijux-rag>=0.1.0,<0.2.0",
-  "bijux-rar>=0.1.0,<0.2.0",
-  "bijux-vex>=0.1.0,<0.2.0",
+  "bijux-llm-agent>=0.1.0,<0.2.0",
+  "bijux-llm-rag>=0.1.0,<0.2.0",
+  "bijux-llm-rar>=0.1.0,<0.2.0",
+  "bijux-llm-vex>=0.1.0,<0.2.0",
   "duckdb>=1.1.3,<2.0.0",
   "pydantic>=2.0.2,<3.0.0",
 ]
@@ -100,6 +100,7 @@ dev = [
 ]
 
 [project.scripts]
+bijux-llm-flows = "agentic_flows.cli.main:main"
 agentic-flows = "agentic_flows.cli.main:main"
 
 [tool.hatch.build]
@@ -111,6 +112,9 @@ include = [
 
 [tool.hatch.version]
 source = "vcs"
+tag-pattern = "^(?:agentic-flows/)?v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'agentic-flows/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+fallback-version = "0.1.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentic_flows"]

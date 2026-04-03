@@ -1,4 +1,4 @@
-name: agentic-flows Publish
+name: bijux-llm-flows Publish
 
 on:
   workflow_dispatch:
@@ -7,14 +7,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: agentic-flows-publish
+  group: bijux-llm-flows-publish
   cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      ARTIFACTS_DIR: artifacts/agentic-flows-compat
+      ARTIFACTS_DIR: artifacts/agentic-flows
 
     steps:
       - uses: actions/checkout@v4
@@ -25,30 +25,34 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: packages/agentic-flows-compat/pyproject.toml
+          cache-dependency-path: packages/agentic-flows/pyproject.toml
 
-      - name: Build compatibility distribution
-        run: make -C packages/agentic-flows-compat build
+      - name: Build distribution and SBOM
+        run: |
+          make -C packages/agentic-flows build
+          make -C packages/agentic-flows sbom
 
       - name: Stage publish artifacts
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .github/tmp/agentic-flows-dist
-          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/agentic-flows-dist/
-          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/agentic-flows-dist/
+          mkdir -p .github/tmp/bijux-llm-flows-dist
+          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-llm-flows-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-llm-flows-dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: .github/tmp/agentic-flows-dist
+          packages-dir: .github/tmp/bijux-llm-flows-dist
           skip-existing: true
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: agentic-flows-release
-          path: ${{ env.ARTIFACTS_DIR }}/build/*
+          name: bijux-llm-flows-release
+          path: |
+            ${{ env.ARTIFACTS_DIR }}/build/*
+            ${{ env.ARTIFACTS_DIR }}/sbom/*
           if-no-files-found: ignore
           retention-days: 14

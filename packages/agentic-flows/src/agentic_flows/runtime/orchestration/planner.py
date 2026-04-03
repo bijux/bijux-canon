@@ -8,15 +8,19 @@ from __future__ import annotations
 
 from importlib.metadata import PackageNotFoundError, version
 
-try:
-    bijux_agent_version = version("bijux-agent")
-except PackageNotFoundError:
-    bijux_agent_version = "0.0.0"
 
-try:
-    bijux_cli_version = version("bijux-cli")
-except PackageNotFoundError:
-    bijux_cli_version = "0.0.0"
+def _distribution_version(*names: str) -> str:
+    """Resolve the first available distribution version from canonical and legacy names."""
+    for name in names:
+        try:
+            return version(name)
+        except PackageNotFoundError:
+            continue
+    return "0.0.0"
+
+
+bijux_agent_version = _distribution_version("bijux-llm-agent", "bijux-agent")
+bijux_cli_version = _distribution_version("bijux-cli")
 
 from agentic_flows.runtime.observability.capture.environment import (
     compute_environment_fingerprint,
