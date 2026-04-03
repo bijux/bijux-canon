@@ -12,11 +12,11 @@ Core namespaces:
 - `bijux_canon_ingest.fp`: functional toolkit and error primitives.
 - `bijux_canon_ingest.retrieval`: retrieval backends, ports, and ranking internals.
 - `bijux_canon_ingest.domain`/`bijux_canon_ingest.infra`: capabilities, async effects, logging, retries, storage adapters.
-- `bijux_canon_ingest.http`: FastAPI transport.
-- `bijux_canon_ingest.boundaries`: boundary exception helpers.
+- `bijux_canon_ingest.interfaces.http`: FastAPI transport.
+- `bijux_canon_ingest.interfaces.errors`: boundary exception helpers.
 - `bijux_canon_ingest.application`: orchestration, services, and pipeline builders.
 - `bijux_canon_ingest.processing`: pure chunking, embedding, and streaming transforms.
-- `bijux_canon_ingest.serde`: serialization codecs and Pydantic edge models.
+- `bijux_canon_ingest.interfaces.serialization`: serialization codecs and Pydantic edge models.
 - `bijux_canon_ingest.config`: package configuration models.
 """
 
@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from typing import assert_never
 
-from .boundaries.exception_bridge import (
+from .interfaces.errors.exception_bridge import (
     UnexpectedFailure,
     result_map_try,
     try_result,
