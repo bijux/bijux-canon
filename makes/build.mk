@@ -27,7 +27,7 @@ build: build-tools
 	@$(BUILD_PYTHON) -m build --wheel --sdist --outdir "$(BUILD_DIR_ABS)" .
 	@if [ "$(BUILD_CHECK_DISTS)" = "1" ]; then \
 	  echo "→ Validating distributions with twine"; \
-	  $(TWINE) check "$(BUILD_DIR_ABS)"/* 2>&1 | tee "$(BUILD_DIR_ABS)/twine-check.log"; \
+	  $(TWINE) check "$(BUILD_DIR_ABS)"/*.whl "$(BUILD_DIR_ABS)"/*.tar.gz 2>&1 | tee "$(BUILD_DIR_ABS)/twine-check.log"; \
 	else \
 	  echo "→ Skipping twine check (BUILD_CHECK_DISTS=$(BUILD_CHECK_DISTS))"; \
 	fi
@@ -50,8 +50,8 @@ build-wheel: build-tools
 	@$(MAKE) build-clean-temp
 
 build-check:
-	@if ls "$(BUILD_DIR_ABS)"/* 1>/dev/null 2>&1; then \
-	  $(TWINE) check "$(BUILD_DIR_ABS)"/* 2>&1 | tee "$(BUILD_DIR_ABS)/twine-check.log"; \
+	@if ls "$(BUILD_DIR_ABS)"/*.whl "$(BUILD_DIR_ABS)"/*.tar.gz 1>/dev/null 2>&1; then \
+	  $(TWINE) check "$(BUILD_DIR_ABS)"/*.whl "$(BUILD_DIR_ABS)"/*.tar.gz 2>&1 | tee "$(BUILD_DIR_ABS)/twine-check.log"; \
 	else \
 	  echo "✘ No artifacts in $(BUILD_DIR_ABS) to check"; exit 1; \
 	fi

@@ -53,7 +53,7 @@ TEST_MAIN_ARGS       := -m "not integration and not e2e"
 TEST_UNIT_DIR_ARGS   := -m "not integration and not e2e and not slow" --maxfail=1 -q
 TEST_UNIT_FALLBACK_ARGS := -k "not e2e and not integration and not functional" -m "not integration and not e2e and not slow" --maxfail=1 -q
 TEST_SYNTAX_PATHS    := src tests
-TEST_PYCACHE_PREFIX  := $(TEST_ARTIFACTS_DIR)/pycache
+TEST_PYCACHE_PREFIX  = $(TEST_ARTIFACTS_DIR)/pycache
 TEST_RESET_PYCACHE   := 1
 
 # Modular Includes

@@ -3,6 +3,7 @@
 # Testing policy: gates (lint/quality/security/typing) intentionally run on lowest supported Python (3.11); full matrix via tox.
 
 PROJECT_SLUG := bijux-llm-vex
+PYTHON := python3.11
 
 include ../../makes/shared/python-package.mk
 
