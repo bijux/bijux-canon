@@ -22,11 +22,11 @@ from bijux_rag import (
     clean_doc,
     embed_chunk,
     eval_pred,
-    full_rag_api_docs,
-    full_rag_api_path,
+    run_ingest_pipeline_docs,
+    run_ingest_pipeline_path,
     gen_chunk_doc,
     build_ingest_deps,
-    iter_rag_core,
+    iter_ingest_pipeline_core,
     parse_rule,
     structural_dedup_chunks,
 )
@@ -54,7 +54,7 @@ class FakeReader:
 def test_full_rag_api_docs_matches_baseline(docs: list[RawDoc], env: RagEnv) -> None:
     config = IngestConfig(env=env, keep=DEFAULT_RULES)
     deps = build_ingest_deps(config)
-    chunks, obs = full_rag_api_docs(docs, config, deps)
+    chunks, obs = run_ingest_pipeline_docs(docs, config, deps)
     assert chunks == _baseline_chunks(docs, env)
     assert obs.total_docs == len(docs)
     assert obs.total_chunks == len(chunks)
@@ -64,8 +64,8 @@ def test_full_rag_api_docs_matches_baseline(docs: list[RawDoc], env: RagEnv) -> 
 def test_iter_rag_core_deterministic(docs: list[RawDoc], env: RagEnv) -> None:
     config = IngestConfig(env=env)
     deps = build_ingest_deps(config)
-    out1 = list(iter_rag_core(docs, config, deps))
-    out2 = list(iter_rag_core(docs, config, deps))
+    out1 = list(iter_ingest_pipeline_core(docs, config, deps))
+    out2 = list(iter_ingest_pipeline_core(docs, config, deps))
     assert out1 == out2
 
 
@@ -73,7 +73,7 @@ def test_iter_rag_core_deterministic(docs: list[RawDoc], env: RagEnv) -> None:
 def test_full_rag_api_path_boundary_shape(docs: list[RawDoc], env: RagEnv) -> None:
     config = IngestConfig(env=env)
     deps = IngestBoundaryDeps(core=build_ingest_deps(config), reader=FakeReader(docs))
-    res = full_rag_api_path("fake.csv", config, deps)
+    res = run_ingest_pipeline_path("fake.csv", config, deps)
     assert isinstance(res, Ok)
     chunks, obs = res.value
     assert chunks == _baseline_chunks(docs, env)

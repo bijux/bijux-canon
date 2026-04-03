@@ -72,7 +72,7 @@ def make_ingest_fn(
 ) -> Callable[[list[RawDoc]], tuple[list[Chunk], Observations]]:
     """Pure configurator: capture immutable config into a reusable callable."""
 
-    from bijux_canon_ingest.application.api import full_rag_api
+    from bijux_canon_ingest.application.pipeline import run_ingest_pipeline
 
     debug_cfg = debug if debug is not None else DebugConfig()
 
@@ -82,7 +82,7 @@ def make_ingest_fn(
     deps = build_ingest_deps(config, taps=taps)
 
     def run(docs: list[RawDoc]) -> tuple[list[Chunk], Observations]:
-        return full_rag_api(docs, config, deps)
+        return run_ingest_pipeline(docs, config, deps)
 
     return run
 

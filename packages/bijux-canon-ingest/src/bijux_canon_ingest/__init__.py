@@ -156,13 +156,13 @@ from .config.ingest import (
     make_chunk_stream_fn,
     make_ingest_fn,
 )
-from .application.api import (
-    full_rag_api,
-    full_rag_api_docs,
-    full_rag_api_path,
+from .application.pipeline import (
+    run_ingest_pipeline,
+    run_ingest_pipeline_docs,
+    run_ingest_pipeline_path,
     iter_chunks_from_cleaned,
-    iter_rag,
-    iter_rag_core,
+    iter_ingest_pipeline,
+    iter_ingest_pipeline_core,
 )
 from .processing import (
     gen_bounded_chunks,
@@ -453,8 +453,8 @@ __all__ = [
     "gen_chunk_doc",
     "gen_chunk_spans",
     "gen_overlapping_chunks",
-    "iter_rag",
-    "iter_rag_core",
+    "iter_ingest_pipeline",
+    "iter_ingest_pipeline_core",
     "stream_chunks",
     "gen_stream_embedded",
     "gen_stream_deduped",
@@ -465,9 +465,9 @@ __all__ = [
     "multicast",
     "throttle",
     "iter_chunks_from_cleaned",
-    "full_rag_api",
-    "full_rag_api_docs",
-    "full_rag_api_path",
+    "run_ingest_pipeline",
+    "run_ingest_pipeline_docs",
+    "run_ingest_pipeline_path",
     "FSReader",
     "write_chunks_jsonl",
     "AppConfig",

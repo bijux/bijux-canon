@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Application-facing RAG pipeline APIs.
+"""Application-facing ingest pipeline APIs.
 
 This module contains the application entry points for:
-- a minimal lazy pipeline (`iter_rag`)
-- the fully-configurable instrumented core (`iter_rag_core`)
-- the doc-materializing API for taps/observations (`full_rag_api_docs`)
-- a boundary helper that returns a `Result` (`full_rag_api_path`)
+- a minimal lazy pipeline (`iter_ingest_pipeline`)
+- the fully-configurable instrumented core (`iter_ingest_pipeline_core`)
+- the doc-materializing API for taps/observations (`run_ingest_pipeline_docs`)
+- a boundary helper that returns a `Result` (`run_ingest_pipeline_path`)
 """
 
 from __future__ import annotations
@@ -50,14 +50,14 @@ def _tap(
     return items
 
 
-def iter_rag(
+def iter_ingest_pipeline(
     docs: Iterable[RawDoc],
     env: RagEnv,
     cleaner: Callable[[RawDoc], CleanDoc],
     *,
     keep: DocRule | None = None,
 ) -> Iterator[Chunk]:
-    """Bijux RAG lazy core: filter → clean → chunk → embed (no dedup)."""
+    """Lazy ingest core: filter -> clean -> chunk -> embed without deduplication."""
 
     rule = keep if keep is not None else any_doc
     kept_docs = (d for d in docs if rule(d))
@@ -67,12 +67,12 @@ def iter_rag(
     yield from embedded
 
 
-def iter_rag_core(
+def iter_ingest_pipeline_core(
     docs: Iterable[RawDoc], config: IngestConfig, deps: IngestDeps
 ) -> Iterator[Chunk]:
     """Parametric streaming core: filter (RulesConfig) → clean → chunk → embed.
 
-    Bijux RAG stdlib-first note:
+    Stdlib-first note:
     - This pipeline is built from stdlib primitives (`filter`, `map`, `itertools.chain`).
     - Optional tracing/probes are applied via `instrument_stage` only when enabled.
     - See `course-book/reference/fp-standards.md` for the repo's stdlib-first guidance.
@@ -164,7 +164,7 @@ def iter_chunks_from_cleaned(
             yield embedder(chunk)
 
 
-def full_rag_api_docs(
+def run_ingest_pipeline_docs(
     docs: Iterable[RawDoc],
     config: IngestConfig,
     deps: IngestDeps,
@@ -197,17 +197,17 @@ def full_rag_api_docs(
     return chunks, obs
 
 
-def full_rag_api(
+def run_ingest_pipeline(
     docs: Iterable[RawDoc],
     config: IngestConfig,
     deps: IngestDeps,
 ) -> tuple[list[Chunk], Observations]:
     """Doc-based API shape used across Modules 02–03 cores."""
 
-    return full_rag_api_docs(docs, config, deps)
+    return run_ingest_pipeline_docs(docs, config, deps)
 
 
-def full_rag_api_path(
+def run_ingest_pipeline_path(
     path: str,
     config: IngestConfig,
     deps: IngestBoundaryDeps,
@@ -217,15 +217,15 @@ def full_rag_api_path(
     docs_res = deps.reader.read_docs(path)
     if isinstance(docs_res, Err):
         return Err(docs_res.error)
-    chunks, obs = full_rag_api_docs(docs_res.value, config, deps.core)
+    chunks, obs = run_ingest_pipeline_docs(docs_res.value, config, deps.core)
     return Ok((chunks, obs))
 
 
 __all__ = [
-    "iter_rag",
-    "iter_rag_core",
+    "iter_ingest_pipeline",
+    "iter_ingest_pipeline_core",
     "iter_chunks_from_cleaned",
-    "full_rag_api",
-    "full_rag_api_docs",
-    "full_rag_api_path",
+    "run_ingest_pipeline",
+    "run_ingest_pipeline_docs",
+    "run_ingest_pipeline_path",
 ]

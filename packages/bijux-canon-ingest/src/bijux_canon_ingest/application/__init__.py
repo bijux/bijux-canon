@@ -5,13 +5,13 @@
 
 from __future__ import annotations
 
-from .api import (
-    full_rag_api,
-    full_rag_api_docs,
-    full_rag_api_path,
+from .pipeline import (
+    run_ingest_pipeline,
+    run_ingest_pipeline_docs,
+    run_ingest_pipeline_path,
     iter_chunks_from_cleaned,
-    iter_rag,
-    iter_rag_core,
+    iter_ingest_pipeline,
+    iter_ingest_pipeline_core,
 )
 from .observability import DebugConfig, Observations, RagTaps, RagTraceV3, TraceLens
 from .pipelines import (
@@ -44,12 +44,12 @@ from .rag import (
 )
 
 __all__ = [
-    "iter_rag",
-    "iter_rag_core",
+    "iter_ingest_pipeline",
+    "iter_ingest_pipeline_core",
     "iter_chunks_from_cleaned",
-    "full_rag_api",
-    "full_rag_api_docs",
-    "full_rag_api_path",
+    "run_ingest_pipeline",
+    "run_ingest_pipeline_docs",
+    "run_ingest_pipeline_path",
     "DebugConfig",
     "RagTaps",
     "Observations",
