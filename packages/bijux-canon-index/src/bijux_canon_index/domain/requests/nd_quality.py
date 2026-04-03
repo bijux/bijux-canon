@@ -10,7 +10,7 @@ import random
 from bijux_canon_index.core.execution_result import WitnessReport
 from bijux_canon_index.core.identity.ids import fingerprint
 from bijux_canon_index.core.types import Result
-from bijux_canon_index.domain.requests.compare import _rank_instability
+from bijux_canon_index.domain.requests.execution_diff import _rank_instability
 from bijux_canon_index.domain.requests.scoring import tie_break_key
 
 

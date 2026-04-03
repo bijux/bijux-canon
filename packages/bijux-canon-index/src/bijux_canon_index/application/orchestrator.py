@@ -56,7 +56,7 @@ from bijux_canon_index.core.types import (
     NDSettings,
     Vector,
 )
-from bijux_canon_index.domain.requests.compare import compare_executions
+from bijux_canon_index.domain.requests.execution_diff import compare_executions
 from bijux_canon_index.domain.requests.execute import (
     execute_request,
     start_execution_session,

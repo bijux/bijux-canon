@@ -8,7 +8,7 @@ from bijux_canon_index.contracts.resources import ExecutionResources
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BackendDivergenceError
 from bijux_canon_index.core.types import ExecutionRequest
-from bijux_canon_index.domain.requests.compare import compare_executions
+from bijux_canon_index.domain.requests.execution_diff import compare_executions
 from bijux_canon_index.domain.requests.execute import (
     execute_request,
     start_execution_session,
