@@ -9,13 +9,15 @@ from pathlib import Path
 
 
 def test_plugin_contracts_report_json():
-    repo_root = Path(__file__).resolve().parents[3]
-    script = repo_root / "scripts" / "plugin_test_kit.py"
+    package_root = Path(__file__).resolve().parents[3]
+    repo_root = package_root.parents[1]
+    script = repo_root / "scripts" / "bijux-vex" / "plugin_test_kit.py"
     result = subprocess.run(
         [sys.executable, str(script), "--format", "json"],
         check=True,
         capture_output=True,
         text=True,
+        cwd=package_root,
     )
     payload = json.loads(result.stdout.strip())
     assert "summary" in payload

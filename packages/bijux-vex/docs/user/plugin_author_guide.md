@@ -25,7 +25,7 @@ Register entrypoints under:
 Run the plugin test kit:
 
 ```bash
-python scripts/plugin_test_kit.py --format json
+python scripts/bijux-vex/plugin_test_kit.py --format json
 ```
 
 ## Minimal Contract Requirements

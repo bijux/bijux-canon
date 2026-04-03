@@ -4,6 +4,7 @@ API_ARTIFACTS_DIR ?= $(PROJECT_ARTIFACTS_DIR)/api
 API_LOG           ?= $(API_ARTIFACTS_DIR)/openapi_drift.log
 API_SCHEMA_YAML   ?= api/v1/schema.yaml
 API_SCHEMA_JSON   ?= api/v1/openapi.v1.json
+PACKAGE_SCRIPTS_DIR ?= $(MONOREPO_ROOT)/scripts/bijux-vex
 
 .PHONY: api api-clean api-freeze
 
@@ -12,7 +13,7 @@ api: | $(VENV)
 	@$(MAKE) api-freeze
 	@echo "→ Checking API drift (if specs exist)"
 	@mkdir -p "$(API_ARTIFACTS_DIR)"
-	@$(VENV_PYTHON) scripts/openapi_drift.py --mode check >"$(API_LOG)" 2>&1 || true
+	@$(VENV_PYTHON) "$(PACKAGE_SCRIPTS_DIR)/openapi_drift.py" --mode check >"$(API_LOG)" 2>&1 || true
 	@echo "✔ API drift check done (log: $(API_LOG))"
 
 api-clean:

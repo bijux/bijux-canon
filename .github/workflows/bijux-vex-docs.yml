@@ -8,7 +8,7 @@ on:
       - "packages/bijux-vex/docs/**"
       - "packages/bijux-vex/README.md"
       - "packages/bijux-vex/CHANGELOG.md"
-      - "packages/bijux-vex/scripts/**"
+      - "scripts/bijux-vex/**"
       - "configs/bijux-vex/mkdocs.yml"
       - "makes/bijux-vex/docs.mk"
       - "makes/shared/**"
