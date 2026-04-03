@@ -18,10 +18,6 @@ from bijux_canon_ingest.retrieval.index_builders import (
     load_index,
 )
 from bijux_canon_ingest.retrieval.lexical_index import BM25Index
-from bijux_canon_ingest.retrieval.text_analysis import (
-    stable_token_bucket as _stable_token_bucket,
-)
-from bijux_canon_ingest.retrieval.text_analysis import tokenize as _tokenize
 
 __all__ = [
     "BM25Index",
