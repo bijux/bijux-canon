@@ -23,13 +23,14 @@ def _collect_nav_paths(nav) -> list[str]:
 
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[1]
-    mkdocs_path = repo_root / "mkdocs.yml"
+    monorepo_root = repo_root.parents[1]
+    mkdocs_path = monorepo_root / "configs" / repo_root.name / "mkdocs.yml"
     if not mkdocs_path.exists():
         print("mkdocs.yml not found; skipping doc consistency check")
         return 0
 
     data = yaml.safe_load(mkdocs_path.read_text(encoding="utf-8")) or {}
-    docs_dir = repo_root / str(data.get("docs_dir", "docs"))
+    docs_dir = mkdocs_path.parent / str(data.get("docs_dir", "docs"))
     nav_paths = _collect_nav_paths(data.get("nav", []))
 
     missing: list[str] = []

@@ -34,7 +34,7 @@ def _flatten_nav(nav: Iterable[dict | str]) -> set[pathlib.Path]:
 
 def test_all_docs_are_reachable_from_nav():
     repo_root = pathlib.Path(__file__).resolve().parents[2]
-    mkdocs_yaml = repo_root / "mkdocs.yml"
+    mkdocs_yaml = repo_root.parents[1] / "configs" / repo_root.name / "mkdocs.yml"
     docs_root = repo_root / "docs"
     data = yaml.safe_load(mkdocs_yaml.read_text())
     nav_entries = _flatten_nav(data["nav"])

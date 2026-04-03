@@ -2,7 +2,6 @@
 
 ACT              ?= $(VENV)/bin
 MKDOCS_BIN       := $(shell test -x "$(ACT)/mkdocs" && printf "%s" "$(ACT)/mkdocs" || command -v mkdocs)
-MKDOCS_CFG       ?= mkdocs.yml
 PY               ?= $(VENV_PYTHON)
 
 DOCS_GEN_DIR     ?= docs

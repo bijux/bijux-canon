@@ -3,6 +3,8 @@ site_url: https://bijux.github.io/bijux-rar/
 repo_name: bijux/bijux-rar
 repo_url: https://github.com/bijux/bijux-rar
 
+docs_dir: ../../packages/bijux-rar/docs
+
 theme:
   name: material
   language: en

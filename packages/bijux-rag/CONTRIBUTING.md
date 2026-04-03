@@ -84,7 +84,7 @@ make api
 ---
 <a id="docs"></a>
 ## Docs
-* Config: `mkdocs.yml` (Material, **strict**)
+* Config: `../../configs/bijux-rag/mkdocs.yml` (Material, **strict**)
 * Build: `make docs`
 * Serve: `make docs-serve`
 * Deploy: `make docs-deploy` (if authorized)

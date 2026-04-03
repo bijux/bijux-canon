@@ -4,8 +4,6 @@
 ACT              ?= $(VENV)/bin
 MKDOCS_BIN_CAND  ?= $(ACT)/mkdocs
 MKDOCS_BIN       := $(shell test -x "$(MKDOCS_BIN_CAND)" && printf "%s" "$(MKDOCS_BIN_CAND)" || command -v mkdocs)
-MKDOCS_CFG       ?= mkdocs.yml
-
 # Keep build/cache strictly under artifacts/
 DOCS_GEN_DIR     ?= artifacts/docs/docs
 DOCS_SITE_DIR    ?= artifacts/docs/site

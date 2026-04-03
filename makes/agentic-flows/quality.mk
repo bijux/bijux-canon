@@ -82,7 +82,7 @@ quality:
 	@$(PYTHON) scripts/check_no_toys_policy.py
 
 	@echo "   - MkDocs build"
-	@$(PYTHON) -m mkdocs build --strict
+	@$(PYTHON) -m mkdocs build --strict --config-file "$(MKDOCS_CFG)"
 
 	@echo "✔ Quality checks passed"
 	@printf "OK\n" >"$(QUALITY_OK_MARKER)"

@@ -9,7 +9,8 @@ from pathlib import Path
 import yaml
 
 DOCS_DIR = Path("docs")
-MKDOCS_PATH = Path("mkdocs.yml")
+REPO_ROOT = Path(__file__).resolve().parents[3]
+MKDOCS_PATH = REPO_ROOT / "configs" / "agentic-flows" / "mkdocs.yml"
 
 LINK_RE = re.compile(r"\[[^\\]]+\\]\\(([^)]+)\\)")
 

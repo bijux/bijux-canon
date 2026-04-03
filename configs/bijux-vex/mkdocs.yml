@@ -3,6 +3,8 @@ site_url: https://bijux.github.io/bijux-vex/
 repo_name: bijux/bijux-vex
 repo_url: https://github.com/bijux/bijux-vex
 
+docs_dir: ../../packages/bijux-vex/docs
+
 theme:
   name: material
   language: en
