@@ -1,11 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG infra: clocks (real + deterministic test)."""
+"""Clock adapters for real and deterministic time sources."""
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
+
+try:
+    from datetime import UTC
+except ImportError:  # pragma: no cover - interpreter compatibility for tooling
+    from datetime import timezone
+
+    UTC = timezone.utc
 
 from bijux_canon_ingest.domain.capabilities import Clock
 
