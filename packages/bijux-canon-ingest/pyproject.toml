@@ -103,6 +103,12 @@ ignore-init-method = true
 ignore-private = true
 ignore-semiprivate = true
 
+[tool.pytest.ini_options]
+markers = [
+  "e2e: end-to-end coverage for package boundaries and retrieval contracts",
+]
+testpaths = ["tests"]
+
 [tool.hatch.build]
 include = [
   "src/bijux_canon_ingest/**",
