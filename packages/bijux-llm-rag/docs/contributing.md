@@ -25,7 +25,7 @@ This guide is the single source of truth for local setup, workflows, API validat
 **Setup**
 ```bash
 git clone https://github.com/bijux/bijux-llm-nexus.git
-cd bijux-llm-nexus/packages/bijux-rag
+cd bijux-llm-nexus/packages/bijux-llm-rag
 make PYTHON=python3.11 install
 source .venv/bin/activate
 ```
@@ -46,14 +46,14 @@ make lint test docs api
 
 | Target | What it does |
 | --------------- | --------------------------------------------------------------------------- |
-| `make test` | `pytest` + coverage (HTML in `artifacts/bijux-rag/test/htmlcov/`) |
+| `make test` | `pytest` + coverage (HTML in `artifacts/bijux-llm-rag/test/htmlcov/`) |
 | `make lint` | Format (ruff), lint (ruff), type-check (mypy) |
 | `make quality` | Dead code (vulture), deps hygiene (deptry), docstrings (interrogate) |
 | `make security` | Bandit + pip-audit |
 | `make api` | OpenAPI lint + generator compat + Schemathesis contract tests |
 | `make docs` | Build MkDocs (strict) |
 | `make build` | Build sdist + wheel |
-| `make sbom` | CycloneDX SBOM → `artifacts/bijux-rag/sbom/` |
+| `make sbom` | CycloneDX SBOM → `artifacts/bijux-llm-rag/sbom/` |
 
 **Handy helpers**
 ```bash
@@ -90,7 +90,7 @@ make api
 ## Tests & Coverage
 * Run all tests: `make test`
 * Focused run: `pytest -k "<expr>" -q`
-* Coverage report: HTML in `artifacts/bijux-rag/test/htmlcov/`
+* Coverage report: HTML in `artifacts/bijux-llm-rag/test/htmlcov/`
 * **Project bar:** Comprehensive tests with **100%** coverage across unit/integration/functional/E2E. Keep it green.
 [Back to top](#top)
 ---
@@ -110,7 +110,7 @@ make lint
 ## Security & Supply Chain
 ```bash
 make security # bandit + pip-audit
-make sbom # CycloneDX, saved to artifacts/bijux-rag/sbom/
+make sbom # CycloneDX, saved to artifacts/bijux-llm-rag/sbom/
 ```
 * No secrets in code or tests
 * Keep dependency pins sane; document any suppressions

@@ -10,11 +10,11 @@ Build, test, docs, and release steps produce transient outputs (wheels/sdists, c
 
 ## Decision
 
-All generated outputs **must** be written beneath a single top-level directory: `artifacts/`. Each package owns a dedicated subtree inside that root, and bijux-rag writes only to `artifacts/bijux-rag/`. No Make/Tox/CI task may write transient files to the repo root or source trees. Standard caches (e.g., `.venv/`, `.tox/`, `.pytest_cache/`) are permitted and ignored via `.gitignore`.
+All generated outputs **must** be written beneath a single top-level directory: `artifacts/`. Each package owns a dedicated subtree inside that root, and bijux-rag writes only to `artifacts/bijux-llm-rag/`. No Make/Tox/CI task may write transient files to the repo root or source trees. Standard caches (e.g., `.venv/`, `.tox/`, `.pytest_cache/`) are permitted and ignored via `.gitignore`.
 
 This policy is enforced **centrally by the Makefile system**. The package
 `Makefile` and the root-managed `../../makes/bijux-rag/*` modules define
-orchestration and output paths (`PROJECT_ARTIFACTS_DIR = artifacts/bijux-rag`). Tox and GitHub
+orchestration and output paths (`PROJECT_ARTIFACTS_DIR = artifacts/bijux-llm-rag`). Tox and GitHub
 Actions **call Make targets**; they do not choose paths.
 
 ### Canonical Layout (Generated Only)
@@ -39,35 +39,35 @@ artifacts/
     lint/           # linter/type checker reports
 ```
 
-> Note: Locally we emit to `artifacts/bijux-rag/build/`. In CI, the uploaded artifact named **`dist`** still represents that same build bundle after upload/download.
+> Note: Locally we emit to `artifacts/bijux-llm-rag/build/`. In CI, the uploaded artifact named **`dist`** still represents that same build bundle after upload/download.
 
-Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`, `../../apis/bijux-rag/v1/schema.yaml`) remain in place and are **not** artifacts.
+Tracked sources (e.g., `pyproject.toml`, `docs/index.md`, `LICENSE`, `../../apis/bijux-rag/v1/schema.yaml`) remain in place and are **not** artifacts.
 
 ## Rationale
 
 * **Clean Working Tree:** Routine tasks don’t dirty the repo; `git status` stays meaningful.
-* **Deterministic Pipelines:** CI and docs deploy hydrate exclusively from `artifacts/bijux-rag/**`.
+* **Deterministic Pipelines:** CI and docs deploy hydrate exclusively from `artifacts/bijux-llm-rag/**`.
 * **Curated Releases:** GitHub Releases contain concise, named bundles (ZIP/tar.gz per subtree), not thousands of loose files.
-* **Safe Docs Builds:** MkDocs reads the tracked `docs/` tree and writes to `artifacts/bijux-rag/docs/site`; required pages are asserted.
+* **Safe Docs Builds:** MkDocs reads the tracked `docs/` tree and writes to `artifacts/bijux-llm-rag/docs/site`; required pages are asserted.
 * **Reproducibility:** Uniform paths across local and CI; caches remain standard and ignored.
 
 ## Enforcement
 
 ### Local (Make + Tox)
 
-* `PROJECT_ARTIFACTS_DIR = artifacts/bijux-rag` in the package `Makefile`; sub-recipes in
+* `PROJECT_ARTIFACTS_DIR = artifacts/bijux-llm-rag` in the package `Makefile`; sub-recipes in
   `../../makes/bijux-rag/*` route outputs under that root (for example,
-  `../../makes/test.mk` → `artifacts/bijux-rag/test/`; integrates with
+  `../../makes/test.mk` → `artifacts/bijux-llm-rag/test/`; integrates with
   ADR-0004 toolchain targets like `make lint` for logs/caches under
-  `artifacts/bijux-rag/lint/`).
+  `artifacts/bijux-llm-rag/lint/`).
 * Tox environments call Make targets; they do **not** set output paths directly.
-* Docs build directly from the tracked `docs/` directory and publish to `artifacts/bijux-rag/docs/site`.
+* Docs build directly from the tracked `docs/` directory and publish to `artifacts/bijux-llm-rag/docs/site`.
 
 ### CI (GitHub Actions)
 
-* **`ci.yml`** (CI workflow) uploads only from `artifacts/bijux-rag/**`.
-* **`deploy-docs.yml`** (Deploy Docs workflow) builds into `artifacts/bijux-rag/docs/site` and checks required pages.
-* **`publish.yml`** (Publish to PyPI workflow) assembles release bundles from `artifacts/bijux-rag/**`, computes checksums for the build bundle, and attaches curated ZIPs (tests per-py, lint, quality, security, api, docs, sbom, build).
+* **`ci.yml`** (CI workflow) uploads only from `artifacts/bijux-llm-rag/**`.
+* **`deploy-docs.yml`** (Deploy Docs workflow) builds into `artifacts/bijux-llm-rag/docs/site` and checks required pages.
+* **`publish.yml`** (Publish to PyPI workflow) assembles release bundles from `artifacts/bijux-llm-rag/**`, computes checksums for the build bundle, and attaches curated ZIPs (tests per-py, lint, quality, security, api, docs, sbom, build).
 
 ## Consequences
 
@@ -87,32 +87,32 @@ Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`, `../../apis/bij
 ## Invariants
 
 * Make targets do **not** write outside `$(PROJECT_ARTIFACTS_DIR)` (except standard caches). 
-* CI uploads/downloads **only** `artifacts/bijux-rag/**`. 
-* Docs build from `docs/` → `artifacts/bijux-rag/docs/site`. 
-* Releases assemble from `artifacts/bijux-rag/**`.
+* CI uploads/downloads **only** `artifacts/bijux-llm-rag/**`. 
+* Docs build from `docs/` → `artifacts/bijux-llm-rag/docs/site`. 
+* Releases assemble from `artifacts/bijux-llm-rag/**`.
 
 ## Compliance Examples
 
 * **Build Wheels/SDist**
 
   ```bash
-  python -m build --outdir artifacts/bijux-rag/build
+  python -m build --outdir artifacts/bijux-llm-rag/build
   ```
 
 * **Tests + Coverage + JUnit**
 
   ```bash
   pytest --cov \
-         --cov-report=xml:artifacts/bijux-rag/test/coverage.xml \
-         --cov-report=html:artifacts/bijux-rag/test/htmlcov \
-         --junitxml=artifacts/bijux-rag/test/junit.xml
+         --cov-report=xml:artifacts/bijux-llm-rag/test/coverage.xml \
+         --cov-report=html:artifacts/bijux-llm-rag/test/htmlcov \
+         --junitxml=artifacts/bijux-llm-rag/test/junit.xml
   ```
 
 * **MkDocs**
 
   ```yaml
   docs_dir: docs
-  site_dir: artifacts/bijux-rag/docs/site
+  site_dir: artifacts/bijux-llm-rag/docs/site
   ```
 
 ## Alternatives Considered

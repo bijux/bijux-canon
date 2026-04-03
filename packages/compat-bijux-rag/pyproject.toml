@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "bijux-rag"
 dynamic = ["version", "dependencies"]
 description = "Compatibility package for bijux-llm-rag."
-readme = "README.md"
+readme = "overview.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "MIT" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -21,11 +21,11 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-rag"
+Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-rag"
 Repository = "https://github.com/bijux/bijux-llm-nexus"
 Documentation = "https://bijux.github.io/bijux-rag/"
 BugTracker = "https://github.com/bijux/bijux-llm-nexus/issues"
-Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-rag/CHANGELOG.md"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-rag/CHANGELOG.md"
 
 [tool.hatch.version]
 source = "vcs"
@@ -39,4 +39,4 @@ canonical-name = "bijux-llm-rag"
 bypass-selection = true
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "hatch_build.py"]
+include = ["pyproject.toml", "overview.md", "hatch_build.py"]

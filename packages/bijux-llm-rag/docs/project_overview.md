@@ -18,12 +18,12 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── .gitignore           # git ignores
 ├── CHANGELOG.md         # version history
 ├── Makefile             # main Makefile entrypoint
-├── README.md            # project overview
+├── docs/index.md        # project overview
 ├── ../mkdocs.yml        # package-owned MkDocs config
 ├── pyproject.toml       # Hatchling build + deps
 ├── ../../configs/pytest.ini # repo-wide pytest config
 ├── ../../tox.ini        # repository tox envs
-└── ../../artifacts/bijux-rag/ # generated outputs (test coverage, lint reports, docs site, sbom, etc.)
+└── ../../artifacts/bijux-llm-rag/ # generated outputs (test coverage, lint reports, docs site, sbom, etc.)
 ```
 
 ## Source Code (high level)

@@ -8,7 +8,7 @@ strict: true
 use_directory_urls: true
 dev_addr: 127.0.0.0:8000
 docs_dir: docs
-site_dir: ../../artifacts/bijux-rag/docs/site
+site_dir: ../../artifacts/bijux-llm-rag/docs/site
 
 theme:
   name: material
@@ -134,4 +134,4 @@ watch:
   - tests
   - mkdocs.yml
   - docs
-  - ../../artifacts/bijux-rag
+  - ../../artifacts/bijux-llm-rag

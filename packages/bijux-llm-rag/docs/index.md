@@ -1,7 +1,7 @@
 # bijux-llm-rag
 
 > At a glance: **index → retrieve → ask** • offline CI profile • reproducible chunk IDs + index fingerprints • CLI + FastAPI boundaries • OpenAPI drift-gated  
-> Quality: **make/tox gates green** (tests, lint, types, docs strict, security, SBOM). Everything writes to `artifacts/bijux-rag/`. No telemetry.
+> Quality: **make/tox gates green** (tests, lint, types, docs strict, security, SBOM). Everything writes to `artifacts/bijux-llm-rag/`. No telemetry.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/bijux-llm-rag.svg?logo=pypi&logoColor=white)](https://pypi.org/project/bijux-llm-rag)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bijux-llm-rag.svg?logo=python&logoColor=white)](https://pypi.org/project/bijux-llm-rag)
@@ -12,7 +12,7 @@
 **Docs:** https://bijux.github.io/bijux-rag/  
 **PyPI:** https://pypi.org/project/bijux-llm-rag/  
 **Issues:** https://github.com/bijux/bijux-llm-nexus/issues
-**Changelog:** https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-rag/CHANGELOG.md
+**Changelog:** https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-rag/CHANGELOG.md
 
 
 **bijux-llm-rag** is a standalone Retrieval-Augmented Generation (RAG) toolkit for Python, emphasizing a functional core with pure transformations for document processing, chunking, and retrieval. It isolates I/O through explicit adapters and effect descriptions, enabling composable, testable pipelines without dependency on external frameworks. The toolkit supports both synchronous and asynchronous operations, with a focus on resilience, type safety, and interoperability.
@@ -85,7 +85,7 @@ From source:
 
 ```bash
 git clone https://github.com/bijux/bijux-llm-nexus.git
-cd bijux-llm-nexus/packages/bijux-rag
+cd bijux-llm-nexus/packages/bijux-llm-rag
 make bootstrap  # Sets up virtualenv and installs in editable mode
 ```
 

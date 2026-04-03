@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 
-PROJECT_SLUG := bijux-rag
+PROJECT_SLUG := bijux-llm-rag
 
 include ../../makes/shared/python-package.mk
 

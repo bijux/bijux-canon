@@ -55,7 +55,7 @@ We enforce the exclusive use of the **Google Python Style Guide** for all in-cod
 * Restrict all repository documentation (ADRs, READMEs, guides) to Markdown format only.
 * Prefer `*` for Markdown bullet points. `-` is also acceptable to match GitHub/MkDocs defaults.
 * Mandate inclusion of Date, Status, and Author headers in ADRs, as exemplified in this document.
-* MkDocs builds from the tracked `docs/` tree and publishes into `artifacts/bijux-rag/docs/site/`, as defined by ADR-0005.
+* MkDocs builds from the tracked `docs/` tree and publishes into `artifacts/bijux-llm-rag/docs/site/`, as defined by ADR-0005.
 
 ## Consequences
 

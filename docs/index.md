@@ -7,7 +7,7 @@ that share repository-wide tooling, governance, and automation.
 
 - `packages/agentic-flows`
 - `packages/bijux-agent`
-- `packages/bijux-rag`
+- `packages/bijux-llm-rag`
 - `packages/bijux-rar`
 - `packages/bijux-vex`
 

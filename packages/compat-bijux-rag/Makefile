@@ -1,4 +1,4 @@
-PROJECT_SLUG := bijux-rag-compat
+PROJECT_SLUG := compat-bijux-rag
 
 include ../../makes/shared/python-package.mk
 

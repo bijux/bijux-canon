@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "bijux-llm-rag"
 dynamic = ["version"]
 description = "Standalone Bijux RAG toolkit"
-readme = "README.md"
+readme = "docs/index.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "MIT" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -84,11 +84,11 @@ bijux-llm-rag = "bijux_rag.boundaries.shells.cli:main"
 bijux-rag = "bijux_rag.boundaries.shells.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-rag"
+Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-rag"
 Repository = "https://github.com/bijux/bijux-llm-nexus"
 Documentation = "https://bijux.github.io/bijux-rag/"
 BugTracker = "https://github.com/bijux/bijux-llm-nexus/issues"
-Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-rag/CHANGELOG.md"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-rag/CHANGELOG.md"
 
 [tool.hatch.version]
 source = "vcs"
@@ -108,7 +108,7 @@ ignore-semiprivate = true
 [tool.hatch.build]
 include = [
   "src/bijux_rag/**",
-  "README.md",
+  "docs/index.md",
   "pyproject.toml",
 ]
 

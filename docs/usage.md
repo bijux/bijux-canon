@@ -6,7 +6,7 @@ This repository is organized for package-focused development.
 
 - `packages/agentic-flows`
 - `packages/bijux-agent`
-- `packages/bijux-rag`
+- `packages/bijux-llm-rag`
 - `packages/bijux-rar`
 - `packages/bijux-vex`
 
@@ -15,7 +15,7 @@ This repository is organized for package-focused development.
 Run a package command from the repository root:
 
 ```bash
-make -C packages/bijux-rag test
+make -C packages/bijux-llm-rag test
 make -C packages/bijux-vex docs
 ```
 
