@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 import sqlite3
-from typing import Any
+from typing import Any, Protocol
 
 from bijux_canon_index.core.identity.ids import fingerprint
 
@@ -18,15 +18,15 @@ class EmbeddingCacheEntry:
     metadata: dict[str, str | None]
 
 
-class EmbeddingCache:
+class EmbeddingCache(Protocol):
     def get(self, key: str) -> EmbeddingCacheEntry | None:
-        raise NotImplementedError
+        ...
 
     def set(self, key: str, entry: EmbeddingCacheEntry) -> None:
-        raise NotImplementedError
+        ...
 
 
-class SQLiteEmbeddingCache(EmbeddingCache):
+class SQLiteEmbeddingCache:
     def __init__(self, path: str | Path) -> None:
         self._path = Path(path)
         self._conn = sqlite3.connect(self._path)
