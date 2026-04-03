@@ -8,7 +8,7 @@ from typing import Any
 
 from packaging.version import InvalidVersion, Version
 
-from bijux_canon_agent.tracing.trace import TRACE_SCHEMA_VERSION
+from bijux_canon_agent.traces.trace import TRACE_SCHEMA_VERSION
 
 
 @dataclass(frozen=True)

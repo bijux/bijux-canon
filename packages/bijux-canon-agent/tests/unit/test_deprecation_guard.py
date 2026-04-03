@@ -13,7 +13,7 @@ MODULES_TO_CHECK = (
     "bijux_canon_agent.agents.verifier",
     "bijux_canon_agent.pipeline.pipeline",
     "bijux_canon_agent.pipeline.control.controller",
-    "bijux_canon_agent.tracing.trace",
+    "bijux_canon_agent.traces.trace",
 )
 
 

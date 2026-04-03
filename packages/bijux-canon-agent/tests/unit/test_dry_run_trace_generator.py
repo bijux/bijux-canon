@@ -14,8 +14,8 @@ from bijux_canon_agent.pipeline.convergence.monitor import (
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
-from bijux_canon_agent.tracing.dry_run import generate_dry_run_trace
-from bijux_canon_agent.tracing.trace import TRACE_SCHEMA_VERSION
+from bijux_canon_agent.traces.dry_run import generate_dry_run_trace
+from bijux_canon_agent.traces.trace import TRACE_SCHEMA_VERSION
 
 
 def test_dry_run_trace_generator_snapshot() -> None:

@@ -9,7 +9,7 @@ from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.failure import validate_failure_artifact
-from bijux_canon_agent.tracing import RunFingerprint, TraceEntry
+from bijux_canon_agent.traces import RunFingerprint, TraceEntry
 
 
 def validate(

@@ -9,7 +9,7 @@ from typing import cast
 import bijux_canon_agent
 from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
-from bijux_canon_agent.tracing.trace import RunFingerprint, TraceEntry
+from bijux_canon_agent.traces.trace import RunFingerprint, TraceEntry
 
 
 def _load_snapshot() -> dict[str, object]:

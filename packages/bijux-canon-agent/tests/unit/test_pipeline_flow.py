@@ -38,7 +38,7 @@ from bijux_canon_agent.pipeline.results.failure import (
 )
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
 from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
-from bijux_canon_agent.tracing import (
+from bijux_canon_agent.traces import (
     ReplayMetadata,
     RunFingerprint,
     RunTrace,

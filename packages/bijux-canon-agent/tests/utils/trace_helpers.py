@@ -12,13 +12,13 @@ from bijux_canon_agent.pipeline.definition import (
     standard_pipeline_definition,
 )
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_canon_agent.tracing import (
+from bijux_canon_agent.traces import (
     ReplayMetadata,
     RunFingerprint,
     RunTraceHeader,
     TraceEntry,
 )
-from bijux_canon_agent.tracing.trace import ModelMetadata
+from bijux_canon_agent.traces.trace import ModelMetadata
 from bijux_canon_agent.core.hashing import prompt_hash
 
 DEFAULT_PIPELINE_DEFINITION: PipelineDefinition = standard_pipeline_definition()

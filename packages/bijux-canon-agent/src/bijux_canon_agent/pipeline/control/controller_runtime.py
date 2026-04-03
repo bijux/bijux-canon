@@ -10,7 +10,7 @@ from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult
-from bijux_canon_agent.tracing.trace import RunTrace
+from bijux_canon_agent.traces.trace import RunTrace
 
 
 @dataclass

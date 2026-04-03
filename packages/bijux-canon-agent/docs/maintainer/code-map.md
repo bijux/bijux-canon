@@ -11,7 +11,7 @@ High-signal locations:
 - `src/bijux_canon_agent/reference_pipelines/` — reference pipeline builders
 - `src/bijux_canon_agent/observability/` — logging and telemetry helpers
 - `src/bijux_canon_agent/core/` — hashing, final markers, and version helpers
-- `src/bijux_canon_agent/tracing/` — trace schema, validation, upgrades, fingerprints
+- `src/bijux_canon_agent/traces/` — trace schema, validation, upgrades, fingerprints
 - `tests/` — unit tests and invariants (docs coverage, contract checks)
 
 If you touch `docs/spec/*`, assume you are changing the contract.

@@ -29,7 +29,7 @@ This document is a module-level map of the codebase. It describes *where respons
 
 - `application/orchestration/*` owns deterministic orchestration policies and state machines
 
-### Tracing (`src/bijux_canon_agent/tracing/`)
+### Tracing (`src/bijux_canon_agent/traces/`)
 
 - Trace schema, validation, and upgrades
 - Field classification (deterministic vs observational)

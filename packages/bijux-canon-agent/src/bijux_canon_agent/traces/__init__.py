@@ -1,4 +1,4 @@
-"""Tracing helpers and JSON output for agent call graphs."""
+"""Trace models, replay helpers, and JSON output for agent runs."""
 
 from __future__ import annotations
 

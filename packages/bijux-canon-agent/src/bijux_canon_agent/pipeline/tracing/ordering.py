@@ -12,7 +12,7 @@ from bijux_canon_agent.pipeline.semantics import (
     DEFAULT_PIPELINE_SEMANTICS,
     PipelineSemantics,
 )
-from bijux_canon_agent.tracing import TraceEntry
+from bijux_canon_agent.traces import TraceEntry
 
 
 def validate(

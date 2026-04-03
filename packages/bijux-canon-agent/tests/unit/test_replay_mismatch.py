@@ -8,7 +8,7 @@ from bijux_canon_agent.replay import (
     ReplayMismatchCategory,
     classify_replay_mismatch,
 )
-from bijux_canon_agent.tracing.trace import ModelMetadata
+from bijux_canon_agent.traces.trace import ModelMetadata
 
 
 def _default_model_metadata() -> ModelMetadata:

@@ -22,7 +22,7 @@ from bijux_canon_agent.pipeline.results.failure import (
     failure_profile_for,
 )
 from bijux_canon_agent.contracts.base import TypedBaseModel
-from bijux_canon_agent.tracing.trace import ModelMetadata
+from bijux_canon_agent.traces.trace import ModelMetadata
 from bijux_canon_agent.core.hashing import prompt_hash
 
 _openai_module: ModuleType | None = None

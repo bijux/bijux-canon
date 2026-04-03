@@ -15,8 +15,8 @@ from bijux_canon_agent.contracts.agent_contract import (
     AgentInputSchema,
     AgentOutputSchema,
 )
-from bijux_canon_agent.tracing import TraceEntry, TraceRecorder
-from bijux_canon_agent.tracing.trace import ModelMetadata
+from bijux_canon_agent.traces import TraceEntry, TraceRecorder
+from bijux_canon_agent.traces.trace import ModelMetadata
 
 from .policy import FailurePolicy
 

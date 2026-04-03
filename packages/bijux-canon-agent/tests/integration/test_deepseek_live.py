@@ -12,7 +12,7 @@ from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION
 from bijux_canon_agent.llm.adapter_factory import build_adapter
 from bijux_canon_agent.llm.llm_adapter import DeepSeekAdapter
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
-from bijux_canon_agent.tracing import (
+from bijux_canon_agent.traces import (
     ReplayMetadata,
     ReplayStatus,
     TraceEntry,

@@ -24,7 +24,7 @@ from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
 from bijux_canon_agent.replay import classify_replay_mismatch
-from bijux_canon_agent.tracing import (
+from bijux_canon_agent.traces import (
     EpistemicStatus,
     ReplayMetadata,
     ReplayStatus,
@@ -35,7 +35,7 @@ from bijux_canon_agent.tracing import (
     upgrade_trace,
     validate_trace_payload,
 )
-from bijux_canon_agent.tracing.trace import ModelMetadata
+from bijux_canon_agent.traces.trace import ModelMetadata
 from bijux_canon_agent.core import version
 from bijux_canon_agent.core.hashing import prompt_hash
 from bijux_canon_agent.core.version import get_runtime_version
