@@ -1,5 +1,5 @@
 extend = "../shared/ruff/base.toml"
-src = ["../../agentic-flows/src", "../../agentic-flows/tests"]
+src = ["../../packages/agentic-flows/src", "../../packages/agentic-flows/tests"]
 
 [lint.per-file-ignores]
 "tests/**" = ["S101"]

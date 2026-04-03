@@ -1,4 +1,6 @@
-MONOREPO_ROOT ?= $(abspath $(CURDIR)/..)
+# Resolve from this shared make fragment so package depth can change without
+# forcing every consumer to recalculate the repository root.
+MONOREPO_ROOT ?= $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
 PROJECT_DIR ?= $(CURDIR)
 PROJECT_SLUG ?= $(notdir $(PROJECT_DIR))
 CONFIG_DIR ?= $(MONOREPO_ROOT)/configs/$(PROJECT_SLUG)

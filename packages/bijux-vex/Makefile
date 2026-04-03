@@ -4,7 +4,7 @@
 
 PROJECT_SLUG := bijux-vex
 
-include ../makes/shared/python-package.mk
+include ../../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 

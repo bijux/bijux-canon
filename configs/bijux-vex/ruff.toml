@@ -1,6 +1,6 @@
 extend = "../shared/ruff/base.toml"
-src = ["../../bijux-vex/src", "../../bijux-vex/tests"]
-extend-exclude = ["../../bijux-vex/src/bijux_vex/_version.py"]
+src = ["../../packages/bijux-vex/src", "../../packages/bijux-vex/tests"]
+extend-exclude = ["../../packages/bijux-vex/src/bijux_vex/_version.py"]
 
 [lint.per-file-ignores]
 "tests/**" = ["S101"]

@@ -2,7 +2,7 @@
 
 PROJECT_SLUG := bijux-rag
 
-include ../makes/shared/python-package.mk
+include ../../makes/shared/python-package.mk
 
 export PYTHONDONTWRITEBYTECODE := 1
 export PYTHONPYCACHEPREFIX     := artifacts/pycache

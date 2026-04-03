@@ -1,5 +1,5 @@
 extend = "../shared/ruff/base.toml"
-src = ["../../bijux-rar/src", "../../bijux-rar/tests"]
+src = ["../../packages/bijux-rar/src", "../../packages/bijux-rar/tests"]
 
 [lint.per-file-ignores]
 "tests/**" = ["S101"]

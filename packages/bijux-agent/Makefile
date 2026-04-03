@@ -3,7 +3,7 @@
 
 PROJECT_SLUG := bijux-agent
 
-include ../makes/shared/python-package.mk
+include ../../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 

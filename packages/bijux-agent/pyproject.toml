@@ -158,10 +158,10 @@ markers = [
 ]
 
 [tool.mypy-core]
-config-file = "../configs/bijux-agent/mypy-core.ini"
+config-file = "../../configs/bijux-agent/mypy-core.ini"
 
 [tool.mypy-extended]
-config-file = "../configs/bijux-agent/mypy-extended.ini"
+config-file = "../../configs/bijux-agent/mypy-extended.ini"
 python_files = ["test_*.py"]
 
 [tool.deptry]

@@ -4,7 +4,7 @@
 PROJECT_SLUG := agentic-flows
 PYTHON := python3.11
 
-include ../makes/shared/python-package.mk
+include ../../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 

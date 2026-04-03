@@ -1,6 +1,6 @@
 extend = "../shared/ruff/base.toml"
 fix = true
-src = ["../../bijux-agent/src", "../../bijux-agent/tests"]
+src = ["../../packages/bijux-agent/src", "../../packages/bijux-agent/tests"]
 
 [lint]
 select = [
