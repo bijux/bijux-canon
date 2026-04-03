@@ -43,9 +43,9 @@ class EvalResult(dict[str, object]):
 
 
 def _default_suite_root() -> Path:
-    """Locate `benchmarks/suites`.
+    """Locate `tooling/evaluation_suites`.
 
-    - repo checkout: CWD contains benchmarks/suites
+    - repo checkout: CWD contains tooling/evaluation_suites
     - package checkout: resolve by walking upward from this module
     """
     cwd_candidate = Path.cwd() / "benchmarks" / "suites"
