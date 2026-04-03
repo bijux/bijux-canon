@@ -17,9 +17,9 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExplainRequest,
     IngestRequest,
 )
-from bijux_canon_index.contracts.authz import AllowAllAuthz, Authz, DenyAllAuthz
+from bijux_canon_index.contracts.authz import Authz
 from bijux_canon_index.contracts.tx import Tx
-from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
+from bijux_canon_index.core.config import ExecutionConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
     AuthzDeniedError,
@@ -65,9 +65,7 @@ from bijux_canon_index.domain.non_determinism.execution_model import (
 )
 from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.domain.provenance.replay import replay
-from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
-from bijux_canon_index.infra.adapters.vectorstore_source import VectorStoreVectorSource
 from bijux_canon_index.infra.embeddings.cache import (
     build_cache,
     cache_key,
@@ -75,45 +73,13 @@ from bijux_canon_index.infra.embeddings.cache import (
     metadata_as_dict,
 )
 from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
-from bijux_canon_index.infra.environment import read_env
 from bijux_canon_index.infra.logging import log_event
 from bijux_canon_index.infra.metrics import METRICS, timed
 from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.infra.runners.registry import RUNNERS
-from bijux_canon_index.core.identity.policies import (
-    ContentAddressedIdPolicy,
-    IdGenerationStrategy,
+from bijux_canon_index.application.orchestration.runtime_bootstrap import (
+    bootstrap_runtime,
 )
-
-_BACKEND_POOL: dict[tuple[str, str], Any] = {}
-_BACKEND_LOCK = threading.Lock()
-
-
-def _resolve_backend(backend_env: str, chosen_path: Path) -> Any:
-    if backend_env == "memory":
-        from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-
-        return memory_backend()
-    key = (backend_env or "", str(chosen_path))
-    with _BACKEND_LOCK:
-        cached = _BACKEND_POOL.get(key)
-        if cached is not None:
-            return cached
-        backend: Any
-        if backend_env == "hnsw":
-            from bijux_canon_index.infra.adapters.hnsw.backend import hnsw_backend
-
-            backend = hnsw_backend(
-                db_path=str(chosen_path),
-                index_dir=read_env(
-                    "BIJUX_CANON_INDEX_HNSW_PATH",
-                    legacy="BIJUX_VEX_HNSW_PATH",
-                ),
-            )
-        else:
-            backend = sqlite_backend(str(chosen_path))
-        _BACKEND_POOL[key] = backend
-        return backend
 
 
 def _resolve_correlation_id(raw: str | None) -> str:
@@ -131,114 +97,32 @@ class Orchestrator:
         config: ExecutionConfig | None = None,
     ) -> None:
         self.config = config or ExecutionConfig()
-        if backend is not None:
-            self.backend = backend
-        else:
-            backend_env = (
-                read_env(
-                    "BIJUX_CANON_INDEX_BACKEND",
-                    legacy="BIJUX_VEX_BACKEND",
-                    default="",
-                )
-                or ""
-            ).lower()
-            chosen_raw: str | Path = (
-                state_path
-                or read_env(
-                    "BIJUX_CANON_INDEX_STATE_PATH",
-                    legacy="BIJUX_VEX_STATE_PATH",
-                    default="session.sqlite",
-                )
-                or "session.sqlite"
-            )
-            chosen_path = Path(chosen_raw)
-            self.backend = _resolve_backend(backend_env, chosen_path)
-        self.vector_store_enabled = self.config.vector_store is not None
-        vector_store_cfg = self.config.vector_store or VectorStoreConfig(
-            backend="memory"
+        runtime = bootstrap_runtime(
+            backend=backend,
+            authz=authz,
+            state_path=state_path,
+            config=self.config,
         )
-        self.vector_store_resolution = VECTOR_STORES.resolve(
-            vector_store_cfg.backend or "memory",
-            uri=vector_store_cfg.uri,
-            options=vector_store_cfg.options,
-        )
-        log_event(
-            "backend_selected",
-            backend=getattr(self.backend, "name", "unknown"),
-            vector_store=self.vector_store_resolution.descriptor.name,
-        )
-        self.stores = self.backend.stores
-        if self.vector_store_enabled:
-            self.stores = self.backend.stores._replace(
-                vectors=VectorStoreVectorSource(
-                    self.backend.stores.vectors, self.vector_store_resolution
-                )
-            )
-        if authz is not None:
-            self.authz = authz
-        else:
-            auth_mode = (
-                read_env(
-                    "BIJUX_CANON_INDEX_AUTHZ_MODE",
-                    legacy="BIJUX_VEX_AUTHZ_MODE",
-                    default="",
-                )
-                or ""
-            ).lower()
-            self.authz = (
-                DenyAllAuthz() if auth_mode in {"deny", "deny_all"} else AllowAllAuthz()
-            )
-        ro = (
-            read_env(
-                "BIJUX_CANON_INDEX_READ_ONLY",
-                legacy="BIJUX_VEX_READ_ONLY",
-                default="",
-            )
-            or ""
-        ).lower()
-        self.read_only = ro in {"1", "true", "yes"}
-        self.id_policy: IdGenerationStrategy = ContentAddressedIdPolicy()
-        self.default_artifact_id = self.id_policy.next_artifact_id()
+        self.backend = runtime.backend
+        self.vector_store_enabled = runtime.vector_store_enabled
+        self.vector_store_resolution = runtime.vector_store_resolution
+        self.stores = runtime.stores
+        self.authz = runtime.authz
+        self.read_only = runtime.read_only
+        self.id_policy = runtime.id_policy
+        self.default_artifact_id = runtime.default_artifact_id
         self._latest_corpus_fingerprint: str | None = None
         self._latest_vector_fingerprint: str | None = None
         self._run_store = RunStore()
         self._idempotency_lock = threading.Lock()
         self._idempotency_cache: dict[str, dict[str, Any]] = {}
-        self._nd_rate_limit = int(
-            read_env(
-                "BIJUX_CANON_INDEX_ND_RATE_LIMIT",
-                legacy="BIJUX_VEX_ND_RATE_LIMIT",
-                default="0",
-            )
-            or "0"
-        )
-        self._nd_rate_window_seconds = int(
-            read_env(
-                "BIJUX_CANON_INDEX_ND_RATE_WINDOW_S",
-                legacy="BIJUX_VEX_ND_RATE_WINDOW_S",
-                default="60",
-            )
-            or "60"
-        )
+        self._nd_rate_limit = runtime.nd_rate_limit
+        self._nd_rate_window_seconds = runtime.nd_rate_window_seconds
         self._nd_rate_window_start = time.time()
         self._nd_rate_count = 0
         self._nd_circuit_failures = 0
-        self._nd_circuit_max_failures = int(
-            read_env(
-                "BIJUX_CANON_INDEX_ND_CIRCUIT_MAX_FAILURES",
-                legacy="BIJUX_VEX_ND_CIRCUIT_MAX_FAILURES",
-                default="3",
-            )
-            or "3"
-        )
-        self._nd_circuit_cooldown_s = int(
-            read_env(
-                "BIJUX_CANON_INDEX_ND_CIRCUIT_COOLDOWN_S",
-                legacy="BIJUX_VEX_ND_CIRCUIT_COOLDOWN_S",
-                default="30",
-            )
-            or "30"
-        )
+        self._nd_circuit_max_failures = runtime.nd_circuit_max_failures
+        self._nd_circuit_cooldown_s = runtime.nd_circuit_cooldown_s
         self._nd_circuit_open_until = 0.0
 
     def _tx(self) -> Tx:
