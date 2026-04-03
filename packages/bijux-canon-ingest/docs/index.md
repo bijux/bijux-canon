@@ -107,12 +107,23 @@ Programmatic equivalent:
 
 ```python
 from bijux_rag.core.rag_types import RawDoc
-from bijux_rag.pipelines.embedding import embed_docs
-from bijux_rag.infra.adapters.memory_storage import InMemoryStorage
+from bijux_rag.application.pipelines.configured import (
+    PipelineConfig,
+    StepConfig,
+    build_rag_pipeline,
+)
 
 docs = [RawDoc(doc_id="1", title="Example", abstract="Sample text.")]
-storage = InMemoryStorage()
-results = list(embed_docs(docs, storage))  # Composable iterator pipeline
+pipeline = build_rag_pipeline(
+    PipelineConfig(
+        steps=(
+            StepConfig("clean"),
+            StepConfig("chunk", {"chunk_size": 256}),
+            StepConfig("embed"),
+        )
+    )
+)
+results = list(pipeline(iter(docs)))
 ```
 
 [↑ Back to Top](#bijux-canon-ingest)

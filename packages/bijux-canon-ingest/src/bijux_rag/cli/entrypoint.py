@@ -7,7 +7,7 @@ This CLI is intentionally small and dependency-free (argparse). It demonstrates:
 - thin shell adapter
 - config-as-data loading (JSON)
 - override parsing (dotted `a.b=1` strings)
-- delegation to pure pipeline builders in `bijux_rag.pipelines`
+- delegation to pure pipeline builders in `bijux_rag.application.pipelines`
 """
 
 from __future__ import annotations
@@ -21,8 +21,8 @@ from typing import Any, Protocol, cast
 
 from bijux_rag.core.rag_types import RagEnv, RawDoc
 from bijux_rag.infra.adapters.file_storage import FileStorage
-from bijux_rag.pipelines.cli import deep_merge, parse_override
-from bijux_rag.pipelines.configured import (
+from bijux_rag.application.pipelines.cli import deep_merge, parse_override
+from bijux_rag.application.pipelines.configured import (
     PipelineConfig,
     StepConfig,
     build_rag_pipeline,

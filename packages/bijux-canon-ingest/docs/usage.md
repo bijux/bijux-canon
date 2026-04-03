@@ -30,15 +30,24 @@ Build composable RAG pipelines programmatically:
 
 ```python
 from bijux_rag.core.rag_types import RawDoc
-from bijux_rag.domain.effects.async_ import async_gen_from_list, async_gen_map
-from bijux_rag.policies.chunking import fixed_size_chunk
-from bijux_rag.pipelines.embedding import embed_docs
+from bijux_rag.application.pipelines.configured import (
+    PipelineConfig,
+    StepConfig,
+    build_rag_pipeline,
+)
 from bijux_rag.rag.app import RagApp
-from bijux_rag.result.types import unwrap
 
 docs = [RawDoc(doc_id="1", title="RAG Intro", abstract="Retrieval-Augmented Generation combines search and LLMs.")]
-chunks = list(async_gen_map(async_gen_from_list(docs), fixed_size_chunk))  # Streaming chunking
-embedded = list(embed_docs(chunks))  # Embed pipeline
+pipeline = build_rag_pipeline(
+    PipelineConfig(
+        steps=(
+            StepConfig("clean"),
+            StepConfig("chunk", {"chunk_size": 256}),
+            StepConfig("embed"),
+        )
+    )
+)
+embedded = [result.value for result in pipeline(iter(docs))]
 
 app = RagApp()  # Configurable app
 index = app.build_index(embedded, backend="bm25").unwrap()

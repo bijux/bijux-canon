@@ -14,6 +14,7 @@ Core namespaces:
 - `bijux_rag.domain`/`bijux_rag.infra`: capabilities, async effects, logging, retries, storage adapters.
 - `bijux_rag.http`: FastAPI transport.
 - `bijux_rag.boundaries`: boundary exception helpers.
+- `bijux_rag.application`: orchestration and pipeline builders.
 - `bijux_rag.serde`: serialization codecs and Pydantic edge models.
 - `bijux_rag.config`: package configuration models.
 """
