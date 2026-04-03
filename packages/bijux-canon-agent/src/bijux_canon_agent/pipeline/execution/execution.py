@@ -6,13 +6,14 @@ import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 import hashlib
-from pathlib import Path
-import time
 from typing import Any, Protocol, TypeAlias, cast
 
-from bijux_canon_agent.pipeline.agent_registry import determine_execution_plan
 from bijux_canon_agent.pipeline.execution.io import PipelineIOMixin
-from bijux_canon_agent.pipeline.execution.shard_processing import process_shard, shard_input
+from bijux_canon_agent.pipeline.execution.preparation_support import (
+    build_error_result,
+    prepare_execution_state,
+)
+from bijux_canon_agent.pipeline.execution.shard_processing import process_shard
 from bijux_canon_agent.pipeline.execution.telemetry import PipelineExecutionContext
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
 
@@ -167,112 +168,12 @@ class PipelineExecutionMixin(PipelineIOMixin):
     async def prepare_execution(
         self, context: dict[str, Any]
     ) -> CachedExecution | FailedExecution | PreparedExecution:
-        context_id = context.get(
-            "context_id",
-            hashlib.sha256(str(sorted(context.items())).encode()).hexdigest(),
-        )
-        self.reset_telemetry()
-        with self.logger.context(agent="Pipeline", context_id=context_id):
-            self.logger.info(
-                "Pipeline execution started",
-                extra={
-                    "context": {
-                        "context_id": context_id,
-                        "input_keys": list(context.keys()),
-                        "task_goal": context.get("task_goal", "undefined"),
-                    }
-                },
-            )
-
-        pipeline_result: PipelineExecutionResult = {
-            "result": None,
-            "stages": {},
-            "audit_trail": [],
-            "final_status": {
-                "success": False,
-                "stages_processed": [],
-                "iterations": 0,
-                "termination_reason": ExecutionTerminationReason.COMPLETED,
-                "converged": False,
-                "convergence_reason": None,
-                "convergence_iterations": 0,
-            },
-            "cache_hit": False,
-            "revision_history": [],
-            "telemetry": {},
-            "execution_path": [],
-            "warnings": [],
-        }
-        execution_context = PipelineExecutionContext(
-            audit_trail=pipeline_result["audit_trail"],
-            revision_history=pipeline_result["revision_history"],
-        )
-        pipeline_result["telemetry"] = execution_context.baseline()
-        self.audit_trail = []
-        self.revision_history = []
-
-        cache_key = self._generate_cache_key(context)
-        if self._cache is not None and cache_key in self._cache:
-            self.logger.debug(
-                "Returning cached pipeline result",
-                extra={"context": {"cache_key": cache_key}},
-            )
-            cached_result = dict(self._cache[cache_key])
-            cached_result["cache_hit"] = True
-            self.logger_manager.log_metric(
-                "pipeline_cache_hits",
-                1,
-                self._metric_type.COUNTER,
-                tags={"stage": "cache_check"},
-            )
-            return self.CachedExecution(cached_result)
-
-        if not context or "task_goal" not in context:
-            error_msg = (
-                "Input context must provide 'task_goal' to define the task objective"
-            )
-            self.logger.error(
-                error_msg,
-                extra={"context": {"stage": "input_validation"}},
-            )
-            self.logger_manager.log_metric(
-                "input_validation_errors",
-                1,
-                self._metric_type.COUNTER,
-                tags={"stage": "input_validation"},
-            )
-            error_result = await self._error_result(
-                error_msg, context, "input_validation"
-            )
-            return self.FailedExecution(error_result)
-
-        current_context = context.copy()
-        task_goal = context["task_goal"].lower()
-
-        required_stages = (
-            self._stages if self._stages else determine_execution_plan(self, task_goal)
-        )
-        self.logger.info(
-            "Determined required stages for task",
-            extra={
-                "context": {
-                    "task_goal": task_goal,
-                    "required_stages": [stage["name"] for stage in required_stages],
-                    "stage": "stage_configuration",
-                }
-            },
-        )
-
-        shards = await shard_input(self, current_context)
-        return self.PreparedExecution(
-            context_id=context_id,
-            cache_key=cache_key,
-            context=current_context,
-            task_goal=task_goal,
-            required_stages=required_stages,
-            shards=shards,
-            pipeline_result=pipeline_result,
-            execution_context=execution_context,
+        return await prepare_execution_state(
+            self,
+            context,
+            prepared_cls=self.PreparedExecution,
+            cached_cls=self.CachedExecution,
+            failed_cls=self.FailedExecution,
         )
 
     async def execute_iteration(
@@ -529,48 +430,4 @@ class PipelineExecutionMixin(PipelineIOMixin):
         context: dict[str, Any] | None = None,
         stage: str = "pipeline",
     ) -> PipelineExecutionResult:
-        result: PipelineExecutionResult = {
-            "result": None,
-            "stages": {},
-            "audit_trail": [
-                {
-                    "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                    "duration_sec": 0.0,
-                    "error": msg,
-                }
-            ],
-            "final_status": {
-                "success": False,
-                "error": msg,
-                "stages_processed": [],
-                "iterations": 0,
-                "termination_reason": ExecutionTerminationReason.FAILURE,
-                "converged": False,
-                "convergence_reason": None,
-                "convergence_iterations": 0,
-            },
-            "cache_hit": False,
-            "revision_history": [],
-            "execution_path": [],
-            "warnings": [msg],
-            "telemetry": {"iterations": 0, "stages_executed": 0},
-            "error": msg,
-            "action_plan": [f"Resolve error: {msg}"],
-        }
-        await self.logger.async_log(
-            "ERROR",
-            msg,
-            {
-                "stage": stage,
-                "context_id": (
-                    context.get("context_id", "unknown") if context else "error"
-                ),
-            },
-        )
-        self.logger_manager.log_metric(
-            "pipeline_errors",
-            1,
-            self._metric_type.COUNTER,
-            tags={"stage": stage},
-        )
-        return result
+        return await build_error_result(self, msg, context, stage=stage)
