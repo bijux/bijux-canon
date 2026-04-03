@@ -21,6 +21,7 @@ ROOT_ARTIFACTS_DIR := $(ARTIFACTS_ROOT)/root
 ROOT_CHECK_VENV := $(ROOT_ARTIFACTS_DIR)/check-venv
 ROOT_CHECK_PYTHON := $(ROOT_CHECK_VENV)/bin/python
 ROOT_CHECK_STAMP := $(ROOT_ARTIFACTS_DIR)/.check-tools.stamp
+ROOT_CHECK_BOOTSTRAP_PYTHON := $(shell command -v python3.11 || command -v python3)
 ROOT_CHECK_PACKAGES := \
 	bandit \
 	codespell \
@@ -158,7 +159,7 @@ root-check-env: $(ROOT_CHECK_STAMP)
 $(ROOT_CHECK_STAMP):
 	@mkdir -p "$(ROOT_ARTIFACTS_DIR)"
 	@rm -rf "$(ROOT_CHECK_VENV)"
-	@python3 -m venv "$(ROOT_CHECK_VENV)"
+	@"$(ROOT_CHECK_BOOTSTRAP_PYTHON)" -m venv "$(ROOT_CHECK_VENV)"
 	@"$(ROOT_CHECK_PYTHON)" -m pip install --upgrade pip setuptools wheel >/dev/null
 	@"$(ROOT_CHECK_PYTHON)" -m pip install --upgrade $(ROOT_CHECK_PACKAGES) >/dev/null
 	@touch "$(ROOT_CHECK_STAMP)"
