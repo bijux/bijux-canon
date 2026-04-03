@@ -55,10 +55,17 @@ class DagExecutionState:
 class DagOrchestrator:
     """Simple deterministic orchestrator that executes DAG nodes in order."""
 
+    DEFAULT_TRACE_PATH = (
+        Path("artifacts")
+        / "bijux-canon-agent"
+        / "dag-runtime"
+        / "run_trace.json"
+    )
+
     def __init__(
         self,
         nodes: Iterable[DagNode],
-        trace_path: Path | str = Path("src/bijux_canon_agent/tracing/run_trace.json"),
+        trace_path: Path | str = DEFAULT_TRACE_PATH,
         model_metadata: ModelMetadata | None = None,
         failure_policy: FailurePolicy | None = None,
     ) -> None:

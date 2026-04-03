@@ -214,3 +214,10 @@ def test_dag_runtime_state_machine_transitions() -> None:
     machine.transition_to(PipelineState.JUDGING)
     with pytest.raises(RuntimeError):
         machine.transition_to(PipelineState.DONE)
+
+
+def test_dag_runtime_default_trace_path_uses_artifacts_dir() -> None:
+    """Default trace output should live under runtime artifacts, not source."""
+    assert DagOrchestrator.DEFAULT_TRACE_PATH == Path(
+        "artifacts/bijux-canon-agent/dag-runtime/run_trace.json"
+    )
