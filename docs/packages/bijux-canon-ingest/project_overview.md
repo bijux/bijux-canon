@@ -67,7 +67,7 @@ Quick map of the `bijux-canon-ingest` package directory.
 ## Config & Tooling
 
 - `Makefile` drives package-local targets such as `make test`, `make lint`, `make api`, and `make docs`.
-- `scripts/bijux-canon-ingest/openapi_drift.py` checks the checked-in schema against the FastAPI app.
+- `bijux_canon_dev.api.openapi_drift` checks the checked-in schema against the FastAPI app.
 - Package-owned paths and names now align with the current ingest tree and its long-lived package boundaries.
 
 [Back to top](#project-tree--guide)

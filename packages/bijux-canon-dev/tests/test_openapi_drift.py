@@ -9,7 +9,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from bijux_canon_dev.api.openapi_drift import load_target, write_schema
+from bijux_canon_dev.api.openapi_drift import canonicalize, load_target, write_schema
 
 
 class _FakeApp:
@@ -34,3 +34,9 @@ def test_write_schema_supports_yaml(tmp_path) -> None:
     write_schema(schema_path, payload)
 
     assert yaml.safe_load(schema_path.read_text(encoding="utf-8")) == payload
+
+
+def test_canonicalize_normalizes_tuples() -> None:
+    payload = {"items": ("a", "b")}
+
+    assert canonicalize(payload) == {"items": ["a", "b"]}

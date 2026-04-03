@@ -72,10 +72,14 @@ def write_generated_json(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def canonicalize(payload: Any) -> Any:
+    return json.loads(json.dumps(payload, sort_keys=True))
+
+
 def main() -> int:
     args = parse_args()
     app = load_target(args.app_import)
-    generated = app.openapi()
+    generated = canonicalize(app.openapi())
 
     schema_path = Path(args.schema)
     output_path = Path(args.out)
@@ -86,7 +90,7 @@ def main() -> int:
         print(f"Pinned OpenAPI schema to {schema_path}")
         return 0
 
-    expected = load_schema(schema_path)
+    expected = canonicalize(load_schema(schema_path))
     if generated != expected:
         raise SystemExit(
             "OpenAPI drift detected.\n"

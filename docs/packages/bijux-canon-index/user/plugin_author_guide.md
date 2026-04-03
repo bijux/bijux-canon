@@ -25,7 +25,7 @@ Register entrypoints under:
 Run the plugin test kit:
 
 ```bash
-python scripts/bijux-canon-index/plugin_test_kit.py --format json
+PYTHONPATH=packages/bijux-canon-dev/src python -m bijux_canon_dev.packages.index.plugin_contract_report --format json
 ```
 
 ## Minimal Contract Requirements

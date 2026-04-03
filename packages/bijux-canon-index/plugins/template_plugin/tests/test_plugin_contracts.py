@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -11,13 +12,26 @@ from pathlib import Path
 def test_plugin_contracts_report_json():
     package_root = Path(__file__).resolve().parents[3]
     repo_root = package_root.parents[1]
-    script = repo_root / "scripts" / "bijux-canon-index" / "plugin_test_kit.py"
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join(
+        [
+            str(repo_root / "packages" / "bijux-canon-dev" / "src"),
+            str(package_root / "src"),
+        ]
+    )
     result = subprocess.run(
-        [sys.executable, str(script), "--format", "json"],
+        [
+            sys.executable,
+            "-m",
+            "bijux_canon_dev.packages.index.plugin_contract_report",
+            "--format",
+            "json",
+        ],
         check=True,
         capture_output=True,
         text=True,
         cwd=package_root,
+        env=env,
     )
     payload = json.loads(result.stdout.strip())
     assert "summary" in payload

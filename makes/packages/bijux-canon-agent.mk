@@ -114,7 +114,7 @@ ci-fast: lint test mypy-core
 .PHONY: ci-fast
 
 line_limit:
-	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/bijux-canon-agent/check_line_limit.py"
+	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/agent/check_line_limit.py"
 .PHONY: line_limit
 
 help:
