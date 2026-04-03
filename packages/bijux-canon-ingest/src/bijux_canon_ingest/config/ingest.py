@@ -25,8 +25,8 @@ from bijux_canon_ingest.config.cleaning import (
 )
 from bijux_canon_ingest.observability import (
     DebugConfig,
+    IngestTaps,
     Observations,
-    RagTaps,
 )
 from bijux_canon_ingest.processing.stages import embed_chunk
 from bijux_canon_ingest.result import Err, Ok, Result
@@ -48,7 +48,7 @@ class IngestConfig:
 class IngestDeps:
     cleaner: Callable[[RawDoc], CleanDoc]
     embedder: Callable[[ChunkWithoutEmbedding], Chunk]
-    taps: RagTaps | None = None
+    taps: IngestTaps | None = None
 
 
 @dataclass(frozen=True)
@@ -57,7 +57,11 @@ class IngestBoundaryDeps:
     reader: DocsReader
 
 
-def build_ingest_deps(config: IngestConfig, *, taps: RagTaps | None = None) -> IngestDeps:
+def build_ingest_deps(
+    config: IngestConfig,
+    *,
+    taps: IngestTaps | None = None,
+) -> IngestDeps:
     cleaner = make_cleaner(config.clean)
     return IngestDeps(cleaner=cleaner, embedder=embed_chunk, taps=taps)
 
@@ -68,7 +72,7 @@ def make_ingest_fn(
     clean_cfg: CleanConfig = DEFAULT_CLEAN_CONFIG,
     keep: RulesConfig = DEFAULT_RULES,
     debug: DebugConfig | None = None,
-    taps: RagTaps | None = None,
+    taps: IngestTaps | None = None,
 ) -> Callable[[list[RawDoc]], tuple[list[Chunk], Observations]]:
     """Pure configurator: capture immutable config into a reusable callable."""
 

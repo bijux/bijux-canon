@@ -9,7 +9,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
-from bijux_canon_ingest.interfaces.cli.file_pipeline import RagFileShell
+from bijux_canon_ingest.interfaces.cli.file_pipeline import IngestFileShell
 from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig
@@ -17,13 +17,13 @@ from bijux_canon_ingest.result import Err, Ok, Result
 
 
 @dataclass(frozen=True)
-class RagApiShell:  # pragma: no cover
+class IngestApiShell:  # pragma: no cover
     in_path: Path
     out_path: Path
     cfg: ChunkAndEmbedConfig
 
     def run(self) -> Result[None, str]:
-        return RagFileShell(
+        return IngestFileShell(
             in_path=self.in_path, out_path=self.out_path, cfg=self.cfg
         ).run()
 
@@ -31,7 +31,7 @@ class RagApiShell:  # pragma: no cover
 def read_docs_csv(
     path: Path,
 ) -> Iterable[tuple[str, str, str | None, str | None]]:  # pragma: no cover
-    return RagFileShell(
+    return IngestFileShell(
         in_path=path, out_path=Path("-"), cfg=ChunkAndEmbedConfig()
     ).read_docs(path)
 
@@ -69,6 +69,6 @@ def write_chunks_jsonl(path: str, chunks: list[Chunk]) -> Result[None, str]:
 def run(
     input_path: str, output_path: str, cfg: ChunkAndEmbedConfig
 ) -> Result[None, str]:
-    return RagFileShell(
+    return IngestFileShell(
         in_path=Path(input_path), out_path=Path(output_path), cfg=cfg
     ).run()

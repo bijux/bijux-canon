@@ -22,9 +22,9 @@ from .indexing import (
 from .querying import ask, parse_filters, retrieve
 from bijux_canon_ingest.observability import (
     DebugConfig,
+    IngestTaps,
+    IngestTrace,
     Observations,
-    RagTaps,
-    RagTraceV3,
     TraceLens,
 )
 from .pipeline_definitions import (
@@ -57,10 +57,10 @@ __all__ = [
     "run_ingest_pipeline_docs",
     "run_ingest_pipeline_path",
     "DebugConfig",
-    "RagTaps",
+    "IngestTaps",
     "Observations",
     "TraceLens",
-    "RagTraceV3",
+    "IngestTrace",
     "IndexBuildConfig",
     "IndexBackend",
     "StoredIndex",

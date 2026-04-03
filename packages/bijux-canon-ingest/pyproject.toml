@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-canon-ingest"
 dynamic = ["version"]
-description = "Standalone Bijux RAG toolkit"
+description = "Deterministic document ingestion, indexing, and retrieval toolkit"
 readme = "docs/index.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
@@ -79,7 +79,6 @@ dev = [
 
 [project.scripts]
 bijux-canon-ingest = "bijux_canon_ingest.interfaces.cli.entrypoint:main"
-bijux-rag = "bijux_canon_ingest.interfaces.cli.entrypoint:main"
 
 [project.urls]
 Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest"

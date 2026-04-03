@@ -12,7 +12,7 @@ from bijux_canon_ingest.result.types import Err, Ok, Result
 
 
 @dataclass(frozen=True)
-class RagFileShell:
+class IngestFileShell:
     """File-based ingestion shell (NOT HTTP API)."""
 
     in_path: Path

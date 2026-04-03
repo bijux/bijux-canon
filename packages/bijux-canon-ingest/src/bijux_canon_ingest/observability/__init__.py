@@ -5,13 +5,20 @@
 
 from __future__ import annotations
 
-from .pipeline import DebugConfig, DocRule, Observations, RagTaps, RagTraceV3, TraceLens
+from .pipeline import (
+    DebugConfig,
+    DocRule,
+    IngestTaps,
+    IngestTrace,
+    Observations,
+    TraceLens,
+)
 
 __all__ = [
     "DocRule",
     "DebugConfig",
     "Observations",
-    "RagTaps",
-    "RagTraceV3",
+    "IngestTaps",
+    "IngestTrace",
     "TraceLens",
 ]

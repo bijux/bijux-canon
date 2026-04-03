@@ -19,7 +19,7 @@ TapAny = Callable[[tuple[Any, ...]], None]
 
 
 @dataclass(frozen=True)
-class RagTaps:
+class IngestTaps:
     """Observation-only hooks for intermediate values.
 
     Tap handlers must be observational only: they may log or collect metrics,
@@ -44,7 +44,7 @@ class DebugConfig:
 
 @dataclass(frozen=True)
 class Observations:
-    """Deterministic summary for a RAG invocation (end-of-Bijux RAG)."""
+    """Deterministic summary for an ingest invocation."""
 
     total_docs: int
     total_chunks: int
@@ -57,8 +57,8 @@ class Observations:
 
 
 @dataclass
-class RagTraceV3:
-    """Bijux RAG stream trace: bounded samples for each pipeline stage."""
+class IngestTrace:
+    """Bounded trace samples for each ingest stage."""
 
     docs: TraceLens[RawDoc] = field(default_factory=TraceLens)
     cleaned: TraceLens[CleanDoc] = field(default_factory=TraceLens)
@@ -70,9 +70,9 @@ class RagTraceV3:
 
 __all__ = [
     "DocRule",
-    "RagTaps",
+    "IngestTaps",
     "DebugConfig",
     "Observations",
     "TraceLens",
-    "RagTraceV3",
+    "IngestTrace",
 ]

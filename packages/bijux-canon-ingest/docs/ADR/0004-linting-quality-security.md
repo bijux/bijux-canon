@@ -30,7 +30,7 @@ We standardized on the following tools:
 * **Bandit** for security static analysis.
 * **pip-audit** for dependency vulnerability audits.
 
-Tooling configuration lives under `../../configs/bijux-rag/`, ensuring CI/local parity across the monorepo.
+Tooling configuration lives under the shared monorepo config surface in `../../configs/`, ensuring CI/local parity across the monorepo.
 
 ---
 
@@ -140,7 +140,7 @@ Interrogate enforces documentation coverage thresholds as configured.
 * Doc style & coverage enforced via **Pydocstyle** + **Interrogate**.
 * Maintainability boosted by **Vulture** (dead code), **Deptry** (deps), **Radon** (complexity).
 * Security posture improved through **Bandit** + **pip-audit**.
-* All tooling configs centralized under `../../configs/bijux-rag/`, ensuring local/CI parity.
+* All tooling configs centralized under `../../configs/`, ensuring local/CI parity.
 
 ### Cons
 

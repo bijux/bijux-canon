@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""bijux_canon_ingest – standalone RAG toolkit.
+"""bijux_canon_ingest - deterministic ingestion and retrieval toolkit.
 
 The package keeps the ingestion path pure (clean → chunk → embed) while exposing typed boundaries for
 storage, config parsing, and CLI execution. Functional helpers (Result/Option, Reader/State/Writer),
@@ -192,9 +192,9 @@ from .processing.stages import (
 from .observability import (
     DebugConfig,
     DocRule,
+    IngestTaps,
+    IngestTrace,
     Observations,
-    RagTaps,
-    RagTraceV3,
     TraceLens,
 )
 
@@ -437,11 +437,11 @@ __all__ = [
     "CleanConfig",
     "DEFAULT_CLEAN_CONFIG",
     "make_cleaner",
-    "RagTaps",
+    "IngestTaps",
     "DebugConfig",
     "Observations",
     "TraceLens",
-    "RagTraceV3",
+    "IngestTrace",
     "IngestConfig",
     "IngestDeps",
     "DocsReader",

@@ -1,114 +1,52 @@
 # bijux-canon-ingest
 
-> At a glance: **index → retrieve → ask** • offline CI profile • reproducible chunk IDs + index fingerprints • CLI + FastAPI boundaries • OpenAPI drift-gated  
-> Quality: **make/tox gates green** (tests, lint, types, docs strict, security, SBOM). Everything writes to `artifacts/bijux-canon-ingest/`. No telemetry.
-
-[![PyPI - Version](https://img.shields.io/pypi/v/bijux-canon-ingest.svg?logo=pypi&logoColor=white)](https://pypi.org/project/bijux-canon-ingest)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bijux-canon-ingest.svg?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-ingest)
-[![License](https://img.shields.io/github/license/bijux/bijux-canon.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
-[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/charliermarsh/ruff)
-[![Documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg)](https://bijux.github.io/bijux-canon-ingest/)
+> At a glance: **ingest -> index -> retrieve -> answer** • deterministic chunk IDs and index fingerprints • CLI + FastAPI interfaces • explicit sync and asyncio effect surfaces
 
 **Docs:** https://bijux.github.io/bijux-canon-ingest/  
 **PyPI:** https://pypi.org/project/bijux-canon-ingest/  
-**Issues:** https://github.com/bijux/bijux-canon/issues
+**Issues:** https://github.com/bijux/bijux-canon/issues  
 **Changelog:** https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md
 
+`bijux-canon-ingest` focuses on deterministic document ingestion, persisted index building, retrieval, and grounded answer assembly. The package keeps document processing pure where possible, pushes I/O into explicit adapters and effect descriptions, and keeps operational concerns such as retries, tracing, and resource safety in clearly named support modules.
 
-**bijux-canon-ingest** is a standalone Retrieval-Augmented Generation (RAG) toolkit for Python, emphasizing a functional core with pure transformations for document processing, chunking, and retrieval. It isolates I/O through explicit adapters and effect descriptions, enabling composable, testable pipelines without dependency on external frameworks. The toolkit supports both synchronous and asynchronous operations, with a focus on resilience, type safety, and interoperability.
+## Highlights
 
-The legacy package name `bijux-rag` remains available as a compatibility shim that installs `bijux-canon-ingest`.
-
-All quality gates—enforced via Tox and Make—remain green: comprehensive tests (unit, integration, end-to-end), static analysis (linting, typing with MyPy), security audits (Bandit, Pip-Audit), and builds. Coverage is gated at 90%+ on the pinned eval suite, and the codebase ships full MkDocs documentation.
-
-
-## At a Glance
-
-- **Core Philosophy**: Functional programming principles for RAG—pure functions, immutable data structures (e.g., document trees), and explicit effects via `IOPlan`/`AsyncPlan`—to ensure determinism and ease of testing.
-- **Key Components**: Primitives for chunking (fixed-size, recursive), embedding pipelines, result folding (fail-fast, error collection), and streaming (bounded concurrency, rate limiting).
-- **Resilience Features**: Policy-driven retries (with exponential backoff and jitter), timeouts, transactions, and fakes for testing (clocks, sleepers).
-- **Interfaces**: CLI for batch processing, HTTP API via FastAPI for serving, and Python API for custom pipelines.
-- **Dependencies**: Minimal runtime (Pydantic, NumPy, FastAPI, Uvicorn); dev extras for testing (Pytest, Hypothesis) and docs (MkDocs).
-- **Version & Compatibility**: v0.1.0; Python 3.11–3.13; Apache-2.0-licensed.
-- **Quality Metrics**: 100% coverage; strict typing; security-scanned.
-
-[↑ Back to Top](#bijux-canon-ingest)
-
-## Table of Contents
-
-- [Features](#features)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Usage](#usage)
-- [Architecture](#architecture)
-- [Testing and Quality](#testing-and-quality)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
-
-[↑ Back to Top](#bijux-canon-ingest)
-
-## Features
-
-bijux-canon-ingest prioritizes modularity and purity, allowing users to build RAG systems from composable building blocks while maintaining control over effects and dependencies.
-
-- **Functional Primitives**: Pure functions for document tree manipulation (flattening, folding), result handling (`Result[T, ErrInfo]` monad with folds like fail-fast or error-capped), and iterator-based pipelines.
-- **Effect Management**: Deferred I/O via `IOPlan` (sync) and `AsyncPlan` (async), supporting retries, transactions, backpressure, and rate limiting as configurable policies.
-- **Resilience and Testing**: Built-in policies for transient error handling; test utilities like fake clocks and sleepers ensure reliable unit testing without mocks.
-- **Adapters and Interop**: Storage options (file, in-memory); compatibility with NumPy for vectors, Pydantic for validation, and standard libraries (e.g., `itertools`, `functools`).
-- **Streaming Capabilities**: Lazy async streams with bounded mapping, fair merging, and chunking policies for high-throughput scenarios.
-- **Tooling Integration**: Comprehensive setup with Ruff for style, MyPy for typing, Hypothesis for property-based tests, and MkDocs for documentation.
-
-[↑ Back to Top](#bijux-canon-ingest)
+- Functional core for cleaning, chunking, embedding, retrieval, and answer assembly.
+- Explicit orchestration in `application/`, with transport adapters in `interfaces/`.
+- Dedicated `observability/`, `integrations/`, and `safeguards/` packages for cross-cutting concerns.
+- Synchronous `IOPlan` and asyncio-based async effects for deterministic testing and controlled runtime behavior.
 
 ## Installation
-
-Requires Python 3.11 or later.
 
 ```bash
 pip install bijux-canon-ingest
 ```
 
-Legacy alias:
-
-```bash
-pip install bijux-rag
-```
-
-For development (includes testing, documentation, and linting tools):
-
-```bash
-pip install bijux-canon-ingest[dev]
-```
-
-From source:
-
-```bash
-git clone https://github.com/bijux/bijux-canon.git
-cd bijux-canon/packages/bijux-canon-ingest
-make bootstrap  # Sets up virtualenv and installs in editable mode
-```
-
-Dependencies are minimal and security-audited; refer to `pyproject.toml` for details.
-
-[↑ Back to Top](#bijux-canon-ingest)
-
 ## Quick Start
 
-Process documents via CLI:
+Build an index from CSV:
 
 ```bash
-bijux-canon-ingest process --input docs.csv --output embeddings.msgpack
+bijux-canon-ingest index build --input corpus.csv --out index.msgpack --backend bm25
 ```
 
-This command reads CSV documents, applies functional chunking, performs embedding (via configured adapter), and outputs MessagePack results.
+Retrieve supporting chunks:
 
-Programmatic equivalent:
+```bash
+bijux-canon-ingest retrieve --index index.msgpack --query "what is bm25?"
+```
+
+Ask for a grounded answer with citations:
+
+```bash
+bijux-canon-ingest ask --index index.msgpack --query "what is bm25?" --top-k 5
+```
+
+Programmatic indexing example:
 
 ```python
-from bijux_canon_ingest.core.types import RawDoc
-from bijux_canon_ingest.core.types import RagEnv
 from bijux_canon_ingest.application.indexing import ingest_docs_to_chunks
+from bijux_canon_ingest.core.types import RagEnv, RawDoc
 
 docs = [
     RawDoc(doc_id="1", title="Example", abstract="Sample text.", categories="docs")
@@ -117,121 +55,13 @@ chunks = ingest_docs_to_chunks(docs=docs, env=RagEnv(chunk_size=256))
 print(chunks[0].text)
 ```
 
-[↑ Back to Top](#bijux-canon-ingest)
-
-## Usage
-
-bijux-canon-ingest offers multiple entry points: CLI for scripting, HTTP API for services, and Python API for integration.
-
-### CLI
-Access help:
-
-```bash
-bijux-canon-ingest --help
-```
-
-Example with custom parameters:
-
-```bash
-bijux-canon-ingest process --input input.csv --chunk-size 512 --embedder default
-```
-
-Note: Embedder options depend on configured adapters; defaults to basic implementations.
-
-### HTTP API
-Launch the server:
-
-```bash
-bijux-canon-ingest serve --port 8000
-```
-
-Interact via endpoints like `/embed` (POST documents for processing) or `/retrieve` (query-based retrieval). Explore via OpenAPI at `/docs`.
-
-### Python API
-Focuses on composability:
-
-- **Documents**: Use `RawDoc` and `Chunk` types.
-- **Pipelines**: Compose pure chunking and embedding stages or use `application.pipeline`.
-- **Effects**: Wrap I/O in `IOPlan` for sync or `AsyncPlan` for async; apply policies like `retry_idempotent`.
-- **Streaming**: Leverage `AsyncGen` for lazy processing, e.g., `async_gen_bounded_map` for concurrency control.
-
-Synchronous retry example:
+Asyncio effect example:
 
 ```python
-from bijux_canon_ingest.domain.effects.io_retry import RetryPolicy, retry_idempotent
-
-policy = RetryPolicy(max_attempts=3)
-safe_write = retry_idempotent(policy)
-```
-
-Asynchronous streaming example:
-
-```python
-from bijux_canon_ingest.domain.effects.async_ import async_gen_map, resilient_mapper
+from bijux_canon_ingest.domain.effects.asyncio import async_gen_map, resilient_mapper
 
 mapper = resilient_mapper(embed_fn, RetryPolicy(max_attempts=3))
 stream = async_gen_map(source_stream, mapper)
-async for result in stream():
-    # Handle result
 ```
 
-Consult the API reference in documentation for complete details.
-
-[↑ Back to Top](#bijux-canon-ingest)
-
-## Architecture
-
-Adopts a hexagonal (ports and adapters) design with a functional core:
-
-- **Boundaries**: CLI and HTTP shells interpret inputs and delegate to domain logic.
-- **Core**: Pure, deterministic functions for RAG operations (e.g., tree folding, result monads).
-- **Domain**: Effect descriptions (`IOPlan`, `AsyncPlan`), policies (chunking, retry), and types.
-- **Infra**: Pluggable adapters for storage (file, memory) and other I/O.
-- **Interop/Policies**: Helpers for stdlib FP and reusable behaviors.
-
-This structure facilitates adapter swaps (e.g., local to cloud storage) without altering core code. Review [Architecture Documentation](https://bijux.github.io/bijux-canon-ingest/architecture/) for decision records (ADRs) and overviews.
-
-[↑ Back to Top](#bijux-canon-ingest)
-
-## Testing and Quality
-
-Execute tests:
-
-```bash
-make test
-```
-
-Other targets:
-
-- `make lint`: Enforces style (Ruff) and types (MyPy).
-- `make security`: Runs Bandit and dependency audits.
-- `make docs`: Builds and serves MkDocs.
-- `make all`: Comprehensive run (clean, install, test, lint, build).
-
-CI ensures all gates pass on every commit.
-
-[↑ Back to Top](#bijux-canon-ingest)
-
-## Contributing
-
-Report issues or suggest features via GitHub Issues. Pull requests must maintain green gates. Setup instructions:
-
-```bash
-make bootstrap
-```
-
-Follow the package guide in [docs/contributing.md](docs/contributing.md).
-
-[↑ Back to Top](#bijux-canon-ingest)
-
-## License
-
-Apache License 2.0. See [LICENSE](https://github.com/bijux/bijux-canon/blob/main/LICENSE).
-
-[↑ Back to Top](#bijux-canon-ingest)
-
-## Acknowledgments
-
-Draws inspiration from functional programming paradigms (e.g., monads, immutability) and RAG literature. Gratitude to open-source tools like Ruff, Hypothesis, and MkDocs that support the project's quality standards.
-
-[↑ Back to Top](#bijux-canon-ingest)
+See [Project Tree & Guide](project_overview.md), [Architecture Overview](architecture/index.md), and [CLI Reference](reference/cli.md) for the current package layout and entrypoints.

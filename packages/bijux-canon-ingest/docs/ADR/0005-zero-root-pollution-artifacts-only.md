@@ -10,10 +10,10 @@ Build, test, docs, and release steps produce transient outputs (wheels/sdists, c
 
 ## Decision
 
-All generated outputs **must** be written beneath a single top-level directory: `artifacts/`. Each package owns a dedicated subtree inside that root, and bijux-rag writes only to `artifacts/bijux-canon-ingest/`. No Make/Tox/CI task may write transient files to the repo root or source trees. Standard caches (e.g., `.venv/`, `.tox/`, `.pytest_cache/`) are permitted and ignored via `.gitignore`.
+All generated outputs **must** be written beneath a single top-level directory: `artifacts/`. Each package owns a dedicated subtree inside that root, and bijux-canon-ingest writes only to `artifacts/bijux-canon-ingest/`. No Make/Tox/CI task may write transient files to the repo root or source trees. Standard caches (e.g., `.venv/`, `.tox/`, `.pytest_cache/`) are permitted and ignored via `.gitignore`.
 
 This policy is enforced **centrally by the Makefile system**. The package
-`Makefile` and the root-managed `../../makes/bijux-rag/*` modules define
+`Makefile` and the root-managed `../../makes/*` modules define
 orchestration and output paths (`PROJECT_ARTIFACTS_DIR = artifacts/bijux-canon-ingest`). Tox and GitHub
 Actions **call Make targets**; they do not choose paths.
 
@@ -21,7 +21,7 @@ Actions **call Make targets**; they do not choose paths.
 
 ```
 artifacts/
-  bijux-rag/
+  bijux-canon-ingest/
     build/          # wheels/sdists built locally
     docs/
       site/         # MkDocs output
@@ -56,7 +56,7 @@ Tracked sources (e.g., `pyproject.toml`, `docs/index.md`, `LICENSE`, `../../apis
 ### Local (Make + Tox)
 
 * `PROJECT_ARTIFACTS_DIR = artifacts/bijux-canon-ingest` in the package `Makefile`; sub-recipes in
-  `../../makes/bijux-rag/*` route outputs under that root (for example,
+  `../../makes/*` route outputs under that root (for example,
   `../../makes/test.mk` → `artifacts/bijux-canon-ingest/test/`; integrates with
   ADR-0004 toolchain targets like `make lint` for logs/caches under
   `artifacts/bijux-canon-ingest/lint/`).
