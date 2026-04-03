@@ -7,7 +7,7 @@ import os
 import subprocess
 import sys
 
-from bijux_rar.core.fingerprints import canonical_dumps
+from bijux_canon_reason.core.fingerprints import canonical_dumps
 
 
 def _run(cmd: list[str]) -> subprocess.CompletedProcess[str]:
@@ -38,7 +38,7 @@ def test_cli_run_and_verify_smoke(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "run",
             "--spec",
             str(spec_path),
@@ -67,7 +67,7 @@ def test_cli_run_and_verify_smoke(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "verify",
             "--trace",
             str(run_dir / "trace.jsonl"),

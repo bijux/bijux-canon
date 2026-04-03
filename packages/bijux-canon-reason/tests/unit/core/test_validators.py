@@ -7,7 +7,7 @@ from typing import Any, cast
 from pydantic import ValidationError
 import pytest
 
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.core.rar_types import (
     EvidenceRef,
     StepStartedEvent,
     ToolCalledEvent,

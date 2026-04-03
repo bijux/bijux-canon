@@ -8,7 +8,7 @@ from decimal import Decimal
 import pytest
 from pydantic import BaseModel
 
-from bijux_rar.core.fingerprints import canonical_dumps, fingerprint_obj, stable_id
+from bijux_canon_reason.core.fingerprints import canonical_dumps, fingerprint_obj, stable_id
 
 
 class _Model(BaseModel):

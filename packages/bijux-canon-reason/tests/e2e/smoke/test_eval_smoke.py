@@ -7,7 +7,7 @@ import os
 import subprocess
 import sys
 
-from bijux_rar.core.fingerprints import canonical_dumps
+from bijux_canon_reason.core.fingerprints import canonical_dumps
 
 
 def _run(cmd: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -51,7 +51,7 @@ def test_cli_eval_smoke(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "eval",
             "--suite",
             "t1",

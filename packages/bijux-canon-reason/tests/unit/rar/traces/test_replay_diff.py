@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.core.rar_types import (
     Claim,
     ClaimEmittedEvent,
     ClaimStatus,
@@ -17,7 +17,7 @@ from bijux_rar.core.rar_types import (
     Trace,
     TraceEventKind,
 )
-from bijux_rar.rar.traces.replay import diff_traces
+from bijux_canon_reason.rar.traces.replay import diff_traces
 
 
 def test_diff_traces_detects_first_mismatch() -> None:

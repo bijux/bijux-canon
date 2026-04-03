@@ -6,7 +6,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from bijux_rar.httpapi import create_app
+from bijux_canon_reason.httpapi import create_app
 
 
 def _app(tmp_path: Path) -> TestClient:

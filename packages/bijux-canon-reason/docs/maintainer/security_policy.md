@@ -28,7 +28,7 @@ The following inputs are **always untrusted**:
 - Any trace, plan, artifact, or manifest loaded from disk
 - Any corpus or evidence content supplied by the user
 
-The HTTP boundary is defined in `src/bijux_rar/httpapi.py`.
+The HTTP boundary is defined in `src/bijux_canon_reason/httpapi.py`.
 
 All validation is fail-fast; malformed or suspicious input is rejected.
 

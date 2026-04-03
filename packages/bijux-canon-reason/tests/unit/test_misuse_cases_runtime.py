@@ -5,9 +5,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_rar.boundaries.serde.trace_jsonl import write_trace_jsonl
-from bijux_rar.core.invariants import validate_trace
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.boundaries.serde.trace_jsonl import write_trace_jsonl
+from bijux_canon_reason.core.invariants import validate_trace
+from bijux_canon_reason.core.rar_types import (
     Claim,
     ClaimStatus,
     ClaimType,
@@ -27,7 +27,7 @@ from bijux_rar.core.rar_types import (
     ToolCalledEvent,
     ToolReturnedEvent,
 )
-from bijux_rar.rar.verification.verifier import verify_trace
+from bijux_canon_reason.rar.verification.verifier import verify_trace
 
 
 def _fake_plan() -> Plan:

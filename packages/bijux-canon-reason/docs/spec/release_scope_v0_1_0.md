@@ -8,7 +8,7 @@ This document freezes the scope for v0.1.0. No new features are accepted after t
 - Deterministic trace, replay, and verification invariants (see [system_contract.md](system_contract.md) and [core_contracts.md](core_contracts.md)).
 - CLI surface: `init`, `run`, `verify`, `replay`, `eval` commands and their documented flags.
 - Trace schema version and fingerprinting rules.
-- Public Python imports under `bijux_rar.*` already documented in [doc_to_code_map.md](doc_to_code_map.md).
+- Public Python imports under `bijux_canon_reason.*` already documented in [doc_to_code_map.md](doc_to_code_map.md).
 
 ## Experimental (may change within v0.x)
 - Evaluation metrics taxonomy (metrics names may expand).

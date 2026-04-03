@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_rar.core.fingerprints import (
+from bijux_canon_reason.core.fingerprints import (
     canonical_dumps,
     fingerprint_bytes,
     fingerprint_obj,

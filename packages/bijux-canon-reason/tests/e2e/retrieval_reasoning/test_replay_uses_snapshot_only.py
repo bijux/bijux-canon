@@ -33,7 +33,7 @@ def test_replay_works_after_corpus_deleted(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "run",
             "--spec",
             str(spec_path),
@@ -56,7 +56,7 @@ def test_replay_works_after_corpus_deleted(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "replay",
             "--trace",
             str(run_dir / "trace.jsonl"),

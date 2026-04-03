@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_rar.core.rar_types import ProblemSpec
-from bijux_rar.rar.app import run_app
-from bijux_rar.rar.execution.runtime import Runtime
+from bijux_canon_reason.core.rar_types import ProblemSpec
+from bijux_canon_reason.rar.app import run_app
+from bijux_canon_reason.rar.execution.runtime import Runtime
 
 
 def test_run_app_with_fake_runtime(tmp_path: Path) -> None:

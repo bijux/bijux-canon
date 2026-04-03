@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from bijux_rar.httpapi import create_app, MAX_REQUEST_BYTES
+from bijux_canon_reason.httpapi import create_app, MAX_REQUEST_BYTES
 
 
 def _client(

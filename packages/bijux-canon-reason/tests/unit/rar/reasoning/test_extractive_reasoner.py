@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 
-from bijux_rar.rar.reasoning.extractive import derive_extractive_answer
+from bijux_canon_reason.rar.reasoning.extractive import derive_extractive_answer
 
 
 def test_extractive_reasoner_emits_citations_with_span_and_hash() -> None:

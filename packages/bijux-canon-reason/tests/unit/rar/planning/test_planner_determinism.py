@@ -2,8 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.core.rar_types import ProblemSpec
-from bijux_rar.rar.planning.planner import plan_problem
+from bijux_canon_reason.core.rar_types import ProblemSpec
+from bijux_canon_reason.rar.planning.planner import plan_problem
 
 
 def test_planner_is_deterministic_same_input_same_plan_id() -> None:

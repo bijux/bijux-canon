@@ -34,7 +34,7 @@ def test_cli_run_writes_evidence_files_and_manifest(
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "run",
             "--spec",
             str(spec_path),

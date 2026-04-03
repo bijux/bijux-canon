@@ -48,7 +48,7 @@ The test suite covers the following guarantees:
 ## Enforcement
 
 - Tests are executed automatically by CI
-- Coverage is enforced for `src/bijux_rar`
+- Coverage is enforced for `src/bijux_canon_reason`
 - Determinism and replay gates are non-optional
 
 A test failure indicates a contract violation.

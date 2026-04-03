@@ -40,7 +40,7 @@ def test_cli_replay_fingerprint_matches_original(
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "run",
             "--spec",
             str(spec_path),
@@ -59,7 +59,7 @@ def test_cli_replay_fingerprint_matches_original(
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "replay",
             "--trace",
             str(run_dir / "trace.jsonl"),

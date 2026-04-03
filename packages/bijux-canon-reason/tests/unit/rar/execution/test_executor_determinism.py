@@ -2,11 +2,11 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.core.fingerprints import fingerprint_obj
-from bijux_rar.core.rar_types import ProblemSpec
-from bijux_rar.rar.execution.executor import execute_plan
-from bijux_rar.rar.execution.runtime import Runtime
-from bijux_rar.rar.planning.planner import plan_problem
+from bijux_canon_reason.core.fingerprints import fingerprint_obj
+from bijux_canon_reason.core.rar_types import ProblemSpec
+from bijux_canon_reason.rar.execution.executor import execute_plan
+from bijux_canon_reason.rar.execution.runtime import Runtime
+from bijux_canon_reason.rar.planning.planner import plan_problem
 
 
 def test_executor_is_deterministic_same_plan_seed_same_trace_fp() -> None:

@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.core.rar_types import (
     EvidenceRef,
     EvidenceRegisteredEvent,
     Plan,
@@ -13,7 +13,7 @@ from bijux_rar.core.rar_types import (
     TraceEventKind,
     VerifyOutput,
 )
-from bijux_rar.rar.verification.checks import VerificationContext, run_all_checks
+from bijux_canon_reason.rar.verification.checks import VerificationContext, run_all_checks
 
 
 def _plan_with_single_step() -> Plan:

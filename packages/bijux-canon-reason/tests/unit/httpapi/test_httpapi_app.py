@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.httpapi import create_app
+from bijux_canon_reason.httpapi import create_app
 
 
 def test_httpapi_app_creates_fastapi_instance() -> None:

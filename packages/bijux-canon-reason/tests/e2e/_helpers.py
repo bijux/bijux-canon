@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from bijux_rar.core.fingerprints import canonical_dumps
+from bijux_canon_reason.core.fingerprints import canonical_dumps
 
 
 def run_cli(cmd: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -29,7 +29,7 @@ def run_cli(cmd: list[str], *, check: bool = True) -> subprocess.CompletedProces
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     full_cmd = cmd
     if not cmd or cmd[0] != sys.executable:
-        full_cmd = [sys.executable, "-m", "bijux_rar", *cmd]
+        full_cmd = [sys.executable, "-m", "bijux_canon_reason", *cmd]
     return subprocess.run(  # noqa: S603
         full_cmd,
         text=True,

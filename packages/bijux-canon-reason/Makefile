@@ -7,23 +7,23 @@ include ../../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
-LINT_DIRS         := src/bijux_rar
+LINT_DIRS         := src/bijux_canon_reason
 ENABLE_MYPY       := 0
 ENABLE_CODESPELL  := 1
 ENABLE_RADON      := 1
 ENABLE_PYDOCSTYLE := 0
 ENABLE_PYTYPE     := 0
 RUFF_CHECK_FIX    := 1
-INTERROGATE_PATHS := src/bijux_rar
-QUALITY_PATHS     := src/bijux_rar
+INTERROGATE_PATHS := src/bijux_canon_reason
+QUALITY_PATHS     := src/bijux_canon_reason
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
-SECURITY_PATHS    := src/bijux_rar
+SECURITY_PATHS    := src/bijux_canon_reason
 SECURITY_IGNORE_IDS := PYSEC-2022-42969
 DOCS_DEV_ADDR     := 127.0.0.1:8000
 DOCS_SITE_URL     := http://127.0.0.1:8000/
 DOCS_DEPLOY_FLAGS := --force --no-history --clean --remote-branch gh-pages
 API_MODE := contract
-API_MODULE := bijux_rar.httpapi
+API_MODULE := bijux_canon_reason.httpapi
 API_INSTALL_EDITABLE := 1
 API_NODE_BOOTSTRAP_MODE := npm-ci-sandbox
 API_SCHEMATHESIS_FILTER_MODE := warnings
@@ -33,7 +33,7 @@ BUILD_CHECK_DISTS := 1
 BUILD_CLEAN_PATHS := build dist *.egg-info
 BUILD_CLEAN_PYCACHE := 1
 PUBLISH_VERIFY_INSTALL_CMD := bijux --version
-TEST_COVERAGE_TARGETS := $(abspath src/bijux_rar/core) $(abspath src/bijux_rar/boundaries)
+TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_reason/core) $(abspath src/bijux_canon_reason/boundaries)
 TEST_MAIN_ARGS := --maxfail=1
 ENABLE_BENCH := 0
 

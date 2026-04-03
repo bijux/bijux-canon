@@ -79,7 +79,7 @@ Verification or replay failures indicate invariant violations.
 ### HTTP API
 
 ```bash
-uvicorn bijux_rar.httpapi:app --host 127.0.0.1 --port 8000
+uvicorn bijux_canon_reason.httpapi:app --host 127.0.0.1 --port 8000
 ```
 
 ```bash

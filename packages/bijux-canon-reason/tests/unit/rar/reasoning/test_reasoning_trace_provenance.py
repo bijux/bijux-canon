@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import hashlib
 
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.core.rar_types import (
     Claim,
     ClaimEmittedEvent,
     ClaimStatus,
@@ -32,7 +32,7 @@ from bijux_rar.core.rar_types import (
     UnderstandOutput,
     VerifyOutput,
 )
-from bijux_rar.rar.verification.verifier import verify_trace
+from bijux_canon_reason.rar.verification.verifier import verify_trace
 
 
 def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:

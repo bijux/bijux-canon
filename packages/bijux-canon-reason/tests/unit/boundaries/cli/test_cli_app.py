@@ -7,8 +7,8 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from bijux_rar.boundaries.cli.main import app
-from bijux_rar.core.fingerprints import canonical_dumps
+from bijux_canon_reason.boundaries.cli.main import app
+from bijux_canon_reason.core.fingerprints import canonical_dumps
 
 runner = CliRunner()
 
@@ -66,7 +66,7 @@ def test_main_import_executes() -> None:
     # Ensure __main__ module imports without side effects
     import importlib
 
-    importlib.import_module("bijux_rar.__main__")
-    from bijux_rar.rar.skeleton.fake_runtime import FakeRuntime
+    importlib.import_module("bijux_canon_reason.__main__")
+    from bijux_canon_reason.rar.skeleton.fake_runtime import FakeRuntime
 
     assert FakeRuntime(seed=1).seed == 1

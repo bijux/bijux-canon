@@ -38,7 +38,7 @@ def test_cli_run_is_deterministic_across_invocations(
     cmd = [
         sys.executable,
         "-m",
-        "bijux_rar",
+        "bijux_canon_reason",
         "run",
         "--spec",
         str(spec_path),

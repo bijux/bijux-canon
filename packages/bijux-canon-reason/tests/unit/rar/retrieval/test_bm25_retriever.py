@@ -11,9 +11,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_rar.rar.retrieval.bm25 import BM25Index
-from bijux_rar.rar.retrieval.corpus import CorpusDoc
-from bijux_rar.rar.retrieval.corpus import load_corpus_jsonl
+from bijux_canon_reason.rar.retrieval.bm25 import BM25Index
+from bijux_canon_reason.rar.retrieval.corpus import CorpusDoc
+from bijux_canon_reason.rar.retrieval.corpus import load_corpus_jsonl
 
 
 def test_bm25_ranks_relevant_doc_first() -> None:

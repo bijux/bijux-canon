@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from bijux_rar.rar.retrieval.chunked_bm25 import ChunkedBM25Index
-from bijux_rar.rar.retrieval.corpus import CorpusDoc, load_corpus_jsonl_stream
+from bijux_canon_reason.rar.retrieval.chunked_bm25 import ChunkedBM25Index
+from bijux_canon_reason.rar.retrieval.corpus import CorpusDoc, load_corpus_jsonl_stream
 
 
 def test_load_corpus_respects_max_docs(tmp_path: Path) -> None:

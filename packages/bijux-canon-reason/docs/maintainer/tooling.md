@@ -25,7 +25,7 @@ Changes that bypass or weaken this toolchain are not accepted.
   Full test execution and coverage reporting.
 
 - **Coverage threshold**  
-  Enforced for `src/bijux_rar` (default: 85%).
+  Enforced for `src/bijux_canon_reason` (default: 85%).
 
 ---
 

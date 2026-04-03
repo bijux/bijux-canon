@@ -24,7 +24,7 @@ def _run_and_get_dir(tmp_path: Path) -> Path:
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "run",
             "--spec",
             str(spec_path),
@@ -48,7 +48,7 @@ def test_replay_refuses_when_corpus_tampered(tmp_path: Path) -> None:
     cmd = [
         sys.executable,
         "-m",
-        "bijux_rar",
+        "bijux_canon_reason",
         "replay",
         "--trace",
         str(run_dir / "trace.jsonl"),
@@ -62,7 +62,7 @@ def test_replay_succeeds_with_intact_provenance(tmp_path: Path) -> None:
     cmd = [
         sys.executable,
         "-m",
-        "bijux_rar",
+        "bijux_canon_reason",
         "replay",
         "--trace",
         str(run_dir / "trace.jsonl"),

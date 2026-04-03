@@ -6,8 +6,8 @@ import pytest
 
 from time import perf_counter
 
-from bijux_rar.rar.retrieval.bm25 import BM25Index
-from bijux_rar.rar.retrieval.corpus import CorpusDoc
+from bijux_canon_reason.rar.retrieval.bm25 import BM25Index
+from bijux_canon_reason.rar.retrieval.corpus import CorpusDoc
 
 
 @pytest.mark.benchmark(group="retrieval")

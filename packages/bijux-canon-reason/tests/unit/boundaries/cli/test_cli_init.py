@@ -6,7 +6,7 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from bijux_rar.boundaries.cli import init as init_cmd
+from bijux_canon_reason.boundaries.cli import init as init_cmd
 
 runner = CliRunner()
 

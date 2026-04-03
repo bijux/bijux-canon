@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.core.rar_types import (
     Claim,
     ClaimEmittedEvent,
     ClaimStatus,
@@ -29,7 +29,7 @@ from bijux_rar.core.rar_types import (
     UnderstandOutput,
     VerifyOutput,
 )
-from bijux_rar.rar.verification.verifier import verify_trace
+from bijux_canon_reason.rar.verification.verifier import verify_trace
 
 
 def test_verifier_passes_on_valid_trace_with_plan() -> None:

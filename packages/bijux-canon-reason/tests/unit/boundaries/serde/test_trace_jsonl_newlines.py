@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_rar.boundaries.serde.trace_jsonl import read_trace_jsonl, write_trace_jsonl
-from bijux_rar.core.rar_types import Trace
+from bijux_canon_reason.boundaries.serde.trace_jsonl import read_trace_jsonl, write_trace_jsonl
+from bijux_canon_reason.core.rar_types import Trace
 
 
 def test_trace_jsonl_writer_uses_lf_only(tmp_path: Path) -> None:

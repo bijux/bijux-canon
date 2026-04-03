@@ -6,7 +6,7 @@ import hashlib
 from pathlib import Path
 
 
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.core.rar_types import (
     Claim,
     ClaimEmittedEvent,
     ClaimStatus,
@@ -25,7 +25,7 @@ from bijux_rar.core.rar_types import (
     Trace,
     TraceEventKind,
 )
-from bijux_rar.rar.verification.verifier import verify_trace
+from bijux_canon_reason.rar.verification.verifier import verify_trace
 
 
 def _build_minimal_plan() -> Plan:

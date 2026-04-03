@@ -23,7 +23,7 @@ def test_cli_verify_span_hash_passes(tmp_path: Path, write_spec, run_cli) -> Non
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "run",
             "--spec",
             str(spec_path),
@@ -40,7 +40,7 @@ def test_cli_verify_span_hash_passes(tmp_path: Path, write_spec, run_cli) -> Non
     cmd = [
         sys.executable,
         "-m",
-        "bijux_rar",
+        "bijux_canon_reason",
         "verify",
         "--trace",
         str(run_dir / "trace.jsonl"),

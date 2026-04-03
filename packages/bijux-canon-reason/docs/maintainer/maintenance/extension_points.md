@@ -5,7 +5,7 @@ STATUS: EXPLANATORY
 Supported seam: **ReasonerBackend**
 
 ### How to implement
-- Implement `ReasonerBackend` interface in `src/bijux_rar/rar/reasoning/backend.py`.
+- Implement `ReasonerBackend` interface in `src/bijux_canon_reason/rar/reasoning/backend.py`.
 - Produce `Derivation` objects with verifiable `citations` (span+hash).
 - Register backend via configuration/preset, not globals.
 

@@ -24,7 +24,7 @@ def _run_with_evidence(tmp_path: Path, write_spec, run_cli) -> Path:
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "run",
             "--spec",
             str(spec_path),
@@ -76,7 +76,7 @@ def test_verify_fails_when_snippet_hash_tampered(
     cmd = [
         sys.executable,
         "-m",
-        "bijux_rar",
+        "bijux_canon_reason",
         "verify",
         "--trace",
         str(trace_path),

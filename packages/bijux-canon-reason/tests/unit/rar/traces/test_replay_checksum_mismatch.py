@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from bijux_rar.core.rar_types import ProblemSpec
-from bijux_rar.rar.skeleton.run_builder import RunBuilder, RunInputs
-from bijux_rar.rar.traces.replay import replay_from_artifacts
+from bijux_canon_reason.core.rar_types import ProblemSpec
+from bijux_canon_reason.rar.skeleton.run_builder import RunBuilder, RunInputs
+from bijux_canon_reason.rar.traces.replay import replay_from_artifacts
 
 
 def test_replay_checksum_mismatch_fails(tmp_path: Path) -> None:

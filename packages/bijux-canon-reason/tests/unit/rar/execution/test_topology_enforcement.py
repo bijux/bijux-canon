@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_rar.core.rar_types import Plan, PlanNode, StepSpec
-from bijux_rar.rar.execution.executor import _topo
+from bijux_canon_reason.core.rar_types import Plan, PlanNode, StepSpec
+from bijux_canon_reason.rar.execution.executor import _topo
 
 
 def test_cycle_detected_fail_fast() -> None:

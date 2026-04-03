@@ -21,7 +21,7 @@ def _run_with_evidence(tmp_path: Path, write_spec, run_cli, *, seed: int) -> Pat
         [
             sys.executable,
             "-m",
-            "bijux_rar",
+            "bijux_canon_reason",
             "run",
             "--spec",
             str(spec_path),
@@ -77,7 +77,7 @@ def test_cli_verify_fails_on_evidence_tampering(
     cmd = [
         sys.executable,
         "-m",
-        "bijux_rar",
+        "bijux_canon_reason",
         "verify",
         "--trace",
         str(run_dir / "trace.jsonl"),
@@ -117,7 +117,7 @@ def test_cli_verify_fails_on_support_snippet_tamper(
     cmd = [
         sys.executable,
         "-m",
-        "bijux_rar",
+        "bijux_canon_reason",
         "verify",
         "--trace",
         str(trace_path),

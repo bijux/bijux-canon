@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from bijux_rar.rar.retrieval.corpus import load_corpus_jsonl, load_corpus_jsonl_stream
+from bijux_canon_reason.rar.retrieval.corpus import load_corpus_jsonl, load_corpus_jsonl_stream
 
 
 def test_load_corpus_jsonl_roundtrip(tmp_path: Path) -> None:

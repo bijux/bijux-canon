@@ -5,10 +5,10 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from bijux_rar.core.rar_types import ProblemSpec, TraceEventKind
-from bijux_rar.rar.execution.executor import ExecutionPolicy, execute_plan
-from bijux_rar.rar.execution.runtime import Runtime
-from bijux_rar.rar.planning.planner import plan_problem
+from bijux_canon_reason.core.rar_types import ProblemSpec, TraceEventKind
+from bijux_canon_reason.rar.execution.executor import ExecutionPolicy, execute_plan
+from bijux_canon_reason.rar.execution.runtime import Runtime
+from bijux_canon_reason.rar.planning.planner import plan_problem
 
 
 def test_executor_emits_claims_with_grounded_supports(tmp_path: Path) -> None:

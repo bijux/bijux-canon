@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.boundaries.serde.json_canonical import canonical_json_line
+from bijux_canon_reason.boundaries.serde.json_canonical import canonical_json_line
 
 
 def test_canonical_json_bytes_is_deterministic() -> None:

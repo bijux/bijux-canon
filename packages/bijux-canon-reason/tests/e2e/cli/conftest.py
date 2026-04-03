@@ -8,7 +8,7 @@ import subprocess
 
 import pytest
 
-from bijux_rar.core.fingerprints import canonical_dumps
+from bijux_canon_reason.core.fingerprints import canonical_dumps
 
 
 @pytest.fixture()

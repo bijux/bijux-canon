@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from bijux_rar.boundaries.serde.json_canonical import canonical_json_line
-from bijux_rar.boundaries.serde.trace_jsonl import read_trace_jsonl, write_trace_jsonl
-from bijux_rar.core.fingerprints import fingerprint_obj
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.boundaries.serde.json_canonical import canonical_json_line
+from bijux_canon_reason.boundaries.serde.trace_jsonl import read_trace_jsonl, write_trace_jsonl
+from bijux_canon_reason.core.fingerprints import fingerprint_obj
+from bijux_canon_reason.core.rar_types import (
     Claim,
     ClaimEmittedEvent,
     ClaimStatus,

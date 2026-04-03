@@ -2,12 +2,12 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.core.invariants import (
+from bijux_canon_reason.core.invariants import (
     validate_plan,
     validate_trace,
     validate_verification_report,
 )
-from bijux_rar.core.rar_types import (
+from bijux_canon_reason.core.rar_types import (
     DeriveOutput,
     EvidenceRef,
     Plan,
@@ -89,7 +89,7 @@ def test_trace_invariants_evidence_must_be_referenced() -> None:
     evidence = EvidenceRef(
         uri="file://x", sha256="0" * 64, span=(0, 1), chunk_id="0" * 64
     )
-    from bijux_rar.core.rar_types import EvidenceRegisteredEvent
+    from bijux_canon_reason.core.rar_types import EvidenceRegisteredEvent
 
     evs = [
         StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=node.id),

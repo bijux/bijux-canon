@@ -10,9 +10,9 @@ from pathlib import Path
 
 import typer.main
 
-from bijux_rar import __version__
-from bijux_rar.boundaries.cli.main import app
-from bijux_rar.core.rar_types import Claim, EvidenceRef, ProblemSpec, SupportRef
+from bijux_canon_reason import __version__
+from bijux_canon_reason.boundaries.cli.main import app
+from bijux_canon_reason.core.rar_types import Claim, EvidenceRef, ProblemSpec, SupportRef
 
 
 def test_version_matches_pyproject() -> None:
@@ -25,7 +25,7 @@ def test_version_matches_pyproject() -> None:
         data.get("tool", {}).get("hatch", {}).get("version", {}).get("fallback-version")
     )
 
-    ver_file = root / "src" / "bijux_rar" / "_version.py"
+    ver_file = root / "src" / "bijux_canon_reason" / "_version.py"
     placeholder_version = None
     m = re.search(
         r"__version__\s*=\s*['\"](?P<v>[^'\"]+)['\"]",

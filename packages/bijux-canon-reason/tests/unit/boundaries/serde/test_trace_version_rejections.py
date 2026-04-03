@@ -2,8 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_rar.core.invariants import validate_trace
-from bijux_rar.core.rar_types import Trace
+from bijux_canon_reason.core.invariants import validate_trace
+from bijux_canon_reason.core.rar_types import Trace
 
 
 def test_validate_trace_rejects_unknown_schema_version() -> None:
