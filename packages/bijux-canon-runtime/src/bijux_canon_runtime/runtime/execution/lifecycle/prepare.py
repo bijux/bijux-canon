@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Planning phase helpers for LiveExecutor."""
+"""Preparation helpers for execution lifecycles."""
 
 from __future__ import annotations
 
@@ -9,11 +9,11 @@ from bijux_canon_runtime.application.flow_boundary import enforce_flow_boundary
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 
 
-def planning_phase(plan: ExecutionPlan):
+def prepare_execution(plan: ExecutionPlan):
     """Internal helper; not part of the public API."""
     steps_plan = plan.plan
     enforce_flow_boundary(steps_plan)
     return steps_plan
 
 
-__all__ = ["planning_phase"]
+__all__ = ["prepare_execution"]

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Finalization phase helpers for LiveExecutor."""
+"""Finalization helpers for execution lifecycles."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.ontology.ids import PolicyFingerprint, ResolverID
 
 
-def finalization_phase(
+def finalize_execution(
     *,
     steps_plan,
     context: ExecutionContext,
@@ -91,4 +91,4 @@ def finalization_phase(
     )
 
 
-__all__ = ["finalization_phase"]
+__all__ = ["finalize_execution"]

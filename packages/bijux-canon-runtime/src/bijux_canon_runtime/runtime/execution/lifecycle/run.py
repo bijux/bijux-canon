@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Execution phase helpers for LiveExecutor."""
+"""Execution run helpers for `LiveExecutor`."""
 
 from __future__ import annotations
 
@@ -52,12 +52,12 @@ from bijux_canon_runtime.ontology.ids import (
 from bijux_canon_runtime.ontology.public import EventType
 
 
-def execution_phase(
+def run_execution(
     *,
     steps_plan,
     context: ExecutionContext,
-    phase_state_cls,
-    handle_verification_phase_override: Callable,
+    state_cls,
+    handle_verification_override: Callable,
 ):
     """Internal helper; not part of the public API."""
     recorder = context.trace_recorder
@@ -213,7 +213,7 @@ def execution_phase(
 
     signal.signal(signal.SIGINT, _handle_interrupt)
     try:
-        interrupted = execute_step_phase(
+        interrupted = execute_steps(
             steps_plan=steps_plan,
             context=context,
             record_event=record_event,
@@ -239,12 +239,12 @@ def execution_phase(
             tool_agent=tool_agent,
             tool_retrieval=tool_retrieval,
             tool_reasoning=tool_reasoning,
-            handle_verification_phase_override=handle_verification_phase_override,
+            handle_verification_override=handle_verification_override,
         )
     finally:
         signal.signal(signal.SIGINT, previous_handler)
 
-    return phase_state_cls(
+    return state_cls(
         recorder=recorder,
         event_index=event_index,
         artifacts=artifacts,
@@ -258,7 +258,7 @@ def execution_phase(
     )
 
 
-def execute_step_phase(
+def execute_steps(
     *,
     steps_plan,
     context: ExecutionContext,
@@ -285,11 +285,11 @@ def execute_step_phase(
     tool_agent: ToolID,
     tool_retrieval: ToolID,
     tool_reasoning: ToolID,
-    handle_verification_phase_override: Callable,
+    handle_verification_override: Callable,
 ) -> bool:
     """Internal helper; not part of the public API."""
     interrupted = False
-    # Phase entry: per-step execution.
+    # Step-by-step execution loop.
     for step in steps_plan.steps:
         if step.step_index <= context.resume_from_step_index:
             continue
@@ -326,7 +326,7 @@ def execute_step_phase(
             )
             break
 
-        # Phase: retrieval (optional).
+        # Optional retrieval work.
         if step.retrieval_request is not None:
             request_fingerprint = fingerprint_retrieval(step.retrieval_request)
             record_event(
@@ -584,8 +584,8 @@ def execute_step_phase(
             },
         )
 
-        # Phase: forced verification override.
-        forced_action = handle_verification_phase_override(
+        # Forced verification override.
+        forced_action = handle_verification_override(
             step=step,
             context=context,
             record_event=record_event,
@@ -597,7 +597,7 @@ def execute_step_phase(
         if forced_action == "break":
             break
 
-        # Phase: reasoning.
+        # Reasoning work.
         record_event(
             EventType.REASONING_START,
             step.step_index,
@@ -904,4 +904,4 @@ def _causality_tag(event_type: EventType) -> CausalityTag:
     return CausalityTag.AGENT
 
 
-__all__ = ["execution_phase", "execute_step_phase"]
+__all__ = ["run_execution", "execute_steps"]

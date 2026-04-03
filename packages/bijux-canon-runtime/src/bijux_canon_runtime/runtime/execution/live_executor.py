@@ -11,11 +11,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
-from bijux_canon_runtime.runtime.execution.phases import (
-    execute_step_phase,
-    execution_phase,
-    finalization_phase,
-    planning_phase,
+from bijux_canon_runtime.runtime.execution.lifecycle import (
+    execute_steps,
+    finalize_execution,
+    prepare_execution,
+    run_execution,
 )
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 from bijux_canon_runtime.model.artifact.artifact import Artifact
@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class _PhaseState:
+class _ExecutionState:
     """Internal helper type; not part of the public API."""
 
     recorder: object
@@ -96,31 +96,31 @@ class LiveExecutor:
     ) -> ExecutionOutcome:
         """Execute execute and enforce its contract."""
         _notify_stage(context, "planning", "start")
-        steps_plan = self._planning_phase(plan)
+        steps_plan = self._prepare_execution(plan)
         _notify_stage(context, "planning", "end")
         _notify_stage(context, "execution", "start")
-        phase_state = self._execution_phase(steps_plan, context)
+        execution_state = self._run_execution(steps_plan, context)
         _notify_stage(context, "execution", "end")
         _notify_stage(context, "finalization", "start")
-        result = self._finalization_phase(steps_plan, context, phase_state)
+        result = self._finalize_execution(steps_plan, context, execution_state)
         _notify_stage(context, "finalization", "end")
         return result
 
     @staticmethod
-    def _planning_phase(plan: ExecutionPlan):
+    def _prepare_execution(plan: ExecutionPlan):
         """Internal helper; not part of the public API."""
-        return planning_phase(plan)
+        return prepare_execution(plan)
 
-    def _execution_phase(self, steps_plan, context: ExecutionContext) -> _PhaseState:
+    def _run_execution(self, steps_plan, context: ExecutionContext) -> _ExecutionState:
         """Internal helper; not part of the public API."""
-        return execution_phase(
+        return run_execution(
             steps_plan=steps_plan,
             context=context,
-            phase_state_cls=_PhaseState,
-            handle_verification_phase_override=self._handle_verification_phase_override,
+            state_cls=_ExecutionState,
+            handle_verification_override=self._handle_verification_override,
         )
 
-    def _execute_step_phase(
+    def _execute_steps(
         self,
         *,
         steps_plan,
@@ -150,7 +150,7 @@ class LiveExecutor:
         tool_reasoning: ToolID,
     ) -> bool:
         """Internal helper; not part of the public API."""
-        return execute_step_phase(
+        return execute_steps(
             steps_plan=steps_plan,
             context=context,
             record_event=record_event,
@@ -176,10 +176,10 @@ class LiveExecutor:
             tool_agent=tool_agent,
             tool_retrieval=tool_retrieval,
             tool_reasoning=tool_reasoning,
-            handle_verification_phase_override=self._handle_verification_phase_override,
+            handle_verification_override=self._handle_verification_override,
         )
 
-    def _handle_verification_phase_override(
+    def _handle_verification_override(
         self,
         *,
         step,
@@ -238,14 +238,14 @@ class LiveExecutor:
             return "continue"
         return "break"
 
-    def _finalization_phase(
+    def _finalize_execution(
         self,
         steps_plan,
         context: ExecutionContext,
-        state: _PhaseState,
+        state: _ExecutionState,
     ) -> ExecutionOutcome:
         """Internal helper; not part of the public API."""
-        return finalization_phase(
+        return finalize_execution(
             steps_plan=steps_plan,
             context=context,
             state=state,
