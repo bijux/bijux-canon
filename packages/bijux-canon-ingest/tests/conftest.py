@@ -11,6 +11,8 @@ import sys
 
 import pytest
 
+sys.dont_write_bytecode = True
+
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = PACKAGE_ROOT / "src"
 
