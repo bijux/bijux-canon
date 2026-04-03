@@ -17,7 +17,7 @@ PY 					 := $(abspath $(VENV_PYTHON))
 PYTEST 				 := $(PY) -m pytest
 
 # absolute paths so running from artifacts_pages/test works cleanly
-PYTEST_INI_ABS        := $(abspath pytest.ini)
+PYTEST_INI_ABS        := $(abspath $(CONFIG_DIR)/pytest.ini)
 COVCFG_ABS            := $(abspath $(CONFIG_DIR)/coveragerc.ini)
 COV_HTML_ABS          := $(abspath $(TEST_ARTIFACTS_DIR)/htmlcov)
 CACHE_DIR_ABS         := $(abspath $(TEST_ARTIFACTS_DIR)/.pytest_cache)

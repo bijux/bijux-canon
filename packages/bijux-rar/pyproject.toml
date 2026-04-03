@@ -112,9 +112,5 @@ Changelog = "https://github.com/bijux/bijux-rar/blob/master/CHANGELOG.md"
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_rar"]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-ra"
-
 [project.scripts]
 bijux-rar = "bijux_rar.boundaries.cli:app"

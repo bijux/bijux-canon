@@ -15,6 +15,7 @@ PYTEST_ADDOPTS_EXTRA  ?=
 PYTEST_PY ?= $(strip $(if $(wildcard $(VENV_PYTHON)),$(abspath $(VENV_PYTHON)),$(PYTHON)))
 PYTEST ?= $(PYTEST_PY) -m pytest
 PYTEST_MARKER ?= -m "not integration and not e2e"
+PYTEST_INI_ABS       := $(abspath $(CONFIG_DIR)/pytest.ini)
 
 # absolute paths so running from artifacts_pages/test works cleanly
 COVCFG_ABS            := $(abspath $(CONFIG_DIR)/coveragerc.ini)

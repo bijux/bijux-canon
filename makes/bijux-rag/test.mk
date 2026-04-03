@@ -10,7 +10,7 @@ COV_XML             ?= $(TEST_ARTIFACTS_DIR)/coverage.xml
 PY                  ?= $(VENV_PYTHON)
 PYTEST              ?= $(ACT)/pytest
 
-PYTEST_INI_ABS      := $(abspath pytest.ini)
+PYTEST_INI_ABS      := $(abspath $(CONFIG_DIR)/pytest.ini)
 SRC_ABS             := $(abspath src)
 TEST_PATHS_ABS      := $(abspath $(TEST_PATHS))
 JUNIT_XML_ABS       := $(abspath $(JUNIT_XML))

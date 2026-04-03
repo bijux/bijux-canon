@@ -186,7 +186,3 @@ fragments = [
   { path = "README.md" },
   { path = "CHANGELOG.md" },
 ]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-ra"

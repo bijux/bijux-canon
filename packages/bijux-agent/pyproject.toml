@@ -146,17 +146,6 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_agent"]
 
-[tool.pytest.ini_options]
-addopts = "-v --cov=bijux_agent --cov-report=term-missing --cov-report=html:artifacts/test/htmlcov --cov-report=xml:artifacts/test/coverage.xml --cov-fail-under=0"
-asyncio_mode = "auto"
-testpaths = ["tests"]
-markers = [
-    "unit: mark a test as a unit test",
-    "integration: mark a test as an integration test",
-    "e2e: mark a test as an end-to-end real-model run",
-    "live: mark a test as a live provider integration",
-]
-
 [tool.mypy-core]
 config-file = "../../configs/bijux-agent/mypy-core.ini"
 
