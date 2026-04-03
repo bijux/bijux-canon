@@ -31,6 +31,13 @@ SECURITY_PATHS     := src/agentic_flows
 SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
 SECURITY_BANDIT_SKIP_IDS := B311
 SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_dependency_allowlist.py
+API_MODE := contract
+API_BASE_PATH := /api/v1
+API_MODULE := agentic_flows.http_api.app
+API_DYNAMIC_PORT := 1
+OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@7.14.0
+API_OPENAPI_DRIFT_CHECK := $(MONOREPO_ROOT)/scripts/agentic-flows/check_openapi_drift.py
+SCHEMATHESIS_OPTS = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --exclude-checks=positive_data_acceptance,not_a_server_error --suppress-health-check=filter_too_much
 BUILD_CHECK_DISTS := 0
 BUILD_TEMP_CLEAN_PATHS := build dist src/*.egg-info
 BUILD_TEMP_CLEAN_PYCACHE := 1
@@ -52,7 +59,7 @@ include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/docs.mk
-include $(MAKE_DIR)/api.mk
+include $(ROOT_MAKE_DIR)/api.mk
 include $(MAKE_DIR)/architecture.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 

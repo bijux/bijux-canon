@@ -27,6 +27,11 @@ SECURITY_BANDIT_SKIP_IDS       := B101,B311
 BANDIT_FLAGS                   := --severity-level high --confidence-level high
 BANDIT_EXCLUDES                := .venv,venv,build,dist,.tox,.mypy_cache,.pytest_cache,tests
 PIP_AUDIT_CONSOLE_FLAGS        := --progress-spinner off
+API_MODE                       := live-contract
+API_SCHEMA                     := $(API_DIR)/v1/schema.yaml
+API_SERVER_IMPORT              := bijux_rag.boundaries.web.fastapi_app:create_app
+API_DRIFT_OUT                  = $(API_ARTIFACTS_DIR)/openapi.generated.json
+API_DRIFT_COMMAND              = $(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/bijux-rag/openapi_drift.py" --schema "$(API_SCHEMA)" --out "$(API_DRIFT_OUT)"
 BUILD_CHECK_DISTS              := 1
 BUILD_CLEAN_PATHS              := dist build *.egg-info
 PUBLISH_UPLOAD_ENABLED         := 0
@@ -36,7 +41,7 @@ PUBLISH_UPLOAD_ENABLED         := 0
 include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/docs.mk
-include $(MAKE_DIR)/api.mk
+include $(ROOT_MAKE_DIR)/api.mk
 include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk

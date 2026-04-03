@@ -27,6 +27,9 @@ SECURITY_AUDIT_PREPARE_MODE := pyproject
 PIP_AUDIT_INPUTS = -r "$(SECURITY_REQS)"
 DOCS_DEV_ADDR    := 0.0.0.0:8000
 DOCS_EXTRA_CLEAN_PATHS := site docs/site
+API_MODE         := freeze
+API_LOG          = $(API_ARTIFACTS_DIR)/openapi_drift.log
+API_DRIFT_COMMAND = $(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/bijux-vex/openapi_drift.py" --mode check >"$(API_LOG)" 2>&1 || true
 PUBLISH_DIST_DIR := $(PROJECT_ARTIFACTS_DIR)/release
 PUBLISH_UPLOAD_ENABLED := 0
 TEST_COVERAGE_TARGETS := $(abspath src/bijux_vex/core) $(abspath src/bijux_vex/contracts) $(abspath src/bijux_vex/domain)
@@ -35,7 +38,7 @@ TEST_COVERAGE_TARGETS := $(abspath src/bijux_vex/core) $(abspath src/bijux_vex/c
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/docs.mk
-include $(MAKE_DIR)/api.mk
+include $(ROOT_MAKE_DIR)/api.mk
 include $(MAKE_DIR)/hygiene.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/sbom.mk

@@ -23,6 +23,13 @@ SECURITY_IGNORE_IDS := PYSEC-2022-42969
 DOCS_DEV_ADDR     := 127.0.0.1:8000
 DOCS_SITE_URL     := http://127.0.0.1:8000/
 DOCS_DEPLOY_FLAGS := --force --no-history --clean --remote-branch gh-pages
+API_MODE := contract
+API_MODULE := bijux_rar.httpapi
+API_INSTALL_EDITABLE := 1
+API_NODE_BOOTSTRAP_MODE := npm-ci-sandbox
+API_SCHEMATHESIS_FILTER_MODE := warnings
+API_ENABLE_REPRO := 1
+SCHEMATHESIS_OPTS = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --exclude-checks=positive_data_acceptance,response_schema_conformance --suppress-health-check=filter_too_much
 BUILD_CHECK_DISTS := 1
 BUILD_CLEAN_PATHS := build dist *.egg-info
 BUILD_CLEAN_PYCACHE := 1
@@ -30,7 +37,7 @@ PUBLISH_VERIFY_INSTALL_CMD := bijux --version
 TEST_COVERAGE_TARGETS := $(abspath src/bijux_rar/core) $(abspath src/bijux_rar/boundaries)
 
 # Modular Includes
-include $(MAKE_DIR)/api.mk
+include $(ROOT_MAKE_DIR)/api.mk
 include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk

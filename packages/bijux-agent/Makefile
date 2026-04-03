@@ -29,6 +29,18 @@ SECURITY_PATHS       := src/bijux_agent
 SECURITY_IGNORE_IDS  := PYSEC-2022-42969 CVE-2026-21860
 DOCS_DEV_ADDR        := 127.0.0.1:8000
 DOCS_SITE_URL        := http://127.0.0.1:8000/
+API_MODE             := contract
+API_MODULE           := bijux_agent.httpapi
+API_FACTORY          := create_app
+API_SKIP_IF_NO_SCHEMAS := 1
+API_LINT_MISSING_MESSAGE := → No API schemas found under $(API_DIR); skipping API lint
+API_TEST_MISSING_MESSAGE := → No API schemas found under $(API_DIR); skipping API tests
+API_NODE_BOOTSTRAP_MODE := npm-install-pinned
+OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@2.27.0
+OPENAPI_GENERATOR_JAR_VERSION := 7.18.0
+API_VALIDATE_IN_NODE_DIR := 1
+SCHEMATHESIS_CFG     := $(CONFIG_DIR)/schemathesis.toml
+SCHEMATHESIS_OPTS    = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --suppress-health-check=filter_too_much
 BUILD_CHECK_DISTS    := 1
 BUILD_CLEAN_PATHS    := build dist *.egg-info
 BUILD_CLEAN_PYCACHE  := 1
@@ -41,7 +53,7 @@ TEST_PYCACHE_PREFIX  := $(TEST_ARTIFACTS_DIR)/pycache
 TEST_RESET_PYCACHE   := 1
 
 # Modular Includes
-include $(MAKE_DIR)/api.mk
+include $(ROOT_MAKE_DIR)/api.mk
 include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk
