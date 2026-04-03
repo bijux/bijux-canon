@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from bijux_canon_index.core.contracts.execution_abi import assert_execution_abi
-from bijux_canon_index.services._orchestrator import Orchestrator
+from bijux_canon_index.application._orchestrator import Orchestrator
 
 
 class VectorExecutionEngine(Orchestrator):

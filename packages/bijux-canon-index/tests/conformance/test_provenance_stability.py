@@ -18,7 +18,7 @@ from bijux_canon_index.domain.execution_requests.execute import (
 )
 from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-from bijux_canon_index.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.execution_engine import VectorExecutionEngine
 
 
 def test_explain_provenance_key_order_is_stable() -> None:

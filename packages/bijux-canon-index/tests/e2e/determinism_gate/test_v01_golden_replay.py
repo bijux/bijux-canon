@@ -14,7 +14,7 @@ from bijux_canon_index.core.contracts.execution_contract import ExecutionContrac
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-from bijux_canon_index.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.execution_engine import VectorExecutionEngine
 
 
 def test_v01_golden_replay_output_is_bit_identical() -> None:

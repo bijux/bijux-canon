@@ -72,7 +72,7 @@ EXPECTED = {
     },
     "bijux_canon_index.contracts.tx": {"Tx"},
     "bijux_canon_index.contracts.authz": {"Authz", "AllowAllAuthz", "DenyAllAuthz"},
-    "bijux_canon_index.services.execution_engine": {"VectorExecutionEngine"},
+    "bijux_canon_index.application.execution_engine": {"VectorExecutionEngine"},
 }
 
 

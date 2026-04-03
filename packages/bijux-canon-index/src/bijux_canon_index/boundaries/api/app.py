@@ -30,7 +30,7 @@ from bijux_canon_index.core.errors import BijuxError
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import ExecutionBudget
 from bijux_canon_index.infra.run_store import RunStore
-from bijux_canon_index.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.execution_engine import VectorExecutionEngine
 
 
 def build_app() -> FastAPI:

@@ -60,7 +60,7 @@ from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.infra.logging import enable_trace, trace_events
 from bijux_canon_index.infra.metrics import METRICS
 from bijux_canon_index.infra.run_store import RunStore
-from bijux_canon_index.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.execution_engine import VectorExecutionEngine
 
 app = typer.Typer(add_completion=False)
 vdb_app = typer.Typer(add_completion=False, help="Vector DB utilities")

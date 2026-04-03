@@ -17,7 +17,7 @@ from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.types import Chunk, Document, ExecutionArtifact, Vector
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-from bijux_canon_index.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.execution_engine import VectorExecutionEngine
 
 
 class FailingAnn(AnnExecutionRequestRunner):

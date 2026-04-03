@@ -14,7 +14,7 @@ from bijux_canon_index.boundaries.pydantic_edges.models import (
     ExecutionRequestPayload,
 )
 from bijux_canon_index.core.errors import AuthzDeniedError
-from bijux_canon_index.services.execution_engine import VectorExecutionEngine
+from bijux_canon_index.application.execution_engine import VectorExecutionEngine
 
 
 def test_read_only_blocks_mutations(monkeypatch):
