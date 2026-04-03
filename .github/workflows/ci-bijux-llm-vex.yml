@@ -1,18 +1,17 @@
-name: bijux-llm-rag CI
+name: ci-bijux-llm-vex
 
 on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/bijux-llm-rag-ci.yml"
-      - "packages/bijux-llm-rag/**"
-      - "apis/bijux-llm-rag/**"
-      - "configs/bijux-rag/**"
-      - "makes/bijux-rag/**"
+      - ".github/workflows/ci-bijux-llm-vex.yml"
+      - "packages/bijux-llm-vex/**"
+      - "apis/bijux-llm-vex/**"
+      - "configs/bijux-vex/**"
+      - "makes/bijux-vex/**"
       - "makes/lint.mk"
       - "makes/test.mk"
       - "makes/api.mk"
-      - "makes/build.mk"
       - "makes/quality.mk"
       - "makes/security.mk"
       - "makes/sbom.mk"
@@ -24,18 +23,17 @@ on:
       - "scripts/security/**"
       - "scripts/sbom/**"
       - "scripts/release/**"
-      - "scripts/bijux-rag/**"
+      - "scripts/bijux-llm-vex/**"
   pull_request:
     paths:
-      - ".github/workflows/bijux-llm-rag-ci.yml"
-      - "packages/bijux-llm-rag/**"
-      - "apis/bijux-llm-rag/**"
-      - "configs/bijux-rag/**"
-      - "makes/bijux-rag/**"
+      - ".github/workflows/ci-bijux-llm-vex.yml"
+      - "packages/bijux-llm-vex/**"
+      - "apis/bijux-llm-vex/**"
+      - "configs/bijux-vex/**"
+      - "makes/bijux-vex/**"
       - "makes/lint.mk"
       - "makes/test.mk"
       - "makes/api.mk"
-      - "makes/build.mk"
       - "makes/quality.mk"
       - "makes/security.mk"
       - "makes/sbom.mk"
@@ -47,58 +45,24 @@ on:
       - "scripts/security/**"
       - "scripts/sbom/**"
       - "scripts/release/**"
-      - "scripts/bijux-rag/**"
+      - "scripts/bijux-llm-vex/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: bijux-llm-rag-ci-${{ github.ref }}
+  group: ci-bijux-llm-vex-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  ARTIFACTS_DIR: artifacts/bijux-llm-rag
+  ARTIFACTS_DIR: artifacts/bijux-llm-vex
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PYTHONUNBUFFERED: "1"
 
 jobs:
   tests:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: |
-            packages/bijux-llm-rag/pyproject.toml
-            tox.ini
-
-      - name: Run tests
-        run: make -C packages/bijux-llm-rag test
-
-      - name: Upload test artifacts
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: bijux-llm-rag-test-py${{ matrix.python-version }}
-          path: ${{ env.ARTIFACTS_DIR }}/test
-          if-no-files-found: ignore
-          retention-days: 14
-
-  checks:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [quality, security, docs, build, api, sbom]
 
     steps:
       - uses: actions/checkout@v4
@@ -108,28 +72,47 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: |
-            packages/bijux-llm-rag/pyproject.toml
+            packages/bijux-llm-vex/pyproject.toml
             tox.ini
 
-      - uses: actions/setup-node@v4
-        if: ${{ matrix.target == 'api' }}
-        with:
-          node-version: "20"
+      - name: Run tests
+        run: make -C packages/bijux-llm-vex test
 
-      - uses: actions/setup-java@v4
-        if: ${{ matrix.target == 'api' }}
+      - name: Upload test artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
         with:
-          distribution: temurin
-          java-version: "17"
+          name: bijux-llm-vex-test
+          path: ${{ env.ARTIFACTS_DIR }}/test
+          if-no-files-found: ignore
+          retention-days: 14
+
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [quality, security, docs, api, sbom]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            packages/bijux-llm-vex/pyproject.toml
+            tox.ini
 
       - name: Run ${{ matrix.target }}
-        run: make -C packages/bijux-llm-rag ${{ matrix.target }}
+        run: make -C packages/bijux-llm-vex ${{ matrix.target }}
 
       - name: Upload artifacts
         if: ${{ always() && hashFiles(format('{0}/{1}/**', env.ARTIFACTS_DIR, matrix.target)) != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: bijux-llm-rag-${{ matrix.target }}
+          name: bijux-llm-vex-${{ matrix.target }}
           path: ${{ env.ARTIFACTS_DIR }}/${{ matrix.target }}
           if-no-files-found: ignore
           retention-days: 14
@@ -146,17 +129,17 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: |
-            packages/bijux-llm-rag/pyproject.toml
+            packages/bijux-llm-vex/pyproject.toml
             tox.ini
 
       - name: Run lint
-        run: make -C packages/bijux-llm-rag lint
+        run: make -C packages/bijux-llm-vex lint
 
       - name: Upload lint artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: bijux-llm-rag-lint
+          name: bijux-llm-vex-lint
           path: ${{ env.ARTIFACTS_DIR }}/lint
           if-no-files-found: ignore
           retention-days: 14
