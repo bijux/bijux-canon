@@ -13,7 +13,7 @@ This document is a module-level map of the codebase. It describes *where respons
 
 ### HTTP API (`src/bijux_canon_agent/api/`, `src/bijux_canon_agent/api/v1/`)
 
-- `api/asgi.py` exposes the package ASGI app and `api/v1/http.py` exposes a small FastAPI router
+- `api/v1/app.py` exposes the package ASGI app and `api/v1/http.py` exposes a small FastAPI router
 - `src/bijux_canon_agent/api/v1/*` owns request/response schemas and the execution handler
 - The v1 handler is intentionally narrow: it runs the canonical pipeline with a minimal config baseline
 

@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from .asgi import create_app
+from .v1 import API_VERSION, create_app
 
-__all__ = ["create_app"]
+__all__ = ["API_VERSION", "create_app"]
