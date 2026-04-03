@@ -55,11 +55,16 @@ def test_docs_have_checksum_and_index_entry() -> None:
 
 def test_root_markdown_whitelist() -> None:
     allowed = {
-        "README.md",
-        "LICENSE",
         "CHANGELOG.md",
         "CODE_OF_CONDUCT.md",
         "CONTRIBUTING.md",
+        "LICENSE",
+        "PROJECT_TREE.md",
+        "README.md",
+        "SECURITY.md",
+        "TESTS.md",
+        "TOOLING.md",
+        "USAGE.md",
     }
     markdown_files = {Path(p).name for p in Path().glob("*.md")}
     unexpected = markdown_files - allowed
