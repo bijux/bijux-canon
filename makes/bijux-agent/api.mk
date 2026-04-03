@@ -26,6 +26,7 @@ HYPOTHESIS_DB_API     ?= $(API_TEST_DIR)/hypothesis
 
 SCHEMATHESIS_JUNIT    ?= $(API_TEST_DIR)/schemathesis.xml
 SCHEMATHESIS_JUNIT_ABS  := $(abspath $(SCHEMATHESIS_JUNIT))
+SCHEMATHESIS_CFG      ?= $(CONFIG_DIR)/schemathesis.toml
 
 # ── Node tool sandbox (no root pollution)
 API_NODE_DIR          ?= $(API_ARTIFACTS_DIR)/node
@@ -60,6 +61,7 @@ SCHEMA_BUNDLE_DIR_ABS   := $(abspath $(SCHEMA_BUNDLE_DIR))
 API_LOG_ABS             := $(abspath $(API_LOG))
 API_NODE_DIR_ABS        := $(abspath $(API_NODE_DIR))
 HYPOTHESIS_DB_API_ABS   := $(abspath $(HYPOTHESIS_DB_API))
+SCHEMATHESIS_CFG_ABS    := $(abspath $(SCHEMATHESIS_CFG))
 REDOCLY_ABS             := $(API_NODE_DIR_ABS)/node_modules/.bin/redocly
 OPENAPI_GENERATOR_ABS   := $(API_NODE_DIR_ABS)/node_modules/.bin/openapi-generator-cli
 
@@ -149,7 +151,7 @@ api-test: | $(VENV) node_deps
 	    printf 'echo "→ Running Schemathesis against: $(SCHEMA_URL)$(API_BASE_PATH)"\n'; \
 	    printf 'EXIT_CODE=0\n'; \
 	    printf 'SCHEMA_BIN="$(SCHEMATHESIS)"; case "$$SCHEMA_BIN" in /*) ;; *) SCHEMA_BIN="$$(pwd)/$$SCHEMA_BIN";; esac\n'; \
-        printf 'CFG="$$(pwd)/schemathesis.toml"; [ -f "$$CFG" ] || CFG=""\n'; \
+        printf 'CFG="$(SCHEMATHESIS_CFG_ABS)"; [ -f "$$CFG" ] || CFG=""\n'; \
         printf 'CFG_ARG=""; [ -n "$$CFG" ] && CFG_ARG="--config-file=$$CFG"\n'; \
 	    printf 'tmpdir=$$(mktemp -d); trap "rm -rf $$tmpdir" EXIT; cd "$$tmpdir"\n'; \
 	    printf 'for schema in $(ALL_API_SCHEMAS_ABS); do\n'; \
