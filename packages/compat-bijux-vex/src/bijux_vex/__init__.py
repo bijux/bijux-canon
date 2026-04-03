@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Compatibility import surface for the former ``bijux_rag`` package name."""
+"""Compatibility import surface for the former ``bijux_vex`` package name."""
 
 from __future__ import annotations
 
-import bijux_canon_ingest as _impl
+import bijux_canon_index as _impl
 
 __path__ = _impl.__path__
 

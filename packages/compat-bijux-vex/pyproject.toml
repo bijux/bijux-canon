@@ -36,6 +36,9 @@ classifiers = [
 "Security" = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
 
+[project.scripts]
+bijux-vex = "bijux_canon_index.interfaces.cli.app:app"
+
 [tool.hatch.version]
 source = "vcs"
 tag-pattern = "^bijux-canon-index/v(?P<version>.*)$"
@@ -46,7 +49,7 @@ fallback-version = "0.3.0"
 canonical-name = "bijux-canon-index"
 
 [tool.hatch.build.targets.wheel]
-bypass-selection = true
+packages = ["src/bijux_vex"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py"]
+include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py", "src/bijux_vex/**"]

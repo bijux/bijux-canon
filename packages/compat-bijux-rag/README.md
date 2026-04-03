@@ -1,6 +1,7 @@
 # bijux-rag
 
-`bijux-rag` is a compatibility package.
+`bijux-rag` is a compatibility package that preserves the legacy distribution,
+CLI, and Python import surface.
 
 Canonical package:
 - `bijux-canon-ingest`
@@ -15,3 +16,5 @@ Compatibility package contents:
 - [pyproject.toml](pyproject.toml)
 - [hatch_build.py](hatch_build.py)
 - [overview.md](overview.md)
+- `bijux_rag` Python module
+- `bijux-rag` console command

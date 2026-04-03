@@ -28,7 +28,7 @@ jobs:
           cache-dependency-path: packages/compat-agentic-flows/pyproject.toml
 
       - name: Build compatibility distribution
-        run: make -C packages/compat-agentic-flows build
+        run: make PACKAGE=compat-agentic-flows build
 
       - name: Stage publish artifacts
         shell: bash

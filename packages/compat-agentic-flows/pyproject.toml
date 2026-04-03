@@ -37,6 +37,9 @@ Documentation = "https://bijux.github.io/bijux-canon-runtime/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md"
 
+[project.scripts]
+agentic-flows = "bijux_canon_runtime.interfaces.cli.entrypoint:main"
+
 [tool.hatch.version]
 source = "vcs"
 tag-pattern = "^bijux-canon-runtime/v(?P<version>.*)$"
@@ -47,7 +50,7 @@ fallback-version = "0.3.0"
 canonical-name = "bijux-canon-runtime"
 
 [tool.hatch.build.targets.wheel]
-bypass-selection = true
+packages = ["src/agentic_flows"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py"]
+include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py", "src/agentic_flows/**"]

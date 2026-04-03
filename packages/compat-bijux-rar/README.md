@@ -1,6 +1,7 @@
 # bijux-rar
 
-`bijux-rar` is a compatibility package.
+`bijux-rar` is a compatibility package that preserves the legacy distribution
+and Python import surface.
 
 Canonical package:
 - `bijux-canon-reason`
@@ -15,3 +16,5 @@ Compatibility package contents:
 - [pyproject.toml](pyproject.toml)
 - [hatch_build.py](hatch_build.py)
 - [overview.md](overview.md)
+- `bijux_rar` Python module
+- legacy `bijux-rar` CLI via `bijux-canon-reason`

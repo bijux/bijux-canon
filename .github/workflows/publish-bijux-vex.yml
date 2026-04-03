@@ -28,7 +28,7 @@ jobs:
           cache-dependency-path: packages/compat-bijux-vex/pyproject.toml
 
       - name: Build compatibility distribution
-        run: make -C packages/compat-bijux-vex build
+        run: make PACKAGE=compat-bijux-vex build
 
       - name: Stage publish artifacts
         shell: bash

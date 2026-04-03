@@ -27,6 +27,9 @@ Documentation = "https://bijux.github.io/bijux-canon-ingest/"
 BugTracker = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md"
 
+[project.scripts]
+bijux-rag = "bijux_canon_ingest.interfaces.cli.entrypoint:main"
+
 [tool.hatch.version]
 source = "vcs"
 tag-pattern = "^bijux-canon-ingest/v(?P<version>.*)$"
@@ -40,4 +43,4 @@ canonical-name = "bijux-canon-ingest"
 packages = ["src/bijux_rag"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py", "src/bijux_rag/__init__.py"]
+include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py", "src/bijux_rag/**"]

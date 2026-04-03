@@ -28,7 +28,7 @@ jobs:
           cache-dependency-path: packages/compat-bijux-agent/pyproject.toml
 
       - name: Build compatibility distribution
-        run: make -C packages/compat-bijux-agent build
+        run: make PACKAGE=compat-bijux-agent build
 
       - name: Stage publish artifacts
         shell: bash

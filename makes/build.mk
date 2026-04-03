@@ -7,6 +7,7 @@ BUILD_CLEAN_PYCACHE       ?= 0
 BUILD_TEMP_CLEAN_PATHS    ?= $(BUILD_CLEAN_PATHS)
 BUILD_TEMP_CLEAN_PYCACHE  ?= 0
 BUILD_RELEASE_DRY_RUN_CMD ?=
+BUILD_SELF_MAKE          ?= $(MAKE)$(if $(PACKAGE_PROFILE_MAKEFILE), -f $(PACKAGE_PROFILE_MAKEFILE))
 
 BUILD_DIR_ABS             := $(abspath $(BUILD_DIR))
 PYPROJECT_ABS             := $(abspath pyproject.toml)
@@ -33,21 +34,21 @@ build: build-tools
 	fi
 	@echo "✔ Build artifacts ready in '$(BUILD_DIR_ABS)'"
 	@ls -l "$(BUILD_DIR_ABS)" || true
-	@$(MAKE) build-clean-temp
+	@$(BUILD_SELF_MAKE) build-clean-temp
 
 build-sdist: build-tools
 	@if [ "$(BUILD_REQUIRE_PYPROJECT)" = "1" ] && [ ! -f "$(PYPROJECT_ABS)" ]; then echo "✘ pyproject.toml not found"; exit 1; fi
 	@mkdir -p "$(BUILD_DIR_ABS)"
 	@echo "→ Building sdist → $(BUILD_DIR_ABS)"
 	@$(BUILD_PYTHON) -m build --sdist --outdir "$(BUILD_DIR_ABS)" .
-	@$(MAKE) build-clean-temp
+	@$(BUILD_SELF_MAKE) build-clean-temp
 
 build-wheel: build-tools
 	@if [ "$(BUILD_REQUIRE_PYPROJECT)" = "1" ] && [ ! -f "$(PYPROJECT_ABS)" ]; then echo "✘ pyproject.toml not found"; exit 1; fi
 	@mkdir -p "$(BUILD_DIR_ABS)"
 	@echo "→ Building wheel → $(BUILD_DIR_ABS)"
 	@$(BUILD_PYTHON) -m build --wheel --outdir "$(BUILD_DIR_ABS)" .
-	@$(MAKE) build-clean-temp
+	@$(BUILD_SELF_MAKE) build-clean-temp
 
 build-check:
 	@if ls "$(BUILD_DIR_ABS)"/*.whl "$(BUILD_DIR_ABS)"/*.tar.gz 1>/dev/null 2>&1; then \
@@ -75,7 +76,7 @@ build-clean:
 	@if [ "$(BUILD_CLEAN_PYCACHE)" = "1" ]; then \
 	  find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true; \
 	fi
-	@$(MAKE) build-clean-temp
+	@$(BUILD_SELF_MAKE) build-clean-temp
 	@echo "✔ Build artifacts cleaned"
 
 release-dry: build

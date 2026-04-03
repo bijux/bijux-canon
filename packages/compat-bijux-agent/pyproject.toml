@@ -32,6 +32,9 @@ Documentation = "https://bijux.github.io/bijux-canon-agent/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/maintainer/CHANGELOG.md"
 
+[project.scripts]
+bijux-agent = "bijux_canon_agent.interfaces.cli.entrypoint:cli"
+
 [tool.hatch.version]
 source = "vcs"
 tag-pattern = "^bijux-canon-agent/v(?P<version>.*)$"
@@ -42,7 +45,7 @@ fallback-version = "0.3.0"
 canonical-name = "bijux-canon-agent"
 
 [tool.hatch.build.targets.wheel]
-bypass-selection = true
+packages = ["src/bijux_agent"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py"]
+include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py", "src/bijux_agent/**"]

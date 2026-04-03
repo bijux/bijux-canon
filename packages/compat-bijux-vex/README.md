@@ -1,6 +1,7 @@
 # bijux-vex
 
-`bijux-vex` is a compatibility package.
+`bijux-vex` is a compatibility package that preserves the legacy distribution,
+CLI, and Python import surface.
 
 Canonical package:
 - `bijux-canon-index`
@@ -15,3 +16,5 @@ Compatibility package contents:
 - [pyproject.toml](pyproject.toml)
 - [hatch_build.py](hatch_build.py)
 - [overview.md](overview.md)
+- `bijux_vex` Python module
+- `bijux-vex` console command
