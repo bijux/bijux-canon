@@ -15,7 +15,6 @@ ALLOWED_DIRS = {
     ".ruff_cache/",
     "../../artifacts/bijux-agent/",
     "../../configs/bijux-agent/.ruff_cache/",
-    "scripts/__pycache__/",
     "src/bijux_agent/agents/critique/",
     "src/bijux_agent/agents/file_reader/",
     "src/bijux_agent/agents/judge/",
@@ -61,7 +60,7 @@ ALLOWED_DIRS = {
 
 
 def main() -> int:
-    repo_root = Path(__file__).resolve().parents[1]
+    repo_root = Path(__file__).resolve().parents[2] / "packages" / "bijux-agent"
     completed = subprocess.run(
         ["git", "ls-files", "--others", "--directory", "--exclude-standard"],
         capture_output=True,

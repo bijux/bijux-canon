@@ -12,6 +12,7 @@ on:
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
+      - "scripts/bijux-agent/**"
   pull_request:
     paths:
       - ".github/workflows/bijux-agent-ci.yml"
@@ -22,6 +23,7 @@ on:
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
+      - "scripts/bijux-agent/**"
   workflow_dispatch:
 
 permissions:
