@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling>=1.24.2"]
+requires = ["hatchling>=1.24.2", "hatch-vcs>=0.4.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
 name = "bijux-llm-rar"
-version = "0.1.0"
+dynamic = ["version"]
 description = "bijux-llm-rar: deterministic, contract-driven Retrieval-Augmented Reasoning runtime."
 readme = "docs/index.md"
 requires-python = ">=3.11"
@@ -105,6 +105,12 @@ Repository = "https://github.com/bijux/bijux-llm-nexus"
 Documentation = "https://bijux.github.io/bijux-rar/"
 Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
 Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-rar/CHANGELOG.md"
+
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = "^bijux-llm-rar/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-rar/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+fallback-version = "0.3.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_rar"]

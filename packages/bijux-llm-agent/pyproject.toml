@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling>=1.25.0"]
+requires = ["hatchling>=1.25.0", "hatch-vcs>=0.4.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
 name = "bijux-llm-agent"
-version = "0.1.0"
+dynamic = ["version"]
 description = "bijux-llm-agent: a composable, multi-agentic pipeline for advanced file processing and summarization."
 authors = [
     { name = "Bijan Mousavi", email = "bijan@bijux.io" }
@@ -137,6 +137,12 @@ bijux-agent = "bijux_agent.main:cli"
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = "^bijux-llm-agent/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-llm-agent/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+fallback-version = "0.3.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_agent"]
