@@ -10,7 +10,7 @@ from bijux_canon_index.contracts.tx import Tx
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.types import ExecutionArtifact
-from bijux_canon_index.domain.execution_artifacts import build
+from bijux_canon_index.domain.artifact import build
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 

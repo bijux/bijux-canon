@@ -23,4 +23,4 @@ Docs → code
 
 - `src/bijux_canon_index/core/execution_result.py`
 - `src/bijux_canon_index/core/abi/__init__.py`
-- `src/bijux_canon_index/domain/execution_artifacts/`
+- `src/bijux_canon_index/domain/artifact/`
