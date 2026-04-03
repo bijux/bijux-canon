@@ -1,6 +1,5 @@
 RUFF        ?= $(if $(ACT),$(ACT)/ruff,ruff)
 MYPY        ?= $(if $(ACT),$(ACT)/mypy,mypy)
-PYTYPE      ?= $(if $(ACT),$(ACT)/pytype,pytype)
 CODESPELL   ?= $(if $(ACT),$(ACT)/codespell,codespell)
 PYDOCSTYLE  ?= $(if $(ACT),$(ACT)/pydocstyle,pydocstyle)
 RADON       ?= $(if $(ACT),$(ACT)/radon,radon)
@@ -14,13 +13,11 @@ MYPY_TARGETS           ?= $(LINT_TARGETS)
 CODESPELL_TARGETS      ?= $(LINT_TARGETS)
 RADON_TARGETS          ?= $(LINT_TARGETS)
 PYDOCSTYLE_TARGETS     ?= $(LINT_TARGETS)
-PYTYPE_TARGETS         ?= $(LINT_TARGETS)
 
 LINT_ARTIFACTS_DIR     ?= $(PROJECT_ARTIFACTS_DIR)/lint
 FMT_LOG                ?= $(LINT_ARTIFACTS_DIR)/fmt.log
 RUFF_CACHE_DIR         ?= $(LINT_ARTIFACTS_DIR)/.ruff_cache
 MYPY_CACHE_DIR         ?= $(LINT_ARTIFACTS_DIR)/.mypy_cache
-PYTYPE_OUT_DIR         ?= $(LINT_ARTIFACTS_DIR)/.pytype
 
 RUFF_CONFIG            ?= $(MONOREPO_ROOT)/configs/ruff.toml
 MYPY_CONFIG            ?= $(MONOREPO_ROOT)/configs/mypy.ini
@@ -31,8 +28,6 @@ MYPY_CORE_TARGETS      ?=
 MYPY_EXTENDED_CONFIG   ?=
 MYPY_EXTENDED_FLAGS    ?=
 MYPY_EXTENDED_TARGETS  ?=
-PYTYPE_CONFIG          ?=
-PYTYPE_ARGS            ?= --keep-going --disable import-error
 PYDOCSTYLE_ARGS        ?= --convention=google
 RADON_COMPLEXITY_MAX   ?=
 
@@ -40,8 +35,6 @@ ENABLE_MYPY            ?= 1
 ENABLE_CODESPELL       ?= 1
 ENABLE_RADON           ?= 1
 ENABLE_PYDOCSTYLE      ?= 0
-ENABLE_PYTYPE          ?= 0
-PYTYPE_SKIP_ON_PY313   ?= 1
 RUFF_CHECK_FIX         ?= 0
 FMT_RUN_RUFF_CHECK_FIX ?= 0
 
@@ -63,7 +56,7 @@ lint: lint-artifacts
 	@echo "✔ Linting completed (logs in '$(LINT_ARTIFACTS_DIR)')"
 
 lint-artifacts: | $(VENV)
-	@mkdir -p "$(LINT_ARTIFACTS_DIR)" "$(RUFF_CACHE_DIR)" "$(MYPY_CACHE_DIR)" "$(PYTYPE_OUT_DIR)"
+	@mkdir -p "$(LINT_ARTIFACTS_DIR)" "$(RUFF_CACHE_DIR)" "$(MYPY_CACHE_DIR)"
 	@set -euo pipefail; { \
 	  echo "→ Ruff format (check)"; \
 	  $(RUFF) format --check --config "$(RUFF_CONFIG)" --cache-dir "$(RUFF_CACHE_DIR)" $(LINT_TARGETS); \
@@ -92,18 +85,6 @@ lint-artifacts: | $(VENV)
 	else \
 	  echo "→ Skipping pydocstyle" | tee "$(LINT_ARTIFACTS_DIR)/pydocstyle.log"; \
 	fi
-	@if [ "$(ENABLE_PYTYPE)" = "1" ]; then \
-	  if [ "$(PYTYPE_SKIP_ON_PY313)" = "1" ] && $(VENV_PYTHON) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 13) else 1)'; then \
-	    echo "Pytype skipped on Python >= 3.13" | tee "$(LINT_ARTIFACTS_DIR)/pytype.log"; \
-	  elif [ -n "$(PYTYPE_CONFIG)" ]; then \
-	    set -euo pipefail; $(PYTYPE) --config="$(PYTYPE_CONFIG)" --output="$(PYTYPE_OUT_DIR)" $(PYTYPE_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/pytype.log"; \
-	  else \
-	    set -euo pipefail; $(PYTYPE) -o "$(PYTYPE_OUT_DIR)" $(PYTYPE_ARGS) $(PYTYPE_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/pytype.log"; \
-	  fi; \
-	else \
-	  echo "→ Skipping pytype" | tee "$(LINT_ARTIFACTS_DIR)/pytype.log"; \
-	fi
-	@[ -d .pytype ] && echo "→ removing stray .pytype" && rm -rf .pytype || true
 	@[ -d .mypy_cache ] && echo "→ removing stray .mypy_cache" && rm -rf .mypy_cache || true
 	@[ -d .ruff_cache ] && echo "→ removing stray .ruff_cache" && rm -rf .ruff_cache || true
 	@printf "OK\n" > "$(LINT_ARTIFACTS_DIR)/_passed"
@@ -136,7 +117,7 @@ mypy-extended:
 
 lint-clean:
 	@echo "→ Cleaning lint artifacts"
-	@rm -rf "$(LINT_ARTIFACTS_DIR)" .pytype .mypy_cache .ruff_cache || true
+	@rm -rf "$(LINT_ARTIFACTS_DIR)" .mypy_cache .ruff_cache || true
 	@echo "✔ done"
 
 ##@ Lint

@@ -3,7 +3,7 @@
 Front-door commands (mirrors bijux-cli):
 
 - `make fmt` — ruff format + autofix
-- `make lint` — ruff check + mypy + pytype (artifacts in `artifacts/bijux-rag/lint`)
+- `make lint` — ruff check + mypy (artifacts in `artifacts/bijux-rag/lint`)
 - `make test` — unit + e2e + coverage (artifacts/bijux-rag/test)
 - `make api` — OpenAPI lint + drift + Schemathesis
 - `make docs` — mkdocs build (strict) → `artifacts/bijux-rag/docs/site`

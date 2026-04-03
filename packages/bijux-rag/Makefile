@@ -14,9 +14,6 @@ MYPY_FLAGS                     := --ignore-missing-imports --follow-imports norm
 ENABLE_CODESPELL               := 0
 ENABLE_RADON                   := 0
 ENABLE_PYDOCSTYLE              := 0
-ENABLE_PYTYPE                  := 1
-PYTYPE_CONFIG                  := $(CONFIG_DIR)/pytype.cfg
-PYTYPE_TARGETS                 = $(if $(LINT_SCOPE),$(LINT_SCOPE),src/bijux_rag/boundaries)
 FMT_RUN_RUFF_CHECK_FIX         := 1
 INTERROGATE_PATHS              := src/bijux_rag
 QUALITY_PATHS                  := src/bijux_rag
@@ -71,7 +68,7 @@ clean-soft:
 	@echo "→ Cleaning (artifacts, caches) ..."
 	@$(RM) \
 	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox .nox \
-	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
+	  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
 	  artifacts "$(PROJECT_ARTIFACTS_DIR)" site .cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
 	  find . -type d -name '__pycache__' -exec $(RM) {} +; \

@@ -70,7 +70,7 @@ clean-soft:
 	@echo "→ Cleaning (no .venv) ..."
 	@$(RM) \
 	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox demo .tmp_home \
-	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
+	  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
 	  spec.json openapitools.json node_modules site \
 	  docs/reference artifacts "$(PROJECT_ARTIFACTS_DIR)" usage_test usage_test_artifacts .cache || true
 	@$(RM) $(CONFIG_DIR)/.ruff_cache || true

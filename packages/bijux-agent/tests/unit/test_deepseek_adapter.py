@@ -23,9 +23,9 @@ SKIP_DOTENV_ENV = "BIJUX_AGENT_SKIP_DOTENV"
 
 
 # ---------------------------------------------------------------------------
-# NOTE (pytype):
+# NOTE:
 # Nested classes referenced in annotations (even with future annotations)
-# can produce "Name ... is not defined" under pytype.
+# can produce undefined-name reports in static analyzers.
 # Keep small response stubs at module scope.
 # ---------------------------------------------------------------------------
 class DummyResponse200:

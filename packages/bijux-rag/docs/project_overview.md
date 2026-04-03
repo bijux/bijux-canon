@@ -75,7 +75,6 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../../configs/coveragerc.ini` — repo-wide coverage configuration.
 - `../../configs/mypy.ini` — repo-wide mypy configuration.
 - `../../configs/package.json` — repo-wide Node manifest for OpenAPI tooling.
-- `../../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
 - `../../configs/ruff.toml` — repo-wide Ruff configuration.
 - `Makefile` + `../../makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make all`).
 - `../../scripts/bijux-rag/download_data.sh` — data fetcher.

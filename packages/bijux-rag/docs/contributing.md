@@ -47,7 +47,7 @@ make lint test docs api
 | Target | What it does |
 | --------------- | --------------------------------------------------------------------------- |
 | `make test` | `pytest` + coverage (HTML in `artifacts/bijux-rag/test/htmlcov/`) |
-| `make lint` | Format (ruff), lint (ruff), type-check (mypy/pytype) |
+| `make lint` | Format (ruff), lint (ruff), type-check (mypy) |
 | `make quality` | Dead code (vulture), deps hygiene (deptry), docstrings (interrogate) |
 | `make security` | Bandit + pip-audit |
 | `make api` | OpenAPI lint + generator compat + Schemathesis contract tests |
@@ -98,7 +98,7 @@ make api
 ## Style, Types, Hygiene
 * **Formatting:** `ruff format` (enforced in `make lint`)
 * **Linting:** `ruff`
-* **Types:** `mypy` (strict) + `pytype` (strict)
+* **Types:** `mypy` (strict)
 * **Docstrings:** `interrogate` (meet configured thresholds)
 Run them all:
 ```bash
@@ -165,7 +165,6 @@ BREAKING CHANGE: <explanation>
 ## Troubleshooting
 * **Missing Node.js** → required for OpenAPI validation tooling
 * **Docs fail** → MkDocs is strict; fix broken links/includes
-* **pytype on Python > 3.12** → skipped automatically
 * **Port in use for API tests** → kill old `uvicorn` or use a different port
 [Back to top](#top)
 ---

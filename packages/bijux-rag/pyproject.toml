@@ -77,7 +77,6 @@ dev = [
   "mkdocs-literate-nav>=0.6,<1",
   "mkdocs-section-index>=0.3,<1",
   "mkdocs-click>=0.8,<1",
-  "pytype>=2024.4.11",
 ]
 
 [project.scripts]
