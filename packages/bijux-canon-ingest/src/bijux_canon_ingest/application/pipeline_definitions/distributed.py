@@ -1,53 +1,63 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Optional distributed compilation scaffolding for pipeline definitions.
-
-This module intentionally keeps hard dependencies optional. It provides a place
-to host Dask/Beam compilers when those libraries are installed.
-"""
+"""Optional distributed compilation boundary for pipeline definitions."""
 
 from __future__ import annotations
 
-import importlib
 from typing import Any
+
+from bijux_canon_ingest.application.pipeline_definitions.compiler_support import (
+    DistributedCompilerSupport,
+    UnsupportedDistributedCompiler,
+    detect_support,
+)
+
+
+def dask_support() -> DistributedCompilerSupport:
+    return detect_support(
+        backend="dask",
+        modules=("dask", "dask.bag"),
+        implemented=False,
+        implementation_reason="Dask compiler is intentionally outside this package boundary",
+    )
+
+
+def beam_support() -> DistributedCompilerSupport:
+    return detect_support(
+        backend="beam",
+        modules=("apache_beam",),
+        implemented=False,
+        implementation_reason="Beam compiler is intentionally outside this package boundary",
+    )
 
 
 def dask_available() -> bool:
-    try:
-        importlib.import_module("dask")
-        importlib.import_module("dask.bag")
-        return True
-    except Exception:
-        return False
+    return dask_support().available
 
 
 def beam_available() -> bool:
-    try:
-        importlib.import_module("apache_beam")
-        return True
-    except Exception:
-        return False
+    return beam_support().available
 
 
 def compile_to_dask_bag(*_args: Any, **_kwargs: Any) -> Any:
-    """Placeholder entrypoint for a Dask compiler (requires dask.bag installed)."""
+    """Raise a typed boundary error for the optional Dask compiler."""
 
-    if not dask_available():
-        raise ImportError("dask is not available")
-    raise NotImplementedError(
-        "Dask compiler is optional and not enabled in this repo by default"
-    )
+    raise UnsupportedDistributedCompiler(support=dask_support())
 
 
 def compile_to_beam(*_args: Any, **_kwargs: Any) -> Any:
-    """Placeholder entrypoint for an Apache Beam compiler (requires apache-beam installed)."""
+    """Raise a typed boundary error for the optional Beam compiler."""
 
-    if not beam_available():
-        raise ImportError("apache-beam is not available")
-    raise NotImplementedError(
-        "Beam compiler is optional and not enabled in this repo by default"
-    )
+    raise UnsupportedDistributedCompiler(support=beam_support())
 
-
-__all__ = ["dask_available", "beam_available", "compile_to_dask_bag", "compile_to_beam"]
+__all__ = [
+    "DistributedCompilerSupport",
+    "UnsupportedDistributedCompiler",
+    "beam_available",
+    "beam_support",
+    "compile_to_beam",
+    "compile_to_dask_bag",
+    "dask_available",
+    "dask_support",
+]

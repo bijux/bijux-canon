@@ -7,10 +7,14 @@ from __future__ import annotations
 
 from .configured import PipelineConfig, StepConfig, build_rag_pipeline
 from .distributed import (
+    DistributedCompilerSupport,
+    UnsupportedDistributedCompiler,
     beam_available,
+    beam_support,
     compile_to_beam,
     compile_to_dask_bag,
     dask_available,
+    dask_support,
 )
 from .specs import (
     ErrorPolicy,
@@ -26,8 +30,12 @@ __all__ = [
     "StepConfig",
     "PipelineConfig",
     "build_rag_pipeline",
+    "DistributedCompilerSupport",
+    "UnsupportedDistributedCompiler",
     "dask_available",
+    "dask_support",
     "beam_available",
+    "beam_support",
     "compile_to_dask_bag",
     "compile_to_beam",
     "ErrorPolicy",
