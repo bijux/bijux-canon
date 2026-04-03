@@ -11,7 +11,7 @@ import time
 from typing import Any, cast
 import uuid
 
-from bijux_canon_index.interfaces.pydantic_edges.models import (
+from bijux_canon_index.interfaces.schemas.models import (
     CreateRequest,
     ExecutionArtifactRequest,
     ExecutionRequestPayload,

@@ -104,7 +104,7 @@ class ExecutionRequestPayload(StrictModel):
 
     @model_validator(mode="after")  # type: ignore[untyped-decorator]
     def ensure_randomness_for_nd(self) -> Self:
-        from bijux_canon_index.interfaces.pydantic_edges.validators import (
+        from bijux_canon_index.interfaces.schemas.validators import (
             validate_execution_request_payload,
         )
 

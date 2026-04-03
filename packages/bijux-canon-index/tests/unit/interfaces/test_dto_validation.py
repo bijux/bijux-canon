@@ -7,7 +7,7 @@ import pytest
 
 from pydantic import ValidationError
 
-from bijux_canon_index.interfaces.pydantic_edges.models import (
+from bijux_canon_index.interfaces.schemas.models import (
     CreateRequest,
     ExplainRequest,
     IngestRequest,

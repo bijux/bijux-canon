@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_canon_index.interfaces.pydantic_edges.models import (
+from bijux_canon_index.interfaces.schemas.models import (
     ExecutionArtifactRequest,
     ExecutionRequestPayload,
     IngestRequest,

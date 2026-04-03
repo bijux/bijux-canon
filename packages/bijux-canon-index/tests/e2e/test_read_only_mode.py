@@ -6,7 +6,7 @@ from bijux_canon_index.core.execution_intent import ExecutionIntent
 import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
-from bijux_canon_index.interfaces.pydantic_edges.models import (
+from bijux_canon_index.interfaces.schemas.models import (
     ExplainRequest,
     ExecutionArtifactRequest,
     ExecutionBudgetPayload,

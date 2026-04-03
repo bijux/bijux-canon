@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_index.interfaces.pydantic_edges.models import (
+from bijux_canon_index.interfaces.schemas.models import (
     ExecutionArtifactRequest,
     ExecutionRequestPayload,
     IngestRequest,

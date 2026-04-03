@@ -31,7 +31,7 @@ from bijux_canon_index.interfaces.exception_bridge import (
     refusal_payload,
     to_cli_exit,
 )
-from bijux_canon_index.interfaces.pydantic_edges.models import (
+from bijux_canon_index.interfaces.schemas.models import (
     ExecutionArtifactRequest,
     ExecutionBudgetPayload,
     ExecutionRequestPayload,

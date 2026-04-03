@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bijux_canon_index.interfaces.pydantic_edges.validators import (
+from bijux_canon_index.interfaces.schemas.validators import (
     validate_execution_request_payload,
 )
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
