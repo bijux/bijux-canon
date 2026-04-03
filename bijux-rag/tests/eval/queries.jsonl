@@ -1,0 +1,25 @@
+{"id":"q01","query":"In FASTQ, what is the ASCII offset for PHRED in Sanger encoding?","expected_doc_ids":["d01_fastq"],"tags":["numeric","bioinformatics"]}
+{"id":"q02","query":"What is BAM and how is it related to SAM?","expected_doc_ids":["d02_bam"],"tags":["definition","bioinformatics"]}
+{"id":"q03","query":"Name the core columns of VCF: CHROM POS ID REF ALT QUAL FILTER INFO.","expected_doc_ids":["d03_vcf"],"tags":["list","bioinformatics"]}
+{"id":"q04","query":"What are the three thermal cycling steps in PCR?","expected_doc_ids":["d04_pcr"],"tags":["biology","definition"]}
+{"id":"q05","query":"What is the main role of mitochondria in cells?","expected_doc_ids":["d05_mito"],"tags":["biology","definition"]}
+{"id":"q06","query":"In one sentence, what does RAG combine?","expected_doc_ids":["d06_rag"],"tags":["rag","definition"]}
+{"id":"q07","query":"Which retrieval function uses k1 and b with TF/IDF and length normalization?","expected_doc_ids":["d07_bm25"],"tags":["ir","bm25"]}
+{"id":"q08","query":"What does TF-IDF stand for and what does it weight?","expected_doc_ids":["d08_tfidf"],"tags":["ir","tfidf"]}
+{"id":"q09","query":"When vectors are normalized, cosine similarity equals what operation?","expected_doc_ids":["d09_cosine"],"tags":["math","cosine"]}
+{"id":"q10","query":"What does L2 normalization do to a vector?","expected_doc_ids":["d10_vector_norm"],"tags":["math","normalization"]}
+{"id":"q11","query":"What is overlap in chunking and why is it used?","expected_doc_ids":["d11_chunking"],"tags":["rag","chunking"]}
+{"id":"q12","query":"Why does deduplication matter for retrieval top-k?","expected_doc_ids":["d12_dedup"],"tags":["rag","dedup"]}
+{"id":"q13","query":"What library is commonly used for fast similarity search over dense vectors?","expected_doc_ids":["d13_faiss"],"tags":["ir","faiss"]}
+{"id":"q14","query":"What do sentence-transformers produce and why is it useful?","expected_doc_ids":["d14_sbert"],"tags":["ml","embeddings"]}
+{"id":"q15","query":"What is prompt injection in the context of RAG?","expected_doc_ids":["d15_prompt_injection"],"tags":["security","rag"]}
+{"id":"q16","query":"Define grounding and what must citations map to.","expected_doc_ids":["d16_grounding"],"tags":["rag","citations"]}
+{"id":"q17","query":"What is OpenAPI drift and how is it gated?","expected_doc_ids":["d17_openapi"],"tags":["api","testing"]}
+{"id":"q18","query":"What response code is typical when rate limits are exceeded?","expected_doc_ids":["d18_rate_limit"],"tags":["security","api"]}
+{"id":"q19","query":"Why should RAG avoid exposing PII under GDPR?","expected_doc_ids":["d19_gdpr"],"tags":["compliance","gdpr"]}
+{"id":"q20","query":"What kind of license is the MIT License?","expected_doc_ids":["d20_mit"],"tags":["license","oss"]}
+{"id":"q21","query":"Why do we need stable chunk identifiers?","expected_doc_ids":["d21_index_id"],"tags":["rag","reproducibility"]}
+{"id":"q22","query":"What is an index fingerprint used for?","expected_doc_ids":["d22_fingerprint"],"tags":["rag","testing"]}
+{"id":"q23","query":"What does p95 latency represent?","expected_doc_ids":["d23_latency"],"tags":["perf","metrics"]}
+{"id":"q24","query":"Give an example of metadata filters supported by retrieval.","expected_doc_ids":["d24_filters"],"tags":["rag","filters"]}
+{"id":"q25","query":"What do RAG E2E tests need to gate to avoid being superficial?","expected_doc_ids":["d25_e2e"],"tags":["testing","rag"]}

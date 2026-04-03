@@ -1,0 +1,415 @@
+components:
+  schemas:
+    AskRequest:
+      properties:
+        filters:
+          additionalProperties:
+            type: string
+          title: Filters
+          type: object
+        index_id:
+          minLength: 1
+          title: Index Id
+          type: string
+        query:
+          minLength: 1
+          title: Query
+          type: string
+        rerank:
+          default: true
+          title: Rerank
+          type: boolean
+        top_k:
+          default: 5
+          minimum: 1.0
+          title: Top K
+          type: integer
+      required:
+      - index_id
+      - query
+      title: AskRequest
+      type: object
+    AskResponse:
+      properties:
+        answer:
+          title: Answer
+          type: string
+        candidates:
+          items:
+            $ref: '#/components/schemas/PCandidate'
+          title: Candidates
+          type: array
+        citations:
+          items:
+            $ref: '#/components/schemas/PCitation'
+          title: Citations
+          type: array
+      required:
+      - answer
+      - citations
+      - candidates
+      title: AskResponse
+      type: object
+    ChunkOut:
+      properties:
+        chunk_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chunk Id
+        doc_id:
+          title: Doc Id
+          type: string
+        embedding:
+          anyOf:
+          - items:
+              type: number
+            type: array
+          - type: 'null'
+          title: Embedding
+        end:
+          title: End
+          type: integer
+        metadata:
+          additionalProperties: true
+          title: Metadata
+          type: object
+        start:
+          title: Start
+          type: integer
+        text:
+          title: Text
+          type: string
+      required:
+      - doc_id
+      - text
+      - start
+      - end
+      title: ChunkOut
+      type: object
+    DocIn:
+      properties:
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        doc_id:
+          minLength: 1
+          title: Doc Id
+          type: string
+        text:
+          minLength: 1
+          title: Text
+          type: string
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+      required:
+      - doc_id
+      - text
+      title: DocIn
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    IndexBuildRequest:
+      properties:
+        backend:
+          pattern: ^(bm25|numpy-cosine)$
+          title: Backend
+          type: string
+        chunk_size:
+          default: 512
+          minimum: 1.0
+          title: Chunk Size
+          type: integer
+        docs:
+          items:
+            $ref: '#/components/schemas/DocIn'
+          minItems: 1
+          title: Docs
+          type: array
+        overlap:
+          default: 50
+          minimum: 0.0
+          title: Overlap
+          type: integer
+      required:
+      - docs
+      - backend
+      title: IndexBuildRequest
+      type: object
+    IndexBuildResponse:
+      properties:
+        fingerprint:
+          title: Fingerprint
+          type: string
+        index_id:
+          title: Index Id
+          type: string
+        schema_version:
+          title: Schema Version
+          type: integer
+      required:
+      - index_id
+      - fingerprint
+      - schema_version
+      title: IndexBuildResponse
+      type: object
+    PCandidate:
+      properties:
+        chunk:
+          title: Chunk
+        metadata:
+          additionalProperties: true
+          title: Metadata
+          type: object
+        score:
+          title: Score
+          type: number
+      required:
+      - score
+      - chunk
+      title: PCandidate
+      type: object
+    PChunkRequest:
+      properties:
+        chunk_size:
+          default: 128
+          minimum: 1.0
+          title: Chunk Size
+          type: integer
+        docs:
+          items:
+            $ref: '#/components/schemas/DocIn'
+          minItems: 1
+          title: Docs
+          type: array
+        include_embeddings:
+          default: true
+          title: Include Embeddings
+          type: boolean
+        overlap:
+          default: 0
+          minimum: 0.0
+          title: Overlap
+          type: integer
+      required:
+      - docs
+      title: PChunkRequest
+      type: object
+    PChunkResponse:
+      properties:
+        chunks:
+          items:
+            $ref: '#/components/schemas/ChunkOut'
+          title: Chunks
+          type: array
+      required:
+      - chunks
+      title: PChunkResponse
+      type: object
+    PCitation:
+      properties:
+        chunk_id:
+          title: Chunk Id
+          type: string
+        doc_id:
+          title: Doc Id
+          type: string
+        end:
+          title: End
+          type: integer
+        start:
+          title: Start
+          type: integer
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+      required:
+      - doc_id
+      - chunk_id
+      - start
+      - end
+      title: PCitation
+      type: object
+    RetrieveRequest:
+      properties:
+        filters:
+          additionalProperties:
+            type: string
+          title: Filters
+          type: object
+        index_id:
+          minLength: 1
+          title: Index Id
+          type: string
+        query:
+          minLength: 1
+          title: Query
+          type: string
+        top_k:
+          default: 5
+          minimum: 1.0
+          title: Top K
+          type: integer
+      required:
+      - index_id
+      - query
+      title: RetrieveRequest
+      type: object
+    RetrieveResponse:
+      properties:
+        candidates:
+          items:
+            $ref: '#/components/schemas/PCandidate'
+          title: Candidates
+          type: array
+      required:
+      - candidates
+      title: RetrieveResponse
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  title: bijux-rag
+  version: 0.1.0
+openapi: 3.1.0
+paths:
+  /v1/ask:
+    post:
+      operationId: ask_v1_ask_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AskResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Ask
+  /v1/chunks:
+    post:
+      operationId: chunks_v1_chunks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PChunkRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PChunkResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Chunks
+  /v1/healthz:
+    get:
+      operationId: healthz_v1_healthz_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: boolean
+                title: Response Healthz V1 Healthz Get
+                type: object
+          description: Successful Response
+      summary: Healthz
+  /v1/index/build:
+    post:
+      operationId: index_build_v1_index_build_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexBuildRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexBuildResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Index Build
+  /v1/retrieve:
+    post:
+      operationId: retrieve_v1_retrieve_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Retrieve
+

@@ -1,0 +1,25 @@
+version = 1
+
+[[annotations]]
+path = [
+  "**/*.png", "**/*.svg", "**/*.ico", "**/*.gif", "**/*.jpg", "**/*.jpeg",
+  "**/*.html", "**/*.toml", "**/*.ini", "**/*.cfg", "**/*.conf", "**/*.css",
+  "**/*.env", "**/*.env.*", "**/*.yaml", "**/*.yml", "**/*.json",
+  "**/*.cff", "**/.editorconfig", ".gitattributes", ".gitignore",
+  "artifacts/**"
+]
+precedence = "override"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileCopyrightText = "© 2025 Bijan Mousavi"
+
+[[annotations]]
+path = ["**/*.md"]
+precedence = "closest"
+SPDX-License-Identifier = "MIT"
+SPDX-FileCopyrightText = "© 2025 Bijan Mousavi"
+
+[[annotations]]
+path = ["**/*.py", "**/*.pyi", "**/*.sh", "**/*.mk", "Makefile", "Dockerfile", "Dockerfile.*"]
+precedence = "closest"
+SPDX-License-Identifier = "MIT"
+SPDX-FileCopyrightText = "© 2025 Bijan Mousavi"

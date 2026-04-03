@@ -1,0 +1,15 @@
+{
+  "name": "bijux-rag-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dev dependencies for OpenAPI validation in bijux-rag.",
+  "scripts": {
+    "lint:openapi": "npx redocly lint api/v1/schema.yaml",
+    "validate:openapi": "npx openapi-generator-cli validate -i api/v1/schema.yaml"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "2.22.0",
+    "@redocly/cli": "2.0.5"
+  },
+  "type": "commonjs"
+}

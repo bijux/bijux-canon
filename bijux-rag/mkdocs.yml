@@ -1,0 +1,137 @@
+site_name: bijux-rag
+site_description: "Standalone functional RAG toolkit"
+site_url: https://bijux.github.io/bijux-rag/
+repo_url: https://github.com/bijux/bijux-rag
+repo_name: bijux/bijux-rag
+edit_uri: ""
+strict: true
+use_directory_urls: true
+dev_addr: 127.0.0.0:8000
+docs_dir: docs
+site_dir: artifacts/docs/site
+
+theme:
+  name: material
+  logo: assets/bijux_logo_hq.png
+  favicon: assets/bijux_icon.png
+  font:
+    text: Roboto
+    code: Roboto Mono
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: lime
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.path
+    - navigation.instant
+    - content.code.copy
+    - content.code.annotate
+    - search.highlight
+    - search.suggest
+    - toc.follow
+    - content.tabs.link
+    - content.action.edit
+    - content.action.view
+    - navigation.footer
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - literate-nav:
+      nav_file: nav.md
+  - include-markdown:
+      recursive: true
+      dedent: true
+      preserve_includer_indent: false
+      trailing_newlines: true
+      comments: false
+      rewrite_relative_urls: true
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            merge_init_into_class: true
+            show_source: true
+            show_if_no_docstring: false
+            show_root_heading: true
+            heading_level: 2
+            separate_signature: true
+            signature_crossrefs: true
+            filters: ["!^_"]
+  - search
+  - autorefs
+  - redirects:
+      redirect_maps: {}
+  - section-index
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+  - git-revision-date-localized:
+      enable_creation_date: true
+      fallback_to_build_date: true
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight
+  - pymdownx.snippets
+  - pymdownx.tabbed
+  - pymdownx.tasklist
+  - pymdownx.mark
+  - pymdownx.magiclink
+  - pymdownx.keys
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bijux/bijux-rag
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/bijux-rag/
+  copyright:
+    text: "© 2025 Bijan Mousavi"
+
+extra_css:
+  - assets/styles/extra.css
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+watch:
+  - src
+  - tests
+  - config
+  - docs
+  - artifacts

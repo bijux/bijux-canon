@@ -1,0 +1,43 @@
+{
+  "venvPath": "..",
+  "venv": ".venv",
+  "include": [
+    "../src/bijux_rag/boundaries"
+  ],
+  "stubPath": "../typings",
+  "ignore": [
+    "../src/bijux_rag/rag",
+    "../src/bijux_rag/core",
+    "../src/bijux_rag/fp",
+    "../src/bijux_rag/result",
+    "../src/bijux_rag/domain",
+    "../src/bijux_rag/interop",
+    "../src/bijux_rag/pipelines",
+    "../src/bijux_rag/policies",
+    "../src/bijux_rag/streaming",
+    "../tests"
+  ],
+  "exclude": [
+    "../tests",
+    "../build",
+    "../dist",
+    "../artifacts",
+    "../node_modules",
+    "../.venv",
+    "../.git",
+    "../src/bijux_rag/__init__.py",
+    "../src/bijux_rag/tree"
+  ],
+  "typeCheckingMode": "basic",
+  "pythonVersion": "3.11",
+  "reportMissingTypeStubs": "warning",
+  "reportMissingImports": "warning",
+  "reportUnknownVariableType": "none",
+  "reportUnknownParameterType": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnusedFunction": "none",
+  "reportPrivateUsage": "none",
+  "reportUnnecessaryIsInstance": "none",
+  "useLibraryCodeForTypes": true
+}

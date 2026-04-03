@@ -1,0 +1,212 @@
+name: Deploy Docs
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-docs:
+    # Only run on tag push or manual dispatch
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+
+    outputs:
+      deploy:     ${{ steps.decide.outputs.deploy }}
+      tag:        ${{ steps.decide.outputs.tag }}
+      version:    ${{ steps.decide.outputs.version }}
+      ci_run_id:  ${{ steps.ci.outputs.run_id }}
+
+    steps:
+      - name: Determine target SHA
+        id: sha
+        run: echo "value=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout (tags + history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.sha.outputs.value }}
+
+      - name: Ensure tags present
+        run: git fetch --tags --force --prune
+
+      - name: Decide deploy (SemVer tag on this SHA?)
+        id: decide
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ steps.sha.outputs.value }}"
+          TAGS=$(git tag --points-at "$SHA" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true)
+          if [ -z "$TAGS" ] && [ "${{ github.event_name }}" = "push" ]; then
+            if [[ "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              TAGS="${GITHUB_REF_NAME}"
+            fi
+          fi
+          if [ -z "$TAGS" ]; then
+            echo "deploy=false"  >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          TAG=$(echo "$TAGS" | head -n1)
+          VERSION=${TAG#v}
+          {
+            echo "deploy=true"
+            echo "tag=$TAG"
+            echo "version=$VERSION"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Wait for CI success & capture run id
+        if: steps.decide.outputs.deploy == 'true'
+        id: ci
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.sha;
+            const timeoutMs = 20 * 60 * 1000, pollMs = 15000;
+            const deadline = Date.now() + timeoutMs;
+
+            async function latestCI() {
+              const res = await github.rest.actions.listWorkflowRunsForRepo({
+                owner, repo, head_sha: sha, per_page: 100
+              });
+              return (res.data.workflow_runs || [])
+                .filter(r => r.name === 'CI')
+                .sort((a,b) => new Date(b.run_started_at) - new Date(a.run_started_at))[0];
+            }
+
+            while (true) {
+              const run = await latestCI();
+              if (run && run.status === 'completed') {
+                if (run.conclusion === 'success') {
+                  core.setOutput('run_id', String(run.id));
+                  return;
+                }
+                core.setFailed(`CI concluded: ${run.conclusion}`);
+                return;
+              }
+              if (Date.now() > deadline) { core.setFailed('CI wait timeout'); return; }
+              await new Promise(r => setTimeout(r, pollMs));
+            }
+
+      - name: Download docs artifact from CI
+        if: steps.decide.outputs.deploy == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/docs
+          gh run download "${{ steps.ci.outputs.run_id }}" -n docs-html -D artifacts/docs || true
+          ls -la artifacts/docs || true
+
+      - name: Set up Python (fallback build)
+        if: steps.decide.outputs.deploy == 'true' && hashFiles('artifacts/docs/**') == ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            mkdocs.yml
+
+      - name: Fallback build (only if artifact missing)
+        if: steps.decide.outputs.deploy == 'true' && hashFiles('artifacts/docs/**') == ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -U pip
+          pip install ".[dev]" tox
+          make docs
+          # Fail if still no site
+          if [ ! -d artifacts/docs/site ] || ! compgen -G "artifacts/docs/site/*" >/dev/null; then
+            echo "::error::No docs site available after fallback build"
+            exit 1
+          fi
+
+      - name: Upload artifact
+        if: steps.decide.outputs.deploy == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/docs/site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: deploy-docs
+    if: needs.deploy-docs.outputs.deploy == 'true'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  create-release:
+    name: Create GitHub Release (with docs assets)
+    needs: deploy-docs
+    if: needs.deploy-docs.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all CI artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          gh run download "${{ needs.deploy-docs.outputs.ci_run_id }}" \
+            --repo "${{ github.repository }}" \
+            -D artifacts
+          echo "--- Downloaded artifacts layout ---"
+          find artifacts -maxdepth 2 -type d -print | sort || true
+          echo "-----------------------------------"
+
+      - name: Package docs bundle (zip)
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          mkdir -p _release
+
+          # Docs: create docs-html.zip if site exists
+          if [ -d artifacts/docs/site ] && compgen -G "artifacts/docs/site/*" >/dev/null; then
+            mkdir -p _release/docs
+            cp -r artifacts/docs/site/* _release/docs/ || true
+            (cd _release && zip -r docs-html.zip docs)
+            rm -rf _release/docs
+          fi
+
+          # List release assets
+          ls -la _release || true
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ needs.deploy-docs.outputs.tag }}"
+          VERSION="${{ needs.deploy-docs.outputs.version }}"
+
+          # Create release (idempotent if exists)
+          gh release create "$TAG" --title "Release $VERSION" --notes "Automated release for $VERSION" --draft=false --prerelease=false || true
+
+          # Upload assets if any
+          if compgen -G "_release/*" >/dev/null; then
+            gh release upload "$TAG" _release/* --clobber
+          else
+            echo "No assets to upload; skipping."
+          fi

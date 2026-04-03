@@ -1,0 +1,14 @@
+{
+  "steps": [
+    {"name": "clean", "params": {}},
+    {
+      "name": "chunk",
+      "params": {
+        "chunk_size": 64,
+        "overlap": 8,
+        "tail_policy": "emit_short"
+      }
+    },
+    {"name": "embed", "params": {}}
+  ]
+}
