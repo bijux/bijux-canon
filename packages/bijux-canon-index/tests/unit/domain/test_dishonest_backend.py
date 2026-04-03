@@ -17,7 +17,7 @@ from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile, VectorExecution
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
-from bijux_canon_index.domain.execution_requests.plan import run_plan
+from bijux_canon_index.domain.requests.plan import run_plan
 from bijux_canon_index.infra.adapters.memory.backend import (
     MemoryExecutionLedger,
     MemoryState,

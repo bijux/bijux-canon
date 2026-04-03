@@ -16,7 +16,7 @@ bijux-vex is a contract-driven vector execution system with explicit determinism
 
 ## ExecutionRequest determinism
 - Identical execution requests over identical corpora yield identical ranked results under the deterministic contract.
-- Modules: `src/bijux_canon_index/core/types.py`, `src/bijux_canon_index/domain/execution_requests/scoring.py`, `tests/conformance/execution_request_determinism.py`.
+- Modules: `src/bijux_canon_index/core/types.py`, `src/bijux_canon_index/domain/requests/scoring.py`, `tests/conformance/execution_request_determinism.py`.
 
 ## Explainability + replay
 - Results must be explainable doc→chunk→vector→artifact→score with provenance that carries `execution_contract`, `nondeterministic_sources`, and `lossy_dimensions`.

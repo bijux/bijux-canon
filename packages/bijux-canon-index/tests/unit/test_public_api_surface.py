@@ -58,11 +58,11 @@ EXPECTED = {
         "derive_execution_id",
         "execution_signature",
     },
-    "bijux_canon_index.domain.execution_requests.plan": {
+    "bijux_canon_index.domain.requests.plan": {
         "build_execution_plan",
         "run_plan",
     },
-    "bijux_canon_index.domain.execution_requests.comparator": {"ExecutionComparator"},
+    "bijux_canon_index.domain.requests.comparator": {"ExecutionComparator"},
     "bijux_canon_index.core.invariants": {"ALLOWED_METRICS", "validate_execution_artifact"},
     "bijux_canon_index.contracts.resources": {
         "ExecutionResources",

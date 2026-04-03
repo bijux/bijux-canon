@@ -53,8 +53,8 @@ from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.identity.ids import fingerprint
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import ExecutionBudget, ExecutionRequest, NDSettings, Result
-from bijux_canon_index.domain.execution_requests import scoring
-from bijux_canon_index.domain.execution_requests.compare import _rank_instability
+from bijux_canon_index.domain.requests import scoring
+from bijux_canon_index.domain.requests.compare import _rank_instability
 from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
 from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.infra.logging import enable_trace, trace_events

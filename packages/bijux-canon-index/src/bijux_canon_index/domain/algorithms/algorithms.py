@@ -15,7 +15,7 @@ from bijux_canon_index.domain.algorithms.base import (
     VectorExecutionAlgorithm,
     register_algorithm,
 )
-from bijux_canon_index.domain.execution_requests import scoring
+from bijux_canon_index.domain.requests import scoring
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 
 

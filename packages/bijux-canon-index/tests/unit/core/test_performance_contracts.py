@@ -8,7 +8,7 @@ from dataclasses import replace
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.contracts.performance_contracts import assert_performance_envelope
-from bijux_canon_index.domain.execution_requests.execute import (
+from bijux_canon_index.domain.requests.execute import (
     execute_request,
     start_execution_session,
 )

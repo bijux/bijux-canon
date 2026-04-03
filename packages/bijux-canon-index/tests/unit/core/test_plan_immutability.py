@@ -7,7 +7,7 @@ import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
-from bijux_canon_index.domain.execution_requests.plan import run_plan
+from bijux_canon_index.domain.requests.plan import run_plan
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
 from bijux_canon_index.core.errors import InvariantError

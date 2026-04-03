@@ -6,7 +6,7 @@ from bijux_canon_index.core.execution_intent import ExecutionIntent
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
-from bijux_canon_index.domain.execution_requests.execute import (
+from bijux_canon_index.domain.requests.execute import (
     execute_request,
     start_execution_session,
 )

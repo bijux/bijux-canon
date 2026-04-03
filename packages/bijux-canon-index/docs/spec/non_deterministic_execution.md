@@ -11,4 +11,4 @@ ND execution is **first-class** at the contract level but remains **experimental
   - `ApproximationReport` (recall, displacement, distance error, algorithm, backend, randomness_sources, fallback flag)
   - `DeterminismReport` with reproducibility bounds and randomness used.
 
-Code mapping: see `src/bijux_canon_index/core/contracts/execution_contract.py`, `src/bijux_canon_index/domain/execution_requests/postprocess.py`, `src/bijux_canon_index/domain/provenance/replay.py`, `tests/conformance/test_execution_contracts.py`.
+Code mapping: see `src/bijux_canon_index/core/contracts/execution_contract.py`, `src/bijux_canon_index/domain/requests/postprocess.py`, `src/bijux_canon_index/domain/provenance/replay.py`, `tests/conformance/test_execution_contracts.py`.

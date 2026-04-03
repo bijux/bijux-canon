@@ -14,8 +14,8 @@ from bijux_canon_index.core.runtime.execution_session import (
 )
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
-from bijux_canon_index.domain.execution_requests import plan as plan_builder
-from bijux_canon_index.domain.execution_requests.budget import default_budget
+from bijux_canon_index.domain.requests import plan as plan_builder
+from bijux_canon_index.domain.requests.budget import default_budget
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 
 

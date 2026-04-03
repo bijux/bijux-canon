@@ -18,9 +18,9 @@ from bijux_canon_index.core.runtime.execution_session import (
     enforce_transition,
 )
 from bijux_canon_index.core.types import ExecutionRequest, Result
-from bijux_canon_index.domain.execution_requests.budget import check_budget
-from bijux_canon_index.domain.execution_requests.plan import run_plan
-from bijux_canon_index.domain.execution_requests.scoring import tie_break_key
+from bijux_canon_index.domain.requests.budget import check_budget
+from bijux_canon_index.domain.requests.plan import run_plan
+from bijux_canon_index.domain.requests.scoring import tie_break_key
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.logging import log_event
 
@@ -70,7 +70,7 @@ def collect_results(
             session.request.execution_contract is ExecutionContract.NON_DETERMINISTIC
             and session.request.nd_settings is not None
         ):
-            from bijux_canon_index.domain.execution_requests.nd_quality import (
+            from bijux_canon_index.domain.requests.nd_quality import (
                 adaptive_filter_results,
             )
 
@@ -84,7 +84,7 @@ def collect_results(
                 session.request.nd_settings.low_signal_margin is not None
                 and results_buffer
             ):
-                from bijux_canon_index.domain.execution_requests.nd_quality import (
+                from bijux_canon_index.domain.requests.nd_quality import (
                     compute_distance_margin,
                 )
 

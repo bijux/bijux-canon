@@ -20,7 +20,7 @@ from bijux_canon_index.core.types import (
     ExecutionRequest,
     Vector,
 )
-from bijux_canon_index.domain.execution_requests.execute import (
+from bijux_canon_index.domain.requests.execute import (
     ExecutionOutcome,
     execute_request_outcome,
     start_execution_session,

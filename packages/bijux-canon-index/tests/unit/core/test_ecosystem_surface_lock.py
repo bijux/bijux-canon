@@ -14,8 +14,8 @@ ALLOWED_ECOSYSTEM_MODULES = {
     "bijux_canon_index.core.runtime.execution_plan",
     "bijux_canon_index.core.runtime.vector_execution",
     "bijux_canon_index.core.runtime.execution_session",
-    "bijux_canon_index.domain.execution_requests.execute",
-    "bijux_canon_index.domain.execution_requests.compare",
+    "bijux_canon_index.domain.requests.execute",
+    "bijux_canon_index.domain.requests.compare",
 }
 
 

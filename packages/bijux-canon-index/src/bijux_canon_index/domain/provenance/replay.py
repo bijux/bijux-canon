@@ -12,7 +12,7 @@ from bijux_canon_index.core.errors import InvariantError, ReplayNotSupportedErro
 from bijux_canon_index.core.identity.ids import fingerprint
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, Result
-from bijux_canon_index.domain.execution_requests.execute import (
+from bijux_canon_index.domain.requests.execute import (
     execute_request,
     start_execution_session,
 )

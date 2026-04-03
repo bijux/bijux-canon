@@ -30,7 +30,7 @@ from bijux_canon_index.core.types import (
     Result,
     Vector,
 )
-from bijux_canon_index.domain.execution_requests import scoring
+from bijux_canon_index.domain.requests import scoring
 from bijux_canon_index.domain.provenance.audit import AuditRecord
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 

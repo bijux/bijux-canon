@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from bijux_canon_index.core.execution_result import ExecutionResult
 from bijux_canon_index.core.types import Result
-from bijux_canon_index.domain.execution_requests.compare import (
+from bijux_canon_index.domain.requests.compare import (
     VectorExecutionDiff,
     compare_executions,
 )

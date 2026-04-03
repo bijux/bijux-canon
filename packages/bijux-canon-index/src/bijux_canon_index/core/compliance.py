@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from bijux_canon_index.core.errors import InvariantError
-from bijux_canon_index.domain.execution_requests.compare import VectorExecutionDiff
+from bijux_canon_index.domain.requests.compare import VectorExecutionDiff
 
 
 @dataclass(frozen=True)

@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 
 from bijux_canon_index.core.compliance import ComparisonPolicy, enforce_policy
-from bijux_canon_index.domain.execution_requests.compare import VectorExecutionDiff
+from bijux_canon_index.domain.requests.compare import VectorExecutionDiff
 from bijux_canon_index.core.execution_result import ExecutionResult, ExecutionCost
 from bijux_canon_index.core.types import Result
 from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan

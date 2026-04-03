@@ -5,7 +5,7 @@
 from __future__ import annotations
 from hypothesis import HealthCheck, given, settings
 
-from bijux_canon_index.domain.execution_requests import scoring
+from bijux_canon_index.domain.requests import scoring
 from tests import strategies as strat
 
 

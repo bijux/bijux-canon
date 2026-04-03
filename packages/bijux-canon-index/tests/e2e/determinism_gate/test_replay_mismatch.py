@@ -46,7 +46,7 @@ def test_replay_reports_mismatch():
         backend.stores.vectors.put_vector(tx, vec)
         backend.stores.ledger.put_artifact(tx, art)
 
-    from bijux_canon_index.domain.execution_requests.execute import (
+    from bijux_canon_index.domain.requests.execute import (
         execute_request,
         start_execution_session,
     )

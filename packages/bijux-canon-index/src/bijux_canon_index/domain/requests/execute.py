@@ -15,21 +15,21 @@ from bijux_canon_index.core.execution_result import (
 )
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, Result
-from bijux_canon_index.domain.execution_requests.budget import (
+from bijux_canon_index.domain.requests.budget import (
     apply_budget_outcomes,
 )
-from bijux_canon_index.domain.execution_requests.execution import collect_results, estimate_cost
-from bijux_canon_index.domain.execution_requests.nd_quality import (
+from bijux_canon_index.domain.requests.execution import collect_results, estimate_cost
+from bijux_canon_index.domain.requests.nd_quality import (
     build_witness_report,
     should_run_witness,
 )
-from bijux_canon_index.domain.execution_requests.planning import start_session
-from bijux_canon_index.domain.execution_requests.postprocess import (
+from bijux_canon_index.domain.requests.planning import start_session
+from bijux_canon_index.domain.requests.postprocess import (
     build_execution_result,
     guard_nd_randomness,
     randomness_audit,
 )
-from bijux_canon_index.domain.execution_requests.validation import require_randomness
+from bijux_canon_index.domain.requests.validation import require_randomness
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 
 
