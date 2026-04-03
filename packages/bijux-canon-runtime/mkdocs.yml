@@ -1,0 +1,150 @@
+site_name: bijux-canon-runtime
+site_url: https://bijux.github.io/bijux-canon-runtime/
+repo_name: bijux/bijux-canon
+repo_url: https://github.com/bijux/bijux-canon
+
+docs_dir: docs
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - search.highlight
+    - content.code.copy
+    - navigation.footer
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: lime
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  logo: assets/bijux_logo_hq.png
+  favicon: assets/bijux_icon.png
+
+nav:
+  - Home: index.md
+  - Overview:
+      - getting_started: overview/getting_started.md
+      - why-agentic-flows: overview/why-agentic-flows.md
+      - why-agentic-flows-contract: overview/why_agentic_flows.md
+      - mental-model: overview/mental-model.md
+      - minimal-run: overview/minimal-run.md
+      - boring-path: overview/boring-path.md
+      - determinism: overview/determinism.md
+      - non-determinism-contract: overview/non-determinism-contract.md
+      - terminology: overview/terminology.md
+      - replay-equivalence: overview/replay-equivalence.md
+      - storage-model: overview/storage-model.md
+      - dependencies: overview/dependencies.md
+      - cli-contract: overview/cli-contract.md
+      - documentation-policy: overview/documentation-policy.md
+      - common-misuse: overview/common-misuse.md
+      - audit-grade: overview/audit-grade.md
+      - datasets: overview/datasets.md
+      - wont-support: overview/wont-support.md
+      - upgrade-policy: overview/upgrade-policy.md
+      - versioning: overview/versioning.md
+      - what-breaks-determinism: overview/what-breaks-determinism.md
+      - relationship-to-agentic-proteins: overview/relationship-to-agentic-proteins.md
+      - audience: overview/audience.md
+      - non-goals: overview/non-goals.md
+      - stability: overview/stability.md
+      - release-checklist: overview/release-checklist.md
+      - release-notes-v0.1.0: overview/release-notes-v0.1.0.md
+  - Concepts:
+      - concepts: concepts/index.md
+      - core_concepts: concepts/core_concepts.md
+      - determinism: concepts/determinism.md
+      - failures: concepts/failures.md
+      - failure-taxonomy: concepts/failure-taxonomy.md
+  - Execution:
+      - failure-paths: execution/failure-paths.md
+  - Governance:
+      - contributing: governance/contributing.md
+      - core: governance/core.md
+      - semver: governance/semver.md
+      - anti_patterns: governance/anti_patterns.md
+      - public-contract-freeze: governance/public_contract_freeze.md
+      - roadmap_ceiling: governance/roadmap_ceiling.md
+      - positioning: governance/positioning.md
+      - release_identity: governance/release_identity.md
+  - Research:
+      - agentic_criteria: research/agentic_criteria.md
+      - agent_taxonomy: research/agent_taxonomy.md
+      - formal_model: research/formal_model.md
+      - falsifiable_claim: research/falsifiable_claim.md
+      - decisive_experiment: research/decisive_experiment.md
+      - ablation_studies: research/ablation_studies.md
+      - neutral_results: research/neutral_results.md
+      - reviewer_premortem: research/reviewer_premortem.md
+      - system_schematic: research/system_schematic.md
+  - Externalization:
+      - mpi: externalization/mpi.md
+      - golden_path: externalization/golden_path.md
+      - misuse_guards: externalization/misuse_guards.md
+      - surface_area: externalization/surface_area.md
+      - sandbox: externalization/sandbox.md
+      - invariant_visualization: externalization/invariant_visualization.md
+      - why_not_x: externalization/why_not_x.md
+  - Docs:
+      - SPINE: meta/SPINE.md
+      - DOCS_STYLE: meta/DOCS_STYLE.md
+      - DOCS_VOICE: meta/DOCS_VOICE.md
+      - NAMING: meta/NAMING.md
+      - TRIAGE: meta/TRIAGE.md
+  - Architecture:
+      - architecture: architecture/architecture.md
+      - invariants: architecture/invariants.md
+      - architecture-note: architecture/architecture-note.md
+      - abstraction_removal: architecture/abstraction_removal.md
+      - experimental: architecture/experimental.md
+      - llm_authority: architecture/llm_authority.md
+      - execution_model: architecture/execution_model.md
+      - execution_lifecycle: architecture/execution_lifecycle.md
+      - execution_cost: architecture/execution_cost.md
+      - pathway_limits: architecture/pathway_limits.md
+      - conservation: architecture/conservation.md
+      - metrics: architecture/metrics.md
+      - observability: architecture/observability.md
+      - negative_results: architecture/negative_results.md
+      - design_debt: architecture/design_debt.md
+  - CLI:
+      - cli: cli/cli.md
+      - cli_surface: interface/cli_surface.md
+  - API:
+      - overview: api/overview.md
+      - schema: api/schema.md
+      - schema-mapping: api/schema-mapping.md
+      - python-surface: api/python_surface.md
+      - public-surface: api/public-surface.md
+      - failures: api/failures.md
+      - http-failures: api/http_failures.md
+      - replay-rejected-example: api/examples/replay_rejected.md
+  - Examples:
+      - replay-failure: examples/replay_failure.txt
+  - Security:
+      - dependencies: security/dependencies.md
+      - threat_model: security/threat_model.md
+
+strict: true
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - tables
+  - def_list

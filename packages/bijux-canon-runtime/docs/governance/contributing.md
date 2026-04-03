@@ -1,0 +1,265 @@
+# Contributing to Agentic Flows
+<a id="top"></a>
+
+This guide is the single source of truth for local setup, workflows, API validation, and PR rules. Follow it to ensure your changes pass CI seamlessly.
+
+---
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Daily Workflow](#daily-workflow)
+- [API Development](#api-development)
+- [Docs](#docs)
+- [Tests & Coverage](#tests--coverage)
+- [Style, Types, Hygiene](#style-types-hygiene)
+- [Security & Supply Chain](#security--supply-chain)
+- [Make Targets (Mirror CI)](#make-targets-mirror-ci)
+- [Commits & PRs](#commits--prs)
+- [Troubleshooting](#troubleshooting)
+- [Community & Conduct](#community--conduct)
+
+
+
+---
+
+<a id="quick-start"></a>
+
+## Quick Start
+
+**Prereqs**
+
+- Python **3.11+** (`pyenv` recommended)
+- **GNU Make**
+- **Node.js + npm** (for API validation tooling)
+
+**Setup**
+
+```bash
+git clone https://github.com/bijux/bijux-canon.git
+cd bijux-canon/packages/bijux-canon-runtime
+make PYTHON=python3.11 install
+source .venv/bin/activate
+```
+
+**Sanity check**
+
+```bash
+make lint test docs api
+```
+
+* ✔ Pass → your env matches CI
+* ✘ Fail → jump to [Troubleshooting](#troubleshooting)
+
+
+
+---
+
+<a id="daily-workflow"></a>
+
+## Daily Workflow
+
+* Everything runs inside **.venv/**
+* No global installs after `make install`
+* Make targets mirror CI jobs 1:1
+
+**Core targets**
+
+| Target          | What it does                                                                 |
+| --------------- | ---------------------------------------------------------------------------- |
+| `make test`     | `pytest` + coverage (HTML in `artifacts/bijux-canon-runtime/test/htmlcov/`)                      |
+| `make lint`     | Format (ruff), lint (ruff), type-check (mypy), complexity (radon)            |
+| `make quality`  | Dead code (vulture), deps hygiene (deptry), docstrings (interrogate)          |
+| `make security` | Bandit + pip-audit                                                           |
+| `make api`      | OpenAPI lint + generator compat + Schemathesis contract tests                |
+| `make docs`     | Build MkDocs (strict)                                                        |
+| `make build`    | Build sdist + wheel                                                          |
+| `make sbom`     | CycloneDX SBOM → `artifacts/bijux-canon-runtime/sbom/`                                           |
+
+**Handy helpers**
+
+```bash
+make lint-file file=path/to/file.py
+make docs-serve    # local docs server
+# make docs-deploy # if you have perms
+```
+
+
+
+---
+
+<a id="api-development"></a>
+
+## API Development
+
+**Schema:** `../../apis/bijux-canon-runtime/v1/schema.yaml`  
+**Tooling:** Prance, OpenAPI Spec Validator, Redocly, OpenAPI Generator, Schemathesis
+
+**Validate locally**
+
+```bash
+.venv/bin/uvicorn agentic_flows.http_api.app:app --host 0.0.0.0 --port 8000 &
+make api
+```
+
+**Contract rules**
+
+* Errors use the documented API error taxonomy.
+* Response shapes and pagination are stable or versioned.
+* Breaking changes require a versioned path **and** a changelog entry.
+
+
+
+---
+
+<a id="docs"></a>
+
+## Docs
+
+* Config: `../mkdocs.yml` (Material, **strict**)
+* Build: `make docs`
+* Serve: `make docs-serve`
+* Deploy: `make docs-deploy` (if authorized)
+
+
+
+---
+
+<a id="tests--coverage"></a>
+
+## Tests & Coverage
+
+* Run all tests: `make test`
+* Focused run: `pytest -k "<expr>" -q`
+* Coverage report: HTML in `artifacts/bijux-canon-runtime/test/htmlcov/`
+* **Project bar:** keep coverage thresholds green and benchmarks within the regression gate.
+
+
+
+---
+
+<a id="style-types-hygiene"></a>
+
+## Style, Types, Hygiene
+
+* **Formatting:** `ruff format` (enforced in `make lint`)
+* **Linting:** `ruff`
+* **Types:** `mypy` (strict)
+* **Complexity:** `radon`
+* **Docstrings:** `interrogate` (meet configured thresholds)
+
+Run them all:
+
+```bash
+make lint
+```
+
+
+
+---
+
+<a id="security--supply-chain"></a>
+
+## Security & Supply Chain
+
+```bash
+make security  # bandit + pip-audit
+make sbom      # CycloneDX, saved to artifact/sbom/
+```
+
+* No secrets in code or tests
+* Keep dependency pins sane; document any suppressions
+
+
+
+---
+
+<a id="make-targets-mirror-ci"></a>
+
+## Make Targets (Mirror CI)
+
+| Target     | Runs            |
+| ---------- | --------------- |
+| `test`     | `make test`     |
+| `lint`     | `make lint`     |
+| `quality`  | `make quality`  |
+| `security` | `make security` |
+| `api`      | `make api`      |
+| `docs`     | `make docs`     |
+| `build`    | `make build`    |
+| `sbom`     | `make sbom`     |
+
+List all:
+
+```bash
+make help
+```
+
+
+
+---
+
+<a id="commits--prs"></a>
+
+## Commits & PRs
+
+### Conventional Commits (required)
+
+```
+<type>(<scope>): <description>
+```
+
+**Types:** `feat` `fix` `docs` `style` `refactor` `test` `chore`
+
+**Example**
+
+```
+feat(runtime): enforce artifact immutability checks
+```
+
+**Breaking changes** must include:
+
+```
+BREAKING CHANGE: <explanation>
+```
+
+> Commit messages should follow Commitizen-compatible conventional commit format.
+
+### PR Checklist
+
+1. Branch from `main`
+2. Run:
+
+   ```bash
+   make lint test api docs
+   ```
+3. Ensure Conventional Commits
+4. Open PR with clear summary & rationale
+
+
+
+---
+
+<a id="troubleshooting"></a>
+
+## Troubleshooting
+
+* **Missing Node.js** → required for API validation tools
+* **Docs fail** → MkDocs is strict; fix broken links/includes
+* **Port in use for API tests** → kill old `uvicorn` or use a different port
+
+
+
+---
+
+<a id="community--conduct"></a>
+
+## Community & Conduct
+
+Be kind and constructive. See the **Code of Conduct** in the docs site. If you see something off, let us know.
+
+
+
+---
+
+**Build well. Break nothing.**

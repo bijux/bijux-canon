@@ -1,0 +1,58 @@
+name: publish-bijux-canon-runtime
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-bijux-canon-runtime
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACTS_DIR: artifacts/bijux-canon-runtime
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: packages/bijux-canon-runtime/pyproject.toml
+
+      - name: Build distribution and SBOM
+        run: |
+          make -C packages/bijux-canon-runtime build
+          make -C packages/bijux-canon-runtime sbom
+
+      - name: Stage publish artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .github/tmp/bijux-canon-runtime-dist
+          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-canon-runtime-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-canon-runtime-dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: .github/tmp/bijux-canon-runtime-dist
+          skip-existing: true
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bijux-canon-runtime-release
+          path: |
+            ${{ env.ARTIFACTS_DIR }}/build/*
+            ${{ env.ARTIFACTS_DIR }}/sbom/*
+          if-no-files-found: ignore
+          retention-days: 14

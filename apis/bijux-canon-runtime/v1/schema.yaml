@@ -1,0 +1,270 @@
+openapi: 3.1.0
+info:
+  title: bijux-canon-runtime API schemas
+  version: v1
+  license:
+    name: MIT
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: /
+security: []
+paths:
+  /flows/run:
+    post:
+      summary: Run a flow
+      description: Executes a flow only when the declared policy, dataset, and headers satisfy the execution contract, otherwise returns a FailureEnvelope.
+      operationId: runFlow
+      parameters:
+        - $ref: '#/components/parameters/XAgenticGate'
+        - $ref: '#/components/parameters/XDeterminismLevel'
+        - $ref: '#/components/parameters/XPolicyFingerprint'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowRunRequest'
+      responses:
+        '200':
+          description: Flow run completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowRunResponse'
+        '406':
+          description: Missing or invalid required headers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+        '400':
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+            text/plain:
+              schema:
+                type: string
+        '422':
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+        '501':
+          description: Flow run not implemented.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+  /flows/replay:
+    post:
+      summary: Replay a flow
+      description: Replays a persisted run under the declared acceptability threshold and reports contractual mismatches in the response envelope.
+      operationId: replayFlow
+      parameters:
+        - $ref: '#/components/parameters/XAgenticGate'
+        - $ref: '#/components/parameters/XDeterminismLevel'
+        - $ref: '#/components/parameters/XPolicyFingerprint'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplayRequest'
+      responses:
+        '200':
+          description: Replay completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowRunResponse'
+        '406':
+          description: Missing or invalid required headers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+        '400':
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+            text/plain:
+              schema:
+                type: string
+        '422':
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+        '501':
+          description: Replay not implemented.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+components:
+  parameters:
+    XAgenticGate:
+      name: X-Agentic-Gate
+      in: header
+      required: true
+      schema:
+        type: string
+    XDeterminismLevel:
+      name: X-Determinism-Level
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/DeterminismLevel'
+    XPolicyFingerprint:
+      name: X-Policy-Fingerprint
+      in: header
+      required: true
+      schema:
+        type: string
+  schemas:
+    FlowRunRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - flow_manifest
+        - inputs_fingerprint
+        - run_mode
+        - dataset_id
+        - policy_fingerprint
+      properties:
+        flow_manifest:
+          anyOf:
+            - type: string
+            - type: string
+              format: uri
+        inputs_fingerprint:
+          type: string
+        run_mode:
+          $ref: '#/components/schemas/RunMode'
+        dataset_id:
+          type: string
+        policy_fingerprint:
+          type: string
+    FlowRunResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - run_id
+        - flow_id
+        - status
+        - determinism_class
+        - environment_fingerprint
+        - replay_acceptability
+        - artifact_count
+      properties:
+        run_id:
+          type: string
+        flow_id:
+          type: string
+        status:
+          $ref: '#/components/schemas/FlowRunStatus'
+        determinism_class:
+          $ref: '#/components/schemas/DeterminismClass'
+        environment_fingerprint:
+          type:
+            - string
+            - "null"
+        replay_acceptability:
+          $ref: '#/components/schemas/ReplayAcceptability'
+        artifact_count:
+          type: integer
+          minimum: 0
+    ReplayRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - run_id
+        - expected_plan_hash
+        - acceptability_threshold
+        - observer_mode
+      properties:
+        run_id:
+          type: string
+        expected_plan_hash:
+          type: string
+        acceptability_threshold:
+          $ref: '#/components/schemas/ReplayAcceptability'
+        observer_mode:
+          type: boolean
+    FailureEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+        - failure_class
+        - reason_code
+        - violated_contract
+        - evidence_ids
+        - determinism_impact
+      properties:
+        failure_class:
+          $ref: '#/components/schemas/FailureClass'
+          description: Classification of the failure category returned by the API.
+        reason_code:
+          $ref: '#/components/schemas/ReasonCode'
+          description: Stable reason code describing the contractual failure cause.
+        violated_contract:
+          type: string
+          description: Identifier of the contract or invariant that was violated.
+        evidence_ids:
+          type: array
+          items:
+            type: string
+          description: Evidence identifiers relevant to the failure analysis.
+        determinism_impact:
+          $ref: '#/components/schemas/DeterminismClass'
+          description: Determinism class impacted by the failure.
+    RunMode:
+      type: string
+      enum:
+        - live
+        - dry
+        - observer
+    FlowRunStatus:
+      type: string
+      enum:
+        - completed
+        - failed
+        - cancelled
+    DeterminismClass:
+      type: string
+      enum:
+        - structural
+        - environmental
+        - stochastic
+        - human
+        - external
+    DeterminismLevel:
+      type: string
+      enum:
+        - strict
+        - bounded
+        - probabilistic
+        - unconstrained
+    ReplayAcceptability:
+      type: string
+      enum:
+        - exact_match
+        - invariant_preserving
+        - statistically_bounded
+    FailureClass:
+      type: string
+      enum:
+        - structural
+        - semantic
+        - environmental
+        - authority
+    ReasonCode:
+      type: string
+      enum:
+        - contradiction_detected
