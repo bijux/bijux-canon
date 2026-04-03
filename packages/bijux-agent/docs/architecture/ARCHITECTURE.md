@@ -39,7 +39,8 @@ This document is a module-level map of the codebase. It describes *where respons
 ### Configuration (`src/bijux_agent/config/`)
 
 - Defaults and minimal reference configs
-- Environment key loading/validation (`config/env.py`)
+- Environment key loading/validation (`src/bijux_agent/config/env.py`)
+- Example runtime YAML (`examples/default-config.yml`)
 
 ## Data flow
 

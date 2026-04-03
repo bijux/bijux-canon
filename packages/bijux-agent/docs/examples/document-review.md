@@ -18,7 +18,7 @@ task_goal: "review this document for correctness, missing assumptions, and actio
 ## Run
 
 ```bash
-python -m bijux_agent.main run path/to/review_corpus --out artifacts/review_run --config config/config.yml
+python -m bijux_agent.main run path/to/review_corpus --out artifacts/review_run --config examples/default-config.yml
 ```
 
 ## How to interpret the outputs

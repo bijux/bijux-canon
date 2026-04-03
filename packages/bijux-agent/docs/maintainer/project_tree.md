@@ -5,7 +5,7 @@ High-signal directories:
 - `src/bijux_agent/` — library and runtime code
 - `tests/` — unit + invariant tests
 - `docs/` — MkDocs sources (this directory)
-- `config/` — runtime-local configuration examples
+- `examples/default-config.yml` — example runtime configuration for CLI runs
 - `../../configs/bijux-agent/` — root-managed tooling configuration
 - `api/` — OpenAPI schema and API assets
 - `../../makes/bijux-agent/` — Make targets used by CI and developers

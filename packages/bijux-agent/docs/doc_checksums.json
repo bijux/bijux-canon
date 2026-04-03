@@ -1,10 +1,10 @@
 {
   "docs/api/index.md": "2318d90bf50a6bb5da8f9ce9f1e90fef8bd7e26aa92a49a4c5f489be2d8b1087",
-  "docs/architecture/ARCHITECTURE.md": "a4fe636b902ddfd8afa0d8416b40062acb478fd588445b6b5fcab27def30d598",
+  "docs/architecture/ARCHITECTURE.md": "ab91fa4a5626ae92f3c41a0dfb256763cf40d2cc6d8be96d8770900ceec2fe2d",
   "docs/design/determinism.md": "ab37ac57cdf51c76f5ecf76ff9d77cdcd2773350b5545093eede45483f05cbf9",
-  "docs/examples/document-review.md": "09462f4fed722e43aa78371a31e56f466c1e2806f22b1d6175bcd4094248ff58",
-  "docs/examples/minimal-pipeline.md": "7057931dcdbeb3cbc2c6af53e1299a1bf3e49d770451192f2278d7aaac14d197",
-  "docs/index.md": "e0bf8f8f2ee9f8a2e8e5b1cb2b705b150ddb38bb158439afee95f7a1b78e7bac",
+  "docs/examples/document-review.md": "257a35d9cfbd3a3f322289124f82dec322d527e6d57067293712de7ea677b7f0",
+  "docs/examples/minimal-pipeline.md": "32b979a8a496b87b170d7658f7071ec5701e7478bc2c5bc8006185a1f20e0568",
+  "docs/index.md": "e0acc7a8048b2d56e7accbf14068ce047f8c5e7de92f8c061dc183f898e1c180",
   "docs/legal/security.md": "c43f1828eba02f7413318105efbabc478652020a28ec7cd8f2d0a3baf8e5ab4c",
   "docs/maintainer/CHANGELOG.md": "0e20053cd440fc6c108aef7b5788b1466a659bf9459f0171badd1fcc46e9fe61",
   "docs/maintainer/anti-features.md": "5854a41d2a1e17a97c203cd2998b68185c78643f44aeba1ce7dcaa4dea1bf4a0",
@@ -18,7 +18,7 @@
   "docs/maintainer/evaluation.md": "b85da1c581a276a6525f66261c7656bf555d96283bdfa398f3b6e2eaf22ea237",
   "docs/maintainer/first-refactor-plan.md": "826d7a80260e002396bad139222a686848757deb69a5a7da38025b9c74de5626",
   "docs/maintainer/pipeline_refactor_rules.md": "0fdb0339e8b5e442d076e4e6d89227aa49d79558bfb1a45ff9b36b63d7b4d8dc",
-  "docs/maintainer/project_tree.md": "2e85aa7cc7ad581335fdb3b9dd94f657cb92e532f87e844c29c368c27f5de775",
+  "docs/maintainer/project_tree.md": "7e17ab9a51fabe209a71aa54b7016d6960d9cc238b4d7dbefed00308a48b6300",
   "docs/maintainer/refactor-invariants.md": "06dd3a8c28c8bf4d685e6901b6afefc685f8fbd3fd9facecb31f915971db195e",
   "docs/maintainer/refactor-plan.md": "5a46be353c6eb1d95da83c039b57edf6debdb3a3fd6d8bef6be271c579fe1d0b",
   "docs/maintainer/refactor-priority.md": "959fb5d75c6abef6af0ed9f3fa831e78152029d89d62af46959fd3e1d2201a75",
@@ -58,5 +58,5 @@
   "docs/spec/tracing-replay/why-trace-exists.md": "ee6c28502020b083440640e4bac2e5f607a18df7ea5c579784c394e5e5cb2ee5",
   "docs/spec/vocabulary.md": "6d705b59b2921f1c13a4f0b9475b8e29f07b51d12fc4a769b4e6477a7084a878",
   "docs/user/reading_paths.md": "e79f1de38d8e3d607f9f50fe6196345a469f97aa4ffeecd91614f91e9c945de9",
-  "docs/user/usage.md": "f3e8e2ad1e463bf423168d7039cc10d11f3bb8f1e9807b00a83992adefb5dff8"
+  "docs/user/usage.md": "dc8462faa1fb16b6c528eba238bd7fc994ae5fb831323cf8b1e793179faadb36"
 }
