@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from bijux_canon_agent.agents.summarizer import SummarizerAgent
     from bijux_canon_agent.agents.taskhandler import TaskHandlerAgent
     from bijux_canon_agent.agents.validator import ValidatorAgent
-    from bijux_canon_agent.utilities.logger_manager import LoggerManager
+    from bijux_canon_agent.observability.logging import LoggerManager
 
 _metric_type_cls: type[Any] | None = None
 
@@ -36,7 +36,7 @@ _metric_type_cls: type[Any] | None = None
 def _get_metric_type() -> type[Any]:
     global _metric_type_cls
     if _metric_type_cls is None:
-        from bijux_canon_agent.utilities.logger_manager import MetricType as _MetricType
+        from bijux_canon_agent.observability.logging import MetricType as _MetricType
 
         _metric_type_cls = _MetricType
     return _metric_type_cls

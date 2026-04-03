@@ -1,4 +1,4 @@
-"""Utility module for interacting with LLM backends asynchronously.
+"""Runtime helpers for interacting with LLM backends asynchronously.
 
 This module provides classes and utilities for interacting with various LLM backends,
 supporting features like retry logic, batch processing, and telemetry integration.
@@ -16,12 +16,12 @@ from typing import Any
 import aiohttp
 from aiohttp import ClientResponseError, ClientSession, ClientTimeout
 
-from bijux_canon_agent.utilities.logger_manager import (
+from bijux_canon_agent.observability.logging import (
     LoggerConfig,
     LoggerManager,
     MetricType,
 )
-from bijux_canon_agent.utilities.prompt_hash import prompt_hash
+from bijux_canon_agent.support.hashing import prompt_hash
 
 
 @dataclass

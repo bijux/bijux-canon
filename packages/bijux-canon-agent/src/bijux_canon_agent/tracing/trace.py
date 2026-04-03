@@ -19,7 +19,7 @@ from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
 from bijux_canon_agent.pipeline.results.failure import FailureArtifact
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
-from bijux_canon_agent.utilities.version import get_runtime_version
+from bijux_canon_agent.support.version import get_runtime_version
 
 
 class TraceFieldClassification(StrEnum):

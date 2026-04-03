@@ -36,9 +36,9 @@ from bijux_canon_agent.tracing import (
     validate_trace_payload,
 )
 from bijux_canon_agent.tracing.trace import ModelMetadata
-from bijux_canon_agent.utilities import version
-from bijux_canon_agent.utilities.prompt_hash import prompt_hash
-from bijux_canon_agent.utilities.version import get_runtime_version
+from bijux_canon_agent.support import version
+from bijux_canon_agent.support.hashing import prompt_hash
+from bijux_canon_agent.support.version import get_runtime_version
 
 
 def ensure_directory(path: str) -> None:

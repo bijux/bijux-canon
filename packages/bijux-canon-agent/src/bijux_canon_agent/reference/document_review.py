@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
-from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
 
 DOCUMENT_REVIEW_CONFIG: dict[str, Any] = {
     "pipeline": {"parameters": {"stage_timeout": 20}},

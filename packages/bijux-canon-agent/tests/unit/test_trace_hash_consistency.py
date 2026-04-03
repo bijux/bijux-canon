@@ -105,7 +105,7 @@ def test_trace_runtime_version_changes_with_git(monkeypatch, tmp_path: Path) -> 
 
     def build_with_version(version: str) -> dict[str, Any]:
         monkeypatch.setattr(
-            "bijux_canon_agent.utilities.version.get_runtime_version",
+            "bijux_canon_agent.support.version.get_runtime_version",
             lambda: version,
         )
         pipeline_result = _pipeline_result_template()

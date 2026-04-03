@@ -18,7 +18,7 @@ import time
 from typing import Any
 
 from bijux_canon_agent.agents.base import BaseAgent
-from bijux_canon_agent.utilities.logger_manager import LoggerManager, MetricType
+from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
 from .capabilities.universal_file_reader_core import UniversalFileReader
 

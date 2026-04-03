@@ -11,7 +11,7 @@ import time
 from typing import Any, ClassVar, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
-from bijux_canon_agent.utilities.logger_manager import LoggerManager
+from bijux_canon_agent.observability.logging import LoggerManager
 
 from .rules import consistency, content, formatting
 from .rules.types import (

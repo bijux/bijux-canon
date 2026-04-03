@@ -17,7 +17,7 @@ from bijux_canon_agent.models.llm_adapter import AdapterConfig, MockAdapter
 from bijux_canon_agent.models.registry import Provider
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.tracing import TraceEntry, TraceRecorder
-from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
 
 
 @pytest.mark.asyncio

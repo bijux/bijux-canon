@@ -17,7 +17,7 @@ from bijux_canon_agent.agents.kernel.lifecycle import LifecyclePhase
 from bijux_canon_agent.enums import AgentType, ExecutionMode, FailureMode
 from bijux_canon_agent.models.contract import AgentOutputSchema
 from bijux_canon_agent.schema import AgentInput, AgentOutput
-from bijux_canon_agent.utilities.logger_manager import LoggerManager
+from bijux_canon_agent.observability.logging import LoggerManager
 
 InputT = TypeVar("InputT", bound=Mapping[str, Any])
 OutputT = TypeVar("OutputT")

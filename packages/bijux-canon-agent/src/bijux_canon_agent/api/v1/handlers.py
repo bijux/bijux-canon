@@ -11,7 +11,7 @@ from bijux_canon_agent.api.v1.errors import HTTP_STATUS_BY_CODE, APIErrorCode
 from bijux_canon_agent.api.v1.schemas import ErrorResponseV1, RunRequestV1, RunResponseV1
 from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
-from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
 
 _DEFAULT_AGENTS: list[str] = [
     "file_reader",

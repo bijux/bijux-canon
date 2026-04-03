@@ -19,7 +19,7 @@ from bijux_canon_agent.tracing import (
     TraceEntry,
 )
 from bijux_canon_agent.tracing.trace import ModelMetadata
-from bijux_canon_agent.utilities.prompt_hash import prompt_hash
+from bijux_canon_agent.support.hashing import prompt_hash
 
 DEFAULT_PIPELINE_DEFINITION: PipelineDefinition = standard_pipeline_definition()
 

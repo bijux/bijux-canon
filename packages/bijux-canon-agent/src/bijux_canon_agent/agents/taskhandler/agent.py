@@ -12,7 +12,7 @@ import time
 from typing import Any, NotRequired, TypedDict, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
-from bijux_canon_agent.utilities.logger_manager import LoggerManager, MetricType
+from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
 
 class TaskHandlerAuditEntry(TypedDict, total=False):

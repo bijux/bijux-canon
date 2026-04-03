@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from bijux_canon_agent.utilities.logger_manager import MetricType
+from bijux_canon_agent.observability.logging import MetricType
 
 
 async def generate_abstractive_summary(

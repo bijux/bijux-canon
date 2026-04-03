@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from bijux_canon_agent.utilities.logger_manager import MetricType
+from bijux_canon_agent.observability.logging import MetricType
 
 
 def validate_recursive(

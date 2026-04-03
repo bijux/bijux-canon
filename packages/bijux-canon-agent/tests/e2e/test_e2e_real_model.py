@@ -27,7 +27,7 @@ from bijux_canon_agent.pipeline.convergence.monitor import (
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
 from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
 from bijux_canon_agent.tracing import RunTrace, TraceEntry
-from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
 
 RUN_REAL_MODEL_TESTS = os.getenv("RUN_REAL_MODEL_TESTS") == "1"
 

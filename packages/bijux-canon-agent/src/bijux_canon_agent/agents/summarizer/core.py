@@ -16,8 +16,8 @@ import time
 from typing import Any, TypedDict, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
-from bijux_canon_agent.utilities.llm_utils import LLMUtils
-from bijux_canon_agent.utilities.logger_manager import LoggerManager, MetricType
+from bijux_canon_agent.models.llm_runtime import LLMUtils
+from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
 from .rules import (
     abstractive,

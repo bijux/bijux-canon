@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from bijux_canon_agent.agents.summarizer import SummarizerAgent
     from bijux_canon_agent.agents.taskhandler import TaskHandlerAgent
     from bijux_canon_agent.agents.validator import ValidatorAgent
-    from bijux_canon_agent.utilities.logger_manager import LoggerManager
+    from bijux_canon_agent.observability.logging import LoggerManager
 
 
 class AuditableDocPipeline(Pipeline):

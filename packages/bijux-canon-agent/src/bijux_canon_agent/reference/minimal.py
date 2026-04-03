@@ -7,7 +7,7 @@ from typing import Any
 
 from bijux_canon_agent.config.defaults import MINIMAL_REFERENCE_CONFIG
 from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
-from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
+from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
 
 
 @dataclass(frozen=True)

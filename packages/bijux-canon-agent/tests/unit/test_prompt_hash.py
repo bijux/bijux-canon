@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from bijux_canon_agent.utilities.prompt_hash import prompt_hash
+from bijux_canon_agent.support.hashing import prompt_hash
 
 
 def test_prompt_hash_is_deterministic() -> None:

@@ -8,7 +8,7 @@ from typing import Any
 
 from bijux_canon_agent.agents.file_reader import FileReaderAgent
 from bijux_canon_agent.constants import CONTRACT_VERSION
-from bijux_canon_agent.utilities.logger_manager import LoggerManager
+from bijux_canon_agent.observability.logging import LoggerManager
 
 
 class FileReaderStub(FileReaderAgent):

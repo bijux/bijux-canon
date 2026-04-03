@@ -7,7 +7,8 @@ import sys
 
 RESTRICTED_PREFIXES = (
     "bijux_canon_agent.agents",
-    "bijux_canon_agent.utilities",
+    "bijux_canon_agent.observability",
+    "bijux_canon_agent.models.llm_runtime",
     "bijux_canon_agent.agents.file_reader.capabilities",
 )
 
