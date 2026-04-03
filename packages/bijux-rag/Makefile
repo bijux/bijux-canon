@@ -37,7 +37,7 @@ include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
-include $(MAKE_DIR)/sbom.mk
+include $(ROOT_MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/publish.mk
 include $(MAKE_DIR)/hygiene.mk
 

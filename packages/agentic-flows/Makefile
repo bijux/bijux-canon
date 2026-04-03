@@ -38,7 +38,7 @@ include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(MAKE_DIR)/build.mk
-include $(MAKE_DIR)/sbom.mk
+include $(ROOT_MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/architecture.mk

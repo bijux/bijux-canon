@@ -27,7 +27,7 @@ include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
-include $(MAKE_DIR)/sbom.mk
+include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(MAKE_DIR)/test.mk
 include $(MAKE_DIR)/publish.mk
@@ -77,14 +77,6 @@ all-parallel: clean install
 	@$(MAKE) -j4 quality security api docs
 	@$(MAKE) build sbom
 	@echo "✔ All targets completed (parallel mode)"
-
-define read_pyproject_version
-$(strip $(shell \
-  python3 -c 'import tomllib; \
-  print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"])' \
-  2>/dev/null || echo 0.0.0 \
-))
-endef
 
 help:
 	@awk 'BEGIN{FS=":.*##"; OFS="";} \

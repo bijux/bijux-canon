@@ -33,7 +33,7 @@ include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/hygiene.mk
 include $(ROOT_MAKE_DIR)/security.mk
-include $(MAKE_DIR)/sbom.mk
+include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/freeze.mk
 
