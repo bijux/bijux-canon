@@ -13,10 +13,11 @@ This CLI is intentionally small and dependency-free (argparse). It demonstrates:
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 from pathlib import Path
 import sys
-from typing import Any, cast
+from typing import Any, Protocol, cast
 
 from bijux_rag.core.rag_types import RagEnv, RawDoc
 from bijux_rag.infra.adapters.file_storage import FileStorage
@@ -30,6 +31,12 @@ from bijux_rag.rag.app import RagBuildConfig, build_index_from_csv, parse_filter
 from bijux_rag.rag.app import ask as rag_ask
 from bijux_rag.rag.app import retrieve as rag_retrieve
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+
+
+class _YamlModule(Protocol):
+    def safe_dump(
+        self, data: object, *, sort_keys: bool = ..., allow_unicode: bool = ...
+    ) -> str: ...
 
 
 def _load_config(path: Path) -> PipelineConfig:
@@ -278,10 +285,12 @@ def _main_rag(argv: list[str]) -> int:
 
         if args.format == "yaml":
             try:
-                import yaml
+                yaml_module = cast(_YamlModule, importlib.import_module("yaml"))
             except Exception as e:
                 raise SystemExit("YAML output requires PyYAML") from e
-            out_s = yaml.safe_dump(ask_payload, sort_keys=False, allow_unicode=True)
+            out_s = yaml_module.safe_dump(
+                ask_payload, sort_keys=False, allow_unicode=True
+            )
         else:
             out_s = json.dumps(ask_payload, ensure_ascii=False)
 

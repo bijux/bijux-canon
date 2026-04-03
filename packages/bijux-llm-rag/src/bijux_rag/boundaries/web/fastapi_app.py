@@ -281,8 +281,9 @@ def create_app() -> FastAPI:
     app.include_router(router)
 
     def _custom_openapi() -> dict[str, Any]:
-        if app.openapi_schema:
-            return app.openapi_schema
+        existing_schema = app.openapi_schema
+        if isinstance(existing_schema, dict):
+            return existing_schema
         app.openapi_schema = get_openapi(
             title=app.title,
             version="0.1.0",
@@ -290,9 +291,14 @@ def create_app() -> FastAPI:
             openapi_version="3.1.0",
             description=app.description,
         )
-        return app.openapi_schema
+        generated_schema = app.openapi_schema
+        if not isinstance(
+            generated_schema, dict
+        ):  # pragma: no cover - FastAPI contract
+            raise RuntimeError("FastAPI returned a non-dict OpenAPI schema")
+        return generated_schema
 
-    app.openapi = _custom_openapi  # type: ignore[method-assign]
+    app.openapi = _custom_openapi
     return app
 
 
