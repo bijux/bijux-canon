@@ -36,6 +36,7 @@ from bijux_canon_runtime.observability.storage.execution_store_protocol import (
 from bijux_canon_runtime.application.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
+from bijux_canon_runtime.application.execution_seed import derive_seed_token
 from bijux_canon_runtime.application.planner import ExecutionPlanner
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
@@ -319,7 +320,7 @@ class FlowPreparation:
                     events=(warning_event,),
                 )
             starting_event_index += 1
-        seed = _derive_seed_token(resolved_flow.plan)
+        seed = derive_seed_token(resolved_flow.plan)
         context = ExecutionContext(
             authority=authority_token(),
             seed=seed,
@@ -431,17 +432,6 @@ def execute_flow(
     result = execution.run()
     finalization = FlowFinalization(prepared=prepared)
     return finalization.run(result)
-
-
-def _derive_seed_token(plan: ExecutionSteps) -> str | None:
-    """Internal helper; not part of the public API."""
-    if not plan.steps:
-        return None
-    for step in plan.steps:
-        if not step.inputs_fingerprint:
-            return None
-    return plan.steps[0].inputs_fingerprint
-
 
 def _ensure_non_determinism_policy(
     resolved_flow: ExecutionPlan, config: ExecutionConfig

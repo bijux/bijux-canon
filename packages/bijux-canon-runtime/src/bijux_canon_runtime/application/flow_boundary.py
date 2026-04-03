@@ -10,6 +10,7 @@ from collections.abc import Callable
 
 from bijux_canon_runtime.core.authority import SEMANTICS_SOURCE, SEMANTICS_VERSION
 from bijux_canon_runtime.application.determinism_guard import validate_determinism
+from bijux_canon_runtime.application.execution_seed import derive_seed_token
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 
 
@@ -21,7 +22,7 @@ def enforce_flow_boundary(
     """Execute enforce_flow_boundary and enforce its contract."""
     _ = (SEMANTICS_VERSION, SEMANTICS_SOURCE)
     _assert_step_order(plan)
-    seed_token = _derive_seed_token(plan)
+    seed_token = derive_seed_token(plan)
     validate_determinism(
         environment_fingerprint=plan.environment_fingerprint,
         seed=seed_token,
@@ -30,17 +31,6 @@ def enforce_flow_boundary(
     )
     if config_validation is not None:
         config_validation()
-
-
-def _derive_seed_token(plan: ExecutionSteps) -> str | None:
-    """Internal helper; not part of the public API."""
-    if not plan.steps:
-        return None
-    for step in plan.steps:
-        if not step.inputs_fingerprint:
-            return None
-    return plan.steps[0].inputs_fingerprint
-
 
 def _assert_step_order(plan: ExecutionSteps) -> None:
     """Internal helper; not part of the public API."""
