@@ -1,4 +1,4 @@
-name: bijux-rar Publish
+name: publish-bijux-agent
 
 on:
   workflow_dispatch:
@@ -7,14 +7,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: bijux-rar-publish
+  group: publish-bijux-agent
   cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      ARTIFACTS_DIR: artifacts/compat-bijux-rar
+      ARTIFACTS_DIR: artifacts/compat-bijux-agent
 
     steps:
       - uses: actions/checkout@v4
@@ -25,30 +25,30 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: packages/compat-bijux-rar/pyproject.toml
+          cache-dependency-path: packages/compat-bijux-agent/pyproject.toml
 
       - name: Build compatibility distribution
-        run: make -C packages/compat-bijux-rar build
+        run: make -C packages/compat-bijux-agent build
 
       - name: Stage publish artifacts
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .github/tmp/bijux-rar-dist
-          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-rar-dist/
-          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-rar-dist/
+          mkdir -p .github/tmp/bijux-agent-dist
+          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-agent-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-agent-dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: .github/tmp/bijux-rar-dist
+          packages-dir: .github/tmp/bijux-agent-dist
           skip-existing: true
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: bijux-rar-release
+          name: bijux-agent-release
           path: ${{ env.ARTIFACTS_DIR }}/build/*
           if-no-files-found: ignore
           retention-days: 14

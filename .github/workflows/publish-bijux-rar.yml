@@ -1,4 +1,4 @@
-name: bijux-vex Publish
+name: publish-bijux-rar
 
 on:
   workflow_dispatch:
@@ -7,14 +7,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: bijux-vex-publish
+  group: publish-bijux-rar
   cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      ARTIFACTS_DIR: artifacts/compat-bijux-vex
+      ARTIFACTS_DIR: artifacts/compat-bijux-rar
 
     steps:
       - uses: actions/checkout@v4
@@ -25,30 +25,30 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: packages/compat-bijux-vex/pyproject.toml
+          cache-dependency-path: packages/compat-bijux-rar/pyproject.toml
 
       - name: Build compatibility distribution
-        run: make -C packages/compat-bijux-vex build
+        run: make -C packages/compat-bijux-rar build
 
       - name: Stage publish artifacts
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .github/tmp/bijux-vex-dist
-          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-vex-dist/
-          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-vex-dist/
+          mkdir -p .github/tmp/bijux-rar-dist
+          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-rar-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-rar-dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: .github/tmp/bijux-vex-dist
+          packages-dir: .github/tmp/bijux-rar-dist
           skip-existing: true
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: bijux-vex-release
+          name: bijux-rar-release
           path: ${{ env.ARTIFACTS_DIR }}/build/*
           if-no-files-found: ignore
           retention-days: 14

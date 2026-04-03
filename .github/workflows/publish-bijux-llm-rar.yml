@@ -1,4 +1,4 @@
-name: bijux-rag Publish
+name: publish-bijux-llm-rar
 
 on:
   workflow_dispatch:
@@ -7,14 +7,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: bijux-rag-publish
+  group: publish-bijux-llm-rar
   cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      ARTIFACTS_DIR: artifacts/compat-bijux-rag
+      ARTIFACTS_DIR: artifacts/bijux-llm-rar
 
     steps:
       - uses: actions/checkout@v4
@@ -25,30 +25,34 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: packages/compat-bijux-rag/pyproject.toml
+          cache-dependency-path: packages/bijux-llm-rar/pyproject.toml
 
-      - name: Build compatibility distribution
-        run: make -C packages/compat-bijux-rag build
+      - name: Build distribution and SBOM
+        run: |
+          make -C packages/bijux-llm-rar build
+          make -C packages/bijux-llm-rar sbom
 
       - name: Stage publish artifacts
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .github/tmp/bijux-rag-dist
-          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-rag-dist/
-          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-rag-dist/
+          mkdir -p .github/tmp/bijux-llm-rar-dist
+          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-llm-rar-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-llm-rar-dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: .github/tmp/bijux-rag-dist
+          packages-dir: .github/tmp/bijux-llm-rar-dist
           skip-existing: true
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: bijux-rag-release
-          path: ${{ env.ARTIFACTS_DIR }}/build/*
+          name: bijux-llm-rar-release
+          path: |
+            ${{ env.ARTIFACTS_DIR }}/build/*
+            ${{ env.ARTIFACTS_DIR }}/sbom/*
           if-no-files-found: ignore
           retention-days: 14

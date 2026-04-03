@@ -1,4 +1,4 @@
-name: bijux-llm-agent Publish
+name: publish-bijux-llm-flows
 
 on:
   workflow_dispatch:
@@ -7,14 +7,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: bijux-llm-agent-publish
+  group: publish-bijux-llm-flows
   cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      ARTIFACTS_DIR: artifacts/bijux-llm-agent
+      ARTIFACTS_DIR: artifacts/bijux-llm-flows
 
     steps:
       - uses: actions/checkout@v4
@@ -25,32 +25,32 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: packages/bijux-llm-agent/pyproject.toml
+          cache-dependency-path: packages/bijux-llm-flows/pyproject.toml
 
       - name: Build distribution and SBOM
         run: |
-          make -C packages/bijux-llm-agent build
-          make -C packages/bijux-llm-agent sbom
+          make -C packages/bijux-llm-flows build
+          make -C packages/bijux-llm-flows sbom
 
       - name: Stage publish artifacts
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .github/tmp/bijux-llm-agent-dist
-          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-llm-agent-dist/
-          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-llm-agent-dist/
+          mkdir -p .github/tmp/bijux-llm-flows-dist
+          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-llm-flows-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-llm-flows-dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: .github/tmp/bijux-llm-agent-dist
+          packages-dir: .github/tmp/bijux-llm-flows-dist
           skip-existing: true
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: bijux-llm-agent-release
+          name: bijux-llm-flows-release
           path: |
             ${{ env.ARTIFACTS_DIR }}/build/*
             ${{ env.ARTIFACTS_DIR }}/sbom/*
