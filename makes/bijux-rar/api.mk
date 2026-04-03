@@ -30,7 +30,9 @@ SCHEMATHESIS_JUNIT_ABS  := $(abspath $(SCHEMATHESIS_JUNIT))
 # ── Node tool sandbox (no root pollution)
 API_NODE_DIR          ?= $(API_ARTIFACTS_DIR)/node
 OPENAPI_GENERATOR_VERSION ?= 7.14.0
-NODE_REQUIRED        ?= 20
+NODE_VERSION_FILE    ?= $(CONFIG_DIR)/node-version.nvmrc
+NODE_REQUIRED_FILE   := $(strip $(shell sed -n 's/^[^0-9]*\([0-9][0-9]*\).*/\1/p' "$(NODE_VERSION_FILE)" 2>/dev/null | head -n 1))
+NODE_REQUIRED        ?= $(if $(NODE_REQUIRED_FILE),$(NODE_REQUIRED_FILE),20)
 NODE_DIST_VERSION    ?= v20.18.0
 NODE_PACKAGE_MANIFEST ?= $(CONFIG_DIR)/package.json
 NODE_LOCKFILE         ?= $(CONFIG_DIR)/package-lock.json
@@ -222,7 +224,7 @@ $(API_NODE_DIR_ABS)/.deps-ok:
 	  NODE_ACTUAL_FULL="$$(node -v | sed 's/^v//')"; \
 	  NODE_ACTUAL="$${NODE_ACTUAL_FULL%%.*}"; \
 	  if [ "$$NODE_ACTUAL" != "$(NODE_REQUIRED)" ]; then \
-	    echo "✘ Node $$NODE_ACTUAL_FULL detected; require $(NODE_REQUIRED).x (see .nvmrc)"; exit 1; \
+	    echo "✘ Node $$NODE_ACTUAL_FULL detected; require $(NODE_REQUIRED).x (see $(NODE_VERSION_FILE))"; exit 1; \
 	  fi; \
 	  echo "→ Using node @ $$(command -v node)"; \
 	  echo "→ Bootstrapping Node toolchain in $(API_NODE_DIR_ABS) using npm ci"; \
