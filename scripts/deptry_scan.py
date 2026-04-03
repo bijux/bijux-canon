@@ -46,7 +46,7 @@ def main() -> int:
 
     deptry_bin_arg = Path(deptry_command[0]).expanduser()
     if deptry_bin_arg.is_absolute() or len(deptry_bin_arg.parts) > 1:
-        deptry_bin = deptry_bin_arg.resolve()
+        deptry_bin = deptry_bin_arg.absolute()
         if not deptry_bin.is_file():
             raise SystemExit(f"deptry executable not found: {args.deptry_bin}")
     else:

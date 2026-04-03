@@ -2,22 +2,23 @@
 pep621_dev_dependency_groups = ["dev"]
 ignore = ["DEP003"]
 extend_exclude = ["docs", "api", "artifacts"]
+package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-llm-agent" = "bijux_agent", "bijux-llm-rag" = "bijux_rag", "bijux-llm-rar" = "bijux_rar", "bijux-llm-vex" = "bijux_vex", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
 
-[tool.repo_deptry.packages."agentic-flows"]
+[tool.repo_deptry.packages."bijux-llm-flows"]
 known_first_party = ["agentic_flows"]
 ignore = ["DEP002", "DEP003"]
 
-[tool.repo_deptry.packages."bijux-agent"]
+[tool.repo_deptry.packages."bijux-llm-agent"]
 known_first_party = ["bijux_agent"]
 extend_exclude = ["docs", "mkdocs", "tooling"]
 ignore = ["DEP001", "DEP002", "DEP003"]
 
-[tool.repo_deptry.packages."bijux-rag"]
+[tool.repo_deptry.packages."bijux-llm-rag"]
 known_first_party = ["bijux_rag"]
 pep621_dev_dependency_groups = ["dev", "docs"]
 per_rule_ignores = { DEP001 = ["dask", "apache_beam"], DEP002 = ["fastapi", "uvicorn", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "hypothesis", "schemathesis", "ruff", "mypy", "vulture", "deptry", "interrogate", "bandit", "pip-audit", "twine", "prance", "openapi-spec-validator", "types-PyYAML", "build", "mkdocs", "mkdocs-material", "pymdown-extensions", "mkdocs-git-revision-date-localized-plugin", "mkdocs-minify-plugin", "mkdocs-redirects", "mkdocs-include-markdown-plugin", "mkdocstrings", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-section-index", "mkdocs-click", "mkdocs-glightbox"], DEP003 = ["bijux_rag"] }
 
-[tool.repo_deptry.packages."bijux-rar"]
+[tool.repo_deptry.packages."bijux-llm-rar"]
 known_first_party = ["bijux_rar"]
 ignore = ["DEP001"]
 per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom"], DEP003 = ["bijux_rar"] }
@@ -26,4 +27,3 @@ per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama",
 known_first_party = ["bijux_vex"]
 ignore = ["DEP001"]
 per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom", "faiss-cpu"], DEP003 = ["bijux_vex"] }
-package_module_name_map = { "faiss-cpu" = "faiss", "sentence-transformers" = "sentence_transformers", "qdrant-client" = "qdrant_client" }

@@ -88,7 +88,7 @@ interrogate-report:
 	  OUT="$$( $(QUALITY_ENV) $(INTERROGATE) --fail-under 0 --verbose $(INTERROGATE_PATHS) )"; \
 	  rc=$$?; \
 	  printf '%s\n' "$$OUT" >"$(QUALITY_ARTIFACTS_DIR)/interrogate.full.txt"; \
-	  OFF="$$(printf '%s\n' "$$OUT" | awk -F'|' 'NR>3 && $$0 ~ /^\\|/ { \
+	  OFF="$$(printf '%s\n' "$$OUT" | awk -F'|' 'NR>3 && $$0 ~ /^\|/ { \
 	    name=$$2; cov=$$6; gsub(/^[ \\t]+|[ \\t]+$$/, "", name); gsub(/^[ \\t]+|[ \\t]+$$/, "", cov); \
 	    if (name !~ /^-+$$/ && cov != "100%") printf("  - %s (%s)\n", name, cov); \
 	  }')"; \
