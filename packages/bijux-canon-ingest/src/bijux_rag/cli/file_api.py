@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Back-compat shim for the historical file-based API shell."""
+"""File-oriented API helpers for chunk ingestion."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
-from bijux_rag.cli.rag_file_shell import RagFileShell
+from bijux_rag.cli.file_pipeline import RagFileShell
 from bijux_rag.core.rag_types import Chunk
 from bijux_rag.infra.adapters.file_storage import FileStorage
 from bijux_rag.rag.stages import ChunkAndEmbedConfig

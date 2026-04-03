@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Thin orchestrator example for the end-of-Bijux RAG codebase."""
+"""CLI pipeline runner helpers."""
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import replace
 
-from bijux_rag.cli.rag_api_shell import FSReader, write_chunks_jsonl
+from bijux_rag.cli.file_api import FSReader, write_chunks_jsonl
 from bijux_rag.config.app import AppConfig
 from bijux_rag.config.cleaning import CleanConfig
 from bijux_rag.config.rag import RagConfig, get_deps

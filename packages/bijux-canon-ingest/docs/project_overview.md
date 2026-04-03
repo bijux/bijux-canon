@@ -29,7 +29,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ## Source Code (high level)
 
 - `src/bijux_rag/boundaries/` — edge adapters (exception_bridge, pydantic_edges, serde).
-- `src/bijux_rag/cli/` — CLI entrypoints and file-oriented command helpers.
+- `src/bijux_rag/cli/` — CLI entrypoints and file-oriented command helpers (`entrypoint`, `pipeline_runner`, `file_api`, `file_pipeline`, `typer_app`).
 - `src/bijux_rag/config/` — package configuration models.
 - `src/bijux_rag/config/` — package and pipeline configuration models (`AppConfig`, `RagConfig`, `CleanConfig`).
 - `src/bijux_rag/core/` — shared RAG types (rag_types), structural dedup, rules (DSL/lint/pred).
