@@ -9,12 +9,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from bijux_canon_runtime.runtime.observability.classification.entropy import EntropyLedger
-from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
-from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
-from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from bijux_canon_runtime.spec.model.execution.non_deterministic_intent import (
+from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
 from bijux_canon_runtime.spec.ontology import EntropyExhaustionAction, EntropyMagnitude

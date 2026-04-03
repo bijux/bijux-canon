@@ -4,15 +4,15 @@
 from __future__ import annotations
 
 from bijux_canon_runtime.runtime.observability.analysis.trace_diff import semantic_trace_diff
-from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
-from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
-from bijux_canon_runtime.spec.model.identifiers.tool_invocation import ToolInvocation
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.spec.ontology import (
     CausalityTag,
     DatasetState,

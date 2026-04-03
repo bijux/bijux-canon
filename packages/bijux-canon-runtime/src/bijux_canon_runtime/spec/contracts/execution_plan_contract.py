@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.spec.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.spec.ontology import (
     DeterminismLevel,
     StepType,

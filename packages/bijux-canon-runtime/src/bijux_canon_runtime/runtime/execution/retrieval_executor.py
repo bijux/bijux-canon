@@ -12,11 +12,11 @@ import bijux_rag
 import bijux_vex
 
 from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.spec.ontology import (
     EntropyMagnitude,
     EvidenceDeterminism,

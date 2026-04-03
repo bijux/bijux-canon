@@ -10,7 +10,7 @@ from collections.abc import Callable
 
 from bijux_canon_runtime.core.authority import SEMANTICS_SOURCE, SEMANTICS_VERSION
 from bijux_canon_runtime.runtime.orchestration.determinism_guard import validate_determinism
-from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 
 
 def enforce_flow_boundary(

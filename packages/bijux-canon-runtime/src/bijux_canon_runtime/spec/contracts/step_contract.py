@@ -8,8 +8,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.spec.ontology import (
     ArtifactScope,
     ArtifactType,

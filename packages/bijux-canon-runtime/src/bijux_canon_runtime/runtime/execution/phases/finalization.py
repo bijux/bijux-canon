@@ -15,7 +15,7 @@ from bijux_canon_runtime.runtime.observability.analysis.flow_invariants import (
 from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
     fingerprint_policy,
 )
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.spec.ontology.ids import PolicyFingerprint, ResolverID
 
 

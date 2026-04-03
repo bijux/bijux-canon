@@ -12,17 +12,17 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.spec.model.datasets.retrieval_request import RetrievalRequest
-from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.spec.model.execution.non_deterministic_intent import (
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.datasets.retrieval_request import RetrievalRequest
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.spec.ontology import (
     DeterminismLevel,
     EntropyMagnitude,

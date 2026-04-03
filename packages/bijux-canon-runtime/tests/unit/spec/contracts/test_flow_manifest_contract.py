@@ -6,10 +6,10 @@ from __future__ import annotations
 import pytest
 
 from bijux_canon_runtime.spec.contracts.flow_contract import validate
-from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
-from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,

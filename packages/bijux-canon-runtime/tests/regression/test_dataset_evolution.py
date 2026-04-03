@@ -11,10 +11,10 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     execute_flow,
 )
 from bijux_canon_runtime.runtime.orchestration.replay_store import replay_with_store
-from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,

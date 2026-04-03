@@ -15,7 +15,7 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     FlowRunResult,
     execute_flow,
 )
-from bijux_canon_runtime.spec.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.spec.ontology.ids import RunID, TenantID
 
 

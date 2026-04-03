@@ -17,14 +17,14 @@ from bijux_canon_runtime.core.authority import evaluate_verification
 from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
     fingerprint_policy,
 )
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.spec.model.reasoning_bundle import ReasoningBundle
-from bijux_canon_runtime.spec.model.verification.verification import VerificationPolicy
-from bijux_canon_runtime.spec.model.verification.verification_arbitration import (
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
-from bijux_canon_runtime.spec.model.verification.verification_result import VerificationResult
+from bijux_canon_runtime.model.verification.verification_result import VerificationResult
 from bijux_canon_runtime.spec.ontology import (
     ArbitrationRule,
     ReasonCode,

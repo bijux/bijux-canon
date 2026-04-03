@@ -9,8 +9,8 @@ from bijux_canon_runtime.runtime.orchestration.determinism_guard import (
     semantic_artifact_fingerprint,
     semantic_evidence_fingerprint,
 )
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.spec.ontology import (
     ArtifactScope,
     ArtifactType,

@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from bijux_canon_runtime.core.authority import AuthorityToken
-from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 
 
 class AppendOnlyList(list[ExecutionEvent]):

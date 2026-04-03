@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from bijux_canon_runtime.core.errors import SemanticViolationError
 from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.spec.ontology import ArtifactType
 
 

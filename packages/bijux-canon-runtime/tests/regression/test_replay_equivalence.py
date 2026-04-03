@@ -11,8 +11,8 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.spec.ontology import (
     DeterminismLevel,
     FlowState,

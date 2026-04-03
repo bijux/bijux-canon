@@ -8,11 +8,11 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.spec.model.reasoning_bundle import ReasoningBundle
-from bijux_canon_runtime.spec.model.verification.verification import VerificationPolicy
-from bijux_canon_runtime.spec.model.verification.verification_rule import VerificationRule
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.model.verification.verification_rule import VerificationRule
 from bijux_canon_runtime.spec.ontology import VerificationRandomness
 from bijux_canon_runtime.spec.ontology.ids import RuleID
 

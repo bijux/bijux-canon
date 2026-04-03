@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
-from bijux_canon_runtime.spec.model.execution.determinism_profile import (
+from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.model.execution.determinism_profile import (
     DeterminismProfile,
     EntropySourceProfile,
 )
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.spec.ontology import (
     DeterminismLevel,
     EntropyMagnitude,

@@ -10,8 +10,8 @@ from bijux_canon_runtime.runtime.context import RunMode
 from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
-from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
-from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
 from bijux_canon_runtime.spec.ontology import EntropyMagnitude

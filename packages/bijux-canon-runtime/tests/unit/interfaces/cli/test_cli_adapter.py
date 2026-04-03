@@ -16,13 +16,13 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     FlowRunResult,
     RunMode,
 )
-from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
-from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from bijux_canon_runtime.spec.model.execution.execution_plan import ExecutionPlan
-from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,

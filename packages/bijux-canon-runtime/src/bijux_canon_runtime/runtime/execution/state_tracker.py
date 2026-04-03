@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import hashlib
 
-from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.spec.ontology.ids import ContentHash
 
 

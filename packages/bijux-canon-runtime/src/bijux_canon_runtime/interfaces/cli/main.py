@@ -31,19 +31,19 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
 )
 from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
 from bijux_canon_runtime.runtime.orchestration.replay_store import replay_with_store
-from bijux_canon_runtime.spec.model.artifact.entropy_budget import (
+from bijux_canon_runtime.model.artifact.entropy_budget import (
     EntropyBudget,
     EntropyBudgetSlice,
 )
-from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from bijux_canon_runtime.spec.model.execution.non_deterministic_intent import (
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
-from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.model.verification.arbitration_policy import ArbitrationPolicy
-from bijux_canon_runtime.spec.model.verification.verification import VerificationPolicy
-from bijux_canon_runtime.spec.model.verification.verification_rule import VerificationRule
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.verification.arbitration_policy import ArbitrationPolicy
+from bijux_canon_runtime.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.model.verification.verification_rule import VerificationRule
 from bijux_canon_runtime.spec.ontology import (
     ArbitrationRule,
     DatasetState,

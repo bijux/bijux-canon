@@ -8,9 +8,9 @@ import pytest
 from bijux_canon_runtime.runtime.observability.analysis.flow_correlation import (
     validate_flow_correlation,
 )
-from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,

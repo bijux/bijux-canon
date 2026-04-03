@@ -15,13 +15,13 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.spec.model.artifact.reasoning_claim import ReasoningClaim
-from bijux_canon_runtime.spec.model.datasets.retrieval_request import RetrievalRequest
-from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
-from bijux_canon_runtime.spec.model.reasoning_bundle import ReasoningBundle
-from bijux_canon_runtime.spec.model.reasoning_step import ReasoningStep
+from bijux_canon_runtime.model.artifact.reasoning_claim import ReasoningClaim
+from bijux_canon_runtime.model.datasets.retrieval_request import RetrievalRequest
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.model.reasoning_step import ReasoningStep
 from bijux_canon_runtime.spec.ontology import (
     ArtifactType,
     DeterminismLevel,

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 
 
 class RuntimeObserver(Protocol):

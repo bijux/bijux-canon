@@ -22,7 +22,7 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     execute_flow,
 )
 from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
-from bijux_canon_runtime.spec.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
 from bijux_canon_runtime.spec.ontology.ids import AgentID, BundleID, RunID, TenantID
 
 pytestmark = pytest.mark.regression

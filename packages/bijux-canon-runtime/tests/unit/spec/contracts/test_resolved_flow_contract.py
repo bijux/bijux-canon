@@ -11,14 +11,14 @@ from bijux_canon_runtime.spec.contracts.execution_plan_contract import (
 from bijux_canon_runtime.spec.contracts.flow_contract import (
     validate as validate_flow_manifest,
 )
-from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
-from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from bijux_canon_runtime.spec.model.execution.execution_plan import ExecutionPlan
-from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
-from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,

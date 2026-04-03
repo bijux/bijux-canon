@@ -37,22 +37,22 @@ from bijux_canon_runtime.runtime.orchestration.non_determinism_lifecycle import 
     NonDeterminismLifecycle,
 )
 from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
-from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.spec.model.execution.execution_plan import ExecutionPlan
-from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
-from bijux_canon_runtime.spec.model.identifiers.tool_invocation import ToolInvocation
-from bijux_canon_runtime.spec.model.policy.non_determinism_policy import NonDeterminismPolicy
-from bijux_canon_runtime.spec.model.reasoning_bundle import ReasoningBundle
-from bijux_canon_runtime.spec.model.verification.verification import VerificationPolicy
-from bijux_canon_runtime.spec.model.verification.verification_arbitration import (
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
+from bijux_canon_runtime.model.policy.non_determinism_policy import NonDeterminismPolicy
+from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
-from bijux_canon_runtime.spec.model.verification.verification_result import VerificationResult
+from bijux_canon_runtime.model.verification.verification_result import VerificationResult
 from bijux_canon_runtime.spec.ontology import (
     CausalityTag,
     DeterminismLevel,

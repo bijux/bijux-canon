@@ -8,7 +8,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 import hashlib
 
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.spec.ontology import (
     ArtifactScope,
     ArtifactType,

@@ -12,8 +12,8 @@ from bijux_canon_runtime.runtime.observability.classification.determinism_classi
     determinism_classes_for_trace,
     determinism_profile_for_trace,
 )
-from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.spec.ontology import EntropyMagnitude
 from bijux_canon_runtime.spec.ontology.public import ReplayAcceptability
 

@@ -19,15 +19,15 @@ from bijux_canon_runtime.runtime.observability.classification.fingerprint import
     fingerprint_inputs,
     fingerprint_policy,
 )
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.model.execution.replay_verdict import (
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.replay_verdict import (
     ReplayVerdict,
     ReplayVerdictDetails,
 )
-from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.spec.ontology import DeterminismLevel
 from bijux_canon_runtime.spec.ontology.public import (
     EventType,

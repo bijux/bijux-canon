@@ -18,14 +18,14 @@ from bijux_canon_runtime.runtime.observability.capture.trace_recorder import Tra
 from bijux_canon_runtime.runtime.orchestration.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
-from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
-from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
-from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.spec.model.identifiers.tool_invocation import ToolInvocation
-from bijux_canon_runtime.spec.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
+from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.spec.ontology import EntropyMagnitude
 from bijux_canon_runtime.spec.ontology.ids import (
     ClaimID,

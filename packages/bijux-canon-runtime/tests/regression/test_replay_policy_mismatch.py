@@ -13,7 +13,7 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.spec.model.verification.arbitration_policy import ArbitrationPolicy
+from bijux_canon_runtime.model.verification.arbitration_policy import ArbitrationPolicy
 from bijux_canon_runtime.spec.ontology import ArbitrationRule
 
 pytestmark = pytest.mark.regression

@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.spec.ontology import DatasetState
 
 _ALLOWED_TRANSITIONS: dict[DatasetState, set[DatasetState]] = {

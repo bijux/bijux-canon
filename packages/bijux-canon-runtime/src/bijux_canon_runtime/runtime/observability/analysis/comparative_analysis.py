@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 import logging
 
-from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 
 _LOGGER = logging.getLogger(__name__)
 

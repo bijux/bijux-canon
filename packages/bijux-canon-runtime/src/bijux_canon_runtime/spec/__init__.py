@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.spec.model import *  # noqa: F403
-from bijux_canon_runtime.spec.model import __all__ as _model_all
+from bijux_canon_runtime.model import *  # noqa: F403
+from bijux_canon_runtime.model import __all__ as _model_all
 from bijux_canon_runtime.spec.ontology import *  # noqa: F403
 from bijux_canon_runtime.spec.ontology import __all__ as _ontology_all
 

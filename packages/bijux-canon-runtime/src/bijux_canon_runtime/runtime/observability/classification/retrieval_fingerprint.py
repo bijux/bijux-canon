@@ -8,7 +8,7 @@ from __future__ import annotations
 from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
-from bijux_canon_runtime.spec.model.datasets.retrieval_request import RetrievalRequest
+from bijux_canon_runtime.model.datasets.retrieval_request import RetrievalRequest
 
 
 def fingerprint_retrieval(request: RetrievalRequest) -> str:
