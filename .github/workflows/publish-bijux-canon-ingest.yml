@@ -1,0 +1,58 @@
+name: publish-bijux-canon-ingest
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-bijux-canon-ingest
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACTS_DIR: artifacts/bijux-canon-ingest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: packages/bijux-canon-ingest/pyproject.toml
+
+      - name: Build distribution and SBOM
+        run: |
+          make -C packages/bijux-canon-ingest build
+          make -C packages/bijux-canon-ingest sbom
+
+      - name: Stage publish artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .github/tmp/bijux-canon-ingest-dist
+          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-canon-ingest-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-canon-ingest-dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: .github/tmp/bijux-canon-ingest-dist
+          skip-existing: true
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bijux-canon-ingest-release
+          path: |
+            ${{ env.ARTIFACTS_DIR }}/build/*
+            ${{ env.ARTIFACTS_DIR }}/sbom/*
+          if-no-files-found: ignore
+          retention-days: 14
