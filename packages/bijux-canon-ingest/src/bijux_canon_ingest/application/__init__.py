@@ -13,7 +13,6 @@ from .pipeline import (
     iter_ingest_pipeline,
     iter_ingest_pipeline_core,
 )
-from .observability import DebugConfig, Observations, RagTaps, RagTraceV3, TraceLens
 from .indexing import (
     IndexBuildConfig,
     build_index_from_csv,
@@ -21,6 +20,13 @@ from .indexing import (
     ingest_docs_to_chunks,
 )
 from .querying import ask, parse_filters, retrieve
+from bijux_canon_ingest.observability import (
+    DebugConfig,
+    Observations,
+    RagTaps,
+    RagTraceV3,
+    TraceLens,
+)
 from .pipeline_definitions import (
     ErrorPolicy,
     OperatorSpec,

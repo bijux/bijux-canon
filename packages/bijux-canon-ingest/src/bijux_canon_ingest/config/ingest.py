@@ -23,7 +23,7 @@ from bijux_canon_ingest.config.cleaning import (
     CleanConfig,
     make_cleaner,
 )
-from bijux_canon_ingest.application.observability import (
+from bijux_canon_ingest.observability import (
     DebugConfig,
     Observations,
     RagTaps,

@@ -14,7 +14,7 @@ from bijux_canon_ingest.config.cleaning import CleanConfig
 from bijux_canon_ingest.config.ingest import IngestConfig, build_ingest_deps
 from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc
 from bijux_canon_ingest.application.pipeline import run_ingest_pipeline_docs
-from bijux_canon_ingest.application.observability import DebugConfig
+from bijux_canon_ingest.observability import DebugConfig
 from bijux_canon_ingest.result import Err, Ok, Result, result_and_then, result_map
 
 

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Observability and debug types for application-level RAG flows."""
+"""Observability and debug types for ingest execution flows."""
 
 from __future__ import annotations
 

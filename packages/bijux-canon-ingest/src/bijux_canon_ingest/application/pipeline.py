@@ -33,7 +33,7 @@ from bijux_canon_ingest.result import Err, Ok, Result
 
 from bijux_canon_ingest.config.ingest import IngestBoundaryDeps, IngestConfig, IngestDeps
 
-from .observability import Observations
+from bijux_canon_ingest.observability import Observations
 
 T = TypeVar("T")
 

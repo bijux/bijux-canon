@@ -189,7 +189,7 @@ from .processing.stages import (
     iter_overlapping_chunks_text,
     structural_dedup_chunks,
 )
-from .application.observability import (
+from .observability import (
     DebugConfig,
     DocRule,
     Observations,
