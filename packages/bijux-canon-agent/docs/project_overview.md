@@ -5,7 +5,7 @@
 ## Ideal tree
 
 - `src/bijux_canon_agent/application/`
-  Runtime orchestration owned by the package, including DAG execution policy.
+  Runtime orchestration owned by the package, including workflow-graph execution policy.
 - `src/bijux_canon_agent/agents/`
   Agent implementations and their local kernels.
 - `src/bijux_canon_agent/pipeline/`

@@ -1,4 +1,4 @@
-"""Deterministic orchestration engine executing a DAG of agents."""
+"""Deterministic orchestration engine executing a workflow graph of agents."""
 
 from __future__ import annotations
 
@@ -24,8 +24,8 @@ AgentCallable = Callable[[AgentInputSchema], Awaitable[AgentOutputSchema]]
 
 
 @dataclass
-class DagNode:
-    """Represents a DAG node that executes an agent with retry metadata."""
+class WorkflowNode:
+    """Represents a workflow graph node that executes an agent with retry metadata."""
 
     name: str
     runner: AgentCallable
@@ -35,8 +35,8 @@ class DagNode:
 
 
 @dataclass
-class DagExecutionState:
-    """Tracks per-node outputs, errors, and retry counts for the DAG run."""
+class WorkflowRunState:
+    """Tracks per-node outputs, errors, and retry counts for the workflow-graph run."""
 
     completed: dict[str, AgentOutputSchema] = field(default_factory=dict)
     errors: dict[str, AgentErrorSchema] = field(default_factory=dict)
@@ -52,19 +52,19 @@ class DagExecutionState:
         self.attempts[name] = self.attempts.get(name, 0) + 1
 
 
-class DagOrchestrator:
-    """Simple deterministic orchestrator that executes DAG nodes in order."""
+class WorkflowOrchestrator:
+    """Simple deterministic orchestrator that executes workflow graph nodes in order."""
 
     DEFAULT_TRACE_PATH = (
         Path("artifacts")
         / "bijux-canon-agent"
-        / "dag-runtime"
+        / "workflow-graph"
         / "run_trace.json"
     )
 
     def __init__(
         self,
-        nodes: Iterable[DagNode],
+        nodes: Iterable[WorkflowNode],
         trace_path: Path | str = DEFAULT_TRACE_PATH,
         model_metadata: ModelMetadata | None = None,
         failure_policy: FailurePolicy | None = None,
@@ -75,9 +75,9 @@ class DagOrchestrator:
             run_id=str(uuid.uuid4()), path=trace_path, model_metadata=model_metadata
         )
 
-    async def run(self, initial_input: AgentInputSchema) -> DagExecutionState:
-        """Execute the DAG nodes in dependency order and record their outcomes."""
-        state = DagExecutionState()
+    async def run(self, initial_input: AgentInputSchema) -> WorkflowRunState:
+        """Execute the workflow graph nodes in dependency order and record their outcomes."""
+        state = WorkflowRunState()
         pending = list(self.nodes)
         context_payload = dict(initial_input.payload)
 
@@ -99,14 +99,14 @@ class DagOrchestrator:
         self.trace_recorder.finish(status="aborted" if state.aborted else "completed")
         return state
 
-    def _dependencies_met(self, node: DagNode, state: DagExecutionState) -> bool:
+    def _dependencies_met(self, node: WorkflowNode, state: WorkflowRunState) -> bool:
         return all(dep in state.completed for dep in node.dependencies)
 
     def _prepare_context(
         self,
-        node: DagNode,
+        node: WorkflowNode,
         initial_input: AgentInputSchema,
-        state: DagExecutionState,
+        state: WorkflowRunState,
         payload: dict[str, Any],
     ) -> AgentInputSchema:
         enriched_payload = dict(payload)
@@ -135,7 +135,7 @@ class DagOrchestrator:
         return reduced
 
     async def _execute(
-        self, node: DagNode, context: AgentInputSchema, state: DagExecutionState
+        self, node: WorkflowNode, context: AgentInputSchema, state: WorkflowRunState
     ) -> None:
         attempt = 0
         while attempt < node.max_retries:
