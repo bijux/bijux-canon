@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 """Replay must succeed using pinned corpus snapshot even if original corpus is gone."""
 
 from __future__ import annotations

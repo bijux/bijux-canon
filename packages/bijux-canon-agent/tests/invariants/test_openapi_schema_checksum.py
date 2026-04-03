@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# SPDX-FileCopyrightText: Copyright © 2026 Bijan Mousavi
 # SPDX-License-Identifier: Apache-2.0
 """Invariant: OpenAPI schema checksum must stay in sync with committed checksum."""
 

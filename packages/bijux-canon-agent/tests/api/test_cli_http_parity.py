@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# SPDX-FileCopyrightText: Copyright © 2026 Bijan Mousavi
 # SPDX-License-Identifier: Apache-2.0
 """Smoke test verifying CLI and HTTP outputs stay in sync."""
 
