@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.rar.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import Runtime
 from bijux_canon_reason.rar.retrieval.chunked_bm25 import build_or_load_index
 
 

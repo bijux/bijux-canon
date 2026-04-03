@@ -6,7 +6,7 @@ from pathlib import Path
 
 from bijux_canon_reason.core.rar_types import ProblemSpec
 from bijux_canon_reason.application.runner import run_app
-from bijux_canon_reason.rar.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import Runtime
 
 
 def test_run_app_with_fake_runtime(tmp_path: Path) -> None:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.rar_types import RuntimeDescriptor, ToolCall, ToolDescriptor, ToolResult
-from bijux_canon_reason.rar.execution.frozen_runtime import FrozenRuntime, RecordedCall
+from bijux_canon_reason.execution.frozen_runtime import FrozenRuntime, RecordedCall
 
 
 def test_frozen_runtime_descriptor_override() -> None:

@@ -33,7 +33,7 @@ from bijux_canon_reason.core.rar_types import (
     UnderstandOutput,
     VerifyOutput,
 )
-from bijux_canon_reason.rar.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import Runtime
 from bijux_canon_reason.rar.reasoning.backend import BaselineReasoner
 
 

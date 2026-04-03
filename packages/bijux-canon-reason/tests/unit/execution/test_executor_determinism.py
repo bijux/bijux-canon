@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
 from bijux_canon_reason.core.rar_types import ProblemSpec
-from bijux_canon_reason.rar.execution.executor import execute_plan
-from bijux_canon_reason.rar.execution.runtime import Runtime
+from bijux_canon_reason.execution.executor import execute_plan
+from bijux_canon_reason.execution.runtime import Runtime
 from bijux_canon_reason.planning.planner import plan_problem
 
 
