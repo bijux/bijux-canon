@@ -19,7 +19,7 @@ from bijux_canon_runtime.observability.classification.fingerprint import (
 )
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,

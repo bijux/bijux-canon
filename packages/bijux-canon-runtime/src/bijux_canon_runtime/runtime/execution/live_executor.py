@@ -22,7 +22,7 @@ from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
-from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,

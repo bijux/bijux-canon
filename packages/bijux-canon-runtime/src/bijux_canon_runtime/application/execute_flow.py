@@ -47,7 +47,7 @@ from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.model.policy.non_determinism_policy import NonDeterminismPolicy
-from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,

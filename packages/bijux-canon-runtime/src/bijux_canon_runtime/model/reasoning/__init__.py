@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.reasoning.step import ReasoningStep
 
-__all__ = ["ReasoningStep"]
+__all__ = ["ReasoningBundle", "ReasoningStep"]
