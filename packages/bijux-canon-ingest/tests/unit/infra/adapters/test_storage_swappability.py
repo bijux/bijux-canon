@@ -10,10 +10,10 @@ import tempfile
 from hypothesis import given, settings
 import hypothesis.strategies as st
 
-from bijux_rag.core.types import RawDoc
-from bijux_rag.infra.adapters.file_storage import FileStorage
-from bijux_rag.infra.adapters.memory_storage import InMemoryStorage
-from bijux_rag.result.types import Ok
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
+from bijux_canon_ingest.infra.adapters.memory_storage import InMemoryStorage
+from bijux_canon_ingest.result.types import Ok
 
 settings.register_profile("ci", max_examples=100, derandomize=True, deadline=None)
 settings.load_profile("ci")

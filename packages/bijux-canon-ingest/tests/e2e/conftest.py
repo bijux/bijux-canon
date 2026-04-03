@@ -23,8 +23,8 @@ from typing import Any
 
 import pytest
 
-from bijux_rag.core.types import RawDoc
-from bijux_rag.result import Err, Ok
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.result import Err, Ok
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -100,13 +100,13 @@ def rag_eval_suite() -> dict[str, Any]:
 
 @pytest.fixture(scope="session")
 def rag_app() -> Any:
-    """Requires you to implement bijux_rag.application.service.IngestService (truthful RAG entrypoint)."""
+    """Requires you to implement bijux_canon_ingest.application.service.IngestService (truthful RAG entrypoint)."""
 
     try:
-        from bijux_rag.application.service import IngestService  # type: ignore
+        from bijux_canon_ingest.application.service import IngestService  # type: ignore
     except Exception as exc:  # pragma: no cover
         pytest.fail(
-            "Missing bijux_rag.application.service.IngestService. Implement real RAG primitives (index/retrieve/ask) first. "
+            "Missing bijux_canon_ingest.application.service.IngestService. Implement real RAG primitives (index/retrieve/ask) first. "
             f"Import error: {exc}"
         )
     return IngestService(profile="ci")

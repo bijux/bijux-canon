@@ -6,13 +6,13 @@ from __future__ import annotations
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.application.pipelines.specs import (
+from bijux_canon_ingest.application.pipelines.specs import (
     OperatorSpec,
     PipelineSpec,
     reconstruct_pipeline,
     spec_hash,
 )
-from bijux_rag.result.types import ErrInfo, Ok, Result, is_ok
+from bijux_canon_ingest.result.types import ErrInfo, Ok, Result, is_ok
 
 
 def _inc(x: int) -> int:

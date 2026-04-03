@@ -7,8 +7,8 @@ from hypothesis import given
 from hypothesis import strategies as st
 import numpy as np
 
-from bijux_rag.fp.validation import VFailure, VSuccess
-from bijux_rag.retrieval.domain import (
+from bijux_canon_ingest.fp.validation import VFailure, VSuccess
+from bijux_canon_ingest.retrieval.domain import (
     Chunk,
     ChunkMetadata,
     ChunkText,

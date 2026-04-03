@@ -6,7 +6,7 @@ from __future__ import annotations
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.interop.toolz_compat import (
+from bijux_canon_ingest.interop.toolz_compat import (
     compose,
     curried_filter,
     curried_map,

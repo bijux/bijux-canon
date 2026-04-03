@@ -6,8 +6,8 @@ from __future__ import annotations
 from hypothesis import given, settings
 import hypothesis.strategies as st
 
-from bijux_rag.domain.effects.io_plan import IOPlan, io_bind, io_delay, io_pure, perform
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.domain.effects.io_plan import IOPlan, io_bind, io_delay, io_pure, perform
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 settings.register_profile("ci", max_examples=200, derandomize=True, deadline=None)
 settings.load_profile("ci")

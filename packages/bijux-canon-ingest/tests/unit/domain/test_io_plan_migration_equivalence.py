@@ -6,11 +6,11 @@ from __future__ import annotations
 from hypothesis import given, settings
 import hypothesis.strategies as st
 
-from bijux_rag.core.types import RawDoc
-from bijux_rag.domain.capabilities import StorageRead
-from bijux_rag.domain.effects.io_plan import IOPlan, io_delay, io_map, perform
-from bijux_rag.infra.adapters.memory_storage import InMemoryStorage
-from bijux_rag.result.types import Ok
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.domain.capabilities import StorageRead
+from bijux_canon_ingest.domain.effects.io_plan import IOPlan, io_delay, io_map, perform
+from bijux_canon_ingest.infra.adapters.memory_storage import InMemoryStorage
+from bijux_canon_ingest.result.types import Ok
 
 settings.register_profile("ci", max_examples=100, derandomize=True, deadline=None)
 settings.load_profile("ci")

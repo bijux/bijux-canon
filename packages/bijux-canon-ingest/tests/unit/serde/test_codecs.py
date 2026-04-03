@@ -6,7 +6,7 @@ from __future__ import annotations
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.interfaces.serialization.codecs import (
+from bijux_canon_ingest.interfaces.serialization.codecs import (
     MIGRATORS,
     Envelope,
     dec_option,
@@ -19,7 +19,7 @@ from bijux_rag.interfaces.serialization.codecs import (
     to_json,
     to_msgpack,
 )
-from bijux_rag.fp.core import Err, ErrInfo, NoneVal, Ok, Some
+from bijux_canon_ingest.fp.core import Err, ErrInfo, NoneVal, Ok, Some
 
 
 @given(opt=st.one_of(st.builds(Some, st.integers()), st.just(NoneVal())))

@@ -10,7 +10,7 @@ import operator
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.interop.stdlib_fp import merge_streams, running_sum
+from bijux_canon_ingest.interop.stdlib_fp import merge_streams, running_sum
 
 
 @given(a=st.lists(st.integers()), b=st.lists(st.integers()))

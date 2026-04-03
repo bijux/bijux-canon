@@ -8,8 +8,8 @@ import asyncio
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.domain.effects.async_ import ChunkPolicy, FakeSleeper, async_gen_chunk
-from bijux_rag.result.types import Ok
+from bijux_canon_ingest.domain.effects.async_ import ChunkPolicy, FakeSleeper, async_gen_chunk
+from bijux_canon_ingest.result.types import Ok
 
 
 @given(items=st.lists(st.integers(), max_size=200))

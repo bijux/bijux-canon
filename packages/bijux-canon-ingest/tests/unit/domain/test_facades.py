@@ -3,11 +3,11 @@
 
 from __future__ import annotations
 
-from bijux_rag.core.types import ChunkWithoutEmbedding
-from bijux_rag.domain.effects import perform
-from bijux_rag.domain.facades import Keyed, deterministic_embedder_port
-from bijux_rag.processing.stages import embed_chunk
-from bijux_rag.result.types import Ok
+from bijux_canon_ingest.core.types import ChunkWithoutEmbedding
+from bijux_canon_ingest.domain.effects import perform
+from bijux_canon_ingest.domain.facades import Keyed, deterministic_embedder_port
+from bijux_canon_ingest.processing.stages import embed_chunk
+from bijux_canon_ingest.result.types import Ok
 
 
 def test_facade_returns_description_not_effect() -> None:

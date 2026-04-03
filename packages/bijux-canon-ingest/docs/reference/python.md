@@ -2,8 +2,9 @@
 
 The core entry points are documented via `mkdocstrings`. Key modules:
 
-::: bijux_rag.application.service
-::: bijux_rag.application.pipeline
-::: bijux_rag.retrieval.indexes
-::: bijux_rag.retrieval.ports
-::: bijux_rag.interfaces.http.app
+::: bijux_canon_ingest.application.indexing
+::: bijux_canon_ingest.application.querying
+::: bijux_canon_ingest.application.service
+::: bijux_canon_ingest.application.pipeline
+::: bijux_canon_ingest.retrieval.indexes
+::: bijux_canon_ingest.interfaces.http.app

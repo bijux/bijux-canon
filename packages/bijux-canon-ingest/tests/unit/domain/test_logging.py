@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-from bijux_rag.domain.logging import LogEntry, LogMonoid, trace_stage, trace_value
-from bijux_rag.fp.effects.writer import run_writer
+from bijux_canon_ingest.domain.logging import LogEntry, LogMonoid, trace_stage, trace_value
+from bijux_canon_ingest.fp.effects.writer import run_writer
 
 
 def test_log_monoid_identity_and_append_order() -> None:

@@ -22,7 +22,7 @@ def main() -> int:
         print(f"✘ Missing dependencies to generate OpenAPI: {exc}", file=sys.stderr)
         return 1
 
-    from bijux_rag.boundaries.web.fastapi_app import create_app
+    from bijux_canon_ingest.interfaces.http.app import create_app
 
     app = create_app()
     generated = app.openapi()

@@ -6,13 +6,13 @@ from __future__ import annotations
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
-from bijux_rag.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.async_ import (
     lift_sync,
     lift_sync_gen_with_executor,
     lift_sync_with_executor,
 )
-from bijux_rag.infra.adapters.async_runtime import perform_async
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.infra.adapters.async_runtime import perform_async
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 
 def good(x: int) -> Result[int, ErrInfo]:

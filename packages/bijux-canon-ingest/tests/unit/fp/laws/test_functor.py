@@ -8,8 +8,8 @@ from dataclasses import dataclass
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.fp.core import Err, Ok
-from bijux_rag.fp.functor import (
+from bijux_canon_ingest.fp.core import Err, Ok
+from bijux_canon_ingest.fp.functor import (
     NONE,
     Some,
     compose,

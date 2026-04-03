@@ -5,9 +5,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_rag.domain.effects.io_plan import io_delay, io_pure, perform
-from bijux_rag.domain.effects.tx import Session, Tx, TxProtocol, with_tx
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.domain.effects.io_plan import io_delay, io_pure, perform
+from bijux_canon_ingest.domain.effects.tx import Session, Tx, TxProtocol, with_tx
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 
 @dataclass

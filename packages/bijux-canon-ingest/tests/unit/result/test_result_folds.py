@@ -6,7 +6,7 @@ from __future__ import annotations
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.result import (
+from bijux_canon_ingest.result import (
     Err,
     Ok,
     all_ok_fail_fast,

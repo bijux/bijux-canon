@@ -8,14 +8,14 @@ import asyncio
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.async_ import (
     AsyncGen,
     BackpressurePolicy,
     async_gen_bounded_map,
     async_lift,
     async_pure,
 )
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 
 def async_gen_from_ok_list(xs: list[int]) -> AsyncGen[int]:

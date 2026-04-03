@@ -2,8 +2,10 @@
 
 This project follows a functional core / explicit-IO boundaries layout:
 
-- `src/bijux_rag/retrieval`: retrieval logic (indexes, embedders, generators, rerankers, ports, domain types).
-- `src/bijux_rag/application` + `src/bijux_rag/http` + `src/bijux_rag/serde`: orchestration, transports, and serialization edges.
+- `src/bijux_canon_ingest/core`, `processing`, `retrieval`, `domain`, `result`, `streaming`, and `tree`: pure or mostly-pure core logic.
+- `src/bijux_canon_ingest/application`: orchestration surfaces split by responsibility (`pipeline`, `indexing`, `querying`, `service`).
+- `src/bijux_canon_ingest/interfaces`: transport and boundary adapters (`cli`, `http`, `serialization`, `errors`).
+- `src/bijux_canon_ingest/infra`: pluggable runtime adapters such as storage and clocks.
 - `tests/`: unit + e2e + eval suite gates.
 - `docs/ADR`: design decisions mirrored from bijux-cli standards (zero-root-pollution, lint/quality/security posture, docstring style).
 

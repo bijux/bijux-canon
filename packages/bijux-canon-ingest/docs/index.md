@@ -106,24 +106,15 @@ This command reads CSV documents, applies functional chunking, performs embeddin
 Programmatic equivalent:
 
 ```python
-from bijux_rag.core.types import RawDoc
-from bijux_rag.application.pipelines.configured import (
-    PipelineConfig,
-    StepConfig,
-    build_rag_pipeline,
-)
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.core.types import RagEnv
+from bijux_canon_ingest.application.indexing import ingest_docs_to_chunks
 
-docs = [RawDoc(doc_id="1", title="Example", abstract="Sample text.")]
-pipeline = build_rag_pipeline(
-    PipelineConfig(
-        steps=(
-            StepConfig("clean"),
-            StepConfig("chunk", {"chunk_size": 256}),
-            StepConfig("embed"),
-        )
-    )
-)
-results = list(pipeline(iter(docs)))
+docs = [
+    RawDoc(doc_id="1", title="Example", abstract="Sample text.", categories="docs")
+]
+chunks = ingest_docs_to_chunks(docs=docs, env=RagEnv(chunk_size=256))
+print(chunks[0].text)
 ```
 
 [↑ Back to Top](#bijux-canon-ingest)
@@ -159,28 +150,24 @@ Interact via endpoints like `/embed` (POST documents for processing) or `/retrie
 ### Python API
 Focuses on composability:
 
-- **Documents**: Use `RawDoc` and `Chunk` types; build trees with `make_chunk`.
-- **Pipelines**: Chain functions, e.g., `read_docs | fixed_size_chunk | embed_docs`.
+- **Documents**: Use `RawDoc` and `Chunk` types.
+- **Pipelines**: Compose pure chunking and embedding stages or use `application.pipeline`.
 - **Effects**: Wrap I/O in `IOPlan` for sync or `AsyncPlan` for async; apply policies like `retry_idempotent`.
 - **Streaming**: Leverage `AsyncGen` for lazy processing, e.g., `async_gen_bounded_map` for concurrency control.
 
 Synchronous retry example:
 
 ```python
-from bijux_rag.domain.effects import retry_idempotent, RetryPolicy
-from bijux_rag.policies.chunking import fixed_size_chunk
-from bijux_rag.result import fold_results_fail_fast
+from bijux_canon_ingest.domain.effects.io_retry import RetryPolicy, retry_idempotent
 
 policy = RetryPolicy(max_attempts=3)
-safe_read = retry_idempotent(policy)(storage.read_docs("input.csv"))
-docs_results = list(safe_read("input.csv"))
-chunks = list(fold_results_fail_fast(docs_results, [], fixed_size_chunk))
+safe_write = retry_idempotent(policy)
 ```
 
 Asynchronous streaming example:
 
 ```python
-from bijux_rag.domain.effects.async_ import async_gen_map, resilient_mapper
+from bijux_canon_ingest.domain.effects.async_ import async_gen_map, resilient_mapper
 
 mapper = resilient_mapper(embed_fn, RetryPolicy(max_attempts=3))
 stream = async_gen_map(source_stream, mapper)

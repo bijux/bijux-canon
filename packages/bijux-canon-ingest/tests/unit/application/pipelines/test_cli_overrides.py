@@ -6,7 +6,7 @@ from __future__ import annotations
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.application.pipelines.cli import deep_merge, parse_override
+from bijux_canon_ingest.application.pipelines.cli import deep_merge, parse_override
 
 
 @given(

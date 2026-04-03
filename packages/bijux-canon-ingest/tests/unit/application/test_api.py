@@ -9,7 +9,7 @@ from hypothesis import given
 import pytest
 from tests.strategies import doc_list_strategy, env_strategy
 
-from bijux_rag import (
+from bijux_canon_ingest import (
     DEFAULT_RULES,
     All,
     Err,
@@ -30,9 +30,9 @@ from bijux_rag import (
     parse_rule,
     structural_dedup_chunks,
 )
-from bijux_rag.core.types import RagEnv, RawDoc
-from bijux_rag.core.rules_lint import assert_rule_is_safe_expr
-from bijux_rag.result import Result
+from bijux_canon_ingest.core.types import RagEnv, RawDoc
+from bijux_canon_ingest.core.rules_lint import assert_rule_is_safe_expr
+from bijux_canon_ingest.result import Result
 
 
 def _baseline_chunks(docs: list[RawDoc], env: RagEnv) -> list:
@@ -80,7 +80,7 @@ def test_full_rag_api_path_boundary_shape(docs: list[RawDoc], env: RagEnv) -> No
     assert obs.total_docs == len(docs)
 
 
-def test_boundary_rag_config_rejects_unknown_rule() -> None:
+def test_parse_ingest_config_rejects_unknown_rule() -> None:
     res = parse_ingest_config({"chunk_size": 256, "clean_rules": ["nope"]})
     assert isinstance(res, Err)
 

@@ -7,7 +7,7 @@ from itertools import islice
 
 import pytest
 
-from bijux_rag import (
+from bijux_canon_ingest import (
     Chunk,
     ChunkWithoutEmbedding,
     FakeTime,
@@ -136,7 +136,7 @@ def test_trace_neutrality_and_bounded_samples() -> None:
     assert lens.samples == [1, 2]
 
 
-def test_make_gen_rag_fn_equivalence() -> None:
+def test_make_chunk_stream_fn_equivalence() -> None:
     docs = [
         RawDoc("d1", "t", "a" * 200, "cs.AI"),
         RawDoc("d2", "t", "b" * 200, "cs.AI"),

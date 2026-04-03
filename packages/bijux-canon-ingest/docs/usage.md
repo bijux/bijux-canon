@@ -4,72 +4,64 @@
 Process documents, build indexes, retrieve, and ask via the CLI:
 
 ```bash
-# Ingest and chunk CSV docs (outputs msgpack chunks)
-bijux-canon-ingest process --input data/arxiv_cs_abstracts_10k.csv --output artifacts/bijux-canon-ingest/chunks.msgpack --chunk-size 512
-
-# Build index from chunks (BM25 or vector)
-bijux-canon-ingest index-build --input artifacts/bijux-canon-ingest/chunks.msgpack --output artifacts/bijux-canon-ingest/index.msgpack --backend bm25
+# Build an index directly from a CSV corpus
+bijux-canon-ingest index build --input data/arxiv_cs_abstracts_10k.csv --out artifacts/bijux-canon-ingest/index.msgpack --backend bm25
 
 # Retrieve top-k matches
 bijux-canon-ingest retrieve --index artifacts/bijux-canon-ingest/index.msgpack --query "functional programming in RAG" --top-k 10
 
 # Ask with grounded response (citations from retrieved)
-bijux-canon-ingest ask --index artifacts/bijux-canon-ingest/index.msgpack --query "explain RAG effects" --top-k 5 --format json
+bijux-canon-ingest ask --index artifacts/bijux-canon-ingest/index.msgpack --query "explain ingest effects" --top-k 5 --format json
 
 # Run eval suite (pinned corpus/queries)
 bijux-canon-ingest eval --suite tests/eval --index artifacts/bijux-canon-ingest/index.msgpack
 ```
 
 - `--backend bm25|numpy-cosine` (deterministic profiles).
-- `--embedder default|custom` for vector indexes.
+- `--embedder hash16|sbert` for vector indexes.
 - `--filter key=value` for metadata filtering (AND).
 - See `bijux-canon-ingest --help` for full options.
 
 ## Library
-Build composable RAG pipelines programmatically:
+Build composable ingest and retrieval flows programmatically:
 
 ```python
-from bijux_rag.core.types import RawDoc
-from bijux_rag.application.pipelines.configured import (
-    PipelineConfig,
-    StepConfig,
-    build_rag_pipeline,
-)
-from bijux_rag.application.service import IngestService
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.application.indexing import ingest_docs_to_chunks
+from bijux_canon_ingest.application.service import IngestService
+from bijux_canon_ingest.result import is_ok
 
-docs = [RawDoc(doc_id="1", title="RAG Intro", abstract="Retrieval-Augmented Generation combines search and LLMs.")]
-pipeline = build_rag_pipeline(
-    PipelineConfig(
-        steps=(
-            StepConfig("clean"),
-            StepConfig("chunk", {"chunk_size": 256}),
-            StepConfig("embed"),
-        )
+docs = [
+    RawDoc(
+        doc_id="1",
+        title="Ingest Intro",
+        abstract="Composable pipelines turn documents into searchable chunks.",
+        categories="docs",
     )
-)
-embedded = [result.value for result in pipeline(iter(docs))]
+]
+chunks = ingest_docs_to_chunks(docs=docs, env=RagEnv(chunk_size=256))
 
-app = IngestService()  # Configurable app
-index = app.build_index(embedded, backend="bm25").unwrap()
-retrieved = app.retrieve(index, query="what is RAG?", top_k=5).unwrap()
-answer = app.ask(index, query="explain RAG", top_k=5, rerank=True).unwrap()["answer"]
-print(answer)
+service = IngestService()
+index_result = service.build_index(docs, backend="bm25")
+if is_ok(index_result):
+    answer_result = service.ask(index_result.value, query="what is ingestion?", top_k=5)
+    print(chunks[0].text, answer_result)
 ```
 
-Leverage effects for resilience: wrap in `retry_idempotent` or `async_with_resilience`.
+Leverage effects for resilience with `retry_idempotent`, `async_gen_map`, and `resilient_mapper`.
 
 ## API (FastAPI)
 Launch the HTTP server:
 
 ```bash
-uvicorn bijux_rag.interfaces.http.app:app --host 0.0.0.0 --port 8000 --reload
+uvicorn bijux_canon_ingest.interfaces.http.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Endpoints (v1 prefix):
-- `GET /health` → `{"status": "ok"}`
-- `POST /index/build` (JSON docs array, backend, chunk params) → index ID.
-- `POST /retrieve` (index_id, query, filters?, top_k) → ranked results.
-- `POST /ask` (index_id, query, top_k, rerank?) → grounded answer with citations.
-- `POST /chunks` (docs, chunk_size, overlap) → chunked output.
+- `GET /healthz`
+- `POST /index/build`
+- `POST /retrieve`
+- `POST /ask`
+- `POST /chunks`
 
 Full schema in docs/reference/http_api.md (OpenAPI compliant).

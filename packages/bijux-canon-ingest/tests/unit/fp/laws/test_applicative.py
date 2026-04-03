@@ -10,7 +10,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 import pytest
 
-from bijux_rag.fp.applicative import (
+from bijux_canon_ingest.fp.applicative import (
     Validation,
     VFailure,
     compose,

@@ -8,9 +8,9 @@ from dataclasses import replace
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.fp.error import ErrorCode
-from bijux_rag.fp.validation import VFailure, VSuccess
-from bijux_rag.retrieval.domain import ChunkMetadata, ChunkText, Embedding, assemble
+from bijux_canon_ingest.fp.error import ErrorCode
+from bijux_canon_ingest.fp.validation import VFailure, VSuccess
+from bijux_canon_ingest.retrieval.domain import ChunkMetadata, ChunkText, Embedding, assemble
 
 raw_tags = st.lists(st.text(min_size=1), min_size=0, max_size=15)
 

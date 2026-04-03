@@ -7,8 +7,8 @@ from collections import Counter
 from collections.abc import AsyncIterator, Callable
 from typing import TypeVar
 
-from bijux_rag.domain.effects.async_ import AsyncGen
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.domain.effects.async_ import AsyncGen
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 T = TypeVar("T")
 

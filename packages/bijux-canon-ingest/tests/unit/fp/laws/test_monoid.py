@@ -7,7 +7,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 import pytest
 
-from bijux_rag.fp.monoid import LIST_STR, METRICS, SUM_INT, Metrics, Sum, tree_reduce
+from bijux_canon_ingest.fp.monoid import LIST_STR, METRICS, SUM_INT, Metrics, Sum, tree_reduce
 
 
 @given(a=st.integers(), b=st.integers(), c=st.integers())

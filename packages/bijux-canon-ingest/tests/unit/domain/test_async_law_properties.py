@@ -8,7 +8,7 @@ import asyncio
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.async_ import (
     AsyncGen,
     AsyncPlan,
     RetryPolicy,
@@ -17,7 +17,7 @@ from bijux_rag.domain.effects.async_ import (
     async_gen_map_action,
     async_with_resilience,
 )
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 
 class FakeEmbedder:

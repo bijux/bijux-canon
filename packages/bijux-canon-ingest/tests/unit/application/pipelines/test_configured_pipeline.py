@@ -3,13 +3,13 @@
 
 from __future__ import annotations
 
-from bijux_rag.core.types import RawDoc
-from bijux_rag.application.pipelines.configured import (
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.application.pipelines.configured import (
     PipelineConfig,
     StepConfig,
     build_rag_pipeline,
 )
-from bijux_rag.result.types import is_ok
+from bijux_canon_ingest.result.types import is_ok
 
 
 def test_build_rag_pipeline_happy_path() -> None:

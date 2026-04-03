@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_rag.interfaces.errors.exception_bridge import (
+from bijux_canon_ingest.interfaces.errors.exception_bridge import (
     UnexpectedFailure,
     result_map_try,
     try_result,
@@ -13,8 +13,8 @@ from bijux_rag.interfaces.errors.exception_bridge import (
     v_map_try,
     v_try,
 )
-from bijux_rag.fp.core import VFailure, VSuccess
-from bijux_rag.result.types import Err, Ok
+from bijux_canon_ingest.fp.core import VFailure, VSuccess
+from bijux_canon_ingest.result.types import Err, Ok
 
 
 def test_try_result_catches_configured_exception() -> None:

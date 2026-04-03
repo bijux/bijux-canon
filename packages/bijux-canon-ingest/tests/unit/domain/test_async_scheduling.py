@@ -9,7 +9,7 @@ from random import Random
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.async_ import (
     FairnessPolicy,
     FakeClock,
     RateLimitPolicy,
@@ -18,7 +18,7 @@ from bijux_rag.domain.effects.async_ import (
     async_gen_from_list,
     async_gen_rate_limited,
 )
-from bijux_rag.result.types import Ok
+from bijux_canon_ingest.result.types import Ok
 
 
 @given(

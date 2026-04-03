@@ -8,7 +8,7 @@ from itertools import islice
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.result import Err, Ok, par_try_map_iter, try_map_iter
+from bijux_canon_ingest.result import Err, Ok, par_try_map_iter, try_map_iter
 
 
 @given(items=st.lists(st.integers()))

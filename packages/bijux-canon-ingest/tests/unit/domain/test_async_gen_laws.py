@@ -10,13 +10,13 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 from tests.helpers import collect
 
-from bijux_rag.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.async_ import (
     async_gen_and_then,
     async_gen_map,
     async_gen_return,
     async_gen_using,
 )
-from bijux_rag.result.types import Err, ErrInfo, Ok
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok
 
 
 @given(x=st.integers())

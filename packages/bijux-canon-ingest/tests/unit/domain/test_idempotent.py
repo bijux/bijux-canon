@@ -5,10 +5,10 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from bijux_rag.core.types import Chunk
-from bijux_rag.domain.effects.io_plan import perform
-from bijux_rag.domain.idempotent import AtomicWriteCap, content_key, idempotent_write
-from bijux_rag.result.types import ErrInfo, Ok, Result
+from bijux_canon_ingest.core.types import Chunk
+from bijux_canon_ingest.domain.effects.io_plan import perform
+from bijux_canon_ingest.domain.idempotent import AtomicWriteCap, content_key, idempotent_write
+from bijux_canon_ingest.result.types import ErrInfo, Ok, Result
 
 
 def _chunk(text: str) -> Chunk:

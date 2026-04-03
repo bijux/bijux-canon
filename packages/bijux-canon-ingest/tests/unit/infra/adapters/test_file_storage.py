@@ -6,9 +6,9 @@ from __future__ import annotations
 import builtins
 from io import StringIO
 
-from bijux_rag.core.types import RawDoc
-from bijux_rag.infra.adapters.file_storage import FileStorage
-from bijux_rag.result.types import Err, Ok
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
+from bijux_canon_ingest.result.types import Err, Ok
 
 
 def test_file_storage_read_docs_partial_consumption_closes_file(monkeypatch) -> None:

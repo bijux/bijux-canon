@@ -9,9 +9,9 @@ from typing import TypeAlias, TypeVar, assert_never
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.fp.core import NoneVal, Some
-from bijux_rag.fp.error import ErrorCode
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.fp.core import NoneVal, Some
+from bijux_canon_ingest.fp.error import ErrorCode
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 T = TypeVar("T")
 E = TypeVar("E")

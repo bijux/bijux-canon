@@ -11,7 +11,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 import pytest
 
-from bijux_rag.fp.core import (
+from bijux_canon_ingest.fp.core import (
     Chunk,
     ChunkState,
     Failure,

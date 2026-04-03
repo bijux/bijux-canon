@@ -8,8 +8,8 @@ from collections import defaultdict
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.policies.retries import RetryDecision, fixed_policy, retry_map_iter
-from bijux_rag.result import Err, Ok
+from bijux_canon_ingest.policies.retries import RetryDecision, fixed_policy, retry_map_iter
+from bijux_canon_ingest.result import Err, Ok
 
 
 @given(items=st.lists(st.integers()))

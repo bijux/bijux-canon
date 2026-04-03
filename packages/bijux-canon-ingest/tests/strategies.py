@@ -10,7 +10,7 @@ import hashlib
 import hypothesis.strategies as st
 from hypothesis.strategies import SearchStrategy
 
-from bijux_rag.core.types import Chunk, RagEnv, RawDoc, TextNode, TreeDoc
+from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc, TextNode, TreeDoc
 
 
 def raw_doc_strategy() -> SearchStrategy[RawDoc]:

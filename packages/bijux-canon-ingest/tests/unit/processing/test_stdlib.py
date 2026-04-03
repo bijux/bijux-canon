@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-from bijux_rag.core.types import RagEnv, RawDoc
-from bijux_rag.processing.stdlib import rag_iter_stdlib
+from bijux_canon_ingest.core.types import RagEnv, RawDoc
+from bijux_canon_ingest.processing.stdlib import rag_iter_stdlib
 
 
 def test_rag_iter_stdlib_smoke() -> None:

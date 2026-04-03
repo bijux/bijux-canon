@@ -3,15 +3,15 @@
 
 from __future__ import annotations
 
-from bijux_rag.domain.effects.io_plan import io_delay, perform
-from bijux_rag.domain.effects.io_retry import RetryPolicy, retry_idempotent
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.domain.effects.io_plan import io_delay, perform
+from bijux_canon_ingest.domain.effects.io_retry import RetryPolicy, retry_idempotent
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 
 def test_retry_idempotent_retries_transient_errors(monkeypatch) -> None:
     sleeps: list[float] = []
     monkeypatch.setattr(
-        "bijux_rag.domain.effects.io_retry.time.sleep", lambda s: sleeps.append(s)
+        "bijux_canon_ingest.domain.effects.io_retry.time.sleep", lambda s: sleeps.append(s)
     )
 
     calls: list[int] = []

@@ -6,13 +6,13 @@ from __future__ import annotations
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.policies.breakers import (
+from bijux_canon_ingest.policies.breakers import (
     BreakInfo,
     circuit_breaker_count_emit,
     short_circuit_on_err_emit,
     short_circuit_on_err_truncate,
 )
-from bijux_rag.result import Err, Ok, map_result_iter
+from bijux_canon_ingest.result import Err, Ok, map_result_iter
 
 
 @st.composite

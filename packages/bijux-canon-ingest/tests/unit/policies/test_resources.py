@@ -9,13 +9,13 @@ from hypothesis import given
 from hypothesis import strategies as st
 import pytest
 
-from bijux_rag.policies.breakers import short_circuit_on_err_truncate
-from bijux_rag.policies.resources import (
+from bijux_canon_ingest.policies.breakers import short_circuit_on_err_truncate
+from bijux_canon_ingest.policies.resources import (
     managed_stream,
     nested_managed,
     with_resource_stream,
 )
-from bijux_rag.result import Err, Ok
+from bijux_canon_ingest.result import Err, Ok
 
 
 def test_cleanup_on_normal_exhaustion() -> None:

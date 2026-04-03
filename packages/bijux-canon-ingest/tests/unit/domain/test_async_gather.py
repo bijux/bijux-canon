@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import asyncio
 
-from bijux_rag.domain.effects.async_ import AsyncPlan, async_gather
-from bijux_rag.infra.adapters.async_runtime import perform_async
-from bijux_rag.result.types import Err, ErrInfo, Ok, Result
+from bijux_canon_ingest.domain.effects.async_ import AsyncPlan, async_gather
+from bijux_canon_ingest.infra.adapters.async_runtime import perform_async
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 
 def test_async_gather_preserves_input_order() -> None:

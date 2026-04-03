@@ -9,7 +9,7 @@ from hypothesis import given
 import pytest
 from tests.strategies import deep_chain_strategy, tree_strategy
 
-from bijux_rag.tree import (
+from bijux_canon_ingest.tree import (
     flatten,
     iter_flatten,
     iter_flatten_buffered,

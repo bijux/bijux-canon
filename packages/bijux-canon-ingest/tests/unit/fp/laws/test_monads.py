@@ -8,7 +8,7 @@ from collections.abc import Callable
 from hypothesis import given, settings
 import hypothesis.strategies as st
 
-from bijux_rag.result.types import Err, NoneVal, Ok, Option, Result, Some
+from bijux_canon_ingest.result.types import Err, NoneVal, Ok, Option, Result, Some
 
 settings.register_profile("ci", max_examples=300, derandomize=True, deadline=None)
 settings.load_profile("ci")

@@ -1,6 +1,6 @@
 # HTTP API (FastAPI)
 
-FastAPI app lives in `bijux_rag.interfaces.http.app`. The published OpenAPI schema is versioned at `../../apis/bijux-canon-ingest/v1/schema.yaml`.
+FastAPI app lives in `bijux_canon_ingest.interfaces.http.app`. The published OpenAPI schema is versioned at `../../apis/bijux-canon-ingest/v1/schema.yaml`.
 
 - `POST /v1/index/build` — build an index from documents (bm25 or numpy-cosine).
 - `POST /v1/retrieve` — retrieve top-k candidates from a saved index.

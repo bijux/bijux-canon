@@ -69,7 +69,7 @@ make docs-serve # local docs server
 **Tooling:** Prance, OpenAPI Spec Validator, OpenAPI Generator, Schemathesis
 **Validate locally**
 ```bash
-.venv/bin/uvicorn bijux_rag.interfaces.http.app:app --host 0.0.0.0 --port 8000 &
+.venv/bin/uvicorn bijux_canon_ingest.interfaces.http.app:app --host 0.0.0.0 --port 8000 &
 make api
 ```
 **Contract rules**
@@ -119,17 +119,20 @@ make sbom # CycloneDX, saved to artifacts/bijux-canon-ingest/sbom/
 <a id="tox-envs-mirror-ci"></a>
 ## Tox Envs (Mirror CI)
 
-| Env | Runs |
-| --------------------------- | --------------- |
-| `test-bijux_rag` | `make test` |
-| `lint-bijux_rag` | `make lint` |
-| `quality-bijux_rag` | `make quality` |
-| `security-bijux_rag` | `make security` |
-| `api-bijux_rag` | `make api` |
-| `docs-bijux_rag` | `make docs` |
-| `build-bijux_rag` | `make build` |
-| `sbom-bijux_rag` | `make sbom` |
-List all:
+Tox env names are generated from the package slug and the package module path, so treat `tox -av` as the source of truth for the exact env names in this repo.
+
+Common mappings:
+
+* test env → `make test`
+* lint env → `make lint`
+* quality env → `make quality`
+* security env → `make security`
+* api env → `make api`
+* docs env → `make docs`
+* build env → `make build`
+* sbom env → `make sbom`
+
+List all envs:
 ```bash
 tox -av
 ```

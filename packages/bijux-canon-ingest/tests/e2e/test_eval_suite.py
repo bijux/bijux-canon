@@ -31,8 +31,8 @@ from typing import Any
 
 import pytest
 
-from bijux_rag.core.types import RawDoc
-from bijux_rag.result import Err, Ok
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.result import Err, Ok
 
 pytestmark = [pytest.mark.e2e]
 
@@ -196,7 +196,7 @@ def rag_eval_suite() -> dict[str, Any]:
 @pytest.fixture(scope="session")
 def rag_app() -> Any:
     """
-    Requires: bijux_rag.application.service.IngestService(profile="ci") with methods:
+    Requires: bijux_canon_ingest.application.service.IngestService(profile="ci") with methods:
       - build_index(docs, backend, chunk_size, overlap, tail_policy)
       - save_index(index, path)
       - load_index(path)
@@ -204,10 +204,10 @@ def rag_app() -> Any:
       - ask(index, query, top_k, filters=None)
     """
     try:
-        from bijux_rag.application.service import IngestService  # type: ignore
+        from bijux_canon_ingest.application.service import IngestService  # type: ignore
     except Exception as exc:
         pytest.fail(
-            "Missing bijux_rag.application.service.IngestService. This suite enforces real RAG primitives "
+            "Missing bijux_canon_ingest.application.service.IngestService. This suite enforces real RAG primitives "
             f"(index/retrieve/ask). Import error: {exc}"
         )
 

@@ -8,7 +8,7 @@ from collections.abc import Callable
 from hypothesis import given, settings
 import hypothesis.strategies as st
 
-from bijux_rag.fp.effects.state import State, get, modify, pure, put, run_state
+from bijux_canon_ingest.fp.effects.state import State, get, modify, pure, put, run_state
 
 settings.register_profile("ci", max_examples=250, derandomize=True, deadline=None)
 settings.load_profile("ci")

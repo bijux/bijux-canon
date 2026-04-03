@@ -6,7 +6,7 @@ from __future__ import annotations
 from hypothesis import given
 from tests.strategies import tree_strategy
 
-from bijux_rag.tree import (
+from bijux_canon_ingest.tree import (
     flatten,
     fold_count_length_maxdepth,
     fold_tree,

@@ -5,9 +5,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_rag.core.types import RawDoc
-from bijux_rag.application.service import IngestService
-from bijux_rag.result import is_ok
+from bijux_canon_ingest.core.types import RawDoc
+from bijux_canon_ingest.application.service import IngestService
+from bijux_canon_ingest.result import is_ok
 
 
 def test_real_rag_smoke_build_retrieve_ask(tmp_path: Path) -> None:

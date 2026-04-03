@@ -10,7 +10,7 @@ import warnings
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.async_ import (
     FakeClock,
     ResilienceEnv,
     RetryPolicy,
@@ -18,7 +18,7 @@ from bijux_rag.domain.effects.async_ import (
     async_with_resilience,
     make_fake_timeout_ctx,
 )
-from bijux_rag.result.types import Err, ErrInfo, Ok
+from bijux_canon_ingest.result.types import Err, ErrInfo, Ok
 
 
 def test_identity_when_no_retry_no_timeout() -> None:
