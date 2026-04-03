@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Core 7: optional distributed compilation scaffolding (end-of-Bijux RAG).
+"""Optional distributed compilation scaffolding for pipeline definitions.
 
 This module intentionally keeps hard dependencies optional. It provides a place
 to host Dask/Beam compilers when those libraries are installed.

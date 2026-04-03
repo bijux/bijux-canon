@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Core 6: config overrides and CLI-friendly spec handling (end-of-Bijux RAG).
+"""Config overrides and CLI-friendly pipeline-definition helpers.
 
 This module is stdlib-only and keeps the "override" mechanics pure/testable.
 Shells can parse args and delegate to these helpers.

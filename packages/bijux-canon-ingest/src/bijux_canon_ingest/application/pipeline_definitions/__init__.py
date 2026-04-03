@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: pipeline building and cross-process specs (end-of-Bijux RAG)."""
+"""Build-time pipeline definitions and portable compilation specs."""
 
 from __future__ import annotations
 

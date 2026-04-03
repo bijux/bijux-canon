@@ -21,7 +21,7 @@ from .indexing import (
     ingest_docs_to_chunks,
 )
 from .querying import ask, parse_filters, retrieve
-from .pipelines import (
+from .pipeline_definitions import (
     ErrorPolicy,
     OperatorSpec,
     PipelineConfig,

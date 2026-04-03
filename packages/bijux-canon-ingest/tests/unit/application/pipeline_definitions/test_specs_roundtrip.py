@@ -6,7 +6,7 @@ from __future__ import annotations
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_canon_ingest.application.pipelines.specs import (
+from bijux_canon_ingest.application.pipeline_definitions.specs import (
     OperatorSpec,
     PipelineSpec,
     reconstruct_pipeline,

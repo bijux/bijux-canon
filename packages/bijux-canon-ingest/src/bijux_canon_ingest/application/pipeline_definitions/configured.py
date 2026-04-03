@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Core 5: config-driven, stateless pipelines (end-of-Bijux RAG).
+"""Config-driven, stateless pipeline definitions.
 
 This is a minimal, production-safe subset of the module text:
 - a `PipelineConfig` is pure data

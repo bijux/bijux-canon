@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Core 9: serializable pipeline specs (end-of-Bijux RAG).
+"""Serializable pipeline specs for deterministic reconstruction.
 
 Specs are pure data. They can be serialized, transported, and reconstructed
 deterministically using allow-listed registries.

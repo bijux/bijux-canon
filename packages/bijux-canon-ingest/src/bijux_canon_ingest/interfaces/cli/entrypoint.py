@@ -1,13 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Core 6: minimal stdlib CLI shell (end-of-Bijux RAG).
+"""Minimal stdlib CLI shell for ingest workflows.
 
 This CLI is intentionally small and dependency-free (argparse). It demonstrates:
 - thin shell adapter
 - config-as-data loading (JSON)
 - override parsing (dotted `a.b=1` strings)
-- delegation to pure pipeline builders in `bijux_canon_ingest.application.pipelines`
+- delegation to pure pipeline builders in
+  `bijux_canon_ingest.application.pipeline_definitions`
 """
 
 from __future__ import annotations
@@ -21,8 +22,11 @@ from typing import Any, Protocol, cast
 
 from bijux_canon_ingest.core.types import RagEnv, RawDoc
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
-from bijux_canon_ingest.application.pipelines.cli import deep_merge, parse_override
-from bijux_canon_ingest.application.pipelines.configured import (
+from bijux_canon_ingest.application.pipeline_definitions.cli import (
+    deep_merge,
+    parse_override,
+)
+from bijux_canon_ingest.application.pipeline_definitions.configured import (
     PipelineConfig,
     StepConfig,
     build_rag_pipeline,

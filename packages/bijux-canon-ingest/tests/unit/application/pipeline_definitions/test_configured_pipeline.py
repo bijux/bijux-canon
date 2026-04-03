@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from bijux_canon_ingest.core.types import RawDoc
-from bijux_canon_ingest.application.pipelines.configured import (
+from bijux_canon_ingest.application.pipeline_definitions.configured import (
     PipelineConfig,
     StepConfig,
     build_rag_pipeline,
