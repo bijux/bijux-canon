@@ -6,7 +6,7 @@ on:
     paths:
       - ".github/workflows/bijux-llm-rag-ci.yml"
       - "packages/bijux-llm-rag/**"
-      - "apis/bijux-rag/**"
+      - "apis/bijux-llm-rag/**"
       - "configs/bijux-rag/**"
       - "makes/bijux-rag/**"
       - "makes/lint.mk"
@@ -29,7 +29,7 @@ on:
     paths:
       - ".github/workflows/bijux-llm-rag-ci.yml"
       - "packages/bijux-llm-rag/**"
-      - "apis/bijux-rag/**"
+      - "apis/bijux-llm-rag/**"
       - "configs/bijux-rag/**"
       - "makes/bijux-rag/**"
       - "makes/lint.mk"

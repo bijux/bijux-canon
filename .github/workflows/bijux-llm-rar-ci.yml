@@ -6,7 +6,7 @@ on:
     paths:
       - ".github/workflows/bijux-llm-rar-ci.yml"
       - "packages/bijux-llm-rar/**"
-      - "apis/bijux-rar/**"
+      - "apis/bijux-llm-rar/**"
       - "configs/bijux-rar/**"
       - "makes/bijux-rar/**"
       - "makes/lint.mk"
@@ -29,7 +29,7 @@ on:
     paths:
       - ".github/workflows/bijux-llm-rar-ci.yml"
       - "packages/bijux-llm-rar/**"
-      - "apis/bijux-rar/**"
+      - "apis/bijux-llm-rar/**"
       - "configs/bijux-rar/**"
       - "makes/bijux-rar/**"
       - "makes/lint.mk"

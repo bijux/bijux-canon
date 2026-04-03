@@ -7,7 +7,7 @@ on:
       - ".github/workflows/bijux-llm-rar-docs.yml"
       - "packages/bijux-llm-rar/docs/**"
       - "packages/bijux-llm-rar/CHANGELOG.md"
-      - "apis/bijux-rar/**"
+      - "apis/bijux-llm-rar/**"
       - "scripts/bijux-rar/**"
       - "packages/bijux-llm-rar/mkdocs.yml"
       - "makes/docs.mk"

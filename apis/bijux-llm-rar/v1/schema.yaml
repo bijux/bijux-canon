@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Bijux RAR API
+  title: Bijux LLM RAR API
   version: 1.0.0
-  description: 'OpenAPI schema for Bijux RAR item management.
+  description: 'OpenAPI schema for Bijux LLM RAR item management.
 
     Includes robust error handling, pagination, and industry-standard response objects.
 
@@ -10,8 +10,8 @@ info:
 
     '
   contact:
-    name: Bijux RAR Support
-    url: https://bijux.dev/bijux-rar/support
+    name: Bijux LLM RAR Support
+    url: https://bijux.dev/bijux-llm-rar/support
     email: bijan@bijux.io
   license:
     name: MIT
@@ -22,7 +22,7 @@ tags:
 servers:
 - url: http://127.0.0.1:8000/v1
   description: Local development server
-- url: https://api.bijux.dev/bijux-rar/v1
+- url: https://api.bijux.dev/bijux-llm-rar/v1
   description: 'Production API server (planned; not live yet).
 
     This URL is a placeholder. API endpoints are not currently deployed.
@@ -344,7 +344,7 @@ components:
         type:
           type: string
           description: Error type URI
-          example: https://bijux.dev/bijux-rar/docs/errors/invalid-request
+          example: https://bijux.dev/bijux-llm-rar/docs/errors/invalid-request
         title:
           type: string
           description: Short, human-readable summary
@@ -371,7 +371,7 @@ components:
           examples:
             notFound:
               value:
-                type: https://bijux.dev/bijux-rar/docs/errors/not-found
+                type: https://bijux.dev/bijux-llm-rar/docs/errors/not-found
                 title: Not found
                 status: 404
                 detail: Item not found
@@ -385,7 +385,7 @@ components:
           examples:
             notAcceptable:
               value:
-                type: https://bijux.dev/bijux-rar/docs/errors/not-acceptable
+                type: https://bijux.dev/bijux-llm-rar/docs/errors/not-acceptable
                 title: Not Acceptable
                 status: 406
                 detail: 'Set ''Accept: application/json'' for this endpoint'
@@ -399,7 +399,7 @@ components:
           examples:
             gone:
               value:
-                type: https://bijux.dev/bijux-rar/docs/errors/gone
+                type: https://bijux.dev/bijux-llm-rar/docs/errors/gone
                 title: Gone
                 status: 410
                 detail: Item deleted
@@ -413,7 +413,7 @@ components:
           examples:
             conflict:
               value:
-                type: https://bijux.dev/bijux-rar/docs/errors/conflict
+                type: https://bijux.dev/bijux-llm-rar/docs/errors/conflict
                 title: Conflict
                 status: 409
                 detail: Item with this name already exists
@@ -442,7 +442,7 @@ components:
           examples:
             serverError:
               value:
-                type: https://bijux.dev/bijux-rar/docs/errors/internal-server-error
+                type: https://bijux.dev/bijux-llm-rar/docs/errors/internal-server-error
                 title: Internal server error
                 status: 500
                 detail: An unexpected error occurred
