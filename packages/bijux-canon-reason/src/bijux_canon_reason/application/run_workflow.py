@@ -21,7 +21,7 @@ from bijux_canon_reason.core.system_contract import assert_system_contract
 
 
 @dataclass(frozen=True)
-class AppResult:
+class RunWorkflowResult:
     spec: ProblemSpec
     plan: Plan
     trace: Trace
@@ -36,7 +36,7 @@ def run_app(
     seed: int,
     artifacts_dir: Path | None = None,
     runtime: Any | None = None,
-) -> AppResult:
+) -> RunWorkflowResult:
     assert_system_contract()
     spec_with_id = spec if spec.id else spec.with_content_id()
     plan = plan_problem(spec=spec_with_id, preset=preset)
@@ -50,7 +50,7 @@ def run_app(
     )
     trace = execution.trace
     verify_report = verify_trace(trace=trace, plan=plan, artifacts_dir=artifacts_dir)
-    return AppResult(
+    return RunWorkflowResult(
         spec=spec_with_id,
         plan=plan,
         trace=trace,

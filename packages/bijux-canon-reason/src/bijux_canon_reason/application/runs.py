@@ -23,7 +23,7 @@ from bijux_canon_reason.core.types import (
     TraceEventKind,
     VerificationReport,
 )
-from bijux_canon_reason.application.runner import run_app
+from bijux_canon_reason.application.run_workflow import run_app
 from bijux_canon_reason.execution.runtime import Runtime
 from bijux_canon_reason.traces.checksum import compute_invariant_checksum
 
