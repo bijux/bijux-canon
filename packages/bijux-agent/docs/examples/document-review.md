@@ -18,13 +18,13 @@ task_goal: "review this document for correctness, missing assumptions, and actio
 ## Run
 
 ```bash
-python -m bijux_agent.main run path/to/review_corpus --out artifacts/review_run --config examples/default-config.yml
+python -m bijux_agent.main run path/to/review_corpus --out artifacts/bijux-agent/review_run --config examples/default-config.yml
 ```
 
 ## How to interpret the outputs
 
-- `artifacts/review_run/result/final_result.json` is the first file to read.
-- `artifacts/review_run/trace/run_trace.json` is what you use to validate:
+- `artifacts/bijux-agent/review_run/result/final_result.json` is the first file to read.
+- `artifacts/bijux-agent/review_run/trace/run_trace.json` is what you use to validate:
   - which model metadata was used,
   - what the replayability classification is,
   - what fingerprints identify the run inputs and config.

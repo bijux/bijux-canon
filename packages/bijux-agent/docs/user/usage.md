@@ -32,19 +32,19 @@ Put them in a `.env` file at the repository root, or export them in your shell.
 Process a single file:
 
 ```bash
-python -m bijux_agent.main run path/to/file.txt --out artifacts/run1 --config examples/default-config.yml
+python -m bijux_agent.main run path/to/file.txt --out artifacts/bijux-agent/run1 --config examples/default-config.yml
 ```
 
 Process a directory (non-recursive; files directly under the directory):
 
 ```bash
-python -m bijux_agent.main run path/to/dir --out artifacts/run1 --config examples/default-config.yml
+python -m bijux_agent.main run path/to/dir --out artifacts/bijux-agent/run1 --config examples/default-config.yml
 ```
 
 Dry-run (no model calls; validates discovery + wiring only):
 
 ```bash
-python -m bijux_agent.main run path/to/file.txt --out artifacts/run1 --config examples/default-config.yml --dry-run
+python -m bijux_agent.main run path/to/file.txt --out artifacts/bijux-agent/run1 --config examples/default-config.yml --dry-run
 ```
 
 ## Outputs
@@ -62,7 +62,7 @@ If exactly one file is processed and succeeds, the CLI also prints the computed 
 Replay is a *verification* tool: it reads a trace and reports whether the recorded run is internally consistent.
 
 ```bash
-python -m bijux_agent.main replay artifacts/run1/trace/run_trace.json
+python -m bijux_agent.main replay artifacts/bijux-agent/run1/trace/run_trace.json
 ```
 
 Replay does not re-run models.

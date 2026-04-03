@@ -33,7 +33,7 @@ The API v1 handler constructs context from:
 
 - `text` and `task_goal` in the request
 - `context_id` (default `api-v1`)
-- a deterministic on-disk snapshot path written under `./artifacts/api/inputs/`
+- a deterministic on-disk snapshot path written under `./artifacts/bijux-agent/api/inputs/`
 
 ## Output contract
 

@@ -17,8 +17,8 @@ Include:
 ## Data handling notes
 
 - The CLI reads local files and may write derived artifacts under the chosen `--out` run directory.
-- The HTTP API handler snapshots request text to disk under `./artifacts/api/inputs/` to preserve auditability.
-- Treat `artifacts/` as sensitive if inputs are sensitive.
+- The HTTP API handler snapshots request text to disk under `./artifacts/bijux-agent/api/inputs/` to preserve auditability.
+- Treat `artifacts/bijux-agent/` as sensitive if inputs are sensitive.
 
 ## Secrets and API keys
 

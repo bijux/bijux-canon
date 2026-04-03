@@ -10,4 +10,4 @@ High-signal directories:
 - `api/` — OpenAPI schema and API assets
 - `../../makes/bijux-agent/` — Make targets used by CI and developers
 
-Generated artifacts belong under `artifacts/` (or under the CLI `--out` directory).
+Generated artifacts belong under `artifacts/bijux-agent/` (or under the CLI `--out` directory).

@@ -14,7 +14,7 @@ EOF
 ## 2) Run the pipeline
 
 ```bash
-python -m bijux_agent.main run examples/tmp/input.txt --out artifacts/minimal --config examples/default-config.yml
+python -m bijux_agent.main run examples/tmp/input.txt --out artifacts/bijux-agent/minimal --config examples/default-config.yml
 ```
 
 If processing exactly one file and the run succeeds, the CLI prints the computed JSON result to stdout.
@@ -22,7 +22,7 @@ If processing exactly one file and the run succeeds, the CLI prints the computed
 ## 3) Inspect artifacts
 
 ```bash
-ls -R artifacts/minimal
+ls -R artifacts/bijux-agent/minimal
 ```
 
 You should see (paths relative to the run directory):

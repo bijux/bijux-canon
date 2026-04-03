@@ -54,11 +54,11 @@ On failure:
 
 The v1 handler snapshots request text into:
 
-- `./artifacts/api/inputs/`
+- `./artifacts/bijux-agent/api/inputs/`
 
 and writes logs/results under:
 
-- `./artifacts/api/`
+- `./artifacts/bijux-agent/api/`
 
 This is deliberate: API runs must still be auditable.
 
