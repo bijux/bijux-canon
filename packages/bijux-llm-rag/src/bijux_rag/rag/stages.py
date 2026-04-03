@@ -9,9 +9,9 @@ them together with configuration-as-data, taps/probes, and boundary adapters.
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
+import hashlib
 
 from bijux_rag.core.rag_types import (
     Chunk,
@@ -121,7 +121,9 @@ def hash16_embed(text: str) -> tuple[float, ...]:
     return tuple(out)
 
 
-def embed_chunk(chunk: ChunkWithoutEmbedding, *, spec: EmbeddingSpec | None = None) -> Chunk:
+def embed_chunk(
+    chunk: ChunkWithoutEmbedding, *, spec: EmbeddingSpec | None = None
+) -> Chunk:
     """Produce a deterministic embedding from chunk text."""
 
     spec = spec or EmbeddingSpec.hash16()

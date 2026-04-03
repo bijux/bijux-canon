@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, cast
+from typing import Any, cast
 
 from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.openapi.utils import get_openapi
@@ -48,7 +48,7 @@ class PChunkRequest(BaseModel):
     docs: list[DocIn] = Field(..., min_length=1)
 
     @model_validator(mode="after")
-    def _validate_overlap(self) -> "PChunkRequest":
+    def _validate_overlap(self) -> PChunkRequest:
         if self.overlap >= self.chunk_size:
             raise ValueError("overlap must be < chunk_size")
         return self
@@ -61,7 +61,7 @@ class IndexBuildRequest(BaseModel):
     overlap: int = Field(50, ge=0)
 
     @model_validator(mode="after")
-    def _validate_overlap(self) -> "IndexBuildRequest":
+    def _validate_overlap(self) -> IndexBuildRequest:
         if self.overlap >= self.chunk_size:
             raise ValueError("overlap must be < chunk_size")
         return self
@@ -132,7 +132,7 @@ def create_app() -> FastAPI:
     router = APIRouter(prefix="/v1")
 
     _APP = RagApp()
-    _INDEX_STORE: Dict[str, RagIndex] = {}
+    _INDEX_STORE: dict[str, RagIndex] = {}
 
     @router.get("/healthz")
     async def healthz() -> dict[str, bool]:
@@ -207,7 +207,9 @@ def create_app() -> FastAPI:
         if idx is None:
             raise HTTPException(status_code=404, detail="Unknown index_id")
 
-        res = _APP.retrieve(index=idx, query=req.query, top_k=req.top_k, filters=req.filters)
+        res = _APP.retrieve(
+            index=idx, query=req.query, top_k=req.top_k, filters=req.filters
+        )
         if isinstance(res, Err):
             raise HTTPException(status_code=400, detail=res.error)
 

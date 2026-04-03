@@ -17,7 +17,7 @@ Core namespaces:
 
 from __future__ import annotations
 
-from typing_extensions import assert_never
+from typing import assert_never
 
 from .boundaries.adapters.exception_bridge import (
     UnexpectedFailure,
@@ -125,7 +125,12 @@ from .policies.reports import (
     fold_error_report,
     report_to_jsonable,
 )
-from .policies.resources import auto_close, managed_stream, nested_managed, with_resource_stream
+from .policies.resources import (
+    auto_close,
+    managed_stream,
+    nested_managed,
+    with_resource_stream,
+)
 from .policies.retries import (
     RetryCtx,
     RetryDecision,
@@ -176,7 +181,14 @@ from .rag.stages import (
     iter_overlapping_chunks_text,
     structural_dedup_chunks,
 )
-from .rag.types import DebugConfig, DocRule, Observations, RagTaps, RagTraceV3, TraceLens
+from .rag.types import (
+    DebugConfig,
+    DocRule,
+    Observations,
+    RagTaps,
+    RagTraceV3,
+    TraceLens,
+)
 
 # Modules 02–09 public API layer (end-of-Bijux RAG)
 from .result import (

@@ -5,8 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import Callable, Generic, Iterable, TypeVar
+from typing import Generic, TypeVar
 
 from .types import Err, Ok, Result
 

@@ -51,7 +51,11 @@ def to_result(obj: Any, *, map_exc: Any | None = None) -> Result[Any, ErrInfo]:
     except Exception as exc:  # pragma: no cover - defensive
         return Err(ErrInfo.from_exception(exc))
 
-    return Err(ErrInfo(code="UNSUPPORTED", msg=f"unsupported returns object: {type(obj).__name__}"))
+    return Err(
+        ErrInfo(
+            code="UNSUPPORTED", msg=f"unsupported returns object: {type(obj).__name__}"
+        )
+    )
 
 
 def to_option(obj: Any) -> Option[Any]:

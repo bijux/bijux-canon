@@ -3,11 +3,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_rag.fp.effects.reader import Reader, ask, local, pure
 
@@ -54,7 +54,9 @@ def st_func_to_reader(draw) -> Callable[[int], Reader[Cfg, int]]:
 
 
 @given(x=st.integers(-20, 20), f=st_func_to_reader(), cfg=cfgs)
-def test_reader_left_identity(x: int, f: Callable[[int], Reader[Cfg, int]], cfg: Cfg) -> None:
+def test_reader_left_identity(
+    x: int, f: Callable[[int], Reader[Cfg, int]], cfg: Cfg
+) -> None:
     assert pure(x).and_then(f).run(cfg) == f(x).run(cfg)
 
 

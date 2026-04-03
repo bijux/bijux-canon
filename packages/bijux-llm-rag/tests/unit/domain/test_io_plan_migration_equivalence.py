@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_rag.core.rag_types import RawDoc
 from bijux_rag.domain.capabilities import StorageRead
@@ -32,7 +32,9 @@ def count_ok_docs_plan(storage: StorageRead, path: str) -> IOPlan[int]:
 def raw_doc(draw) -> RawDoc:
     # Avoid surrogates for predictable test output.
     safe_text = st.text(
-        alphabet=st.characters(blacklist_categories=("Cs",), blacklist_characters=["\x00"]),
+        alphabet=st.characters(
+            blacklist_categories=("Cs",), blacklist_characters=["\x00"]
+        ),
         max_size=50,
     )
     return RawDoc(

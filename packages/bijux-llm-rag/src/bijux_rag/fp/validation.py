@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Protocol, Tuple, TypeVar, cast
+from typing import Protocol, TypeVar, cast
 
 from .core import Err, Ok, Result, Validation, VFailure, VSuccess
 
@@ -21,7 +21,9 @@ B1 = TypeVar("B1")
 C1 = TypeVar("C1")
 
 
-def compose(f: Callable[[B1], C1]) -> Callable[[Callable[[A1], B1]], Callable[[A1], C1]]:
+def compose(
+    f: Callable[[B1], C1],
+) -> Callable[[Callable[[A1], B1]], Callable[[A1], C1]]:
     """Curried function composition for applicative laws.
 
     In the applicative composition law we need:
@@ -39,7 +41,7 @@ def compose(f: Callable[[B1], C1]) -> Callable[[Callable[[A1], B1]], Callable[[A
 
 
 class CombineErrors(Protocol[E]):
-    def __call__(self, left: Tuple[E, ...], right: Tuple[E, ...]) -> Tuple[E, ...]: ...
+    def __call__(self, left: tuple[E, ...], right: tuple[E, ...]) -> tuple[E, ...]: ...
 
 
 def v_pure(x: T) -> Validation[T, E]:
@@ -78,7 +80,9 @@ def v_ap(
     right_errs = vx.errors if isinstance(vx, VFailure) else ()
     combined = combine(left_errs, right_errs)
     if not combined:
-        raise ValueError("combine must not return empty tuple (must treat () as identity)")
+        raise ValueError(
+            "combine must not return empty tuple (must treat () as identity)"
+        )
     return v_failure(combined)
 
 

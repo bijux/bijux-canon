@@ -5,10 +5,17 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterator, Sequence
 import contextlib
 from contextlib import AbstractContextManager
 from types import TracebackType
-from typing import Any, Callable, ContextManager, Generic, Iterator, Sequence, TypeVar, cast
+from typing import (
+    Any,
+    ContextManager,
+    Generic,
+    TypeVar,
+    cast,
+)
 
 R = TypeVar("R")
 
@@ -74,7 +81,9 @@ def managed_stream(factory: Callable[[], Iterator[R]]) -> ContextManager[Iterato
     return _ManagedStream(factory)
 
 
-def nested_managed(managers: Sequence[ContextManager[Any]]) -> ContextManager[tuple[Any, ...]]:
+def nested_managed(
+    managers: Sequence[ContextManager[Any]],
+) -> ContextManager[tuple[Any, ...]]:
     """Compose multiple context managers; returns tuple of entered values."""
 
     class _Nested(AbstractContextManager[tuple[Any, ...]]):

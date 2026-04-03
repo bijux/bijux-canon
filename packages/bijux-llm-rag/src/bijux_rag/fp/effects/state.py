@@ -5,8 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Generic, TypeVar
+from typing import Generic, TypeVar
 
 S = TypeVar("S")
 T = TypeVar("T")
@@ -17,14 +18,14 @@ U = TypeVar("U")
 class State(Generic[S, T]):
     run: Callable[[S], tuple[T, S]]
 
-    def map(self, f: Callable[[T], U]) -> "State[S, U]":
+    def map(self, f: Callable[[T], U]) -> State[S, U]:
         def _run(s: S) -> tuple[U, S]:
             value, new_s = self.run(s)
             return f(value), new_s
 
         return State(_run)
 
-    def and_then(self, f: Callable[[T], "State[S, U]"]) -> "State[S, U]":
+    def and_then(self, f: Callable[[T], State[S, U]]) -> State[S, U]:
         def _run(s: S) -> tuple[U, S]:
             value, new_s = self.run(s)
             return f(value).run(new_s)

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from hypothesis import given
+from tests.strategies import tree_strategy
 
 from bijux_rag.tree import (
     flatten,
@@ -12,7 +13,6 @@ from bijux_rag.tree import (
     fold_tree_buffered,
     fold_tree_no_path,
 )
-from tests.strategies import tree_strategy
 
 
 def recursive_fold(tree, seed, combiner, *, depth: int = 0, path: tuple[int, ...] = ()):

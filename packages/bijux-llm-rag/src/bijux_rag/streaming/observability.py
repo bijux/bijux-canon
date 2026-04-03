@@ -9,9 +9,9 @@ observe streams (logging/metrics/snapshots) without changing the yielded values.
 
 from __future__ import annotations
 
-import threading
 from collections import deque
 from collections.abc import Callable, Iterable, Iterator
+import threading
 from typing import Any, Literal, TypeVar
 
 from .types import Transform

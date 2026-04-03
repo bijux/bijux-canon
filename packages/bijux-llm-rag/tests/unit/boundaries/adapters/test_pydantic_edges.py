@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
+import pytest
 
 from bijux_rag.boundaries.adapters.pydantic_edges import (
     ChunkModel,

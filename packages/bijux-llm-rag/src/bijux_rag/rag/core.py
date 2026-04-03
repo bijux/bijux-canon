@@ -29,7 +29,12 @@ from bijux_rag.policies.breakers import (
     short_circuit_on_err_emit,
     short_circuit_on_err_truncate,
 )
-from bijux_rag.policies.memo import DiskCache, content_hash_key, lru_cache_custom, memoize_keyed
+from bijux_rag.policies.memo import (
+    DiskCache,
+    content_hash_key,
+    lru_cache_custom,
+    memoize_keyed,
+)
 from bijux_rag.policies.reports import (
     ErrGroup,
     ErrReport,
@@ -119,7 +124,12 @@ from bijux_rag.tree import (
     scan_tree,
 )
 
-from .chunking import gen_chunk_doc, gen_chunk_spans, gen_overlapping_chunks, sliding_windows
+from .chunking import (
+    gen_chunk_doc,
+    gen_chunk_spans,
+    gen_overlapping_chunks,
+    sliding_windows,
+)
 from .rag_api import (
     full_rag_api,
     full_rag_api_docs,

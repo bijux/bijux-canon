@@ -8,6 +8,7 @@ the outside world (CLI, filesystem, JSON/MessagePack, Pydantic schemas).
 
 Reusable edge adapters live in `bijux_rag.boundaries.adapters`.
 """
+from __future__ import annotations
 
 from .adapters.exception_bridge import (
     UnexpectedFailure,

@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_rag.fp.effects.state import State, get, modify, pure, put, run_state
 
@@ -38,7 +38,9 @@ def st_func_to_state(draw) -> Callable[[int], State[int, int]]:
 
 
 @given(x=st.integers(-20, 20), f=st_func_to_state(), s0=st.integers(-20, 20))
-def test_state_left_identity(x: int, f: Callable[[int], State[int, int]], s0: int) -> None:
+def test_state_left_identity(
+    x: int, f: Callable[[int], State[int, int]], s0: int
+) -> None:
     assert run_state(pure(x).and_then(f), s0) == run_state(f(x), s0)
 
 
@@ -47,7 +49,9 @@ def test_state_right_identity(p: State[int, int], s0: int) -> None:
     assert run_state(p.and_then(pure), s0) == run_state(p, s0)
 
 
-@given(p=st_state(), f=st_func_to_state(), g=st_func_to_state(), s0=st.integers(-20, 20))
+@given(
+    p=st_state(), f=st_func_to_state(), g=st_func_to_state(), s0=st.integers(-20, 20)
+)
 def test_state_associativity(
     p: State[int, int],
     f: Callable[[int], State[int, int]],

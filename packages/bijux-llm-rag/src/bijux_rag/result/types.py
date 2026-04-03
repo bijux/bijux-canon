@@ -11,9 +11,18 @@ Bijux RAG extends the ADTs with:
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Any, Callable, Generic, Mapping, NamedTuple, TypeAlias, TypeGuard, TypeVar, cast
+from typing import (
+    Any,
+    Generic,
+    NamedTuple,
+    TypeAlias,
+    TypeGuard,
+    TypeVar,
+    cast,
+)
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -30,20 +39,20 @@ def curry2(f: Callable[[T, U], V]) -> Callable[[T], Callable[[U], V]]:
 class Ok(Generic[T, E]):
     value: T
 
-    def and_then(self, f: Callable[[T], "Result[U, E]"]) -> "Result[U, E]":
+    def and_then(self, f: Callable[[T], Result[U, E]]) -> Result[U, E]:
         return f(self.value)
 
-    def bind(self, f: Callable[[T], "Result[U, E]"]) -> "Result[U, E]":
+    def bind(self, f: Callable[[T], Result[U, E]]) -> Result[U, E]:
         return self.and_then(f)
 
-    def map(self, f: Callable[[T], U]) -> "Result[U, E]":
+    def map(self, f: Callable[[T], U]) -> Result[U, E]:
         return Ok(f(self.value))
 
-    def map_err(self, f: Callable[[E], F]) -> "Result[T, F]":
+    def map_err(self, f: Callable[[E], F]) -> Result[T, F]:
         _ = f
         return cast("Result[T, F]", self)
 
-    def ap(self, arg: "Result[U, E]") -> "Result[V, E]":
+    def ap(self, arg: Result[U, E]) -> Result[V, E]:
         if isinstance(arg, Err):
             return arg  # type: ignore[return-value]
         func = cast(Callable[[U], V], self.value)
@@ -52,11 +61,11 @@ class Ok(Generic[T, E]):
     def or_else(self, _: Callable[[E], T]) -> T:
         return self.value
 
-    def tap(self, side: Callable[[T], None]) -> "Ok[T, E]":
+    def tap(self, side: Callable[[T], None]) -> Ok[T, E]:
         side(self.value)
         return self
 
-    def recover(self, f: Callable[[E], T]) -> "Result[T, E]":
+    def recover(self, f: Callable[[E], T]) -> Result[T, E]:
         _ = f
         return cast("Result[T, E]", self)
 
@@ -64,7 +73,7 @@ class Ok(Generic[T, E]):
         _ = default
         return self.value
 
-    def to_option(self) -> "Option[T]":
+    def to_option(self) -> Option[T]:
         return Some(self.value)
 
 
@@ -72,35 +81,35 @@ class Ok(Generic[T, E]):
 class Err(Generic[T, E]):
     error: E
 
-    def and_then(self, _: Callable[[T], "Result[U, E]"]) -> "Result[U, E]":
+    def and_then(self, _: Callable[[T], Result[U, E]]) -> Result[U, E]:
         return cast("Result[U, E]", self)
 
-    def bind(self, f: Callable[[T], "Result[U, E]"]) -> "Result[U, E]":
+    def bind(self, f: Callable[[T], Result[U, E]]) -> Result[U, E]:
         _ = f
         return cast("Result[U, E]", self)
 
-    def map(self, _: Callable[[T], U]) -> "Result[U, E]":
+    def map(self, _: Callable[[T], U]) -> Result[U, E]:
         return cast("Result[U, E]", self)
 
-    def map_err(self, f: Callable[[E], F]) -> "Result[T, F]":
+    def map_err(self, f: Callable[[E], F]) -> Result[T, F]:
         return Err(f(self.error))
 
-    def ap(self, _: "Result[Any, E]") -> "Result[V, E]":
+    def ap(self, _: Result[Any, E]) -> Result[V, E]:
         return cast("Result[V, E]", self)
 
     def or_else(self, op: Callable[[E], T]) -> T:
         return op(self.error)
 
-    def tap(self, _: Callable[[T], None]) -> "Err[T, E]":
+    def tap(self, _: Callable[[T], None]) -> Err[T, E]:
         return self
 
-    def recover(self, f: Callable[[E], T]) -> "Result[T, E]":
+    def recover(self, f: Callable[[E], T]) -> Result[T, E]:
         return Ok(f(self.error))
 
     def unwrap_or(self, default: T) -> T:
         return default
 
-    def to_option(self) -> "Option[T]":
+    def to_option(self) -> Option[T]:
         return NONE
 
 
@@ -149,13 +158,13 @@ class Some(Generic[T]):
         if self.value is None:
             raise ValueError("Some(None) forbidden – use NoneVal() / NONE")
 
-    def map(self, f: Callable[[T], U]) -> "Option[U]":
+    def map(self, f: Callable[[T], U]) -> Option[U]:
         return Some(f(self.value))
 
-    def and_then(self, f: Callable[[T], "Option[U]"]) -> "Option[U]":
+    def and_then(self, f: Callable[[T], Option[U]]) -> Option[U]:
         return f(self.value)
 
-    def bind(self, f: Callable[[T], "Option[U]"]) -> "Option[U]":
+    def bind(self, f: Callable[[T], Option[U]]) -> Option[U]:
         return self.and_then(f)
 
     def unwrap_or(self, default: T) -> T:
@@ -169,20 +178,20 @@ class Some(Generic[T]):
     def or_else(self, _: Callable[[], T]) -> T:
         return self.value
 
-    def tap(self, side: Callable[[T], None]) -> "Some[T]":
+    def tap(self, side: Callable[[T], None]) -> Some[T]:
         side(self.value)
         return self
 
 
 @dataclass(frozen=True)
 class NoneVal:
-    def map(self, _: Callable[[Any], U]) -> "Option[U]":
+    def map(self, _: Callable[[Any], U]) -> Option[U]:
         return self
 
-    def and_then(self, _: Callable[[Any], "Option[U]"]) -> "Option[U]":
+    def and_then(self, _: Callable[[Any], Option[U]]) -> Option[U]:
         return self
 
-    def bind(self, f: Callable[[Any], "Option[U]"]) -> "Option[U]":
+    def bind(self, f: Callable[[Any], Option[U]]) -> Option[U]:
         _ = f
         return self
 
@@ -195,7 +204,7 @@ class NoneVal:
     def or_else(self, op: Callable[[], T]) -> T:
         return op()
 
-    def tap(self, _: Callable[[Any], None]) -> "NoneVal":
+    def tap(self, _: Callable[[Any], None]) -> NoneVal:
         return self
 
 
@@ -255,7 +264,7 @@ class ErrInfo(NamedTuple):
         path: tuple[int, ...] = (),
         ctx: Mapping[str, object] | None = None,
         meta: Mapping[str, object] | None = None,
-    ) -> "ErrInfo":
+    ) -> ErrInfo:
         return make_errinfo(
             code=code,
             msg=msg or str(exc),
@@ -276,7 +285,7 @@ class ErrInfo(NamedTuple):
         path: tuple[int, ...] = (),
         ctx: Mapping[str, object] | None = None,
         meta: Mapping[str, object] | None = None,
-    ) -> "ErrInfo":
+    ) -> ErrInfo:
         return ErrInfo.from_exception(
             exc,
             code=code,

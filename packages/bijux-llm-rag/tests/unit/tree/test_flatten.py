@@ -5,11 +5,16 @@ from __future__ import annotations
 
 from itertools import islice
 
-import pytest
 from hypothesis import given
-
-from bijux_rag.tree import flatten, iter_flatten, iter_flatten_buffered, recursive_flatten
+import pytest
 from tests.strategies import deep_chain_strategy, tree_strategy
+
+from bijux_rag.tree import (
+    flatten,
+    iter_flatten,
+    iter_flatten_buffered,
+    recursive_flatten,
+)
 
 
 @given(tree=tree_strategy())

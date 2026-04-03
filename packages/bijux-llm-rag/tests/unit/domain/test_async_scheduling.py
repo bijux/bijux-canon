@@ -68,7 +68,9 @@ def test_fair_merge_approx_proportional_when_all_ready(
     total: int, weight_a: int, weight_b: int
 ) -> None:
     async def run() -> None:
-        policy = FairnessPolicy(weights={0: weight_a, 1: weight_b}, max_buffer_per_stream=32)
+        policy = FairnessPolicy(
+            weights={0: weight_a, 1: weight_b}, max_buffer_per_stream=32
+        )
 
         def instant_producer(tag: str, count: int):
             async def _gen():
@@ -78,7 +80,8 @@ def test_fair_merge_approx_proportional_when_all_ready(
             return lambda: _gen()
 
         merged = async_gen_fair_merge(
-            [instant_producer("A", total * 10), instant_producer("B", total * 10)], policy
+            [instant_producer("A", total * 10), instant_producer("B", total * 10)],
+            policy,
         )
 
         counts = {"A": 0, "B": 0}
@@ -102,9 +105,13 @@ def test_fair_merge_approx_proportional_when_all_ready(
     n=st.integers(min_value=200, max_value=2000),
 )
 @settings(deadline=None, max_examples=25)
-def test_fair_merge_prefix_normalized_gap_bounded(weight_a: int, weight_b: int, n: int) -> None:
+def test_fair_merge_prefix_normalized_gap_bounded(
+    weight_a: int, weight_b: int, n: int
+) -> None:
     async def run() -> None:
-        policy = FairnessPolicy(weights={0: weight_a, 1: weight_b}, max_buffer_per_stream=64)
+        policy = FairnessPolicy(
+            weights={0: weight_a, 1: weight_b}, max_buffer_per_stream=64
+        )
 
         def infinite(tag: str):
             async def _gen():
@@ -155,7 +162,9 @@ def test_fair_merge_closes_sources_on_early_break() -> None:
 
             return lambda: _gen()
 
-        merged = async_gen_fair_merge([src(0), src(1)], FairnessPolicy(max_buffer_per_stream=4))
+        merged = async_gen_fair_merge(
+            [src(0), src(1)], FairnessPolicy(max_buffer_per_stream=4)
+        )
 
         it = merged()
         async for _ in it:

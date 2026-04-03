@@ -15,10 +15,11 @@ If these fixtures fail, it means bijux-rag is still 'ingestion-only' and not a R
 
 from __future__ import annotations
 
-import json
+from collections.abc import Iterable
 from dataclasses import is_dataclass
+import json
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import pytest
 
@@ -83,7 +84,9 @@ def rag_eval_suite() -> dict[str, Any]:
         qid = str(row["id"])
         query = str(row["query"])
         expected = row.get("expected_doc_ids", [])
-        if not isinstance(expected, list) or not all(isinstance(x, str) for x in expected):
+        if not isinstance(expected, list) or not all(
+            isinstance(x, str) for x in expected
+        ):
             raise TypeError(f"expected_doc_ids must be list[str] for query {qid}")
         queries.append(
             {
@@ -113,7 +116,9 @@ def rag_app() -> Any:
 
 @pytest.fixture(scope="session")
 def rag_index(
-    tmp_path_factory: pytest.TempPathFactory, rag_app: Any, rag_eval_suite: dict[str, Any]
+    tmp_path_factory: pytest.TempPathFactory,
+    rag_app: Any,
+    rag_eval_suite: dict[str, Any],
 ) -> Any:
     """Build + save + load a deterministic offline index (must be reproducible)."""
 

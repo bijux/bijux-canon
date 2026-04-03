@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-import numpy as np
 from hypothesis import given
 from hypothesis import strategies as st
+import numpy as np
 
 from bijux_rag.fp.validation import VFailure, VSuccess
 from bijux_rag.rag.domain import Chunk, ChunkMetadata, ChunkText, process_batch_hybrid
@@ -40,7 +40,9 @@ def test_pure_vs_hybrid_equivalence(batch: list[Chunk]) -> None:
             assert (pc.embedding is None) == (hc.embedding is None)
             assert pc.embedding is not None and hc.embedding is not None
             assert pc.embedding.model == hc.embedding.model
-            assert np.allclose(pc.embedding.vector, hc.embedding.vector, rtol=1e-6, atol=1e-8)
+            assert np.allclose(
+                pc.embedding.vector, hc.embedding.vector, rtol=1e-6, atol=1e-8
+            )
         else:
             assert isinstance(h, VFailure)
             assert p.errors == h.errors

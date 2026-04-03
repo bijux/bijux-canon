@@ -2,9 +2,15 @@
 # Copyright © 2025 Bijan Mousavi
 
 """Bijux RAG: pipeline building and cross-process specs (end-of-Bijux RAG)."""
+from __future__ import annotations
 
 from .configured import PipelineConfig, StepConfig, build_rag_pipeline
-from .distributed import beam_available, compile_to_beam, compile_to_dask_bag, dask_available
+from .distributed import (
+    beam_available,
+    compile_to_beam,
+    compile_to_dask_bag,
+    dask_available,
+)
 from .specs import (
     ErrorPolicy,
     OperatorSpec,

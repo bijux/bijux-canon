@@ -4,8 +4,8 @@
 from __future__ import annotations
 
 import asyncio
-import warnings
 from random import Random
+import warnings
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -40,7 +40,9 @@ def test_identity_when_no_retry_no_timeout() -> None:
 @settings(deadline=None, max_examples=50)
 def test_retry_bounded_attempts(attempts: int) -> None:
     async def run() -> None:
-        policy = RetryPolicy(max_attempts=attempts, retriable_codes=frozenset({"TRANSIENT"}))
+        policy = RetryPolicy(
+            max_attempts=attempts, retriable_codes=frozenset({"TRANSIENT"})
+        )
         call_count = 0
 
         async def always_fail():
@@ -63,7 +65,10 @@ def test_retry_bounded_attempts(attempts: int) -> None:
 def test_backoff_cap_respected(base_ms: int) -> None:
     async def run() -> None:
         policy = RetryPolicy(
-            max_attempts=6, backoff_base_ms=base_ms, max_backoff_ms=1000, jitter_factor=0.0
+            max_attempts=6,
+            backoff_base_ms=base_ms,
+            max_backoff_ms=1000,
+            jitter_factor=0.0,
         )
 
         delays: list[float] = []
@@ -80,7 +85,9 @@ def test_backoff_cap_respected(base_ms: int) -> None:
         await plan()
 
         for attempt, delay in enumerate(delays, start=1):
-            expected = min(base_ms * (2 ** (attempt - 1)), policy.max_backoff_ms) / 1000.0
+            expected = (
+                min(base_ms * (2 ** (attempt - 1)), policy.max_backoff_ms) / 1000.0
+            )
             assert abs(delay - expected) < 1e-9
 
     asyncio.run(run())

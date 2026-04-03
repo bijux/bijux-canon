@@ -9,8 +9,9 @@ when interpreted by the shell via `perform`.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result
 

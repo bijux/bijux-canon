@@ -5,9 +5,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass, field, is_dataclass
 from types import MappingProxyType
-from typing import Any, Generic, Iterable, Mapping, TypeVar
+from typing import Any, Generic, TypeVar
 
 from bijux_rag.result import Err, ErrInfo, Ok, Result
 
@@ -157,9 +158,16 @@ def report_to_jsonable(report: ErrReport[E]) -> dict[str, Any]:
         "by_code": {k: group_to_jsonable(v) for k, v in report.by_code.items()},
         "by_stage": {k: group_to_jsonable(v) for k, v in report.by_stage.items()},
         "by_path_prefix": {
-            ".".join(map(str, k)): group_to_jsonable(v) for k, v in report.by_path_prefix.items()
+            ".".join(map(str, k)): group_to_jsonable(v)
+            for k, v in report.by_path_prefix.items()
         },
     }
 
 
-__all__ = ["ErrGroup", "ErrReport", "fold_error_counts", "fold_error_report", "report_to_jsonable"]
+__all__ = [
+    "ErrGroup",
+    "ErrReport",
+    "fold_error_counts",
+    "fold_error_report",
+    "report_to_jsonable",
+]

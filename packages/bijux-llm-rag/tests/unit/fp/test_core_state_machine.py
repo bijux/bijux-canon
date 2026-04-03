@@ -3,11 +3,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+import pytest
 
 from bijux_rag.fp.core import (
     Done,
@@ -25,7 +25,7 @@ from bijux_rag.fp.core import (
     transition,
 )
 
-UTC = timezone.utc
+UTC = UTC
 aware_dt = st.datetimes(timezones=st.just(UTC))
 
 
@@ -47,7 +47,9 @@ def test_advance_negative_rejected(delta: int) -> None:
     progress=st.integers(min_value=0, max_value=1000),
     delta=st.integers(min_value=0, max_value=2000),
 )
-def test_progress_monotonic_and_clamped(started_at: datetime, progress: int, delta: int) -> None:
+def test_progress_monotonic_and_clamped(
+    started_at: datetime, progress: int, delta: int
+) -> None:
     state = running(started_at=started_at, progress_permille=progress)
     ev = advance_event(delta_permille=delta)
     new_state = transition(state, ev)
@@ -77,8 +79,12 @@ def test_terminal_idempotent(state: Done | Failed) -> None:
     for ev in [
         start_event(started_at=datetime.now(UTC)),
         advance_event(delta_permille=100),
-        succeed_event(completed_at=datetime.now(UTC), artifact_id="x", dim=1, sha256="0" * 64),
-        fail_event(failed_at=datetime.now(UTC), code=ErrorCode.INTERNAL, msg="", attempt=1),
+        succeed_event(
+            completed_at=datetime.now(UTC), artifact_id="x", dim=1, sha256="0" * 64
+        ),
+        fail_event(
+            failed_at=datetime.now(UTC), code=ErrorCode.INTERNAL, msg="", attempt=1
+        ),
     ]:
         assert transition(state, ev) == state
 

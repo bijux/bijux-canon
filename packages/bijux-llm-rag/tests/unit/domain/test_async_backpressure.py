@@ -27,7 +27,8 @@ def async_gen_from_ok_list(xs: list[int]) -> AsyncGen[int]:
 
 
 @given(
-    n=st.integers(min_value=20, max_value=200), concurrency=st.integers(min_value=1, max_value=20)
+    n=st.integers(min_value=20, max_value=200),
+    concurrency=st.integers(min_value=1, max_value=20),
 )
 @settings(deadline=None, max_examples=50)
 def test_bounded_concurrency_never_exceeds_limit(n: int, concurrency: int) -> None:
@@ -46,7 +47,9 @@ def test_bounded_concurrency_never_exceeds_limit(n: int, concurrency: int) -> No
             return Ok(x)
 
         src = async_gen_from_ok_list(list(range(n)))
-        stream = async_gen_bounded_map(src, lambda x: async_lift(lambda: probe(x)), policy)
+        stream = async_gen_bounded_map(
+            src, lambda x: async_lift(lambda: probe(x)), policy
+        )
 
         async for _ in stream():
             pass

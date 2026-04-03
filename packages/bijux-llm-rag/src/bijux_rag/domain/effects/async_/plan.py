@@ -86,7 +86,7 @@ def lift_sync_with_executor(
 def lift_sync_gen_with_executor(
     f: Callable[..., Result[list[T], ErrInfo]],
     executor: Executor,
-) -> Callable[..., "AsyncGen[T]"]:
+) -> Callable[..., AsyncGen[T]]:
     """Lift a `Result[list[T]]` function into an async stream description.
 
     This is a convenience adapter for synchronous stages that naturally return a
@@ -94,7 +94,7 @@ def lift_sync_gen_with_executor(
     blocking the event loop.
     """
 
-    def lifted(*args: Any, **kwargs: Any) -> "AsyncGen[T]":
+    def lifted(*args: Any, **kwargs: Any) -> AsyncGen[T]:
         async def _gen() -> AsyncIterator[Result[T, ErrInfo]]:
             loop = asyncio.get_running_loop()
             try:
@@ -135,7 +135,9 @@ def async_lift(make_coro: Callable[[], Awaitable[Result[A, ErrInfo]]]) -> AsyncP
     return make_coro
 
 
-def async_gather(plans: list[AsyncPlan[A]], *, concurrency: int = 16) -> AsyncPlan[list[A]]:
+def async_gather(
+    plans: list[AsyncPlan[A]], *, concurrency: int = 16
+) -> AsyncPlan[list[A]]:
     """Run independent AsyncPlans with bounded concurrency and preserve list order.
 
     Semantics:
@@ -174,7 +176,9 @@ def async_gather(plans: list[AsyncPlan[A]], *, concurrency: int = 16) -> AsyncPl
                 next_idx += 1
 
             while pending:
-                done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
+                done, pending = await asyncio.wait(
+                    pending, return_when=asyncio.FIRST_COMPLETED
+                )
                 for task in done:
                     i, res = task.result()
                     results[i] = res

@@ -6,9 +6,10 @@
 from __future__ import annotations
 
 from collections import deque
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Any, Callable, Generic, Iterable, Iterator, NamedTuple, TypeVar, cast
+from typing import Any, Generic, NamedTuple, TypeVar, cast
 
 from bijux_rag.result import Err, Ok, Result
 
@@ -75,7 +76,11 @@ def retry_map_iter(
     if inflight_cap < 1:
         raise ValueError("inflight_cap >= 1")
 
-    name = policy_name if policy_name is not None else str(getattr(policy, "__name__", "anonymous"))
+    name = (
+        policy_name
+        if policy_name is not None
+        else str(getattr(policy, "__name__", "anonymous"))
+    )
     it = iter(xs)
     work: deque[tuple[X, int]] = deque()
 
@@ -99,12 +104,18 @@ def retry_map_iter(
 
         e = r.error
         if not classifier(e):
-            yield Err(_annotate_err(e, attempt=attempt, max_attempts=max_attempts, policy=name))
+            yield Err(
+                _annotate_err(
+                    e, attempt=attempt, max_attempts=max_attempts, policy=name
+                )
+            )
             prime()
             continue
 
         p = key_path(x) if key_path is not None else ()
-        ctx = RetryCtx(item=x, attempt=attempt, error=e, stage=stage, path=p, policy_name=name)
+        ctx = RetryCtx(
+            item=x, attempt=attempt, error=e, stage=stage, path=p, policy_name=name
+        )
         try:
             dec = policy(ctx)
         except Exception:  # noqa: BLE001 - policy is treated as user code
@@ -144,10 +155,18 @@ def exp_policy(total_attempts: int, base_ms: int, cap_ms: int) -> Policy[Any, An
 
 def is_retriable_errinfo(e: Any) -> bool:
     code = getattr(e, "code", None)
-    return code in {"RATE_LIMIT", "TIMEOUT", "CONN_RESET", "EMBED/UNAVAILABLE", "TRANSIENT"}
+    return code in {
+        "RATE_LIMIT",
+        "TIMEOUT",
+        "CONN_RESET",
+        "EMBED/UNAVAILABLE",
+        "TRANSIENT",
+    }
 
 
-def restore_input_order(tagged: Iterable[tuple[int, Result[Y, E]]]) -> Iterator[Result[Y, E]]:
+def restore_input_order(
+    tagged: Iterable[tuple[int, Result[Y, E]]],
+) -> Iterator[Result[Y, E]]:
     """Restore input order from (idx, result) pairs (0-based consecutive indices)."""
 
     buffer: dict[int, Result[Y, E]] = {}

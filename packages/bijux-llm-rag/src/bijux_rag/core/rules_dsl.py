@@ -93,7 +93,11 @@ def parse_rule(expr: str) -> DocRule:
                 return any(values)
         if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
             return not interpret(node.operand, doc)
-        if isinstance(node, ast.Compare) and len(node.ops) == 1 and len(node.comparators) == 1:
+        if (
+            isinstance(node, ast.Compare)
+            and len(node.ops) == 1
+            and len(node.comparators) == 1
+        ):
             left = interpret(node.left, doc)
             right = interpret(node.comparators[0], doc)
             op = node.ops[0]
@@ -125,7 +129,11 @@ def parse_rule(expr: str) -> DocRule:
                 return doc.abstract
             if node.attr == "categories":
                 return doc.categories
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "len":
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "len"
+        ):
             return len(interpret(node.args[0], doc))
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
             base_value = interpret(node.func.value, doc)

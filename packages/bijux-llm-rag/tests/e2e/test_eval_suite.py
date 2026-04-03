@@ -23,10 +23,11 @@ Required suite assets:
 
 from __future__ import annotations
 
-import json
+from collections.abc import Iterable
 from dataclasses import is_dataclass
+import json
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import pytest
 
@@ -177,8 +178,12 @@ def rag_eval_suite() -> dict[str, Any]:
     queries: list[dict[str, Any]] = []
     for row in query_rows:
         expected = row.get("expected_doc_ids", [])
-        if not isinstance(expected, list) or not all(isinstance(x, str) for x in expected):
-            raise TypeError(f"expected_doc_ids must be list[str] for query {row.get('id')}")
+        if not isinstance(expected, list) or not all(
+            isinstance(x, str) for x in expected
+        ):
+            raise TypeError(
+                f"expected_doc_ids must be list[str] for query {row.get('id')}"
+            )
         queries.append(
             {
                 "id": str(row["id"]),
@@ -289,7 +294,9 @@ def test_ask_returns_answer_and_grounded_citations(
     assert citations, "ask() must return citations in CI profile"
 
     contexts = _ask_contexts(res)
-    assert contexts, "ask() must return contexts/candidates used for grounding verification"
+    assert contexts, (
+        "ask() must return contexts/candidates used for grounding verification"
+    )
 
     # Citations must cite at least one expected doc for this query.
     cited_docs = {_doc_id(c) for c in citations}
@@ -315,7 +322,9 @@ def test_ask_returns_answer_and_grounded_citations(
             if t and e <= len(t):
                 ok = True
                 break
-        assert ok, f"citation span {(s, e)} does not fit any returned context for doc_id={did}"
+        assert ok, (
+            f"citation span {(s, e)} does not fit any returned context for doc_id={did}"
+        )
 
 
 @pytest.mark.parametrize("case", _CASES)

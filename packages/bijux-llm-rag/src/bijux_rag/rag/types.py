@@ -9,8 +9,9 @@ Most of these types are introduced in Bijux RAG and extended in Bijux RAG
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import Any, Callable, Mapping
+from typing import Any
 
 from bijux_rag.core.rag_types import Chunk, CleanDoc, DocRule, RawDoc
 from bijux_rag.streaming import TraceLens
@@ -65,8 +66,17 @@ class RagTraceV3:
 
     docs: TraceLens[RawDoc] = field(default_factory=TraceLens)
     cleaned: TraceLens[CleanDoc] = field(default_factory=TraceLens)
-    chunks: TraceLens[Any] = field(default_factory=TraceLens)  # typically ChunkWithoutEmbedding
+    chunks: TraceLens[Any] = field(
+        default_factory=TraceLens
+    )  # typically ChunkWithoutEmbedding
     embedded: TraceLens[Any] = field(default_factory=TraceLens)  # typically Chunk
 
 
-__all__ = ["DocRule", "RagTaps", "DebugConfig", "Observations", "TraceLens", "RagTraceV3"]
+__all__ = [
+    "DocRule",
+    "RagTaps",
+    "DebugConfig",
+    "Observations",
+    "TraceLens",
+    "RagTraceV3",
+]

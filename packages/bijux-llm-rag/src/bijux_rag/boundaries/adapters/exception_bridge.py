@@ -12,7 +12,8 @@ These helpers intentionally focus on *boundary* use: the caller supplies an
 
 from __future__ import annotations
 
-from typing import Callable, NoReturn, TypeAlias, TypeVar
+from collections.abc import Callable
+from typing import NoReturn, TypeAlias, TypeVar
 
 from bijux_rag.fp.core import Validation, VFailure, VSuccess
 from bijux_rag.result.types import Err, Ok, Result

@@ -45,7 +45,9 @@ def test_option_composition(x: int) -> None:
 
 
 @given(
-    res=st.one_of(st.builds(Ok, st.integers()), st.builds(Err, st.builds(DummyErr, msg=st.text())))
+    res=st.one_of(
+        st.builds(Ok, st.integers()), st.builds(Err, st.builds(DummyErr, msg=st.text()))
+    )
 )
 def test_result_functor_laws(res) -> None:
     assert result_map(lambda x: x)(res) == res

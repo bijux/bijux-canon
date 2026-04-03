@@ -10,6 +10,7 @@ Bijux RAG introduces a production architecture around the existing pure core:
 
 Note: `IOPlan` + IOPlan-specific retry/tx helpers live in `bijux_rag.domain.effects`.
 """
+from __future__ import annotations
 
 from .capabilities import Cache, Clock, Logger, Storage, StorageRead, StorageWrite
 from .composition import chain_io, logged_read

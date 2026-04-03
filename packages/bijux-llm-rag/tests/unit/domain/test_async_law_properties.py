@@ -32,7 +32,9 @@ class FakeEmbedder:
     def embed(self, key: int) -> AsyncPlan[int]:
         async def _act() -> Result[int, ErrInfo]:
             await asyncio.sleep(0)
-            should_fail = self._schedule[self._idx] if self._idx < len(self._schedule) else True
+            should_fail = (
+                self._schedule[self._idx] if self._idx < len(self._schedule) else True
+            )
             self._idx += 1
             if should_fail:
                 return Err(ErrInfo(code="TRANSIENT", msg="fail", path=(key,)))
@@ -80,7 +82,9 @@ def lawful_desc(
 
 
 @given(
-    keys=st.lists(st.integers(min_value=0, max_value=1000), min_size=0, max_size=50, unique=True),
+    keys=st.lists(
+        st.integers(min_value=0, max_value=1000), min_size=0, max_size=50, unique=True
+    ),
     schedule=st.lists(st.booleans(), min_size=0, max_size=200),
 )
 @settings(deadline=None, max_examples=25)
@@ -117,7 +121,9 @@ def test_async_pipeline_idempotence_and_no_duplication(
 
 
 @given(
-    keys=st.lists(st.integers(min_value=0, max_value=1000), min_size=0, max_size=30, unique=True)
+    keys=st.lists(
+        st.integers(min_value=0, max_value=1000), min_size=0, max_size=30, unique=True
+    )
 )
 @settings(deadline=None, max_examples=25)
 def test_async_pipeline_partial_cancellation_safety(keys: list[int]) -> None:

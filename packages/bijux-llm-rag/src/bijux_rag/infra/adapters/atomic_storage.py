@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-import os
 from collections.abc import Iterator
+import os
 
 from bijux_rag.core.rag_types import Chunk
 from bijux_rag.domain.idempotent import AtomicWriteCap
@@ -20,7 +20,9 @@ class AtomicFileStorage(AtomicWriteCap):
         self.root = root
         self._storage = FileStorage()
 
-    def write_if_absent(self, key: str, chunks: Iterator[Chunk]) -> Result[bool, ErrInfo]:
+    def write_if_absent(
+        self, key: str, chunks: Iterator[Chunk]
+    ) -> Result[bool, ErrInfo]:
         path = os.path.join(self.root, key)
         if os.path.exists(path):
             return Ok(False)

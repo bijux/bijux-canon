@@ -7,9 +7,10 @@ import asyncio
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
 
+from tests.helpers import collect
+
 from bijux_rag.domain.effects.async_ import AsyncGen, async_gen_gather
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result
-from tests.helpers import collect
 
 
 def test_async_gen_gather_yields_all_items() -> None:

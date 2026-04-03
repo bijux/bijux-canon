@@ -11,13 +11,13 @@ This adapter is resource-safe:
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+from contextlib import ExitStack
 import csv
+from dataclasses import asdict
 import json
 import os
 import tempfile
-from collections.abc import Iterator
-from contextlib import ExitStack
-from dataclasses import asdict
 
 from bijux_rag.core.rag_types import Chunk, RawDoc
 from bijux_rag.domain.capabilities import Storage
@@ -78,8 +78,12 @@ class FileStorage(Storage):
                 except OSError:
                     pass
             if isinstance(ex, OSError):
-                return Err(ErrInfo(code="IO_WRITE", msg=str(ex), stage="storage.write_chunks"))
-            return Err(ErrInfo(code="WRITE_FAILED", msg=str(ex), stage="storage.write_chunks"))
+                return Err(
+                    ErrInfo(code="IO_WRITE", msg=str(ex), stage="storage.write_chunks")
+                )
+            return Err(
+                ErrInfo(code="WRITE_FAILED", msg=str(ex), stage="storage.write_chunks")
+            )
 
 
 __all__ = ["FileStorage"]

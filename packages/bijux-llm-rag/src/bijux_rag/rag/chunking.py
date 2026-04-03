@@ -45,7 +45,9 @@ def gen_overlapping_chunks(
 ) -> Iterator[ChunkWithoutEmbedding]:
     """Chunk raw text lazily with overlap and a tail policy (Bijux RAG)."""
 
-    yield from iter_overlapping_chunks_text(doc_id, text, k=k, o=o, tail_policy=tail_policy)
+    yield from iter_overlapping_chunks_text(
+        doc_id, text, k=k, o=o, tail_policy=tail_policy
+    )
 
 
 def sliding_windows(items: Iterable[T], w: int) -> Iterator[tuple[T, ...]]:

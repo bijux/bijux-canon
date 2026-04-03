@@ -53,7 +53,9 @@ def throttle(
 ) -> Iterator[T]:
     """Yield items while enforcing a minimum spacing between emissions."""
 
-    stage: Transform[T, T] = make_throttle(min_delta=min_delta, clock=clock, sleeper=sleeper)
+    stage: Transform[T, T] = make_throttle(
+        min_delta=min_delta, clock=clock, sleeper=sleeper
+    )
     yield from stage(items)
 
 
@@ -125,4 +127,10 @@ def make_call_gate(
     return gate
 
 
-__all__ = ["make_throttle", "throttle", "make_rate_limit", "make_timestamp", "make_call_gate"]
+__all__ = [
+    "make_throttle",
+    "throttle",
+    "make_rate_limit",
+    "make_timestamp",
+    "make_call_gate",
+]

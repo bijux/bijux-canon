@@ -6,9 +6,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
+import pytest
 
 from bijux_rag.boundaries.shells.cli import main as cli_main
 
@@ -33,7 +33,9 @@ def _write_csv(tmp_path: Path, docs: list[dict[str, str]]) -> Path:
         for row in docs:
             safe_title = row["title"].replace('"', "'")
             safe_abs = row["abstract"].replace('"', "'").replace("\n", " ")
-            f.write(f'{row["doc_id"]},"{safe_title}","{safe_abs}",{row["categories"]}\n')
+            f.write(
+                f'{row["doc_id"]},"{safe_title}","{safe_abs}",{row["categories"]}\n'
+            )
     return path
 
 
@@ -43,7 +45,11 @@ def _write_config(tmp_path: Path, chunk_size: int, overlap: int, tail: str) -> P
             {"name": "clean", "params": {}},
             {
                 "name": "chunk",
-                "params": {"chunk_size": chunk_size, "overlap": overlap, "tail_policy": tail},
+                "params": {
+                    "chunk_size": chunk_size,
+                    "overlap": overlap,
+                    "tail_policy": tail,
+                },
             },
             {"name": "embed", "params": {}},
         ]
@@ -62,7 +68,9 @@ def _write_config(tmp_path: Path, chunk_size: int, overlap: int, tail: str) -> P
     tail=st.sampled_from(["emit_short", "drop", "pad"]),
 )
 @settings(
-    max_examples=250, deadline=None, suppress_health_check=[HealthCheck.function_scoped_fixture]
+    max_examples=250,
+    deadline=None,
+    suppress_health_check=[HealthCheck.function_scoped_fixture],
 )
 def test_cli_end_to_end_chunks(
     tmp_path: Path, docs: list[dict[str, str]], chunk_size: int, overlap: int, tail: str
@@ -76,7 +84,9 @@ def test_cli_end_to_end_chunks(
     cfg_path = _write_config(tmp_path, chunk_size, overlap, tail)
     out_path = tmp_path / "chunks.jsonl"
 
-    exit_code = cli_main([str(input_csv), "--config", str(cfg_path), "--out", str(out_path)])
+    exit_code = cli_main(
+        [str(input_csv), "--config", str(cfg_path), "--out", str(out_path)]
+    )
     assert exit_code == 0
     assert out_path.exists()
 
@@ -102,7 +112,9 @@ def test_cli_end_to_end_chunks(
     overlap=st.integers(min_value=0, max_value=24),
 )
 @settings(
-    max_examples=250, deadline=None, suppress_health_check=[HealthCheck.function_scoped_fixture]
+    max_examples=250,
+    deadline=None,
+    suppress_health_check=[HealthCheck.function_scoped_fixture],
 )
 def test_cli_overrides_apply(
     tmp_path: Path, docs: list[dict[str, str]], chunk_size: int, overlap: int
@@ -111,7 +123,8 @@ def test_cli_overrides_apply(
         overlap = max(0, chunk_size // 4)
     if any(len(d["abstract"]) <= chunk_size for d in docs):
         chunk_size = min(
-            chunk_size, max(len(max(docs, key=lambda x: len(x["abstract"]))["abstract"]), 48)
+            chunk_size,
+            max(len(max(docs, key=lambda x: len(x["abstract"]))["abstract"]), 48),
         )
     if overlap >= chunk_size:
         overlap = max(0, chunk_size // 4)

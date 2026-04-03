@@ -9,8 +9,8 @@ cleaning as immutable data and bind it into a pure ``RawDoc -> CleanDoc`` stage.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 from bijux_rag.core.rag_types import CleanDoc, RawDoc
 
@@ -57,7 +57,10 @@ def make_cleaner(cfg: CleanConfig) -> Callable[[RawDoc], CleanDoc]:
     def cleaner(doc: RawDoc) -> CleanDoc:
         abstract = clean_abstract(doc.abstract, cfg)
         return CleanDoc(
-            doc_id=doc.doc_id, title=doc.title, abstract=abstract, categories=doc.categories
+            doc_id=doc.doc_id,
+            title=doc.title,
+            abstract=abstract,
+            categories=doc.categories,
         )
 
     return cleaner

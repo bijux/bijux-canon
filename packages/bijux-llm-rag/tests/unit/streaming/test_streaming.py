@@ -44,7 +44,9 @@ def test_dedup_iterator_preserves_order() -> None:
     assert out == [a, b, c]
 
 
-def _reconstruct_overlap(chunks: list[ChunkWithoutEmbedding], o: int, *, strip_nuls: bool) -> str:
+def _reconstruct_overlap(
+    chunks: list[ChunkWithoutEmbedding], o: int, *, strip_nuls: bool
+) -> str:
     if not chunks:
         return ""
     out = chunks[0].text
@@ -57,7 +59,9 @@ def _reconstruct_overlap(chunks: list[ChunkWithoutEmbedding], o: int, *, strip_n
 
 def test_overlapping_coverage_emit_short() -> None:
     text = "abcdefghij"
-    chunks = list(gen_overlapping_chunks("id", text, k=4, o=2, tail_policy="emit_short"))
+    chunks = list(
+        gen_overlapping_chunks("id", text, k=4, o=2, tail_policy="emit_short")
+    )
     assert _reconstruct_overlap(chunks, 2, strip_nuls=False) == text
 
 

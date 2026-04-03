@@ -15,13 +15,24 @@ RAG-specific streaming functions live in `bijux_rag.rag.streaming_rag`.
 
 from __future__ import annotations
 
-from .compose import compose2_transforms, compose_transforms, fence_k, source_to_transform
+from .compose import (
+    compose2_transforms,
+    compose_transforms,
+    fence_k,
+    source_to_transform,
+)
 from .contiguity import ensure_contiguous
 from .fanin import as_source, make_chain, make_merge, make_roundrobin
 from .fanout import fork2_lockstep, multicast, tap_prefix
 from .observability import make_counter, make_peek, make_tap
 from .sampling import make_sampler_bernoulli, make_sampler_periodic, make_sampler_stable
-from .time import make_call_gate, make_rate_limit, make_throttle, make_timestamp, throttle
+from .time import (
+    make_call_gate,
+    make_rate_limit,
+    make_throttle,
+    make_timestamp,
+    throttle,
+)
 from .types import Lens, Source, TraceLens, Transform, trace_iter
 
 __all__ = [

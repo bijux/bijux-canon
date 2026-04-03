@@ -86,7 +86,9 @@ def async_gen_bounded_map(
                             yield task.result()
 
                 while pending:
-                    done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
+                    done, pending = await asyncio.wait(
+                        pending, return_when=asyncio.FIRST_COMPLETED
+                    )
                     for task in done:
                         yield task.result()
             finally:
@@ -124,7 +126,9 @@ def async_gen_bounded_map(
                 while idx - next_expected >= max_concurrent:
                     if not pending:
                         raise RuntimeError("Backpressure window violation")
-                    done, _ = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
+                    done, _ = await asyncio.wait(
+                        pending, return_when=asyncio.FIRST_COMPLETED
+                    )
                     for task in done:
                         pending.remove(task)
                         i, res = task.result()
@@ -146,7 +150,9 @@ def async_gen_bounded_map(
                 idx += 1
 
             while pending:
-                done, _ = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
+                done, _ = await asyncio.wait(
+                    pending, return_when=asyncio.FIRST_COMPLETED
+                )
                 for task in done:
                     pending.remove(task)
                     i, res = task.result()
@@ -194,7 +200,9 @@ def async_gen_rate_limited(
         async for item in stream():
             now = local_env.clock.now_s()
             elapsed = now - last_refill_s
-            tokens = min(float(policy.burst_tokens), tokens + elapsed * policy.tokens_per_second)
+            tokens = min(
+                float(policy.burst_tokens), tokens + elapsed * policy.tokens_per_second
+            )
             last_refill_s = now
 
             if tokens < 1.0:
@@ -202,7 +210,8 @@ def async_gen_rate_limited(
                 now = local_env.clock.now_s()
                 elapsed = now - last_refill_s
                 tokens = min(
-                    float(policy.burst_tokens), tokens + elapsed * policy.tokens_per_second
+                    float(policy.burst_tokens),
+                    tokens + elapsed * policy.tokens_per_second,
                 )
                 last_refill_s = now
 

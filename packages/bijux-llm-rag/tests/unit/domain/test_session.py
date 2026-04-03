@@ -62,7 +62,9 @@ def test_with_tx_rolls_back_on_failure() -> None:
     def body(_: Tx):
         return io_pure(Err(ErrInfo(code="BODY_FAIL", msg="boom")))
 
-    assert perform(with_tx(tx_cap, session, body)) == Ok(Err(ErrInfo(code="BODY_FAIL", msg="boom")))
+    assert perform(with_tx(tx_cap, session, body)) == Ok(
+        Err(ErrInfo(code="BODY_FAIL", msg="boom"))
+    )
     assert (tx_cap.begin_calls, tx_cap.commit_calls, tx_cap.rollback_calls) == (1, 0, 1)
 
 
@@ -73,7 +75,9 @@ def test_with_tx_commit_failure_dominates() -> None:
     def body(_: Tx):
         return io_pure(Ok("done"))
 
-    assert perform(with_tx(tx_cap, session, body)) == Ok(Err(ErrInfo(code="COMMIT_FAIL", msg="t1")))
+    assert perform(with_tx(tx_cap, session, body)) == Ok(
+        Err(ErrInfo(code="COMMIT_FAIL", msg="t1"))
+    )
     assert (tx_cap.begin_calls, tx_cap.commit_calls, tx_cap.rollback_calls) == (1, 1, 0)
 
 
@@ -84,5 +88,7 @@ def test_with_tx_rollback_best_effort_preserves_body_err() -> None:
     def body(_: Tx):
         return io_pure(Err(ErrInfo(code="BODY_FAIL", msg="boom")))
 
-    assert perform(with_tx(tx_cap, session, body)) == Ok(Err(ErrInfo(code="BODY_FAIL", msg="boom")))
+    assert perform(with_tx(tx_cap, session, body)) == Ok(
+        Err(ErrInfo(code="BODY_FAIL", msg="boom"))
+    )
     assert (tx_cap.begin_calls, tx_cap.commit_calls, tx_cap.rollback_calls) == (1, 0, 1)

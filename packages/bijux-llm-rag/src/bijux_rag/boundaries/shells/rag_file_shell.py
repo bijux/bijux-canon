@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 from bijux_rag.rag.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
 from bijux_rag.result.types import Err, Ok, Result
@@ -27,19 +27,28 @@ class RagFileShell:
         self._write_chunks(self.out_path, res.value)
         return Ok(None)
 
-    def read_docs(self, path: Path) -> Iterable[tuple[str, str, str | None, str | None]]:
+    def read_docs(
+        self, path: Path
+    ) -> Iterable[tuple[str, str, str | None, str | None]]:
         """Public reader for CSV docs (used by back-compat shims)."""
         return self._read_docs(path)
 
-    def _read_docs(self, path: Path) -> Iterable[tuple[str, str, str | None, str | None]]:
+    def _read_docs(
+        self, path: Path
+    ) -> Iterable[tuple[str, str, str | None, str | None]]:
         import csv
 
         with path.open("r", encoding="utf-8") as f:
             r = csv.DictReader(f)
             for row in r:
-                yield (row["doc_id"], row["text"], row.get("title"), row.get("category"))
+                yield (
+                    row["doc_id"],
+                    row["text"],
+                    row.get("title"),
+                    row.get("category"),
+                )
 
-    def _write_chunks(self, path: Path, chunks: Iterable["Chunk"]) -> None:
+    def _write_chunks(self, path: Path, chunks: Iterable[Chunk]) -> None:
         import json
 
         with path.open("w", encoding="utf-8") as f:

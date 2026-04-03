@@ -114,7 +114,9 @@ class Index(Protocol):
 class Indexer(Protocol):
     """Indexer port."""
 
-    def build(self, *, chunks: Sequence[Chunk], embedder: Embedder | None = None) -> Index: ...
+    def build(
+        self, *, chunks: Sequence[Chunk], embedder: Embedder | None = None
+    ) -> Index: ...
 
 
 class Reranker(Protocol):

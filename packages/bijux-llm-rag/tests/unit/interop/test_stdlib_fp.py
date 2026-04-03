@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-import operator
 from functools import partial, reduce
 from itertools import chain
+import operator
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -19,7 +19,10 @@ def test_merge_streams_equiv_to_concat(a: list[int], b: list[int]) -> None:
     assert list(merge_streams(a, b)) == list(chain(a, b)) == a + b
 
 
-@given(n=st.integers(min_value=-100, max_value=100), x=st.integers(min_value=-100, max_value=100))
+@given(
+    n=st.integers(min_value=-100, max_value=100),
+    x=st.integers(min_value=-100, max_value=100),
+)
 @settings(max_examples=200)
 def test_partial_equiv(n: int, x: int) -> None:
     add_n = partial(operator.add, n)

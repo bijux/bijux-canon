@@ -5,9 +5,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Generic, Iterable, Literal, Mapping, Sequence, TypeAlias, TypeVar
+from datetime import UTC, datetime
+from typing import Generic, Literal, TypeAlias, TypeVar
 
 from bijux_rag.result.types import (
     NONE,
@@ -33,7 +34,7 @@ JSONPrimitive: TypeAlias = str | int | float | bool | None
 JSON: TypeAlias = JSONPrimitive | Mapping[str, "JSON"] | Sequence["JSON"]
 Path: TypeAlias = tuple[int, ...]
 
-UTC = timezone.utc
+UTC = UTC
 
 
 def _freeze_metadata(m: Mapping[str, JSON]) -> tuple[tuple[str, JSON], ...]:
@@ -106,7 +107,8 @@ ChunkState: TypeAlias = Success | Failure
 
 def success(*, embedding: Iterable[float], metadata: Mapping[str, JSON]) -> Success:
     return Success(
-        embedding=tuple(float(x) for x in embedding), metadata=_freeze_metadata(metadata)
+        embedding=tuple(float(x) for x in embedding),
+        metadata=_freeze_metadata(metadata),
     )
 
 
@@ -117,7 +119,10 @@ def failure(*, code: str, msg: str, attempt: int) -> Failure:
 def chunk_state_to_dict(state: ChunkState) -> dict[str, JSON]:
     base: dict[str, JSON] = {"kind": state.kind, "version": 1}
     if isinstance(state, Success):
-        return base | {"embedding": list(state.embedding), "metadata": dict(state.metadata)}
+        return base | {
+            "embedding": list(state.embedding),
+            "metadata": dict(state.metadata),
+        }
     return base | {"code": state.code, "msg": state.msg, "attempt": state.attempt}
 
 
@@ -166,7 +171,9 @@ def make_errinfo(
     exc: BaseException | None = None,
     meta: Mapping[str, object] | None = None,
 ) -> ErrInfo:
-    return _make_errinfo(code=str(code), msg=msg, stage=stage, path=path, cause=exc, ctx=meta)
+    return _make_errinfo(
+        code=str(code), msg=msg, stage=stage, path=path, cause=exc, ctx=meta
+    )
 
 
 # State ADTs (C02)
@@ -211,13 +218,19 @@ def advance_event(*, delta_permille: int) -> EvAdvance:
     return EvAdvance(delta_permille=delta_permille)
 
 
-def succeed_event(*, completed_at: datetime, artifact_id: str, dim: int, sha256: str) -> EvSucceed:
+def succeed_event(
+    *, completed_at: datetime, artifact_id: str, dim: int, sha256: str
+) -> EvSucceed:
     if completed_at.tzinfo is None:
         raise ValueError("completed_at must be timezone-aware")
-    return EvSucceed(completed_at=completed_at, artifact_id=artifact_id, dim=dim, sha256=sha256)
+    return EvSucceed(
+        completed_at=completed_at, artifact_id=artifact_id, dim=dim, sha256=sha256
+    )
 
 
-def fail_event(*, failed_at: datetime, code: ErrorCode, msg: str, attempt: int) -> EvFail:
+def fail_event(
+    *, failed_at: datetime, code: ErrorCode, msg: str, attempt: int
+) -> EvFail:
     if failed_at.tzinfo is None:
         raise ValueError("failed_at must be timezone-aware")
     if attempt < 1:
@@ -284,7 +297,9 @@ def done(*, completed_at: datetime, artifact_id: str, dim: int, sha256: str) -> 
         raise ValueError("dim must be > 0")
     if len(sha256) != 64 or not all(c in "0123456789abcdefABCDEF" for c in sha256):
         raise ValueError("sha256 must be a 64-hex string")
-    return Done(completed_at=completed_at, artifact_id=artifact_id, dim=dim, sha256=sha256)
+    return Done(
+        completed_at=completed_at, artifact_id=artifact_id, dim=dim, sha256=sha256
+    )
 
 
 def failed(*, failed_at: datetime, code: ErrorCode, msg: str, attempt: int) -> Failed:

@@ -72,7 +72,12 @@ class SafeVisitor(ast.NodeVisitor):
     def visit_Attribute(self, node: ast.Attribute) -> None:
         if not self._attr_chain_from_doc(node):
             raise ValueError("Attributes must be accessed off 'd'")
-        allowed_attrs = {"title", "abstract", "categories", *self._ALLOWED_ATTRIBUTE_CALLS}
+        allowed_attrs = {
+            "title",
+            "abstract",
+            "categories",
+            *self._ALLOWED_ATTRIBUTE_CALLS,
+        }
         if node.attr not in allowed_attrs:
             raise ValueError(f"Unsupported attribute: {node.attr}")
         self.generic_visit(node)

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
+from tests.helpers import collect
 
 from bijux_rag.domain.effects.async_ import (
     async_gen_and_then,
@@ -16,7 +17,6 @@ from bijux_rag.domain.effects.async_ import (
     async_gen_using,
 )
 from bijux_rag.result.types import Err, ErrInfo, Ok
-from tests.helpers import collect
 
 
 @given(x=st.integers())

@@ -31,17 +31,17 @@ class LenGt:
 
 @dataclass(frozen=True)
 class All:
-    rules: tuple["Pred", ...]
+    rules: tuple[Pred, ...]
 
 
 @dataclass(frozen=True)
 class AnyOf:
-    rules: tuple["Pred", ...]
+    rules: tuple[Pred, ...]
 
 
 @dataclass(frozen=True)
 class Not:
-    rule: "Pred"
+    rule: Pred
 
 
 Pred = Union[Eq, StartsWith, LenGt, All, AnyOf, Not]

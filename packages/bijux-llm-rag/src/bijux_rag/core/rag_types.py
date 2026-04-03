@@ -52,7 +52,7 @@ class EmbeddingSpec:
             raise ValueError("EmbeddingSpec.normalized must be a bool")
 
     @classmethod
-    def hash16(cls) -> "EmbeddingSpec":
+    def hash16(cls) -> EmbeddingSpec:
         """Deterministic, dependency-free embedding spec."""
 
         return cls(model="hash16", dim=16, metric="cosine", normalized=True)
@@ -88,7 +88,7 @@ def stable_chunk_id(*, doc_id: str, start: int, end: int, text: str) -> str:
         A hex digest string.
     """
 
-    payload = f"{doc_id}:{start}:{end}:".encode("utf-8") + text.encode("utf-8")
+    payload = f"{doc_id}:{start}:{end}:".encode() + text.encode("utf-8")
     return sha256(payload).hexdigest()
 
 
@@ -147,7 +147,9 @@ class ChunkWithoutEmbedding:
     def chunk_id(self) -> str:
         """Deterministic id for this chunk."""
 
-        return stable_chunk_id(doc_id=self.doc_id, start=self.start, end=self.end, text=self.text)
+        return stable_chunk_id(
+            doc_id=self.doc_id, start=self.start, end=self.end, text=self.text
+        )
 
 
 @dataclass(frozen=True, eq=True)
@@ -177,14 +179,16 @@ class Chunk(ChunkWithoutEmbedding):
         embedding: Mapping[str, object] | tuple[float, ...] | list[float] | None = None,
         embedding_spec: EmbeddingSpec | None = None,
         metadata: Mapping[str, object] | None = None,
-    ) -> Result["Chunk", str]:
+    ) -> Result[Chunk, str]:
         """Validated constructor returning Result for boundary code."""
 
         checks = [
             Ok(None) if chunk_index >= 0 else Err("chunk_index must be non-negative"),
             Ok(None) if start >= 0 else Err("start must be non-negative"),
             Ok(None) if end >= 0 else Err("end must be non-negative"),
-            embedding_spec.validate_embedding(tuple(embedding) if embedding is not None else None)
+            embedding_spec.validate_embedding(
+                tuple(embedding) if embedding is not None else None
+            )
             if embedding_spec is not None
             else Ok(None),
         ]
@@ -192,7 +196,9 @@ class Chunk(ChunkWithoutEmbedding):
             if isinstance(check, Err):
                 return Err(check.error)
 
-        emb_tuple: tuple[float, ...] | tuple = tuple(embedding) if embedding is not None else ()
+        emb_tuple: tuple[float, ...] | tuple = (
+            tuple(embedding) if embedding is not None else ()
+        )
         return Ok(
             cls(
                 doc_id=doc_id,
@@ -232,7 +238,9 @@ class RagEnv:
         if not 0 <= self.overlap < self.chunk_size:
             raise ValueError("RagEnv.overlap must satisfy 0 <= overlap < chunk_size")
         if self.tail_policy not in {"emit_short", "drop", "pad"}:
-            raise ValueError('RagEnv.tail_policy must be one of: "emit_short", "drop", "pad"')
+            raise ValueError(
+                'RagEnv.tail_policy must be one of: "emit_short", "drop", "pad"'
+            )
 
 
 @dataclass(frozen=True)
@@ -254,7 +262,7 @@ class TreeDoc:
     """Immutable, recursive document structure (Bijux RAG)."""
 
     node: TextNode
-    children: tuple["TreeDoc", ...] = ()
+    children: tuple[TreeDoc, ...] = ()
 
 
 __all__ = [

@@ -2,6 +2,7 @@
 # Copyright © 2025 Bijan Mousavi
 
 """Infrastructure adapters implementing domain ports/capabilities (end-of-Bijux RAG)."""
+from __future__ import annotations
 
 from .atomic_storage import AtomicFileStorage
 from .clock import MonotonicTestClock, SystemClock

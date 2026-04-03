@@ -10,7 +10,9 @@ from bijux_rag.result.types import Err, ErrInfo, Ok, Result
 
 def test_retry_idempotent_retries_transient_errors(monkeypatch) -> None:
     sleeps: list[float] = []
-    monkeypatch.setattr("bijux_rag.domain.effects.io_retry.time.sleep", lambda s: sleeps.append(s))
+    monkeypatch.setattr(
+        "bijux_rag.domain.effects.io_retry.time.sleep", lambda s: sleeps.append(s)
+    )
 
     calls: list[int] = []
 

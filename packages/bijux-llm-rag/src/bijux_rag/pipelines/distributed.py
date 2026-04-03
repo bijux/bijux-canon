@@ -35,7 +35,9 @@ def compile_to_dask_bag(*_args: Any, **_kwargs: Any) -> Any:
 
     if not dask_available():
         raise ImportError("dask is not available")
-    raise NotImplementedError("Dask compiler is optional and not enabled in this repo by default")
+    raise NotImplementedError(
+        "Dask compiler is optional and not enabled in this repo by default"
+    )
 
 
 def compile_to_beam(*_args: Any, **_kwargs: Any) -> Any:
@@ -43,7 +45,9 @@ def compile_to_beam(*_args: Any, **_kwargs: Any) -> Any:
 
     if not beam_available():
         raise ImportError("apache-beam is not available")
-    raise NotImplementedError("Beam compiler is optional and not enabled in this repo by default")
+    raise NotImplementedError(
+        "Beam compiler is optional and not enabled in this repo by default"
+    )
 
 
 __all__ = ["dask_available", "beam_available", "compile_to_dask_bag", "compile_to_beam"]

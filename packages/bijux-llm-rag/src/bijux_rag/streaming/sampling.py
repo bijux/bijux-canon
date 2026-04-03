@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Iterator
 import hashlib
 import random
-from collections.abc import Callable, Iterable, Iterator
 from typing import TypeVar
 
 from .types import Transform

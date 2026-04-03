@@ -3,10 +3,14 @@
 
 from __future__ import annotations
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
-from bijux_rag.fp.effects.configurable import toggle_logging, toggle_metrics, toggle_validation
+from bijux_rag.fp.effects.configurable import (
+    toggle_logging,
+    toggle_metrics,
+    toggle_validation,
+)
 from bijux_rag.fp.effects.writer import Writer
 from bijux_rag.result.types import Err, Ok, Result
 

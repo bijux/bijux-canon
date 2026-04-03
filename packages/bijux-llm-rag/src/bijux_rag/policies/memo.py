@@ -5,14 +5,15 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
+from collections.abc import Callable, Hashable
+from dataclasses import dataclass
 import functools
 import hashlib
 import os
-import threading
-from collections import OrderedDict
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Hashable, Optional, ParamSpec, TypeVar, cast
+import threading
+from typing import Any, ParamSpec, TypeVar, cast
 
 from bijux_rag.core.rag_types import ChunkWithoutEmbedding
 
@@ -23,7 +24,7 @@ R = TypeVar("R")
 
 
 def lru_cache_custom(
-    maxsize: Optional[int] = 512,
+    maxsize: int | None = 512,
 ) -> Callable[[Callable[..., V]], Callable[..., V]]:
     """Drop-in wrapper around functools.lru_cache with a project default maxsize."""
 
@@ -40,7 +41,7 @@ class CacheInfo:
 def memoize_keyed(
     key_fn: Callable[P, K],
     *,
-    maxsize: Optional[int] = None,
+    maxsize: int | None = None,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Memoize a pure function by an explicit key function.
 
@@ -112,7 +113,9 @@ class DiskCache:
     Keys are strings; values are arbitrary bytes (caller handles serialization).
     """
 
-    def __init__(self, dirpath: str, namespace: str = "default", version: str = "v1") -> None:
+    def __init__(
+        self, dirpath: str, namespace: str = "default", version: str = "v1"
+    ) -> None:
         self.dir = Path(dirpath)
         self.dir.mkdir(parents=True, exist_ok=True)
         self.prefix = f"{namespace}-{version}-"
@@ -121,7 +124,7 @@ class DiskCache:
         h = hashlib.sha256(key.encode("utf-8")).hexdigest()
         return self.dir / f"{self.prefix}{h}.bin"
 
-    def get(self, key: str) -> Optional[bytes]:
+    def get(self, key: str) -> bytes | None:
         p = self._path(key)
         return p.read_bytes() if p.exists() else None
 

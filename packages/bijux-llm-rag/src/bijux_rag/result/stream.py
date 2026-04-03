@@ -17,7 +17,9 @@ U = TypeVar("U")
 E = TypeVar("E")
 
 
-def map_result_iter(f: Callable[[T], Result[U, E]], xs: Iterable[T]) -> Iterator[Result[U, E]]:
+def map_result_iter(
+    f: Callable[[T], Result[U, E]], xs: Iterable[T]
+) -> Iterator[Result[U, E]]:
     for x in xs:
         yield f(x)
 
@@ -104,14 +106,18 @@ def par_try_map_iter(
                 idx += 1
 
 
-def tap_ok(xs: Iterable[Result[T, E]], fn: Callable[[T], None]) -> Iterator[Result[T, E]]:
+def tap_ok(
+    xs: Iterable[Result[T, E]], fn: Callable[[T], None]
+) -> Iterator[Result[T, E]]:
     for r in xs:
         if isinstance(r, Ok):
             fn(r.value)
         yield r
 
 
-def tap_err(xs: Iterable[Result[T, E]], fn: Callable[[E], None]) -> Iterator[Result[T, E]]:
+def tap_err(
+    xs: Iterable[Result[T, E]], fn: Callable[[E], None]
+) -> Iterator[Result[T, E]]:
     for r in xs:
         if isinstance(r, Err):
             fn(r.error)

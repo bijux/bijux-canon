@@ -18,7 +18,13 @@ from functools import partial
 from itertools import chain
 from operator import attrgetter
 
-from bijux_rag.core.rag_types import Chunk, ChunkWithoutEmbedding, CleanDoc, RagEnv, RawDoc
+from bijux_rag.core.rag_types import (
+    Chunk,
+    ChunkWithoutEmbedding,
+    CleanDoc,
+    RagEnv,
+    RawDoc,
+)
 from bijux_rag.rag.stages import clean_doc, embed_chunk, iter_chunk_doc
 
 
@@ -39,7 +45,9 @@ def rag_iter_stdlib(docs: Iterable[RawDoc], env: RagEnv) -> Iterator[Chunk]:
 
     cleaned = clean_docs(docs)
     chunk_fn = chunk_docs(env)
-    chunks: Iterator[ChunkWithoutEmbedding] = chain.from_iterable(map(chunk_fn, cleaned))
+    chunks: Iterator[ChunkWithoutEmbedding] = chain.from_iterable(
+        map(chunk_fn, cleaned)
+    )
     return map(embed_chunk, chunks)
 
 

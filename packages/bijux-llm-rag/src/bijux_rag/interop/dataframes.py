@@ -44,7 +44,9 @@ def normalize_records(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def pandas_clean_abstract(df: Any) -> Any:
     if not PANDAS_AVAILABLE:
         raise ImportError("pandas not available")
-    return df.assign(clean_abstract=lambda d: d["abstract"].astype(str).str.strip().str.lower())
+    return df.assign(
+        clean_abstract=lambda d: d["abstract"].astype(str).str.strip().str.lower()
+    )
 
 
 def pandas_filter_ai(df: Any) -> Any:

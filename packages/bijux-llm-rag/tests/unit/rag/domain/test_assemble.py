@@ -22,13 +22,19 @@ raw_tags = st.lists(st.text(min_size=1), min_size=0, max_size=15)
     model=st.none() | st.text(),
     dim=st.none() | st.integers(min_value=1, max_value=8192),
     vector=st.none()
-    | st.lists(st.floats(allow_nan=False, allow_infinity=False), min_size=1, max_size=10),
+    | st.lists(
+        st.floats(allow_nan=False, allow_infinity=False), min_size=1, max_size=10
+    ),
 )
-def test_assemble_success_and_dedup(content, source, raw_tags, model, dim, vector) -> None:
+def test_assemble_success_and_dedup(
+    content, source, raw_tags, model, dim, vector
+) -> None:
     meta = ChunkMetadata(
         source=source, tags=tuple(raw_tags), embedding_model=model, expected_dim=dim
     )
-    emb = Embedding(vector=tuple(vector or ()), model=model or "test") if vector else None
+    emb = (
+        Embedding(vector=tuple(vector or ()), model=model or "test") if vector else None
+    )
 
     if emb:
         meta = replace(meta, expected_dim=emb.dim, embedding_model=emb.model)
@@ -59,10 +65,14 @@ def test_assemble_success_and_dedup(content, source, raw_tags, model, dim, vecto
     source=st.text(),
     tags=st.lists(st.text(), min_size=1, max_size=10),
     model=st.text(min_size=1),
-    vector=st.lists(st.floats(allow_nan=False, allow_infinity=False), min_size=1, max_size=10),
+    vector=st.lists(
+        st.floats(allow_nan=False, allow_infinity=False), min_size=1, max_size=10
+    ),
 )
 def test_assemble_model_mismatch_fails(content, source, tags, model, vector) -> None:
-    meta = ChunkMetadata(source=source, tags=tuple(tags), embedding_model=model + "-wrong")
+    meta = ChunkMetadata(
+        source=source, tags=tuple(tags), embedding_model=model + "-wrong"
+    )
     emb = Embedding(vector=tuple(vector), model=model)
     v = assemble(ChunkText(content=content), meta, emb)
     assert isinstance(v, VFailure)
@@ -74,11 +84,16 @@ def test_assemble_model_mismatch_fails(content, source, tags, model, vector) -> 
     source=st.text(),
     tags=st.lists(st.text(), min_size=1, max_size=10),
     model=st.text(min_size=1),
-    vector=st.lists(st.floats(allow_nan=False, allow_infinity=False), min_size=1, max_size=10),
+    vector=st.lists(
+        st.floats(allow_nan=False, allow_infinity=False), min_size=1, max_size=10
+    ),
 )
 def test_assemble_dim_mismatch_fails(content, source, tags, model, vector) -> None:
     meta = ChunkMetadata(
-        source=source, tags=tuple(tags), embedding_model=model, expected_dim=len(vector) + 1
+        source=source,
+        tags=tuple(tags),
+        embedding_model=model,
+        expected_dim=len(vector) + 1,
     )
     emb = Embedding(vector=tuple(vector), model=model)
     v = assemble(ChunkText(content=content), meta, emb)

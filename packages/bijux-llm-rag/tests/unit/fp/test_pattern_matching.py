@@ -4,11 +4,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TypeAlias, TypeVar
+from typing import TypeAlias, TypeVar, assert_never
 
 from hypothesis import given
 from hypothesis import strategies as st
-from typing_extensions import assert_never
 
 from bijux_rag.fp.core import NoneVal, Some
 from bijux_rag.fp.error import ErrorCode
@@ -59,7 +58,10 @@ def handle_result(res: Result[T, DummyErr]) -> T | None:
 @given(
     res=st.one_of(
         st.builds(Ok, st.integers()),
-        st.builds(Err, st.builds(DummyErr, code=st.sampled_from(list(ErrorCode)), msg=st.text())),
+        st.builds(
+            Err,
+            st.builds(DummyErr, code=st.sampled_from(list(ErrorCode)), msg=st.text()),
+        ),
     )
 )
 def test_result_match_exhaustive(res: Result[int, DummyErr]) -> None:

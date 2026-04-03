@@ -10,9 +10,9 @@ consistent across modules.
 
 from __future__ import annotations
 
-import operator
 from collections.abc import Iterable, Iterator
 from itertools import accumulate, chain, tee
+import operator
 from typing import TypeVar
 
 T = TypeVar("T")

@@ -9,8 +9,8 @@ It assembles an answer from retrieved evidence spans and always emits citations.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 from bijux_rag.rag.ports import Answer, Candidate, Citation
 
@@ -35,7 +35,9 @@ class ExtractiveGenerator:
         evidence = [c for c in candidates if float(c.score) >= self.min_score]
         if not evidence:
             return Answer(
-                text="Cannot answer from sources.", citations=(), candidates=tuple(candidates)
+                text="Cannot answer from sources.",
+                citations=(),
+                candidates=tuple(candidates),
             )
 
         parts: list[str] = []

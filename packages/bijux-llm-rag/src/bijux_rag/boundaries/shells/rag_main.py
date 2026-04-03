@@ -47,7 +47,9 @@ def boundary_app_config(args: list[str]) -> Result[AppConfig, str]:
     )
 
     try:
-        cfg = RagConfig(env=RagEnv(ns.chunk_size), clean=CleanConfig(rule_names=rule_names))
+        cfg = RagConfig(
+            env=RagEnv(ns.chunk_size), clean=CleanConfig(rule_names=rule_names)
+        )
     except Exception as exc:
         return Err(f"Invalid config: {exc}")
 

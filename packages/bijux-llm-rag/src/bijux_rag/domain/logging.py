@@ -48,8 +48,18 @@ def trace_stage(msg: str, level: Level = "INFO") -> Writer[None, LogEntry]:
     return log_tell(LogEntry(level=level, msg=msg))
 
 
-def trace_value(name: str, value: object, level: Level = "DEBUG") -> Writer[None, LogEntry]:
+def trace_value(
+    name: str, value: object, level: Level = "DEBUG"
+) -> Writer[None, LogEntry]:
     return log_tell(LogEntry(level=level, msg=f"{name}={value!r}"))
 
 
-__all__ = ["Level", "LogEntry", "Logs", "LogMonoid", "log_tell", "trace_stage", "trace_value"]
+__all__ = [
+    "Level",
+    "LogEntry",
+    "Logs",
+    "LogMonoid",
+    "log_tell",
+    "trace_stage",
+    "trace_value",
+]

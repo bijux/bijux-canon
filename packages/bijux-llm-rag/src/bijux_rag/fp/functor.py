@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator, Sequence
-from typing import Optional, Tuple, TypeVar, cast
+from typing import TypeVar, cast
 
 from .core import NONE, Err, ErrInfo, Ok, Option, Result, Some, make_errinfo
 
@@ -28,11 +28,11 @@ def option_map(f: Callable[[T], U]) -> Callable[[Option[T]], Option[U]]:
     return _inner
 
 
-def from_optional(x: Optional[T]) -> Option[T]:
+def from_optional(x: T | None) -> Option[T]:
     return NONE if x is None else Some(value=x)
 
 
-def to_optional(opt: Option[T]) -> Optional[T]:
+def to_optional(opt: Option[T]) -> T | None:
     return opt.value if isinstance(opt, Some) else None
 
 
@@ -49,7 +49,7 @@ def result_try_map(
     f: Callable[[T], U],
     *,
     stage: str = "",
-    path: Tuple[int, ...] = (),
+    path: tuple[int, ...] = (),
 ) -> Callable[[Result[T, ErrInfo]], Result[U, ErrInfo]]:
     def _inner(res: Result[T, ErrInfo]) -> Result[U, ErrInfo]:
         if isinstance(res, Err):

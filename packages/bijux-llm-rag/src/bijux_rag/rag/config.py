@@ -9,13 +9,24 @@ and extended in Bijux RAG with streaming entry points.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
-from typing import Callable, Mapping, Protocol
+from typing import Protocol
 
-from bijux_rag.core.rag_types import Chunk, ChunkWithoutEmbedding, CleanDoc, RagEnv, RawDoc
+from bijux_rag.core.rag_types import (
+    Chunk,
+    ChunkWithoutEmbedding,
+    CleanDoc,
+    RagEnv,
+    RawDoc,
+)
 from bijux_rag.core.rules_pred import DEFAULT_RULES, RulesConfig
-from bijux_rag.rag.clean_cfg import DEFAULT_CLEAN_CONFIG, RULES, CleanConfig, make_cleaner
+from bijux_rag.rag.clean_cfg import (
+    DEFAULT_CLEAN_CONFIG,
+    RULES,
+    CleanConfig,
+    make_cleaner,
+)
 from bijux_rag.rag.stages import embed_chunk
 from bijux_rag.rag.types import DebugConfig, Observations, RagTaps
 from bijux_rag.result import Err, Ok, Result
@@ -65,7 +76,9 @@ def make_rag_fn(
 
     debug_cfg = debug if debug is not None else DebugConfig()
 
-    config = RagConfig(env=RagEnv(chunk_size), keep=keep, clean=clean_cfg, debug=debug_cfg)
+    config = RagConfig(
+        env=RagEnv(chunk_size), keep=keep, clean=clean_cfg, debug=debug_cfg
+    )
     deps = get_deps(config, taps=taps)
 
     def run(docs: list[RawDoc]) -> tuple[list[Chunk], Observations]:
@@ -99,7 +112,9 @@ def boundary_rag_config(raw: Mapping[str, object]) -> Result[RagConfig, str]:
 
     chunk_size_raw = raw.get("chunk_size", 512)
     if not isinstance(chunk_size_raw, int):
-        return Err(f"Invalid config: chunk_size must be int (got {type(chunk_size_raw).__name__})")
+        return Err(
+            f"Invalid config: chunk_size must be int (got {type(chunk_size_raw).__name__})"
+        )
 
     rule_names_raw = raw.get("clean_rules", DEFAULT_CLEAN_CONFIG.rule_names)
     if not isinstance(rule_names_raw, (tuple, list)) or not all(
@@ -110,9 +125,13 @@ def boundary_rag_config(raw: Mapping[str, object]) -> Result[RagConfig, str]:
     missing = [name for name in rule_names if name not in RULES]
     if missing:
         available = ", ".join(sorted(RULES))
-        return Err(f"Invalid config: unknown clean rule(s): {missing}; available: {available}")
+        return Err(
+            f"Invalid config: unknown clean rule(s): {missing}; available: {available}"
+        )
 
-    return Ok(RagConfig(env=RagEnv(chunk_size_raw), clean=CleanConfig(rule_names=rule_names)))
+    return Ok(
+        RagConfig(env=RagEnv(chunk_size_raw), clean=CleanConfig(rule_names=rule_names))
+    )
 
 
 __all__ = [

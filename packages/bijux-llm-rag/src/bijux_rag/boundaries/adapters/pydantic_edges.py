@@ -6,9 +6,16 @@
 from __future__ import annotations
 
 import math
-from typing import Any, Dict, List, Literal, TypeVar
+from typing import Any, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, computed_field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    TypeAdapter,
+    computed_field,
+    model_validator,
+)
 
 from bijux_rag.fp.core import Chunk, make_chunk
 
@@ -27,11 +34,11 @@ class ChunkModel(BaseModel):
 
     version: Literal[1] = 1
     text: str = Field(min_length=1, max_length=200_000)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-    embedding: List[float] | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    embedding: list[float] | None = None
 
     @model_validator(mode="after")
-    def _validate_embedding(self) -> "ChunkModel":
+    def _validate_embedding(self) -> ChunkModel:
         if self.embedding is None:
             return self
         if not self.embedding:

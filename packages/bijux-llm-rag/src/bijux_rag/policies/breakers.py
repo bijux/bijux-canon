@@ -5,9 +5,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Callable, Generic, Iterable, Iterator, Mapping, TypeVar, cast
+from typing import Generic, TypeVar, cast
 
 from bijux_rag.result import Err, Ok, Result
 
@@ -35,7 +36,9 @@ class BreakInfo(Generic[E]):
     threshold: Mapping[str, object]
 
 
-def short_circuit_on_err_emit(xs: Iterable[Result[T, E]]) -> Iterator[Result[T, E | BreakInfo[E]]]:
+def short_circuit_on_err_emit(
+    xs: Iterable[Result[T, E]],
+) -> Iterator[Result[T, E | BreakInfo[E]]]:
     """Yield items until first Err (which is yielded), then emit terminal BreakInfo."""
 
     it = iter(xs)
@@ -117,7 +120,9 @@ def circuit_breaker_rate_emit(
                     n_ok=n_ok,
                     n_err=n_err,
                     total=total,
-                    threshold=MappingProxyType({"max_rate": max_rate, "min_samples": min_samples}),
+                    threshold=MappingProxyType(
+                        {"max_rate": max_rate, "min_samples": min_samples}
+                    ),
                 )
                 yield Err(bi)
                 return

@@ -14,9 +14,9 @@ All embedders must:
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from hashlib import sha256
-from typing import Sequence
 
 import numpy as np
 from numpy.typing import NDArray
@@ -40,7 +40,9 @@ class HashEmbedder:
     - development without model downloads
     """
 
-    _spec: EmbeddingSpec = EmbeddingSpec(model="hash16", dim=16, metric="cosine", normalized=True)
+    _spec: EmbeddingSpec = EmbeddingSpec(
+        model="hash16", dim=16, metric="cosine", normalized=True
+    )
 
     @property
     def spec(self) -> EmbeddingSpec:
@@ -81,7 +83,10 @@ class SentenceTransformersEmbedder:
         # Dim is resolved lazily from the model, but we still expose a placeholder.
         # The index builder will overwrite with the true dim after first encode.
         return EmbeddingSpec(
-            model=f"sbert:{self.model_name}", dim=384, metric="cosine", normalized=self.normalize
+            model=f"sbert:{self.model_name}",
+            dim=384,
+            metric="cosine",
+            normalized=self.normalize,
         )
 
     def embed(self, texts: Sequence[str]) -> list[tuple[float, ...]]:

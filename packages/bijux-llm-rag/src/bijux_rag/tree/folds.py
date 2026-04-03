@@ -18,7 +18,9 @@ A = TypeVar("A")
 Path = tuple[int, ...]
 
 
-def fold_tree(tree: TreeDoc, seed: R, combiner: Callable[[R, TreeDoc, int, Path], R]) -> R:
+def fold_tree(
+    tree: TreeDoc, seed: R, combiner: Callable[[R, TreeDoc, int, Path], R]
+) -> R:
     """Iterative preorder fold with explicit stack."""
 
     acc = seed
@@ -34,7 +36,9 @@ def fold_tree(tree: TreeDoc, seed: R, combiner: Callable[[R, TreeDoc, int, Path]
     return acc
 
 
-def fold_tree_buffered(tree: TreeDoc, seed: R, combiner: Callable[[R, TreeDoc, int, Path], R]) -> R:
+def fold_tree_buffered(
+    tree: TreeDoc, seed: R, combiner: Callable[[R, TreeDoc, int, Path], R]
+) -> R:
     """Preorder fold with traversal-internal path buffering (production hot-path)."""
 
     acc = seed
@@ -62,7 +66,9 @@ def fold_tree_buffered(tree: TreeDoc, seed: R, combiner: Callable[[R, TreeDoc, i
     return acc
 
 
-def fold_tree_no_path(tree: TreeDoc, seed: R, combiner: Callable[[R, TreeDoc, int], R]) -> R:
+def fold_tree_no_path(
+    tree: TreeDoc, seed: R, combiner: Callable[[R, TreeDoc, int], R]
+) -> R:
     """Iterative fold variant when path is not needed (depth only)."""
 
     acc = seed

@@ -6,7 +6,13 @@ from __future__ import annotations
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_rag.interop.toolz_compat import compose, curried_filter, curried_map, pipe, reduceby
+from bijux_rag.interop.toolz_compat import (
+    compose,
+    curried_filter,
+    curried_map,
+    pipe,
+    reduceby,
+)
 
 
 @given(xs=st.lists(st.integers(), max_size=200))

@@ -3,11 +3,12 @@
 
 from __future__ import annotations
 
-from typing import Callable, cast
+from collections.abc import Callable
+from typing import cast
 
-import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+import pytest
 
 from bijux_rag.fp.applicative import (
     Validation,

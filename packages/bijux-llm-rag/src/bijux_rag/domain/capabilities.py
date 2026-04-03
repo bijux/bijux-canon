@@ -29,7 +29,9 @@ class StorageRead(Protocol):
 
 
 class StorageWrite(Protocol):
-    def write_chunks(self, path: str, chunks: Iterator[Chunk]) -> Result[None, ErrInfo]: ...
+    def write_chunks(
+        self, path: str, chunks: Iterator[Chunk]
+    ) -> Result[None, ErrInfo]: ...
 
 
 class Storage(StorageRead, StorageWrite, Protocol):

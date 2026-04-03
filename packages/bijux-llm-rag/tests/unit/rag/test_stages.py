@@ -5,17 +5,17 @@
 
 from __future__ import annotations
 
-import hypothesis.strategies as st
 from hypothesis import given
-
-from bijux_rag import chunk_doc, clean_doc, embed_chunk, structural_dedup_chunks
-from bijux_rag.core.rag_types import ChunkWithoutEmbedding, RagEnv, RawDoc
+import hypothesis.strategies as st
 from tests.strategies import (
     doc_list_strategy,
     env_strategy,
     pipeline_chunk_strategy,
     raw_doc_strategy,
 )
+
+from bijux_rag import chunk_doc, clean_doc, embed_chunk, structural_dedup_chunks
+from bijux_rag.core.rag_types import ChunkWithoutEmbedding, RagEnv, RawDoc
 
 
 @given(doc=raw_doc_strategy())
@@ -52,7 +52,9 @@ def test_structural_dedup_is_canonical_order(chunks) -> None:
 
 
 @given(docs=doc_list_strategy(), env=env_strategy())
-def test_structural_dedup_after_pipeline_is_fixed_point(docs: list[RawDoc], env: RagEnv) -> None:
+def test_structural_dedup_after_pipeline_is_fixed_point(
+    docs: list[RawDoc], env: RagEnv
+) -> None:
     cleaned = [clean_doc(d) for d in docs]
     embedded = [embed_chunk(c) for cd in cleaned for c in chunk_doc(cd, env)]
     chunks = structural_dedup_chunks(embedded)

@@ -26,7 +26,13 @@ from .breakers import (
     short_circuit_on_err_truncate,
 )
 from .memo import DiskCache, content_hash_key, lru_cache_custom, memoize_keyed
-from .reports import ErrGroup, ErrReport, fold_error_counts, fold_error_report, report_to_jsonable
+from .reports import (
+    ErrGroup,
+    ErrReport,
+    fold_error_counts,
+    fold_error_report,
+    report_to_jsonable,
+)
 from .resources import auto_close, managed_stream, nested_managed, with_resource_stream
 from .retries import (
     RetryCtx,

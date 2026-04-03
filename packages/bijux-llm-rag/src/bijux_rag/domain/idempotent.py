@@ -17,7 +17,9 @@ T = TypeVar("T")
 
 
 class AtomicWriteCap(Protocol):
-    def write_if_absent(self, key: str, chunks: Iterator[Chunk]) -> Result[bool, ErrInfo]:
+    def write_if_absent(
+        self, key: str, chunks: Iterator[Chunk]
+    ) -> Result[bool, ErrInfo]:
         """Return Ok(True) if written; Ok(False) if already present."""
 
 

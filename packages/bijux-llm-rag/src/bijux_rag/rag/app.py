@@ -12,15 +12,21 @@ Both CLI and FastAPI boundary call into this layer to avoid drift.
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from enum import Enum
+import hashlib
 from pathlib import Path
 
 import msgpack
 
-from bijux_rag.core.rag_types import Chunk, ChunkWithoutEmbedding, CleanDoc, RagEnv, RawDoc
+from bijux_rag.core.rag_types import (
+    Chunk,
+    ChunkWithoutEmbedding,
+    CleanDoc,
+    RagEnv,
+    RawDoc,
+)
 from bijux_rag.infra.adapters.file_storage import FileStorage
 from bijux_rag.rag.embedders import HashEmbedder, SentenceTransformersEmbedder
 from bijux_rag.rag.generators import ExtractiveGenerator
@@ -56,7 +62,9 @@ def _iter_clean_docs(docs: Iterable[RawDoc]) -> Iterator[CleanDoc]:
         yield clean_doc(d)
 
 
-def _iter_chunks(cleaned: Iterable[CleanDoc], env: RagEnv) -> Iterator[ChunkWithoutEmbedding]:
+def _iter_chunks(
+    cleaned: Iterable[CleanDoc], env: RagEnv
+) -> Iterator[ChunkWithoutEmbedding]:
     for cd in cleaned:
         yield from iter_chunk_doc(cd, env)
 
@@ -165,11 +173,15 @@ def retrieve(
     if isinstance(idx, NumpyCosineIndex) and embedder is None:
         # Default embedder based on index spec.
         if idx.spec.model.startswith("sbert:"):
-            embedder = SentenceTransformersEmbedder(model_name=idx.spec.model.split(":", 1)[1])
+            embedder = SentenceTransformersEmbedder(
+                model_name=idx.spec.model.split(":", 1)[1]
+            )
         else:
             embedder = HashEmbedder()
 
-    return idx.retrieve(query=query, top_k=int(top_k), filters=filters, embedder=embedder)
+    return idx.retrieve(
+        query=query, top_k=int(top_k), filters=filters, embedder=embedder
+    )
 
 
 def ask(
@@ -191,7 +203,9 @@ def ask(
         embedder=embedder,
     )
     if rerank:
-        cands = LexicalOverlapReranker().rerank(query=query, candidates=cands, top_k=int(top_k))
+        cands = LexicalOverlapReranker().rerank(
+            query=query, candidates=cands, top_k=int(top_k)
+        )
     else:
         cands = cands[: int(top_k)]
     return ExtractiveGenerator().generate(query=query, candidates=cands)
@@ -336,7 +350,9 @@ class RagApp:
 
         emb = HashEmbedder()
         idx = build_numpy_cosine_index(chunks=chunks, embedder=emb)
-        return Ok(RagIndex(backend="numpy-cosine", index=idx, fingerprint=idx.fingerprint))
+        return Ok(
+            RagIndex(backend="numpy-cosine", index=idx, fingerprint=idx.fingerprint)
+        )
 
     def save_index(self, index: RagIndex, path: Path) -> Result[None, str]:
         try:
@@ -349,23 +365,35 @@ class RagApp:
         try:
             idx = load_index(str(path))
             if isinstance(idx, BM25Index):
-                return Ok(RagIndex(backend="bm25", index=idx, fingerprint=idx.fingerprint))
+                return Ok(
+                    RagIndex(backend="bm25", index=idx, fingerprint=idx.fingerprint)
+                )
             if isinstance(idx, NumpyCosineIndex):
-                return Ok(RagIndex(backend="numpy-cosine", index=idx, fingerprint=idx.fingerprint))
+                return Ok(
+                    RagIndex(
+                        backend="numpy-cosine", index=idx, fingerprint=idx.fingerprint
+                    )
+                )
             return Err("unknown index backend")
         except Exception as exc:  # pragma: no cover
             return Err(str(exc))
 
     # ------------- Retrieve / Ask -------------
     def retrieve(
-        self, index: RagIndex, query: str, top_k: int, filters: dict[str, str] | None = None
+        self,
+        index: RagIndex,
+        query: str,
+        top_k: int,
+        filters: dict[str, str] | None = None,
     ) -> Result[list[Candidate], str]:
         try:
             embedder = None
             if isinstance(index.index, NumpyCosineIndex):
                 spec = index.index.spec
                 if isinstance(spec.model, str) and spec.model.startswith("sbert:"):
-                    embedder = SentenceTransformersEmbedder(model_name=spec.model.split(":", 1)[1])
+                    embedder = SentenceTransformersEmbedder(
+                        model_name=spec.model.split(":", 1)[1]
+                    )
                 else:
                     embedder = HashEmbedder()
             fetch_k = max(int(top_k) * 3, 20)
@@ -449,17 +477,29 @@ class RagApp:
             idx = NumpyCosineIndex.load_bytes(blob)
             spec = idx.spec
             if isinstance(spec.model, str) and spec.model.startswith("sbert:"):
-                emb = SentenceTransformersEmbedder(model_name=spec.model.split(":", 1)[1])
+                emb = SentenceTransformersEmbedder(
+                    model_name=spec.model.split(":", 1)[1]
+                )
             else:
                 emb = HashEmbedder()
-            return Ok(idx.retrieve(query=query, top_k=top_k, filters=filters, embedder=emb))
+            return Ok(
+                idx.retrieve(query=query, top_k=top_k, filters=filters, embedder=emb)
+            )
         return Err("unknown index backend")
 
     def ask_blob(
-        self, blob: bytes, query: str, top_k: int, filters: dict[str, str], rerank: bool = True
+        self,
+        blob: bytes,
+        query: str,
+        top_k: int,
+        filters: dict[str, str],
+        rerank: bool = True,
     ) -> Result[Answer, str]:
         res = self.retrieve_blob(
-            blob=blob, query=query, top_k=max(top_k, 10 if rerank else top_k), filters=filters
+            blob=blob,
+            query=query,
+            top_k=max(top_k, 10 if rerank else top_k),
+            filters=filters,
         )
         if isinstance(res, Err):
             return res

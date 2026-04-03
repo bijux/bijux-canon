@@ -66,7 +66,12 @@ def test_par_try_map_iter_preserves_length_and_order(items: list[int]) -> None:
     serial = list(try_map_iter(f, items, stage="test", key_path=lambda x: (x,)))
     par = list(
         par_try_map_iter(
-            f, items, stage="test", key_path=lambda x: (x,), max_workers=4, max_in_flight=8
+            f,
+            items,
+            stage="test",
+            key_path=lambda x: (x,),
+            max_workers=4,
+            max_in_flight=8,
         )
     )
     assert len(serial) == len(par) == len(items)

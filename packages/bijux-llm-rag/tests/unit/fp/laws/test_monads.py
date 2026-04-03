@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_rag.result.types import Err, NoneVal, Ok, Option, Result, Some
 
@@ -48,7 +48,9 @@ def st_func_to_option(draw) -> Callable[[int], Option[int]]:
     threshold = draw(st.integers(-10, 10))
 
     def f(x: int) -> Option[int]:
-        return Some(some_val if x >= threshold else x + 1) if (x % 3) != 0 else NoneVal()
+        return (
+            Some(some_val if x >= threshold else x + 1) if (x % 3) != 0 else NoneVal()
+        )
 
     return f
 
@@ -94,7 +96,9 @@ def test_result_bifunctor_identity(m: Result[int, str]) -> None:
 
 
 @given(m=st_result(), prefix=st.text(max_size=4), suffix=st.text(max_size=4))
-def test_result_bifunctor_composition(m: Result[int, str], prefix: str, suffix: str) -> None:
+def test_result_bifunctor_composition(
+    m: Result[int, str], prefix: str, suffix: str
+) -> None:
     def f(e: str) -> str:
         return prefix + e
 

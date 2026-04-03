@@ -16,7 +16,13 @@ from dataclasses import dataclass, field
 from itertools import chain
 from typing import Any, cast
 
-from bijux_rag.core.rag_types import Chunk, ChunkWithoutEmbedding, CleanDoc, RagEnv, RawDoc
+from bijux_rag.core.rag_types import (
+    Chunk,
+    ChunkWithoutEmbedding,
+    CleanDoc,
+    RagEnv,
+    RawDoc,
+)
 from bijux_rag.rag.stages import clean_doc, embed_chunk, iter_chunk_doc
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result
 
@@ -45,7 +51,9 @@ def _env_from_params(params: Mapping[str, object]) -> RagEnv:
         or not isinstance(overlap, int)
         or not isinstance(tail_policy, str)
     ):
-        raise TypeError("chunk params must be: chunk_size:int, overlap:int, tail_policy:str")
+        raise TypeError(
+            "chunk params must be: chunk_size:int, overlap:int, tail_policy:str"
+        )
     return RagEnv(chunk_size=chunk_size, overlap=overlap, tail_policy=tail_policy)
 
 
@@ -89,7 +97,9 @@ def build_rag_pipeline(
                 raise TypeError("chunk expects CleanDoc")
             env = _env_from_params({**params, **injected})
 
-            def _chunk(cd: CleanDoc, *, _env: RagEnv = env) -> Iterator[ChunkWithoutEmbedding]:
+            def _chunk(
+                cd: CleanDoc, *, _env: RagEnv = env
+            ) -> Iterator[ChunkWithoutEmbedding]:
                 yield from iter_chunk_doc(cd, _env)
 
             steps.append(("flatmap", _chunk))
@@ -106,7 +116,9 @@ def build_rag_pipeline(
             else:
                 if not callable(embedder_obj):
                     raise TypeError("embedder artifact must be callable")
-                embedder_fn = cast(Callable[[ChunkWithoutEmbedding], Chunk], embedder_obj)
+                embedder_fn = cast(
+                    Callable[[ChunkWithoutEmbedding], Chunk], embedder_obj
+                )
 
             def _embed(
                 x: ChunkWithoutEmbedding,

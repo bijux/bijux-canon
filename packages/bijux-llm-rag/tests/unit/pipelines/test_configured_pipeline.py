@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 from bijux_rag.core.rag_types import RawDoc
-from bijux_rag.pipelines.configured import PipelineConfig, StepConfig, build_rag_pipeline
+from bijux_rag.pipelines.configured import (
+    PipelineConfig,
+    StepConfig,
+    build_rag_pipeline,
+)
 from bijux_rag.result.types import is_ok
 
 
@@ -18,7 +22,9 @@ def test_build_rag_pipeline_happy_path() -> None:
     )
 
     pipeline = build_rag_pipeline(cfg)
-    docs = iter([RawDoc(doc_id="d1", title="t", abstract="hello world", categories="cs.AI")])
+    docs = iter(
+        [RawDoc(doc_id="d1", title="t", abstract="hello world", categories="cs.AI")]
+    )
     out = list(pipeline(docs))
     assert out
     assert all(is_ok(r) for r in out)

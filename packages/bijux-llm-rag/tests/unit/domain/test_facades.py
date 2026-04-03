@@ -19,7 +19,9 @@ def test_facade_returns_description_not_effect() -> None:
         return embed_chunk(_c)
 
     port = deterministic_embedder_port(embed_one=embed_one)
-    plan = port.embed_batch([Keyed(key="k", value=ChunkWithoutEmbedding("d", "x", 0, 1))])
+    plan = port.embed_batch(
+        [Keyed(key="k", value=ChunkWithoutEmbedding("d", "x", 0, 1))]
+    )
     assert calls == 0
     _ = perform(plan)
     assert calls == 1
@@ -27,7 +29,9 @@ def test_facade_returns_description_not_effect() -> None:
 
 def test_facade_interpretation_produces_ok() -> None:
     port = deterministic_embedder_port()
-    plan = port.embed_batch([Keyed(key="k", value=ChunkWithoutEmbedding("d", "x", 0, 1))])
+    plan = port.embed_batch(
+        [Keyed(key="k", value=ChunkWithoutEmbedding("d", "x", 0, 1))]
+    )
     res = perform(plan)
     assert isinstance(res, Ok)
     assert res.value[0].key == "k"

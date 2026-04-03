@@ -24,7 +24,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-
 from tests.e2e.conftest import _get, _unwrap_ok
 
 
@@ -150,7 +149,9 @@ def test_ask_has_grounded_citations(
     assert citations, "ask() must return citations in CI profile"
 
     contexts = _contexts_from_ask(res)
-    assert contexts, "ask() must return the contexts it grounded on (contexts/candidates)"
+    assert contexts, (
+        "ask() must return the contexts it grounded on (contexts/candidates)"
+    )
 
     ctx_by_doc: dict[str, list[Any]] = {}
     for ctx in contexts:
@@ -178,7 +179,9 @@ def test_ask_has_grounded_citations(
             if e <= len(t):
                 ok = True
                 break
-        assert ok, f"citation span {(s, e)} does not fit in any returned context for doc_id={did}"
+        assert ok, (
+            f"citation span {(s, e)} does not fit in any returned context for doc_id={did}"
+        )
 
 
 @pytest.mark.e2e

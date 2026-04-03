@@ -13,11 +13,12 @@ Persistence format: msgpack (schema_versioned).
 
 from __future__ import annotations
 
-import json
-import math
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
-from typing import Any, Mapping, Sequence
+import json
+import math
+from typing import Any
 
 import msgpack
 import numpy as np
@@ -37,9 +38,9 @@ def _fingerprint_bytes(*parts: bytes) -> str:
 
 
 def _json_dumps(obj: object) -> bytes:
-    return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    return json.dumps(
+        obj, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+    ).encode("utf-8")
 
 
 def _l2_normalize(x: NDArray[np.float32]) -> NDArray[np.float32]:
@@ -112,7 +113,9 @@ class NumpyCosineIndex:
         if embedder is None:
             raise ValueError("embedder is required for dense retrieval")
         if embedder.spec.model != self.spec.model:
-            raise ValueError(f"embedder model mismatch: {embedder.spec.model} != {self.spec.model}")
+            raise ValueError(
+                f"embedder model mismatch: {embedder.spec.model} != {self.spec.model}"
+            )
 
         q = embedder.embed_texts([query])
         qv = q[0]
@@ -157,7 +160,9 @@ class NumpyCosineIndex:
         for i in top_idxs.tolist():
             out.append(
                 Candidate(
-                    chunk=self.chunks[i], score=float(scores[i]), metadata={"backend": self.backend}
+                    chunk=self.chunks[i],
+                    score=float(scores[i]),
+                    metadata={"backend": self.backend},
                 )
             )
         return out
@@ -222,7 +227,7 @@ class NumpyCosineIndex:
         return msgpack.packb(payload, use_bin_type=True)
 
     @staticmethod
-    def load(path: str) -> "NumpyCosineIndex":
+    def load(path: str) -> NumpyCosineIndex:
         with open(path, "rb") as f:
             payload = msgpack.unpackb(f.read(), raw=False)
         if payload.get("schema_version") != SCHEMA_VERSION:
@@ -258,7 +263,7 @@ class NumpyCosineIndex:
         return NumpyCosineIndex(chunks=chunks, vectors=arr, spec=spec)
 
     @classmethod
-    def load_bytes(cls, blob: bytes) -> "NumpyCosineIndex":
+    def load_bytes(cls, blob: bytes) -> NumpyCosineIndex:
         payload = msgpack.unpackb(blob, raw=False)
         if payload.get("schema_version") != SCHEMA_VERSION:
             raise ValueError("unsupported index schema version")
@@ -390,7 +395,11 @@ class BM25Index:
         out: list[Candidate] = []
         for i, s in scores[: max(0, int(top_k))]:
             out.append(
-                Candidate(chunk=self.chunks[i], score=float(s), metadata={"backend": self.backend})
+                Candidate(
+                    chunk=self.chunks[i],
+                    score=float(s),
+                    metadata={"backend": self.backend},
+                )
             )
         return out
 
@@ -446,7 +455,7 @@ class BM25Index:
         return msgpack.packb(payload, use_bin_type=True)
 
     @staticmethod
-    def load(path: str) -> "BM25Index":
+    def load(path: str) -> BM25Index:
         with open(path, "rb") as f:
             payload = msgpack.unpackb(f.read(), raw=False)
         if payload.get("schema_version") != SCHEMA_VERSION:
@@ -476,11 +485,16 @@ class BM25Index:
         tfs = tuple(tuple((int(a), int(b)) for a, b in row) for row in payload["tfs"])
         avg_dl = float(payload["avg_dl"])
         return BM25Index(
-            chunks=chunks, buckets=buckets, df=df, tfs=tfs, doc_len=doc_len, avg_dl=avg_dl
+            chunks=chunks,
+            buckets=buckets,
+            df=df,
+            tfs=tfs,
+            doc_len=doc_len,
+            avg_dl=avg_dl,
         )
 
     @classmethod
-    def load_bytes(cls, blob: bytes) -> "BM25Index":
+    def load_bytes(cls, blob: bytes) -> BM25Index:
         payload = msgpack.unpackb(blob, raw=False)
         if payload.get("schema_version") != SCHEMA_VERSION:
             raise ValueError("unsupported index schema version")
@@ -504,10 +518,19 @@ class BM25Index:
         doc_len = np.frombuffer(payload["doc_len"], dtype=np.int32, count=n).copy()
         tfs = tuple(tuple((int(a), int(b)) for a, b in row) for row in payload["tfs"])
         avg_dl = float(payload["avg_dl"])
-        return cls(chunks=chunks, buckets=buckets, df=df, tfs=tfs, doc_len=doc_len, avg_dl=avg_dl)
+        return cls(
+            chunks=chunks,
+            buckets=buckets,
+            df=df,
+            tfs=tfs,
+            doc_len=doc_len,
+            avg_dl=avg_dl,
+        )
 
 
-def build_numpy_cosine_index(*, chunks: Sequence[Chunk], embedder: Embedder) -> NumpyCosineIndex:
+def build_numpy_cosine_index(
+    *, chunks: Sequence[Chunk], embedder: Embedder
+) -> NumpyCosineIndex:
     """Build a dense index from chunk texts."""
 
     if not chunks:
@@ -524,7 +547,10 @@ def build_numpy_cosine_index(*, chunks: Sequence[Chunk], embedder: Embedder) -> 
     if vecs.shape[1] != spec.dim:
         # Allow embedders to report placeholder dims; in that case, take the real dim.
         spec = EmbeddingSpec(
-            model=spec.model, dim=int(vecs.shape[1]), metric=spec.metric, normalized=spec.normalized
+            model=spec.model,
+            dim=int(vecs.shape[1]),
+            metric=spec.metric,
+            normalized=spec.normalized,
         )
     arr = np.asarray(vecs, dtype=np.float32)
     if spec.normalized:

@@ -9,10 +9,10 @@ deterministically using allow-listed registries.
 
 from __future__ import annotations
 
-import hashlib
-import json
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
+import hashlib
+import json
 from typing import Any, Literal, TypeAlias, TypeVar, cast
 
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result, is_err, is_ok
@@ -84,16 +84,24 @@ def reconstruct_pipeline(
     registry: SpecRegistry,
     *,
     allow_list: set[str] | None = None,
-) -> Result[Callable[[Iterable[Result[Any, ErrInfo]]], Iterator[Result[Any, ErrInfo]]], ErrInfo]:
+) -> Result[
+    Callable[[Iterable[Result[Any, ErrInfo]]], Iterator[Result[Any, ErrInfo]]], ErrInfo
+]:
     allow = allow_list if allow_list is not None else set(registry.keys())
 
-    funcs: list[tuple[Literal["Map", "FlatMap"], str, Callable[[Any], Any], ErrorPolicy]] = []
+    funcs: list[
+        tuple[Literal["Map", "FlatMap"], str, Callable[[Any], Any], ErrorPolicy]
+    ] = []
     for op in spec.ops:
         if op.func_id not in allow:
-            return Err(ErrInfo(code="DISALLOWED", msg=f"func_id not allowed: {op.func_id}"))
+            return Err(
+                ErrInfo(code="DISALLOWED", msg=f"func_id not allowed: {op.func_id}")
+            )
         f = registry.get(op.func_id)
         if f is None:
-            return Err(ErrInfo(code="UNKNOWN_FUNC", msg=f"unknown func_id: {op.func_id}"))
+            return Err(
+                ErrInfo(code="UNKNOWN_FUNC", msg=f"unknown func_id: {op.func_id}")
+            )
         funcs.append((op.type, op.func_id, f, op.error_policy))
 
     def run(stream: Iterable[Result[Any, ErrInfo]]) -> Iterator[Result[Any, ErrInfo]]:
@@ -136,7 +144,11 @@ def reconstruct_pipeline(
                         yield Err(ErrInfo.from_exception(exc, stage=_fid))
 
                 it = _apply_policy(
-                    (y for r in cast(Iterator[Result[Any, ErrInfo]], it) for y in _flat(r)),
+                    (
+                        y
+                        for r in cast(Iterator[Result[Any, ErrInfo]], it)
+                        for y in _flat(r)
+                    ),
                     pol,
                 )
             else:

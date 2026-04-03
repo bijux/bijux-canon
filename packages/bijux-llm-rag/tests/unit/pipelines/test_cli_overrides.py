@@ -14,7 +14,9 @@ from bijux_rag.pipelines.cli import deep_merge, parse_override
     b=st.dictionaries(st.text(min_size=1, max_size=5), st.integers(), max_size=10),
 )
 @settings(max_examples=100)
-def test_deep_merge_right_bias_for_scalars(a: dict[str, int], b: dict[str, int]) -> None:
+def test_deep_merge_right_bias_for_scalars(
+    a: dict[str, int], b: dict[str, int]
+) -> None:
     merged = deep_merge(dict(a), dict(b))
     for k, v in a.items():
         if k not in b:

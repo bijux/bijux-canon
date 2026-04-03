@@ -8,8 +8,8 @@ The default reranker is deterministic and CI-friendly: lexical overlap.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 from bijux_rag.rag.indexes import _tokenize
 from bijux_rag.rag.ports import Candidate
@@ -22,7 +22,9 @@ class LexicalOverlapReranker:
     This is a cheap, deterministic reranker that improves lexical baselines.
     """
 
-    def rerank(self, *, query: str, candidates: Sequence[Candidate], top_k: int) -> list[Candidate]:
+    def rerank(
+        self, *, query: str, candidates: Sequence[Candidate], top_k: int
+    ) -> list[Candidate]:
         def _stem(tok: str) -> str:
             if tok.endswith("es") and len(tok) > 4:
                 return tok[:-1]  # combines -> combine, passages -> passage

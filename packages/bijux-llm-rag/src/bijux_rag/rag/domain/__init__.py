@@ -11,6 +11,7 @@ These ADTs are used in the Bijux RAG "type-driven design" cores:
 This modeling layer is intentionally separate from the main RAG pipeline value
 types in `bijux_rag.core.rag_types`.
 """
+from __future__ import annotations
 
 from .chunk import (
     Chunk,

@@ -11,10 +11,18 @@ This package provides:
 All interop modules are designed to keep the core package importable without
 non-stdlib dependencies; any third-party imports are performed dynamically.
 """
+from __future__ import annotations
 
 from .returns_compat import RETURNS_AVAILABLE, to_option, to_result
 from .stdlib_fp import merge_streams, multicast_stream, running_sum
-from .toolz_compat import TOOLZ_AVAILABLE, compose, curried_filter, curried_map, pipe, reduceby
+from .toolz_compat import (
+    TOOLZ_AVAILABLE,
+    compose,
+    curried_filter,
+    curried_map,
+    pipe,
+    reduceby,
+)
 
 __all__ = [
     # stdlib FP

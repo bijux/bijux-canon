@@ -10,9 +10,9 @@ This is distinct from `bijux_rag.policies.retries`:
 
 from __future__ import annotations
 
-import time
 from collections.abc import Callable
 from dataclasses import dataclass
+import time
 from typing import TypeVar
 
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result
@@ -38,7 +38,8 @@ class RetryPolicy:
 def retry_idempotent(
     policy: RetryPolicy,
 ) -> Callable[
-    [Callable[[A], IOPlan[Result[T, ErrInfo]]]], Callable[[A], IOPlan[Result[T, ErrInfo]]]
+    [Callable[[A], IOPlan[Result[T, ErrInfo]]]],
+    Callable[[A], IOPlan[Result[T, ErrInfo]]],
 ]:
     """Retry wrapper for idempotent behaviours only (synchronous/backoff variant)."""
 
@@ -49,7 +50,11 @@ def retry_idempotent(
             def step(attempt: int) -> IOPlan[Result[T, ErrInfo]]:
                 if attempt >= policy.max_attempts:
                     return io_pure(
-                        Err(ErrInfo(code="MAX_RETRY", msg=f"Failed after {attempt} attempts"))
+                        Err(
+                            ErrInfo(
+                                code="MAX_RETRY", msg=f"Failed after {attempt} attempts"
+                            )
+                        )
                     )
 
                 plan = behaviour(a)
@@ -60,7 +65,9 @@ def retry_idempotent(
                     if not is_transient(r.error):
                         return io_pure(r)
                     delay_ms = policy.backoff_ms(attempt)
-                    return io_bind(io_delay(lambda: _sleep(delay_ms)), lambda _: step(attempt + 1))
+                    return io_bind(
+                        io_delay(lambda: _sleep(delay_ms)), lambda _: step(attempt + 1)
+                    )
 
                 return io_bind(plan, handle)
 

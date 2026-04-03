@@ -121,7 +121,9 @@ def _trace_items(
         yield item
 
 
-def _probe_items(items: Iterable[X], stage: str, check_fn: Callable[[X], None]) -> Iterator[X]:
+def _probe_items(
+    items: Iterable[X], stage: str, check_fn: Callable[[X], None]
+) -> Iterator[X]:
     for item in items:
         try:
             check_fn(item)
@@ -146,7 +148,9 @@ def tee(
     return tracer
 
 
-def probe(stage: str, check_fn: Callable[[Any], None]) -> Callable[[Iterable[Any]], Iterator[Any]]:
+def probe(
+    stage: str, check_fn: Callable[[Any], None]
+) -> Callable[[Iterable[Any]], Iterator[Any]]:
     """Lazy assertion stage: checks each value, yields unchanged, raises with context."""
 
     def checker(items: Iterable[Any]) -> Iterator[Any]:
@@ -176,7 +180,9 @@ def instrument_stage(
     def wrapped(items: Iterable[T_in]) -> Iterator[T_out]:
         out: Iterable[T_out] = stage(items)
         if inst.trace:
-            out = _trace_items(out, stage_name, emit=inst.emit, formatter=inst.formatter)
+            out = _trace_items(
+                out, stage_name, emit=inst.emit, formatter=inst.formatter
+            )
         if inst.probe_fn is not None:
             out = _probe_items(out, stage_name, inst.probe_fn)
         return iter(out)

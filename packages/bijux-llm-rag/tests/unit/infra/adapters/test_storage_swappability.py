@@ -7,8 +7,8 @@ import csv
 import os
 import tempfile
 
-import hypothesis.strategies as st
 from hypothesis import given, settings
+import hypothesis.strategies as st
 
 from bijux_rag.core.rag_types import RawDoc
 from bijux_rag.infra.adapters.file_storage import FileStorage
@@ -22,7 +22,9 @@ settings.load_profile("ci")
 def _csv_safe_text(max_size: int) -> st.SearchStrategy[str]:
     # Avoid surrogates (not UTF-8 encodable) for filesystem roundtrips.
     return st.text(
-        alphabet=st.characters(blacklist_categories=("Cs",), blacklist_characters=["\x00"]),
+        alphabet=st.characters(
+            blacklist_categories=("Cs",), blacklist_characters=["\x00"]
+        ),
         max_size=max_size,
     )
 
@@ -45,7 +47,9 @@ def test_storage_read_docs_swappability_file_vs_memory(docs: list[RawDoc]) -> No
     with tempfile.TemporaryDirectory() as tmpdir:
         path = os.path.join(tmpdir, "in.csv")
         with open(path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=["doc_id", "title", "abstract", "categories"])
+            writer = csv.DictWriter(
+                f, fieldnames=["doc_id", "title", "abstract", "categories"]
+            )
             writer.writeheader()
             for d in docs:
                 writer.writerow(

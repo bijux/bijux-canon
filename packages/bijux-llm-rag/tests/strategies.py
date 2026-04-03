@@ -50,7 +50,9 @@ def text_node_strategy() -> SearchStrategy[TextNode]:
         metadata=st.dictionaries(
             keys=st.just("id"),
             values=st.text(
-                min_size=1, max_size=20, alphabet="abcdefghijklmnopqrstuvwxyz0123456789-_"
+                min_size=1,
+                max_size=20,
+                alphabet="abcdefghijklmnopqrstuvwxyz0123456789-_",
             ),
             max_size=1,
         ),
@@ -62,7 +64,9 @@ def tree_strategy() -> SearchStrategy[TreeDoc]:
     return st.recursive(
         base,
         lambda sub: st.builds(
-            TreeDoc, node=text_node_strategy(), children=st.lists(sub, max_size=3).map(tuple)
+            TreeDoc,
+            node=text_node_strategy(),
+            children=st.lists(sub, max_size=3).map(tuple),
         ),
         max_leaves=50,
     )
@@ -71,7 +75,9 @@ def tree_strategy() -> SearchStrategy[TreeDoc]:
 def deep_chain(depth: int) -> TreeDoc:
     if depth < 1:
         raise ValueError("depth must be >= 1")
-    node: TreeDoc = TreeDoc(TextNode(text=f"n{depth - 1}", metadata={"id": f"n{depth - 1}"}), ())
+    node: TreeDoc = TreeDoc(
+        TextNode(text=f"n{depth - 1}", metadata={"id": f"n{depth - 1}"}), ()
+    )
     for i in range(depth - 2, -1, -1):
         node = TreeDoc(TextNode(text=f"n{i}", metadata={"id": f"n{i}"}), (node,))
     return node
@@ -94,7 +100,9 @@ def pipeline_chunk_strategy(draw) -> Chunk:
     vec = tuple(int(h[i : i + step], 16) / (16**step - 1) for i in range(0, 64, step))
 
     doc_id = draw(st.text(min_size=1))
-    return Chunk(doc_id=doc_id, text=text, start=start, end=end, metadata={}, embedding=vec)
+    return Chunk(
+        doc_id=doc_id, text=text, start=start, end=end, metadata={}, embedding=vec
+    )
 
 
 __all__ = [

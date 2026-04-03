@@ -18,7 +18,9 @@ B = TypeVar("B")
 C = TypeVar("C")
 
 
-def tap_prefix(items: Iterable[T], k: int, hook: Callable[[tuple[T, ...]], None]) -> Iterator[T]:
+def tap_prefix(
+    items: Iterable[T], k: int, hook: Callable[[tuple[T, ...]], None]
+) -> Iterator[T]:
     """Bounded side-effect tap: observe up to k items, then yield the full stream."""
 
     it = iter(items)
@@ -65,7 +67,9 @@ def fork2_lockstep(t: Transform[A, B], u: Transform[A, C]) -> Transform[A, tuple
     return stage
 
 
-def multicast(items: Iterable[T], n: int, *, maxlen: int = 1024) -> tuple[Iterator[T], ...]:
+def multicast(
+    items: Iterable[T], n: int, *, maxlen: int = 1024
+) -> tuple[Iterator[T], ...]:
     """Bounded multicast: return ``n`` independent iterators over the same stream.
 
     Raises BufferError if consumer skew exceeds maxlen.

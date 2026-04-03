@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-import hypothesis.strategies as st
 from hypothesis import given
+import hypothesis.strategies as st
 
 from bijux_rag import ffilter, flatmap, fmap, identity, pipe
 

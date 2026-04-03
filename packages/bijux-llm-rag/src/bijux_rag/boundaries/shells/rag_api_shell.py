@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 from bijux_rag.boundaries.shells.rag_file_shell import RagFileShell
 from bijux_rag.core.rag_types import Chunk
@@ -23,13 +23,17 @@ class RagApiShell:  # pragma: no cover
     cfg: ChunkAndEmbedConfig
 
     def run(self) -> Result[None, str]:
-        return RagFileShell(in_path=self.in_path, out_path=self.out_path, cfg=self.cfg).run()
+        return RagFileShell(
+            in_path=self.in_path, out_path=self.out_path, cfg=self.cfg
+        ).run()
 
 
 def read_docs_csv(
     path: Path,
 ) -> Iterable[tuple[str, str, str | None, str | None]]:  # pragma: no cover
-    return RagFileShell(in_path=path, out_path=Path("-"), cfg=ChunkAndEmbedConfig()).read_docs(path)
+    return RagFileShell(
+        in_path=path, out_path=Path("-"), cfg=ChunkAndEmbedConfig()
+    ).read_docs(path)
 
 
 # Compatibility shims for legacy imports
@@ -61,5 +65,9 @@ def write_chunks_jsonl(path: str, chunks: list[Chunk]) -> Result[None, str]:
         return Err(str(exc))
 
 
-def run(input_path: str, output_path: str, cfg: ChunkAndEmbedConfig) -> Result[None, str]:
-    return RagFileShell(in_path=Path(input_path), out_path=Path(output_path), cfg=cfg).run()
+def run(
+    input_path: str, output_path: str, cfg: ChunkAndEmbedConfig
+) -> Result[None, str]:
+    return RagFileShell(
+        in_path=Path(input_path), out_path=Path(output_path), cfg=cfg
+    ).run()

@@ -54,7 +54,9 @@ def async_gen_map(gen: AsyncGen[T], f: Callable[[T], U]) -> AsyncGen[U]:
     return lambda: _mapped()
 
 
-def async_gen_map_action(gen: AsyncGen[T], f: Callable[[T], AsyncPlan[U]]) -> AsyncGen[U]:
+def async_gen_map_action(
+    gen: AsyncGen[T], f: Callable[[T], AsyncPlan[U]]
+) -> AsyncGen[U]:
     async def _mapped() -> AsyncIterator[Result[U, ErrInfo]]:
         async for item in gen():
             if isinstance(item, Err):
@@ -81,7 +83,9 @@ def async_gen_flat_map(gen: AsyncGen[T], f: Callable[[T], AsyncGen[U]]) -> Async
     return async_gen_and_then(gen, f)
 
 
-def lift_async_item(fn: Callable[[T], Awaitable[Result[U, ErrInfo]]]) -> Callable[[T], AsyncGen[U]]:
+def lift_async_item(
+    fn: Callable[[T], Awaitable[Result[U, ErrInfo]]],
+) -> Callable[[T], AsyncGen[U]]:
     def lifted(x: T) -> AsyncGen[U]:
         async def _gen() -> AsyncIterator[Result[U, ErrInfo]]:
             yield await fn(x)
@@ -121,7 +125,9 @@ def async_gen_gather(gens: list[AsyncGen[T]], *, max_buffer: int = 16) -> AsyncG
             __slots__ = ()
 
         done_marker = _Done()
-        queue: asyncio.Queue[Result[T, ErrInfo] | _Done] = asyncio.Queue(maxsize=max_buffer)
+        queue: asyncio.Queue[Result[T, ErrInfo] | _Done] = asyncio.Queue(
+            maxsize=max_buffer
+        )
         tasks: set[asyncio.Task[None]] = set()
 
         async def pump(gen: AsyncGen[T]) -> None:
@@ -250,7 +256,9 @@ def async_gen_chunk(
                         and first_item_ts_ms is not None
                         and sleeper.now_ms() - first_item_ts_ms >= policy.max_delay_ms
                     )
-                    size_flush = policy.max_units > 0 and (buf_size + units > policy.max_units)
+                    size_flush = policy.max_units > 0 and (
+                        buf_size + units > policy.max_units
+                    )
 
                     if (time_flush or size_flush) and buf:
                         yield Ok(buf[:])

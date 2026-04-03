@@ -42,7 +42,9 @@ def test_idempotent_write_writes_at_most_once() -> None:
             self.write_attempts: int = 0
             self.actual_writes: int = 0
 
-        def write_if_absent(self, key: str, chunks: Iterator[Chunk]) -> Result[bool, ErrInfo]:
+        def write_if_absent(
+            self, key: str, chunks: Iterator[Chunk]
+        ) -> Result[bool, ErrInfo]:
             self.write_attempts += 1
             if key in self.present:
                 return Ok(False)

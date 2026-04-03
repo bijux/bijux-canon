@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+import pytest
 
 from bijux_rag.result import NONE, Err, NoneVal, Ok, Some
 

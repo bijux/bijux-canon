@@ -8,6 +8,7 @@ The architecture treats these effect descriptions as part of the domain layer:
 - IOPlan-specific wrappers: retry (idempotent only) and transaction bracketing
  - `AsyncPlan`/`AsyncGen`: deferred async effects and lazy async streams as pure descriptions
 """
+from __future__ import annotations
 
 from .async_ import (
     AsyncAction,

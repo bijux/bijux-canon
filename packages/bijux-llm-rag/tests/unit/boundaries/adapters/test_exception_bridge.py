@@ -53,7 +53,9 @@ def test_v_try_and_v_map_try_bridge_exceptions() -> None:
     v1 = v_try(boom, lambda ex: str(ex), exc_type=ValueError)
     assert v1 == VFailure(("x",))
 
-    v2 = v_map_try(VSuccess(1), lambda _: boom(), lambda ex: str(ex), exc_type=ValueError)
+    v2 = v_map_try(
+        VSuccess(1), lambda _: boom(), lambda ex: str(ex), exc_type=ValueError
+    )
     assert v2 == VFailure(("x",))
 
 

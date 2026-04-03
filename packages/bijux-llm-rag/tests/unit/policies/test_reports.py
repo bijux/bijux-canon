@@ -34,13 +34,18 @@ def test_report_sample_ordering(items: list[int]) -> None:
 
     samples = group.samples
     sample_xs = [int(s.msg[3:]) for s in samples]
-    positions = [next(i for i, x in enumerate(items) if x == sx and x % 2 != 0) for sx in sample_xs]
+    positions = [
+        next(i for i, x in enumerate(items) if x == sx and x % 2 != 0)
+        for sx in sample_xs
+    ]
     assert positions == sorted(positions)
 
 
 @given(items=st.lists(st.integers()))
 def test_report_bounded_memory(items: list[int]) -> None:
-    report = fold_error_report(map_result_iter(lambda _x: Err("E"), items), max_samples=10)
+    report = fold_error_report(
+        map_result_iter(lambda _x: Err("E"), items), max_samples=10
+    )
     assert all(len(g.samples) <= 10 for g in report.by_code.values())
 
 

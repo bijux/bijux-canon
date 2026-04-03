@@ -5,8 +5,9 @@
 
 from __future__ import annotations
 
-import pytest
 from hypothesis import given
+import pytest
+from tests.strategies import doc_list_strategy, env_strategy
 
 from bijux_rag import (
     DEFAULT_RULES,
@@ -32,7 +33,6 @@ from bijux_rag import (
 from bijux_rag.core.rag_types import RagEnv, RawDoc
 from bijux_rag.core.rules_lint import assert_rule_is_safe_expr
 from bijux_rag.result import Result
-from tests.strategies import doc_list_strategy, env_strategy
 
 
 def _baseline_chunks(docs: list[RawDoc], env: RagEnv) -> list:

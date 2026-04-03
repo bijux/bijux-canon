@@ -16,7 +16,14 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from itertools import chain
 from typing import TypeVar
 
-from bijux_rag.core.rag_types import Chunk, ChunkWithoutEmbedding, CleanDoc, DocRule, RagEnv, RawDoc
+from bijux_rag.core.rag_types import (
+    Chunk,
+    ChunkWithoutEmbedding,
+    CleanDoc,
+    DocRule,
+    RagEnv,
+    RawDoc,
+)
 from bijux_rag.core.rules_dsl import any_doc
 from bijux_rag.core.rules_pred import eval_pred
 from bijux_rag.fp import StageInstrumentation, instrument_stage
@@ -34,7 +41,9 @@ def _identity_iter(items: Iterable[RawDoc]) -> Iterable[RawDoc]:
     return items
 
 
-def _tap(items: Sequence[T], handler: Callable[[tuple[T, ...]], None] | None) -> Sequence[T]:
+def _tap(
+    items: Sequence[T], handler: Callable[[tuple[T, ...]], None] | None
+) -> Sequence[T]:
     if handler is not None:
         handler(tuple(items))
     return items
@@ -57,7 +66,9 @@ def iter_rag(
     yield from embedded
 
 
-def iter_rag_core(docs: Iterable[RawDoc], config: RagConfig, deps: RagCoreDeps) -> Iterator[Chunk]:
+def iter_rag_core(
+    docs: Iterable[RawDoc], config: RagConfig, deps: RagCoreDeps
+) -> Iterator[Chunk]:
     """Parametric streaming core: filter (RulesConfig) → clean → chunk → embed.
 
     Bijux RAG stdlib-first note:
@@ -90,7 +101,9 @@ def iter_rag_core(docs: Iterable[RawDoc], config: RagConfig, deps: RagCoreDeps) 
 
     kept_stage: Callable[[Iterable[RawDoc]], Iterator[RawDoc]] = _kept
     clean_stage: Callable[[Iterable[RawDoc]], Iterator[CleanDoc]] = _clean
-    chunk_stage: Callable[[Iterable[CleanDoc]], Iterator[ChunkWithoutEmbedding]] = _chunk
+    chunk_stage: Callable[[Iterable[CleanDoc]], Iterator[ChunkWithoutEmbedding]] = (
+        _chunk
+    )
     embed_stage: Callable[[Iterable[ChunkWithoutEmbedding]], Iterator[Chunk]] = _embed
 
     if config.debug.trace_kept:

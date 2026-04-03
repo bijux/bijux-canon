@@ -14,14 +14,18 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
+import sys
 from typing import Any, cast
 
 from bijux_rag.core.rag_types import RagEnv, RawDoc
 from bijux_rag.infra.adapters.file_storage import FileStorage
 from bijux_rag.pipelines.cli import deep_merge, parse_override
-from bijux_rag.pipelines.configured import PipelineConfig, StepConfig, build_rag_pipeline
+from bijux_rag.pipelines.configured import (
+    PipelineConfig,
+    StepConfig,
+    build_rag_pipeline,
+)
 from bijux_rag.rag.app import RagBuildConfig, build_index_from_csv, parse_filters
 from bijux_rag.rag.app import ask as rag_ask
 from bijux_rag.rag.app import retrieve as rag_retrieve
@@ -53,7 +57,8 @@ def _render(result: Result[Any, ErrInfo]) -> int:
     err = result.error
     print(
         json.dumps(
-            {"error": {"code": err.code, "msg": err.msg, "stage": err.stage}}, ensure_ascii=False
+            {"error": {"code": err.code, "msg": err.msg, "stage": err.stage}},
+            ensure_ascii=False,
         )
     )
     return 2 if err.code.startswith("PARSE") else 1
@@ -89,9 +94,15 @@ def _main_legacy(argv: list[str]) -> int:
     p.add_argument("input_csv", type=Path)
     p.add_argument("--config", type=Path, required=True)
     p.add_argument(
-        "--set", dest="overrides", action="append", default=[], help="Override a.b.c=value"
+        "--set",
+        dest="overrides",
+        action="append",
+        default=[],
+        help="Override a.b.c=value",
     )
-    p.add_argument("--out", type=Path, default=None, help="Optional output JSONL path for chunks")
+    p.add_argument(
+        "--out", type=Path, default=None, help="Optional output JSONL path for chunks"
+    )
     args = p.parse_args(argv)
 
     cfg = _load_config(args.config)
@@ -105,7 +116,9 @@ def _main_legacy(argv: list[str]) -> int:
             step_over = overrides.get(step.name, {})
             if isinstance(step_over, dict):
                 steps.append(
-                    StepConfig(name=step.name, params=deep_merge(dict(step.params), step_over))
+                    StepConfig(
+                        name=step.name, params=deep_merge(dict(step.params), step_over)
+                    )
                 )
             else:
                 steps.append(step)
@@ -132,7 +145,9 @@ def _main_legacy(argv: list[str]) -> int:
         with args.out.open("w", encoding="utf-8") as f_out:
             for res in results:
                 if isinstance(res, Ok):
-                    f_out.write(json.dumps(_chunk_to_json(res.value), ensure_ascii=False))
+                    f_out.write(
+                        json.dumps(_chunk_to_json(res.value), ensure_ascii=False)
+                    )
                     f_out.write("\n")
     return 0
 
@@ -160,14 +175,18 @@ def _main_rag(argv: list[str]) -> int:
     p_retrieve.add_argument("--index", type=Path, required=True)
     p_retrieve.add_argument("--query", required=True)
     p_retrieve.add_argument("--top-k", type=int, default=5)
-    p_retrieve.add_argument("--filter", action="append", default=[], help="Filter k=v (repeatable)")
+    p_retrieve.add_argument(
+        "--filter", action="append", default=[], help="Filter k=v (repeatable)"
+    )
     p_retrieve.add_argument("--out", type=Path, default=None)
 
     p_ask = sub.add_parser("ask", help="Answer with citations (extractive)")
     p_ask.add_argument("--index", type=Path, required=True)
     p_ask.add_argument("--query", required=True)
     p_ask.add_argument("--top-k", type=int, default=5)
-    p_ask.add_argument("--filter", action="append", default=[], help="Filter k=v (repeatable)")
+    p_ask.add_argument(
+        "--filter", action="append", default=[], help="Filter k=v (repeatable)"
+    )
     p_ask.add_argument("--no-rerank", action="store_true")
     p_ask.add_argument("--format", choices=["json", "yaml"], default="json")
     p_ask.add_argument("--out", type=Path, default=None)
@@ -186,7 +205,11 @@ def _main_rag(argv: list[str]) -> int:
     args = p.parse_args(argv)
 
     if args.cmd == "index" and args.index_cmd == "build":
-        env = RagEnv(chunk_size=args.chunk_size, overlap=args.overlap, tail_policy=args.tail_policy)
+        env = RagEnv(
+            chunk_size=args.chunk_size,
+            overlap=args.overlap,
+            tail_policy=args.tail_policy,
+        )
         cfg = RagBuildConfig(
             chunk_env=env,
             backend=args.backend,
@@ -243,7 +266,12 @@ def _main_rag(argv: list[str]) -> int:
         ask_payload: dict[str, object] = {
             "text": ans.text,
             "citations": [
-                {"doc_id": c.doc_id, "chunk_id": c.chunk_id, "start": c.start, "end": c.end}
+                {
+                    "doc_id": c.doc_id,
+                    "chunk_id": c.chunk_id,
+                    "start": c.start,
+                    "end": c.end,
+                }
                 for c in ans.citations
             ],
         }
@@ -271,7 +299,14 @@ def _main_rag(argv: list[str]) -> int:
         qpath = args.suite / "queries.jsonl"
         if not qpath.exists():
             print(
-                json.dumps({"error": {"code": "MISSING_SUITE", "msg": "queries.jsonl not found"}})
+                json.dumps(
+                    {
+                        "error": {
+                            "code": "MISSING_SUITE",
+                            "msg": "queries.jsonl not found",
+                        }
+                    }
+                )
             )
             return 2
         queries: list[dict[str, Any]] = []

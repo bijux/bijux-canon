@@ -5,17 +5,13 @@
 
 from __future__ import annotations
 
-import json
+from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
+import json
 from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Callable,
-    Iterable,
-    Iterator,
-    Mapping,
-    Tuple,
     TypeAlias,
     TypeVar,
     cast,
@@ -108,7 +104,9 @@ def enc_option(enc_val: Callable[[T], JSON] | None = None) -> Encoder[Option[T]]
     def _enc(x: Option[T]) -> Envelope:
         match x:
             case Some(value=v):
-                return Envelope(tag="option", ver=1, payload={"kind": "some", "value": ev(v)})
+                return Envelope(
+                    tag="option", ver=1, payload={"kind": "some", "value": ev(v)}
+                )
             case NoneVal():
                 return Envelope(tag="option", ver=1, payload={"kind": "none"})
             case other:
@@ -145,9 +143,13 @@ def enc_result(
     def _enc(x: Result[T, ErrInfo]) -> Envelope:
         match x:
             case Ok(value=v):
-                return Envelope(tag="result", ver=1, payload={"kind": "ok", "value": ev(v)})
+                return Envelope(
+                    tag="result", ver=1, payload={"kind": "ok", "value": ev(v)}
+                )
             case Err(error=e):
-                return Envelope(tag="result", ver=1, payload={"kind": "err", "error": ee(e)})
+                return Envelope(
+                    tag="result", ver=1, payload={"kind": "err", "error": ee(e)}
+                )
             case other:
                 raise TypeError(f"Unexpected Result variant: {other!r}")
 
@@ -187,7 +189,9 @@ def enc_validation(
         match x:
             case VSuccess(value=v):
                 return Envelope(
-                    tag="validation", ver=1, payload={"kind": "v_success", "value": ev(v)}
+                    tag="validation",
+                    ver=1,
+                    payload={"kind": "v_success", "value": ev(v)},
                 )
             case VFailure(errors=es):
                 return Envelope(
@@ -279,7 +283,7 @@ def from_msgpack(b: bytes, dec: Decoder[T]) -> T:
 
 @dataclass(frozen=True, slots=True)
 class DecodeErr:
-    path: Tuple[str, ...] = ()
+    path: tuple[str, ...] = ()
     msg: str = ""
 
 

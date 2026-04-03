@@ -5,12 +5,11 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, assert_never
 
-import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from typing_extensions import assert_never
+import pytest
 
 from bijux_rag.fp.core import (
     Chunk,
@@ -32,7 +31,9 @@ json_value = st.recursive(
     | st.integers()
     | st.floats(allow_nan=False, allow_infinity=False)
     | st.text(),
-    lambda inner: st.lists(inner, max_size=5) | st.dictionaries(st.text(), inner, max_size=5),
+    lambda inner: (
+        st.lists(inner, max_size=5) | st.dictionaries(st.text(), inner, max_size=5)
+    ),
     max_leaves=25,
 )
 
@@ -42,7 +43,9 @@ json_value = st.recursive(
     path=st.lists(st.integers(), max_size=10).map(tuple),
     meta=st.dictionaries(st.text(), json_value, max_size=10),
 )
-def test_chunk_immutability(text: str, path: tuple[int, ...], meta: dict[str, object]) -> None:
+def test_chunk_immutability(
+    text: str, path: tuple[int, ...], meta: dict[str, object]
+) -> None:
     chunk = make_chunk(text=text, path=path, metadata=meta)  # type: ignore[arg-type]
     with pytest.raises(dataclasses.FrozenInstanceError):
         chunk.text = "mutated"  # type: ignore[misc]
@@ -73,7 +76,9 @@ def test_chunk_roundtrip(chunk: Chunk) -> None:
 @given(
     succ=st.builds(
         success,
-        embedding=st.lists(st.floats(allow_nan=False, allow_infinity=False), max_size=10),
+        embedding=st.lists(
+            st.floats(allow_nan=False, allow_infinity=False), max_size=10
+        ),
         metadata=st.dictionaries(st.text(), json_value, max_size=10),
     ),
     fail=st.builds(
@@ -94,7 +99,9 @@ def test_chunk_state_roundtrip(succ: Success, fail: Failure) -> None:
     state=st.one_of(
         st.builds(
             success,
-            embedding=st.lists(st.floats(allow_nan=False, allow_infinity=False), max_size=3),
+            embedding=st.lists(
+                st.floats(allow_nan=False, allow_infinity=False), max_size=3
+            ),
             metadata=st.dictionaries(st.text(), st.integers(), max_size=3),
         ),
         st.builds(
@@ -119,13 +126,13 @@ class TextNode:
 class SectionNode:
     kind: Literal["section"] = "section"
     title: str
-    children: tuple["Node", ...]
+    children: tuple[Node, ...]
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ListNode:
     kind: Literal["list"] = "list"
-    items: tuple["Node", ...]
+    items: tuple[Node, ...]
 
 
 Node = TextNode | SectionNode | ListNode

@@ -5,8 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field, replace
-from typing import Callable, TypeAlias
+from typing import TypeAlias
 from uuid import UUID, uuid4
 
 from bijux_rag.fp.error import ErrInfo, ErrorCode
@@ -23,7 +24,9 @@ ChunkId: TypeAlias = UUID
 class Chunk:
     id: ChunkId = field(default_factory=uuid4)
     text: ChunkText = field(default_factory=lambda: ChunkText(content=""))
-    metadata: ChunkMetadata = field(default_factory=lambda: ChunkMetadata(source="", tags=()))
+    metadata: ChunkMetadata = field(
+        default_factory=lambda: ChunkMetadata(source="", tags=())
+    )
     embedding: Embedding | None = None
 
 
@@ -39,10 +42,15 @@ def assemble(
     if emb is not None:
         if meta.embedding_model is not None and meta.embedding_model != emb.model:
             errs.append(
-                ErrInfo(ErrorCode.EMB_MODEL_MISMATCH, f"{emb.model} != {meta.embedding_model}")
+                ErrInfo(
+                    ErrorCode.EMB_MODEL_MISMATCH,
+                    f"{emb.model} != {meta.embedding_model}",
+                )
             )
         if meta.expected_dim is not None and meta.expected_dim != emb.dim:
-            errs.append(ErrInfo(ErrorCode.EMB_DIM_MISMATCH, f"{emb.dim} != {meta.expected_dim}"))
+            errs.append(
+                ErrInfo(ErrorCode.EMB_DIM_MISMATCH, f"{emb.dim} != {meta.expected_dim}")
+            )
 
     return (
         v_failure(tuple(errs))
@@ -51,7 +59,9 @@ def assemble(
     )
 
 
-def try_set_embedding(chunk: Chunk, emb: Embedding | None) -> Validation[Chunk, ErrInfo]:
+def try_set_embedding(
+    chunk: Chunk, emb: Embedding | None
+) -> Validation[Chunk, ErrInfo]:
     return assemble(chunk.text, chunk.metadata, emb)
 
 

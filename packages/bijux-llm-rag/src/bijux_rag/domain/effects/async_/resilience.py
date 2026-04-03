@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import asyncio
-import warnings
 from collections.abc import Awaitable, Callable
 from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
@@ -14,6 +13,7 @@ from random import Random
 from time import monotonic
 from types import TracebackType
 from typing import Protocol, TypeAlias, TypeVar
+import warnings
 
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result, make_errinfo
 
@@ -89,7 +89,7 @@ class ResilienceEnv:
     clock: Clock
 
     @staticmethod
-    def default() -> "ResilienceEnv":
+    def default() -> ResilienceEnv:
         async def _sleep(seconds: float) -> None:
             await asyncio.sleep(seconds)
 
@@ -105,7 +105,9 @@ def make_test_resilience_env(
     async def _noop_sleep(_: float) -> None:
         await asyncio.sleep(0)
 
-    return ResilienceEnv(rng=Random(seed), sleep=sleep or _noop_sleep, clock=clock or FakeClock())
+    return ResilienceEnv(
+        rng=Random(seed), sleep=sleep or _noop_sleep, clock=clock or FakeClock()
+    )
 
 
 @dataclass(frozen=True)
@@ -145,7 +147,12 @@ def async_with_resilience(
     *,
     timeout_ctx: TimeoutCtx | None = None,
 ) -> AsyncPlan[T]:
-    if retry.max_attempts == 1 and timeout is None and env is None and timeout_ctx is None:
+    if (
+        retry.max_attempts == 1
+        and timeout is None
+        and env is None
+        and timeout_ctx is None
+    ):
         return step
 
     async def _resilient() -> Result[T, ErrInfo]:
@@ -175,7 +182,9 @@ def async_with_resilience(
             except TimeoutError:
                 if timeout is None:
                     raise
-                last_err = ErrInfo(code="TIMEOUT", msg=f"Timeout after {timeout.timeout_ms}ms")
+                last_err = ErrInfo(
+                    code="TIMEOUT", msg=f"Timeout after {timeout.timeout_ms}ms"
+                )
                 if "TIMEOUT" not in retry.retriable_codes:
                     return Err(last_err)
                 if retry.max_attempts == 1:
@@ -199,7 +208,11 @@ def async_with_resilience(
 
             if attempt < retry.max_attempts:
                 base_s = (
-                    min(retry.backoff_base_ms * (2 ** (attempt - 1)), retry.max_backoff_ms) / 1000.0
+                    min(
+                        retry.backoff_base_ms * (2 ** (attempt - 1)),
+                        retry.max_backoff_ms,
+                    )
+                    / 1000.0
                 )
                 jitter = base_s * retry.jitter_factor * (2.0 * rng.random() - 1.0)
                 delay = max(0.0, base_s + jitter)
@@ -230,7 +243,9 @@ def resilient_mapper(
     timeout_ctx: TimeoutCtx | None = None,
 ) -> Callable[[A], AsyncPlan[B]]:
     def wrapped(item: A) -> AsyncPlan[B]:
-        return async_with_resilience(f(item), retry, timeout, env, timeout_ctx=timeout_ctx)
+        return async_with_resilience(
+            f(item), retry, timeout, env, timeout_ctx=timeout_ctx
+        )
 
     return wrapped
 

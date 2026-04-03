@@ -35,7 +35,9 @@ def test_real_rag_smoke_build_retrieve_ask(tmp_path: Path) -> None:
     loaded = app.load_index(p)
     assert is_ok(loaded)
     idx_loaded = loaded.value
-    r = app.retrieve(index=idx_loaded, query="powerhouse of the cell", top_k=3, filters={})
+    r = app.retrieve(
+        index=idx_loaded, query="powerhouse of the cell", top_k=3, filters={}
+    )
     assert is_ok(r)
     got = [c.chunk.doc_id for c in r.value]
     assert got and got[0] == "d1"

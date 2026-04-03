@@ -19,7 +19,9 @@ def test_async_plan_left_identity(x: int) -> None:
         def f(y: int):
             return async_pure(y + 1)
 
-        assert await perform_async(async_bind(async_pure(x), f)) == await perform_async(f(x))
+        assert await perform_async(async_bind(async_pure(x), f)) == await perform_async(
+            f(x)
+        )
 
     asyncio.run(run())
 
@@ -29,7 +31,9 @@ def test_async_plan_left_identity(x: int) -> None:
 def test_async_plan_right_identity(x: int) -> None:
     async def run() -> None:
         plan = async_pure(x)
-        assert await perform_async(async_bind(plan, async_pure)) == await perform_async(plan)
+        assert await perform_async(async_bind(plan, async_pure)) == await perform_async(
+            plan
+        )
 
     asyncio.run(run())
 
