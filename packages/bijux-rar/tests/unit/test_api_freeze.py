@@ -37,9 +37,12 @@ def test_version_matches_pyproject() -> None:
         return v.split("+", 1)[0].split(".dev", 1)[0]
 
     try:
-        dist_version = metadata.version("bijux-rar")
+        dist_version = metadata.version("bijux-llm-rar")
     except metadata.PackageNotFoundError:
-        dist_version = __version__
+        try:
+            dist_version = metadata.version("bijux-rar")
+        except metadata.PackageNotFoundError:
+            dist_version = __version__
     candidates = [pyproject_version, placeholder_version, dist_version, __version__]
     bases = [b for b in (_base(v) for v in candidates) if b]
     assert bases, "no version candidates found"

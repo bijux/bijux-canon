@@ -3,9 +3,9 @@ requires = ["hatchling>=1.24.2"]
 build-backend = "hatchling.build"
 
 [project]
-name = "bijux-rar"
+name = "bijux-llm-rar"
 version = "0.1.0"
-description = "bijux-rar: deterministic, contract-driven Retrieval-Augmented Reasoning runtime."
+description = "bijux-llm-rar: deterministic, contract-driven Retrieval-Augmented Reasoning runtime."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -110,4 +110,5 @@ Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-r
 packages = ["src/bijux_rar"]
 
 [project.scripts]
+bijux-llm-rar = "bijux_rar.boundaries.cli:app"
 bijux-rar = "bijux_rar.boundaries.cli:app"

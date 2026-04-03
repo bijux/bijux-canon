@@ -18,7 +18,7 @@ from bijux_rar.rar.verification.verifier import verify_trace
 
 app = typer.Typer(
     add_completion=False,
-    help="bijux-rar: deterministic CLI + artifacts + verification gates.",
+    help="bijux-llm-rar: deterministic CLI + artifacts + verification gates.",
 )
 
 SPEC_PATH_OPTION = typer.Option(

@@ -146,7 +146,7 @@ def _enforce_response_size(payload: dict[str, object]) -> dict[str, object]:
 
 def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
     artifacts_dir = artifacts_dir or Path("artifacts/bijux-rar")
-    app = FastAPI(title="bijux-rar", version="1")
+    app = FastAPI(title="bijux-llm-rar", version="1")
     db_path = _db_path(artifacts_dir)
     _init_db(db_path)
     app.state.db_path = db_path

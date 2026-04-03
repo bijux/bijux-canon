@@ -1,11 +1,13 @@
-# bijux-rar
+# bijux-llm-rar
 
-[![PyPI](https://img.shields.io/pypi/v/bijux-rar.svg)](https://pypi.org/project/bijux-rar/)
-[![Python](https://img.shields.io/pypi/pyversions/bijux-rar.svg)](https://pypi.org/project/bijux-rar/)
+[![PyPI](https://img.shields.io/pypi/v/bijux-llm-rar.svg)](https://pypi.org/project/bijux-llm-rar/)
+[![Python](https://img.shields.io/pypi/pyversions/bijux-llm-rar.svg)](https://pypi.org/project/bijux-llm-rar/)
 [![License](https://img.shields.io/github/license/bijux/bijux-llm-nexus.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-gh--pages-blue)](https://bijux.github.io/bijux-rar/)
 
-**bijux-rar** is a deterministic retrieval-augmented reasoning (RAR) engine.
+**bijux-llm-rar** is a deterministic retrieval-augmented reasoning (RAR) engine.
+
+The legacy package name `bijux-rar` remains available as a compatibility shim that installs `bijux-llm-rar`.
 
 It produces **byte-stable traces**, **versioned artifacts**, and **verifiable provenance**
 for every run. Execution, verification, and replay are first-class constraints,
@@ -21,7 +23,7 @@ Most RAG / RAR systems are:
 - unverifiable after the fact,
 - dependent on trust in the author or runtime.
 
-bijux-rar enforces:
+bijux-llm-rar enforces:
 - deterministic execution,
 - immutable artifacts,
 - cryptographically stable traces,
@@ -34,10 +36,16 @@ If a run cannot be replayed and verified byte-for-byte, it is considered invalid
 ## Installation
 
 ```bash
-pip install bijux-rar
-````
+pip install bijux-llm-rar
+```
 
-Python ≥ 3.10 is required.
+Legacy alias:
+
+```bash
+pip install bijux-rar
+```
+
+Python ≥ 3.11 is required.
 
 ---
 
@@ -46,19 +54,19 @@ Python ≥ 3.10 is required.
 ### CLI
 
 ```bash
-bijux-rar run \
+bijux-llm-rar run \
   --spec examples/spec.json \
   --artifacts-dir artifacts/bijux-rar \
   --seed 0
 
 RUN_DIR=$(cat artifacts/bijux-rar/runs/latest.txt 2>/dev/null || ls artifacts/bijux-rar/runs | head -n1)
 
-bijux-rar verify \
+bijux-llm-rar verify \
   --trace artifacts/bijux-rar/runs/$RUN_DIR/trace.jsonl \
   --plan artifacts/bijux-rar/runs/$RUN_DIR/plan.json \
   --fail-on-verify
 
-bijux-rar replay \
+bijux-llm-rar replay \
   --trace artifacts/bijux-rar/runs/$RUN_DIR/trace.jsonl \
   --fail-on-diff
 ```
@@ -85,7 +93,7 @@ The API exposes the same deterministic contracts as the CLI.
 
 ## Project boundaries
 
-bijux-rar is intentionally narrow in scope.
+bijux-llm-rar is intentionally narrow in scope.
 
 It is **not**:
 
@@ -106,7 +114,7 @@ It is a **core execution and verification engine**.
 * **bijux-rag** — retrieval layer and corpus tooling
   [https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-rag](https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-rag)
 
-bijux-rar sits beneath both, enforcing execution and verification invariants.
+bijux-llm-rar sits beneath both, enforcing execution and verification invariants.
 
 ---
 
