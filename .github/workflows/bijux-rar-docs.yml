@@ -10,7 +10,7 @@ on:
       - "packages/bijux-rar/CHANGELOG.md"
       - "apis/bijux-rar/**"
       - "scripts/bijux-rar/**"
-      - "configs/bijux-rar/mkdocs.yml"
+      - "packages/bijux-rar/mkdocs.yml"
       - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:

@@ -25,7 +25,7 @@ def _collect_nav_paths(nav) -> list[str]:
 
 
 def main() -> int:
-    mkdocs_path = MONOREPO_ROOT / "configs" / PACKAGE_ROOT.name / "mkdocs.yml"
+    mkdocs_path = PACKAGE_ROOT / "mkdocs.yml"
     if not mkdocs_path.exists():
         print("mkdocs.yml not found; skipping doc consistency check")
         return 0

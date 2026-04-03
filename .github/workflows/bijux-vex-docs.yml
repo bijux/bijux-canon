@@ -10,7 +10,7 @@ on:
       - "packages/bijux-vex/CHANGELOG.md"
       - "apis/bijux-vex/**"
       - "scripts/bijux-vex/**"
-      - "configs/bijux-vex/mkdocs.yml"
+      - "packages/bijux-vex/mkdocs.yml"
       - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:

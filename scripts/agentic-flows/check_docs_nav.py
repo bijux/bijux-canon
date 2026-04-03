@@ -11,7 +11,7 @@ import yaml
 MONOREPO_ROOT = Path(__file__).resolve().parents[2]
 PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "agentic-flows"
 DOCS_DIR = PACKAGE_ROOT / "docs"
-MKDOCS_PATH = MONOREPO_ROOT / "configs" / "agentic-flows" / "mkdocs.yml"
+MKDOCS_PATH = PACKAGE_ROOT / "mkdocs.yml"
 
 LINK_RE = re.compile(r"\[[^\\]]+\\]\\(([^)]+)\\)")
 

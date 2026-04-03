@@ -3,7 +3,7 @@ site_url: https://bijux.github.io/bijux-agent/
 repo_name: bijux/bijux-agent
 repo_url: https://github.com/bijux/bijux-agent
 
-docs_dir: ../../packages/bijux-agent/docs
+docs_dir: docs
 
 theme:
   name: material

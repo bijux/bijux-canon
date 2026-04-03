@@ -3,7 +3,7 @@ site_url: https://bijux.github.io/agentic-flows/
 repo_name: bijux/agentic-flows
 repo_url: https://github.com/bijux/agentic-flows
 
-docs_dir: ../../packages/agentic-flows/docs
+docs_dir: docs
 
 theme:
   name: material

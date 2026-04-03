@@ -10,7 +10,7 @@ on:
       - "packages/bijux-rag/CHANGELOG.md"
       - "apis/bijux-rag/**"
       - "scripts/bijux-rag/**"
-      - "configs/bijux-rag/mkdocs.yml"
+      - "packages/bijux-rag/mkdocs.yml"
       - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:

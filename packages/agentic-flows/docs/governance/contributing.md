@@ -116,7 +116,7 @@ make api
 
 ## Docs
 
-* Config: `../../configs/agentic-flows/mkdocs.yml` (Material, **strict**)
+* Config: `../mkdocs.yml` (Material, **strict**)
 * Build: `make docs`
 * Serve: `make docs-serve`
 * Deploy: `make docs-deploy` (if authorized)

@@ -10,7 +10,7 @@ on:
       - "packages/agentic-flows/CHANGELOG.md"
       - "apis/agentic-flows/**"
       - "scripts/agentic-flows/**"
-      - "configs/agentic-flows/mkdocs.yml"
+      - "packages/agentic-flows/mkdocs.yml"
       - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:

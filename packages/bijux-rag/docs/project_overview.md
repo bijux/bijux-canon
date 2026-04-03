@@ -19,7 +19,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── CHANGELOG.md         # version history
 ├── Makefile             # main Makefile entrypoint
 ├── README.md            # project overview
-├── ../../configs/bijux-rag/mkdocs.yml # repo-owned MkDocs config
+├── ../mkdocs.yml        # package-owned MkDocs config
 ├── pyproject.toml       # Hatchling build + deps
 ├── ../../configs/pytest.ini # repo-wide pytest config
 ├── ../../tox.ini        # repository tox envs
@@ -71,7 +71,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `pyproject.toml` — Hatchling build, deps, scripts, classifiers.
 - `../../tox.ini` — repository tox envs mirroring package make targets.
 - `../../configs/pytest.ini` — repo-wide pytest config.
-- `../../configs/bijux-rag/mkdocs.yml` — repo-owned MkDocs setup (theme, plugins, nav, extensions).
+- `../mkdocs.yml` — package-owned MkDocs setup (theme, plugins, nav, extensions).
 - `../../configs/coveragerc.ini` — repo-wide coverage configuration.
 - `../../configs/mypy.ini` — repo-wide mypy configuration.
 - `../../configs/bijux-rag/package.json` — repo-owned Node manifest for OpenAPI tooling.

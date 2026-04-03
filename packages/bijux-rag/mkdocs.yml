@@ -7,7 +7,7 @@ edit_uri: ""
 strict: true
 use_directory_urls: true
 dev_addr: 127.0.0.0:8000
-docs_dir: ../../packages/bijux-rag/docs
+docs_dir: docs
 site_dir: ../../artifacts/bijux-rag/docs/site
 
 theme:
@@ -63,7 +63,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [../../packages/bijux-rag/src]
+          paths: [src]
           options:
             docstring_style: google
             merge_init_into_class: true
@@ -130,8 +130,8 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 watch:
-  - ../../packages/bijux-rag/src
-  - ../../packages/bijux-rag/tests
-  - ../../configs/bijux-rag
-  - ../../packages/bijux-rag/docs
+  - src
+  - tests
+  - mkdocs.yml
+  - docs
   - ../../artifacts/bijux-rag
