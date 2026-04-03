@@ -3,6 +3,14 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.models.base import JsonValue, StableModel
+from bijux_canon_reason.core.models.claims import (
+    Claim,
+    ClaimStatus,
+    ClaimType,
+    EvidenceRef,
+    SupportKind,
+    SupportRef,
+)
 from bijux_canon_reason.core.models.planning import (
     Plan,
     PlanNode,
@@ -13,6 +21,10 @@ from bijux_canon_reason.core.models.planning import (
 )
 
 __all__ = [
+    "Claim",
+    "ClaimStatus",
+    "ClaimType",
+    "EvidenceRef",
     "JsonValue",
     "Plan",
     "PlanNode",
@@ -20,5 +32,7 @@ __all__ = [
     "StableModel",
     "StepKind",
     "StepSpec",
+    "SupportKind",
+    "SupportRef",
     "ToolRequest",
 ]
