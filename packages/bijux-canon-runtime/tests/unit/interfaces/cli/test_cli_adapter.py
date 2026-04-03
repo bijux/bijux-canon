@@ -174,9 +174,7 @@ def test_cli_delegates_to_api_run_flow(tmp_path: Path, monkeypatch) -> None:
 
     cli_main_module = importlib.import_module("bijux_canon_runtime.interfaces.cli.entrypoint")
     monkeypatch.setattr(cli_main_module, "execute_flow", _fake_run_flow)
-    monkeypatch.setattr(
-        "sys.argv", ["bijux-canon-runtime", "experimental", "plan", str(manifest_path)]
-    )
+    monkeypatch.setattr("sys.argv", ["bijux-canon-runtime", "plan", str(manifest_path)])
 
     cli_main()
 

@@ -215,8 +215,7 @@ def _load_policy(path: Path) -> VerificationPolicy:
     )
 
 
-# Stable commands: run, replay, inspect.
-# Diagnostic-only commands: experimental/* (plan, dry-run, unsafe-run, diff, explain, validate).
+# Stable commands: plan, dry-run, run, unsafe-run, replay, inspect, diff, explain, validate.
 # The CLI is not the primary API surface; contract-first integration should use the API schema.
 EXIT_FAILURE = 1
 EXIT_CONTRACT_VIOLATION = 2
@@ -281,16 +280,7 @@ def main() -> None:
     inspect_run_parser.add_argument("--db-path", required=True)
     inspect_run_parser.add_argument("--json", action="store_true")
 
-    experimental_parser = subparsers.add_parser(
-        "experimental",
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
-    )
-    experimental_subparsers = experimental_parser.add_subparsers(
-        dest="experimental_command"
-    )
-
-    plan_parser = experimental_subparsers.add_parser(
+    plan_parser = subparsers.add_parser(
         "plan",
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
@@ -299,7 +289,7 @@ def main() -> None:
     plan_parser.add_argument("--db-path")
     plan_parser.add_argument("--json", action="store_true")
 
-    dry_run_parser = experimental_subparsers.add_parser(
+    dry_run_parser = subparsers.add_parser(
         "dry-run",
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
@@ -309,7 +299,7 @@ def main() -> None:
     dry_run_parser.add_argument("--strict-determinism", action="store_true")
     dry_run_parser.add_argument("--json", action="store_true")
 
-    unsafe_parser = experimental_subparsers.add_parser(
+    unsafe_parser = subparsers.add_parser(
         "unsafe-run",
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
@@ -319,7 +309,7 @@ def main() -> None:
     unsafe_parser.add_argument("--strict-determinism", action="store_true")
     unsafe_parser.add_argument("--json", action="store_true")
 
-    diff_parser = experimental_subparsers.add_parser(
+    diff_parser = subparsers.add_parser(
         "diff",
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
@@ -336,7 +326,7 @@ def main() -> None:
     diff_run_parser.add_argument("--db-path", required=True)
     diff_run_parser.add_argument("--json", action="store_true")
 
-    explain_parser = experimental_subparsers.add_parser(
+    explain_parser = subparsers.add_parser(
         "explain",
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
@@ -352,7 +342,7 @@ def main() -> None:
     explain_failure_parser.add_argument("--db-path", required=True)
     explain_failure_parser.add_argument("--json", action="store_true")
 
-    validate_parser = experimental_subparsers.add_parser(
+    validate_parser = subparsers.add_parser(
         "validate",
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
@@ -374,24 +364,14 @@ def main() -> None:
         _replay_run(args, json_output=args.json)
         return
     if (
-        args.command == "experimental"
-        and args.experimental_command == "diff"
-        and args.diff_command == "run"
+        args.command == "diff" and args.diff_command == "run"
     ):
         _diff_runs(args, json_output=args.json)
         return
-    if (
-        args.command == "experimental"
-        and args.experimental_command == "explain"
-        and args.explain_command == "failure"
-    ):
+    if args.command == "explain" and args.explain_command == "failure":
         _explain_failure(args, json_output=args.json)
         return
-    if (
-        args.command == "experimental"
-        and args.experimental_command == "validate"
-        and args.validate_command == "db"
-    ):
+    if args.command == "validate" and args.validate_command == "db":
         _validate_db(args, json_output=args.json)
         return
 
@@ -399,9 +379,6 @@ def main() -> None:
     manifest = _load_manifest(manifest_path)
 
     command = args.command
-    if args.command == "experimental":
-        command = args.experimental_command
-
     config = ExecutionConfig.from_command(command)
     config = replace(config, determinism_level=manifest.determinism_level)
     if getattr(args, "db_path", None):
