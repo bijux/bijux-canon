@@ -5,14 +5,13 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 import hashlib
 import json
 from pathlib import Path
 from typing import Any, ClassVar
 
 from bijux_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
-from bijux_agent.models.contract import AgentOutputSchema
 from bijux_agent.pipeline.control.phases import PipelinePhase
 from bijux_agent.pipeline.control.stop_conditions import StopReason
 from bijux_agent.pipeline.definition import PipelineDefinition
@@ -23,7 +22,7 @@ from bijux_agent.pipeline.termination import ExecutionTerminationReason
 from bijux_agent.utilities.version import get_runtime_version
 
 
-class TraceFieldClassification(str, Enum):
+class TraceFieldClassification(StrEnum):
     DETERMINISTIC = "deterministic"
     OBSERVATIONAL = "observational"
 
@@ -122,8 +121,7 @@ class RunFingerprint:
         )
 
 
-@dataclass
-class ReplayStatus(str, Enum):
+class ReplayStatus(StrEnum):
     """Replayability states recorded in trace headers."""
 
     REPLAYABLE = "REPLAYABLE"

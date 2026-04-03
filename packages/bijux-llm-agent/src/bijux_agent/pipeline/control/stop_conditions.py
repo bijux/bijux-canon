@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 
-class StopReason(str, Enum):
+class StopReason(StrEnum):
     USER_INTERRUPTION = "user_interruption"
     CONVERGENCE_REACHED = "convergence_reached"
     CONFIDENCE_THRESHOLD_MET = "confidence_threshold_met"

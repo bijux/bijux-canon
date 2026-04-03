@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class Provider(str, Enum):
+class Provider(StrEnum):
     """Supported LLM providers."""
 
     OPENAI = "OpenAI"

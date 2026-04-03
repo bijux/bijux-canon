@@ -126,7 +126,7 @@ def enforce_artifact_boundary():
 
 def _git_untracked(root: Path) -> set[str]:
     completed = subprocess.run(
-        ["git", "status", "--porcelain"],
+        ["/usr/bin/git", "status", "--porcelain"],  # noqa: S607 - fixed system git path
         capture_output=True,
         text=True,
         cwd=root,

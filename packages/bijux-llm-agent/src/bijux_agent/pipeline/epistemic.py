@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class EpistemicVerdict(str, Enum):
+class EpistemicVerdict(StrEnum):
     """Describes how confident the pipeline is in its final judgment."""
 
     CERTAIN = "certain"

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 import hashlib
 import json
 from statistics import mean
@@ -57,14 +57,14 @@ def _config_from_window(window: DecisionStabilityWindow) -> ConvergenceConfig:
     )
 
 
-class ConvergenceType(str, Enum):
+class ConvergenceType(StrEnum):
     SCORE = "score"
     VERDICT = "verdict"
     CONFIDENCE = "confidence"
     MIXED = "mixed"
 
 
-class ConvergenceReason(str, Enum):
+class ConvergenceReason(StrEnum):
     STABILITY = "stability"
     OSCILLATION = "oscillation"
     MAX_ITERATIONS = "max_iterations"

@@ -32,7 +32,7 @@ PUBLIC_MODULES = {
 
 def _star_imported(module_name: str) -> set[str]:
     namespace: dict[str, object] = {"__builtins__": __builtins__}
-    exec(f"from {module_name} import *", namespace)
+    exec(f"from {module_name} import *", namespace)  # noqa: S102 - invariant test for star imports
     namespace.pop("__builtins__", None)
     return set(namespace.keys())
 

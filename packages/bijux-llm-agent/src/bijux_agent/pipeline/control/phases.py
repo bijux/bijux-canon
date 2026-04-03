@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 from bijux_agent.enums import AgentType
 
 from .stop_conditions import StopReason
 
 
-class PipelinePhase(str, Enum):
+class PipelinePhase(StrEnum):
     """Each phase follows the single canonical lifecycle declared here."""
 
     INIT = "INIT"

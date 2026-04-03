@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import ConfigDict, Field
 
@@ -12,12 +12,12 @@ from bijux_agent.schema.base import TypedBaseModel
 from bijux_agent.utilities.final import final_class
 
 
-class FailureCategory(str, Enum):
+class FailureCategory(StrEnum):
     EPISTEMIC = "epistemic_failure"
     OPERATIONAL = "operational_failure"
 
 
-class FailureClass(str, Enum):
+class FailureClass(StrEnum):
     USER_INTERRUPTION = "user_interruption"
     EPISTEMIC_UNCERTAINTY = "epistemic_uncertainty"
     VERIFICATION_VETO = "verification_veto"

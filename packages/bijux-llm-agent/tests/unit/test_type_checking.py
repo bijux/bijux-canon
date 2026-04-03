@@ -13,7 +13,7 @@ def test_pipeline_mypy_has_no_regressions() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     cache_dir = repo_root / "artifacts" / "test" / ".mypy_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    completed = subprocess.run(
+    completed = subprocess.run(  # noqa: S603 - executes local mypy for regression coverage
         [
             sys.executable,
             "-m",

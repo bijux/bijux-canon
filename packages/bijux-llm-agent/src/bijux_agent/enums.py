@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class AgentType(str, Enum):
+class AgentType(StrEnum):
     """Named agents participating in the pipeline lifecycle."""
 
     READER = "reader"
@@ -18,7 +18,7 @@ class AgentType(str, Enum):
     ORCHESTRATOR = "orchestrator"
 
 
-class AgentStatus(str, Enum):
+class AgentStatus(StrEnum):
     """States describing an agent's lifecycle during a run."""
 
     PENDING = "pending"
@@ -28,7 +28,7 @@ class AgentStatus(str, Enum):
     ABORTED = "aborted"
 
 
-class DecisionOutcome(str, Enum):
+class DecisionOutcome(StrEnum):
     """Canonical verdicts emitted by pipeline agents."""
 
     APPROVE = "pass"
@@ -36,7 +36,7 @@ class DecisionOutcome(str, Enum):
     VETO = "veto"
 
 
-class FailureMode(str, Enum):
+class FailureMode(StrEnum):
     """Classifies the severity of agent/system failures."""
 
     TIMEOUT = "TIMEOUT"
@@ -45,7 +45,7 @@ class FailureMode(str, Enum):
     FATAL = "FATAL"
 
 
-class ConfidenceLevel(str, Enum):
+class ConfidenceLevel(StrEnum):
     """Buckets that map floating-point confidences to qualitative levels."""
 
     LOW = "low"
@@ -61,14 +61,14 @@ class ConfidenceLevel(str, Enum):
         return cls.LOW
 
 
-class ExecutionMode(str, Enum):
+class ExecutionMode(StrEnum):
     """Executes tasks synchronously or asynchronously."""
 
     SYNC = "sync"
     ASYNC = "async"
 
 
-class PipelineState(str, Enum):
+class PipelineState(StrEnum):
     """Abstract lifecycle states for high-level orchestration."""
 
     INIT = "init"

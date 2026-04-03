@@ -13,7 +13,7 @@ def _assert_help(command: list[str]) -> None:
         "HUGGINGFACE_API_KEY": "test",
         "DEEPSEEK_API_KEY": "test",
     }
-    result = subprocess.run(
+    result = subprocess.run(  # noqa: S603 - executes package CLI under test
         command,
         check=False,
         capture_output=True,

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import ConfigDict, Field
 
@@ -14,7 +14,7 @@ from bijux_agent.tracing.trace import ModelMetadata, RunTrace
 from bijux_agent.utilities.final import final_class
 
 
-class PipelineStatus(str, Enum):
+class PipelineStatus(StrEnum):
     DONE = "DONE"
     ABORTED = "ABORTED"
 

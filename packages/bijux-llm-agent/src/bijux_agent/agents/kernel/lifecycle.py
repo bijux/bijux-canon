@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class LifecyclePhase(str, Enum):
+class LifecyclePhase(StrEnum):
     """Discrete agent lifecycle checkpoints used for ordering assertions."""
 
     INIT = "init"

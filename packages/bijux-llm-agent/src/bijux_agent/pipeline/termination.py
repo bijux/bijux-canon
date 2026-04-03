@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class ExecutionTerminationReason(str, Enum):
+class ExecutionTerminationReason(StrEnum):
     """Why a pipeline execution stopped."""
 
     COMPLETED = "completed"

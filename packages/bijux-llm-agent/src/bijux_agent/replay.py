@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from bijux_agent.pipeline.results.outcome import PipelineResult
 
 
-class ReplayMismatchCategory(str, Enum):
+class ReplayMismatchCategory(StrEnum):
     CONFIG_DRIFT = "config drift"
     MODEL_DRIFT = "model drift"
     PROMPT_DRIFT = "prompt drift"

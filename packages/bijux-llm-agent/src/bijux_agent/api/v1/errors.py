@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class APIErrorCode(str, Enum):
+class APIErrorCode(StrEnum):
     """Stable error codes exposed by the API layer."""
 
     INVALID_REQUEST = "INVALID_REQUEST"
