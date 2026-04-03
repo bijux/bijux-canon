@@ -1,12 +1,15 @@
-"""Invariant: agents must not import pipeline/orchestrator modules."""
+"""Invariant: agents must not import pipeline/application modules."""
 
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
-FORBIDDEN_PREFIXES = ("bijux_canon_agent.pipeline", "bijux_canon_agent.orchestrator")
-FORBIDDEN_RELATIVE = ("pipeline", "orchestrator")
+FORBIDDEN_PREFIXES = (
+    "bijux_canon_agent.pipeline",
+    "bijux_canon_agent.application",
+)
+FORBIDDEN_RELATIVE = ("pipeline", "application")
 
 
 def _iter_agent_files(root: Path) -> list[Path]:
@@ -25,7 +28,7 @@ def _matches_forbidden(module: str, level: int) -> bool:
     )
 
 
-def test_agents_no_orchestration_imports() -> None:
+def test_agents_no_application_imports() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     violations: list[str] = []
     for path in _iter_agent_files(repo_root):

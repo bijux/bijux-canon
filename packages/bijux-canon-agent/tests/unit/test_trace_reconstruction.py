@@ -10,8 +10,8 @@ from bijux_canon_agent.interfaces.cli.helpers import load_trace
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
-from bijux_canon_agent.orchestrator.engine import AgentNode, Orchestrator
-from bijux_canon_agent.orchestrator.policy import FailurePolicy
+from bijux_canon_agent.application.orchestration.engine import AgentNode, Orchestrator
+from bijux_canon_agent.application.orchestration.policy import FailurePolicy
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
 

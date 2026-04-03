@@ -9,17 +9,17 @@ from tests.utils.trace_helpers import default_model_metadata
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import PipelineState
 from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
-from bijux_canon_agent.orchestrator.engine import AgentNode, Orchestrator
-from bijux_canon_agent.orchestrator.policy import (
+from bijux_canon_agent.application.orchestration.engine import AgentNode, Orchestrator
+from bijux_canon_agent.application.orchestration.policy import (
     FailurePolicy,
     ScopeReductionPolicy,
 )
-from bijux_canon_agent.orchestrator.state_machine import OrchestratorStateMachine
+from bijux_canon_agent.application.orchestration.state_machine import OrchestratorStateMachine
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_run_happy_path(tmp_path: Path) -> None:
+async def test_application_orchestration_run_happy_path(tmp_path: Path) -> None:
     """Orchestrator should execute nodes in dependency order and complete."""
 
     async def fake_runner(context: AgentInputSchema) -> AgentOutputSchema:
@@ -52,7 +52,7 @@ async def test_orchestrator_run_happy_path(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_abort_records_stop_reason(tmp_path: Path) -> None:
+async def test_application_orchestration_abort_records_stop_reason(tmp_path: Path) -> None:
     """Abort path should record a StopReason on the last trace entry."""
 
     class StopSignalError(RuntimeError):
@@ -83,7 +83,7 @@ async def test_orchestrator_abort_records_stop_reason(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_partial_failure_stops_downstream(tmp_path: Path) -> None:
+async def test_application_orchestration_partial_failure_stops_downstream(tmp_path: Path) -> None:
     """A failing node should abort and prevent downstream execution."""
 
     async def failing_runner(context: AgentInputSchema) -> AgentOutputSchema:
@@ -122,7 +122,7 @@ async def test_orchestrator_partial_failure_stops_downstream(tmp_path: Path) -> 
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_retry_policy_retries_until_success(tmp_path: Path) -> None:
+async def test_application_orchestration_retry_policy_retries_until_success(tmp_path: Path) -> None:
     """Retry policy should allow a node to recover after a transient failure."""
 
     attempts: dict[str, int] = {"count": 0}
@@ -199,7 +199,7 @@ async def test_scope_reduction_policy_reduces_payload(tmp_path: Path) -> None:
         assert payload.get("keep") == "value"
 
 
-def test_orchestrator_state_machine_transitions() -> None:
+def test_application_orchestration_state_machine_transitions() -> None:
     """State machine should only allow declared transitions."""
     machine = OrchestratorStateMachine()
     machine.transition_to(PipelineState.RUNNING)

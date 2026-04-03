@@ -86,8 +86,8 @@ def _package_version() -> Version:
     except metadata.PackageNotFoundError:
         try:
             raw_version = metadata.version("bijux-agent")
-        except metadata.PackageNotFoundError as exc:  # pragma: no cover - env issue
-            raise RuntimeError("bijux-canon-agent package version not found") from exc
+        except metadata.PackageNotFoundError:
+            return _TRACE_SCHEMA_MIN_VERSION[TRACE_SCHEMA_VERSION]
     try:
         return Version(raw_version)
     except InvalidVersion as exc:  # pragma: no cover - env issue

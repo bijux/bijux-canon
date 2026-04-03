@@ -1,4 +1,4 @@
-"""Invariant: agents remain passive (no orchestration/kernel control flow)."""
+"""Invariant: agents remain passive (no application/kernel control flow)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 
 FORBIDDEN_IMPORT_PREFIXES = (
     "bijux_canon_agent.pipeline",
-    "bijux_canon_agent.orchestrator",
+    "bijux_canon_agent.application",
 )
 FORBIDDEN_IMPORT_MODULES = {
     "bijux_canon_agent.agents.kernel.execution_kernel",
