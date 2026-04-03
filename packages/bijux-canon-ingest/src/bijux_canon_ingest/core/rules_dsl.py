@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Tiny function-level rules DSL (Modules 02–03)."""
+"""Tiny function-level rules DSL for document filters."""
 
 from __future__ import annotations
 

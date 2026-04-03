@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""AST validator for dynamic rule expressions (Modules 02–03)."""
+"""AST validator for dynamic rule expressions."""
 
 from __future__ import annotations
 

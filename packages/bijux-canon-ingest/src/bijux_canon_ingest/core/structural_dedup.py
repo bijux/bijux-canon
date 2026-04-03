@@ -1,12 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Streaming structural deduplication (Bijux RAG).
+"""Streaming structural deduplication helpers.
 
-Bijux RAG provides a canonical, order-independent deduplication helper
-(`structural_dedup_chunks`) that sorts and then removes duplicates.
-
-Bijux RAG introduces a streaming alternative that preserves encounter order:
+`structural_dedup_lazy` preserves encounter order:
 the first time an item is seen it is yielded, and later duplicates are skipped.
 """
 
