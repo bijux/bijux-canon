@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for http_api/v1/__init__.py."""
+"""Versioned HTTP schema exports for bijux-canon-runtime."""
 
 from __future__ import annotations
 
-from bijux_canon_runtime.http_api.v1.schemas import (
+from bijux_canon_runtime.api.v1.schemas import (
     FailureEnvelope,
     FlowRunRequest,
     FlowRunResponse,

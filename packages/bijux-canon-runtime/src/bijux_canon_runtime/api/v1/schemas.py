@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for http_api/v1/schemas.py."""
+"""Pydantic schemas for the runtime HTTP API."""
 
 from __future__ import annotations
 

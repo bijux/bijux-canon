@@ -123,7 +123,7 @@ packages = ["src/bijux_canon_runtime"]
 zip-safe = false
 
 [tool.hatch.build.targets.wheel.package-data]
-"bijux_canon_runtime" = ["py.typed", "http_api/v1/schema.hash"]
+"bijux_canon_runtime" = ["py.typed", "api/v1/schema.hash"]
 
 [tool.hatch.build.targets.wheel.shared-data]
 "../../apis/bijux-canon-runtime/v1/schema.hash" = "bijux_canon_runtime.schema.hash"

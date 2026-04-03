@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.routing import Match
 
-from bijux_canon_runtime.http_api.v1.schemas import (
+from bijux_canon_runtime.api.v1.schemas import (
     FailureEnvelope,
     FlowRunRequest,
     ReplayRequest,
