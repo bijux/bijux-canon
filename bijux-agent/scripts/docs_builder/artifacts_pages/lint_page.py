@@ -5,7 +5,7 @@
 
 This module defines the `LintArtifactPage`, which implements the
 `StandardArtifactPage` base class to parse and display results from tools like
-Ruff, Mypy, and Pyright. It uses a set of specialized parser functions to extract
+Ruff, Mypy, and Pytype. It uses a set of specialized parser functions to extract
 key metrics from the raw log files of each tool.
 
 Module Constants:
@@ -33,7 +33,6 @@ ORDER = [
     "ruff-format.log",
     "ruff.log",
     "mypy-core.log",
-    "pyright.log",
     "codespell.log",
     "radon.log",
     "pydocstyle.log",
@@ -46,7 +45,6 @@ BLURBS = {
     "ruff-format.log": ("Formatter check (`ruff format --check`).", "No changes needed."),
     "codespell.log": ("Spelling checker for identifiers, comments, docs.", "Empty log (no typos)."),
     "mypy-core.log": ("Static type-checker (mypy-core).", "Success: no issues found."),
-    "pyright.log": ("Static type-checker (pyright).", "0 errors, 0 warnings."),
     "pytype.log": ("Type inference + checking (pytype).", "No errors."),
     "pydocstyle.log": ("Google-style docstring conventions (pydocstyle).", "0 violations (Google convention)."),
     "radon.log": ("Complexity & maintainability (CC, MI).", "Mostly A; MI ≥ 70; nothing above thresholds."),
@@ -119,19 +117,6 @@ def _parse_mypy(text: str) -> tuple[bool, int]:
         return True, 0
     m = re.search(r"Found\s+(\d+)\s+error", text, re.I)
     return False, (int(m.group(1)) if m else 0)
-
-
-def _parse_pyright(text: str) -> tuple[int, int]:
-    """Parses pyright log content to count errors and warnings.
-
-    Args:
-        text: The raw string content of the pyright log file.
-
-    Returns:
-        A tuple containing the number of errors and warnings, respectively.
-    """
-    m = re.search(r"Found\s+(\d+)\s+errors?,\s+(\d+)\s+warnings?", text, re.I)
-    return (int(m.group(1)), int(m.group(2))) if m else (0, 0)
 
 
 def _pytype_skipped(text: str) -> bool:
@@ -209,7 +194,7 @@ class LintArtifactPage(StandardArtifactPage):
             "Static analysis reports that keep style, formatting, typing and complexity in check.\n\n"
             "- **Ruff**: rules & auto-fixes; **Ruff Format**: code formatter\n"
             "- **codespell**: common typos\n"
-            "- **mypy/pyright/pytype**: static typing at different speeds/strictness\n"
+            "- **mypy/pytype**: static typing at different speeds/strictness\n"
             "- **pydocstyle**: Google-style docstrings\n"
             "- **radon**: cyclomatic complexity (CC), Maintainability Index (MI)\n"
         )
@@ -256,9 +241,6 @@ class LintArtifactPage(StandardArtifactPage):
         elif label == "mypy-core.log":
             ok, n = _parse_mypy(content)
             extra = f" — {'success' if ok else f'errors: {n}'}"
-        elif label == "pyright.log":
-            e, w = _parse_pyright(content)
-            extra = f" — errors: {e}, warnings: {w}"
         elif label == "pytype.log":
             if _pytype_skipped(content):
                 extra = " — skipped (Python ≥ 3.13)"
@@ -279,7 +261,6 @@ class LintArtifactPage(StandardArtifactPage):
             "ruff-format.log": "Run `ruff format`; enforce via pre-commit.",
             "codespell.log": "Accept valid suggestions; collect custom words.",
             "mypy-core.log": "Annotate public APIs; enable stricter flags gradually.",
-            "pyright.log": "Use strict mode per module; ratchet warnings down.",
             "pytype.log": "Prefer precise hints over `Any`; use pragmas sparingly.",
             "pydocstyle.log": "Follow Google sections (Args/Returns/Raises); set `--convention=google`.",
             "radon.log": "Refactor hotspots (C–F); track MI/CC thresholds.",

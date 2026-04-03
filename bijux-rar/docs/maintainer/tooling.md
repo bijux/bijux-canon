@@ -14,7 +14,7 @@ Changes that bypass or weaken this toolchain are not accepted.
 - **Ruff**  
   Formatting and linting. Style deviations are rejected.
 
-- **MyPy** and **Pyright**  
+- **MyPy**  
   Static typing and interface validation.
 
 ---

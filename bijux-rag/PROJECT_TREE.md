@@ -29,7 +29,7 @@ Quick map of the bijux-rag repository (aligned with the bijux-cli documentation 
 ├── TOOLING.md           # tooling guide
 ├── USAGE.md             # usage instructions
 ├── mkdocs.yml           # MkDocs config
-├── package.json         # Node deps (for Pyright)
+├── package.json         # Node deps (for OpenAPI validation tooling)
 ├── pyproject.toml       # Hatchling build + deps
 ├── pytest.ini           # pytest config
 ├── tox.ini              # tox envs
@@ -79,7 +79,6 @@ Quick map of the bijux-rag repository (aligned with the bijux-cli documentation 
 - `mkdocs.yml` — MkDocs setup (theme, plugins, nav, extensions).
 - `../configs/bijux-rag/coveragerc.ini` — coverage omit/includes.
 - `../configs/bijux-rag/mypy.ini` — mypy strict settings.
-- `../configs/bijux-rag/pyrightconfig.json` — pyright includes/excludes.
 - `../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
 - `../configs/bijux-rag/ruff.toml` — ruff line-length/target-version/selects.
 - `Makefile` + `makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make hygiene`, `make all`).

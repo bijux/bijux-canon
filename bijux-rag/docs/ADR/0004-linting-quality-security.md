@@ -22,7 +22,6 @@ We standardized on the following tools:
 
 * **Ruff** for **formatting**, **import sorting**, and **linting** (with auto-fix where safe).
 * **Mypy** and **Pytype** for static typing (Pytype runs where supported).
-* **Pyright** for fast type checks (editor/CI parity).
 * **Pydocstyle** (Google convention) for docstring style.
 * **Interrogate** for documentation coverage.
 * **Radon** for cyclomatic complexity.
@@ -94,15 +93,6 @@ The toolchain is driven by unified configs:
 </details>
 
 <details>
-<summary>Pyright (<code>../configs/bijux-rag/pyrightconfig.json</code>)</summary>
-
-```json
---8<-- "../configs/bijux-rag/pyrightconfig.json"
-```
-
-</details>
-
-<details>
 <summary>Deptry (<code>pyproject.toml</code>)</summary>
 
 ```toml
@@ -156,7 +146,7 @@ Interrogate enforces documentation coverage thresholds as configured.
 
 * Uniform enforcement across the repo; no drift.
 * **One tool (Ruff)** handles formatting, import sorting, and linting with fast auto-fixes.
-* Strong typing via **Mypy**, **Pytype** (where supported), and **Pyright**.
+* Strong typing via **Mypy** and **Pytype** (where supported).
 * Doc style & coverage enforced via **Pydocstyle** + **Interrogate**.
 * Maintainability boosted by **Vulture** (dead code), **Deptry** (deps), **Radon** (complexity).
 * SPDX compliance via **REUSE**.

@@ -156,7 +156,7 @@ bijux-rag follows the same “gated quality” philosophy used across Bijux proj
 * **Security scans (gating):** `bandit`, `pip-audit` (`make security`)
 * **SBOMs:** CycloneDX generation (`make sbom`)
 * **API contract hardening:** OpenAPI lint + drift checks; Schemathesis runs against endpoints (`make api`)
-* **Strict typing + lint:** Ruff + MyPy + Pyright + Pytype (CI-gated)
+* **Strict typing + lint:** Ruff + MyPy + Pytype (CI-gated)
 * **Hygiene:** “zero-root-pollution” — generated outputs and caches must go under `artifacts/` (CI-gated)
 * **No telemetry:** the project does not phone home; any unexpected outbound behavior is treated as a security bug
 

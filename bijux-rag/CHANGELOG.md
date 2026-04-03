@@ -14,7 +14,7 @@ All notable changes to **bijux-rag** are documented here. This project adheres t
 - **Interop and Helpers**: Included stdlib FP utilities (`merge_streams`, `running_sum`) and Toolz-compatible functions (`compose`, `curried_map`, `reduceby`); added chunking policies (`fixed_size_chunk`).
 - **Adapters and Pipelines**: Implemented storage adapters (`FileStorage`, `InMemoryStorage`) with CSV support; defined composable pipelines like `embed_docs`.
 - **Boundaries and APIs**: Added CLI entrypoint (`bijux-rag`) for processing/serving; FastAPI HTTP API with embedding/retrieval endpoints and OpenAPI schema.
-- **Typing and Testing**: Included `py.typed` markers, msgpack stubs, and strict configs for MyPy/Pyright/Pytype; comprehensive tests with Hypothesis (laws, equivalence), coverage, and E2E markers.
+- **Typing and Testing**: Included `py.typed` markers, msgpack stubs, and strict configs for MyPy/Pytype; comprehensive tests with Hypothesis (laws, equivalence), coverage, and E2E markers.
 - **Documentation and Tooling**: MkDocs setup with Material theme, plugins (mkdocstrings, minify), and pages for overview, usage, API reference, architecture (ADRs), and changelog.
 - **Quality Pipeline**: Linting (Ruff), code health (Vulture, Deptry, Interrogate), security (Bandit, Pip-Audit), modular Makefiles (test, lint, docs, build), Tox envs (3.11-3.13), and CI with GitHub Actions.
 - **Build and Compliance**: Hatchling packaging with VCS versioning; SBOM (CycloneDX), citations (CFF, BibTeX); REUSE compliance with MIT/CC0 licenses.

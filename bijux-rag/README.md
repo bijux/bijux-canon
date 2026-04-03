@@ -19,7 +19,7 @@
 
 **bijux-rag** is a standalone Retrieval-Augmented Generation (RAG) toolkit for Python, emphasizing a functional core with pure transformations for document processing, chunking, and retrieval. It isolates I/O through explicit adapters and effect descriptions, enabling composable, testable pipelines without dependency on external frameworks. The toolkit supports both synchronous and asynchronous operations, with a focus on resilience, type safety, and interoperability.
 
-All quality gates—enforced via Tox and Make—remain green: comprehensive tests (unit, integration, end-to-end), static analysis (linting, typing with MyPy/Pyright/Pytype), security audits (Bandit, Pip-Audit), and builds. Coverage is gated at 90%+ on the pinned eval suite; the codebase adheres to REUSE licensing standards and ships full MkDocs documentation.
+All quality gates—enforced via Tox and Make—remain green: comprehensive tests (unit, integration, end-to-end), static analysis (linting, typing with MyPy/Pytype), security audits (Bandit, Pip-Audit), and builds. Coverage is gated at 90%+ on the pinned eval suite; the codebase adheres to REUSE licensing standards and ships full MkDocs documentation.
 
 
 ## At a Glance
@@ -199,7 +199,7 @@ make test
 
 Other targets:
 
-- `make lint`: Enforces style (Ruff) and types (MyPy, Pyright, Pytype).
+- `make lint`: Enforces style (Ruff) and types (MyPy, Pytype).
 - `make security`: Runs Bandit and dependency audits.
 - `make docs`: Builds and serves MkDocs.
 - `make all`: Comprehensive run (clean, install, test, lint, build).
