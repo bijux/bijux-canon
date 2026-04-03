@@ -20,7 +20,6 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── Makefile             # main Makefile entrypoint
 ├── README.md            # project overview
 ├── ../../configs/bijux-rag/mkdocs.yml # repo-owned MkDocs config
-├── package.json         # Node deps (for OpenAPI validation tooling)
 ├── pyproject.toml       # Hatchling build + deps
 ├── ../../configs/bijux-rag/pytest.ini # repo-owned pytest config
 ├── ../../tox.ini        # repository tox envs
@@ -75,6 +74,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../../configs/bijux-rag/mkdocs.yml` — repo-owned MkDocs setup (theme, plugins, nav, extensions).
 - `../../configs/bijux-rag/coveragerc.ini` — coverage omit/includes.
 - `../../configs/bijux-rag/mypy.ini` — mypy strict settings.
+- `../../configs/bijux-rag/package.json` — repo-owned Node manifest for OpenAPI tooling.
 - `../../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
 - `../../configs/bijux-rag/ruff.toml` — ruff line-length/target-version/selects.
 - `Makefile` + `../../makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make hygiene`, `make all`).
