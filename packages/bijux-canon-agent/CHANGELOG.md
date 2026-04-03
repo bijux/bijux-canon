@@ -16,4 +16,4 @@ All notable changes to this project are documented here.
 - Agent execution kernel, lifecycle invariants, and passive-agent enforcement.
 - Trace schema versioning, migration guards, and runtime compatibility checks.
 - Convergence strategies and dry-run trace generator for deterministic tests.
-- Reference pipelines, public API boundary docs, and star-import invariants.
+- Example pipelines, public API boundary docs, and star-import invariants.

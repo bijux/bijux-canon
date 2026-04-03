@@ -15,7 +15,7 @@ This page captures the maintainer rules for changing package layout and runtime 
 - pipeline orchestration and lifecycle control
 - agent runtime behavior and audit traces
 - CLI and HTTP entrypoints for running and replaying the pipeline
-- reference configuration and reference pipeline builders for adoption
+- reference configuration and example pipeline builders for adoption
 
 ## What does not belong here
 

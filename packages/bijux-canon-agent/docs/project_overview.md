@@ -18,8 +18,8 @@
   Logging and telemetry plumbing.
 - `src/bijux_canon_agent/config/`
   Runtime defaults and environment handling.
-- `src/bijux_canon_agent/reference_pipelines/`
-  Importable reference builders used in docs and smoke coverage.
+- `src/bijux_canon_agent/tooling/example_pipelines/`
+  Importable example builders used in docs and smoke coverage.
 - `examples/`
   Human-run sample assets such as `reference-config.yml` and golden outputs.
 - `config/execution_policy.yaml`

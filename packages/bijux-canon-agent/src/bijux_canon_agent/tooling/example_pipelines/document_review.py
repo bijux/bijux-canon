@@ -1,4 +1,4 @@
-"""Reference pipeline for document review workflows."""
+"""Example pipeline for document review workflows."""
 
 from __future__ import annotations
 

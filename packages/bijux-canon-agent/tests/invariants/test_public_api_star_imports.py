@@ -21,7 +21,7 @@ PUBLIC_MODULES = {
         "Pipeline",
         "PipelineDefinition",
     ),
-    "bijux_canon_agent.reference_pipelines": (
+    "bijux_canon_agent.tooling.example_pipelines": (
         "MinimalPipeline",
         "run_minimal",
         "DocumentReviewPipeline",
