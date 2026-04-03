@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 from typer.testing import CliRunner
 
-from bijux_canon_index.boundaries.cli import app as cli_app
+from bijux_canon_index.interfaces.cli import app as cli_app
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 
 

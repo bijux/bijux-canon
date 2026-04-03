@@ -5,7 +5,7 @@ This guide covers production operations for Bijux Vex.
 ## Running FastAPI
 
 - Use a process manager (systemd, container runtime) with `uvicorn`.
-- Example: `uvicorn bijux_canon_index.boundaries.api.app:app --host 0.0.0.0 --port 8000`
+- Example: `uvicorn bijux_canon_index.interfaces.api.app:app --host 0.0.0.0 --port 8000`
 - Configure workers based on CPU cores and expected concurrency.
 
 ## Config + Env Patterns

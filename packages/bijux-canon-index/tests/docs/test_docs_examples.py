@@ -39,7 +39,7 @@ def test_readme_quickstart(tmp_path: Path) -> None:
     cmd = [
         sys.executable,
         "-m",
-        "bijux_canon_index.boundaries.cli.app",
+        "bijux_canon_index.interfaces.cli.app",
         "ingest",
         "--doc",
         "hello",
@@ -53,7 +53,7 @@ def test_readme_quickstart(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "bijux_canon_index.boundaries.cli.app",
+            "bijux_canon_index.interfaces.cli.app",
             "materialize",
             "--execution-contract",
             "deterministic",
@@ -68,7 +68,7 @@ def test_readme_quickstart(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "bijux_canon_index.boundaries.cli.app",
+            "bijux_canon_index.interfaces.cli.app",
             "execute",
             "--vector",
             "[0,1,0]",

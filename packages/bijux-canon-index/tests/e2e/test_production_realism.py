@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from bijux_canon_index.boundaries.pydantic_edges.models import (
+from bijux_canon_index.interfaces.pydantic_edges.models import (
     ExecutionArtifactRequest,
     ExecutionRequestPayload,
     ExplainRequest,

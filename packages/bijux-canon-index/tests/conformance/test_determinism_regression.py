@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_index.boundaries.pydantic_edges.models import (
+from bijux_canon_index.interfaces.pydantic_edges.models import (
     ExecutionArtifactRequest,
     ExecutionRequestPayload,
     IngestRequest,

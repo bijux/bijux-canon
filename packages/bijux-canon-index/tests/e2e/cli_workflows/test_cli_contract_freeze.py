@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 CLI_HELP = """                                                                                
- Usage: python -m bijux_canon_index.boundaries.cli.app [OPTIONS] COMMAND [ARGS]...      
+ Usage: python -m bijux_canon_index.interfaces.cli.app [OPTIONS] COMMAND [ARGS]...      
                                                                                 
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --format          TEXT  Output format: json|table (default: json)            │
@@ -48,7 +48,7 @@ def test_cli_help_is_frozen():
     repo_root = Path(__file__).resolve().parents[3]
     env = {**os.environ, "PYTHONPATH": str(repo_root / "src")}
     out = subprocess.check_output(
-        [sys.executable, "-m", "bijux_canon_index.boundaries.cli.app", "--help"],
+        [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app", "--help"],
         text=True,
         env=env,
     )

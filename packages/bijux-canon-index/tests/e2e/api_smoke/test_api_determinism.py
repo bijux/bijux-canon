@@ -10,7 +10,7 @@ from pathlib import Path
 import schemathesis
 from starlette.testclient import TestClient
 
-from bijux_canon_index.boundaries.api.app import build_app
+from bijux_canon_index.interfaces.api.app import build_app
 from bijux_canon_index.core.identity.ids import fingerprint
 
 

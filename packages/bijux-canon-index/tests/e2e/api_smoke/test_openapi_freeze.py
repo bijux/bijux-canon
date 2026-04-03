@@ -3,7 +3,7 @@
 from __future__ import annotations
 from fastapi.encoders import jsonable_encoder
 
-from bijux_canon_index.boundaries.api.app import build_app
+from bijux_canon_index.interfaces.api.app import build_app
 from bijux_canon_index.core.canon import canon
 from bijux_canon_index.core.identity.ids import fingerprint
 

@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 from fastapi.encoders import jsonable_encoder
 
-from bijux_canon_index.boundaries.api.app import build_app
+from bijux_canon_index.interfaces.api.app import build_app
 from bijux_canon_index.core.canon import CANON_VERSION, canon
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.identity.ids import fingerprint
@@ -46,7 +46,7 @@ def test_v1_release_gate():
     repo_root = Path(__file__).resolve().parents[1]
     env = {**os.environ, "PYTHONPATH": str(repo_root / "src")}
     help_text = subprocess.check_output(
-        [sys.executable, "-m", "bijux_canon_index.boundaries.cli.app", "--help"],
+        [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app", "--help"],
         text=True,
         env=env,
     )

@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 
-CLI = [sys.executable, "-m", "bijux_canon_index.boundaries.cli.app"]
+CLI = [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app"]
 
 
 def run_cmd(args, env):

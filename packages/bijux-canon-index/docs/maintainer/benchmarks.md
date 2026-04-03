@@ -10,15 +10,15 @@ See `docs/maintainer/benchmark_truth_table.md` for what each benchmark measures 
 ## Run Locally
 ```bash
 make install
-.venv/bin/python -m bijux_canon_index.boundaries.cli.app bench --store vdb --vector-store faiss --mode exact
-.venv/bin/python -m bijux_canon_index.boundaries.cli.app bench --store vdb --vector-store faiss --mode ann
+.venv/bin/python -m bijux_canon_index.interfaces.cli.app bench --store vdb --vector-store faiss --mode exact
+.venv/bin/python -m bijux_canon_index.interfaces.cli.app bench --store vdb --vector-store faiss --mode ann
 ```
 
 ## Qdrant (Local)
 Qdrant benchmarks can run without Docker using the in-memory client:
 ```bash
-.venv/bin/python -m bijux_canon_index.boundaries.cli.app bench --store vdb --vector-store qdrant --vector-store-uri :memory: --mode exact
-.venv/bin/python -m bijux_canon_index.boundaries.cli.app bench --store vdb --vector-store qdrant --vector-store-uri :memory: --mode ann
+.venv/bin/python -m bijux_canon_index.interfaces.cli.app bench --store vdb --vector-store qdrant --vector-store-uri :memory: --mode exact
+.venv/bin/python -m bijux_canon_index.interfaces.cli.app bench --store vdb --vector-store qdrant --vector-store-uri :memory: --mode ann
 ```
 
 ## Qdrant (Docker)

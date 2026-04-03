@@ -9,7 +9,7 @@
 Use the explicit vector store flag:
 
 ```bash
-python -m bijux_canon_index.boundaries.cli.app ingest \
+python -m bijux_canon_index.interfaces.cli.app ingest \
   --doc "hello" --vector "[0.0,1.0,0.0]" \
   --vector-store faiss --vector-store-uri ./index.faiss
 ```

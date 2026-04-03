@@ -7,7 +7,7 @@ from bijux_canon_index.core.execution_intent import ExecutionIntent
 import pytest
 from typer.testing import CliRunner
 
-from bijux_canon_index.boundaries.cli import app as cli_app
+from bijux_canon_index.interfaces.cli import app as cli_app
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
     BackendDivergenceError,

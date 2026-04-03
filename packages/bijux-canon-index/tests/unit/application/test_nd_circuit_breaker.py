@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_index.boundaries.exception_bridge import refusal_payload
-from bijux_canon_index.boundaries.pydantic_edges.models import (
+from bijux_canon_index.interfaces.exception_bridge import refusal_payload
+from bijux_canon_index.interfaces.pydantic_edges.models import (
     ExecutionBudgetPayload,
     ExecutionRequestPayload,
     RandomnessProfilePayload,

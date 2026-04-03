@@ -4,6 +4,6 @@
 
 from __future__ import annotations
 
-from bijux_canon_index.boundaries.api.app import app, build_app
+from bijux_canon_index.interfaces.api.app import app, build_app
 
 __all__ = ["app", "build_app"]

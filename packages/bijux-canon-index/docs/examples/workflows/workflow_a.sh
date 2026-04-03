@@ -14,7 +14,7 @@ if [ -z "${PYTHON_BIN:-}" ]; then
   fi
 fi
 
-BIN="${PYTHON_BIN} -m bijux_canon_index.boundaries.cli.app"
+BIN="${PYTHON_BIN} -m bijux_canon_index.interfaces.cli.app"
 
 $BIN init --config-path "$WORKDIR/bijux_canon_index.toml" --force
 $BIN ingest --doc "hello" --vector "[0.0, 1.0, 0.0]" --vector-store memory

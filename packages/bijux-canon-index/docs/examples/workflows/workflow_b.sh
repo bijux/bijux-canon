@@ -14,7 +14,7 @@ if [ -z "${PYTHON_BIN:-}" ]; then
   fi
 fi
 
-BIN="${PYTHON_BIN} -m bijux_canon_index.boundaries.cli.app"
+BIN="${PYTHON_BIN} -m bijux_canon_index.interfaces.cli.app"
 
 if ! $PYTHON_BIN - <<'PY'; then
 import sys

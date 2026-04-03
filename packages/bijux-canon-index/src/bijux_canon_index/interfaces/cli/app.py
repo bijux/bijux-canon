@@ -25,13 +25,13 @@ from bijux_canon_index.bench.dataset import (
     save_dataset,
 )
 from bijux_canon_index.bench.runner import format_table, run_benchmark
-from bijux_canon_index.boundaries.exception_bridge import (
+from bijux_canon_index.interfaces.exception_bridge import (
     is_refusal,
     record_failure,
     refusal_payload,
     to_cli_exit,
 )
-from bijux_canon_index.boundaries.pydantic_edges.models import (
+from bijux_canon_index.interfaces.pydantic_edges.models import (
     ExecutionArtifactRequest,
     ExecutionBudgetPayload,
     ExecutionRequestPayload,

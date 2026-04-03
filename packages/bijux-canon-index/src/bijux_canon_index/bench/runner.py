@@ -14,7 +14,7 @@ import uuid
 if TYPE_CHECKING:  # pragma: no cover
     import numpy as np
 
-from bijux_canon_index.boundaries.pydantic_edges.models import (
+from bijux_canon_index.interfaces.pydantic_edges.models import (
     ExecutionArtifactRequest,
     ExecutionBudgetPayload,
     ExecutionRequestPayload,

@@ -6,13 +6,13 @@ from typing import NoReturn, cast
 
 from fastapi import FastAPI, Header, HTTPException, Response
 
-from bijux_canon_index.boundaries.exception_bridge import (
+from bijux_canon_index.interfaces.exception_bridge import (
     is_refusal,
     record_failure,
     refusal_payload,
     to_http_status,
 )
-from bijux_canon_index.boundaries.pydantic_edges.models import (
+from bijux_canon_index.interfaces.pydantic_edges.models import (
     BackendCapabilitiesReport,
     CreateRequest,
     ExecutionArtifactRequest,

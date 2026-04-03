@@ -20,7 +20,7 @@ def test_cli_denies_mutations_when_authz_disabled(tmp_path: Path, monkeypatch):
     cmd = [
         sys.executable,
         "-m",
-        "bijux_canon_index.boundaries.cli.app",
+        "bijux_canon_index.interfaces.cli.app",
         "ingest",
         "--doc",
         "hi",

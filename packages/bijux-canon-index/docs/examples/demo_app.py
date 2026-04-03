@@ -9,7 +9,7 @@ import tempfile
 
 from fastapi.testclient import TestClient
 
-from bijux_canon_index.boundaries.api.app import app
+from bijux_canon_index.interfaces.api.app import app
 
 
 def main() -> None:
