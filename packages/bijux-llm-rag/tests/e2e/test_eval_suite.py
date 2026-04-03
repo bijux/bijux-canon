@@ -135,9 +135,7 @@ def _ask_contexts(res: Any) -> list[Any]:
 
 def _load_query_ids() -> list[str]:
     base = Path(__file__).resolve().parents[1] / "eval" / "queries.jsonl"
-    ids: list[str] = []
-    for row in _load_jsonl(base):
-        ids.append(str(row["id"]))
+    ids = [str(row["id"]) for row in _load_jsonl(base)]
     if len(ids) != 25:
         raise RuntimeError(
             f"Expected exactly 25 queries in tests/eval/queries.jsonl, got {len(ids)}. "
@@ -164,16 +162,15 @@ def rag_eval_suite() -> dict[str, Any]:
     corpus_rows = _load_jsonl(corpus_path)
     query_rows = _load_jsonl(queries_path)
 
-    docs: list[RawDoc] = []
-    for row in corpus_rows:
-        docs.append(
-            RawDoc(
-                doc_id=str(row["doc_id"]),
-                title=str(row.get("title", "")),
-                abstract=str(row.get("abstract", "")),
-                categories=str(row.get("categories", "")),
-            )
+    docs = [
+        RawDoc(
+            doc_id=str(row["doc_id"]),
+            title=str(row.get("title", "")),
+            abstract=str(row.get("abstract", "")),
+            categories=str(row.get("categories", "")),
         )
+        for row in corpus_rows
+    ]
 
     queries: list[dict[str, Any]] = []
     for row in query_rows:

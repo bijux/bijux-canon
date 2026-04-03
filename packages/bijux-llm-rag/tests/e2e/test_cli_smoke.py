@@ -98,7 +98,8 @@ def test_cli_end_to_end_chunks(
     assert lines, "expected at least one chunk"
 
     for chunk in lines:
-        assert "embedding" in chunk and len(chunk["embedding"]) == 16
+        assert "embedding" in chunk
+        assert len(chunk["embedding"]) == 16
         assert 0 <= chunk["start"] <= chunk["end"]
         assert chunk["doc_id"] in {d["doc_id"] for d in docs}
         assert len(chunk["text"]) <= chunk_size + overlap

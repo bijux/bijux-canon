@@ -67,17 +67,15 @@ def rag_eval_suite() -> dict[str, Any]:
     corpus_rows = _load_jsonl(corpus_path)
     query_rows = _load_jsonl(queries_path)
 
-    docs: list[RawDoc] = []
-    for row in corpus_rows:
-        docs.append(
-            RawDoc(
-                doc_id=str(row["doc_id"]),
-                title=str(row.get("title", "")),
-                abstract=str(row.get("abstract", "")),
-                categories=str(row.get("categories", "")),
-            )
+    docs = [
+        RawDoc(
+            doc_id=str(row["doc_id"]),
+            title=str(row.get("title", "")),
+            abstract=str(row.get("abstract", "")),
+            categories=str(row.get("categories", "")),
         )
-
+        for row in corpus_rows
+    ]
     # Normalize query structure.
     queries: list[dict[str, Any]] = []
     for row in query_rows:

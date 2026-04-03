@@ -40,7 +40,8 @@ def test_real_rag_smoke_build_retrieve_ask(tmp_path: Path) -> None:
     )
     assert is_ok(r)
     got = [c.chunk.doc_id for c in r.value]
-    assert got and got[0] == "d1"
+    assert got
+    assert got[0] == "d1"
     a = app.ask(
         index=idx_loaded,
         query="What is the powerhouse of the cell?",
