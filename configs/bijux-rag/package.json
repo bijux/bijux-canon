@@ -4,8 +4,8 @@
   "private": true,
   "description": "Dev dependencies for OpenAPI validation in bijux-rag.",
   "scripts": {
-    "lint:openapi": "npx redocly lint api/v1/schema.yaml",
-    "validate:openapi": "npx openapi-generator-cli validate -i api/v1/schema.yaml"
+    "lint:openapi": "npx redocly lint ../../apis/bijux-rag/v1/schema.yaml",
+    "validate:openapi": "npx openapi-generator-cli validate -i ../../apis/bijux-rag/v1/schema.yaml"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "2.22.0",

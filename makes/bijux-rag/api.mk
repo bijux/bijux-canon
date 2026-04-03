@@ -3,7 +3,7 @@
 SHELL                 := /bin/bash
 API_ARTIFACTS_DIR     ?= $(PROJECT_ARTIFACTS_DIR)/api
 API_LINT_DIR          ?= $(API_ARTIFACTS_DIR)/lint
-API_SCHEMA            ?= api/v1/schema.yaml
+API_SCHEMA            ?= $(API_DIR)/v1/schema.yaml
 API_SERVER_LOG        ?= $(API_ARTIFACTS_DIR)/server.log
 API_HOST              ?= 127.0.0.1
 API_PORT              ?= 8000
@@ -56,7 +56,7 @@ api-drift:
 	@$(VENV_PYTHON) "$(PACKAGE_SCRIPTS_DIR)/openapi_drift.py" --schema "$(API_SCHEMA)" --out "$(API_DRIFT_OUT)"
 
 api-clean:
-	@rm -rf "$(API_ARTIFACTS_DIR)" api/v1/__pycache__
+	@rm -rf "$(API_ARTIFACTS_DIR)"
 
 ##@ API
 api: ## Lint OpenAPI schema and run schemathesis against live FastAPI server

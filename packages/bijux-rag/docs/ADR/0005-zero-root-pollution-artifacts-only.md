@@ -32,7 +32,7 @@ artifacts/
       hypothesis/   # Hypothesis DB
       benchmarks/   # benchmark results
       tmp/          # temp test files
-    api/            # schemas, API logs/reports
+    api/            # API logs/reports
     sbom/           # SBOM outputs
     quality/        # interrogate, vulture, deptry, and related reports
     security/       # bandit, pip-audit, etc.
@@ -41,7 +41,7 @@ artifacts/
 
 > Note: Locally we emit to `artifacts/bijux-rag/build/`. In CI, the uploaded artifact named **`dist`** still represents that same build bundle after upload/download.
 
-Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`) remain in place and are **not** artifacts.
+Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`, `../../apis/bijux-rag/v1/schema.yaml`) remain in place and are **not** artifacts.
 
 ## Rationale
 
