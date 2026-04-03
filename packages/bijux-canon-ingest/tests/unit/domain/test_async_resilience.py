@@ -10,7 +10,7 @@ import warnings
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_canon_ingest.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.asyncio import (
     FakeClock,
     ResilienceEnv,
     RetryPolicy,

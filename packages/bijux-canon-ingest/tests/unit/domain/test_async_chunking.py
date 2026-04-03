@@ -8,7 +8,11 @@ import asyncio
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from bijux_canon_ingest.domain.effects.async_ import ChunkPolicy, FakeSleeper, async_gen_chunk
+from bijux_canon_ingest.domain.effects.asyncio import (
+    ChunkPolicy,
+    FakeSleeper,
+    async_gen_chunk,
+)
 from bijux_canon_ingest.result.types import Ok
 
 

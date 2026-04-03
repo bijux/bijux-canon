@@ -10,7 +10,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 from tests.helpers import collect
 
-from bijux_canon_ingest.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.asyncio import (
     async_gen_and_then,
     async_gen_map,
     async_gen_return,

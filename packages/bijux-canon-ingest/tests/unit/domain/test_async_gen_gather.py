@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 from tests.helpers import collect
 
-from bijux_canon_ingest.domain.effects.async_ import AsyncGen, async_gen_gather
+from bijux_canon_ingest.domain.effects.asyncio import AsyncGen, async_gen_gather
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 

@@ -11,7 +11,7 @@ The architecture treats these effect descriptions as part of the domain layer:
 
 from __future__ import annotations
 
-from .async_ import (
+from .asyncio import (
     AsyncAction,
     AsyncGen,
     AsyncPlan,
@@ -57,7 +57,7 @@ from .async_ import (
     make_test_resilience_env,
     resilient_mapper,
 )
-from .async_ import (
+from .asyncio import (
     RetryPolicy as AsyncRetryPolicy,
 )
 from .io_plan import IOPlan, io_bind, io_delay, io_map, io_pure, perform

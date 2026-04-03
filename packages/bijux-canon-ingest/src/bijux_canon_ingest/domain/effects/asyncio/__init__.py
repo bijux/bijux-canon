@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: async effect descriptions and combinators (end-of-Bijux RAG).
+"""Asyncio-backed effect descriptions and combinators.
 
 This subpackage groups all async-first primitives:
 - `AsyncPlan` (single async step as a pure description)

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TypeVar
 
-from bijux_canon_ingest.domain.effects.async_.plan import AsyncPlan
+from bijux_canon_ingest.domain.effects.asyncio.plan import AsyncPlan
 from bijux_canon_ingest.result.types import ErrInfo, Result
 
 A = TypeVar("A")

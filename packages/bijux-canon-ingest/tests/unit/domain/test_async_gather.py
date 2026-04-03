@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import asyncio
 
-from bijux_canon_ingest.domain.effects.async_ import AsyncPlan, async_gather
+from bijux_canon_ingest.domain.effects.asyncio import AsyncPlan, async_gather
 from bijux_canon_ingest.infra.adapters.async_runtime import perform_async
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 

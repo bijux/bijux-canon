@@ -6,7 +6,7 @@ from __future__ import annotations
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
-from bijux_canon_ingest.domain.effects.async_ import (
+from bijux_canon_ingest.domain.effects.asyncio import (
     lift_sync,
     lift_sync_gen_with_executor,
     lift_sync_with_executor,
