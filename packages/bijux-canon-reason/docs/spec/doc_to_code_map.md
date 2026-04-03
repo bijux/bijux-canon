@@ -7,7 +7,7 @@ STATUS: AUTHORITATIVE
 - `core_contracts.md` → governs system-wide invariants across execution/verification/replay. Doc supersedes code comments.
 - `determinism.md` → governs deterministic behavior (`retrieval/*`, `execution/runtime.py`, `core/fingerprints.py`). Doc supersedes code comments.
 - `verification_model.md` → governs verifier guarantees (`verification/*`). Doc supersedes code comments.
-- `security_model.md` → governs security posture (`interfaces/security.py`, `api/v1/app.py`, path validation). Doc supersedes code comments.
+- `security_model.md` → governs security posture (`interfaces/access_guards.py`, `api/v1/app.py`, path validation). Doc supersedes code comments.
 - `versioning_compat.md` → governs schema/version compatibility logic. Doc supersedes code comments.
 
 If code and these docs disagree, docs are authoritative and code must be fixed.***
