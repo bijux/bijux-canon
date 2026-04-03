@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: retry wrapper for idempotent IOPlan behaviours (sync version).
+"""Retry wrapper for idempotent IOPlan behaviours (sync version).
 
-This is distinct from `bijux_canon_ingest.policies.retries`:
-- `policies.retries` is a pure retry engine for `Result`-returning functions over iterables.
+This is distinct from `bijux_canon_ingest.safeguards.retries`:
+- `safeguards.retries` is a pure retry engine for `Result`-returning functions
+  over iterables.
 - `io_retry` wraps *effectful* `IOPlan[Result[T, ErrInfo]]` behaviours.
 """
 

@@ -112,7 +112,7 @@ from .fp import (
     wr_map,
     wr_pure,
 )
-from .policies.breakers import (
+from .safeguards.breakers import (
     BreakInfo,
     circuit_breaker_count_emit,
     circuit_breaker_count_truncate,
@@ -123,21 +123,21 @@ from .policies.breakers import (
     short_circuit_on_err_emit,
     short_circuit_on_err_truncate,
 )
-from .policies.memo import DiskCache, content_hash_key, lru_cache_custom, memoize_keyed
-from .policies.reports import (
+from .safeguards.memo import DiskCache, content_hash_key, lru_cache_custom, memoize_keyed
+from .safeguards.reports import (
     ErrGroup,
     ErrReport,
     fold_error_counts,
     fold_error_report,
     report_to_jsonable,
 )
-from .policies.resources import (
+from .safeguards.resources import (
     auto_close,
     managed_stream,
     nested_managed,
     with_resource_stream,
 )
-from .policies.retries import (
+from .safeguards.retries import (
     RetryCtx,
     RetryDecision,
     exp_policy,
