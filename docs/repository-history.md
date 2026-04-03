@@ -5,7 +5,7 @@ This repository preserves the standalone history of each imported project.
 Layout:
 
 - `packages/agentic-flows/`
-- `packages/bijux-agent/`
+- `packages/bijux-llm-agent/`
 - `packages/bijux-llm-rag/`
 - `packages/bijux-llm-rar/`
 - `packages/bijux-llm-vex/`
