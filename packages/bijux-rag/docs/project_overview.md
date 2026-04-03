@@ -58,7 +58,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `docs/architecture/` — overview (index.md) + ADRs (adr/index.md).
 - `docs/ADR/` — individual ADRs (0003-docstring-style, 0004-linting-quality, 0005-zero-pollution).
 - `docs/artifacts.md` — artifact dir explanations.
-- `docs/assets/` — images (bijux_icon/logo).
+- `../../docs/assets/` — shared documentation images and styles.
 - `docs/changelog.md` — changelog page backed by the package changelog.
 - `docs/community.md` — community expectations and repo-wide conduct links.
 - `docs/contributing.md` — package contribution workflow.

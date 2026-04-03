@@ -30,7 +30,7 @@ theme:
         name: Switch to light mode
 
 extra_css:
-  - assets/styles/extra.css
+  - assets/styles/bijux-rar.css
 
 extra:
   version:

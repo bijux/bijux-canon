@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/bijux/bijux-llm-nexus/main/packages/bijux-vex/docs/assets/bijux_logo_hq.png" alt="Bijux-Vex" width="180" />
+  <img src="https://raw.githubusercontent.com/bijux/bijux-llm-nexus/main/docs/assets/bijux_logo_hq.png" alt="Bijux-Vex" width="180" />
 </p>
 
 # bijux-vex
