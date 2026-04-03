@@ -5,7 +5,6 @@ ACT              ?= $(VENV)/bin
 MKDOCS_BIN_CAND  ?= $(ACT)/mkdocs
 MKDOCS_BIN       := $(shell test -x "$(MKDOCS_BIN_CAND)" && printf "%s" "$(MKDOCS_BIN_CAND)" || command -v mkdocs)
 # Keep build/cache strictly under artifacts/
-DOCS_GEN_DIR     ?= artifacts/docs/docs
 DOCS_SITE_DIR    ?= artifacts/docs/site
 DOCS_CACHE_DIR   ?= artifacts/docs/.cache
 
@@ -26,7 +25,7 @@ else
 endif
 
 # Guardrails (apply only when docs targets are invoked)
-DOCS_GOALS := $(filter docs docs-serve docs-deploy docs-check docs-prep,$(MAKECMDGOALS))
+DOCS_GOALS := $(filter docs docs-serve docs-deploy docs-check,$(MAKECMDGOALS))
 ifneq ($(strip $(DOCS_GOALS)),)
   ifeq ($(strip $(MKDOCS_BIN)),)
     $(error mkdocs not found. Activate your venv or install dev deps)
@@ -36,9 +35,9 @@ ifneq ($(strip $(DOCS_GOALS)),)
   endif
 endif
 
-.PHONY: docs docs-clean docs-serve docs-deploy docs-check docs-hygiene docs-prep
+.PHONY: docs docs-clean docs-serve docs-deploy docs-check docs-hygiene
 
-docs: docs-clean docs-prep
+docs: docs-clean
 	@echo "Building documentation"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
 	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) ENABLE_SOCIAL_CARDS=$(ENABLE_SOCIAL_CARDS) \
@@ -46,7 +45,7 @@ docs: docs-clean docs-prep
 	@$(MAKE) docs-hygiene
 	@echo "Documentation build complete"
 
-docs-serve: docs-prep
+docs-serve:
 	@HOST=$${HOST:-$(DOCS_HOST)}; PORT=$${PORT:-$(DOCS_PORT)}; \
 	  if command -v lsof >/dev/null 2>&1; then \
 	    while lsof -tiTCP:$$PORT -sTCP:LISTEN >/dev/null 2>&1; do PORT=$$((PORT+1)); done; \
@@ -55,12 +54,6 @@ docs-serve: docs-prep
 	  mkdir -p "$(DOCS_CACHE_DIR)"; \
 	  XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) SITE_URL=http://$$HOST:$$PORT/ \
 	    "$(MKDOCS_BIN)" serve --config-file "$(MKDOCS_CFG)" --dev-addr $$HOST:$$PORT
-
-docs-deploy:
-	@echo "Deploying documentation to GitHub Pages"
-	@mkdir -p "$(DOCS_CACHE_DIR)"
-	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) ENABLE_SOCIAL_CARDS=$(ENABLE_SOCIAL_CARDS) \
-	  "$(MKDOCS_BIN)" gh-deploy --strict --config-file "$(MKDOCS_CFG)"
 
 docs-check:
 	@echo "Checking documentation build integrity"
@@ -72,26 +65,13 @@ docs-check:
 	@$(MAKE) docs-hygiene
 	@echo "Documentation passes build checks"
 
-docs-prep:
-	@echo "Preparing docs → $(DOCS_GEN_DIR)"
-	@rm -rf "$(DOCS_GEN_DIR)"
-	@mkdir -p "$(DOCS_GEN_DIR)"
-	@if [ -d docs/ADR ]; then rsync -a --delete docs/ADR/ "$(DOCS_GEN_DIR)/ADR/"; fi
-	@if [ -d docs/assets ]; then rsync -a --delete docs/assets/ "$(DOCS_GEN_DIR)/assets/"; fi
-	@GEN_FILES_DISK_FALLBACK=1 GEN_FILES_DISK_DIR="$(DOCS_GEN_DIR)" \
-	  $(PY) scripts/docs_builder/mkdocs_manager.py
-	@test -f "$(DOCS_GEN_DIR)/nav.md" || (echo "ERROR: nav.md was not generated under $(DOCS_GEN_DIR)"; exit 1)
-	@echo "[docs-prep] nav.md present at $(DOCS_GEN_DIR)/nav.md"
-
 docs-clean:
 	@echo "Cleaning documentation build artifacts"
-	@rm -rf "$(DOCS_SITE_DIR)" artifacts/docs/.cache "$(DOCS_GEN_DIR)" site .cache
+	@rm -rf "$(DOCS_SITE_DIR)" artifacts/docs/.cache site .cache
 
 docs-hygiene:
 	@test ! -e "site"   || (echo "ERROR: root 'site/' is forbidden"; exit 1)
 	@test ! -e ".cache" || (echo "ERROR: root '.cache/' is forbidden"; exit 1)
-	@test ! -d "docs/artifacts" || (echo "ERROR: generated 'docs/artifacts' is forbidden; use docs-prep→$(DOCS_GEN_DIR)"; exit 1)
-	@test ! -d "docs/reference" || (echo "ERROR: generated 'docs/reference' is forbidden; use docs-prep→$(DOCS_GEN_DIR)"; exit 1)
 	@echo "Docs hygiene OK"
 
 ##@ Documentation
@@ -100,10 +80,9 @@ docs-serve:   ## Serve documentation locally (auto-reload; no disk generation)
 docs-deploy:  ## Deploy documentation to GitHub Pages (strict)
 docs-check:   ## Validate documentation builds without errors
 docs-clean:   ## Remove generated documentation artifacts
-docs-prep:    ## Generate markdown to disk under artifacts/docs/generated (optional)
-docs-hygiene: ## Fail if root 'site/' or '.cache/' or generated under docs/
+docs-hygiene: ## Fail if root 'site/' or '.cache/' exist
 
-docs-deploy: docs-clean docs-prep
+docs-deploy: docs-clean
 	@echo "Deploying documentation (gh-deploy)"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
 	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) ENABLE_SOCIAL_CARDS=$(ENABLE_SOCIAL_CARDS) \
