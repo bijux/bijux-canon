@@ -12,7 +12,6 @@ include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/lint.mk
-include $(MAKE_DIR)/mutation.mk
 include $(MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/security.mk
@@ -44,7 +43,7 @@ clean-soft:
 	@$(RM) \
 	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox demo .tmp_home \
 	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
-	  spec.json openapitools.json node_modules .mutmut-cache site \
+	  spec.json openapitools.json node_modules site \
 	  docs/reference artifacts "$(PROJECT_ARTIFACTS_DIR)" usage_test usage_test_artifacts .cache || true
 	@$(RM) $(CONFIG_DIR)/.ruff_cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
