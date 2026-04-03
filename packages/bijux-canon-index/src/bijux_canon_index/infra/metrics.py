@@ -6,6 +6,7 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 import time
+from typing import Protocol
 
 
 @dataclass
@@ -14,19 +15,19 @@ class MetricsSnapshot:
     timers_ms: dict[str, list[float]]
 
 
-class MetricsSink:
+class MetricsSink(Protocol):
     def increment(self, name: str, value: int = 1) -> None:
-        raise NotImplementedError
+        ...
 
     def observe_ms(self, name: str, value_ms: float) -> None:
-        raise NotImplementedError
+        ...
 
     def snapshot(self) -> MetricsSnapshot:
-        raise NotImplementedError
+        ...
 
 
 @dataclass
-class InMemoryMetrics(MetricsSink):
+class InMemoryMetrics:
     counters: dict[str, int] = field(default_factory=dict)
     timers_ms: dict[str, list[float]] = field(default_factory=dict)
 
