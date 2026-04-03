@@ -28,8 +28,8 @@ from bijux_canon_runtime.model.execution.replay_verdict import (
     ReplayVerdictDetails,
 )
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
-from bijux_canon_runtime.spec.ontology import DeterminismLevel
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology import DeterminismLevel
+from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
     ReplayMode,

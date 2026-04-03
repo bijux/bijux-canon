@@ -17,9 +17,9 @@ from bijux_canon_runtime.model.artifact.non_determinism_source import (
 from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
-from bijux_canon_runtime.spec.ontology import EntropyExhaustionAction, EntropyMagnitude
-from bijux_canon_runtime.spec.ontology.ids import TenantID
-from bijux_canon_runtime.spec.ontology.public import EntropySource
+from bijux_canon_runtime.ontology import EntropyExhaustionAction, EntropyMagnitude
+from bijux_canon_runtime.ontology.ids import TenantID
+from bijux_canon_runtime.ontology.public import EntropySource
 
 
 @dataclass(frozen=True)

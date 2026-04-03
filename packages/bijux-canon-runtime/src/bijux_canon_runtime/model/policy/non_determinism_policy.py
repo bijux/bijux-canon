@@ -11,8 +11,8 @@ from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
-from bijux_canon_runtime.spec.ontology import EntropyMagnitude
-from bijux_canon_runtime.spec.ontology.public import EntropySource, NonDeterminismIntentSource
+from bijux_canon_runtime.ontology import EntropyMagnitude
+from bijux_canon_runtime.ontology.public import EntropySource, NonDeterminismIntentSource
 
 _MAGNITUDE_ORDER = {
     EntropyMagnitude.LOW: 0,

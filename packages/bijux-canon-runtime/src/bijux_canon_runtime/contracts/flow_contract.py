@@ -9,14 +9,14 @@ from collections import defaultdict, deque
 from collections.abc import Iterable
 
 from bijux_canon_runtime.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DatasetState,
     DeterminismLevel,
     EntropyExhaustionAction,
     EntropyMagnitude,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     NonDeterminismIntentSource,
     ReplayAcceptability,

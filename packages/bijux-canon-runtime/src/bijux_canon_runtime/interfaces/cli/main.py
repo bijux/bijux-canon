@@ -44,7 +44,7 @@ from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.model.verification.arbitration_policy import ArbitrationPolicy
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.model.verification.verification_rule import VerificationRule
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     ArbitrationRule,
     DatasetState,
     DeterminismLevel,
@@ -53,7 +53,7 @@ from bijux_canon_runtime.spec.ontology import (
     FlowState,
     VerificationRandomness,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     ContractID,
     DatasetID,
@@ -64,7 +64,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     RunID,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     NonDeterminismIntentSource,
     ReplayAcceptability,

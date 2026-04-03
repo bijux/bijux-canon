@@ -13,8 +13,8 @@ from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvide
 from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.model.verification.verification_rule import VerificationRule
-from bijux_canon_runtime.spec.ontology import VerificationRandomness
-from bijux_canon_runtime.spec.ontology.ids import RuleID
+from bijux_canon_runtime.ontology import VerificationRandomness
+from bijux_canon_runtime.ontology.ids import RuleID
 
 RuleEvaluator = Callable[
     [ReasoningBundle, Sequence[RetrievedEvidence], Sequence[Artifact]], bool

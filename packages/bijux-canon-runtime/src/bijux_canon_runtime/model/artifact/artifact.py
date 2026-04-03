@@ -8,11 +8,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
 )
-from bijux_canon_runtime.spec.ontology.ids import ArtifactID, ContentHash, TenantID
+from bijux_canon_runtime.ontology.ids import ArtifactID, ContentHash, TenantID
 
 
 @dataclass(frozen=True)

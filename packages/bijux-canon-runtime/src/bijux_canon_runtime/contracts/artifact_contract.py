@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from bijux_canon_runtime.spec.ontology import ArtifactType
+from bijux_canon_runtime.ontology import ArtifactType
 
 _ALLOWED_PARENTS: dict[ArtifactType, set[ArtifactType]] = {
     ArtifactType.FLOW_MANIFEST: set(),

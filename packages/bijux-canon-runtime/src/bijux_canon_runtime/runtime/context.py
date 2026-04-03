@@ -26,15 +26,15 @@ from bijux_canon_runtime.model.artifact.non_determinism_source import (
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
-from bijux_canon_runtime.spec.ontology import EntropyMagnitude
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology import EntropyMagnitude
+from bijux_canon_runtime.ontology.ids import (
     ClaimID,
     EnvironmentFingerprint,
     FlowID,
     RunID,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import EntropySource
+from bijux_canon_runtime.ontology.public import EntropySource
 
 if TYPE_CHECKING:
     from bijux_canon_runtime.runtime.observability.storage.execution_store_protocol import (

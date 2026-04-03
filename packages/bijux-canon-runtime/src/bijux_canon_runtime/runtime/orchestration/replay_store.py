@@ -16,7 +16,7 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     execute_flow,
 )
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
-from bijux_canon_runtime.spec.ontology.ids import RunID, TenantID
+from bijux_canon_runtime.ontology.ids import RunID, TenantID
 
 
 def replay_with_store(

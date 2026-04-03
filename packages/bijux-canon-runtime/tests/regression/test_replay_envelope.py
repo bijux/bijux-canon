@@ -9,12 +9,12 @@ from bijux_canon_runtime.runtime.observability.analysis.trace_diff import semant
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DatasetState,
     DeterminismLevel,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     ClaimID,
     DatasetID,
     EnvironmentFingerprint,
@@ -23,7 +23,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import ReplayAcceptability
+from bijux_canon_runtime.ontology.public import ReplayAcceptability
 
 pytestmark = pytest.mark.regression
 

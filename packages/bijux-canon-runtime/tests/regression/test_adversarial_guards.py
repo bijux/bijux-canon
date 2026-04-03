@@ -33,7 +33,7 @@ from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
 from bijux_canon_runtime.model.reasoning_step import ReasoningStep
 from bijux_canon_runtime.model.verification.arbitration_policy import ArbitrationPolicy
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     ArbitrationRule,
     ArtifactScope,
     ArtifactType,
@@ -44,7 +44,7 @@ from bijux_canon_runtime.spec.ontology import (
     StepType,
     VerificationRandomness,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     ArtifactID,
     BundleID,
@@ -61,7 +61,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     EventType,
     ReplayAcceptability,

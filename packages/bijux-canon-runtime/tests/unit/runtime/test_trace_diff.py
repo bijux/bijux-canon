@@ -13,14 +13,14 @@ from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     CausalityTag,
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     ContentHash,
     DatasetID,
     EnvironmentFingerprint,
@@ -30,7 +30,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     TenantID,
     ToolID,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     EventType,
     ReplayAcceptability,

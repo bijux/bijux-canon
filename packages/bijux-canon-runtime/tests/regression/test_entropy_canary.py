@@ -10,9 +10,9 @@ from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from bijux_canon_runtime.spec.ontology import EntropyMagnitude
-from bijux_canon_runtime.spec.ontology.ids import FlowID, TenantID
-from bijux_canon_runtime.spec.ontology.public import EntropySource
+from bijux_canon_runtime.ontology import EntropyMagnitude
+from bijux_canon_runtime.ontology.ids import FlowID, TenantID
+from bijux_canon_runtime.ontology.public import EntropySource
 
 pytestmark = pytest.mark.regression
 

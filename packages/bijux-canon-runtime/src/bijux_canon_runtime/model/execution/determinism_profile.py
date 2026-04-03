@@ -8,8 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudgetSlice
-from bijux_canon_runtime.spec.ontology import EntropyMagnitude, EntropySeverity
-from bijux_canon_runtime.spec.ontology.public import EntropySource, ReplayAcceptability
+from bijux_canon_runtime.ontology import EntropyMagnitude, EntropySeverity
+from bijux_canon_runtime.ontology.public import EntropySource, ReplayAcceptability
 
 
 @dataclass(frozen=True)

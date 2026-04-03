@@ -14,18 +14,18 @@ from bijux_canon_runtime.model.execution.non_deterministic_intent import (
 )
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     EnvironmentFingerprint,
     FlowID,
     PlanHash,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import ReplayAcceptability, ReplayMode
+from bijux_canon_runtime.ontology.public import ReplayAcceptability, ReplayMode
 
 
 @dataclass(frozen=True)

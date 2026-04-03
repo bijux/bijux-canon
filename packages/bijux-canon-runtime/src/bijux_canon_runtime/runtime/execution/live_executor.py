@@ -28,13 +28,13 @@ from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
 from bijux_canon_runtime.model.verification.verification_result import VerificationResult
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     CausalityTag,
     VerificationPhase,
     VerificationRandomness,
 )
-from bijux_canon_runtime.spec.ontology.ids import ContentHash, RuleID, ToolID
-from bijux_canon_runtime.spec.ontology.public import EventType
+from bijux_canon_runtime.ontology.ids import ContentHash, RuleID, ToolID
+from bijux_canon_runtime.ontology.public import EventType
 
 if TYPE_CHECKING:
     from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor

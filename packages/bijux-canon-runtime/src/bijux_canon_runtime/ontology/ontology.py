@@ -6,13 +6,13 @@ from __future__ import annotations
 
 from enum import StrEnum, auto
 
-from bijux_canon_runtime.spec.ontology.ids import ActionID as Action
-from bijux_canon_runtime.spec.ontology.ids import AgentID as Agent
-from bijux_canon_runtime.spec.ontology.ids import ArtifactID as Artifact
-from bijux_canon_runtime.spec.ontology.ids import EvidenceID as Evidence
-from bijux_canon_runtime.spec.ontology.ids import FlowID as Flow
-from bijux_canon_runtime.spec.ontology.ids import StepID as Step
-from bijux_canon_runtime.spec.ontology.ids import ToolID as Tool
+from bijux_canon_runtime.ontology.ids import ActionID as Action
+from bijux_canon_runtime.ontology.ids import AgentID as Agent
+from bijux_canon_runtime.ontology.ids import ArtifactID as Artifact
+from bijux_canon_runtime.ontology.ids import EvidenceID as Evidence
+from bijux_canon_runtime.ontology.ids import FlowID as Flow
+from bijux_canon_runtime.ontology.ids import StepID as Step
+from bijux_canon_runtime.ontology.ids import ToolID as Tool
 
 
 class ArtifactType(StrEnum):

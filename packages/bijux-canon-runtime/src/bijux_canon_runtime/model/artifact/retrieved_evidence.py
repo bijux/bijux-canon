@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology import EvidenceDeterminism
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology import EvidenceDeterminism
+from bijux_canon_runtime.ontology.ids import (
     ContentHash,
     ContractID,
     EvidenceID,

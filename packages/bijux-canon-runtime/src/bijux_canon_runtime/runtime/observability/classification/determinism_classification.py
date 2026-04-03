@@ -11,12 +11,12 @@ from bijux_canon_runtime.model.execution.determinism_profile import (
     EntropySourceProfile,
 )
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DeterminismLevel,
     EntropyMagnitude,
     EntropySeverity,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     DeterminismClass,
     EntropySource,
     EventType,

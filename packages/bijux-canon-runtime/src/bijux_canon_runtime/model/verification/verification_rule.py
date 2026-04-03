@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology import VerificationRandomness
-from bijux_canon_runtime.spec.ontology.ids import RuleID
+from bijux_canon_runtime.ontology import VerificationRandomness
+from bijux_canon_runtime.ontology.ids import RuleID
 
 
 @dataclass(frozen=True)

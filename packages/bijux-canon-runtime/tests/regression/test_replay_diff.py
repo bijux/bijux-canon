@@ -16,7 +16,7 @@ from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
     DeterminismLevel,
@@ -24,7 +24,7 @@ from bijux_canon_runtime.spec.ontology import (
     EvidenceDeterminism,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     ArtifactID,
     ContentHash,
@@ -36,7 +36,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )

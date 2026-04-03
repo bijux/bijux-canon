@@ -11,12 +11,12 @@ from bijux_canon_runtime.runtime.orchestration.determinism_guard import (
 )
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
     EvidenceDeterminism,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     ArtifactID,
     ContentHash,
     ContractID,

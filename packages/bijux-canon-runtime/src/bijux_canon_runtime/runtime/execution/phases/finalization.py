@@ -16,7 +16,7 @@ from bijux_canon_runtime.runtime.observability.classification.fingerprint import
     fingerprint_policy,
 )
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.ontology.ids import PolicyFingerprint, ResolverID
+from bijux_canon_runtime.ontology.ids import PolicyFingerprint, ResolverID
 
 
 def finalization_phase(

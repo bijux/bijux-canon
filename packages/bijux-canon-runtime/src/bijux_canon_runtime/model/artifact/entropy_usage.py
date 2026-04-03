@@ -10,9 +10,9 @@ from dataclasses import dataclass
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from bijux_canon_runtime.spec.ontology import EntropyMagnitude
-from bijux_canon_runtime.spec.ontology.ids import TenantID
-from bijux_canon_runtime.spec.ontology.public import EntropySource
+from bijux_canon_runtime.ontology import EntropyMagnitude
+from bijux_canon_runtime.ontology.ids import TenantID
+from bijux_canon_runtime.ontology.public import EntropySource
 
 
 @dataclass(frozen=True)

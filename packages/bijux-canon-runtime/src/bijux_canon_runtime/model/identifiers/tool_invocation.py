@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology import DeterminismLevel
-from bijux_canon_runtime.spec.ontology.ids import ContentHash, ToolID
+from bijux_canon_runtime.ontology import DeterminismLevel
+from bijux_canon_runtime.ontology.ids import ContentHash, ToolID
 
 
 @dataclass(frozen=True)

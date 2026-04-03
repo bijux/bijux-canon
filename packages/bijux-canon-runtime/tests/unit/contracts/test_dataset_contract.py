@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 
 from bijux_canon_runtime.contracts.dataset_contract import validate_transition
-from bijux_canon_runtime.spec.ontology import DatasetState
+from bijux_canon_runtime.ontology import DatasetState
 
 pytestmark = pytest.mark.unit
 

@@ -24,13 +24,13 @@ from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
     CausalityTag,
 )
-from bijux_canon_runtime.spec.ontology.ids import ArtifactID, PolicyFingerprint, ResolverID
-from bijux_canon_runtime.spec.ontology.public import EventType
+from bijux_canon_runtime.ontology.ids import ArtifactID, PolicyFingerprint, ResolverID
+from bijux_canon_runtime.ontology.public import EventType
 
 
 def _causality_tag(event_type: EventType) -> CausalityTag:

@@ -53,14 +53,14 @@ from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
 from bijux_canon_runtime.model.verification.verification_result import VerificationResult
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     CausalityTag,
     DeterminismLevel,
     EntropyMagnitude,
     EventType,
 )
-from bijux_canon_runtime.spec.ontology.ids import ClaimID, FlowID, RunID, TenantID
-from bijux_canon_runtime.spec.ontology.public import NonDeterminismIntentSource
+from bijux_canon_runtime.ontology.ids import ClaimID, FlowID, RunID, TenantID
+from bijux_canon_runtime.ontology.public import NonDeterminismIntentSource
 
 
 @dataclass(frozen=True)

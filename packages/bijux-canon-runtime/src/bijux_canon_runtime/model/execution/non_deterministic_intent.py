@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology import EntropyMagnitude
-from bijux_canon_runtime.spec.ontology.public import NonDeterminismIntentSource
+from bijux_canon_runtime.ontology import EntropyMagnitude
+from bijux_canon_runtime.ontology.public import NonDeterminismIntentSource
 
 
 @dataclass(frozen=True)

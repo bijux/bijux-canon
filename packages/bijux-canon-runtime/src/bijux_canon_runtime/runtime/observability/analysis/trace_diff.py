@@ -14,8 +14,8 @@ from bijux_canon_runtime.runtime.observability.classification.determinism_classi
 )
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.spec.ontology import EntropyMagnitude
-from bijux_canon_runtime.spec.ontology.public import ReplayAcceptability
+from bijux_canon_runtime.ontology import EntropyMagnitude
+from bijux_canon_runtime.ontology.public import ReplayAcceptability
 
 _MAGNITUDE_ORDER = {
     EntropyMagnitude.LOW: 0,

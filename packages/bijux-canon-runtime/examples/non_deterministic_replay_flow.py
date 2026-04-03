@@ -22,14 +22,14 @@ from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.policy.non_determinism_policy import (
     NonDeterminismPolicy,
 )
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     CausalityTag,
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     ContractID,
     DatasetID,
@@ -40,7 +40,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     EventType,
     NonDeterminismIntentSource,

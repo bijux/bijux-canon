@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology import CausalityTag
-from bijux_canon_runtime.spec.ontology.public import EventType
+from bijux_canon_runtime.ontology import CausalityTag
+from bijux_canon_runtime.ontology.public import EventType
 
 
 @dataclass(frozen=True)

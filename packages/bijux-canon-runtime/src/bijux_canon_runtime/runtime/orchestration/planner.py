@@ -25,8 +25,8 @@ from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
-from bijux_canon_runtime.spec.ontology import StepType
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology import StepType
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     EnvironmentFingerprint,
     FlowID,

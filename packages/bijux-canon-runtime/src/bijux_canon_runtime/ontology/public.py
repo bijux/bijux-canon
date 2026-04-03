@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for spec/ontology/public.py."""
+"""Module definitions for ontology/public.py."""
 
 from __future__ import annotations
 
-from bijux_canon_runtime.spec.ontology.ontology import (
+from bijux_canon_runtime.ontology.ontology import (
     DeterminismClass,
     EntropySource,
     EventType,

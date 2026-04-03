@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology import ArbitrationRule
+from bijux_canon_runtime.ontology import ArbitrationRule
 
 
 @dataclass(frozen=True)

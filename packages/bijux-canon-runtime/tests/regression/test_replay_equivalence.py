@@ -13,11 +13,11 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
 )
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DeterminismLevel,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     ContractID,
     FlowID,
@@ -25,7 +25,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import ReplayAcceptability
+from bijux_canon_runtime.ontology.public import ReplayAcceptability
 
 pytestmark = pytest.mark.regression
 

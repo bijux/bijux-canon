@@ -14,12 +14,12 @@ from bijux_canon_runtime.model.datasets.retrieval_request import RetrievalReques
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DeterminismLevel,
     FlowState,
     StepType,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     ContractID,
     FlowID,
@@ -29,7 +29,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from bijux_canon_runtime.spec.ontology.public import ReplayAcceptability
+from bijux_canon_runtime.ontology.public import ReplayAcceptability
 
 pytestmark = pytest.mark.regression
 

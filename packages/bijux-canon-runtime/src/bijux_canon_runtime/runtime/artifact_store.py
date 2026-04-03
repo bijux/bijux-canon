@@ -9,11 +9,11 @@ from abc import ABC, abstractmethod
 import hashlib
 
 from bijux_canon_runtime.model.artifact.artifact import Artifact
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
 )
-from bijux_canon_runtime.spec.ontology.ids import ArtifactID, ContentHash, TenantID
+from bijux_canon_runtime.ontology.ids import ArtifactID, ContentHash, TenantID
 
 
 class ArtifactStore(ABC):

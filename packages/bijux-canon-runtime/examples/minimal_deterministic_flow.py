@@ -20,13 +20,13 @@ from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.flow_manifest import FlowManifest
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     ContractID,
     DatasetID,
@@ -34,7 +34,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     GateID,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import EntropySource, ReplayAcceptability
+from bijux_canon_runtime.ontology.public import EntropySource, ReplayAcceptability
 
 
 def build_manifest() -> FlowManifest:

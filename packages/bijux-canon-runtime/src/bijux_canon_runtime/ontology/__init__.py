@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for spec/ontology/__init__.py."""
+"""Module definitions for ontology/__init__.py."""
 
 from __future__ import annotations
 
-from bijux_canon_runtime.spec.ontology.artifact_types import ArtifactType
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.artifact_types import ArtifactType
+from bijux_canon_runtime.ontology.ids import (
     ActionID,
     AgentID,
     ArtifactID,
@@ -28,7 +28,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     ToolID,
     VersionID,
 )
-from bijux_canon_runtime.spec.ontology.ontology import (
+from bijux_canon_runtime.ontology.ontology import (
     ArbitrationRule,
     ArtifactScope,
     CausalityTag,
@@ -46,7 +46,7 @@ from bijux_canon_runtime.spec.ontology.ontology import (
     VerificationPhase,
     VerificationRandomness,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     EventType,
     NonDeterminismIntentSource,

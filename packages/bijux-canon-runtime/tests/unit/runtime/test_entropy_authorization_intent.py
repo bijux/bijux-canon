@@ -23,14 +23,14 @@ from bijux_canon_runtime.model.execution.non_deterministic_intent import (
 )
 from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DeterminismLevel,
     EntropyMagnitude,
     EvidenceDeterminism,
     FlowState,
     StepType,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     ContentHash,
     ContractID,
@@ -42,7 +42,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     NonDeterminismIntentSource,
     ReplayAcceptability,

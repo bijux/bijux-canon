@@ -34,7 +34,7 @@ from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
 from bijux_canon_runtime.model.verification.verification_result import VerificationResult
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
     CausalityTag,
@@ -42,14 +42,14 @@ from bijux_canon_runtime.spec.ontology import (
     VerificationPhase,
     VerificationRandomness,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     ArtifactID,
     ClaimID,
     ContentHash,
     RuleID,
     ToolID,
 )
-from bijux_canon_runtime.spec.ontology.public import EventType
+from bijux_canon_runtime.ontology.public import EventType
 
 
 def execution_phase(

@@ -7,11 +7,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     VerificationPhase,
     VerificationRandomness,
 )
-from bijux_canon_runtime.spec.ontology.ids import ArtifactID, RuleID
+from bijux_canon_runtime.ontology.ids import ArtifactID, RuleID
 
 
 @dataclass(frozen=True)

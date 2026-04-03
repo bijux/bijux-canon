@@ -13,7 +13,7 @@ from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.spec.ontology.ids import PlanHash
+from bijux_canon_runtime.ontology.ids import PlanHash
 
 pytestmark = pytest.mark.regression
 

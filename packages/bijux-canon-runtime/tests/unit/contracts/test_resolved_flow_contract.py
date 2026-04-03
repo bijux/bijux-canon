@@ -19,14 +19,14 @@ from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
     StepType,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     AgentID,
     DatasetID,
     EnvironmentFingerprint,
@@ -37,7 +37,7 @@ from bijux_canon_runtime.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from bijux_canon_runtime.spec.ontology.public import (
+from bijux_canon_runtime.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )

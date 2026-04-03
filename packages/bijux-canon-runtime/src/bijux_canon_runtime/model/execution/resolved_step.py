@@ -13,12 +13,12 @@ from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     DeterminismLevel,
     EntropyMagnitude,
     StepType,
 )
-from bijux_canon_runtime.spec.ontology.ids import AgentID, ArtifactID, InputsFingerprint
+from bijux_canon_runtime.ontology.ids import AgentID, ArtifactID, InputsFingerprint
 
 
 @dataclass(frozen=True)

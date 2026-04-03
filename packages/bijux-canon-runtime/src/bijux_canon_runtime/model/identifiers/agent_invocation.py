@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology.ids import AgentID, InputsFingerprint, VersionID
+from bijux_canon_runtime.ontology.ids import AgentID, InputsFingerprint, VersionID
 
 
 @dataclass(frozen=True)

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology.ids import ClaimID, StepID
+from bijux_canon_runtime.ontology.ids import ClaimID, StepID
 
 
 @dataclass(frozen=True)

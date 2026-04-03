@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology import DatasetState
-from bijux_canon_runtime.spec.ontology.ids import DatasetID, TenantID
+from bijux_canon_runtime.ontology import DatasetState
+from bijux_canon_runtime.ontology.ids import DatasetID, TenantID
 
 
 @dataclass(frozen=True)

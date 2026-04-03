@@ -8,7 +8,7 @@ import pytest
 from bijux_canon_runtime.runtime.orchestration.determinism_guard import (
     validate_determinism,
 )
-from bijux_canon_runtime.spec.ontology import DeterminismLevel
+from bijux_canon_runtime.ontology import DeterminismLevel
 
 pytestmark = pytest.mark.e2e
 

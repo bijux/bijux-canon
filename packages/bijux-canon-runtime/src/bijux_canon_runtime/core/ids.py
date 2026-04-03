@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.spec.ontology.ids import *  # noqa: F403
+from bijux_canon_runtime.ontology.ids import *  # noqa: F403
 
 __all__ = [
     name for name in globals() if name.endswith("ID") or name.endswith("Fingerprint")

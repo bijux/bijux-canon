@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_runtime.spec.ontology.ids import FlowID, StepID
-from bijux_canon_runtime.spec.ontology.public import EntropySource
+from bijux_canon_runtime.ontology.ids import FlowID, StepID
+from bijux_canon_runtime.ontology.public import EntropySource
 
 
 @dataclass(frozen=True)

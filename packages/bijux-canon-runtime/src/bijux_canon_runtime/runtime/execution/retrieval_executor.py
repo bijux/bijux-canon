@@ -17,18 +17,18 @@ from bijux_canon_runtime.model.artifact.non_determinism_source import (
 )
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.spec.ontology import (
+from bijux_canon_runtime.ontology import (
     EntropyMagnitude,
     EvidenceDeterminism,
 )
-from bijux_canon_runtime.spec.ontology.ids import (
+from bijux_canon_runtime.ontology.ids import (
     ContentHash,
     ContractID,
     EvidenceID,
     StepID,
     TenantID,
 )
-from bijux_canon_runtime.spec.ontology.public import EntropySource
+from bijux_canon_runtime.ontology.public import EntropySource
 
 
 class RetrievalExecutor:

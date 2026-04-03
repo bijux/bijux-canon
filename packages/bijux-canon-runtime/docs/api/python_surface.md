@@ -18,7 +18,7 @@ Classes
 - bijux_canon_runtime.runtime.observability.storage.execution_store.DuckDBExecutionReadStore
 
 Modules
-- bijux_canon_runtime.spec.ontology.public
+- bijux_canon_runtime.ontology.public
 - bijux_canon_runtime.runtime.orchestration.execute_flow
 - bijux_canon_runtime.runtime.orchestration.replay_store
 - bijux_canon_runtime.runtime.observability.storage.execution_store
