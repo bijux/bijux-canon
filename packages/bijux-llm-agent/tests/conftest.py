@@ -103,15 +103,19 @@ def enforce_artifact_boundary():
     mp.setattr(
         os,
         "mkdir",
-        lambda path, *args, **kwargs: _assert_within_allowed(Path(path))
-        or original_os_mkdir(path, *args, **kwargs),
+        lambda path, *args, **kwargs: (
+            _assert_within_allowed(Path(path))
+            or original_os_mkdir(path, *args, **kwargs)
+        ),
         raising=False,
     )
     mp.setattr(
         os,
         "makedirs",
-        lambda path, *args, **kwargs: _assert_within_allowed(Path(path))
-        or original_os_makedirs(path, *args, **kwargs),
+        lambda path, *args, **kwargs: (
+            _assert_within_allowed(Path(path))
+            or original_os_makedirs(path, *args, **kwargs)
+        ),
         raising=False,
     )
 

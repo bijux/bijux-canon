@@ -24,11 +24,13 @@ def build_stage_definitions(pipeline: Any) -> list[dict[str, Any]]:
             "name": "summarization",
             "agent": pipeline.summarizer,
             "dependencies": ["file_extraction"],
-            "condition": lambda ctx: "file_extraction" in ctx
-            and isinstance(ctx["file_extraction"], dict)
-            and "text" in ctx["file_extraction"]
-            and isinstance(ctx["file_extraction"]["text"], str)
-            and ctx["file_extraction"]["text"].strip(),
+            "condition": lambda ctx: (
+                "file_extraction" in ctx
+                and isinstance(ctx["file_extraction"], dict)
+                and "text" in ctx["file_extraction"]
+                and isinstance(ctx["file_extraction"]["text"], str)
+                and ctx["file_extraction"]["text"].strip()
+            ),
             "timeout": pipeline.stage_timeout,
             "output_key": "summarization",
         },
@@ -36,10 +38,12 @@ def build_stage_definitions(pipeline: Any) -> list[dict[str, Any]]:
             "name": "validation",
             "agent": pipeline.validator,
             "dependencies": ["summarization"],
-            "condition": lambda ctx: "summarization" in ctx
-            and isinstance(ctx["summarization"], dict)
-            and "summary" in ctx["summarization"]
-            and isinstance(ctx["summarization"]["summary"], dict),
+            "condition": lambda ctx: (
+                "summarization" in ctx
+                and isinstance(ctx["summarization"], dict)
+                and "summary" in ctx["summarization"]
+                and isinstance(ctx["summarization"]["summary"], dict)
+            ),
             "timeout": pipeline.stage_timeout,
             "output_key": "validation_result",
         },
@@ -47,10 +51,12 @@ def build_stage_definitions(pipeline: Any) -> list[dict[str, Any]]:
             "name": "critique",
             "agent": pipeline.critique,
             "dependencies": ["summarization", "validation"],
-            "condition": lambda ctx: "summarization" in ctx
-            and isinstance(ctx["summarization"], dict)
-            and "summary" in ctx["summarization"]
-            and isinstance(ctx["summarization"]["summary"], dict),
+            "condition": lambda ctx: (
+                "summarization" in ctx
+                and isinstance(ctx["summarization"], dict)
+                and "summary" in ctx["summarization"]
+                and isinstance(ctx["summarization"]["summary"], dict)
+            ),
             "timeout": pipeline.stage_timeout,
             "output_key": "critique_result",
         },
