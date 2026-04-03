@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "bijux-canon-ingest"
 dynamic = ["version"]
 description = "Deterministic document ingestion, indexing, and retrieval toolkit"
-readme = "docs/index.md"
+readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -106,7 +106,7 @@ ignore-semiprivate = true
 [tool.hatch.build]
 include = [
   "src/bijux_canon_ingest/**",
-  "docs/index.md",
+  "README.md",
   "pyproject.toml",
 ]
 

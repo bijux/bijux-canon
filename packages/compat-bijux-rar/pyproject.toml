@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "bijux-rar"
 dynamic = ["version", "dependencies"]
 description = "Compatibility package for bijux-canon-reason."
-readme = "overview.md"
+readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -44,4 +44,4 @@ canonical-name = "bijux-canon-reason"
 bypass-selection = true
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "overview.md", "hatch_build.py"]
+include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py"]

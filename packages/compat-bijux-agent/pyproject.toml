@@ -7,7 +7,7 @@ name = "bijux-agent"
 dynamic = ["version", "dependencies"]
 description = "Compatibility package for bijux-canon-agent."
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
-readme = "overview.md"
+readme = "README.md"
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 keywords = ["pipeline", "multi-agent", "file-processing", "summarization", "AI", "LLM"]
@@ -45,4 +45,4 @@ canonical-name = "bijux-canon-agent"
 bypass-selection = true
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "overview.md", "hatch_build.py"]
+include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py"]

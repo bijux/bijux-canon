@@ -9,7 +9,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-canon-index"
 description = "bijux-canon-index: contract-driven vector execution with replayable determinism and audited ANN."
-readme = { file = "docs/index.md", content-type = "text/markdown" }
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -154,7 +154,7 @@ include = ["src/bijux_canon_index/py.typed"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-  "docs/index.md",
+  "README.md",
   "CHANGELOG.md",
   "docs/maintainer/pypi.md",
   "src/bijux_canon_index/py.typed",
@@ -162,7 +162,7 @@ include = [
 
 [tool.hatch.build]
 include = [
-  "docs/index.md",
+  "README.md",
   "CHANGELOG.md",
   "docs/maintainer/pypi.md",
   "src/bijux_canon_index/py.typed",
@@ -171,6 +171,6 @@ include = [
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"
 fragments = [
-  { path = "docs/index.md" },
+  { path = "README.md" },
   { path = "CHANGELOG.md" },
 ]

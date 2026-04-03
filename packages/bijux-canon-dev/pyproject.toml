@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "bijux-canon-dev"
 dynamic = ["version"]
 description = "Repository-owned developer tooling for bijux-canon packages."
-readme = "docs/index.md"
+readme = "README.md"
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -51,6 +51,6 @@ packages = ["src/bijux_canon_dev"]
 
 [tool.hatch.build]
 include = [
-  "docs/index.md",
+  "README.md",
   "src/bijux_canon_dev/**",
 ]

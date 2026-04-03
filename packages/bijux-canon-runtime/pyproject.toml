@@ -10,7 +10,7 @@ build-backend = "hatchling.build"
 name = "bijux-canon-runtime"
 dynamic = ["version"]
 description = "Governed execution and replay with auditable non-determinism"
-readme = { file = "docs/index.md", content-type = "text/markdown" }
+readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -106,7 +106,7 @@ bijux-canon-runtime = "bijux_canon_runtime.interfaces.cli.entrypoint:main"
 
 [tool.hatch.build]
 include = [
-  "docs/index.md",
+  "README.md",
   "CHANGELOG.md",
   "src/bijux_canon_runtime/py.typed",
 ]
@@ -130,7 +130,7 @@ zip-safe = false
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"
 fragments = [
-  { path = "docs/index.md" },
+  { path = "README.md" },
   { path = "CHANGELOG.md" },
 ]
 
