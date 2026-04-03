@@ -15,7 +15,7 @@ class RunConfigV1(BaseModel):
     agents: (
         list[
             Literal[
-                "file_reader", "summarizer", "validator", "critique", "task_handler"
+                "file_reader", "summarizer", "validator", "critique", "workflow_executor"
             ]
         ]
         | None

@@ -71,7 +71,7 @@ LIFECYCLE_DETAILS: dict[PipelineLifecycle, LifecycleInfo] = {
         allowed_agents=(
             AgentType.READER,
             AgentType.SUMMARIZER,
-            AgentType.TASKHANDLER,
+            AgentType.WORKFLOW_EXECUTOR,
             AgentType.CRITIQUE,
         ),
         stop_reasons=(

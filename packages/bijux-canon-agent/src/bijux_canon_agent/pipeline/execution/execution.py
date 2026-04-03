@@ -59,7 +59,7 @@ class PipelineExecutionMixin(PipelineIOMixin):
     summarizer: Any
     validator: Any
     critique: Any
-    task_handler: Any
+    workflow_executor: Any
 
     def reset_telemetry(self) -> None: ...
 

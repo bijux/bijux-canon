@@ -18,7 +18,7 @@ _DEFAULT_AGENTS: list[str] = [
     "summarizer",
     "validator",
     "critique",
-    "task_handler",
+    "workflow_executor",
 ]
 
 

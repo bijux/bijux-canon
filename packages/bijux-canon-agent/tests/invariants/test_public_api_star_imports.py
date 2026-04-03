@@ -11,7 +11,7 @@ PUBLIC_MODULES = {
         "FileReaderAgent",
         "PlannerAgent",
         "SummarizerAgent",
-        "TaskHandlerAgent",
+        "WorkflowExecutorAgent",
         "ValidatorAgent",
         "JudgeAgent",
         "VerifierAgent",

@@ -11,7 +11,7 @@ class AgentType(StrEnum):
     READER = "reader"
     SUMMARIZER = "summarizer"
     CRITIQUE = "critique"
-    TASKHANDLER = "taskhandler"
+    WORKFLOW_EXECUTOR = "workflow_executor"
     PLANNER = "planner"
     JUDGE = "judge"
     VERIFIER = "verifier"

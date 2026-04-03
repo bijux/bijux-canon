@@ -21,7 +21,7 @@ def _load_snapshot() -> dict[str, object]:
 
 def test_refactor_safety_net_matches_snapshot() -> None:
     snapshot = _load_snapshot()
-    config = {"pipeline": {"parameters": {}}, "agents": ["file_reader", "task_handler"]}
+    config = {"pipeline": {"parameters": {}}, "agents": ["file_reader", "workflow_executor"]}
     fingerprint = RunFingerprint.create(standard_pipeline_definition(), config)
     public_imports = cast(list[str], list(bijux_canon_agent.__all__))
     actual = {

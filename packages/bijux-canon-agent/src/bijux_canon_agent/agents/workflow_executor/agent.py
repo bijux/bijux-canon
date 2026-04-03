@@ -1,7 +1,7 @@
-"""TaskHandlerAgent module for executing stages in a multi-agent system.
+"""WorkflowExecutorAgent module for executing workflow steps in a multi-agent system.
 
-This module provides the TaskHandlerAgent class, which manages the execution
-of a sequence of stages in a multi-agent system. It focuses on task execution
+This module provides the WorkflowExecutorAgent class, which manages the execution
+of a sequence of workflow steps in a multi-agent system. It focuses on workflow execution
 without orchestration, providing detailed logging and telemetry.
 """
 
@@ -15,7 +15,7 @@ from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
 
-class TaskHandlerAuditEntry(TypedDict, total=False):
+class WorkflowExecutorAuditEntry(TypedDict, total=False):
     """TypedDict for audit trail entries."""
 
     stage_name: str
@@ -25,29 +25,29 @@ class TaskHandlerAuditEntry(TypedDict, total=False):
     stages_processed: list[str]
 
 
-class TaskHandlerFinalStatus(TypedDict):
+class WorkflowExecutorFinalStatus(TypedDict):
     """TypedDict for the final status block."""
 
     stages_processed: list[str]
     iterations: int
 
 
-class TaskHandlerResult(TypedDict):
-    """TypedDict describing the TaskHandlerAgent run output."""
+class WorkflowExecutorResult(TypedDict):
+    """TypedDict describing the WorkflowExecutorAgent run output."""
 
     stages: dict[str, dict[str, Any]]
-    final_status: TaskHandlerFinalStatus
-    audit_trail: list[TaskHandlerAuditEntry]
+    final_status: WorkflowExecutorFinalStatus
+    audit_trail: list[WorkflowExecutorAuditEntry]
     warnings: list[str]
     error: NotRequired[str]
     action_plan: NotRequired[list[str]]
 
 
-class TaskHandlerAgent(BaseAgent):
-    """Enhanced TaskHandlerAgent for executing a seq of stages in a multi-agent system.
+class WorkflowExecutorAgent(BaseAgent):
+    """Enhanced WorkflowExecutorAgent for executing workflow steps in a multi-agent system.
 
-    Manages stage execution with detailed logging and telemetry, focusing on
-    task execution without orchestration.
+    Manages step execution with detailed logging and telemetry, focusing on
+    workflow execution without orchestration.
     """
 
     def __init__(
@@ -55,7 +55,7 @@ class TaskHandlerAgent(BaseAgent):
         config: dict[str, Any],
         logger_manager: LoggerManager,
     ):
-        """Initialize the TaskHandlerAgent with configuration and logger manager.
+        """Initialize the WorkflowExecutorAgent with configuration and logger manager.
 
         Args:
             config: Configuration settings for the agent.
@@ -68,7 +68,7 @@ class TaskHandlerAgent(BaseAgent):
         self._stages: list[dict[str, Any]] = []  # Store stages to be executed
 
         self.logger.info(
-            "TaskHandlerAgent initialized",
+            "WorkflowExecutorAgent initialized",
             extra={"context": {"config": {"enable_cache": bool(self._cache)}}},
         )
 
@@ -88,23 +88,23 @@ class TaskHandlerAgent(BaseAgent):
         pass
 
     def set_stages(self, stages: Sequence[Mapping[str, Any]]) -> None:
-        """Set the list of stages to be executed by the TaskHandlerAgent.
+        """Set the list of stages to be executed by the WorkflowExecutorAgent.
 
         Args:
             stages: List of stage configurations to execute.
         """
         self._stages = [dict(stage) for stage in stages]
         self.logger.info(
-            "Stages set for TaskHandlerAgent",
+            "Stages set for WorkflowExecutorAgent",
             extra={"context": {"stages": [stage["name"] for stage in self._stages]}},
         )
 
     @property
     def capabilities(self) -> list[str]:
         """List of capabilities this agent supports."""
-        return ["task_handling"]
+        return ["workflow_execution"]
 
-    async def _run_payload(self, context: dict[str, Any]) -> TaskHandlerResult:
+    async def _run_payload(self, context: dict[str, Any]) -> WorkflowExecutorResult:
         """Execute a sequence of stages with the provided context.
 
         Args:
@@ -114,18 +114,18 @@ class TaskHandlerAgent(BaseAgent):
             Dictionary containing stage results, final status, and audit trail.
         """
         if not self._stages:
-            error_msg = "No stages set for TaskHandlerAgent to execute"
+            error_msg = "No stages set for WorkflowExecutorAgent to execute"
             self.logger.error(error_msg, extra={"context": {"stage": "init"}})
             self.logger_manager.log_metric(
                 "stage_errors", 1, MetricType.COUNTER, tags={"stage": "init"}
             )
             return cast(
-                TaskHandlerResult,
+                WorkflowExecutorResult,
                 await self.execution_kernel.error_result(error_msg, context, "init"),
             )
 
         context_id = context.get("context_id", "unknown")
-        with self.logger.context(agent="TaskHandlerAgent", context_id=context_id):
+        with self.logger.context(agent="WorkflowExecutorAgent", context_id=context_id):
             self.logger.info(
                 "Starting stage execution",
                 extra={
@@ -139,7 +139,7 @@ class TaskHandlerAgent(BaseAgent):
 
         # Initialize result structure
         start_time = time.perf_counter()
-        result: TaskHandlerResult = {
+        result: WorkflowExecutorResult = {
             "stages": {},
             "final_status": {"stages_processed": [], "iterations": 0},
             "audit_trail": [],
@@ -159,7 +159,7 @@ class TaskHandlerAgent(BaseAgent):
                 tags={"stage": "input_validation"},
             )
             return cast(
-                TaskHandlerResult,
+                WorkflowExecutorResult,
                 await self.execution_kernel.error_result(
                     error_msg, context, "input_validation"
                 ),
@@ -332,7 +332,7 @@ class TaskHandlerAgent(BaseAgent):
         context: dict[str, Any],
         stage: str,
         extra: dict[str, Any] | None = None,
-    ) -> TaskHandlerResult:
+    ) -> WorkflowExecutorResult:
         """Return a standardized error result with async logging."""
         _ = extra
         self.logger_manager.log_metric(
@@ -442,11 +442,11 @@ class TaskHandlerAgent(BaseAgent):
     async def shutdown(self) -> None:
         """Shutdown the agent and flush logs."""
         self.logger.info(
-            "Shutting down TaskHandlerAgent", extra={"context": {"stage": "shutdown"}}
+            "Shutting down WorkflowExecutorAgent", extra={"context": {"stage": "shutdown"}}
         )
         self.flush_logs()
         self.logger.info(
-            "TaskHandlerAgent shutdown complete",
+            "WorkflowExecutorAgent shutdown complete",
             extra={"context": {"stage": "shutdown"}},
         )
         await super().shutdown()

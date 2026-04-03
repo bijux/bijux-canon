@@ -14,7 +14,7 @@ from tests.utils.trace_helpers import default_model_metadata
 from bijux_canon_agent.agents.critique.core import CritiqueAgent
 from bijux_canon_agent.agents.summarizer import SummarizerAgent
 from bijux_canon_agent.agents.summarizer.core import SummarizerResult
-from bijux_canon_agent.agents.taskhandler.agent import TaskHandlerAgent
+from bijux_canon_agent.agents.workflow_executor.agent import WorkflowExecutorAgent
 from bijux_canon_agent.agents.validator import ValidatorAgent
 from bijux_canon_agent.interfaces.cli.helpers import build_trace_from_result
 from bijux_canon_agent.constants import CONTRACT_VERSION
@@ -92,7 +92,7 @@ class CritiqueStubAgent(CritiqueAgent):
         return result
 
 
-class FakeTaskHandler:
+class FakeWorkflowExecutor:
     """Provides deterministic stage outputs for pipeline tests."""
 
     def __init__(self) -> None:
@@ -145,7 +145,7 @@ class FakeTaskHandler:
         self.reset_calls += 1
 
 
-class StatelessTaskHandler(FakeTaskHandler):
+class StatelessWorkflowExecutor(FakeWorkflowExecutor):
     """Task handler that produces identical outputs across invocations."""
 
     async def run(self, context: dict[str, Any]) -> Mapping[str, Any]:
@@ -186,8 +186,8 @@ class StatelessTaskHandler(FakeTaskHandler):
         }
 
 
-class ResourceExhaustionTaskHandler(FakeTaskHandler):
-    """TaskHandler that simulates hitting resource limits."""
+class ResourceExhaustionWorkflowExecutor(FakeWorkflowExecutor):
+    """WorkflowExecutor that simulates hitting resource limits."""
 
     async def run(self, context: dict[str, Any]) -> Mapping[str, Any]:
         self.run_counter += 1
@@ -241,7 +241,7 @@ def _shard_payload_key(payload: str) -> int:
 
 
 def make_pipeline(
-    handler: FakeTaskHandler,
+    handler: FakeWorkflowExecutor,
     logger_manager,
 ) -> AuditableDocPipeline:
     repo_root = Path(__file__).resolve().parents[4]
@@ -260,7 +260,7 @@ def make_pipeline(
     return AuditableDocPipeline(
         config=config,
         logger_manager=logger_manager,
-        task_handler_agent=cast(TaskHandlerAgent, handler),
+        workflow_executor_agent=cast(WorkflowExecutorAgent, handler),
         file_reader_agent=file_reader_stub,
         summarizer_agent=summarizer_stub,
         validator_agent=validator_stub,
@@ -275,7 +275,7 @@ def make_pipeline(
 async def test_pipeline_concurrency_produces_deterministic_ordering(
     logger_manager,
 ) -> None:
-    handler = FakeTaskHandler()
+    handler = FakeWorkflowExecutor()
     pipeline = make_pipeline(handler, logger_manager)
     context = {
         "task_goal": "summarize text",
@@ -304,7 +304,7 @@ async def test_pipeline_concurrency_produces_deterministic_ordering(
 
 @pytest.mark.asyncio
 async def test_pipeline_telemetry_reset_between_runs(logger_manager) -> None:
-    handler = FakeTaskHandler()
+    handler = FakeWorkflowExecutor()
     pipeline = make_pipeline(handler, logger_manager)
     first_context = {
         "task_goal": "summarize once",
@@ -328,7 +328,7 @@ async def test_pipeline_telemetry_reset_between_runs(logger_manager) -> None:
 
 @pytest.mark.asyncio
 async def test_pipeline_has_no_hidden_state_between_runs(logger_manager) -> None:
-    handler = StatelessTaskHandler()
+    handler = StatelessWorkflowExecutor()
     pipeline = make_pipeline(handler, logger_manager)
     context = {
         "task_goal": "summarize stateless text",
@@ -348,7 +348,7 @@ async def test_pipeline_has_no_hidden_state_between_runs(logger_manager) -> None
 async def test_resource_exhaustion_sets_termination_reason(
     logger_manager, tmp_path: Path
 ) -> None:
-    handler = ResourceExhaustionTaskHandler()
+    handler = ResourceExhaustionWorkflowExecutor()
     pipeline = make_pipeline(handler, logger_manager)
     context = {
         "task_goal": "fail resource limits",
@@ -396,7 +396,7 @@ async def test_async_trace_ordering_deterministic(
     context_text = "\n\n".join(f"Async Shard {i}" for i in range(1, 7))
 
     async def run_instance(run_id: str) -> list[str]:
-        handler = FakeTaskHandler()
+        handler = FakeWorkflowExecutor()
         pipeline = make_pipeline(handler, logger_manager)
         context = {"task_goal": f"async-{run_id}", "text": context_text}
         result = await pipeline.run(context)

@@ -32,7 +32,7 @@ DEFAULT_HTTP_AGENTS = [
     "summarizer",
     "validator",
     "critique",
-    "task_handler",
+    "workflow_executor",
 ]
 
 
@@ -166,7 +166,7 @@ def test_cli_http_parity(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
         "task_goal": task_goal,
         "backend": "simple",
         "strategy": "extractive",
-        "agents": ["file_reader", "task_handler"],
+        "agents": ["file_reader", "workflow_executor"],
         "pipeline": {"parameters": {"stage_timeout": 15}},
         "logging": {
             "log_dir": str(tmp_path / "logs"),

@@ -12,7 +12,7 @@ from bijux_canon_agent.pipeline.agent_registry import (
     load_critique_agent,
     load_file_reader_agent,
     load_summarizer_agent,
-    load_task_handler_agent,
+    load_workflow_executor_agent,
     load_universal_file_reader,
     load_validator_agent,
 )
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
         UniversalFileReader,
     )
     from bijux_canon_agent.agents.summarizer import SummarizerAgent
-    from bijux_canon_agent.agents.taskhandler import TaskHandlerAgent
+    from bijux_canon_agent.agents.workflow_executor import WorkflowExecutorAgent
     from bijux_canon_agent.agents.validator import ValidatorAgent
     from bijux_canon_agent.observability.logging import LoggerManager
 
@@ -49,7 +49,7 @@ class PipelineLifecycleMixin:
         self,
         config: dict[str, Any],
         logger_manager: LoggerManager,
-        task_handler_agent: TaskHandlerAgent | None = None,
+        workflow_executor_agent: WorkflowExecutorAgent | None = None,
         file_reader_agent: FileReaderAgent | None = None,
         summarizer_agent: SummarizerAgent | None = None,
         validator_agent: ValidatorAgent | None = None,
@@ -137,8 +137,8 @@ class PipelineLifecycleMixin:
             config=config,
             logger_manager=logger_manager,
         )
-        task_handler_cls = load_task_handler_agent()
-        self.task_handler: TaskHandlerAgent = task_handler_agent or task_handler_cls(
+        workflow_executor_cls = load_workflow_executor_agent()
+        self.workflow_executor: WorkflowExecutorAgent = workflow_executor_agent or workflow_executor_cls(
             config=config,
             logger_manager=logger_manager,
         )
@@ -208,9 +208,9 @@ class PipelineLifecycleMixin:
                     if self.critique
                     else {}
                 ),
-                "TaskHandlerAgent": (
-                    await self.task_handler.execution_kernel.get_telemetry()
-                    if self.task_handler
+                "WorkflowExecutorAgent": (
+                    await self.workflow_executor.execution_kernel.get_telemetry()
+                    if self.workflow_executor
                     else {}
                 ),
             }
@@ -246,7 +246,7 @@ class PipelineLifecycleMixin:
                 self.summarizer,
                 self.validator,
                 self.critique,
-                self.task_handler,
+                self.workflow_executor,
             ]:
                 if agent and hasattr(agent, "reset_telemetry"):
                     agent.reset_telemetry()
@@ -276,7 +276,7 @@ class PipelineLifecycleMixin:
             self.summarizer,
             self.validator,
             self.critique,
-            self.task_handler,
+            self.workflow_executor,
         ]:
             if agent and hasattr(agent, "shutdown"):
                 await agent.shutdown()

@@ -50,12 +50,12 @@ def test_trace_requires_phase_timestamp_ordering() -> None:
     first_execute = _base_entry(
         phase=PipelineLifecycle.EXECUTE,
         start=base,
-        agent_type=AgentType.TASKHANDLER,
+        agent_type=AgentType.WORKFLOW_EXECUTOR,
     )
     second_execute = _base_entry(
         phase=PipelineLifecycle.EXECUTE,
         start=base - timedelta(seconds=5),
-        agent_type=AgentType.TASKHANDLER,
+        agent_type=AgentType.WORKFLOW_EXECUTOR,
     )
     entries = [first_execute, second_execute]
 
@@ -73,7 +73,7 @@ def test_deterministic_snapshot_excludes_timestamps() -> None:
     entry = _base_entry(
         phase=PipelineLifecycle.EXECUTE,
         start=datetime(2025, 1, 1, tzinfo=UTC),
-        agent_type=AgentType.TASKHANDLER,
+        agent_type=AgentType.WORKFLOW_EXECUTOR,
     )
     snapshot = entry.deterministic_snapshot()
 
