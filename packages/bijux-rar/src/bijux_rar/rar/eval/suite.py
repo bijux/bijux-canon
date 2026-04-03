@@ -43,15 +43,15 @@ class EvalResult(dict[str, object]):
 
 
 def _default_suite_root() -> Path:
-    """Locate `eval/suites`.
+    """Locate `benchmarks/suites`.
 
-    - repo checkout: CWD contains eval/suites
+    - repo checkout: CWD contains benchmarks/suites
     - installed package: resolve relative to this file
     """
-    cwd_candidate = Path.cwd() / "eval" / "suites"
+    cwd_candidate = Path.cwd() / "benchmarks" / "suites"
     if cwd_candidate.exists():
         return cwd_candidate
-    return Path(__file__).resolve().parents[4] / "eval" / "suites"
+    return Path(__file__).resolve().parents[4] / "benchmarks" / "suites"
 
 
 def _read_jsonl(path: Path) -> list[dict[str, object]]:

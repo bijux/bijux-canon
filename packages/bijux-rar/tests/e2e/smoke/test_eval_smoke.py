@@ -28,7 +28,7 @@ def _run(cmd: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
 
 def test_cli_eval_smoke(tmp_path: Path) -> None:
     # Create a disposable suite rooted at CWD, as expected by the eval runner.
-    suite_dir = tmp_path / "eval" / "suites" / "t1"
+    suite_dir = tmp_path / "benchmarks" / "suites" / "t1"
     suite_dir.mkdir(parents=True, exist_ok=True)
 
     problems = [
