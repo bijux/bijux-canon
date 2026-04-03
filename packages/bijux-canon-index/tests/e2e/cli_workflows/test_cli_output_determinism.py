@@ -14,6 +14,8 @@ CLI = [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app"]
 
 
 def run_cmd(args, env):
+    repo_root = Path(__file__).resolve().parents[3]
+    env = {**env, "PYTHONPATH": str(repo_root / "src")}
     return subprocess.check_output(CLI + args, text=True, env=env).strip()
 
 

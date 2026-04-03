@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -12,7 +13,9 @@ CLI = [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app"]
 
 
 def run_cmd(args):
-    return subprocess.check_output(CLI + args, text=True).strip()
+    repo_root = Path(__file__).resolve().parents[2]
+    env = {**os.environ, "PYTHONPATH": str(repo_root / "src")}
+    return subprocess.check_output(CLI + args, text=True, env=env).strip()
 
 
 def test_v01_cli_flow(tmp_path: Path, monkeypatch):
