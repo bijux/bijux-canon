@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from itertools import chain
 from typing import Any, cast
 
-from bijux_canon_ingest.core.rag_types import (
+from bijux_canon_ingest.core.types import (
     Chunk,
     ChunkWithoutEmbedding,
     CleanDoc,

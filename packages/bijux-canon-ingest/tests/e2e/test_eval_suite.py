@@ -31,7 +31,7 @@ from typing import Any
 
 import pytest
 
-from bijux_rag.core.rag_types import RawDoc
+from bijux_rag.core.types import RawDoc
 from bijux_rag.result import Err, Ok
 
 pytestmark = [pytest.mark.e2e]

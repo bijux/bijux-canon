@@ -15,7 +15,7 @@ from pathlib import Path
 import threading
 from typing import Any, ParamSpec, TypeVar, cast
 
-from bijux_canon_ingest.core.rag_types import ChunkWithoutEmbedding
+from bijux_canon_ingest.core.types import ChunkWithoutEmbedding
 
 K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")

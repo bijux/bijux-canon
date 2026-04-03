@@ -14,7 +14,7 @@ from itertools import dropwhile, groupby, islice
 from operator import attrgetter
 from typing import TypeVar
 
-from bijux_canon_ingest.core.rag_types import Chunk, ChunkWithoutEmbedding, CleanDoc, RawDoc
+from bijux_canon_ingest.core.types import Chunk, ChunkWithoutEmbedding, CleanDoc, RawDoc
 from bijux_canon_ingest.core.rules_pred import eval_pred
 from bijux_canon_ingest.core.structural_dedup import structural_dedup_lazy
 from bijux_canon_ingest.streaming import TraceLens, ensure_contiguous, trace_iter

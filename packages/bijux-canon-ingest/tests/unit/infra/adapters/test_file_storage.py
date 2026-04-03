@@ -6,7 +6,7 @@ from __future__ import annotations
 import builtins
 from io import StringIO
 
-from bijux_rag.core.rag_types import RawDoc
+from bijux_rag.core.types import RawDoc
 from bijux_rag.infra.adapters.file_storage import FileStorage
 from bijux_rag.result.types import Err, Ok
 

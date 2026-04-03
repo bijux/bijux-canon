@@ -19,7 +19,7 @@ import json
 import os
 import tempfile
 
-from bijux_canon_ingest.core.rag_types import Chunk, RawDoc
+from bijux_canon_ingest.core.types import Chunk, RawDoc
 from bijux_canon_ingest.domain.capabilities import Storage
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 

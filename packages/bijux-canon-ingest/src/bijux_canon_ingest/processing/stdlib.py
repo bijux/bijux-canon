@@ -18,7 +18,7 @@ from functools import partial
 from itertools import chain
 from operator import attrgetter
 
-from bijux_canon_ingest.core.rag_types import (
+from bijux_canon_ingest.core.types import (
     Chunk,
     ChunkWithoutEmbedding,
     CleanDoc,

@@ -14,7 +14,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic, Protocol, TypeVar
 
-from bijux_canon_ingest.core.rag_types import Chunk, ChunkWithoutEmbedding
+from bijux_canon_ingest.core.types import Chunk, ChunkWithoutEmbedding
 from bijux_canon_ingest.domain.effects import IOPlan, io_delay
 from bijux_canon_ingest.processing.stages import embed_chunk
 from bijux_canon_ingest.result.types import ErrInfo, Ok, Result

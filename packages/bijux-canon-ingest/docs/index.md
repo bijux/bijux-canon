@@ -106,7 +106,7 @@ This command reads CSV documents, applies functional chunking, performs embeddin
 Programmatic equivalent:
 
 ```python
-from bijux_rag.core.rag_types import RawDoc
+from bijux_rag.core.types import RawDoc
 from bijux_rag.application.pipelines.configured import (
     PipelineConfig,
     StepConfig,

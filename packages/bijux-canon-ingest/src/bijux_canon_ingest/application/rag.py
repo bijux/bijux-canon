@@ -20,7 +20,7 @@ from pathlib import Path
 
 import msgpack
 
-from bijux_canon_ingest.core.rag_types import (
+from bijux_canon_ingest.core.types import (
     Chunk,
     ChunkWithoutEmbedding,
     CleanDoc,

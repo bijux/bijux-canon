@@ -9,7 +9,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from bijux_canon_ingest.core.rag_types import Chunk, CleanDoc, DocRule, RawDoc
+from bijux_canon_ingest.core.types import Chunk, CleanDoc, DocRule, RawDoc
 from bijux_canon_ingest.streaming import TraceLens
 
 TapDocs = Callable[[tuple[RawDoc, ...]], None]

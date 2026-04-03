@@ -36,7 +36,7 @@ from .cli.file_api import FSReader, write_chunks_jsonl
 from .config.app import AppConfig
 
 # Domain value types – immutable, hashable where needed
-from .core.rag_types import (
+from .core.types import (
     Chunk,
     ChunkWithoutEmbedding,
     CleanDoc,

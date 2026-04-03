@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections import deque
 from collections.abc import Iterator
 
-from bijux_canon_ingest.core.rag_types import ChunkWithoutEmbedding, TextNode, TreeDoc
+from bijux_canon_ingest.core.types import ChunkWithoutEmbedding, TextNode, TreeDoc
 
 Path = tuple[int, ...]
 

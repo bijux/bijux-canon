@@ -13,7 +13,7 @@ from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from typing import Protocol
 
-from bijux_canon_ingest.core.rag_types import (
+from bijux_canon_ingest.core.types import (
     Chunk,
     ChunkWithoutEmbedding,
     CleanDoc,

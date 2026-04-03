@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from bijux_canon_ingest.core.rag_types import CleanDoc, RawDoc
+from bijux_canon_ingest.core.types import CleanDoc, RawDoc
 
 TextRule = Callable[[str], str]
 

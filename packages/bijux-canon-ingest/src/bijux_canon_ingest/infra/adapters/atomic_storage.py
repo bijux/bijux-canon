@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 import os
 
-from bijux_canon_ingest.core.rag_types import Chunk
+from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.domain.idempotent import AtomicWriteCap
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 

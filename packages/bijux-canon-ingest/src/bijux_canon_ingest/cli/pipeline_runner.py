@@ -12,7 +12,7 @@ from bijux_canon_ingest.cli.file_api import FSReader, write_chunks_jsonl
 from bijux_canon_ingest.config.app import AppConfig
 from bijux_canon_ingest.config.cleaning import CleanConfig
 from bijux_canon_ingest.config.rag import RagConfig, get_deps
-from bijux_canon_ingest.core.rag_types import Chunk, RagEnv, RawDoc
+from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc
 from bijux_canon_ingest.application.api import full_rag_api_docs
 from bijux_canon_ingest.application.observability import DebugConfig
 from bijux_canon_ingest.result import Err, Ok, Result, result_and_then, result_map

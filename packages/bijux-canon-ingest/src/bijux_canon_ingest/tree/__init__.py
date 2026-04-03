@@ -7,7 +7,7 @@ Public surface:
 - Stack-safe preorder traversal (`flatten`, `iter_flatten_buffered`)
 - Safe folds/scans (`fold_tree_buffered`, `scan_tree`, ...)
 
-`TreeDoc` and `TextNode` live in `bijux_canon_ingest.core.rag_types`.
+`TreeDoc` and `TextNode` live in `bijux_canon_ingest.core.types`.
 """
 
 from __future__ import annotations

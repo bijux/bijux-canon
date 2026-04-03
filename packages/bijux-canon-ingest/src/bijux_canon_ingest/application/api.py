@@ -16,7 +16,7 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from itertools import chain
 from typing import TypeVar
 
-from bijux_canon_ingest.core.rag_types import (
+from bijux_canon_ingest.core.types import (
     Chunk,
     ChunkWithoutEmbedding,
     CleanDoc,

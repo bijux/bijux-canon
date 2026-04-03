@@ -9,7 +9,7 @@ from collections.abc import Iterator
 from datetime import datetime
 from typing import Protocol
 
-from bijux_canon_ingest.core.rag_types import Chunk, RawDoc
+from bijux_canon_ingest.core.types import Chunk, RawDoc
 from bijux_canon_ingest.result.types import ErrInfo, Option, Result
 
 from .logging import LogEntry

@@ -19,7 +19,7 @@ from pathlib import Path
 import sys
 from typing import Any, Protocol, cast
 
-from bijux_canon_ingest.core.rag_types import RagEnv, RawDoc
+from bijux_canon_ingest.core.types import RagEnv, RawDoc
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.application.pipelines.cli import deep_merge, parse_override
 from bijux_canon_ingest.application.pipelines.configured import (

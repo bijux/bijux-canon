@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from bijux_canon_ingest.core.rag_types import RawDoc
+from bijux_canon_ingest.core.types import RawDoc
 
 
 @dataclass(frozen=True)

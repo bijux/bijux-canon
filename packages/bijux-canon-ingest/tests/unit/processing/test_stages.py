@@ -15,7 +15,7 @@ from tests.strategies import (
 )
 
 from bijux_rag import chunk_doc, clean_doc, embed_chunk, structural_dedup_chunks
-from bijux_rag.core.rag_types import ChunkWithoutEmbedding, RagEnv, RawDoc
+from bijux_rag.core.types import ChunkWithoutEmbedding, RagEnv, RawDoc
 
 
 @given(doc=raw_doc_strategy())

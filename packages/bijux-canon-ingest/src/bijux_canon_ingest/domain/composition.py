@@ -15,7 +15,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterator
 from typing import TypeVar
 
-from bijux_canon_ingest.core.rag_types import RawDoc
+from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.domain.effects.io_plan import IOPlan, io_bind, io_delay
 from bijux_canon_ingest.result.types import ErrInfo, Ok, Result
 

@@ -9,7 +9,7 @@ These ADTs are used in the Bijux RAG "type-driven design" cores:
 - an optional NumPy hybrid path with equivalence tests
 
 This modeling layer is intentionally separate from the main RAG pipeline value
-types in `bijux_canon_ingest.core.rag_types`.
+types in `bijux_canon_ingest.core.types`.
 """
 
 from __future__ import annotations

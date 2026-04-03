@@ -8,7 +8,7 @@ from __future__ import annotations
 import ast
 from typing import Any
 
-from bijux_canon_ingest.core.rag_types import DocRule, RawDoc
+from bijux_canon_ingest.core.types import DocRule, RawDoc
 from bijux_canon_ingest.core.rules_lint import SafeVisitor
 
 

@@ -30,7 +30,7 @@ from bijux_rag import (
     parse_rule,
     structural_dedup_chunks,
 )
-from bijux_rag.core.rag_types import RagEnv, RawDoc
+from bijux_rag.core.types import RagEnv, RawDoc
 from bijux_rag.core.rules_lint import assert_rule_is_safe_expr
 from bijux_rag.result import Result
 

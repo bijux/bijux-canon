@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from bijux_rag.core.rag_types import RagEnv, RawDoc
+from bijux_rag.core.types import RagEnv, RawDoc
 from bijux_rag.processing.stdlib import rag_iter_stdlib
 
 

@@ -58,4 +58,4 @@ class RagFileShell:
 
 
 # Late import to avoid circular dependency at type-check time.
-from bijux_canon_ingest.core.rag_types import Chunk  # noqa: E402  isort:skip
+from bijux_canon_ingest.core.types import Chunk  # noqa: E402  isort:skip

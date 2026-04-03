@@ -11,7 +11,7 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field, model_validator
 
-from bijux_canon_ingest.core.rag_types import RawDoc
+from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.application.rag import IndexBackend, RagApp, RagIndex
 from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
 from bijux_canon_ingest.retrieval.ports import Answer, Candidate

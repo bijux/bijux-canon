@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from bijux_rag.core.rag_types import Chunk
+from bijux_rag.core.types import Chunk
 from bijux_rag.domain.effects.io_plan import perform
 from bijux_rag.domain.idempotent import AtomicWriteCap, content_key, idempotent_write
 from bijux_rag.result.types import ErrInfo, Ok, Result

@@ -21,7 +21,7 @@ from hashlib import sha256
 import numpy as np
 from numpy.typing import NDArray
 
-from bijux_canon_ingest.core.rag_types import EmbeddingSpec
+from bijux_canon_ingest.core.types import EmbeddingSpec
 
 
 def _l2_normalize(x: NDArray[np.float32]) -> NDArray[np.float32]:

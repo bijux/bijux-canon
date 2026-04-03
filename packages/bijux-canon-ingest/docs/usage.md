@@ -29,7 +29,7 @@ bijux-canon-ingest eval --suite tests/eval --index artifacts/bijux-canon-ingest/
 Build composable RAG pipelines programmatically:
 
 ```python
-from bijux_rag.core.rag_types import RawDoc
+from bijux_rag.core.types import RawDoc
 from bijux_rag.application.pipelines.configured import (
     PipelineConfig,
     StepConfig,

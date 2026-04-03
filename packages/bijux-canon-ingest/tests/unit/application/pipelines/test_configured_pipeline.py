@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from bijux_rag.core.rag_types import RawDoc
+from bijux_rag.core.types import RawDoc
 from bijux_rag.application.pipelines.configured import (
     PipelineConfig,
     StepConfig,

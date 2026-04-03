@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Iterator
 
-from bijux_canon_ingest.core.rag_types import Chunk, RawDoc
+from bijux_canon_ingest.core.types import Chunk, RawDoc
 from bijux_canon_ingest.domain.capabilities import Storage
 from bijux_canon_ingest.result.types import ErrInfo, Ok, Result
 

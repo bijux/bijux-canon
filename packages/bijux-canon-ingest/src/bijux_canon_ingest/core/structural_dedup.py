@@ -16,7 +16,7 @@ from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from bijux_canon_ingest.core.rag_types import Chunk
+from bijux_canon_ingest.core.types import Chunk
 
 T = TypeVar("T")
 K = TypeVar("K", bound=object)

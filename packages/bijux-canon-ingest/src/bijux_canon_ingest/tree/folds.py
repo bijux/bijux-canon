@@ -9,7 +9,7 @@ from collections import deque
 from collections.abc import Callable, Iterable, Iterator
 from typing import TypeVar
 
-from bijux_canon_ingest.core.rag_types import TreeDoc
+from bijux_canon_ingest.core.types import TreeDoc
 
 R = TypeVar("R")
 T = TypeVar("T")

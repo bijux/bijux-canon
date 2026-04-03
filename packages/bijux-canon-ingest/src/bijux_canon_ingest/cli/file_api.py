@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from bijux_canon_ingest.cli.file_pipeline import RagFileShell
-from bijux_canon_ingest.core.rag_types import Chunk
+from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig
 from bijux_canon_ingest.result import Err, Ok, Result

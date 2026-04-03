@@ -6,7 +6,7 @@ from __future__ import annotations
 from hypothesis import given, settings
 import hypothesis.strategies as st
 
-from bijux_rag.core.rag_types import RawDoc
+from bijux_rag.core.types import RawDoc
 from bijux_rag.domain.capabilities import StorageRead
 from bijux_rag.domain.effects.io_plan import IOPlan, io_delay, io_map, perform
 from bijux_rag.infra.adapters.memory_storage import InMemoryStorage

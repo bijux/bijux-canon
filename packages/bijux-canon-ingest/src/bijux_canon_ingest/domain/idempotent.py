@@ -9,7 +9,7 @@ from collections.abc import Callable, Iterator
 from hashlib import sha256
 from typing import Protocol, TypeVar
 
-from bijux_canon_ingest.core.rag_types import Chunk
+from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.domain.effects.io_plan import IOPlan, io_delay
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 

@@ -18,7 +18,7 @@ from typing import Any, Protocol
 import numpy as np
 from numpy.typing import NDArray
 
-from bijux_canon_ingest.core.rag_types import Chunk, EmbeddingSpec
+from bijux_canon_ingest.core.types import Chunk, EmbeddingSpec
 
 
 @dataclass(frozen=True, slots=True)

@@ -24,7 +24,7 @@ import msgpack
 import numpy as np
 from numpy.typing import NDArray
 
-from bijux_canon_ingest.core.rag_types import Chunk, EmbeddingSpec
+from bijux_canon_ingest.core.types import Chunk, EmbeddingSpec
 from bijux_canon_ingest.retrieval.ports import Candidate, Embedder
 
 SCHEMA_VERSION = 1
