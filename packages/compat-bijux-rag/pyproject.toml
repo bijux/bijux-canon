@@ -37,7 +37,7 @@ fallback-version = "0.3.0"
 canonical-name = "bijux-canon-ingest"
 
 [tool.hatch.build.targets.wheel]
-bypass-selection = true
+packages = ["src/bijux_rag"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "overview.md", "hatch_build.py"]
+include = ["pyproject.toml", "overview.md", "hatch_build.py", "src/bijux_rag/__init__.py"]
