@@ -30,6 +30,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 
 - `src/bijux_rag/boundaries/` — shells and adapters (CLI via typer_cli/rag_main, HTTP via fastapi_app/rag_api_shell, exception_bridge, pydantic_edges, serde).
 - `src/bijux_rag/config/` — package configuration models.
+- `src/bijux_rag/config/` — package and pipeline configuration models (`AppConfig`, `RagConfig`, `CleanConfig`).
 - `src/bijux_rag/core/` — shared RAG types (rag_types), structural dedup, rules (DSL/lint/pred).
 - `src/bijux_rag/domain/` — effects and capabilities (async_ with concurrency/plan/resilience/stream, io_plan, io_retry, tx; facades, idempotent, logging, composition).
 - `src/bijux_rag/fp/` — functional primitives (core with chunk/state_machine, effects like reader/state/writer, laws, applicative/functor/monoid/option_result/validation).
@@ -37,7 +38,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `src/bijux_rag/interop/` — compat layers (dataframes, returns_compat, stdlib_fp, toolz_compat).
 - `src/bijux_rag/pipelines/` — composable pipelines (cli, configured, distributed, specs).
 - `src/bijux_rag/policies/` — reusable behaviors (breakers, memo, reports, resources, retries).
-- `src/bijux_rag/rag/` — core RAG domain (app, chunking, clean_cfg/config, core, domain with chunk/embedding/metadata/perf/text, embedders, generators, indexes, ports, rag_api, rerankers, stages, stdlib_fp, streaming_rag, types).
+- `src/bijux_rag/rag/` — core RAG domain (app, chunking, core, domain with chunk/embedding/metadata/perf/text, embedders, generators, indexes, ports, rag_api, rerankers, stages, stdlib_fp, streaming_rag, types).
 - `src/bijux_rag/result/` — result monad (folds, stream, types).
 - `src/bijux_rag/streaming/` — streaming utils (compose, contiguity, fanin/fanout, observability, sampling, time, types).
 - `src/bijux_rag/tree/` — tree operations (_traversal, folds).

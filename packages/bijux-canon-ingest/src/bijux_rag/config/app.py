@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_rag.rag.config import RagConfig
+from bijux_rag.config.rag import RagConfig
 
 
 @dataclass(frozen=True)

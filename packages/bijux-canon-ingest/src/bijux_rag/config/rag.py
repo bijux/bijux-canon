@@ -21,7 +21,7 @@ from bijux_rag.core.rag_types import (
     RawDoc,
 )
 from bijux_rag.core.rules_pred import DEFAULT_RULES, RulesConfig
-from bijux_rag.rag.clean_cfg import (
+from bijux_rag.config.cleaning import (
     DEFAULT_CLEAN_CONFIG,
     RULES,
     CleanConfig,

@@ -9,8 +9,8 @@ entrypoints live here instead.
 
 from __future__ import annotations
 
-from .clean_cfg import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
-from .config import (
+from ..config.cleaning import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
+from ..config.rag import (
     DocsReader,
     RagBoundaryDeps,
     RagConfig,

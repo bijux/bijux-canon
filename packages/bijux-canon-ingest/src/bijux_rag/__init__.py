@@ -141,8 +141,8 @@ from .policies.retries import (
     restore_input_order,
     retry_map_iter,
 )
-from .rag.clean_cfg import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
-from .rag.config import (
+from .config.cleaning import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
+from .config.rag import (
     DocsReader,
     RagBoundaryDeps,
     RagConfig,
