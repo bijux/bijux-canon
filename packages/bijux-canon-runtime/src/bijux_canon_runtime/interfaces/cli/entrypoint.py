@@ -12,6 +12,8 @@ from pathlib import Path
 import sys
 
 from bijux_canon_runtime.core.errors import ConfigurationError, classify_failure
+from bijux_canon_runtime.interfaces.cli.manifest_loader import load_manifest
+from bijux_canon_runtime.interfaces.cli.policy_loader import load_policy
 from bijux_canon_runtime.observability.analysis.trace_diff import (
     entropy_summary,
     semantic_trace_diff,
@@ -31,188 +33,18 @@ from bijux_canon_runtime.application.execute_flow import (
 )
 from bijux_canon_runtime.application.planner import ExecutionPlanner
 from bijux_canon_runtime.application.replay_store import replay_with_store
-from bijux_canon_runtime.model.artifact.entropy_budget import (
-    EntropyBudget,
-    EntropyBudgetSlice,
-)
-from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
-from bijux_canon_runtime.model.execution.non_deterministic_intent import (
-    NonDeterministicIntent,
-)
-from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.model.flows.manifest import FlowManifest
-from bijux_canon_runtime.model.verification.arbitration_policy import ArbitrationPolicy
-from bijux_canon_runtime.model.verification.verification import VerificationPolicy
-from bijux_canon_runtime.model.verification.verification_rule import VerificationRule
 from bijux_canon_runtime.ontology import (
-    ArbitrationRule,
-    DatasetState,
     DeterminismLevel,
-    EntropyExhaustionAction,
-    EntropyMagnitude,
-    FlowState,
-    VerificationRandomness,
 )
 from bijux_canon_runtime.ontology.ids import (
-    AgentID,
-    ContractID,
-    DatasetID,
-    EvidenceID,
-    FlowID,
-    GateID,
-    RuleID,
     RunID,
     TenantID,
 )
 from bijux_canon_runtime.ontology.public import (
-    EntropySource,
-    NonDeterminismIntentSource,
     ReplayAcceptability,
-    ReplayMode,
 )
-
-
-def _load_manifest(path: Path) -> FlowManifest:
-    """Internal helper; not part of the public API."""
-    raw_contents = path.read_text(encoding="utf-8")
-    payload = json.loads(raw_contents)
-    allowed_keys = {
-        "flow_id",
-        "tenant_id",
-        "flow_state",
-        "determinism_level",
-        "replay_mode",
-        "replay_acceptability",
-        "entropy_budget",
-        "allowed_variance_class",
-        "nondeterminism_intent",
-        "replay_envelope",
-        "dataset",
-        "allow_deprecated_datasets",
-        "agents",
-        "dependencies",
-        "retrieval_contracts",
-        "verification_gates",
-    }
-    unknown_keys = sorted(set(payload) - allowed_keys)
-    if unknown_keys:
-        raise ConfigurationError(",".join(unknown_keys))
-    determinism_value = payload.get("determinism_level")
-    if determinism_value in (None, "", "default"):
-        raise ConfigurationError("determinism_level")
-    return FlowManifest(
-        spec_version="v1",
-        flow_id=FlowID(payload["flow_id"]),
-        tenant_id=TenantID(payload["tenant_id"]),
-        flow_state=FlowState(payload["flow_state"]),
-        determinism_level=DeterminismLevel(payload["determinism_level"]),
-        replay_mode=ReplayMode(payload.get("replay_mode", "strict")),
-        replay_acceptability=ReplayAcceptability(payload["replay_acceptability"]),
-        entropy_budget=EntropyBudget(
-            spec_version="v1",
-            allowed_sources=tuple(
-                EntropySource(source)
-                for source in payload["entropy_budget"]["allowed_sources"]
-            ),
-            max_magnitude=EntropyMagnitude(payload["entropy_budget"]["max_magnitude"]),
-            min_magnitude=EntropyMagnitude(
-                payload["entropy_budget"].get("min_magnitude", "low")
-            ),
-            exhaustion_action=EntropyExhaustionAction(
-                payload["entropy_budget"].get("exhaustion_action", "halt")
-            ),
-            per_source=tuple(
-                EntropyBudgetSlice(
-                    source=EntropySource(entry["source"]),
-                    min_magnitude=EntropyMagnitude(entry["min_magnitude"]),
-                    max_magnitude=EntropyMagnitude(entry["max_magnitude"]),
-                    exhaustion_action=EntropyExhaustionAction(
-                        entry["exhaustion_action"]
-                    )
-                    if entry.get("exhaustion_action") is not None
-                    else None,
-                )
-                for entry in payload["entropy_budget"].get("per_source", [])
-            ),
-        ),
-        allowed_variance_class=EntropyMagnitude(payload["allowed_variance_class"])
-        if payload.get("allowed_variance_class") is not None
-        else None,
-        nondeterminism_intent=tuple(
-            NonDeterministicIntent(
-                spec_version="v1",
-                source=NonDeterminismIntentSource(entry["source"]),
-                min_entropy_magnitude=EntropyMagnitude(entry["min_entropy_magnitude"]),
-                max_entropy_magnitude=EntropyMagnitude(entry["max_entropy_magnitude"]),
-                justification=entry["justification"],
-            )
-            for entry in payload.get("nondeterminism_intent", [])
-        ),
-        replay_envelope=ReplayEnvelope(
-            spec_version="v1",
-            min_claim_overlap=float(payload["replay_envelope"]["min_claim_overlap"]),
-            max_contradiction_delta=int(
-                payload["replay_envelope"]["max_contradiction_delta"]
-            ),
-        ),
-        dataset=DatasetDescriptor(
-            spec_version="v1",
-            dataset_id=DatasetID(payload["dataset"]["dataset_id"]),
-            tenant_id=TenantID(payload["dataset"]["tenant_id"]),
-            dataset_version=payload["dataset"]["dataset_version"],
-            dataset_hash=payload["dataset"]["dataset_hash"],
-            dataset_state=DatasetState(payload["dataset"]["dataset_state"]),
-            storage_uri=payload["dataset"]["storage_uri"],
-        ),
-        allow_deprecated_datasets=bool(payload["allow_deprecated_datasets"]),
-        agents=tuple(AgentID(agent_id) for agent_id in payload["agents"]),
-        dependencies=tuple(payload["dependencies"]),
-        retrieval_contracts=tuple(
-            ContractID(contract) for contract in payload["retrieval_contracts"]
-        ),
-        verification_gates=tuple(
-            GateID(gate) for gate in payload["verification_gates"]
-        ),
-    )
-
-
-def _load_policy(path: Path) -> VerificationPolicy:
-    """Internal helper; not part of the public API."""
-    raw_contents = path.read_text(encoding="utf-8")
-    payload = json.loads(raw_contents)
-    arbitration = payload["arbitration_policy"]
-    rules = tuple(
-        VerificationRule(
-            spec_version=rule["spec_version"],
-            rule_id=RuleID(rule["rule_id"]),
-            description=rule["description"],
-            severity=rule["severity"],
-            target=rule["target"],
-            randomness_requirement=VerificationRandomness(
-                rule["randomness_requirement"]
-            ),
-            cost=int(rule["cost"]),
-        )
-        for rule in payload["rules"]
-    )
-    return VerificationPolicy(
-        spec_version=payload["spec_version"],
-        verification_level=payload["verification_level"],
-        failure_mode=payload["failure_mode"],
-        randomness_tolerance=VerificationRandomness(payload["randomness_tolerance"]),
-        arbitration_policy=ArbitrationPolicy(
-            spec_version=arbitration["spec_version"],
-            rule=ArbitrationRule(arbitration["rule"]),
-            quorum_threshold=arbitration["quorum_threshold"],
-        ),
-        required_evidence=tuple(
-            EvidenceID(value) for value in payload["required_evidence"]
-        ),
-        max_rule_cost=int(payload["max_rule_cost"]),
-        rules=rules,
-        fail_on=tuple(RuleID(value) for value in payload["fail_on"]),
-        escalate_on=tuple(RuleID(value) for value in payload["escalate_on"]),
-    )
+_load_manifest = load_manifest
+_load_policy = load_policy
 
 
 # Stable commands: plan, dry-run, run, unsafe-run, replay, inspect, diff, explain, validate.
