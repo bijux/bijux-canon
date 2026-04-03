@@ -6,6 +6,7 @@ update_changelog_on_bump = false
 
 [tool.bijux_canon]
 packages = [
+  "bijux-canon-dev",
   "bijux-canon-runtime",
   "bijux-canon-agent",
   "bijux-canon-ingest",
@@ -14,6 +15,7 @@ packages = [
 ]
 
 [tool.bijux_canon.package_dirs]
+"bijux-canon-dev" = "packages/bijux-canon-dev"
 "bijux-canon-runtime" = "packages/bijux-canon-runtime"
 "bijux-canon-agent" = "packages/bijux-canon-agent"
 "bijux-canon-ingest" = "packages/bijux-canon-ingest"

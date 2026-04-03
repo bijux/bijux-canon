@@ -1,4 +1,5 @@
 PRIMARY_PACKAGES := \
+	bijux-canon-dev \
 	bijux-canon-runtime \
 	bijux-canon-agent \
 	bijux-canon-ingest \
@@ -57,6 +58,7 @@ export PYTHONDONTWRITEBYTECODE := 1
 export PYTHONPYCACHEPREFIX := $(ROOT_ARTIFACTS_DIR)/pycache
 export XDG_CACHE_HOME := $(ROOT_ARTIFACTS_DIR)/xdg_cache
 export HYPOTHESIS_STORAGE_DIRECTORY := $(ROOT_ARTIFACTS_DIR)/hypothesis
+export PYTHONPATH := $(CURDIR)/packages/bijux-canon-dev/src$(if $(PYTHONPATH),:$(PYTHONPATH))
 
 DEFAULT_GOAL := help
 .PHONY: \

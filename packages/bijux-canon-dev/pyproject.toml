@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling>=1.27.0,<1.28", "hatch-vcs>=0.4.0,<1.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bijux-canon-dev"
+dynamic = ["version"]
+description = "Repository-owned developer tooling for bijux-canon packages."
+readme = "docs/index.md"
+requires-python = ">=3.11,<4"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: Apache Software License",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed",
+]
+dependencies = [
+  "packaging>=24.0,<25.0",
+  "PyYAML>=6.0,<7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4.1,<9.0",
+  "ruff>=0.6.8,<1.0",
+  "mypy>=1.11.2,<2.0",
+  "vulture>=2.7,<3.0",
+  "deptry>=0.10.0,<1.0",
+  "interrogate>=1.7.0,<2.0",
+  "bandit>=1.7.10,<2.0",
+  "pip-audit>=2.7.3,<3.0",
+  "build>=1.0.3,<2.0",
+]
+
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = "^bijux-canon-dev/v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-canon-dev/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+fallback-version = "0.1.0"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bijux_canon_dev"]
+
+[tool.hatch.build]
+include = [
+  "docs/index.md",
+  "src/bijux_canon_dev/**",
+]
