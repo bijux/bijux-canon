@@ -2,18 +2,14 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from dataclasses import dataclass
 import hashlib
 import json
 from pathlib import Path
 import re
 
-from bijux_canon_reason.core.invariants import validate_plan, validate_trace
 from bijux_canon_reason.core.types import (
     ClaimType,
     JsonValue,
-    Plan,
-    StepKind,
     SupportKind,
     Trace,
     TraceEventKind,
@@ -21,21 +17,19 @@ from bijux_canon_reason.core.types import (
     VerificationFailure,
     VerificationSeverity,
 )
+from bijux_canon_reason.verification.context import VerificationContext
+from bijux_canon_reason.verification.structural_checks import (
+    check_claim_supports,
+    check_core_invariants,
+    check_finalize_validated,
+    check_insufficient_reasoning,
+    check_required_steps,
+    check_tool_linkage,
+)
 
-INV_SCH_001 = "INV-SCH-001"
-INV_LNK_001 = "INV-LNK-001"
 INV_GRD_001 = "INV-GRD-001"
 INV_GRD_002 = "INV-GRD-002"
-INV_ORD_001 = "INV-ORD-001"
 INV_EVD_001 = "INV-EVD-001"
-INV_TLK_001 = "INV-TLK-001"
-
-
-@dataclass(frozen=True)
-class VerificationContext:
-    trace: Trace
-    plan: Plan
-    artifacts_dir: Path | None
 
 
 def _sha256_path(p: Path) -> str:
@@ -51,81 +45,6 @@ def _resolve_under_root(root: Path, rel_posix_path: str) -> Path | None:
         return cand
     except Exception:  # noqa: BLE001
         return None
-
-
-def check_core_invariants(
-    ctx: VerificationContext,
-) -> tuple[VerificationCheck, list[VerificationFailure]]:
-    errs = validate_plan(ctx.plan) + validate_trace(ctx.trace, plan=ctx.plan)
-    if not errs:
-        return VerificationCheck(name="core_invariants", passed=True), []
-    details = "\n".join(errs)
-    failures = [
-        VerificationFailure(
-            severity=VerificationSeverity.error,
-            message=err,
-            invariant_id=INV_SCH_001,
-        )
-        for err in errs
-    ]
-    return (
-        VerificationCheck(name="core_invariants", passed=False, details=details),
-        failures,
-    )
-
-
-def check_claim_supports(
-    ctx: VerificationContext,
-) -> tuple[VerificationCheck, list[VerificationFailure]]:
-    # Accept claims without supports (assumed/derived) but ensure referenced supports resolve
-    failures: list[VerificationFailure] = []
-    known_claims = {
-        ev.claim.id
-        for ev in ctx.trace.events
-        if ev.kind == TraceEventKind.claim_emitted
-    }
-    known_evidence = {
-        ev.evidence.id
-        for ev in ctx.trace.events
-        if ev.kind == TraceEventKind.evidence_registered
-    }
-    known_calls = {
-        ev.result.call_id
-        for ev in ctx.trace.events
-        if ev.kind == TraceEventKind.tool_returned
-    }
-
-    for ev in ctx.trace.events:
-        if ev.kind != TraceEventKind.claim_emitted:
-            continue
-        for sup in ev.claim.supports:
-            if sup.kind == SupportKind.claim and sup.ref_id not in known_claims:
-                failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
-                        message=f"claim_justifications: unknown claim ref {sup.ref_id}",
-                        invariant_id=INV_LNK_001,
-                    )
-                )
-            if sup.kind == SupportKind.evidence and sup.ref_id not in known_evidence:
-                failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
-                        message=f"claim_justifications: unknown evidence ref {sup.ref_id}",
-                        invariant_id=INV_LNK_001,
-                    )
-                )
-            if sup.kind == SupportKind.tool_call and sup.ref_id not in known_calls:
-                failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
-                        message=f"claim_justifications: unknown tool ref {sup.ref_id}",
-                        invariant_id=INV_LNK_001,
-                    )
-                )
-    return VerificationCheck(
-        name="claim_justifications", passed=(len(failures) == 0)
-    ), failures
 
 
 def check_derived_grounding(
@@ -224,28 +143,6 @@ def check_derived_grounding(
 
     passed = len(failures) == 0
     return VerificationCheck(name="derived_claim_grounding", passed=passed), failures
-
-
-def check_finalize_validated(
-    ctx: VerificationContext,
-) -> tuple[VerificationCheck, list[VerificationFailure]]:
-    failures: list[VerificationFailure] = []
-    finalize_present = False
-    for ev in ctx.trace.events:
-        if ev.kind == TraceEventKind.step_finished and ev.output.type == "finalize":
-            finalize_present = True
-
-    if not finalize_present:
-        return VerificationCheck(name="finalize_present", passed=False), [
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="Missing finalize output",
-                invariant_id=INV_ORD_001,
-            )
-        ]
-    return VerificationCheck(name="finalize_present", passed=True), failures
-
-
 def check_evidence_hashes(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
@@ -512,96 +409,6 @@ def check_reasoning_trace(
     return VerificationCheck(
         name="reasoning_trace", passed=(len(failures) == 0)
     ), failures
-
-
-def check_insufficient_reasoning(
-    ctx: VerificationContext,
-) -> tuple[VerificationCheck, list[VerificationFailure]]:
-    """If no derived claims exist, an insufficiency output must be present."""
-    failures: list[VerificationFailure] = []
-    has_claim = any(
-        ev.kind == TraceEventKind.claim_emitted
-        and getattr(ev.claim, "claim_type", None) == ClaimType.derived
-        for ev in ctx.trace.events
-    )
-    has_insuff = any(
-        ev.kind == TraceEventKind.step_finished
-        and getattr(ev.output, "type", "") == "insufficient_evidence"
-        for ev in ctx.trace.events
-    )
-    if not has_claim and not has_insuff:
-        failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="No derived claims and no insufficiency marker present",
-            )
-        )
-    if has_claim and has_insuff:
-        failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="Both derived claims and insufficiency present (ambiguous)",
-            )
-        )
-    return VerificationCheck(
-        name="insufficient_reasoning", passed=(len(failures) == 0)
-    ), failures
-
-
-def check_required_steps(
-    ctx: VerificationContext,
-) -> tuple[VerificationCheck, list[VerificationFailure]]:
-    """Ensure the trace contains a full reasoning pass.
-
-    Product contract: every run must finish at least one each of:
-    understand/gather/derive/verify/finalize (even if some are no-ops).
-    """
-    required: set[StepKind] = {"understand", "gather", "derive", "verify", "finalize"}
-    seen: set[StepKind] = set()
-    for ev in ctx.trace.events:
-        if ev.kind != TraceEventKind.step_finished:
-            continue
-        out_type = ev.output.type
-        if out_type == "insufficient_evidence":
-            seen.add("derive")
-        else:
-            seen.add(out_type)
-    missing = sorted(required - seen)
-    if not missing:
-        return VerificationCheck(name="required_steps", passed=True), []
-    msg = f"Missing required step outputs: {missing}"
-    return VerificationCheck(name="required_steps", passed=False, details=msg), [
-        VerificationFailure(
-            severity=VerificationSeverity.error,
-            message=msg,
-            invariant_id=INV_ORD_001,
-        )
-    ]
-
-
-def check_tool_linkage(
-    ctx: VerificationContext,
-) -> tuple[VerificationCheck, list[VerificationFailure]]:
-    calls: list[str] = []
-    results: set[str] = set()
-    for ev in ctx.trace.events:
-        if ev.kind == TraceEventKind.tool_called:
-            calls.append(ev.call.id)
-        if ev.kind == TraceEventKind.tool_returned:
-            results.add(ev.result.call_id)
-    missing = sorted(set(calls) - results)
-    if not missing:
-        return VerificationCheck(name="tool_linkage", passed=True), []
-    msg = f"tool_linkage: Missing tool results for call ids: {missing}"
-    return VerificationCheck(name="tool_linkage", passed=False, details=msg), [
-        VerificationFailure(
-            severity=VerificationSeverity.error,
-            message=msg,
-            invariant_id=INV_TLK_001,
-        )
-    ]
-
-
 def run_all_checks(
     ctx: VerificationContext,
 ) -> tuple[list[VerificationCheck], list[VerificationFailure]]:
