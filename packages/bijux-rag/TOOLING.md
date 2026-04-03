@@ -7,7 +7,7 @@ Front-door commands (mirrors bijux-cli):
 - `make test` — unit + e2e + coverage (artifacts/test)
 - `make api` — OpenAPI lint + drift + Schemathesis
 - `make docs` — mkdocs build (strict) → `artifacts/docs/site`
-- `make quality` — vulture/deptry/reuse/interrogate
+- `make quality` — vulture/deptry/interrogate
 - `make security` — bandit + pip-audit (gating)
 - `make sbom` — CycloneDX SBOMs
 - `make hygiene` — zero-root-pollution gate

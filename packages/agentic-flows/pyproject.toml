@@ -92,7 +92,6 @@ dev = [
   "radon>=6.0.0",
   "vulture>=2.7,<3.0",
   "deptry>=0.10.0,<1.0",
-  "reuse>=4.0.0,<6.0.0",
   "build>=1.0.3,<2.0",
   "bandit>=1.7.10,<2.0",
   "pip-audit>=2.7.3,<3.0",
@@ -108,7 +107,6 @@ agentic-flows = "agentic_flows.cli.main:main"
 include = [
   "README.md",
   "CHANGELOG.md",
-  "REUSE.toml",
   "src/agentic_flows/py.typed",
 ]
 

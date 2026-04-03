@@ -34,7 +34,7 @@ artifacts/
     tmp/            # temp test files
   api/              # schemas, API logs/reports
   sbom/             # SBOM outputs
-  quality/          # interrogate, vulture, deptry, reuse, etc.
+  quality/          # interrogate, vulture, deptry, and related reports
   security/         # bandit, pip-audit, etc.
   lint/             # linter/type checker reports
 ```

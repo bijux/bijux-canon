@@ -27,7 +27,6 @@ We standardized on the following tools:
 * **Radon** for cyclomatic complexity.
 * **Vulture** for dead code detection.
 * **Deptry** for unused/incorrect dependencies.
-* **REUSE** for SPDX license header compliance.
 * **Bandit** for security static analysis.
 * **pip-audit** for dependency vulnerability audits.
 
@@ -110,15 +109,6 @@ The toolchain is driven by unified configs:
 
 </details>
 
-<details>
-<summary>REUSE (<code>REUSE.toml</code>)</summary>
-
-```toml
---8<-- "REUSE.toml"
-```
-
-</details>
-
 **Docstring Style Enforcement**
 
 We mandate Google-style docstrings via Pydocstyle (enforced in Makefile):
@@ -149,7 +139,6 @@ Interrogate enforces documentation coverage thresholds as configured.
 * Strong typing via **Mypy** and **Pytype** (where supported).
 * Doc style & coverage enforced via **Pydocstyle** + **Interrogate**.
 * Maintainability boosted by **Vulture** (dead code), **Deptry** (deps), **Radon** (complexity).
-* SPDX compliance via **REUSE**.
 * Security posture improved through **Bandit** + **pip-audit**.
 * All tooling configs centralized under `../../configs/bijux-rag/`, ensuring local/CI parity.
 

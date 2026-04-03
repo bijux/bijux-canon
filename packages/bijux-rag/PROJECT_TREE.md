@@ -20,7 +20,6 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── Makefile             # main Makefile entrypoint
 ├── PROJECT_TREE.md      # this file
 ├── README.md            # project overview
-├── REUSE.toml           # REUSE annotations
 ├── TESTS.md             # tests overview
 ├── TOOLING.md           # tooling guide
 ├── USAGE.md             # usage instructions
@@ -87,7 +86,6 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../../CODE_OF_CONDUCT.md` — repository-wide community standards.
 - `../../CONTRIBUTING.md` — repository-wide setup/workflow/PR guide.
 - `../../SECURITY.md` — repository-wide vulnerability reporting.
-- `REUSE.toml` — license annotations (MIT across current repository content).
 - `../../LICENSE` — repository-wide MIT license text.
 
 [Back to top](#project-tree--guide)

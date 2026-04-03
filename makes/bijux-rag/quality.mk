@@ -1,4 +1,4 @@
-# Quality checks (dead code, deps, REUSE, doc coverage)
+# Quality checks (dead code, deps, doc coverage)
 
 QUALITY_PATHS       ?= src/bijux_rag
 INTERROGATE_PATHS   ?= src/bijux_rag
@@ -7,7 +7,6 @@ QUALITY_OK_MARKER     := $(QUALITY_ARTIFACTS_DIR)/_passed
 
 VULTURE     := $(ACT)/vulture
 DEPTRY      := $(ACT)/deptry
-REUSE       := $(ACT)/reuse
 INTERROGATE := $(ACT)/interrogate
 
 .PHONY: quality quality-clean interrogate-report
@@ -19,8 +18,6 @@ quality:
 	@$(VULTURE) $(QUALITY_PATHS) --min-confidence 80 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/vulture.log"
 	@echo "   - Dependency hygiene (deptry)"
 	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/deptry_scan.py" --deptry-bin "$(DEPTRY)" --config "$(CONFIG_DIR)/deptry.toml" --project-dir . $(QUALITY_PATHS) 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/deptry.log"
-	@echo "   - REUSE compliance"
-	@$(REUSE) lint 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/reuse.log"
 	@$(MAKE) interrogate-report
 	@printf "OK\n" >"$(QUALITY_OK_MARKER)"
 	@echo "✔ Quality complete"
@@ -38,5 +35,5 @@ quality-clean:
 	@rm -rf "$(QUALITY_ARTIFACTS_DIR)"
 
 ##@ Quality
-quality: ## Run vulture, deptry, reuse, interrogate (artifacts under artifacts/quality)
+quality: ## Run vulture, deptry, interrogate (artifacts under artifacts/quality)
 quality-clean: ## Remove quality artifacts

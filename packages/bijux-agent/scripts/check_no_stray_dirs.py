@@ -55,7 +55,6 @@ ALLOWED_DIRS = {
     "tests/api/",
     "tests/stubs/",
     "tests/utils/",
-    ".reuse/",
     "src/bijux_agent/cli/",
     "src/bijux_agent/httpapi/",
 }

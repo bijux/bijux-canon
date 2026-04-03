@@ -5,12 +5,10 @@ QUALITY_PATHS     ?= src/bijux_agent
 
 VULTURE     := $(ACT)/vulture
 DEPTRY      := $(ACT)/deptry
-REUSE       := $(ACT)/reuse
 INTERROGATE := $(ACT)/interrogate
 MYPY        := $(ACT)/mypy
 PYTHON      := $(shell command -v python3 || command -v python)
 SKIP_DEPTRY ?= 0
-SKIP_REUSE ?= 0
 SKIP_INTERROGATE ?= 0
 
 QUALITY_ARTIFACTS_DIR ?= artifacts/quality
@@ -48,18 +46,6 @@ quality:
 	  $(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/deptry_scan.py" --deptry-bin "$(DEPTRY)" --config "$(CONFIG_DIR)/deptry.toml" --project-dir . $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
 	fi
 
-	@echo "   - Cleaning __pycache__ before REUSE lint"
-	@find . -type d -name '__pycache__' -exec rm -rf {} + >/dev/null 2>&1 || true
-	@echo "   - License & SPDX compliance (REUSE)"
-	@if [ "$(SKIP_REUSE)" = "1" ]; then \
-	  { $(REUSE) --version 2>/dev/null || true; } >"$(QUALITY_ARTIFACTS_DIR)/reuse.log"; \
-	  echo "→ Skipping reuse" >>"$(QUALITY_ARTIFACTS_DIR)/reuse.log"; \
-	else \
-	  set -euo pipefail; \
-	  { $(REUSE) --version 2>/dev/null || true; } >"$(QUALITY_ARTIFACTS_DIR)/reuse.log"; \
-	  $(REUSE) lint 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/reuse.log"; \
-	fi
-
 	@echo "   - Static typing (Mypy)"
 	@set -euo pipefail; \
 	  $(MYPY) --config-file $(CONFIG_DIR)/mypy-core.ini 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/mypy-core.log"
@@ -94,6 +80,6 @@ quality-clean:
 	@rm -rf "$(QUALITY_ARTIFACTS_DIR)"
 
 ##@ Quality
-quality: ## Run Vulture, Deptry, REUSE, Interrogate; save logs to artifacts_pages/quality/
+quality: ## Run Vulture, Deptry, Interrogate; save logs to artifacts_pages/quality/
 interrogate-report: ## Save full Interrogate table + offenders list
 quality-clean: ## Remove artifacts_pages/quality

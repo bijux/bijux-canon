@@ -1,12 +1,11 @@
 # bijux-rag
 
 > At a glance: **index → retrieve → ask** • offline CI profile • reproducible chunk IDs + index fingerprints • CLI + FastAPI boundaries • OpenAPI drift-gated  
-> Quality: **make/tox gates green** (tests, lint, types, docs strict, security, SBOM, REUSE, hygiene). Everything writes to `artifacts/`. No telemetry.
+> Quality: **make/tox gates green** (tests, lint, types, docs strict, security, SBOM, hygiene). Everything writes to `artifacts/`. No telemetry.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/bijux-rag.svg?logo=pypi&logoColor=white)](https://pypi.org/project/bijux-rag)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bijux-rag.svg?logo=python&logoColor=white)](https://pypi.org/project/bijux-rag)
 [![License](https://img.shields.io/github/license/bijux/bijux-llm-nexus.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
-[![REUSE Compliant](https://api.reuse.software/badge/github.com/bijux/bijux-llm-nexus)](https://api.reuse.software/info/github.com/bijux/bijux-llm-nexus)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/charliermarsh/ruff)
 [![Documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg)](https://bijux.github.io/bijux-rag/)
 
@@ -18,7 +17,7 @@
 
 **bijux-rag** is a standalone Retrieval-Augmented Generation (RAG) toolkit for Python, emphasizing a functional core with pure transformations for document processing, chunking, and retrieval. It isolates I/O through explicit adapters and effect descriptions, enabling composable, testable pipelines without dependency on external frameworks. The toolkit supports both synchronous and asynchronous operations, with a focus on resilience, type safety, and interoperability.
 
-All quality gates—enforced via Tox and Make—remain green: comprehensive tests (unit, integration, end-to-end), static analysis (linting, typing with MyPy/Pytype), security audits (Bandit, Pip-Audit), and builds. Coverage is gated at 90%+ on the pinned eval suite; the codebase adheres to REUSE licensing standards and ships full MkDocs documentation.
+All quality gates—enforced via Tox and Make—remain green: comprehensive tests (unit, integration, end-to-end), static analysis (linting, typing with MyPy/Pytype), security audits (Bandit, Pip-Audit), and builds. Coverage is gated at 90%+ on the pinned eval suite, and the codebase ships full MkDocs documentation.
 
 
 ## At a Glance
@@ -29,7 +28,7 @@ All quality gates—enforced via Tox and Make—remain green: comprehensive test
 - **Interfaces**: CLI for batch processing, HTTP API via FastAPI for serving, and Python API for custom pipelines.
 - **Dependencies**: Minimal runtime (Pydantic, NumPy, FastAPI, Uvicorn); dev extras for testing (Pytest, Hypothesis) and docs (MkDocs).
 - **Version & Compatibility**: v0.1.0; Python 3.11–3.13; MIT-licensed.
-- **Quality Metrics**: 100% coverage; strict typing; security-scanned; REUSE-compliant.
+- **Quality Metrics**: 100% coverage; strict typing; security-scanned.
 
 [↑ Back to Top](#bijux-rag)
 
@@ -221,7 +220,7 @@ Follow the repository guide in [CONTRIBUTING.md](https://github.com/bijux/bijux-
 
 ## License
 
-MIT License—see [LICENSE](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE). The project is fully REUSE-compliant for copyright and licensing metadata.
+MIT License—see [LICENSE](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE).
 
 [↑ Back to Top](#bijux-rag)
 

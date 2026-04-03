@@ -1,4 +1,4 @@
-# Repo hygiene (keep the workspace REUSE-clean and releaseable)
+# Repo hygiene (keep the workspace releaseable)
 
 RM ?= rm -rf
 
@@ -29,5 +29,5 @@ hygiene-check:
 	  echo "✔ hygiene-check passed"
 
 ##@ Hygiene
-hygiene: ## Remove bytecode/caches/macOS junk that breaks REUSE and releases
+hygiene: ## Remove bytecode/caches/macOS junk that breaks releases
 hygiene-check: ## Fail if bytecode/caches/macOS junk exist in the workspace
