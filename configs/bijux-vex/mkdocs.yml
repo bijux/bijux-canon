@@ -172,9 +172,11 @@ nav:
       - Audit Narrative: examples/audit_narrative.md
   - Maintainer:
       - Changelog: changelog.md
+      - Contributing: maintainer/contributing.md
       - Benchmarks: maintainer/benchmarks.md
       - Benchmark Truth Table: maintainer/benchmark_truth_table.md
       - Release Process: maintainer/release_process.md
+      - PyPI Page: maintainer/pypi.md
       - Release Checklist: maintainer/release_checklist.md
       - Release Dry Run: maintainer/release_dry_run.md
       - Pre-Release Self-Audit: maintainer/pre_release_self_audit.md

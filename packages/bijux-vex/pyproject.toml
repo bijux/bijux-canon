@@ -163,7 +163,7 @@ include = ["src/bijux_vex/py.typed"]
 include = [
   "README.md",
   "CHANGELOG.md",
-  "PYPI.md",
+  "docs/maintainer/pypi.md",
   "src/bijux_vex/py.typed",
 ]
 
@@ -171,7 +171,7 @@ include = [
 include = [
   "README.md",
   "CHANGELOG.md",
-  "PYPI.md",
+  "docs/maintainer/pypi.md",
   "src/bijux_vex/py.typed",
 ]
 
