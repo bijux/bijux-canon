@@ -377,7 +377,7 @@ paths:
                   value:
                     results:
                     - vec-1
-                    correlation_id: req-1
+                    correlation_id: req-example
                     execution_contract: deterministic
                     execution_contract_status: stable
                     replayable: true
@@ -572,6 +572,12 @@ components:
             type: array
           type: object
           title: Plugins
+        nd:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Nd
       additionalProperties: false
       type: object
       required:
@@ -604,6 +610,11 @@ components:
       properties:
         execution_contract:
           $ref: '#/components/schemas/ExecutionContract'
+        index_mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Index Mode
         vector_store:
           anyOf:
           - type: string
@@ -706,6 +717,129 @@ components:
           anyOf:
           - $ref: '#/components/schemas/RandomnessProfilePayload'
           - type: 'null'
+        nd_profile:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nd Profile
+        nd_target_recall:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Target Recall
+        nd_latency_budget_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Latency Budget Ms
+        nd_witness_rate:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Witness Rate
+        nd_witness_sample_k:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Witness Sample K
+        nd_witness_mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nd Witness Mode
+        nd_build_on_demand:
+          type: boolean
+          title: Nd Build On Demand
+          default: false
+        nd_candidate_k:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Candidate K
+        nd_diversity_lambda:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Diversity Lambda
+        nd_normalize_vectors:
+          type: boolean
+          title: Nd Normalize Vectors
+          default: false
+        nd_normalize_query:
+          type: boolean
+          title: Nd Normalize Query
+          default: false
+        nd_outlier_threshold:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Outlier Threshold
+        nd_low_signal_margin:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Low Signal Margin
+        nd_adaptive_k:
+          type: boolean
+          title: Nd Adaptive K
+          default: false
+        nd_low_signal_refuse:
+          type: boolean
+          title: Nd Low Signal Refuse
+          default: false
+        nd_replay_strict:
+          type: boolean
+          title: Nd Replay Strict
+          default: false
+        nd_warmup_queries:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nd Warmup Queries
+        nd_incremental_index:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Nd Incremental Index
+        nd_max_candidates:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Max Candidates
+        nd_max_index_memory_mb:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Max Index Memory Mb
+        nd_two_stage:
+          type: boolean
+          title: Nd Two Stage
+          default: true
+        nd_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd M
+        nd_ef_construction:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Ef Construction
+        nd_ef_search:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Ef Search
+        nd_max_ef_search:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Max Ef Search
+        nd_space:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nd Space
         correlation_id:
           anyOf:
           - type: string
@@ -839,6 +973,10 @@ components:
         bounded:
           type: boolean
           title: Bounded
+          default: false
+        non_replayable:
+          type: boolean
+          title: Non Replayable
           default: false
       additionalProperties: false
       type: object

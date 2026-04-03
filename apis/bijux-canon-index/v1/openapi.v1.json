@@ -1,844 +1,23 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "bijux-canon-index execution API",
-    "version": "v1"
-  },
-  "paths": {
-    "/capabilities": {
-      "get": {
-        "summary": "Capabilities",
-        "operationId": "capabilities_capabilities_get",
-        "parameters": [
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BackendCapabilitiesReport"
-                },
-                "examples": {
-                  "capabilities": {
-                    "value": {
-                      "backend": "sqlite",
-                      "contracts": [
-                        "deterministic",
-                        "non_deterministic"
-                      ],
-                      "deterministic_query": true,
-                      "supports_ann": false,
-                      "replayable": true,
-                      "metrics": [
-                        "l2",
-                        "cosine"
-                      ],
-                      "max_vector_size": 4096,
-                      "isolation_level": "read_committed",
-                      "execution_modes": [
-                        "strict",
-                        "bounded",
-                        "exploratory"
-                      ],
-                      "ann_status": "unavailable",
-                      "storage_backends": [],
-                      "vector_stores": [],
-                      "plugins": {}
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/artifacts": {
-      "get": {
-        "summary": "List Artifacts",
-        "operationId": "list_artifacts_artifacts_get",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Limit"
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0,
-              "title": "Offset"
-            }
-          },
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response List Artifacts Artifacts Get"
-                },
-                "examples": {
-                  "artifacts": {
-                    "value": {
-                      "artifacts": [
-                        "art-1"
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/runs": {
-      "get": {
-        "summary": "List Runs",
-        "operationId": "list_runs_runs_get",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Limit"
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0,
-              "title": "Offset"
-            }
-          },
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response List Runs Runs Get"
-                },
-                "examples": {
-                  "runs": {
-                    "value": {
-                      "runs": [
-                        "run-1"
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/create": {
-      "post": {
-        "summary": "Create",
-        "operationId": "create_create_post",
-        "parameters": [
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRequest"
-              },
-              "examples": {
-                "create": {
-                  "value": {
-                    "name": "my-corpus"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Create Create Post"
-                },
-                "examples": {
-                  "created": {
-                    "value": {
-                      "name": "my-corpus",
-                      "status": "created"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "refusal": {
-                    "value": {
-                      "error": {
-                        "reason": "determinism_violation",
-                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
-                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Bad Request"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ingest": {
-      "post": {
-        "summary": "Ingest",
-        "operationId": "ingest_ingest_post",
-        "parameters": [
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          },
-          {
-            "name": "Idempotency-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Idempotency-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IngestRequest"
-              },
-              "examples": {
-                "ingest": {
-                  "value": {
-                    "documents": [
-                      "hello"
-                    ],
-                    "vectors": [
-                      [
-                        0.0,
-                        1.0,
-                        0.0
-                      ]
-                    ],
-                    "vector_store": "faiss",
-                    "vector_store_uri": "index.faiss"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Ingest Ingest Post"
-                },
-                "examples": {
-                  "ingested": {
-                    "value": {
-                      "ingested": 1
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "refusal": {
-                    "value": {
-                      "error": {
-                        "reason": "determinism_violation",
-                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
-                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Bad Request"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/artifact": {
-      "post": {
-        "summary": "Artifact",
-        "operationId": "artifact_artifact_post",
-        "parameters": [
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExecutionArtifactRequest"
-              },
-              "examples": {
-                "artifact": {
-                  "value": {
-                    "execution_contract": "deterministic"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Artifact Artifact Post"
-                },
-                "examples": {
-                  "artifact": {
-                    "value": {
-                      "artifact_id": "art-1",
-                      "execution_contract": "deterministic",
-                      "execution_contract_status": "stable",
-                      "replayable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "refusal": {
-                    "value": {
-                      "error": {
-                        "reason": "determinism_violation",
-                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
-                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Bad Request"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/execute": {
-      "post": {
-        "summary": "Execute",
-        "operationId": "execute_execute_post",
-        "parameters": [
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExecutionRequestPayload"
-              },
-              "examples": {
-                "execute": {
-                  "value": {
-                    "artifact_id": "art-1",
-                    "vector": [
-                      0.0,
-                      1.0,
-                      0.0
-                    ],
-                    "top_k": 3,
-                    "execution_contract": "deterministic",
-                    "execution_intent": "exact_validation",
-                    "execution_mode": "strict"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Execute Execute Post"
-                },
-                "examples": {
-                  "execute": {
-                    "value": {
-                      "results": [
-                        "vec-1"
-                      ],
-                      "correlation_id": "req-example",
-                      "execution_contract": "deterministic",
-                      "execution_contract_status": "stable",
-                      "replayable": true,
-                      "execution_id": "exec-1"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "refusal": {
-                    "value": {
-                      "error": {
-                        "reason": "determinism_violation",
-                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
-                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Unprocessable Entity"
-          }
-        }
-      }
-    },
-    "/explain": {
-      "post": {
-        "summary": "Explain",
-        "operationId": "explain_explain_post",
-        "parameters": [
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExplainRequest"
-              },
-              "examples": {
-                "explain": {
-                  "value": {
-                    "result_id": "res-1"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Explain Explain Post"
-                },
-                "examples": {
-                  "explain": {
-                    "value": {
-                      "result_id": "res-1"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "refusal": {
-                    "value": {
-                      "error": {
-                        "reason": "determinism_violation",
-                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
-                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Bad Request"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/replay": {
-      "post": {
-        "summary": "Replay",
-        "operationId": "replay_replay_post",
-        "parameters": [
-          {
-            "name": "X-Correlation-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Correlation-Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExecutionRequestPayload"
-              },
-              "examples": {
-                "replay": {
-                  "value": {
-                    "artifact_id": "art-1",
-                    "request_text": "hello"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Replay Replay Post"
-                },
-                "examples": {
-                  "replay": {
-                    "value": {
-                      "matches": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "refusal": {
-                    "value": {
-                      "error": {
-                        "reason": "determinism_violation",
-                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
-                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Bad Request"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   "components": {
     "schemas": {
       "BackendCapabilitiesReport": {
+        "additionalProperties": false,
         "properties": {
+          "ann_status": {
+            "title": "Ann Status",
+            "type": "string"
+          },
           "backend": {
-            "type": "string",
-            "title": "Backend"
+            "title": "Backend",
+            "type": "string"
           },
           "contracts": {
             "items": {
               "type": "string"
             },
-            "type": "array",
-            "title": "Contracts"
+            "title": "Contracts",
+            "type": "array"
           },
           "deterministic_query": {
             "anyOf": [
@@ -851,38 +30,12 @@
             ],
             "title": "Deterministic Query"
           },
-          "supports_ann": {
-            "type": "boolean",
-            "title": "Supports Ann"
-          },
-          "replayable": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Replayable"
-          },
-          "metrics": {
+          "execution_modes": {
             "items": {
               "type": "string"
             },
-            "type": "array",
-            "title": "Metrics"
-          },
-          "max_vector_size": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Vector Size"
+            "title": "Execution Modes",
+            "type": "array"
           },
           "isolation_level": {
             "anyOf": [
@@ -895,30 +48,23 @@
             ],
             "title": "Isolation Level"
           },
-          "execution_modes": {
+          "max_vector_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Vector Size"
+          },
+          "metrics": {
             "items": {
               "type": "string"
             },
-            "type": "array",
-            "title": "Execution Modes"
-          },
-          "ann_status": {
-            "type": "string",
-            "title": "Ann Status"
-          },
-          "storage_backends": {
-            "items": {
-              "$ref": "#/components/schemas/StorageBackendDescriptor"
-            },
-            "type": "array",
-            "title": "Storage Backends"
-          },
-          "vector_stores": {
-            "items": {
-              "$ref": "#/components/schemas/VectorStoreDescriptor"
-            },
-            "type": "array",
-            "title": "Vector Stores"
+            "title": "Metrics",
+            "type": "array"
           },
           "plugins": {
             "additionalProperties": {
@@ -928,24 +74,39 @@
               },
               "type": "array"
             },
-            "type": "object",
-            "title": "Plugins"
+            "title": "Plugins",
+            "type": "object"
           },
-          "nd": {
+          "replayable": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "type": "boolean"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Nd"
+            "title": "Replayable"
+          },
+          "storage_backends": {
+            "items": {
+              "$ref": "#/components/schemas/StorageBackendDescriptor"
+            },
+            "title": "Storage Backends",
+            "type": "array"
+          },
+          "supports_ann": {
+            "title": "Supports Ann",
+            "type": "boolean"
+          },
+          "vector_stores": {
+            "items": {
+              "$ref": "#/components/schemas/VectorStoreDescriptor"
+            },
+            "title": "Vector Stores",
+            "type": "array"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "backend",
           "contracts",
@@ -961,38 +122,29 @@
           "vector_stores",
           "plugins"
         ],
-        "title": "BackendCapabilitiesReport"
+        "title": "BackendCapabilitiesReport",
+        "type": "object"
       },
       "CreateRequest": {
+        "additionalProperties": false,
         "properties": {
           "name": {
-            "type": "string",
             "minLength": 1,
-            "title": "Name"
+            "title": "Name",
+            "type": "string"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "name"
         ],
-        "title": "CreateRequest"
+        "title": "CreateRequest",
+        "type": "object"
       },
       "ExecutionArtifactRequest": {
+        "additionalProperties": false,
         "properties": {
           "execution_contract": {
             "$ref": "#/components/schemas/ExecutionContract"
-          },
-          "index_mode": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Index Mode"
           },
           "vector_store": {
             "anyOf": [
@@ -1004,17 +156,6 @@
               }
             ],
             "title": "Vector Store"
-          },
-          "vector_store_uri": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Vector Store Uri"
           },
           "vector_store_options": {
             "anyOf": [
@@ -1029,17 +170,39 @@
               }
             ],
             "title": "Vector Store Options"
+          },
+          "vector_store_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vector Store Uri"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "execution_contract"
         ],
-        "title": "ExecutionArtifactRequest"
+        "title": "ExecutionArtifactRequest",
+        "type": "object"
       },
       "ExecutionBudgetPayload": {
+        "additionalProperties": false,
         "properties": {
+          "max_error": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Error"
+          },
           "max_latency_ms": {
             "anyOf": [
               {
@@ -1061,51 +224,40 @@
               }
             ],
             "title": "Max Memory Mb"
-          },
-          "max_error": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Error"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "ExecutionBudgetPayload"
+        "title": "ExecutionBudgetPayload",
+        "type": "object"
       },
       "ExecutionContract": {
-        "type": "string",
         "enum": [
           "deterministic",
           "non_deterministic"
         ],
-        "title": "ExecutionContract"
+        "title": "ExecutionContract",
+        "type": "string"
       },
       "ExecutionIntent": {
-        "type": "string",
         "enum": [
           "exact_validation",
           "reproducible_research",
           "exploratory_search",
           "production_retrieval"
         ],
-        "title": "ExecutionIntent"
+        "title": "ExecutionIntent",
+        "type": "string"
       },
       "ExecutionMode": {
-        "type": "string",
         "enum": [
           "strict",
           "bounded",
           "exploratory"
         ],
-        "title": "ExecutionMode"
+        "title": "ExecutionMode",
+        "type": "string"
       },
       "ExecutionRequestPayload": {
+        "additionalProperties": false,
         "properties": {
           "artifact_id": {
             "anyOf": [
@@ -1118,6 +270,47 @@
             ],
             "title": "Artifact Id"
           },
+          "correlation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correlation Id"
+          },
+          "execution_budget": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExecutionBudgetPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "execution_contract": {
+            "$ref": "#/components/schemas/ExecutionContract"
+          },
+          "execution_intent": {
+            "$ref": "#/components/schemas/ExecutionIntent"
+          },
+          "execution_mode": {
+            "$ref": "#/components/schemas/ExecutionMode",
+            "default": "strict"
+          },
+          "randomness_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RandomnessProfilePayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "request_text": {
             "anyOf": [
               {
@@ -1128,6 +321,12 @@
               }
             ],
             "title": "Request Text"
+          },
+          "top_k": {
+            "default": 5,
+            "exclusiveMinimum": 0.0,
+            "title": "Top K",
+            "type": "integer"
           },
           "vector": {
             "anyOf": [
@@ -1143,297 +342,6 @@
             ],
             "title": "Vector"
           },
-          "top_k": {
-            "type": "integer",
-            "exclusiveMinimum": 0.0,
-            "title": "Top K",
-            "default": 5
-          },
-          "execution_contract": {
-            "$ref": "#/components/schemas/ExecutionContract"
-          },
-          "execution_intent": {
-            "$ref": "#/components/schemas/ExecutionIntent"
-          },
-          "execution_mode": {
-            "$ref": "#/components/schemas/ExecutionMode",
-            "default": "strict"
-          },
-          "execution_budget": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ExecutionBudgetPayload"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "randomness_profile": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/RandomnessProfilePayload"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "nd_profile": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Profile"
-          },
-          "nd_target_recall": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Target Recall"
-          },
-          "nd_latency_budget_ms": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Latency Budget Ms"
-          },
-          "nd_witness_rate": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Witness Rate"
-          },
-          "nd_witness_sample_k": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Witness Sample K"
-          },
-          "nd_witness_mode": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Witness Mode"
-          },
-          "nd_build_on_demand": {
-            "type": "boolean",
-            "title": "Nd Build On Demand",
-            "default": false
-          },
-          "nd_candidate_k": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Candidate K"
-          },
-          "nd_diversity_lambda": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Diversity Lambda"
-          },
-          "nd_normalize_vectors": {
-            "type": "boolean",
-            "title": "Nd Normalize Vectors",
-            "default": false
-          },
-          "nd_normalize_query": {
-            "type": "boolean",
-            "title": "Nd Normalize Query",
-            "default": false
-          },
-          "nd_outlier_threshold": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Outlier Threshold"
-          },
-          "nd_low_signal_margin": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Low Signal Margin"
-          },
-          "nd_adaptive_k": {
-            "type": "boolean",
-            "title": "Nd Adaptive K",
-            "default": false
-          },
-          "nd_low_signal_refuse": {
-            "type": "boolean",
-            "title": "Nd Low Signal Refuse",
-            "default": false
-          },
-          "nd_replay_strict": {
-            "type": "boolean",
-            "title": "Nd Replay Strict",
-            "default": false
-          },
-          "nd_warmup_queries": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Warmup Queries"
-          },
-          "nd_incremental_index": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Incremental Index"
-          },
-          "nd_max_candidates": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Max Candidates"
-          },
-          "nd_max_index_memory_mb": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Max Index Memory Mb"
-          },
-          "nd_two_stage": {
-            "type": "boolean",
-            "title": "Nd Two Stage",
-            "default": true
-          },
-          "nd_m": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd M"
-          },
-          "nd_ef_construction": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Ef Construction"
-          },
-          "nd_ef_search": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Ef Search"
-          },
-          "nd_max_ef_search": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Max Ef Search"
-          },
-          "nd_space": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nd Space"
-          },
-          "correlation_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Correlation Id"
-          },
           "vector_store": {
             "anyOf": [
               {
@@ -1444,17 +352,6 @@
               }
             ],
             "title": "Vector Store"
-          },
-          "vector_store_uri": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Vector Store Uri"
           },
           "vector_store_options": {
             "anyOf": [
@@ -1469,23 +366,29 @@
               }
             ],
             "title": "Vector Store Options"
+          },
+          "vector_store_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vector Store Uri"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "execution_contract",
           "execution_intent"
         ],
-        "title": "ExecutionRequestPayload"
+        "title": "ExecutionRequestPayload",
+        "type": "object"
       },
       "ExplainRequest": {
+        "additionalProperties": false,
         "properties": {
-          "result_id": {
-            "type": "string",
-            "minLength": 1,
-            "title": "Result Id"
-          },
           "artifact_id": {
             "anyOf": [
               {
@@ -1496,14 +399,18 @@
               }
             ],
             "title": "Artifact Id"
+          },
+          "result_id": {
+            "minLength": 1,
+            "title": "Result Id",
+            "type": "string"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "result_id"
         ],
-        "title": "ExplainRequest"
+        "title": "ExplainRequest",
+        "type": "object"
       },
       "HTTPValidationError": {
         "properties": {
@@ -1511,61 +418,16 @@
             "items": {
               "$ref": "#/components/schemas/ValidationError"
             },
-            "type": "array",
-            "title": "Detail"
+            "title": "Detail",
+            "type": "array"
           }
         },
-        "type": "object",
-        "title": "HTTPValidationError"
+        "title": "HTTPValidationError",
+        "type": "object"
       },
       "IngestRequest": {
+        "additionalProperties": false,
         "properties": {
-          "documents": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Documents"
-          },
-          "vectors": {
-            "anyOf": [
-              {
-                "items": {
-                  "items": {
-                    "type": "number"
-                  },
-                  "type": "array"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Vectors"
-          },
-          "embed_provider": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Embed Provider"
-          },
-          "embed_model": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Embed Model"
-          },
           "cache_embeddings": {
             "anyOf": [
               {
@@ -1587,6 +449,35 @@
               }
             ],
             "title": "Correlation Id"
+          },
+          "documents": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "embed_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embed Model"
+          },
+          "embed_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embed Provider"
           },
           "idempotency_key": {
             "anyOf": [
@@ -1610,17 +501,6 @@
             ],
             "title": "Vector Store"
           },
-          "vector_store_uri": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Vector Store Uri"
-          },
           "vector_store_options": {
             "anyOf": [
               {
@@ -1634,17 +514,50 @@
               }
             ],
             "title": "Vector Store Options"
+          },
+          "vector_store_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vector Store Uri"
+          },
+          "vectors": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vectors"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "documents"
         ],
-        "title": "IngestRequest"
+        "title": "IngestRequest",
+        "type": "object"
       },
       "RandomnessProfilePayload": {
+        "additionalProperties": false,
         "properties": {
+          "bounded": {
+            "default": false,
+            "title": "Bounded",
+            "type": "boolean"
+          },
           "seed": {
             "anyOf": [
               {
@@ -1669,31 +582,28 @@
               }
             ],
             "title": "Sources"
-          },
-          "bounded": {
-            "type": "boolean",
-            "title": "Bounded",
-            "default": false
-          },
-          "non_replayable": {
-            "type": "boolean",
-            "title": "Non Replayable",
-            "default": false
           }
         },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "RandomnessProfilePayload"
+        "title": "RandomnessProfilePayload",
+        "type": "object"
       },
       "StorageBackendDescriptor": {
+        "additionalProperties": false,
         "properties": {
           "name": {
-            "type": "string",
-            "title": "Name"
+            "title": "Name",
+            "type": "string"
           },
-          "status": {
-            "type": "string",
-            "title": "Status"
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
           },
           "persistence": {
             "anyOf": [
@@ -1706,25 +616,17 @@
             ],
             "title": "Persistence"
           },
-          "notes": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Notes"
+          "status": {
+            "title": "Status",
+            "type": "string"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "name",
           "status"
         ],
-        "title": "StorageBackendDescriptor"
+        "title": "StorageBackendDescriptor",
+        "type": "object"
       },
       "ValidationError": {
         "properties": {
@@ -1739,59 +641,32 @@
                 }
               ]
             },
-            "type": "array",
-            "title": "Location"
+            "title": "Location",
+            "type": "array"
           },
           "msg": {
-            "type": "string",
-            "title": "Message"
+            "title": "Message",
+            "type": "string"
           },
           "type": {
-            "type": "string",
-            "title": "Error Type"
+            "title": "Error Type",
+            "type": "string"
           }
         },
-        "type": "object",
         "required": [
           "loc",
           "msg",
           "type"
         ],
-        "title": "ValidationError"
+        "title": "ValidationError",
+        "type": "object"
       },
       "VectorStoreDescriptor": {
+        "additionalProperties": false,
         "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
           "available": {
-            "type": "boolean",
-            "title": "Available"
-          },
-          "supports_exact": {
-            "type": "boolean",
-            "title": "Supports Exact"
-          },
-          "supports_ann": {
-            "type": "boolean",
-            "title": "Supports Ann"
-          },
-          "delete_supported": {
-            "type": "boolean",
-            "title": "Delete Supported"
-          },
-          "filtering_supported": {
-            "type": "boolean",
-            "title": "Filtering Supported"
-          },
-          "deterministic_exact": {
-            "type": "boolean",
-            "title": "Deterministic Exact"
-          },
-          "experimental": {
-            "type": "boolean",
-            "title": "Experimental"
+            "title": "Available",
+            "type": "boolean"
           },
           "consistency": {
             "anyOf": [
@@ -1804,16 +679,25 @@
             ],
             "title": "Consistency"
           },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
+          "delete_supported": {
+            "title": "Delete Supported",
+            "type": "boolean"
+          },
+          "deterministic_exact": {
+            "title": "Deterministic Exact",
+            "type": "boolean"
+          },
+          "experimental": {
+            "title": "Experimental",
+            "type": "boolean"
+          },
+          "filtering_supported": {
+            "title": "Filtering Supported",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
           },
           "notes": {
             "anyOf": [
@@ -1825,10 +709,27 @@
               }
             ],
             "title": "Notes"
+          },
+          "supports_ann": {
+            "title": "Supports Ann",
+            "type": "boolean"
+          },
+          "supports_exact": {
+            "title": "Supports Exact",
+            "type": "boolean"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
           }
         },
-        "additionalProperties": false,
-        "type": "object",
         "required": [
           "name",
           "available",
@@ -1839,7 +740,834 @@
           "deterministic_exact",
           "experimental"
         ],
-        "title": "VectorStoreDescriptor"
+        "title": "VectorStoreDescriptor",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "bijux-canon-index execution API",
+    "version": "v1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/artifact": {
+      "post": {
+        "operationId": "artifact_artifact_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "artifact": {
+                  "value": {
+                    "execution_contract": "deterministic"
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionArtifactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "artifact": {
+                    "value": {
+                      "artifact_id": "art-1",
+                      "execution_contract": "deterministic",
+                      "execution_contract_status": "stable",
+                      "replayable": true
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Artifact Artifact Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "refusal": {
+                    "value": {
+                      "error": {
+                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
+                        "reason": "determinism_violation",
+                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Artifact"
+      }
+    },
+    "/artifacts": {
+      "get": {
+        "operationId": "list_artifacts_artifacts_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "artifacts": {
+                    "value": {
+                      "artifacts": [
+                        "art-1"
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Artifacts Artifacts Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Artifacts"
+      }
+    },
+    "/capabilities": {
+      "get": {
+        "operationId": "capabilities_capabilities_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "capabilities": {
+                    "value": {
+                      "ann_status": "unavailable",
+                      "backend": "sqlite",
+                      "contracts": [
+                        "deterministic",
+                        "non_deterministic"
+                      ],
+                      "deterministic_query": true,
+                      "execution_modes": [
+                        "strict",
+                        "bounded",
+                        "exploratory"
+                      ],
+                      "isolation_level": "read_committed",
+                      "max_vector_size": 4096,
+                      "metrics": [
+                        "l2",
+                        "cosine"
+                      ],
+                      "plugins": {},
+                      "replayable": true,
+                      "storage_backends": [],
+                      "supports_ann": false,
+                      "vector_stores": []
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BackendCapabilitiesReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Capabilities"
+      }
+    },
+    "/create": {
+      "post": {
+        "operationId": "create_create_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "create": {
+                  "value": {
+                    "name": "my-corpus"
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "created": {
+                    "value": {
+                      "name": "my-corpus",
+                      "status": "created"
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Create Create Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "refusal": {
+                    "value": {
+                      "error": {
+                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
+                        "reason": "determinism_violation",
+                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create"
+      }
+    },
+    "/execute": {
+      "post": {
+        "operationId": "execute_execute_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "execute": {
+                  "value": {
+                    "artifact_id": "art-1",
+                    "execution_contract": "deterministic",
+                    "execution_intent": "exact_validation",
+                    "execution_mode": "strict",
+                    "top_k": 3,
+                    "vector": [
+                      0.0,
+                      1.0,
+                      0.0
+                    ]
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionRequestPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "execute": {
+                    "value": {
+                      "correlation_id": "req-1",
+                      "execution_contract": "deterministic",
+                      "execution_contract_status": "stable",
+                      "execution_id": "exec-1",
+                      "replayable": true,
+                      "results": [
+                        "vec-1"
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Execute Execute Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "refusal": {
+                    "value": {
+                      "error": {
+                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
+                        "reason": "determinism_violation",
+                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Execute"
+      }
+    },
+    "/explain": {
+      "post": {
+        "operationId": "explain_explain_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "explain": {
+                  "value": {
+                    "result_id": "res-1"
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/ExplainRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "explain": {
+                    "value": {
+                      "result_id": "res-1"
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Explain Explain Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "refusal": {
+                    "value": {
+                      "error": {
+                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
+                        "reason": "determinism_violation",
+                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Explain"
+      }
+    },
+    "/ingest": {
+      "post": {
+        "operationId": "ingest_ingest_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "ingest": {
+                  "value": {
+                    "documents": [
+                      "hello"
+                    ],
+                    "vector_store": "faiss",
+                    "vector_store_uri": "index.faiss",
+                    "vectors": [
+                      [
+                        0.0,
+                        1.0,
+                        0.0
+                      ]
+                    ]
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/IngestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ingested": {
+                    "value": {
+                      "ingested": 1
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Ingest Ingest Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "refusal": {
+                    "value": {
+                      "error": {
+                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
+                        "reason": "determinism_violation",
+                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ingest"
+      }
+    },
+    "/replay": {
+      "post": {
+        "operationId": "replay_replay_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "replay": {
+                  "value": {
+                    "artifact_id": "art-1",
+                    "request_text": "hello"
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionRequestPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "replay": {
+                    "value": {
+                      "matches": true
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Replay Replay Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "refusal": {
+                    "value": {
+                      "error": {
+                        "message": "[INV-000] Deterministic execution requires a deterministic vector store",
+                        "reason": "determinism_violation",
+                        "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Replay"
+      }
+    },
+    "/runs": {
+      "get": {
+        "operationId": "list_runs_runs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "runs": {
+                    "value": {
+                      "runs": [
+                        "run-1"
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Runs Runs Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Runs"
       }
     }
   }
