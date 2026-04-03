@@ -42,11 +42,11 @@ def test_failure_policy_load_returns_default_retry(tmp_path: Path) -> None:
 
 def test_failure_policy_default_path_uses_repo_config() -> None:
     policy_path = FailurePolicy.default_path()
-    assert policy_path == Path("configs/bijux-agent/failure_policy.yaml").resolve()
+    assert policy_path == Path("packages/bijux-agent/failure_policy.yaml").resolve()
     assert policy_path.is_file()
 
 
 def test_failure_policy_load_default_matches_repo_config() -> None:
     assert FailurePolicy.load_default() == FailurePolicy.load(
-        Path("configs/bijux-agent/failure_policy.yaml")
+        Path("packages/bijux-agent/failure_policy.yaml")
     )

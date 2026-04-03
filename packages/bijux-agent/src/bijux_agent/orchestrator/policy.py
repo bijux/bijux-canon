@@ -1,4 +1,4 @@
-"""Failure and retry rules parsed from `configs/bijux-agent/failure_policy.yaml`."""
+"""Failure and retry rules parsed from `packages/bijux-agent/failure_policy.yaml`."""
 
 from __future__ import annotations
 
@@ -7,9 +7,7 @@ from pathlib import Path
 
 import yaml
 
-FAILURE_POLICY_RELATIVE_PATH = (
-    Path("configs") / "bijux-agent" / "failure_policy.yaml"
-)
+FAILURE_POLICY_RELATIVE_PATH = Path("packages") / "bijux-agent" / "failure_policy.yaml"
 DEFAULT_TRANSIENT_CODES = ("TIMEOUT", "TRANSIENT")
 DEFAULT_FALLBACK_MODELS = ("gpt-4o-mini", "gpt-4o-mini-0", "gpt-3.5-turbo-1106")
 DEFAULT_SCOPE_REDUCTION_STEPS = (

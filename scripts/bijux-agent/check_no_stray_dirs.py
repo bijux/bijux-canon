@@ -14,7 +14,6 @@ ALLOWED_DIRS = {
     ".benchmarks/",
     ".ruff_cache/",
     "../../artifacts/bijux-agent/",
-    "../../configs/bijux-agent/.ruff_cache/",
     "src/bijux_agent/agents/critique/",
     "src/bijux_agent/agents/file_reader/",
     "src/bijux_agent/agents/judge/",

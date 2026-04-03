@@ -6,7 +6,7 @@ High-signal directories:
 - `tests/` — unit + invariant tests
 - `docs/` — MkDocs sources (this directory)
 - `examples/default-config.yml` — example runtime configuration for CLI runs
-- `../../configs/bijux-agent/` — root-managed tooling configuration
+- `failure_policy.yaml` — package-managed retry, fallback, scope, and abort rules
 - `../../apis/bijux-agent/` — root-managed OpenAPI schema and API assets
 - `../../makes/bijux-agent/` — Make targets used by CI and developers
 
