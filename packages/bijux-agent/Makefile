@@ -7,11 +7,23 @@ include ../../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
+LINT_DIRS            := src/bijux_agent tests
+MYPY_CONFIG          := $(CONFIG_DIR)/mypy-core.ini
+MYPY_FLAGS           := --strict
+MYPY_CORE_CONFIG     := $(CONFIG_DIR)/mypy-core.ini
+MYPY_CORE_FLAGS      := --strict
+MYPY_EXTENDED_CONFIG := $(CONFIG_DIR)/mypy-extended.ini
+ENABLE_CODESPELL     := 1
+ENABLE_RADON         := 1
+ENABLE_PYDOCSTYLE    := 0
+ENABLE_PYTYPE        := 1
+RUFF_CHECK_FIX       := 1
+
 # Modular Includes
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/docs.mk
-include $(MAKE_DIR)/lint.mk
+include $(ROOT_MAKE_DIR)/lint.mk
 include $(MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/security.mk

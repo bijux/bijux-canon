@@ -10,10 +10,18 @@ include ../../makes/shared/python-package.mk
 
 # ---- Single virtualenv (Python 3.11+) ----
 ACT             := $(if $(wildcard $(VENV)/bin/activate),$(VENV)/bin,$(ACT))
+LINT_DIRS       := src/agentic_flows
+ENABLE_CODESPELL := 1
+ENABLE_RADON    := 1
+ENABLE_PYDOCSTYLE := 1
+ENABLE_PYTYPE   := 0
+RUFF_CHECK_FIX  := 0
+RADON_COMPLEXITY_MAX := 48
+PYDOCSTYLE_ARGS := --convention=google --add-ignore=D100,D101,D102,D103,D104,D105,D106,D107
 
 # ---- Includes ----
 include $(MAKE_DIR)/test.mk
-include $(MAKE_DIR)/lint.mk
+include $(ROOT_MAKE_DIR)/lint.mk
 include $(MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/security.mk
 include $(MAKE_DIR)/build.mk

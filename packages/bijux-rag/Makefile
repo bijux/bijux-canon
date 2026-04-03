@@ -8,11 +8,21 @@ export PYTHONDONTWRITEBYTECODE := 1
 export PYTHONPYCACHEPREFIX     := $(PROJECT_ARTIFACTS_DIR)/pycache
 export XDG_CACHE_HOME          := $(PROJECT_ARTIFACTS_DIR)/xdg_cache
 export COVERAGE_FILE           := $(PROJECT_ARTIFACTS_DIR)/test/.coverage
+LINT_DIRS                      := src/bijux_rag tests
+MYPY_TARGETS                   = $(if $(LINT_SCOPE),$(LINT_SCOPE),src/bijux_rag)
+MYPY_FLAGS                     :=
+ENABLE_CODESPELL               := 0
+ENABLE_RADON                   := 0
+ENABLE_PYDOCSTYLE              := 0
+ENABLE_PYTYPE                  := 1
+PYTYPE_CONFIG                  := $(CONFIG_DIR)/pytype.cfg
+PYTYPE_TARGETS                 = $(if $(LINT_SCOPE),$(LINT_SCOPE),src/bijux_rag/boundaries)
+FMT_RUN_RUFF_CHECK_FIX         := 1
 
 .NOTPARALLEL: all clean
 
 include $(MAKE_DIR)/test.mk
-include $(MAKE_DIR)/lint.mk
+include $(ROOT_MAKE_DIR)/lint.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk

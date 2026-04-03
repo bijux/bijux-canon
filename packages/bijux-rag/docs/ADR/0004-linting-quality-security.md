@@ -44,7 +44,7 @@ We enforce Makefile targets to run the full toolchain consistently.
 <summary>Lint (<code>Makefile</code>)</summary>
 
 ```make
---8<-- "../../makes/bijux-rag/lint.mk"
+--8<-- "../../makes/lint.mk"
 ```
 
 </details>
