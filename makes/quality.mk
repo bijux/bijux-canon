@@ -19,7 +19,7 @@ VULTURE     ?= $(VENV_PYTHON) -m vulture
 DEPTRY      ?= $(VENV_PYTHON) -m deptry
 INTERROGATE ?= $(VENV_PYTHON) -m interrogate
 MYPY        ?= $(VENV_PYTHON) -m mypy
-DEPTRY_SCAN_SCRIPT ?= $(MONOREPO_ROOT)/scripts/deptry_scan.py
+DEPTRY_SCAN_SCRIPT ?= $(VENV_PYTHON) -m bijux_canon_dev.quality.deptry_scan
 DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
 
 SKIP_DEPTRY      ?= 0
@@ -56,7 +56,7 @@ quality:
 	else \
 	  set -euo pipefail; \
 	    { $(DEPTRY) --version 2>/dev/null || true; } >"$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
-	    $(VENV_PYTHON) "$(DEPTRY_SCAN_SCRIPT)" --deptry-bin "$(DEPTRY)" --config "$(DEPTRY_CONFIG)" --project-dir . $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
+	    $(DEPTRY_SCAN_SCRIPT) --deptry-bin "$(DEPTRY)" --config "$(DEPTRY_CONFIG)" --project-dir . $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
 	fi
 	@echo "   - Static typing (Mypy)"
 	@if [ "$(SKIP_MYPY)" = "1" ] || [ -z "$(QUALITY_MYPY_CONFIG)" ]; then \

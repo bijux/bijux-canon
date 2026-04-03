@@ -1,8 +1,8 @@
 PUBLISH_PYTHON            ?= $(if $(wildcard $(VENV_PYTHON)),$(VENV_PYTHON),python3.11)
 PUBLISH_DIST_DIR          ?= $(PROJECT_ARTIFACTS_DIR)/build
 PUBLISH_PACKAGE_NAME      ?= $(PROJECT_SLUG)
-PUBLISH_VERSION_RESOLVER  ?= $(MONOREPO_ROOT)/scripts/release/resolve_package_version.py
-PKG_VERSION               ?= $(strip $(shell $(PUBLISH_PYTHON) "$(PUBLISH_VERSION_RESOLVER)" --pyproject pyproject.toml --package-name "$(PUBLISH_PACKAGE_NAME)" 2>/dev/null || echo 0.0.0))
+PUBLISH_VERSION_RESOLVER  ?= -m bijux_canon_dev.release.version_resolver
+PKG_VERSION               ?= $(strip $(shell $(PUBLISH_PYTHON) $(PUBLISH_VERSION_RESOLVER) --pyproject pyproject.toml --package-name "$(PUBLISH_PACKAGE_NAME)" 2>/dev/null || echo 0.0.0))
 TWINE                     ?= $(PUBLISH_PYTHON) -m twine
 TWINE_REPOSITORY          ?= pypi
 TWINE_USERNAME            ?= __token__

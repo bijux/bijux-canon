@@ -22,7 +22,7 @@ BANDIT_THREADS            ?= 0
 SECURITY_BANDIT_SKIP_IDS  ?=
 BANDIT_FLAGS              ?=
 SECURITY_AUDIT_PREPARE_MODE ?= none
-SECURITY_PIP_AUDIT_GATE   ?= $(MONOREPO_ROOT)/scripts/security/pip_audit_gate.py
+SECURITY_PIP_AUDIT_GATE   ?= -m bijux_canon_dev.security.pip_audit_gate
 SECURITY_EXTRA_CHECKS     ?=
 
 SECURITY_BANDIT_SKIP_FLAG := $(if $(SECURITY_BANDIT_SKIP_IDS),--skip $(SECURITY_BANDIT_SKIP_IDS),)
@@ -58,7 +58,7 @@ security-audit:
 	PIPA_JSON="$(PIPA_JSON)" \
 	SECURITY_STRICT="$(SECURITY_STRICT)" \
 	SECURITY_IGNORE_IDS="$(SECURITY_IGNORE_IDS)" \
-	"$(VENV_PYTHON)" "$(SECURITY_PIP_AUDIT_GATE)" | tee "$(PIPA_TXT)"
+	"$(VENV_PYTHON)" $(SECURITY_PIP_AUDIT_GATE) | tee "$(PIPA_TXT)"
 
 security-deps:
 	@if [ -n "$(SECURITY_EXTRA_CHECKS)" ]; then \

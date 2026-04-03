@@ -1,8 +1,8 @@
 PACKAGE_NAME              ?= $(PROJECT_SLUG)
 SBOM_METADATA_PYTHON      ?= python3.11
 GIT_SHA                   ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
-SBOM_VERSION_RESOLVER     ?= $(MONOREPO_ROOT)/scripts/release/resolve_package_version.py
-SBOM_VERSION              ?= $(strip $(shell $(SBOM_METADATA_PYTHON) "$(SBOM_VERSION_RESOLVER)" --pyproject "$(SBOM_PYPROJECT)" --package-name "$(PACKAGE_NAME)" 2>/dev/null || echo 0.0.0))
+SBOM_VERSION_RESOLVER     ?= -m bijux_canon_dev.release.version_resolver
+SBOM_VERSION              ?= $(strip $(shell $(SBOM_METADATA_PYTHON) $(SBOM_VERSION_RESOLVER) --pyproject "$(SBOM_PYPROJECT)" --package-name "$(PACKAGE_NAME)" 2>/dev/null || echo 0.0.0))
 SBOM_VERSION_SAFE          = $(shell printf '%s' "$(SBOM_VERSION)" | tr ' /' '__' | tr -s '_' '_')
 
 SBOM_DIR                  ?= $(PROJECT_ARTIFACTS_DIR)/sbom
@@ -10,7 +10,7 @@ SBOM_FORMAT               ?= cyclonedx-json
 SBOM_CLI                  ?= cyclonedx
 SBOM_DEV_GROUP            ?= dev
 SBOM_PYPROJECT            ?= pyproject.toml
-SBOM_REQUIREMENTS_WRITER  ?= $(MONOREPO_ROOT)/scripts/sbom/write_requirements.py
+SBOM_REQUIREMENTS_WRITER  ?= -m bijux_canon_dev.sbom.requirements_writer
 SBOM_IGNORE_IDS           ?= PYSEC-2022-42969
 SBOM_IGNORE_FLAGS          = $(foreach V,$(SBOM_IGNORE_IDS),--ignore-vuln $(V))
 SBOM_PROD_REQ             := $(SBOM_DIR)/requirements.prod.txt
@@ -34,7 +34,7 @@ sbom-tooling: | $(VENV)
 
 sbom-prod: sbom-tooling
 	@mkdir -p "$(SBOM_DIR)"
-	@$(VENV_PYTHON) "$(SBOM_REQUIREMENTS_WRITER)" write-requirements --pyproject "$(SBOM_PYPROJECT)" --group prod --output "$(SBOM_PROD_REQ)"
+	@$(VENV_PYTHON) $(SBOM_REQUIREMENTS_WRITER) --pyproject "$(SBOM_PYPROJECT)" --group prod --output "$(SBOM_PROD_REQ)"
 	@if [ -s "$(SBOM_PROD_REQ)" ]; then \
 	  echo "→ SBOM (prod via $(SBOM_PROD_REQ))"; \
 	  $(PIP_AUDIT) $(PIP_AUDIT_FLAGS) -r "$(SBOM_PROD_REQ)" --output "$(SBOM_PROD_FILE)" || true; \
@@ -45,7 +45,7 @@ sbom-prod: sbom-tooling
 
 sbom-dev: sbom-tooling
 	@mkdir -p "$(SBOM_DIR)"
-	@$(VENV_PYTHON) "$(SBOM_REQUIREMENTS_WRITER)" write-requirements --pyproject "$(SBOM_PYPROJECT)" --group dev --optional-group "$(SBOM_DEV_GROUP)" --output "$(SBOM_DEV_REQ)"
+	@$(VENV_PYTHON) $(SBOM_REQUIREMENTS_WRITER) --pyproject "$(SBOM_PYPROJECT)" --group dev --optional-group "$(SBOM_DEV_GROUP)" --output "$(SBOM_DEV_REQ)"
 	@if [ -s "$(SBOM_DEV_REQ)" ]; then \
 	  echo "→ SBOM (dev via $(SBOM_DEV_REQ))"; \
 	  $(PIP_AUDIT) $(PIP_AUDIT_FLAGS) -r "$(SBOM_DEV_REQ)" --output "$(SBOM_DEV_FILE)" || true; \
