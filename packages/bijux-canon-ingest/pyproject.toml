@@ -78,8 +78,8 @@ dev = [
 ]
 
 [project.scripts]
-bijux-canon-ingest = "bijux_rag.cli.entrypoint:main"
-bijux-rag = "bijux_rag.cli.entrypoint:main"
+bijux-canon-ingest = "bijux_canon_ingest.cli.entrypoint:main"
+bijux-rag = "bijux_canon_ingest.cli.entrypoint:main"
 
 [project.urls]
 Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest"
@@ -95,7 +95,7 @@ raw-options = { git_describe_command = "git describe --dirty --tags --long --mat
 fallback-version = "0.3.0"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/bijux_rag/_version.py"
+version-file = "src/bijux_canon_ingest/_version.py"
 
 [tool.interrogate]
 fail-under = 0
@@ -106,15 +106,15 @@ ignore-semiprivate = true
 
 [tool.hatch.build]
 include = [
-  "src/bijux_rag/**",
+  "src/bijux_canon_ingest/**",
   "docs/index.md",
   "pyproject.toml",
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/bijux_rag"]
-include = ["src/bijux_rag/py.typed"]
-only-include = ["src/bijux_rag"]
+packages = ["src/bijux_canon_ingest"]
+include = ["src/bijux_canon_ingest/py.typed"]
+only-include = ["src/bijux_canon_ingest"]
 
 [tool.hatch.build.targets.wheel.package-data]
-"bijux_rag" = ["py.typed"]
+"bijux_canon_ingest" = ["py.typed"]
