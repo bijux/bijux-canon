@@ -12,9 +12,9 @@ PYDOCSTYLE_SKIP ?= 1
 
 # Targets & dirs
 LINT_DIRS           ?= src/bijux_vex
-LINT_ARTIFACTS_DIR  ?= artifacts/lint
+LINT_ARTIFACTS_DIR  ?= $(PROJECT_ARTIFACTS_DIR)/lint
 
-# Tool caches inside artifacts/lint
+# Tool caches inside the root artifact tree
 RUFF_CACHE_DIR      ?= $(LINT_ARTIFACTS_DIR)/.ruff_cache
 MYPY_CACHE_DIR      ?= $(LINT_ARTIFACTS_DIR)/.mypy_cache
 PYTYPE_OUT_DIR      ?= $(LINT_ARTIFACTS_DIR)/.pytype
@@ -84,7 +84,7 @@ lint-clean:
 	@echo "✔ done"
 
 ##@ Lint
-lint: ## Run all lint checks; save logs to artifacts/lint/ (ruff/mypy/pytype caches under artifacts/lint)
+lint: ## Run all lint checks; save logs to $(PROJECT_ARTIFACTS_DIR)/lint
 lint-artifacts: ## Same as 'lint' (explicit), generates logs
 lint-file: ## Lint a single file (requires file=<path>)
 lint-dir: ## Lint a directory (requires dir=<path>)

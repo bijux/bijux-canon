@@ -56,7 +56,7 @@ clean-soft: ## Remove build artifacts but keep venv
 	@$(RM) \
 	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox demo .tmp_home \
 	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
-	  artifacts .cache || true
+	  artifacts "$(PROJECT_ARTIFACTS_DIR)" .cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
 	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
 	fi

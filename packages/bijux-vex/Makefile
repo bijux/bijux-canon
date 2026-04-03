@@ -45,7 +45,7 @@ clean-soft:
 	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox \
 	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
 	  spec.json openapitools.json node_modules session.sqlite site \
-	  docs/site artifacts || true
+	  docs/site artifacts "$(PROJECT_ARTIFACTS_DIR)" || true
 	@$(RM) $(CONFIG_DIR)/.ruff_cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
 	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
@@ -62,18 +62,18 @@ lint quality security api docs: | bootstrap
 
 release: clean install fmt lint test quality security sbom
 	@echo "[INFO] Building release artifacts"
-	@mkdir -p artifacts/release
-	@$(VENV_PYTHON) -m build --wheel --sdist --outdir artifacts/release
+	@mkdir -p "$(PROJECT_ARTIFACTS_DIR)/release"
+	@$(VENV_PYTHON) -m build --wheel --sdist --outdir "$(PROJECT_ARTIFACTS_DIR)/release"
 	@echo "[INFO] Generating SBOM"
 	@if ! command -v $(PIP_AUDIT) >/dev/null 2>&1; then \
 	  echo "→ Installing pip-audit into $(VENV)"; \
 	  $(VENV_PYTHON) -m pip install --upgrade pip-audit >/dev/null; \
 	fi
-	@$(PIP_AUDIT) $(PIP_AUDIT_FLAGS) --output artifacts/release/sbom.json || true
+	@$(PIP_AUDIT) $(PIP_AUDIT_FLAGS) --output "$(PROJECT_ARTIFACTS_DIR)/release/sbom.json" || true
 	@echo "[INFO] Refreshing OpenAPI v1"
 	@$(VENV_PYTHON) - <<'PY'\nfrom pathlib import Path\nimport json\nfrom bijux_vex.api.v1 import build_app\nPath('api/v1').mkdir(parents=True, exist_ok=True)\nPath('api/v1/openapi.v1.json').write_text(json.dumps(build_app().openapi(), indent=2))\nPY
-	@cd artifacts/release && shasum -a 256 *.whl *.tar.gz > SHA256SUMS
-	@echo "[OK] Release artifacts ready under artifacts/release"
+	@cd "$(PROJECT_ARTIFACTS_DIR)/release" && shasum -a 256 *.whl *.tar.gz > SHA256SUMS
+	@echo "[OK] Release artifacts ready under $(PROJECT_ARTIFACTS_DIR)/release"
 
 build: release
 	@echo "[OK] build target completed (alias for make release)"

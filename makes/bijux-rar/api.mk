@@ -17,7 +17,7 @@ SCHEMA_URL            ?= http://$(API_HOST):$(API_PORT)
 SCHEMATHESIS_TIMEOUT  ?= 30
 
 # ── Artifacts
-API_ARTIFACTS_DIR     ?= artifacts/api
+API_ARTIFACTS_DIR     ?= $(PROJECT_ARTIFACTS_DIR)/api
 API_LOG               ?= $(API_ARTIFACTS_DIR)/server.log
 API_LINT_DIR          ?= $(API_ARTIFACTS_DIR)/lint
 API_TEST_DIR          ?= $(API_ARTIFACTS_DIR)/test
@@ -247,11 +247,11 @@ api-clean:
 	@echo "✔ Done"
 
 ##@ API
-api:            ## Run full API workflow (install → lint → test with Schemathesis); artifacts in artifacts/api/**
+api:            ## Run full API workflow (install → lint → test with Schemathesis); artifacts in $(PROJECT_ARTIFACTS_DIR)/api/**
 api-install:    ## Install API toolchain (Python deps + sandboxed Node deps)
-api-lint:       ## Validate all OpenAPI specs; logs to artifacts/api/lint/*.log
-api-test:       ## Start server, wait for /health, run Schemathesis; logs & JUnit to artifacts/api/**
+api-lint:       ## Validate all OpenAPI specs; logs to $(PROJECT_ARTIFACTS_DIR)/api/lint/*.log
+api-test:       ## Start server, wait for /health, run Schemathesis; logs and JUnit to $(PROJECT_ARTIFACTS_DIR)/api/**
 api-serve:      ## Serve API in the foreground (dev)
-api-serve-bg:   ## Serve API in the background; PID to artifacts/api/server.pid
+api-serve-bg:   ## Serve API in the background; PID to $(PROJECT_ARTIFACTS_DIR)/api/server.pid
 api-stop:       ## Stop background API (if running)
 api-clean:      ## Remove all API artifacts

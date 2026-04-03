@@ -1,7 +1,7 @@
 # Security checks (Bandit + pip-audit)
 
 SECURITY_PATHS       ?= src/bijux_rag
-SECURITY_REPORT_DIR  ?= artifacts/security
+SECURITY_REPORT_DIR  ?= $(PROJECT_ARTIFACTS_DIR)/security
 BANDIT               := $(ACT)/bandit
 PIP_AUDIT            := $(ACT)/pip-audit
 SECURITY_IGNORE_IDS  ?= PYSEC-2022-42969
@@ -28,5 +28,5 @@ security-clean:
 	@rm -rf "$(SECURITY_REPORT_DIR)"
 
 ##@ Security
-security: ## Run Bandit + pip-audit (artifacts under artifacts/security)
+security: ## Run Bandit and pip-audit (artifacts under $(PROJECT_ARTIFACTS_DIR)/security)
 security-clean: ## Remove security artifacts

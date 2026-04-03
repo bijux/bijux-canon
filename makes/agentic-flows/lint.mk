@@ -8,7 +8,7 @@ RADON       := $(if $(ACT),$(ACT)/radon,radon)
 
 # Targets & dirs
 LINT_DIRS           ?= src/agentic_flows
-LINT_ARTIFACTS_DIR  ?= artifacts/lint
+LINT_ARTIFACTS_DIR  ?= $(PROJECT_ARTIFACTS_DIR)/lint
 FMT_LOG             ?= $(LINT_ARTIFACTS_DIR)/fmt.log
 
 # Tool caches inside artifacts_pages/lint
@@ -72,7 +72,7 @@ lint-clean:
 	@echo "✔ done"
 
 ##@ Lint
-fmt: ## Apply Ruff formatting; save logs to artifacts/lint/fmt.log
+fmt: ## Apply Ruff formatting; save logs to $(PROJECT_ARTIFACTS_DIR)/lint/fmt.log
 lint: ## Run all lint checks; save logs to artifacts_pages/lint/ (ruff/mypy caches under artifacts_pages/lint)
 lint-artifacts: ## Same as 'lint' (explicit), generates logs
 lint-file: ## Lint a single file (requires file=<path>)

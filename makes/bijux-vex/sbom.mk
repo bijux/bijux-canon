@@ -19,7 +19,7 @@ PKG_VERSION_FULL    := $(if $(GIT_TAG_EXACT),$(PKG_VERSION),\
 
 SBOM_VERSION        := $(if $(PKG_VERSION_FULL),$(PKG_VERSION_FULL),$(PKG_VERSION))
 
-SBOM_DIR            ?= artifacts/sbom
+SBOM_DIR            ?= $(PROJECT_ARTIFACTS_DIR)/sbom
 SBOM_FORMAT         ?= cyclonedx-json
 SBOM_CLI            ?= cyclonedx
 

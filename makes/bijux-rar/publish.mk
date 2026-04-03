@@ -1,6 +1,6 @@
 # Publish Configuration (build → validate → upload)
 
-DIST_DIR            ?= artifacts/build
+DIST_DIR            ?= $(PROJECT_ARTIFACTS_DIR)/build
 PKG_DIST_NAME       ?= bijux-rar
 PY                  ?= python3
 TWINE               ?= $(PY) -m twine

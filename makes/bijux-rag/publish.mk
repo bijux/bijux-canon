@@ -1,7 +1,7 @@
 # Publish helper (local staging; no automatic upload)
 
 PY ?= $(VENV_PYTHON)
-DIST_DIR ?= artifacts/build
+DIST_DIR ?= $(PROJECT_ARTIFACTS_DIR)/build
 
 .PHONY: publish publish-check
 

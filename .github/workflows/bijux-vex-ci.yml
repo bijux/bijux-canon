@@ -32,6 +32,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  ARTIFACTS_DIR: artifacts/bijux-vex
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PYTHONUNBUFFERED: "1"
 
@@ -58,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bijux-vex-test
-          path: packages/bijux-vex/artifacts/test
+          path: ${{ env.ARTIFACTS_DIR }}/test
           if-no-files-found: ignore
           retention-days: 14
 
@@ -84,11 +85,11 @@ jobs:
         run: make -C packages/bijux-vex ${{ matrix.target }}
 
       - name: Upload artifacts
-        if: ${{ always() && hashFiles(format('packages/bijux-vex/artifacts/{0}/**', matrix.target)) != '' }}
+        if: ${{ always() && hashFiles(format('{0}/{1}/**', env.ARTIFACTS_DIR, matrix.target)) != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: bijux-vex-${{ matrix.target }}
-          path: packages/bijux-vex/artifacts/${{ matrix.target }}
+          path: ${{ env.ARTIFACTS_DIR }}/${{ matrix.target }}
           if-no-files-found: ignore
           retention-days: 14
 
@@ -115,6 +116,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bijux-vex-lint
-          path: packages/bijux-vex/artifacts/lint
+          path: ${{ env.ARTIFACTS_DIR }}/lint
           if-no-files-found: ignore
           retention-days: 14

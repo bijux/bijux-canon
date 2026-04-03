@@ -1,12 +1,12 @@
-# Documentation pipeline (artifacts only)
+# Documentation pipeline (root-owned artifacts only)
 
 ACT              ?= $(VENV)/bin
 MKDOCS_BIN       := $(shell test -x "$(ACT)/mkdocs" && printf "%s" "$(ACT)/mkdocs" || command -v mkdocs)
 PY               ?= $(VENV_PYTHON)
 
 DOCS_GEN_DIR     ?= docs
-DOCS_SITE_DIR    ?= artifacts/docs/site
-DOCS_CACHE_DIR   ?= artifacts/docs/.cache
+DOCS_SITE_DIR    ?= $(PROJECT_ARTIFACTS_DIR)/docs/site
+DOCS_CACHE_DIR   ?= $(PROJECT_ARTIFACTS_DIR)/docs/.cache
 DOCS_DEV_ADDR    ?= 127.0.0.1:8001
 
 .PHONY: docs docs-serve docs-check docs-clean docs-hygiene
@@ -44,7 +44,7 @@ docs-hygiene:
 	@test ! -e ".cache" || (echo "ERROR: root '.cache/' is forbidden"; exit 1)
 
 ##@ Documentation
-docs: ## Build MkDocs site to artifacts/docs/site (strict)
+docs: ## Build MkDocs site to $(PROJECT_ARTIFACTS_DIR)/docs/site (strict)
 docs-serve: ## Serve docs locally
 docs-check: ## Validate docs build (strict, quiet)
 docs-clean: ## Remove docs artifacts

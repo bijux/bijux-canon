@@ -1,7 +1,7 @@
 # API validation (OpenAPI) — artifacts only
 
 SHELL                 := /bin/bash
-API_ARTIFACTS_DIR     ?= artifacts/api
+API_ARTIFACTS_DIR     ?= $(PROJECT_ARTIFACTS_DIR)/api
 API_LINT_DIR          ?= $(API_ARTIFACTS_DIR)/lint
 API_SCHEMA            ?= api/v1/schema.yaml
 API_SERVER_LOG        ?= $(API_ARTIFACTS_DIR)/server.log

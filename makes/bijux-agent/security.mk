@@ -6,7 +6,7 @@ PIP_AUDIT                ?= $(if $(ACT),$(ACT)/pip-audit,pip-audit)
 VENV_PYTHON              ?= $(if $(VIRTUAL_ENV),$(VIRTUAL_ENV)/bin/python,python)
 SKIP_BANDIT              ?= 0
 
-SECURITY_REPORT_DIR      ?= artifacts/security
+SECURITY_REPORT_DIR      ?= $(PROJECT_ARTIFACTS_DIR)/security
 BANDIT_JSON              := $(SECURITY_REPORT_DIR)/bandit.json
 BANDIT_TXT               := $(SECURITY_REPORT_DIR)/bandit.txt
 PIPA_JSON                := $(SECURITY_REPORT_DIR)/pip-audit.json

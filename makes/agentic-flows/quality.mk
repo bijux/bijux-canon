@@ -9,7 +9,7 @@ INTERROGATE := $(if $(ACT),$(ACT)/interrogate,interrogate)
 MYPY        := $(if $(ACT),$(ACT)/mypy,mypy)
 PYTHON      := $(shell command -v python3 || command -v python)
 
-QUALITY_ARTIFACTS_DIR ?= artifacts/quality
+QUALITY_ARTIFACTS_DIR ?= $(PROJECT_ARTIFACTS_DIR)/quality
 QUALITY_OK_MARKER     := $(QUALITY_ARTIFACTS_DIR)/_passed
 MYPY_CACHE_DIR        ?= $(QUALITY_ARTIFACTS_DIR)/.mypy_cache
 

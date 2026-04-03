@@ -17,7 +17,7 @@ SCHEMA_URL            ?= http://$(API_HOST):$(API_PORT)
 SCHEMATHESIS_TIMEOUT  ?= 30
 
 # ── Artifacts
-API_ARTIFACTS_DIR     ?= artifacts/api
+API_ARTIFACTS_DIR     ?= $(PROJECT_ARTIFACTS_DIR)/api
 API_LOG               ?= $(API_ARTIFACTS_DIR)/server.log
 API_LINT_DIR          ?= $(API_ARTIFACTS_DIR)/lint
 API_TEST_DIR          ?= $(API_ARTIFACTS_DIR)/test

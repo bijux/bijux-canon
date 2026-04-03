@@ -4,9 +4,9 @@
 ACT              ?= $(VENV)/bin
 MKDOCS_BIN_CAND  ?= $(ACT)/mkdocs
 MKDOCS_BIN       := $(shell test -x "$(MKDOCS_BIN_CAND)" && printf "%s" "$(MKDOCS_BIN_CAND)" || command -v mkdocs)
-# Keep build/cache strictly under artifacts/
-DOCS_SITE_DIR    ?= artifacts/docs/site
-DOCS_CACHE_DIR   ?= artifacts/docs/.cache
+# Keep build/cache strictly under the root artifact tree
+DOCS_SITE_DIR    ?= $(PROJECT_ARTIFACTS_DIR)/docs/site
+DOCS_CACHE_DIR   ?= $(PROJECT_ARTIFACTS_DIR)/docs/.cache
 
 ENABLE_SOCIAL_CARDS ?= false
 SITE_URL            ?= http://127.0.0.1:8000/
@@ -66,7 +66,7 @@ docs-check:
 
 docs-clean:
 	@echo "Cleaning documentation build artifacts"
-	@rm -rf "$(DOCS_SITE_DIR)" artifacts/docs/.cache site .cache
+	@rm -rf "$(DOCS_SITE_DIR)" "$(DOCS_CACHE_DIR)" site .cache
 
 docs-hygiene:
 	@test ! -e "site"   || (echo "ERROR: root 'site/' is forbidden"; exit 1)
@@ -74,7 +74,7 @@ docs-hygiene:
 	@echo "Docs hygiene OK"
 
 ##@ Documentation
-docs:         ## Build documentation (mkdocs --strict) to artifacts/docs/site
+docs:         ## Build documentation (mkdocs --strict) to $(PROJECT_ARTIFACTS_DIR)/docs/site
 docs-serve:   ## Serve documentation locally (auto-reload; no disk generation)
 docs-deploy:  ## Deploy documentation to GitHub Pages (strict)
 docs-check:   ## Validate documentation builds without errors

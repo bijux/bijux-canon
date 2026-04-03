@@ -13,6 +13,8 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      ARTIFACTS_DIR: artifacts/bijux-rag
 
     steps:
       - uses: actions/checkout@v4
@@ -35,8 +37,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .github/tmp/bijux-rag-dist
-          cp packages/bijux-rag/artifacts/build/*.whl .github/tmp/bijux-rag-dist/
-          cp packages/bijux-rag/artifacts/build/*.tar.gz .github/tmp/bijux-rag-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-rag-dist/
+          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-rag-dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -50,7 +52,7 @@ jobs:
         with:
           name: bijux-rag-release
           path: |
-            packages/bijux-rag/artifacts/build/*
-            packages/bijux-rag/artifacts/sbom/*
+            ${{ env.ARTIFACTS_DIR }}/build/*
+            ${{ env.ARTIFACTS_DIR }}/sbom/*
           if-no-files-found: ignore
           retention-days: 14

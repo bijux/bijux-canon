@@ -1,4 +1,4 @@
-# Quality Configuration (evidence → artifacts/quality)
+# Quality Configuration (evidence → $(PROJECT_ARTIFACTS_DIR)/quality)
 
 INTERROGATE_PATHS ?= src/bijux_vex
 QUALITY_PATHS     ?= src/bijux_vex
@@ -8,7 +8,7 @@ DEPTRY      := $(ACT)/deptry
 INTERROGATE := $(ACT)/interrogate
 PYTHON      := $(shell command -v python3 || command -v python)
 
-QUALITY_ARTIFACTS_DIR ?= artifacts/quality
+QUALITY_ARTIFACTS_DIR ?= $(PROJECT_ARTIFACTS_DIR)/quality
 QUALITY_OK_MARKER     := $(QUALITY_ARTIFACTS_DIR)/_passed
 
 ifeq ($(shell uname -s),Darwin)
@@ -65,6 +65,6 @@ quality-clean:
 	@rm -rf "$(QUALITY_ARTIFACTS_DIR)"
 
 ##@ Quality
-quality: ## Run Vulture, Deptry, Interrogate; save logs to artifacts/quality/
+quality: ## Run Vulture, Deptry, Interrogate; save logs to $(PROJECT_ARTIFACTS_DIR)/quality
 interrogate-report: ## Save full Interrogate table + offenders list
-quality-clean: ## Remove artifacts/quality
+quality-clean: ## Remove $(PROJECT_ARTIFACTS_DIR)/quality

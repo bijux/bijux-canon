@@ -1,7 +1,7 @@
-# Build Configuration — keep outputs under artifacts/
+# Build Configuration — keep outputs under the root artifact tree
 
 # Dirs & flags
-BUILD_DIR        ?= artifacts/build
+BUILD_DIR        ?= $(PROJECT_ARTIFACTS_DIR)/build
 CHECK_DISTS      ?= 0             # set to 0 to skip twine check by default
 
 # Absolute paths (safer if a target changes CWD)
@@ -74,10 +74,10 @@ build-clean:
 
 ##@ Build
 build-tools: ## Ensure local venv has build tooling (pip, build, twine)
-build-clean: ## Remove ALL build artifacts (artifacts/build + temporary files)
+build-clean: ## Remove all build artifacts under $(PROJECT_ARTIFACTS_DIR)/build plus temporary files
 clean-temp-build-files: ## (Internal) Remove temporary build files from the root directory
-build: ## Build wheel and sdist into artifacts/build and clean up temporary files
-build-sdist: ## Build sdist only into artifacts/build and clean up temporary files
-build-wheel: ## Build wheel only into artifacts/build and clean up temporary files
-build-check: ## Run twine check on artifacts/build/*
+build: ## Build wheel and sdist into $(PROJECT_ARTIFACTS_DIR)/build and clean up temporary files
+build-sdist: ## Build sdist only into $(PROJECT_ARTIFACTS_DIR)/build and clean up temporary files
+build-wheel: ## Build wheel only into $(PROJECT_ARTIFACTS_DIR)/build and clean up temporary files
+build-check: ## Run twine check on $(PROJECT_ARTIFACTS_DIR)/build/*
 release-dry: ## Build artifacts and validate version + changelog (no upload)

@@ -19,5 +19,5 @@ enabled = [
 
 [cosmic-ray.logging]
 level   = "INFO"
-file    = "artifacts/cosmic-ray.log"
+file    = "artifacts/bijux-agent/quality/cosmic-ray.log"
 format  = "plain"

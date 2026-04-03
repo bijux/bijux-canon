@@ -11,7 +11,7 @@ PYTYPE_SKIP ?= 1
 
 # Targets & dirs
 LINT_DIRS           ?= src/bijux_rar
-LINT_ARTIFACTS_DIR  ?= artifacts/lint
+LINT_ARTIFACTS_DIR  ?= $(PROJECT_ARTIFACTS_DIR)/lint
 
 # Tool caches inside artifacts_pages/lint
 RUFF_CACHE_DIR      ?= $(LINT_ARTIFACTS_DIR)/.ruff_cache

@@ -13,9 +13,9 @@ hygiene:
 	fi
 	@extra=$$(find . -type d -name '__pycache__' -not -path './.venv/*' -not -path './artifacts/*' -print | head -n 1); \
 	if [ -n "$$extra" ]; then \
-	  echo "✘ __pycache__ outside artifacts/.venv:"; echo "$$extra"; exit 1; \
+	  echo "✘ __pycache__ outside $(PROJECT_ARTIFACTS_DIR) and .venv:"; echo "$$extra"; exit 1; \
 	fi
 	@echo "✔ hygiene OK"
 
 ##@ Hygiene
-hygiene: ## Fail if caches/bytecode exist outside artifacts/.venv
+hygiene: ## Fail if caches or bytecode exist outside $(PROJECT_ARTIFACTS_DIR) and .venv

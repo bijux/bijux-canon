@@ -1,7 +1,7 @@
 # SBOM generation (pip-audit -> CycloneDX JSON)
 
 PACKAGE_NAME    ?= bijux-rag
-SBOM_DIR        ?= artifacts/sbom
+SBOM_DIR        ?= $(PROJECT_ARTIFACTS_DIR)/sbom
 SBOM_FORMAT     ?= cyclonedx-json
 PIP_AUDIT       := $(ACT)/pip-audit
 SBOM_IGNORE_IDS ?= PYSEC-2022-42969

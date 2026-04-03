@@ -6,7 +6,7 @@ PYTYPE      := $(ACT)/pytype
 
 LINT_DIRS           ?= src/bijux_rag tests
 MYPY_DIRS           ?= src/bijux_rag
-LINT_ARTIFACTS_DIR  ?= artifacts/lint
+LINT_ARTIFACTS_DIR  ?= $(PROJECT_ARTIFACTS_DIR)/lint
 RUFF_CACHE_DIR      ?= $(LINT_ARTIFACTS_DIR)/.ruff_cache
 MYPY_CACHE_DIR      ?= $(LINT_ARTIFACTS_DIR)/.mypy_cache
 PYTYPE_OUT_DIR      ?= $(LINT_ARTIFACTS_DIR)/pytype
@@ -40,5 +40,5 @@ lint-clean:
 
 ##@ Lint
 fmt: ## Auto-format with ruff (format + autofix)
-lint: ## Run ruff + mypy + pytype (check-only, caches under artifacts/lint)
+lint: ## Run ruff + mypy + pytype (check-only, caches under $(PROJECT_ARTIFACTS_DIR)/lint)
 lint-clean: ## Remove lint artifacts

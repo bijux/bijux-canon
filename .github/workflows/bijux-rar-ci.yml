@@ -32,6 +32,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  ARTIFACTS_DIR: artifacts/bijux-rar
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PYTHONUNBUFFERED: "1"
 
@@ -58,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bijux-rar-test
-          path: packages/bijux-rar/artifacts/test
+          path: ${{ env.ARTIFACTS_DIR }}/test
           if-no-files-found: ignore
           retention-days: 14
 
@@ -95,11 +96,11 @@ jobs:
         run: make -C packages/bijux-rar ${{ matrix.target }}
 
       - name: Upload artifacts
-        if: ${{ always() && hashFiles(format('packages/bijux-rar/artifacts/{0}/**', matrix.target)) != '' }}
+        if: ${{ always() && hashFiles(format('{0}/{1}/**', env.ARTIFACTS_DIR, matrix.target)) != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: bijux-rar-${{ matrix.target }}
-          path: packages/bijux-rar/artifacts/${{ matrix.target }}
+          path: ${{ env.ARTIFACTS_DIR }}/${{ matrix.target }}
           if-no-files-found: ignore
           retention-days: 14
 
@@ -126,6 +127,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bijux-rar-lint
-          path: packages/bijux-rar/artifacts/lint
+          path: ${{ env.ARTIFACTS_DIR }}/lint
           if-no-files-found: ignore
           retention-days: 14

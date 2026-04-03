@@ -12,7 +12,7 @@ MYPY_EXTENDED_CONFIG ?= $(CONFIG_DIR)/mypy-extended.ini
 
 # Targets & dirs
 LINT_DIRS           ?= src/bijux_agent tests
-LINT_ARTIFACTS_DIR  ?= artifacts/lint
+LINT_ARTIFACTS_DIR  ?= $(PROJECT_ARTIFACTS_DIR)/lint
 FMT_LOG             ?= $(LINT_ARTIFACTS_DIR)/fmt.log
 
 # Tool caches inside artifacts_pages/lint

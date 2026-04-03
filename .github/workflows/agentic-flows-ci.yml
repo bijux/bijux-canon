@@ -33,6 +33,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  ARTIFACTS_DIR: artifacts/agentic-flows
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PYTHONUNBUFFERED: "1"
 
@@ -61,21 +62,21 @@ jobs:
           if compgen -G "packages/agentic-flows/src/agentic_flows/providers/*" > /dev/null; then
             python -m coverage report \
               --rcfile configs/agentic-flows/coveragerc.ini \
-              --data-file packages/agentic-flows/artifacts/test/.coverage \
+              --data-file "${ARTIFACTS_DIR}/test/.coverage" \
               --include "packages/agentic-flows/src/agentic_flows/providers/*" \
               --fail-under=65
           fi
           if [ -f "packages/agentic-flows/src/agentic_flows/interfaces/cli.py" ]; then
             python -m coverage report \
               --rcfile configs/agentic-flows/coveragerc.ini \
-              --data-file packages/agentic-flows/artifacts/test/.coverage \
+              --data-file "${ARTIFACTS_DIR}/test/.coverage" \
               --include "packages/agentic-flows/src/agentic_flows/interfaces/cli.py" \
               --fail-under=60
           fi
           if compgen -G "packages/agentic-flows/src/agentic_flows/api/*" > /dev/null; then
             python -m coverage report \
               --rcfile configs/agentic-flows/coveragerc.ini \
-              --data-file packages/agentic-flows/artifacts/test/.coverage \
+              --data-file "${ARTIFACTS_DIR}/test/.coverage" \
               --include "packages/agentic-flows/src/agentic_flows/api/*" \
               --fail-under=75
           fi
@@ -85,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: agentic-flows-test
-          path: packages/agentic-flows/artifacts/test
+          path: ${{ env.ARTIFACTS_DIR }}/test
           if-no-files-found: ignore
           retention-days: 14
 
@@ -130,11 +131,11 @@ jobs:
         run: make -C packages/agentic-flows ${{ matrix.target }}
 
       - name: Upload artifacts
-        if: ${{ always() && hashFiles(format('packages/agentic-flows/artifacts/{0}/**', matrix.target)) != '' }}
+        if: ${{ always() && hashFiles(format('{0}/{1}/**', env.ARTIFACTS_DIR, matrix.target)) != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: agentic-flows-${{ matrix.target }}
-          path: packages/agentic-flows/artifacts/${{ matrix.target }}
+          path: ${{ env.ARTIFACTS_DIR }}/${{ matrix.target }}
           if-no-files-found: ignore
           retention-days: 14
 
@@ -161,6 +162,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: agentic-flows-lint
-          path: packages/agentic-flows/artifacts/lint
+          path: ${{ env.ARTIFACTS_DIR }}/lint
           if-no-files-found: ignore
           retention-days: 14

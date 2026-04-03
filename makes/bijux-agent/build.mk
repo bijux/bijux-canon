@@ -1,7 +1,7 @@
 # Build Configuration — keep outputs under artifacts_pages/
 
 # Dirs & flags
-BUILD_DIR        ?= artifacts/build
+BUILD_DIR        ?= $(PROJECT_ARTIFACTS_DIR)/build
 CHECK_DISTS      ?= 1             # set to 0 to skip twine check
 
 # Absolute paths (safer if a target changes CWD)

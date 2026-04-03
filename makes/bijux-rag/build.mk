@@ -1,6 +1,6 @@
-# Build artifacts (wheel/sdist) into artifacts/build
+# Build artifacts (wheel/sdist) into $(PROJECT_ARTIFACTS_DIR)/build
 
-BUILD_DIR ?= artifacts/build
+BUILD_DIR ?= $(PROJECT_ARTIFACTS_DIR)/build
 PY        ?= $(VENV_PYTHON)
 
 .PHONY: build build-clean
@@ -17,5 +17,5 @@ build-clean:
 	@rm -rf "$(BUILD_DIR)" dist build *.egg-info
 
 ##@ Build
-build: ## Build wheel/sdist into artifacts/build and run twine check
+build: ## Build wheel/sdist into $(PROJECT_ARTIFACTS_DIR)/build and run twine check
 build-clean: ## Remove build artifacts

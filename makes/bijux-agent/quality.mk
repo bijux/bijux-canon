@@ -11,7 +11,7 @@ PYTHON      := $(shell command -v python3 || command -v python)
 SKIP_DEPTRY ?= 0
 SKIP_INTERROGATE ?= 0
 
-QUALITY_ARTIFACTS_DIR ?= artifacts/quality
+QUALITY_ARTIFACTS_DIR ?= $(PROJECT_ARTIFACTS_DIR)/quality
 QUALITY_OK_MARKER     := $(QUALITY_ARTIFACTS_DIR)/_passed
 
 ifeq ($(shell uname -s),Darwin)

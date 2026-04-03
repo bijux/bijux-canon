@@ -5,9 +5,9 @@ PROJECT_SLUG := bijux-rag
 include ../../makes/shared/python-package.mk
 
 export PYTHONDONTWRITEBYTECODE := 1
-export PYTHONPYCACHEPREFIX     := artifacts/pycache
-export XDG_CACHE_HOME          := artifacts/xdg_cache
-export COVERAGE_FILE           := artifacts/test/.coverage
+export PYTHONPYCACHEPREFIX     := $(PROJECT_ARTIFACTS_DIR)/pycache
+export XDG_CACHE_HOME          := $(PROJECT_ARTIFACTS_DIR)/xdg_cache
+export COVERAGE_FILE           := $(PROJECT_ARTIFACTS_DIR)/test/.coverage
 
 .NOTPARALLEL: all clean
 
@@ -46,7 +46,7 @@ clean-soft:
 	@$(RM) \
 	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox .nox \
 	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
-	  artifacts site .cache || true
+	  artifacts "$(PROJECT_ARTIFACTS_DIR)" site .cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
 	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
 	fi

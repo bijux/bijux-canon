@@ -3,7 +3,7 @@
 TEST_PATHS            ?= tests
 TEST_PATHS_UNIT       ?= tests/unit
 
-TEST_ARTIFACTS_DIR    ?= artifacts/test
+TEST_ARTIFACTS_DIR    ?= $(PROJECT_ARTIFACTS_DIR)/test
 JUNIT_XML             ?= $(TEST_ARTIFACTS_DIR)/junit.xml
 TMP_DIR               ?= $(TEST_ARTIFACTS_DIR)/tmp
 HYPOTHESIS_DB_DIR     ?= $(TEST_ARTIFACTS_DIR)/hypothesis
@@ -59,6 +59,7 @@ test:
 	( cd "$(TEST_ARTIFACTS_DIR)" && \
 	  PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	  PYTHONDONTWRITEBYTECODE=1 \
+	  COVERAGE_FILE="$(TEST_ARTIFACTS_DIR)/.coverage" \
 	  HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	  sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" $(PYTEST_FLAGS) '"$$BENCH_FLAGS" )
 	@rm -rf .hypothesis .benchmarks || true
@@ -85,6 +86,7 @@ test-unit:
 	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
 	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	    PYTHONDONTWRITEBYTECODE=1 \
+	    COVERAGE_FILE="$(TEST_ARTIFACTS_DIR)/.coverage" \
 	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_UNIT_ABS)" -m "not slow" --maxfail=1 -q $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
 	else \
@@ -92,6 +94,7 @@ test-unit:
 	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
 	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	    PYTHONDONTWRITEBYTECODE=1 \
+	    COVERAGE_FILE="$(TEST_ARTIFACTS_DIR)/.coverage" \
 	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" -k "not e2e and not integration and not functional" -m "not slow" --maxfail=1 -q $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
 	fi
@@ -109,10 +112,11 @@ coverage-core:
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)"
 	@PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	PYTHONDONTWRITEBYTECODE=1 \
+	COVERAGE_FILE="$(TEST_ARTIFACTS_DIR)/.coverage" \
 	HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	$(PYTEST) -c "$(PYTEST_INI_ABS)" $(CORE_BOUNDARIES) --cov="$(SRC_ABS)" --cov-report=term-missing --cov-fail-under=90
 
 ##@ Test
-test: ## Run full test suite; artifacts in artifacts/test/
+test: ## Run full test suite; artifacts in $(PROJECT_ARTIFACTS_DIR)/test
 test-unit: ## Run unit tests only; exclude slow/e2e unless present
 test-clean: ## Remove stray root .hypothesis/.benchmarks and coverage files

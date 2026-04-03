@@ -1,4 +1,4 @@
-# Test Configuration — zero root pollution (pytest runs from artifacts_pages/test)
+# Test Configuration — zero root pollution (pytest runs from the root artifact tree)
 
 TEST_PATHS            ?= tests
 TEST_PATHS_UNIT       ?= tests/unit
@@ -6,7 +6,7 @@ TEST_PATHS_E2E        ?= tests/e2e
 TEST_PATHS_REGRESSION ?= tests/regression
 TEST_PATHS_EVAL       ?= tests/regression
 
-TEST_ARTIFACTS_DIR    ?= artifacts/test
+TEST_ARTIFACTS_DIR    ?= $(PROJECT_ARTIFACTS_DIR)/test
 JUNIT_XML             ?= $(TEST_ARTIFACTS_DIR)/junit.xml
 TMP_DIR               ?= $(TEST_ARTIFACTS_DIR)/tmp
 HYPOTHESIS_DB_DIR     ?= $(TEST_ARTIFACTS_DIR)/hypothesis
@@ -173,7 +173,7 @@ real-local:
 	@$(PYTEST) -c "$(PYTEST_INI_ABS)" -o addopts= "$(abspath tests/real_local)" -m "real_local" -s -p no:cov
 
 ##@ Test
-test: ## Run full test suite; side-effects contained in artifacts_pages/test/
+test: ## Run full test suite; side-effects contained in $(PROJECT_ARTIFACTS_DIR)/test
 test-unit: ## Run unit tests only; same containment; fallback excludes e2e/integration/functional/slow
 test-e2e: ## Run end-to-end tests only (LocalExecutor only)
 test-regression: ## Run regression tests only (deterministic, pinned)

@@ -1,7 +1,7 @@
 # Test Configuration
 
 TEST_PATHS          ?= tests
-TEST_ARTIFACTS_DIR  ?= artifacts/test
+TEST_ARTIFACTS_DIR  ?= $(PROJECT_ARTIFACTS_DIR)/test
 JUNIT_XML           ?= $(TEST_ARTIFACTS_DIR)/junit.xml
 TMP_DIR             ?= $(TEST_ARTIFACTS_DIR)/tmp
 HYPOTHESIS_DB_DIR   ?= $(TEST_ARTIFACTS_DIR)/hypothesis
@@ -30,6 +30,7 @@ test:
 	@rm -rf .hypothesis .pytest_cache .benchmarks || true
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(TMP_DIR)"
 	@HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
+	COVERAGE_FILE="$(PROJECT_ARTIFACTS_DIR)/test/.coverage" \
 	PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" $(PYTEST_FLAGS)
 	@echo "✔ tests complete (artifacts in $(TEST_ARTIFACTS_DIR))"
@@ -40,5 +41,5 @@ test-clean:
 	@echo "✔ done"
 
 ##@ Test
-test: ## Run full test suite (artifacts stored under artifacts/test)
+test: ## Run full test suite (artifacts stored under $(PROJECT_ARTIFACTS_DIR)/test)
 test-clean: ## Remove test artifacts and caches

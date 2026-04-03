@@ -1,9 +1,9 @@
-# Test Configuration — zero root pollution (pytest runs from artifacts_pages/test)
+# Test Configuration — zero root pollution (pytest runs from the root artifact tree)
 
 TEST_PATHS            ?= tests
 TEST_PATHS_UNIT       ?= tests/unit
 
-TEST_ARTIFACTS_DIR    ?= artifacts/test
+TEST_ARTIFACTS_DIR    ?= $(PROJECT_ARTIFACTS_DIR)/test
 JUNIT_XML             ?= $(TEST_ARTIFACTS_DIR)/junit.xml
 TMP_DIR               ?= $(TEST_ARTIFACTS_DIR)/tmp
 HYPOTHESIS_DB_DIR     ?= $(TEST_ARTIFACTS_DIR)/hypothesis
@@ -22,6 +22,7 @@ COVCFG_ABS            := $(abspath $(CONFIG_DIR)/coveragerc.ini)
 COV_HTML_ABS          := $(abspath $(TEST_ARTIFACTS_DIR)/htmlcov)
 CACHE_DIR_ABS         := $(abspath $(TEST_ARTIFACTS_DIR)/.pytest_cache)
 COV_XML_ABS           := $(abspath $(TEST_ARTIFACTS_DIR)/coverage.xml)
+COV_DATA_ABS          := $(abspath $(TEST_ARTIFACTS_DIR)/.coverage)
 CORE_BOUNDARIES       := $(abspath src/bijux_rar/core) $(abspath src/bijux_rar/boundaries)
 
 TEST_PATHS_ABS        := $(abspath $(TEST_PATHS))
@@ -62,6 +63,7 @@ test:
 	( cd "$(TEST_ARTIFACTS_DIR)" && \
 	  PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	  PYTHONDONTWRITEBYTECODE=1 \
+	  COVERAGE_FILE="$(COV_DATA_ABS)" \
 	  HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	  sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" $(PYTEST_FLAGS) '"$$BENCH_FLAGS" )
 	@rm -rf .hypothesis .benchmarks || true
@@ -88,6 +90,7 @@ test-unit:
 	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
 	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	    PYTHONDONTWRITEBYTECODE=1 \
+	    COVERAGE_FILE="$(COV_DATA_ABS)" \
 	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_UNIT_ABS)" -m "not slow" --maxfail=1 -q $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
 	else \
@@ -95,6 +98,7 @@ test-unit:
 	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
 	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	    PYTHONDONTWRITEBYTECODE=1 \
+	    COVERAGE_FILE="$(COV_DATA_ABS)" \
 	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" -k "not e2e and not integration and not functional" -m "not slow" --maxfail=1 -q $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
 	fi
@@ -112,10 +116,11 @@ coverage-core:
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)"
 	@PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
 	PYTHONDONTWRITEBYTECODE=1 \
+	COVERAGE_FILE="$(COV_DATA_ABS)" \
 	HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	$(PYTEST) -c "$(PYTEST_INI_ABS)" $(CORE_BOUNDARIES) --cov="$(SRC_ABS)" --cov-report=term-missing --cov-fail-under=90
 
 ##@ Test
-test: ## Run full test suite; all side-effects contained in artifacts_pages/test/ (JUnit, htmlcov, tmp, hypothesis DB, benchmarks)
+test: ## Run full test suite; all side-effects contained in $(PROJECT_ARTIFACTS_DIR)/test
 test-unit: ## Run unit tests only; same containment; fallback excludes e2e/integration/functional/slow
 test-clean: ## Remove stray root .hypothesis/.benchmarks and coverage files

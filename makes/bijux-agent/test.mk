@@ -1,9 +1,9 @@
-# Test Configuration — zero root pollution (pytest runs from artifacts_pages/test)
+# Test Configuration — zero root pollution (pytest runs from the root artifact tree)
 
 TEST_PATHS            ?= tests
 TEST_PATHS_UNIT       ?= tests/unit
 
-TEST_ARTIFACTS_DIR    ?= artifacts/test
+TEST_ARTIFACTS_DIR    ?= $(PROJECT_ARTIFACTS_DIR)/test
 JUNIT_XML             ?= $(TEST_ARTIFACTS_DIR)/junit.xml
 TMP_DIR               ?= $(TEST_ARTIFACTS_DIR)/tmp
 HYPOTHESIS_DB_DIR     ?= $(TEST_ARTIFACTS_DIR)/hypothesis
@@ -22,6 +22,7 @@ COVCFG_ABS            := $(abspath $(CONFIG_DIR)/coveragerc.ini)
 COV_HTML_ABS          := $(abspath $(TEST_ARTIFACTS_DIR)/htmlcov)
 CACHE_DIR_ABS         := $(abspath $(TEST_ARTIFACTS_DIR)/.pytest_cache)
 COV_XML_ABS           := $(abspath $(TEST_ARTIFACTS_DIR)/coverage.xml)
+COV_DATA_ABS          := $(abspath $(TEST_ARTIFACTS_DIR)/.coverage)
 
 TEST_PATHS_ABS        := $(abspath $(TEST_PATHS))
 TEST_PATHS_UNIT_ABS   := $(abspath $(TEST_PATHS_UNIT))
@@ -62,6 +63,7 @@ test:
 	fi; \
   ( cd "$(TEST_ARTIFACTS_DIR)" && \
   export PYTHONDONTWRITEBYTECODE=1 \
+    COVERAGE_FILE="$(COV_DATA_ABS)" \
     PYTHONPYCACHEPREFIX="$(PYCACHE_PREFIX_ABS)" \
     PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
     HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)"; \
@@ -88,6 +90,7 @@ test-unit:
 	  echo "   • detected $(TEST_PATHS_UNIT) — targeting that directory"; \
     ( cd "$(TEST_ARTIFACTS_DIR)" && \
       export PYTHONDONTWRITEBYTECODE=1 \
+        COVERAGE_FILE="$(COV_DATA_ABS)" \
         PYTHONPYCACHEPREFIX="$(PYCACHE_PREFIX_ABS)" \
         PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
         HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)"; \
@@ -96,6 +99,7 @@ test-unit:
 	  echo "   • no $(TEST_PATHS_UNIT); excluding e2e/integration/functional/slow"; \
     ( cd "$(TEST_ARTIFACTS_DIR)" && \
       export PYTHONDONTWRITEBYTECODE=1 \
+        COVERAGE_FILE="$(COV_DATA_ABS)" \
         PYTHONPYCACHEPREFIX="$(PYCACHE_PREFIX_ABS)" \
         PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
         HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)"; \
@@ -115,6 +119,6 @@ test-syntax:
 	@PYTHONDONTWRITEBYTECODE=1 PYTHONPYCACHEPREFIX="$(PYCACHE_PREFIX_ABS)" $(PYTHON) -m compileall src tests
 
 ##@ Test
-test: ## Run full test suite; all side-effects contained in artifacts_pages/test/ (JUnit, htmlcov, tmp, hypothesis DB, benchmarks)
+test: ## Run full test suite; all side-effects contained in $(PROJECT_ARTIFACTS_DIR)/test
 test-unit: ## Run unit tests only; same containment; fallback excludes e2e/integration/functional/slow
 test-clean: ## Remove stray root .hypothesis/.benchmarks and coverage files

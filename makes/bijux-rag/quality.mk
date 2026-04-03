@@ -2,7 +2,7 @@
 
 QUALITY_PATHS       ?= src/bijux_rag
 INTERROGATE_PATHS   ?= src/bijux_rag
-QUALITY_ARTIFACTS_DIR ?= artifacts/quality
+QUALITY_ARTIFACTS_DIR ?= $(PROJECT_ARTIFACTS_DIR)/quality
 QUALITY_OK_MARKER     := $(QUALITY_ARTIFACTS_DIR)/_passed
 
 VULTURE     := $(ACT)/vulture
@@ -35,5 +35,5 @@ quality-clean:
 	@rm -rf "$(QUALITY_ARTIFACTS_DIR)"
 
 ##@ Quality
-quality: ## Run vulture, deptry, interrogate (artifacts under artifacts/quality)
+quality: ## Run vulture, deptry, interrogate (artifacts under $(PROJECT_ARTIFACTS_DIR)/quality)
 quality-clean: ## Remove quality artifacts

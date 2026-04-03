@@ -20,7 +20,7 @@ PKG_VERSION_FULL    := $(if $(GIT_TAG_EXACT),$(PKG_VERSION),\
 SBOM_VERSION        := $(if $(PKG_VERSION_FULL),$(PKG_VERSION_FULL),$(PKG_VERSION))
 SBOM_VERSION_SAFE   := $(shell printf '%s' "$(SBOM_VERSION)" | tr ' /' '__' | tr -s '_' '_')
 
-SBOM_DIR            ?= artifacts/sbom
+SBOM_DIR            ?= $(PROJECT_ARTIFACTS_DIR)/sbom
 SBOM_PROD_REQ       ?= requirements/prod.txt
 SBOM_DEV_REQ        ?= requirements/dev.txt
 SBOM_FORMAT         ?= cyclonedx-json            # pip-audit format

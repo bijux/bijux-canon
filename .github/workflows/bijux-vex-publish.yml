@@ -13,6 +13,8 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      ARTIFACTS_DIR: artifacts/bijux-vex
 
     steps:
       - uses: actions/checkout@v4
@@ -33,8 +35,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .github/tmp/bijux-vex-dist
-          cp packages/bijux-vex/artifacts/release/*.whl .github/tmp/bijux-vex-dist/
-          cp packages/bijux-vex/artifacts/release/*.tar.gz .github/tmp/bijux-vex-dist/
+          cp "${ARTIFACTS_DIR}"/release/*.whl .github/tmp/bijux-vex-dist/
+          cp "${ARTIFACTS_DIR}"/release/*.tar.gz .github/tmp/bijux-vex-dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -47,6 +49,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bijux-vex-release
-          path: packages/bijux-vex/artifacts/release/*
+          path: ${{ env.ARTIFACTS_DIR }}/release/*
           if-no-files-found: ignore
           retention-days: 14

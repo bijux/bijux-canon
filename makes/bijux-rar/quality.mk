@@ -8,7 +8,7 @@ DEPTRY      := $(ACT)/deptry
 INTERROGATE := $(ACT)/interrogate
 PYTHON      := $(shell command -v python3 || command -v python)
 
-QUALITY_ARTIFACTS_DIR ?= artifacts/quality
+QUALITY_ARTIFACTS_DIR ?= $(PROJECT_ARTIFACTS_DIR)/quality
 QUALITY_OK_MARKER     := $(QUALITY_ARTIFACTS_DIR)/_passed
 
 ifeq ($(shell uname -s),Darwin)
