@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-# mypy: ignore-errors
 """Application service facade for in-memory indexes.
 
 This module wires:
@@ -12,8 +11,10 @@ Both CLI and FastAPI boundaries call into this layer to avoid drift.
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TypedDict
 
 from bijux_canon_ingest.application.index_runtime import (
     IndexBackend,
@@ -25,9 +26,33 @@ from bijux_canon_ingest.application.index_runtime import (
     save_stored_index,
 )
 from bijux_canon_ingest.retrieval.answering import ExtractiveAnswerer
-from bijux_canon_ingest.retrieval.ports import Answer
+from bijux_canon_ingest.retrieval.ports import Answer, Candidate
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
 from bijux_canon_ingest.result.types import Err, Ok, Result
+
+
+class CandidatePayload(TypedDict):
+    doc_id: str
+    text: str
+    start: int
+    end: int
+    chunk_id: str
+    score: float
+
+
+class CitationPayload(TypedDict):
+    doc_id: str
+    chunk_id: str
+    start: int
+    end: int
+    text: str
+
+
+class AnswerPayload(TypedDict):
+    answer: str
+    citations: list[CitationPayload]
+    contexts: list[CandidatePayload]
+    candidates: list[CandidatePayload]
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,7 +65,7 @@ class IngestService:
 
     def build_index(
         self,
-        docs,
+        docs: Iterable[object],
         backend: str = "bm25",
         chunk_size: int = 4096,
         overlap: int = 0,
@@ -65,13 +90,13 @@ class IngestService:
         index: StoredIndex,
         query: str,
         top_k: int,
-        filters: dict[str, str] | None = None,
-    ):
+        filters: Mapping[str, str] | None = None,
+    ) -> Result[list[Candidate], str]:
         return retrieve_candidates(
             index=index,
             query=query,
             top_k=top_k,
-            filters=filters,
+            filters=dict(filters or {}),
             reranker=self.reranker,
         )
 
@@ -80,17 +105,17 @@ class IngestService:
         index: StoredIndex,
         query: str,
         top_k: int,
-        filters: dict[str, str] | None = None,
+        filters: Mapping[str, str] | None = None,
         rerank: bool = True,
-    ) -> Result[dict[str, object], str]:
+    ) -> Result[AnswerPayload, str]:
         retrieved = self.retrieve(
             index=index,
             query=query,
             top_k=max(top_k, 10 if rerank else top_k),
-            filters=filters or {},
+            filters=filters,
         )
         if isinstance(retrieved, Err):
-            return retrieved
+            return Err(retrieved.error)
 
         candidates = retrieved.value
         if not candidates:
@@ -106,13 +131,13 @@ class IngestService:
         blob: bytes,
         query: str,
         top_k: int,
-        filters: dict[str, str],
-    ):
+        filters: Mapping[str, str] | None = None,
+    ) -> Result[list[Candidate], str]:
         return retrieve_blob_candidates(
             blob=blob,
             query=query,
             top_k=top_k,
-            filters=filters,
+            filters=dict(filters or {}),
         )
 
     def ask_blob(
@@ -120,7 +145,7 @@ class IngestService:
         blob: bytes,
         query: str,
         top_k: int,
-        filters: dict[str, str],
+        filters: Mapping[str, str] | None = None,
         rerank: bool = True,
     ) -> Result[Answer, str]:
         retrieved = self.retrieve_blob(
@@ -130,7 +155,7 @@ class IngestService:
             filters=filters,
         )
         if isinstance(retrieved, Err):
-            return retrieved
+            return Err(retrieved.error)
 
         candidates = retrieved.value
         if rerank and candidates:
@@ -140,9 +165,9 @@ class IngestService:
         return Ok(self.answerer.generate(query=query, candidates=candidates))
 
 
-def _answer_payload(candidates, *, top_k: int) -> dict[str, object]:
+def _answer_payload(candidates: Sequence[Candidate], *, top_k: int) -> AnswerPayload:
     top = candidates[0]
-    contexts = [
+    contexts: list[CandidatePayload] = [
         {
             "doc_id": candidate.doc_id,
             "text": candidate.text,
@@ -153,7 +178,7 @@ def _answer_payload(candidates, *, top_k: int) -> dict[str, object]:
         }
         for candidate in candidates[: max(1, top_k)]
     ]
-    citations = [
+    citations: list[CitationPayload] = [
         {
             "doc_id": context["doc_id"],
             "chunk_id": context["chunk_id"],
@@ -171,4 +196,11 @@ def _answer_payload(candidates, *, top_k: int) -> dict[str, object]:
     }
 
 
-__all__ = ["IndexBackend", "IngestService", "StoredIndex"]
+__all__ = [
+    "AnswerPayload",
+    "CandidatePayload",
+    "CitationPayload",
+    "IndexBackend",
+    "IngestService",
+    "StoredIndex",
+]
