@@ -1,6 +1,29 @@
-extend = "shared/ruff/base.toml"
+target-version = "py311"
+line-length = 88
+respect-gitignore = true
+
 src = ["src", "tests"]
+exclude = [
+  ".git",
+  ".hg",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  ".tox",
+  ".venv",
+  "build",
+  "dist",
+  "docs",
+  "htmlcov",
+  "__pycache__",
+  "migrations",
+  "*.egg-info",
+]
 extend-exclude = ["artifacts", "node_modules", "src/**/_version.py"]
+
+[lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "PT", "N", "A", "C4", "S", "TID", "PERF"]
+ignore = ["E501", "E203"]
 
 [lint.per-file-ignores]
 "tests/**" = ["S101"]
