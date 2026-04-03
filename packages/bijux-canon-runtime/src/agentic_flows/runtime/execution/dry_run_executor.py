@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 # Dry-run exists to generate repeatable traces when inputs are fixed, without invoking any agent logic.
 # It must remain intelligence-free: no tools, no network, no retrieval, no reasoning code.

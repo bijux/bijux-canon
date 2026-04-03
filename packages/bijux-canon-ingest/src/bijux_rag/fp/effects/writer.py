@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 """Bijux RAG–07: Writer – accumulate logs/metrics as pure data (effects).
 

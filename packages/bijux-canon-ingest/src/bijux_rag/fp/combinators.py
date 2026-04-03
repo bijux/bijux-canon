@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 """Small, focused functional helpers for the end-of-Bijux RAG codebase.
 

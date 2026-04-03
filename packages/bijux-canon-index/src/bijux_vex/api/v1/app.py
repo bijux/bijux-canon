@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 """Frozen v1 FastAPI application."""
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 # ANALYSIS ONLY — NOT REQUIRED FOR EXECUTION OR REPLAY
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 """Module definitions for runtime/observability/analysis/flow_correlation.py."""
 

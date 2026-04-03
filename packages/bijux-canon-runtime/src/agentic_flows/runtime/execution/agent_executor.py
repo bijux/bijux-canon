@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 # Agent execution is the only place bijux-agent may be invoked.
 # Allowed: seeded agent execution with explicit inputs and seeded randomness.

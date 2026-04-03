@@ -1,7 +1,7 @@
 # INTERNAL — NOT A PUBLIC EXTENSION POINT
 """Replay assumes execution stores are immutable and append-only; it relies on persisted traces, datasets, and replay envelopes matching stored hashes."""
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 """Ontology enums are frozen in v1; adding values requires a MAJOR bump, and reordering is forbidden."""
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 from __future__ import annotations
 

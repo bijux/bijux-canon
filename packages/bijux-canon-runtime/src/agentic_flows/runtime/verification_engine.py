@@ -2,7 +2,7 @@
 # INTERNAL — SUBJECT TO CHANGE WITHOUT NOTICE
 # INTERNAL API — NOT STABLE
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 # Verification must never call agents or modify artifact; epistemic truth is delegated to authority.
 """Module definitions for runtime/verification_engine.py."""

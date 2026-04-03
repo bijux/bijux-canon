@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
+# Copyright © 2026 Bijan Mousavi
 
 """Bijux RAG hybrid performance path: optimized batches with equivalence checks (end-of-Bijux RAG; domain-modeling)."""
 
