@@ -5,25 +5,25 @@ Process documents, build indexes, retrieve, and ask via the CLI:
 
 ```bash
 # Ingest and chunk CSV docs (outputs msgpack chunks)
-bijux-rag process --input data/arxiv_cs_abstracts_10k.csv --output artifacts/bijux-rag/chunks.msgpack --chunk-size 512
+bijux-llm-rag process --input data/arxiv_cs_abstracts_10k.csv --output artifacts/bijux-rag/chunks.msgpack --chunk-size 512
 
 # Build index from chunks (BM25 or vector)
-bijux-rag index-build --input artifacts/bijux-rag/chunks.msgpack --output artifacts/bijux-rag/index.msgpack --backend bm25
+bijux-llm-rag index-build --input artifacts/bijux-rag/chunks.msgpack --output artifacts/bijux-rag/index.msgpack --backend bm25
 
 # Retrieve top-k matches
-bijux-rag retrieve --index artifacts/bijux-rag/index.msgpack --query "functional programming in RAG" --top-k 10
+bijux-llm-rag retrieve --index artifacts/bijux-rag/index.msgpack --query "functional programming in RAG" --top-k 10
 
 # Ask with grounded response (citations from retrieved)
-bijux-rag ask --index artifacts/bijux-rag/index.msgpack --query "explain RAG effects" --top-k 5 --format json
+bijux-llm-rag ask --index artifacts/bijux-rag/index.msgpack --query "explain RAG effects" --top-k 5 --format json
 
 # Run eval suite (pinned corpus/queries)
-bijux-rag eval --suite tests/eval --index artifacts/bijux-rag/index.msgpack
+bijux-llm-rag eval --suite tests/eval --index artifacts/bijux-rag/index.msgpack
 ```
 
 - `--backend bm25|numpy-cosine` (deterministic profiles).
 - `--embedder default|custom` for vector indexes.
 - `--filter key=value` for metadata filtering (AND).
-- See `bijux-rag --help` for full options.
+- See `bijux-llm-rag --help` for full options.
 
 ## Library
 Build composable RAG pipelines programmatically:

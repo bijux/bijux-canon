@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27", "hatch-vcs>=0.4"]
 build-backend = "hatchling.build"
 
 [project]
-name = "bijux-rag"
+name = "bijux-llm-rag"
 dynamic = ["version"]
 description = "Standalone Bijux RAG toolkit"
 readme = "README.md"
@@ -80,6 +80,7 @@ dev = [
 ]
 
 [project.scripts]
+bijux-llm-rag = "bijux_rag.boundaries.shells.cli:main"
 bijux-rag = "bijux_rag.boundaries.shells.cli:main"
 
 [project.urls]

@@ -119,7 +119,7 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/bijux/bijux-rag
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/bijux-rag/
+      link: https://pypi.org/project/bijux-llm-rag/
   copyright:
     text: "© 2025 Bijan Mousavi"
 

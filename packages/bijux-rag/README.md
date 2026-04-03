@@ -1,23 +1,25 @@
-# bijux-rag
+# bijux-llm-rag
 
 > At a glance: **index → retrieve → ask** • offline CI profile • reproducible chunk IDs + index fingerprints • CLI + FastAPI boundaries • OpenAPI drift-gated  
 > Quality: **make/tox gates green** (tests, lint, types, docs strict, security, SBOM). Everything writes to `artifacts/bijux-rag/`. No telemetry.
 
-[![PyPI - Version](https://img.shields.io/pypi/v/bijux-rag.svg?logo=pypi&logoColor=white)](https://pypi.org/project/bijux-rag)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bijux-rag.svg?logo=python&logoColor=white)](https://pypi.org/project/bijux-rag)
+[![PyPI - Version](https://img.shields.io/pypi/v/bijux-llm-rag.svg?logo=pypi&logoColor=white)](https://pypi.org/project/bijux-llm-rag)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bijux-llm-rag.svg?logo=python&logoColor=white)](https://pypi.org/project/bijux-llm-rag)
 [![License](https://img.shields.io/github/license/bijux/bijux-llm-nexus.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/charliermarsh/ruff)
 [![Documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg)](https://bijux.github.io/bijux-rag/)
 
 **Docs:** https://bijux.github.io/bijux-rag/  
-**PyPI:** https://pypi.org/project/bijux-rag/  
+**PyPI:** https://pypi.org/project/bijux-llm-rag/  
 **Issues:** https://github.com/bijux/bijux-llm-nexus/issues
 **Changelog:** https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-rag/CHANGELOG.md
 
 
-**bijux-rag** is a standalone Retrieval-Augmented Generation (RAG) toolkit for Python, emphasizing a functional core with pure transformations for document processing, chunking, and retrieval. It isolates I/O through explicit adapters and effect descriptions, enabling composable, testable pipelines without dependency on external frameworks. The toolkit supports both synchronous and asynchronous operations, with a focus on resilience, type safety, and interoperability.
+**bijux-llm-rag** is a standalone Retrieval-Augmented Generation (RAG) toolkit for Python, emphasizing a functional core with pure transformations for document processing, chunking, and retrieval. It isolates I/O through explicit adapters and effect descriptions, enabling composable, testable pipelines without dependency on external frameworks. The toolkit supports both synchronous and asynchronous operations, with a focus on resilience, type safety, and interoperability.
 
-All quality gates—enforced via Tox and Make—remain green: comprehensive tests (unit, integration, end-to-end), static analysis (linting, typing with MyPy/Pytype), security audits (Bandit, Pip-Audit), and builds. Coverage is gated at 90%+ on the pinned eval suite, and the codebase ships full MkDocs documentation.
+The legacy package name `bijux-rag` remains available as a compatibility shim that installs `bijux-llm-rag`.
+
+All quality gates—enforced via Tox and Make—remain green: comprehensive tests (unit, integration, end-to-end), static analysis (linting, typing with MyPy), security audits (Bandit, Pip-Audit), and builds. Coverage is gated at 90%+ on the pinned eval suite, and the codebase ships full MkDocs documentation.
 
 
 ## At a Glance
@@ -30,7 +32,7 @@ All quality gates—enforced via Tox and Make—remain green: comprehensive test
 - **Version & Compatibility**: v0.1.0; Python 3.11–3.13; MIT-licensed.
 - **Quality Metrics**: 100% coverage; strict typing; security-scanned.
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Table of Contents
 
@@ -44,24 +46,30 @@ All quality gates—enforced via Tox and Make—remain green: comprehensive test
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Features
 
-bijux-rag prioritizes modularity and purity, allowing users to build RAG systems from composable building blocks while maintaining control over effects and dependencies.
+bijux-llm-rag prioritizes modularity and purity, allowing users to build RAG systems from composable building blocks while maintaining control over effects and dependencies.
 
 - **Functional Primitives**: Pure functions for document tree manipulation (flattening, folding), result handling (`Result[T, ErrInfo]` monad with folds like fail-fast or error-capped), and iterator-based pipelines.
 - **Effect Management**: Deferred I/O via `IOPlan` (sync) and `AsyncPlan` (async), supporting retries, transactions, backpressure, and rate limiting as configurable policies.
 - **Resilience and Testing**: Built-in policies for transient error handling; test utilities like fake clocks and sleepers ensure reliable unit testing without mocks.
 - **Adapters and Interop**: Storage options (file, in-memory); compatibility with NumPy for vectors, Pydantic for validation, and standard libraries (e.g., `itertools`, `functools`).
 - **Streaming Capabilities**: Lazy async streams with bounded mapping, fair merging, and chunking policies for high-throughput scenarios.
-- **Tooling Integration**: Comprehensive setup with Ruff for style, multiple type checkers, Hypothesis for property-based tests, and MkDocs for documentation.
+- **Tooling Integration**: Comprehensive setup with Ruff for style, MyPy for typing, Hypothesis for property-based tests, and MkDocs for documentation.
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Installation
 
 Requires Python 3.11 or later.
+
+```bash
+pip install bijux-llm-rag
+```
+
+Legacy alias:
 
 ```bash
 pip install bijux-rag
@@ -70,7 +78,7 @@ pip install bijux-rag
 For development (includes testing, documentation, and linting tools):
 
 ```bash
-pip install bijux-rag[dev]
+pip install bijux-llm-rag[dev]
 ```
 
 From source:
@@ -83,14 +91,14 @@ make bootstrap  # Sets up virtualenv and installs in editable mode
 
 Dependencies are minimal and security-audited; refer to `pyproject.toml` for details.
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Quick Start
 
 Process documents via CLI:
 
 ```bash
-bijux-rag process --input docs.csv --output embeddings.msgpack
+bijux-llm-rag process --input docs.csv --output embeddings.msgpack
 ```
 
 This command reads CSV documents, applies functional chunking, performs embedding (via configured adapter), and outputs MessagePack results.
@@ -107,23 +115,23 @@ storage = InMemoryStorage()
 results = list(embed_docs(docs, storage))  # Composable iterator pipeline
 ```
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Usage
 
-bijux-rag offers multiple entry points: CLI for scripting, HTTP API for services, and Python API for integration.
+bijux-llm-rag offers multiple entry points: CLI for scripting, HTTP API for services, and Python API for integration.
 
 ### CLI
 Access help:
 
 ```bash
-bijux-rag --help
+bijux-llm-rag --help
 ```
 
 Example with custom parameters:
 
 ```bash
-bijux-rag process --input input.csv --chunk-size 512 --embedder default
+bijux-llm-rag process --input input.csv --chunk-size 512 --embedder default
 ```
 
 Note: Embedder options depend on configured adapters; defaults to basic implementations.
@@ -132,7 +140,7 @@ Note: Embedder options depend on configured adapters; defaults to basic implemen
 Launch the server:
 
 ```bash
-bijux-rag serve --port 8000
+bijux-llm-rag serve --port 8000
 ```
 
 Interact via endpoints like `/embed` (POST documents for processing) or `/retrieve` (query-based retrieval). Explore via OpenAPI at `/docs`.
@@ -171,7 +179,7 @@ async for result in stream():
 
 Consult the API reference in documentation for complete details.
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Architecture
 
@@ -185,7 +193,7 @@ Adopts a hexagonal (ports and adapters) design with a functional core:
 
 This structure facilitates adapter swaps (e.g., local to cloud storage) without altering core code. Review [Architecture Documentation](https://bijux.github.io/bijux-rag/architecture/) for decision records (ADRs) and overviews.
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Testing and Quality
 
@@ -197,14 +205,14 @@ make test
 
 Other targets:
 
-- `make lint`: Enforces style (Ruff) and types (MyPy, Pytype).
+- `make lint`: Enforces style (Ruff) and types (MyPy).
 - `make security`: Runs Bandit and dependency audits.
 - `make docs`: Builds and serves MkDocs.
 - `make all`: Comprehensive run (clean, install, test, lint, build).
 
 CI ensures all gates pass on every commit.
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Contributing
 
@@ -216,16 +224,16 @@ make bootstrap
 
 Follow the package guide in [docs/contributing.md](docs/contributing.md).
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## License
 
 MIT License—see [LICENSE](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE).
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)
 
 ## Acknowledgments
 
 Draws inspiration from functional programming paradigms (e.g., monads, immutability) and RAG literature. Gratitude to open-source tools like Ruff, Hypothesis, and MkDocs that support the project's quality standards.
 
-[↑ Back to Top](#bijux-rag)
+[↑ Back to Top](#bijux-llm-rag)

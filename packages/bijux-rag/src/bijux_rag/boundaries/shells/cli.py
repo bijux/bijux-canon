@@ -85,7 +85,7 @@ def _main_legacy(argv: list[str]) -> int:
     New RAG commands are under explicit subcommands.
     """
 
-    p = argparse.ArgumentParser(prog="bijux-rag")
+    p = argparse.ArgumentParser(prog="bijux-llm-rag")
     p.add_argument("input_csv", type=Path)
     p.add_argument("--config", type=Path, required=True)
     p.add_argument(
@@ -140,7 +140,7 @@ def _main_legacy(argv: list[str]) -> int:
 def _main_rag(argv: list[str]) -> int:
     """RAG-capable CLI: index, retrieve, ask, eval."""
 
-    p = argparse.ArgumentParser(prog="bijux-rag")
+    p = argparse.ArgumentParser(prog="bijux-llm-rag")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     p_index = sub.add_parser("index", help="Index operations")
