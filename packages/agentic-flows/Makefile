@@ -61,7 +61,6 @@ include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/api.mk
-include $(MAKE_DIR)/architecture.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
 -include .env
