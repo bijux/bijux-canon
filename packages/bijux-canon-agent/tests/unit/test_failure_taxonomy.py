@@ -4,7 +4,7 @@ from typing import cast
 
 import pytest
 
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.results.failure import (
     FailureArtifact,
     FailureCategory,
@@ -27,7 +27,7 @@ def test_failure_artifact_validation_enforces_category() -> None:
         failure_class=FailureClass.EPISTEMIC_UNCERTAINTY,
         mode="uncertain",
         message="epistemic failure",
-        phase=PipelinePhase.ABORTED,
+        phase=PipelineLifecycle.ABORTED,
         recoverable=False,
         category=FailureCategory.EPISTEMIC,
     )
@@ -39,7 +39,7 @@ def test_failure_artifact_validation_rejects_mismatch() -> None:
         failure_class=FailureClass.EPISTEMIC_UNCERTAINTY,
         mode="uncertain",
         message="epistemic failure",
-        phase=PipelinePhase.ABORTED,
+        phase=PipelineLifecycle.ABORTED,
         recoverable=False,
         category=FailureCategory.OPERATIONAL,
     )

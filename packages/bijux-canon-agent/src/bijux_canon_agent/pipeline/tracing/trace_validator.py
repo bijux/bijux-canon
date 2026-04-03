@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.semantics import PipelineSemantics
@@ -20,7 +20,7 @@ class TraceValidator:
         entries: Sequence[TraceEntry],
         definition: PipelineDefinition,
         stop_reason: StopReason | None,
-        semantics: dict[PipelinePhase, PipelineSemantics] | None = None,
+        semantics: dict[PipelineLifecycle, PipelineSemantics] | None = None,
         header: RunTraceHeader | None = None,
     ) -> None:
         phase_counts, final_entry, final_phase = ordering.validate(
@@ -53,7 +53,7 @@ def _validate_replay_fields(entry: TraceEntry) -> None:
     if not fingerprint or not fingerprint.fingerprint:
         raise RuntimeError("Trace entry missing run_fingerprint required for replay")
     if (
-        entry.phase == PipelinePhase.FINALIZE.value
+        entry.phase == PipelineLifecycle.FINALIZE.value
         and not entry.replay_metadata.convergence_hash
     ):
         raise RuntimeError("Trace entry missing convergence_hash required for replay")

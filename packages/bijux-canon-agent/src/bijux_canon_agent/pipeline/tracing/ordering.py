@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from datetime import datetime
 
 from bijux_canon_agent.enums import AgentType
-from bijux_canon_agent.pipeline.control.phases import PHASE_DETAILS, PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import LIFECYCLE_DETAILS, PipelineLifecycle
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.semantics import (
     DEFAULT_PIPELINE_SEMANTICS,
@@ -18,16 +18,16 @@ from bijux_canon_agent.tracing import TraceEntry
 def validate(
     entries: Sequence[TraceEntry],
     definition: PipelineDefinition,
-    semantics: dict[PipelinePhase, PipelineSemantics] | None = None,
-) -> tuple[dict[PipelinePhase, int], TraceEntry, PipelinePhase]:
+    semantics: dict[PipelineLifecycle, PipelineSemantics] | None = None,
+) -> tuple[dict[PipelineLifecycle, int], TraceEntry, PipelineLifecycle]:
     """Validate ordering, agent allowances, and semantics for the trace."""
     if not entries:
         raise ValueError("Trace must contain at least one entry")
 
     phase_order = {phase: idx for idx, phase in enumerate(definition.phases)}
-    phase_counts: dict[PipelinePhase, int] = {}
+    phase_counts: dict[PipelineLifecycle, int] = {}
     last_index = -1
-    previous_phase: PipelinePhase | None = None
+    previous_phase: PipelineLifecycle | None = None
     seen_abort = False
     semantics_map = semantics or DEFAULT_PIPELINE_SEMANTICS
     last_order_key: tuple[int, datetime] | None = None
@@ -54,7 +54,7 @@ def validate(
             last_index = order_index
             if (
                 previous_phase
-                and previous_phase != PipelinePhase.ABORTED
+                and previous_phase != PipelineLifecycle.ABORTED
                 and previous_phase in definition.allowed_transitions
             ):
                 allowed = definition.allowed_transitions[previous_phase]
@@ -62,19 +62,19 @@ def validate(
                     raise RuntimeError(
                         f"Transition from {previous_phase.value} to {phase.value} disallowed"
                     )
-        elif phase != PipelinePhase.ABORTED:
+        elif phase != PipelineLifecycle.ABORTED:
             raise RuntimeError(f"Unexpected phase in trace: {phase.value}")
 
-        if phase == PipelinePhase.ABORTED:
+        if phase == PipelineLifecycle.ABORTED:
             seen_abort = True
 
         if (
             phase
             not in (
-                PipelinePhase.FINALIZE,
-                PipelinePhase.DONE,
-                PipelinePhase.ABORTED,
-                PipelinePhase.INIT,
+                PipelineLifecycle.FINALIZE,
+                PipelineLifecycle.DONE,
+                PipelineLifecycle.ABORTED,
+                PipelineLifecycle.INIT,
             )
             and not entry.scores
         ):
@@ -89,18 +89,18 @@ def validate(
     return phase_counts, final_entry, final_phase
 
 
-def _resolve_phase(entry: TraceEntry) -> PipelinePhase:
+def _resolve_phase(entry: TraceEntry) -> PipelineLifecycle:
     phase_value = entry.phase or entry.input.get("phase")
     if not phase_value:
         raise RuntimeError("Trace entry missing phase information")
     try:
-        return PipelinePhase(phase_value)
+        return PipelineLifecycle(phase_value)
     except ValueError as exc:  # pragma: no cover - defensive
         raise RuntimeError(f"Unknown phase recorded: {phase_value}") from exc
 
 
-def _validate_agent(entry: TraceEntry, phase: PipelinePhase) -> None:
-    info = PHASE_DETAILS.get(phase)
+def _validate_agent(entry: TraceEntry, phase: PipelineLifecycle) -> None:
+    info = LIFECYCLE_DETAILS.get(phase)
     agent_type_value = entry.input.get("agent_type")
     if info and info.allowed_agents and agent_type_value:
         try:
@@ -113,7 +113,7 @@ def _validate_agent(entry: TraceEntry, phase: PipelinePhase) -> None:
 
 def _validate_semantics(
     entry: TraceEntry,
-    phase: PipelinePhase,
+    phase: PipelineLifecycle,
     semantics: PipelineSemantics | None,
 ) -> None:
     if semantics is None:

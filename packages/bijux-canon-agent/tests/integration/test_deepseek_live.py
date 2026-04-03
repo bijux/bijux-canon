@@ -11,7 +11,7 @@ import pytest
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION
 from bijux_canon_agent.models.adapter_factory import build_adapter
 from bijux_canon_agent.models.llm_adapter import DeepSeekAdapter
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.tracing import (
     ReplayMetadata,
     ReplayStatus,
@@ -82,7 +82,7 @@ def test_deepseek_integration_metadata_and_trace(
         scores={"quality": response.confidence},
         prompt_hash=prompt_hash(prompt),
         model_hash=prompt_hash("deepseek-chat"),
-        phase=PipelinePhase.EXECUTE.value,
+        phase=PipelineLifecycle.EXECUTE.value,
         run_id="live-deepseek",
         replay_metadata=ReplayMetadata(
             input_hash=prompt_hash(prompt),

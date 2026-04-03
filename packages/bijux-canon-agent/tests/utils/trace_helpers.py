@@ -6,7 +6,7 @@ from typing import Any
 
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.definition import (
     PipelineDefinition,
     standard_pipeline_definition,
@@ -88,7 +88,7 @@ def build_trace_header(
 
 def build_trace_entry(
     *,
-    phase: PipelinePhase,
+    phase: PipelineLifecycle,
     run_id: str = "run-1",
     agent_id: str | None = None,
     node: str | None = None,

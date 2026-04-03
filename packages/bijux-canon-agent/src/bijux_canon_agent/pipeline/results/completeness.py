@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Mapping
 
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 
 
@@ -15,7 +15,7 @@ class TraceCompletenessCheck:
     def __init__(self, definition: PipelineDefinition) -> None:
         self.definition = definition
 
-    def validate(self, phase_counts: Mapping[PipelinePhase, int]) -> None:
+    def validate(self, phase_counts: Mapping[PipelineLifecycle, int]) -> None:
         counter = Counter(phase_counts)
         order = {phase: idx for idx, phase in enumerate(self.definition.phases)}
         observed_indices = [

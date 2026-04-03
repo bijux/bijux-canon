@@ -1,4 +1,4 @@
-"""Defines the canonical pipeline lifecycle and phase metadata."""
+"""Defines the canonical pipeline lifecycle and lifecycle metadata."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from bijux_canon_agent.enums import AgentType
 from .stop_conditions import StopReason
 
 
-class PipelinePhase(StrEnum):
-    """Each phase follows the single canonical lifecycle declared here."""
+class PipelineLifecycle(StrEnum):
+    """Each lifecycle step follows the canonical flow declared here."""
 
     INIT = "INIT"
     PLAN = "PLAN"
@@ -25,47 +25,47 @@ class PipelinePhase(StrEnum):
 
 
 @dataclass(frozen=True)
-class PhaseInfo:
+class LifecycleInfo:
     entry_conditions: Sequence[str]
     exit_conditions: Sequence[str]
     allowed_agents: Sequence[AgentType]
     stop_reasons: Sequence[StopReason]
 
 
-PHASE_SEQUENCE: tuple[PipelinePhase, ...] = (
-    PipelinePhase.INIT,
-    PipelinePhase.PLAN,
-    PipelinePhase.EXECUTE,
-    PipelinePhase.JUDGE,
-    PipelinePhase.VERIFY,
-    PipelinePhase.FINALIZE,
-    PipelinePhase.DONE,
+PIPELINE_LIFECYCLE: tuple[PipelineLifecycle, ...] = (
+    PipelineLifecycle.INIT,
+    PipelineLifecycle.PLAN,
+    PipelineLifecycle.EXECUTE,
+    PipelineLifecycle.JUDGE,
+    PipelineLifecycle.VERIFY,
+    PipelineLifecycle.FINALIZE,
+    PipelineLifecycle.DONE,
 )
 
-PIPELINE_PHASE_ORDER: list[PipelinePhase] = [
-    PipelinePhase.INIT,
-    PipelinePhase.PLAN,
-    PipelinePhase.EXECUTE,
-    PipelinePhase.JUDGE,
-    PipelinePhase.VERIFY,
-    PipelinePhase.FINALIZE,
-    PipelinePhase.DONE,
+PIPELINE_LIFECYCLE_ORDER: list[PipelineLifecycle] = [
+    PipelineLifecycle.INIT,
+    PipelineLifecycle.PLAN,
+    PipelineLifecycle.EXECUTE,
+    PipelineLifecycle.JUDGE,
+    PipelineLifecycle.VERIFY,
+    PipelineLifecycle.FINALIZE,
+    PipelineLifecycle.DONE,
 ]
 
-PHASE_DETAILS: dict[PipelinePhase, PhaseInfo] = {
-    PipelinePhase.INIT: PhaseInfo(
+LIFECYCLE_DETAILS: dict[PipelineLifecycle, LifecycleInfo] = {
+    PipelineLifecycle.INIT: LifecycleInfo(
         entry_conditions=("context_ready",),
         exit_conditions=("plan_started",),
         allowed_agents=(),
         stop_reasons=(StopReason.USER_INTERRUPTION, StopReason.FATAL_FAILURE),
     ),
-    PipelinePhase.PLAN: PhaseInfo(
+    PipelineLifecycle.PLAN: LifecycleInfo(
         entry_conditions=("plan_requested",),
         exit_conditions=("plan_completed",),
         allowed_agents=(AgentType.PLANNER,),
         stop_reasons=(StopReason.USER_INTERRUPTION, StopReason.MAX_ITERATIONS),
     ),
-    PipelinePhase.EXECUTE: PhaseInfo(
+    PipelineLifecycle.EXECUTE: LifecycleInfo(
         entry_conditions=("retrieval_done",),
         exit_conditions=("execution_finished",),
         allowed_agents=(
@@ -80,7 +80,7 @@ PHASE_DETAILS: dict[PipelinePhase, PhaseInfo] = {
             StopReason.CONFIDENCE_THRESHOLD_MET,
         ),
     ),
-    PipelinePhase.JUDGE: PhaseInfo(
+    PipelineLifecycle.JUDGE: LifecycleInfo(
         entry_conditions=("execution_traces_available",),
         exit_conditions=("judgment_recorded",),
         allowed_agents=(AgentType.JUDGE,),
@@ -90,7 +90,7 @@ PHASE_DETAILS: dict[PipelinePhase, PhaseInfo] = {
             StopReason.MAX_ITERATIONS,
         ),
     ),
-    PipelinePhase.VERIFY: PhaseInfo(
+    PipelineLifecycle.VERIFY: LifecycleInfo(
         entry_conditions=("judgment_finalized",),
         exit_conditions=("verification_completed",),
         allowed_agents=(AgentType.VERIFIER,),
@@ -100,7 +100,7 @@ PHASE_DETAILS: dict[PipelinePhase, PhaseInfo] = {
             StopReason.FATAL_FAILURE,
         ),
     ),
-    PipelinePhase.FINALIZE: PhaseInfo(
+    PipelineLifecycle.FINALIZE: LifecycleInfo(
         entry_conditions=("verification_passed",),
         exit_conditions=("final_record_saved",),
         allowed_agents=(AgentType.ORCHESTRATOR,),
@@ -110,13 +110,13 @@ PHASE_DETAILS: dict[PipelinePhase, PhaseInfo] = {
             StopReason.USER_INTERRUPTION,
         ),
     ),
-    PipelinePhase.DONE: PhaseInfo(
+    PipelineLifecycle.DONE: LifecycleInfo(
         entry_conditions=("finalized",),
         exit_conditions=(),
         allowed_agents=(),
         stop_reasons=(),
     ),
-    PipelinePhase.ABORTED: PhaseInfo(
+    PipelineLifecycle.ABORTED: LifecycleInfo(
         entry_conditions=("abort_triggered",),
         exit_conditions=("cleanup_completed",),
         allowed_agents=(),

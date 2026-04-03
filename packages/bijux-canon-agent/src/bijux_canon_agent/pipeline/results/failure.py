@@ -7,7 +7,7 @@ from enum import StrEnum
 
 from pydantic import ConfigDict, Field
 
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.schema.base import TypedBaseModel
 from bijux_canon_agent.utilities.final import final_class
 
@@ -40,7 +40,7 @@ class FailureArtifact(TypedBaseModel):
     )
     mode: str = Field(..., description="Mode describing how failure was detected")
     message: str = Field(..., description="Human-readable failure message")
-    phase: PipelinePhase = Field(
+    phase: PipelineLifecycle = Field(
         ..., description="Canonical phase where failure occurred"
     )
     recoverable: bool = Field(

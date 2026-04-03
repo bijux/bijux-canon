@@ -4,38 +4,38 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 
 
 @dataclass(frozen=True)
 class PipelineSemantics:
-    phase: PipelinePhase
+    phase: PipelineLifecycle
     forbidden_artifact_keys: tuple[str, ...] = ()
     forbidden_metadata_keys: tuple[str, ...] = ()
     allow_decision_artifact: bool = False
     allow_epistemic_verdict: bool = False
 
 
-DEFAULT_PIPELINE_SEMANTICS: dict[PipelinePhase, PipelineSemantics] = {
-    PipelinePhase.PLAN: PipelineSemantics(
-        phase=PipelinePhase.PLAN,
+DEFAULT_PIPELINE_SEMANTICS: dict[PipelineLifecycle, PipelineSemantics] = {
+    PipelineLifecycle.PLAN: PipelineSemantics(
+        phase=PipelineLifecycle.PLAN,
         forbidden_artifact_keys=("final_result", "final_output"),
         forbidden_metadata_keys=("decision", "finalized"),
     ),
-    PipelinePhase.EXECUTE: PipelineSemantics(
-        phase=PipelinePhase.EXECUTE,
+    PipelineLifecycle.EXECUTE: PipelineSemantics(
+        phase=PipelineLifecycle.EXECUTE,
         forbidden_metadata_keys=("decision",),
     ),
-    PipelinePhase.JUDGE: PipelineSemantics(
-        phase=PipelinePhase.JUDGE,
+    PipelineLifecycle.JUDGE: PipelineSemantics(
+        phase=PipelineLifecycle.JUDGE,
         forbidden_metadata_keys=("finalized",),
     ),
-    PipelinePhase.VERIFY: PipelineSemantics(
-        phase=PipelinePhase.VERIFY,
+    PipelineLifecycle.VERIFY: PipelineSemantics(
+        phase=PipelineLifecycle.VERIFY,
         forbidden_metadata_keys=("decision", "final_result"),
     ),
-    PipelinePhase.FINALIZE: PipelineSemantics(
-        phase=PipelinePhase.FINALIZE,
+    PipelineLifecycle.FINALIZE: PipelineSemantics(
+        phase=PipelineLifecycle.FINALIZE,
         allow_decision_artifact=True,
         allow_epistemic_verdict=True,
     ),

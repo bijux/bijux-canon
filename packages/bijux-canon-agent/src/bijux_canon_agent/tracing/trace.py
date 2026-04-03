@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
@@ -362,7 +362,7 @@ class TraceRecorder:
             return False
         convergence_missing = (
             self.trace.header.convergence_hash
-            and entry.phase == PipelinePhase.FINALIZE.value
+            and entry.phase == PipelineLifecycle.FINALIZE.value
             and not entry.replay_metadata.convergence_hash
         )
         return not convergence_missing

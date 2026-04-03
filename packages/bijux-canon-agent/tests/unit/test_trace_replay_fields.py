@@ -7,7 +7,7 @@ from tests.utils.trace_helpers import build_trace_header
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
 from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
@@ -22,9 +22,9 @@ from bijux_canon_agent.tracing import (
 def _definition() -> PipelineDefinition:
     return PipelineDefinition(
         name="test-replay",
-        phases=[PipelinePhase.INIT, PipelinePhase.FINALIZE],
-        terminal_phases={PipelinePhase.FINALIZE},
-        allowed_transitions={PipelinePhase.INIT: {PipelinePhase.FINALIZE}},
+        phases=[PipelineLifecycle.INIT, PipelineLifecycle.FINALIZE],
+        terminal_phases={PipelineLifecycle.FINALIZE},
+        allowed_transitions={PipelineLifecycle.INIT: {PipelineLifecycle.FINALIZE}},
     )
 
 
@@ -43,7 +43,7 @@ def _build_entries(
         status="success",
         start_time=now,
         end_time=now,
-        input={"phase": PipelinePhase.INIT.value},
+        input={"phase": PipelineLifecycle.INIT.value},
         output={
             "artifacts": {},
             "metadata": {"contract_version": CONTRACT_VERSION},
@@ -52,7 +52,7 @@ def _build_entries(
         scores={"quality": 0.5},
         prompt_hash="init",
         model_hash="model",
-        phase=PipelinePhase.INIT.value,
+        phase=PipelineLifecycle.INIT.value,
         run_id="replay",
         replay_metadata=ReplayMetadata(),
         decision_artifact=None,
@@ -64,7 +64,7 @@ def _build_entries(
         status="success",
         start_time=now,
         end_time=now,
-        input={"phase": PipelinePhase.FINALIZE.value},
+        input={"phase": PipelineLifecycle.FINALIZE.value},
         output={
             "artifacts": {},
             "metadata": {"contract_version": CONTRACT_VERSION},
@@ -74,7 +74,7 @@ def _build_entries(
         scores={"quality": 0.9},
         prompt_hash="final",
         model_hash="model",
-        phase=PipelinePhase.FINALIZE.value,
+        phase=PipelineLifecycle.FINALIZE.value,
         run_id="replay",
         replay_metadata=ReplayMetadata(
             input_hash="hash",

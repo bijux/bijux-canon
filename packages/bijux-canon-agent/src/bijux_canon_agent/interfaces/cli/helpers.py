@@ -16,7 +16,7 @@ import uuid
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.convergence.monitor import ConvergenceReason
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
@@ -331,7 +331,7 @@ def build_trace_from_result(
         scores={"quality": confidence},
         prompt_hash=entry_prompt_hash,
         model_hash=model_hash_value,
-        phase=PipelinePhase.FINALIZE.value,
+        phase=PipelineLifecycle.FINALIZE.value,
         run_id=run_id,
         stop_reason=None,
         failure_artifact=None,

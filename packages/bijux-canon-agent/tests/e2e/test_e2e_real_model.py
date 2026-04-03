@@ -18,7 +18,7 @@ from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
 from bijux_canon_agent.models.llm_adapter import AdapterConfig, OpenAIAdapter
 from bijux_canon_agent.pipeline.control.controller import PipelineController
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceMonitor,
     ConvergenceReason,
@@ -67,7 +67,7 @@ class RealExecutorAgent(BaseAgent):
 
 def _trace_entry_for_phase(
     agent_type: AgentType,
-    phase: PipelinePhase,
+    phase: PipelineLifecycle,
     input_payload: dict[str, Any],
     output: dict[str, Any],
 ) -> TraceEntry:
@@ -127,12 +127,12 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
         "payload": {},
     }
 
-    controller.transition_to(PipelinePhase.PLAN)
+    controller.transition_to(PipelineLifecycle.PLAN)
     plan_result = await planner.run(context)
     trace_entries.append(
         _trace_entry_for_phase(
             AgentType.PLANNER,
-            PipelinePhase.PLAN,
+            PipelineLifecycle.PLAN,
             {},
             plan_result,
         )
@@ -144,7 +144,7 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
         "context_id": "real-exec",
         "payload": {"prompt": f"{plan_artifact['sequence']}"},
     }
-    controller.transition_to(PipelinePhase.EXECUTE)
+    controller.transition_to(PipelineLifecycle.EXECUTE)
     executor_result = await executor.run(executor_context)
     convergence.record(
         executor_result["scores"], DecisionOutcome.PASS, executor_result["confidence"]
@@ -152,7 +152,7 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
     trace_entries.append(
         _trace_entry_for_phase(
             AgentType.SUMMARIZER,
-            PipelinePhase.EXECUTE,
+            PipelineLifecycle.EXECUTE,
             executor_context["payload"],
             executor_result,
         )
@@ -163,7 +163,7 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
         "context_id": "real-judge",
         "payload": {"agent_outputs": [executor_result]},
     }
-    controller.transition_to(PipelinePhase.JUDGE)
+    controller.transition_to(PipelineLifecycle.JUDGE)
     judge_result = await judge.run(judge_context)
     convergence.record(
         judge_result["scores"], DecisionOutcome.PASS, judge_result["confidence"]
@@ -171,7 +171,7 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
     trace_entries.append(
         _trace_entry_for_phase(
             AgentType.JUDGE,
-            PipelinePhase.JUDGE,
+            PipelineLifecycle.JUDGE,
             judge_context["payload"],
             judge_result,
         )
@@ -182,7 +182,7 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
         "context_id": "real-verify",
         "payload": {"agent_outputs": [executor_result]},
     }
-    controller.transition_to(PipelinePhase.VERIFY)
+    controller.transition_to(PipelineLifecycle.VERIFY)
     verifier_result = await verifier.run(verifier_context)
     convergence.record(
         verifier_result["scores"],
@@ -192,17 +192,17 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
     trace_entries.append(
         _trace_entry_for_phase(
             AgentType.VERIFIER,
-            PipelinePhase.VERIFY,
+            PipelineLifecycle.VERIFY,
             verifier_context["payload"],
             verifier_result,
         )
     )
 
-    controller.transition_to(PipelinePhase.FINALIZE)
+    controller.transition_to(PipelineLifecycle.FINALIZE)
     trace_entries.append(
         _trace_entry_for_phase(
             AgentType.ORCHESTRATOR,
-            PipelinePhase.FINALIZE,
+            PipelineLifecycle.FINALIZE,
             {},
             verifier_result,
         )
@@ -218,7 +218,7 @@ async def test_e2e_real_model_flow(tmp_path) -> None:
         entries=trace_entries,
     )
     controller.finalize(trace)
-    assert controller.phase == PipelinePhase.DONE
+    assert controller.phase == PipelineLifecycle.DONE
     assert not controller.should_stop()
     assert convergence.has_converged()
     convergence_hash = "test-convergence"

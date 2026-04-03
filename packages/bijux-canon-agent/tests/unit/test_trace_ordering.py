@@ -10,7 +10,7 @@ from tests.utils.trace_helpers import (
 )
 
 from bijux_canon_agent.enums import AgentType
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
 from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
 from bijux_canon_agent.tracing.trace import TraceEntry
@@ -18,7 +18,7 @@ from bijux_canon_agent.tracing.trace import TraceEntry
 
 def _base_entry(
     *,
-    phase: PipelinePhase,
+    phase: PipelineLifecycle,
     start: datetime,
     agent_type: AgentType | None = None,
 ) -> TraceEntry:
@@ -48,12 +48,12 @@ def _base_entry(
 def test_trace_requires_phase_timestamp_ordering() -> None:
     base = datetime(2025, 1, 1, tzinfo=UTC)
     first_execute = _base_entry(
-        phase=PipelinePhase.EXECUTE,
+        phase=PipelineLifecycle.EXECUTE,
         start=base,
         agent_type=AgentType.TASKHANDLER,
     )
     second_execute = _base_entry(
-        phase=PipelinePhase.EXECUTE,
+        phase=PipelineLifecycle.EXECUTE,
         start=base - timedelta(seconds=5),
         agent_type=AgentType.TASKHANDLER,
     )
@@ -71,7 +71,7 @@ def test_trace_requires_phase_timestamp_ordering() -> None:
 
 def test_deterministic_snapshot_excludes_timestamps() -> None:
     entry = _base_entry(
-        phase=PipelinePhase.EXECUTE,
+        phase=PipelineLifecycle.EXECUTE,
         start=datetime(2025, 1, 1, tzinfo=UTC),
         agent_type=AgentType.TASKHANDLER,
     )

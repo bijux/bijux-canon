@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.pipeline.control.controller_core import PipelineControllerCore
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult
@@ -43,8 +43,8 @@ class PipelineController(PipelineControllerCore):
         self.final_epistemic_verdict = EpistemicVerdict.UNCERTAIN
         if reason == StopReason.EPISTEMIC_FAILURE:
             self.final_decision = DecisionOutcome.VETO
-        if self.phase != PipelinePhase.ABORTED:
-            self.transition_to(PipelinePhase.ABORTED)
+        if self.phase != PipelineLifecycle.ABORTED:
+            self.transition_to(PipelineLifecycle.ABORTED)
 
     def should_stop(self) -> bool:
         """Return True when an explicit stop reason exists."""
@@ -53,7 +53,7 @@ class PipelineController(PipelineControllerCore):
     def finalize(self, trace: RunTrace) -> PipelineResult:
         """Return the canonical outcome once the run completes."""
         if self.should_stop():
-            self.transition_to(PipelinePhase.ABORTED)
+            self.transition_to(PipelineLifecycle.ABORTED)
         else:
-            self.transition_to(PipelinePhase.DONE)
+            self.transition_to(PipelineLifecycle.DONE)
         return PipelineResult.from_trace(trace)

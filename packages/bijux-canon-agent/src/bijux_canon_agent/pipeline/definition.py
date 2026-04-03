@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from .control.phases import PHASE_SEQUENCE, PipelinePhase
+from .control.lifecycle import PIPELINE_LIFECYCLE, PipelineLifecycle
 
 CANONICAL_PIPELINE_NAME = "auditable-doc-pipeline"
 
@@ -15,12 +15,12 @@ class PipelineDefinition:
     """Barebones structure describing a pipeline's name, phases, and terminals."""
 
     name: str
-    phases: list[PipelinePhase]
-    terminal_phases: set[PipelinePhase]
-    allowed_transitions: dict[PipelinePhase, set[PipelinePhase]] = field(
+    phases: list[PipelineLifecycle]
+    terminal_phases: set[PipelineLifecycle]
+    allowed_transitions: dict[PipelineLifecycle, set[PipelineLifecycle]] = field(
         default_factory=dict
     )
-    skip_reasons: dict[PipelinePhase, str] = field(default_factory=dict)
+    skip_reasons: dict[PipelineLifecycle, str] = field(default_factory=dict)
 
     def to_payload(self) -> dict[str, Any]:
         return {
@@ -42,18 +42,18 @@ def standard_pipeline_definition() -> PipelineDefinition:
 
     return PipelineDefinition(
         name=CANONICAL_PIPELINE_NAME,
-        phases=list(PHASE_SEQUENCE),
-        terminal_phases={PipelinePhase.DONE, PipelinePhase.ABORTED},
+        phases=list(PIPELINE_LIFECYCLE),
+        terminal_phases={PipelineLifecycle.DONE, PipelineLifecycle.ABORTED},
         allowed_transitions={
-            PipelinePhase.INIT: {PipelinePhase.PLAN},
-            PipelinePhase.PLAN: {PipelinePhase.EXECUTE},
-            PipelinePhase.EXECUTE: {PipelinePhase.JUDGE},
-            PipelinePhase.JUDGE: {PipelinePhase.VERIFY},
-            PipelinePhase.VERIFY: {PipelinePhase.FINALIZE},
-            PipelinePhase.FINALIZE: {PipelinePhase.DONE},
+            PipelineLifecycle.INIT: {PipelineLifecycle.PLAN},
+            PipelineLifecycle.PLAN: {PipelineLifecycle.EXECUTE},
+            PipelineLifecycle.EXECUTE: {PipelineLifecycle.JUDGE},
+            PipelineLifecycle.JUDGE: {PipelineLifecycle.VERIFY},
+            PipelineLifecycle.VERIFY: {PipelineLifecycle.FINALIZE},
+            PipelineLifecycle.FINALIZE: {PipelineLifecycle.DONE},
         },
         skip_reasons={
-            PipelinePhase.INIT: "Initialization handled outside trace",
-            PipelinePhase.DONE: "Finality implied by FINALIZE",
+            PipelineLifecycle.INIT: "Initialization handled outside trace",
+            PipelineLifecycle.DONE: "Finality implied by FINALIZE",
         },
     )

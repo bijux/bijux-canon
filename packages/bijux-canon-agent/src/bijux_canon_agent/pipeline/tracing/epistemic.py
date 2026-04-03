@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
@@ -14,26 +14,26 @@ from bijux_canon_agent.tracing import RunFingerprint, TraceEntry
 
 def validate(
     final_entry: TraceEntry,
-    final_phase: PipelinePhase,
+    final_phase: PipelineLifecycle,
     stop_reason: StopReason | None,
     definition: PipelineDefinition,
 ) -> None:
     """Validate terminal trace metadata and replay fingerprints."""
-    if final_phase == PipelinePhase.ABORTED:
+    if final_phase == PipelineLifecycle.ABORTED:
         _validate_abort_entry(final_entry, stop_reason)
-    if stop_reason and final_phase != PipelinePhase.ABORTED:
+    if stop_reason and final_phase != PipelineLifecycle.ABORTED:
         raise RuntimeError("Provided stop reason without an abort entry")
     if (
         stop_reason
         and stop_reason == StopReason.VERIFICATION_VETO
-        and final_phase != PipelinePhase.ABORTED
+        and final_phase != PipelineLifecycle.ABORTED
     ):
         raise RuntimeError("Verification veto must terminate the run")
     if (
         final_phase
         in (
-            PipelinePhase.FINALIZE,
-            PipelinePhase.DONE,
+            PipelineLifecycle.FINALIZE,
+            PipelineLifecycle.DONE,
         )
         and final_entry.decision_artifact is None
     ):
@@ -67,7 +67,7 @@ def _validate_abort_entry(
     if entry.failure_artifact is None:
         raise RuntimeError("Aborted trace entry must include a FailureArtifact")
     validate_failure_artifact(entry.failure_artifact)
-    if entry.failure_artifact.phase != PipelinePhase.ABORTED:
+    if entry.failure_artifact.phase != PipelineLifecycle.ABORTED:
         raise RuntimeError("Failure artifact phase must be ABORTED")
 
 

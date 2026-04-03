@@ -11,7 +11,7 @@ from typing import Any
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceMonitor,
     default_convergence_config,
@@ -33,20 +33,20 @@ from bijux_canon_agent.tracing.trace import (
     TraceEntry,
 )
 
-_PHASE_AGENT: dict[PipelinePhase, AgentType] = {
-    PipelinePhase.PLAN: AgentType.PLANNER,
-    PipelinePhase.EXECUTE: AgentType.READER,
-    PipelinePhase.JUDGE: AgentType.JUDGE,
-    PipelinePhase.VERIFY: AgentType.VERIFIER,
-    PipelinePhase.FINALIZE: AgentType.ORCHESTRATOR,
+_PHASE_AGENT: dict[PipelineLifecycle, AgentType] = {
+    PipelineLifecycle.PLAN: AgentType.PLANNER,
+    PipelineLifecycle.EXECUTE: AgentType.READER,
+    PipelineLifecycle.JUDGE: AgentType.JUDGE,
+    PipelineLifecycle.VERIFY: AgentType.VERIFIER,
+    PipelineLifecycle.FINALIZE: AgentType.ORCHESTRATOR,
 }
 
 
-def _phase_sequence(definition: PipelineDefinition) -> list[PipelinePhase]:
+def _phase_sequence(definition: PipelineDefinition) -> list[PipelineLifecycle]:
     return [
         phase
         for phase in definition.phases
-        if phase not in (PipelinePhase.INIT, PipelinePhase.DONE)
+        if phase not in (PipelineLifecycle.INIT, PipelineLifecycle.DONE)
     ]
 
 
@@ -133,9 +133,9 @@ def generate_dry_run_trace(
                 convergence_hash=header.convergence_hash,
                 model_metadata=model_metadata,
             ),
-            run_fingerprint=fingerprint if phase == PipelinePhase.FINALIZE else None,
+            run_fingerprint=fingerprint if phase == PipelineLifecycle.FINALIZE else None,
         )
-        if phase == PipelinePhase.FINALIZE:
+        if phase == PipelineLifecycle.FINALIZE:
             entry.decision_artifact = DecisionArtifact(
                 verdict=DecisionOutcome.PASS,
                 justification="dry-run success",

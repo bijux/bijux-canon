@@ -6,7 +6,7 @@ import json
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceMonitor,
     default_convergence_config,
@@ -38,17 +38,17 @@ def test_dry_run_trace_generator_snapshot() -> None:
     )
 
     phase_agent = {
-        PipelinePhase.PLAN: AgentType.PLANNER,
-        PipelinePhase.EXECUTE: AgentType.READER,
-        PipelinePhase.JUDGE: AgentType.JUDGE,
-        PipelinePhase.VERIFY: AgentType.VERIFIER,
-        PipelinePhase.FINALIZE: AgentType.ORCHESTRATOR,
+        PipelineLifecycle.PLAN: AgentType.PLANNER,
+        PipelineLifecycle.EXECUTE: AgentType.READER,
+        PipelineLifecycle.JUDGE: AgentType.JUDGE,
+        PipelineLifecycle.VERIFY: AgentType.VERIFIER,
+        PipelineLifecycle.FINALIZE: AgentType.ORCHESTRATOR,
     }
 
     phases = [
         phase
         for phase in definition.phases
-        if phase not in (PipelinePhase.INIT, PipelinePhase.DONE)
+        if phase not in (PipelineLifecycle.INIT, PipelineLifecycle.DONE)
     ]
     entries = []
     dry_run_model_metadata = {
@@ -106,7 +106,7 @@ def test_dry_run_trace_generator_snapshot() -> None:
             "run_fingerprint": None,
             "termination_reason": None,
         }
-        if phase == PipelinePhase.FINALIZE:
+        if phase == PipelineLifecycle.FINALIZE:
             entry["decision_artifact"] = DecisionArtifact(
                 verdict=DecisionOutcome.PASS,
                 justification="dry-run success",

@@ -17,7 +17,7 @@ from tests.utils.trace_helpers import (
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
 from bijux_canon_agent.pipeline.control.controller import PipelineController
-from bijux_canon_agent.pipeline.control.phases import PHASE_SEQUENCE, PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PIPELINE_LIFECYCLE, PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceConfig,
@@ -49,11 +49,11 @@ from bijux_canon_agent.tracing import (
 from bijux_canon_agent.utilities.prompt_hash import prompt_hash
 
 STANDARD_TRANSITIONS = [
-    (PipelinePhase.PLAN, AgentType.PLANNER),
-    (PipelinePhase.EXECUTE, AgentType.SUMMARIZER),
-    (PipelinePhase.JUDGE, AgentType.JUDGE),
-    (PipelinePhase.VERIFY, AgentType.VERIFIER),
-    (PipelinePhase.FINALIZE, AgentType.ORCHESTRATOR),
+    (PipelineLifecycle.PLAN, AgentType.PLANNER),
+    (PipelineLifecycle.EXECUTE, AgentType.SUMMARIZER),
+    (PipelineLifecycle.JUDGE, AgentType.JUDGE),
+    (PipelineLifecycle.VERIFY, AgentType.VERIFIER),
+    (PipelineLifecycle.FINALIZE, AgentType.ORCHESTRATOR),
 ]
 
 CANONICAL_DEFINITION = standard_pipeline_definition()
@@ -87,7 +87,7 @@ def _default_decision_artifact(
 
 def _build_entry(
     agent_type: AgentType,
-    phase: PipelinePhase,
+    phase: PipelineLifecycle,
     stop_reason: StopReason | None = None,
     run_id: str = "test-run",
     failure_artifact: FailureArtifact | None = None,
@@ -99,30 +99,30 @@ def _build_entry(
 ) -> TraceEntry:
     now = datetime.now(UTC)
     resolved_verdict = epistemic_verdict
-    if resolved_verdict is None and phase == PipelinePhase.FINALIZE:
+    if resolved_verdict is None and phase == PipelineLifecycle.FINALIZE:
         resolved_verdict = EpistemicVerdict.CERTAIN
     resolved_artifact = decision_artifact
     if (
         resolved_artifact is None
-        and phase == PipelinePhase.FINALIZE
+        and phase == PipelineLifecycle.FINALIZE
         and attach_decision_artifact
     ):
         resolved_artifact = _default_decision_artifact()
     resolved_run_fingerprint = run_fingerprint
     if (
-        phase in (PipelinePhase.FINALIZE, PipelinePhase.ABORTED)
+        phase in (PipelineLifecycle.FINALIZE, PipelineLifecycle.ABORTED)
         and resolved_run_fingerprint is None
     ):
         resolved_run_fingerprint = _build_run_fingerprint()
     final_convergence_hash = convergence_hash
-    if phase == PipelinePhase.FINALIZE and not convergence_hash:
+    if phase == PipelineLifecycle.FINALIZE and not convergence_hash:
         final_convergence_hash = "trace-hash"
     metadata_repr = ReplayMetadata(
         input_hash=f"{phase.value}-input",
         config_hash="test-config",
         model_id=agent_type.value,
         convergence_hash=final_convergence_hash
-        if phase == PipelinePhase.FINALIZE
+        if phase == PipelineLifecycle.FINALIZE
         else "",
     )
     return TraceEntry(
@@ -162,8 +162,8 @@ def _build_standard_entries(
             agent_type,
             phase,
             run_id=run_id,
-            run_fingerprint=fingerprint if phase == PipelinePhase.FINALIZE else None,
-            convergence_hash="trace-hash" if phase == PipelinePhase.FINALIZE else None,
+            run_fingerprint=fingerprint if phase == PipelineLifecycle.FINALIZE else None,
+            convergence_hash="trace-hash" if phase == PipelineLifecycle.FINALIZE else None,
         )
         for phase, agent_type in STANDARD_TRANSITIONS
     ]
@@ -212,7 +212,7 @@ def test_pipeline_transitions_and_trace_validation() -> None:
                 phase,
                 run_id="run-1",
                 run_fingerprint=run_fingerprint
-                if phase == PipelinePhase.FINALIZE
+                if phase == PipelineLifecycle.FINALIZE
                 else None,
             )
         )
@@ -233,15 +233,15 @@ def test_pipeline_transitions_and_trace_validation() -> None:
         model_metadata=metadata,
     )
     assert outcome == expected
-    assert controller.phase == PipelinePhase.DONE
+    assert controller.phase == PipelineLifecycle.DONE
     assert controller.history == [
-        PipelinePhase.INIT,
-        PipelinePhase.PLAN,
-        PipelinePhase.EXECUTE,
-        PipelinePhase.JUDGE,
-        PipelinePhase.VERIFY,
-        PipelinePhase.FINALIZE,
-        PipelinePhase.DONE,
+        PipelineLifecycle.INIT,
+        PipelineLifecycle.PLAN,
+        PipelineLifecycle.EXECUTE,
+        PipelineLifecycle.JUDGE,
+        PipelineLifecycle.VERIFY,
+        PipelineLifecycle.FINALIZE,
+        PipelineLifecycle.DONE,
     ]
 
     TraceValidator.validate(
@@ -259,7 +259,7 @@ def test_finalize_returns_pipeline_result_object() -> None:
     controller.record_outcome(DecisionOutcome.PASS, 0.85)
     entry = _build_entry(
         AgentType.ORCHESTRATOR,
-        PipelinePhase.FINALIZE,
+        PipelineLifecycle.FINALIZE,
         run_id="finalize-run",
     )
     trace = _trace_from_entries("finalize-run", [entry], status="completed")
@@ -269,14 +269,14 @@ def test_finalize_returns_pipeline_result_object() -> None:
 
 def test_pipeline_controller_done_transition_requires_finalize() -> None:
     controller = PipelineController()
-    controller.transition_to(PipelinePhase.PLAN)
-    controller.transition_to(PipelinePhase.EXECUTE)
-    controller.transition_to(PipelinePhase.JUDGE)
-    controller.transition_to(PipelinePhase.VERIFY)
+    controller.transition_to(PipelineLifecycle.PLAN)
+    controller.transition_to(PipelineLifecycle.EXECUTE)
+    controller.transition_to(PipelineLifecycle.JUDGE)
+    controller.transition_to(PipelineLifecycle.VERIFY)
     with pytest.raises(RuntimeError):
-        controller.transition_to(PipelinePhase.DONE)
-    controller.transition_to(PipelinePhase.FINALIZE)
-    controller.transition_to(PipelinePhase.DONE)
+        controller.transition_to(PipelineLifecycle.DONE)
+    controller.transition_to(PipelineLifecycle.FINALIZE)
+    controller.transition_to(PipelineLifecycle.DONE)
 
 
 def test_pipeline_golden_trace(test_artifacts_dir: Path) -> None:
@@ -290,7 +290,7 @@ def test_pipeline_golden_trace(test_artifacts_dir: Path) -> None:
     phases = [
         phase
         for phase in CANONICAL_DEFINITION.phases
-        if phase not in (PipelinePhase.INIT, PipelinePhase.DONE)
+        if phase not in (PipelineLifecycle.INIT, PipelineLifecycle.DONE)
     ]
     confidences = [0.8 + idx * 0.02 for idx in range(len(phases))]
 
@@ -316,7 +316,7 @@ def test_pipeline_golden_trace(test_artifacts_dir: Path) -> None:
             phase=phase.value,
         )
 
-        if phase == PipelinePhase.FINALIZE:
+        if phase == PipelineLifecycle.FINALIZE:
             entry.decision_artifact = DecisionArtifact(
                 verdict=DecisionOutcome.PASS,
                 justification="golden trace verification",
@@ -368,10 +368,10 @@ def test_pipeline_failure_snapshot_matches_baseline() -> None:
             status="success",
             start_time=datetime(2024, 1, 5, tzinfo=UTC),
             end_time=datetime(2024, 1, 5, tzinfo=UTC),
-            input={"phase": PipelinePhase.PLAN.value},
+            input={"phase": PipelineLifecycle.PLAN.value},
             output={
                 "text": "plan",
-                "artifacts": {"phase": PipelinePhase.PLAN.value},
+                "artifacts": {"phase": PipelineLifecycle.PLAN.value},
                 "scores": {"quality": 0.8},
                 "confidence": 0.8,
                 "metadata": {"contract_version": CONTRACT_VERSION},
@@ -380,7 +380,7 @@ def test_pipeline_failure_snapshot_matches_baseline() -> None:
             scores={"quality": 0.8},
             prompt_hash="plan",
             model_hash="plan",
-            phase=PipelinePhase.PLAN.value,
+            phase=PipelineLifecycle.PLAN.value,
             run_id="failure-run",
             replay_metadata=build_replay_metadata(
                 input_hash="plan-input",
@@ -394,10 +394,10 @@ def test_pipeline_failure_snapshot_matches_baseline() -> None:
             status="failed",
             start_time=datetime(2024, 1, 5, tzinfo=UTC),
             end_time=datetime(2024, 1, 5, tzinfo=UTC),
-            input={"phase": PipelinePhase.ABORTED.value},
+            input={"phase": PipelineLifecycle.ABORTED.value},
             output={
                 "text": "abort",
-                "artifacts": {"phase": PipelinePhase.ABORTED.value},
+                "artifacts": {"phase": PipelineLifecycle.ABORTED.value},
                 "scores": {"quality": 0.3},
                 "confidence": 0.3,
                 "metadata": {"contract_version": CONTRACT_VERSION},
@@ -406,13 +406,13 @@ def test_pipeline_failure_snapshot_matches_baseline() -> None:
             scores={"quality": 0.3},
             prompt_hash="abort",
             model_hash="abort",
-            phase=PipelinePhase.ABORTED.value,
+            phase=PipelineLifecycle.ABORTED.value,
             stop_reason=StopReason.USER_INTERRUPTION,
             failure_artifact=FailureArtifact(
                 failure_class=FailureClass.USER_INTERRUPTION,
                 mode="abort",
                 message="simulated crash",
-                phase=PipelinePhase.ABORTED,
+                phase=PipelineLifecycle.ABORTED,
                 recoverable=False,
             ),
             epistemic_verdict=EpistemicVerdict.UNCERTAIN,
@@ -464,10 +464,10 @@ def test_trace_validation_detects_missing_entries() -> None:
 
 def test_trace_requires_stop_reason_for_abort() -> None:
     entries = [
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN),
         _build_entry(
             AgentType.PLANNER,
-            PipelinePhase.ABORTED,
+            PipelineLifecycle.ABORTED,
         ),
     ]
 
@@ -493,7 +493,7 @@ def test_trace_requires_stop_reason_for_abort() -> None:
         failure_class=FailureClass.USER_INTERRUPTION,
         mode="aborted",
         message="User interruption requested",
-        phase=PipelinePhase.ABORTED,
+        phase=PipelineLifecycle.ABORTED,
         recoverable=False,
     )
     TraceValidator.validate(
@@ -506,16 +506,16 @@ def test_trace_requires_stop_reason_for_abort() -> None:
 
 def test_trace_accepts_epistemic_failure_stop_reason() -> None:
     entries = [
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN),
         _build_entry(
             AgentType.PLANNER,
-            PipelinePhase.ABORTED,
+            PipelineLifecycle.ABORTED,
             stop_reason=StopReason.EPISTEMIC_FAILURE,
             failure_artifact=FailureArtifact(
                 failure_class=FailureClass.EPISTEMIC_UNCERTAINTY,
                 mode="uncertain",
                 message="Inspector flagged epistemic uncertainty",
-                phase=PipelinePhase.ABORTED,
+                phase=PipelineLifecycle.ABORTED,
                 recoverable=False,
                 category=FailureCategory.EPISTEMIC,
             ),
@@ -535,14 +535,14 @@ def test_failure_path_records_epistemic_and_user_abort(
     test_artifacts_dir: Path,
 ) -> None:
     controller = PipelineController()
-    controller.transition_to(PipelinePhase.PLAN)
-    controller.transition_to(PipelinePhase.EXECUTE)
+    controller.transition_to(PipelineLifecycle.PLAN)
+    controller.transition_to(PipelineLifecycle.EXECUTE)
     controller.request_stop(StopReason.EPISTEMIC_FAILURE, details="uncertain signals")
     controller.request_stop(
         StopReason.USER_INTERRUPTION, details="manual abort requested"
     )
 
-    assert controller.phase == PipelinePhase.ABORTED
+    assert controller.phase == PipelineLifecycle.ABORTED
     assert controller.stop_reason == StopReason.USER_INTERRUPTION
     assert controller.final_epistemic_verdict == EpistemicVerdict.UNCERTAIN
 
@@ -564,7 +564,7 @@ def test_failure_path_records_epistemic_and_user_abort(
             input={"phase": "PLAN"},
             output={
                 "text": "plan generated",
-                "artifacts": {"phase": PipelinePhase.PLAN.value},
+                "artifacts": {"phase": PipelineLifecycle.PLAN.value},
                 "scores": {"quality": 0.85},
                 "confidence": 0.85,
                 "metadata": {"contract_version": CONTRACT_VERSION},
@@ -573,7 +573,7 @@ def test_failure_path_records_epistemic_and_user_abort(
             scores={"quality": 0.85},
             prompt_hash="plan-hash",
             model_hash="plan-model",
-            phase=PipelinePhase.PLAN.value,
+            phase=PipelineLifecycle.PLAN.value,
         )
     )
     recorder.record_entry(
@@ -583,10 +583,10 @@ def test_failure_path_records_epistemic_and_user_abort(
             status="failed",
             start_time=now,
             end_time=now,
-            input={"phase": PipelinePhase.ABORTED.value},
+            input={"phase": PipelineLifecycle.ABORTED.value},
             output={
                 "text": "abort recorded",
-                "artifacts": {"phase": PipelinePhase.ABORTED.value},
+                "artifacts": {"phase": PipelineLifecycle.ABORTED.value},
                 "scores": {"quality": 0.4},
                 "confidence": 0.4,
                 "metadata": {"contract_version": CONTRACT_VERSION},
@@ -595,13 +595,13 @@ def test_failure_path_records_epistemic_and_user_abort(
             scores={"quality": 0.4},
             prompt_hash="abort-hash",
             model_hash="abort-model",
-            phase=PipelinePhase.ABORTED.value,
+            phase=PipelineLifecycle.ABORTED.value,
             stop_reason=StopReason.USER_INTERRUPTION,
             failure_artifact=FailureArtifact(
                 failure_class=FailureClass.EPISTEMIC_UNCERTAINTY,
                 mode="uncertain",
                 message="epistemic failure triggered abort",
-                phase=PipelinePhase.ABORTED,
+                phase=PipelineLifecycle.ABORTED,
                 recoverable=False,
                 category=FailureCategory.EPISTEMIC,
             ),
@@ -631,8 +631,8 @@ def test_failure_path_records_epistemic_and_user_abort(
 
 def test_pipeline_aborts_on_confidence_threshold() -> None:
     controller = PipelineController()
-    controller.transition_to(PipelinePhase.PLAN)
-    controller.transition_to(PipelinePhase.EXECUTE)
+    controller.transition_to(PipelineLifecycle.PLAN)
+    controller.transition_to(PipelineLifecycle.EXECUTE)
 
     controller.request_stop(
         StopReason.CONFIDENCE_THRESHOLD_MET,
@@ -640,10 +640,10 @@ def test_pipeline_aborts_on_confidence_threshold() -> None:
     )
 
     entries = [
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN, run_id="abort-run"),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN, run_id="abort-run"),
         _build_entry(
             AgentType.SUMMARIZER,
-            PipelinePhase.ABORTED,
+            PipelineLifecycle.ABORTED,
             run_id="abort-run",
             stop_reason=StopReason.CONFIDENCE_THRESHOLD_MET,
             epistemic_verdict=EpistemicVerdict.UNCERTAIN,
@@ -652,7 +652,7 @@ def test_pipeline_aborts_on_confidence_threshold() -> None:
     trace = _trace_from_entries("abort-run", entries, status="aborted")
     outcome = controller.finalize(trace)
     assert outcome.status == PipelineStatus.ABORTED
-    assert controller.phase == PipelinePhase.ABORTED
+    assert controller.phase == PipelineLifecycle.ABORTED
     assert controller.stop_reason == StopReason.CONFIDENCE_THRESHOLD_MET
     assert outcome.epistemic_verdict != EpistemicVerdict.CERTAIN
     assert controller.final_epistemic_verdict == EpistemicVerdict.UNCERTAIN
@@ -672,10 +672,10 @@ def test_trace_meta_enforces_contractual_fields(test_artifacts_dir: Path) -> Non
         status="success",
         start_time=now,
         end_time=now,
-        input={"phase": PipelinePhase.PLAN.value},
+        input={"phase": PipelineLifecycle.PLAN.value},
         output={
             "text": "meta trace entry",
-            "artifacts": {"phase": PipelinePhase.PLAN.value},
+            "artifacts": {"phase": PipelineLifecycle.PLAN.value},
             "scores": {"quality": 0.7},
             "confidence": 0.7,
             "metadata": {"contract_version": CONTRACT_VERSION},
@@ -689,7 +689,9 @@ def test_trace_meta_enforces_contractual_fields(test_artifacts_dir: Path) -> Non
     recorder.finish()
 
     project_root = Path(__file__).resolve().parents[2]
-    artifacts_root = project_root.parents[1] / "artifacts" / "bijux-agent" / "test"
+    artifacts_root = (
+        project_root.parents[1] / "artifacts" / "bijux-canon-agent" / "test"
+    )
     assert trace_path.resolve().is_relative_to(artifacts_root)
 
     data = json.loads(trace_path.read_text(encoding="utf-8"))
@@ -702,16 +704,16 @@ def test_trace_meta_enforces_contractual_fields(test_artifacts_dir: Path) -> Non
 
 def test_epistemic_failure_requires_non_certain_verdict() -> None:
     entries = [
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN),
         _build_entry(
             AgentType.PLANNER,
-            PipelinePhase.ABORTED,
+            PipelineLifecycle.ABORTED,
             stop_reason=StopReason.EPISTEMIC_FAILURE,
             failure_artifact=FailureArtifact(
                 failure_class=FailureClass.EPISTEMIC_UNCERTAINTY,
                 mode="uncertain",
                 message="Inspector flagged epistemic uncertainty",
-                phase=PipelinePhase.ABORTED,
+                phase=PipelineLifecycle.ABORTED,
                 recoverable=False,
                 category=FailureCategory.EPISTEMIC,
             ),
@@ -730,9 +732,9 @@ def test_epistemic_failure_requires_non_certain_verdict() -> None:
 
 def test_trace_validator_rejects_out_of_order_phases() -> None:
     entries = [
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN),
-        _build_entry(AgentType.SUMMARIZER, PipelinePhase.EXECUTE),
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN),
+        _build_entry(AgentType.SUMMARIZER, PipelineLifecycle.EXECUTE),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN),
     ]
 
     with pytest.raises(RuntimeError):
@@ -749,7 +751,7 @@ def test_trace_requires_decision_artifact_for_final_entry() -> None:
     entries = _build_standard_entries("no-artifact", fingerprint)
     entries[-1] = _build_entry(
         AgentType.ORCHESTRATOR,
-        PipelinePhase.FINALIZE,
+        PipelineLifecycle.FINALIZE,
         run_id="no-artifact",
         run_fingerprint=fingerprint,
         attach_decision_artifact=False,
@@ -766,27 +768,27 @@ def test_trace_requires_decision_artifact_for_final_entry() -> None:
 def test_trace_completeness_requires_each_phase() -> None:
     completeness_definition = PipelineDefinition(
         name="completeness",
-        phases=list(PHASE_SEQUENCE),
-        terminal_phases={PipelinePhase.DONE},
+        phases=list(PIPELINE_LIFECYCLE),
+        terminal_phases={PipelineLifecycle.DONE},
         allowed_transitions={
-            PipelinePhase.INIT: {PipelinePhase.PLAN},
-            PipelinePhase.PLAN: {PipelinePhase.EXECUTE},
-            PipelinePhase.EXECUTE: {PipelinePhase.JUDGE},
-            PipelinePhase.JUDGE: {PipelinePhase.VERIFY, PipelinePhase.FINALIZE},
-            PipelinePhase.VERIFY: {PipelinePhase.FINALIZE},
-            PipelinePhase.FINALIZE: {PipelinePhase.DONE},
+            PipelineLifecycle.INIT: {PipelineLifecycle.PLAN},
+            PipelineLifecycle.PLAN: {PipelineLifecycle.EXECUTE},
+            PipelineLifecycle.EXECUTE: {PipelineLifecycle.JUDGE},
+            PipelineLifecycle.JUDGE: {PipelineLifecycle.VERIFY, PipelineLifecycle.FINALIZE},
+            PipelineLifecycle.VERIFY: {PipelineLifecycle.FINALIZE},
+            PipelineLifecycle.FINALIZE: {PipelineLifecycle.DONE},
         },
         skip_reasons={
-            PipelinePhase.INIT: "Initialization is implicit",
-            PipelinePhase.DONE: "Finality implied",
+            PipelineLifecycle.INIT: "Initialization is implicit",
+            PipelineLifecycle.DONE: "Finality implied",
         },
     )
 
     entries = [
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN),
-        _build_entry(AgentType.SUMMARIZER, PipelinePhase.EXECUTE),
-        _build_entry(AgentType.JUDGE, PipelinePhase.JUDGE),
-        _build_entry(AgentType.ORCHESTRATOR, PipelinePhase.FINALIZE),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN),
+        _build_entry(AgentType.SUMMARIZER, PipelineLifecycle.EXECUTE),
+        _build_entry(AgentType.JUDGE, PipelineLifecycle.JUDGE),
+        _build_entry(AgentType.ORCHESTRATOR, PipelineLifecycle.FINALIZE),
     ]
 
     with pytest.raises(RuntimeError):
@@ -801,19 +803,19 @@ def test_trace_completeness_requires_each_phase() -> None:
 def test_trace_completeness_allows_skipped_phase_with_reason() -> None:
     skipping_definition = PipelineDefinition(
         name="skip-verify",
-        phases=list(PHASE_SEQUENCE),
-        terminal_phases={PipelinePhase.DONE},
+        phases=list(PIPELINE_LIFECYCLE),
+        terminal_phases={PipelineLifecycle.DONE},
         allowed_transitions={
-            PipelinePhase.INIT: {PipelinePhase.PLAN},
-            PipelinePhase.PLAN: {PipelinePhase.EXECUTE},
-            PipelinePhase.EXECUTE: {PipelinePhase.JUDGE},
-            PipelinePhase.JUDGE: {PipelinePhase.FINALIZE},
-            PipelinePhase.FINALIZE: {PipelinePhase.DONE},
+            PipelineLifecycle.INIT: {PipelineLifecycle.PLAN},
+            PipelineLifecycle.PLAN: {PipelineLifecycle.EXECUTE},
+            PipelineLifecycle.EXECUTE: {PipelineLifecycle.JUDGE},
+            PipelineLifecycle.JUDGE: {PipelineLifecycle.FINALIZE},
+            PipelineLifecycle.FINALIZE: {PipelineLifecycle.DONE},
         },
         skip_reasons={
-            PipelinePhase.INIT: "Implicit start",
-            PipelinePhase.VERIFY: "Verification intentionally skipped",
-            PipelinePhase.DONE: "Terminal",
+            PipelineLifecycle.INIT: "Implicit start",
+            PipelineLifecycle.VERIFY: "Verification intentionally skipped",
+            PipelineLifecycle.DONE: "Terminal",
         },
     )
     fingerprint = RunFingerprint.create(
@@ -822,12 +824,12 @@ def test_trace_completeness_allows_skipped_phase_with_reason() -> None:
     )
 
     entries = [
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN),
-        _build_entry(AgentType.SUMMARIZER, PipelinePhase.EXECUTE),
-        _build_entry(AgentType.JUDGE, PipelinePhase.JUDGE),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN),
+        _build_entry(AgentType.SUMMARIZER, PipelineLifecycle.EXECUTE),
+        _build_entry(AgentType.JUDGE, PipelineLifecycle.JUDGE),
         _build_entry(
             AgentType.ORCHESTRATOR,
-            PipelinePhase.FINALIZE,
+            PipelineLifecycle.FINALIZE,
             run_fingerprint=fingerprint,
         ),
     ]
@@ -884,7 +886,7 @@ def test_stop_request_transitions_to_aborted() -> None:
     controller = PipelineController()
     controller.request_stop(StopReason.MAX_ITERATIONS, details="test")
     assert controller.should_stop()
-    assert controller.phase == PipelinePhase.ABORTED
+    assert controller.phase == PipelineLifecycle.ABORTED
     assert controller.stop_reason == StopReason.MAX_ITERATIONS
 
 
@@ -913,22 +915,22 @@ def test_trace_detects_adversarial_confidence_veto() -> None:
 
 def test_trace_disallows_entries_after_abort() -> None:
     entries = [
-        _build_entry(AgentType.PLANNER, PipelinePhase.PLAN),
-        _build_entry(AgentType.SUMMARIZER, PipelinePhase.EXECUTE),
+        _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN),
+        _build_entry(AgentType.SUMMARIZER, PipelineLifecycle.EXECUTE),
         _build_entry(
             AgentType.PLANNER,
-            PipelinePhase.ABORTED,
+            PipelineLifecycle.ABORTED,
             stop_reason=StopReason.USER_INTERRUPTION,
             failure_artifact=FailureArtifact(
                 failure_class=FailureClass.USER_INTERRUPTION,
                 mode="abort",
                 message="mid-run failure",
-                phase=PipelinePhase.ABORTED,
+                phase=PipelineLifecycle.ABORTED,
                 recoverable=False,
             ),
             epistemic_verdict=EpistemicVerdict.UNCERTAIN,
         ),
-        _build_entry(AgentType.JUDGE, PipelinePhase.JUDGE),
+        _build_entry(AgentType.JUDGE, PipelineLifecycle.JUDGE),
     ]
 
     with pytest.raises(
@@ -943,7 +945,7 @@ def test_trace_disallows_entries_after_abort() -> None:
 
 
 def test_trace_rejects_missing_phase_information() -> None:
-    entry = _build_entry(AgentType.PLANNER, PipelinePhase.PLAN)
+    entry = _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN)
     entry.phase = ""
     entry.input = {}
     with pytest.raises(RuntimeError, match="Trace entry missing phase information"):
@@ -956,7 +958,7 @@ def test_trace_rejects_missing_phase_information() -> None:
 
 
 def test_trace_rejects_unknown_phase() -> None:
-    entry = _build_entry(AgentType.PLANNER, PipelinePhase.PLAN)
+    entry = _build_entry(AgentType.PLANNER, PipelineLifecycle.PLAN)
     entry.phase = "UNKNOWN"
     with pytest.raises(RuntimeError, match="Unknown phase recorded: UNKNOWN"):
         TraceValidator.validate(
@@ -970,13 +972,13 @@ def test_trace_rejects_unknown_phase() -> None:
 @pytest.mark.asyncio
 async def test_pipeline_controller_handles_interrupt_race_condition() -> None:
     controller = PipelineController()
-    controller.transition_to(PipelinePhase.PLAN)
+    controller.transition_to(PipelineLifecycle.PLAN)
 
     async def run_phase() -> None:
-        controller.transition_to(PipelinePhase.EXECUTE)
+        controller.transition_to(PipelineLifecycle.EXECUTE)
         try:
             await asyncio.sleep(0.05)
-            controller.transition_to(PipelinePhase.JUDGE)
+            controller.transition_to(PipelineLifecycle.JUDGE)
         except RuntimeError:
             pass
 
@@ -987,7 +989,7 @@ async def test_pipeline_controller_handles_interrupt_race_condition() -> None:
 
     aborted_entry = _build_entry(
         AgentType.SUMMARIZER,
-        PipelinePhase.ABORTED,
+        PipelineLifecycle.ABORTED,
         run_id="interrupt-run",
         stop_reason=StopReason.USER_INTERRUPTION,
         epistemic_verdict=EpistemicVerdict.UNCERTAIN,
@@ -996,4 +998,4 @@ async def test_pipeline_controller_handles_interrupt_race_condition() -> None:
     outcome = controller.finalize(trace)
     assert outcome.status == PipelineStatus.ABORTED
     assert controller.stop_reason == StopReason.USER_INTERRUPTION
-    assert controller.phase == PipelinePhase.ABORTED
+    assert controller.phase == PipelineLifecycle.ABORTED

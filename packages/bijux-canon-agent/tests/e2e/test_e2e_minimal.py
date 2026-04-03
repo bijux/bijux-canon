@@ -15,7 +15,7 @@ from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.models.llm_adapter import AdapterConfig, MockAdapter
 from bijux_canon_agent.models.registry import Provider
-from bijux_canon_agent.pipeline.control.phases import PipelinePhase
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.tracing import TraceEntry, TraceRecorder
 from bijux_canon_agent.utilities.logger_manager import LoggerConfig, LoggerManager
 
@@ -51,7 +51,7 @@ async def test_end_to_end_minimal_run(tmp_path: Path) -> None:
             input=context,
             output=plan_result,
             scores={"quality": plan_result.scores.get("quality", 0.0)},
-            phase=PipelinePhase.PLAN.value,
+            phase=PipelineLifecycle.PLAN.value,
             prompt_hash="plan-hash",
             model_hash="planner-model",
             run_id="e2e-minimal",
@@ -98,7 +98,7 @@ async def test_end_to_end_minimal_run(tmp_path: Path) -> None:
             input=judge_context,
             output=judge_result,
             scores={"quality": judge_result.scores.get("quality", 0.0)},
-            phase=PipelinePhase.JUDGE.value,
+            phase=PipelineLifecycle.JUDGE.value,
             prompt_hash="hash-judge",
             model_hash="mock-model",
             run_id="e2e-minimal",
@@ -123,7 +123,7 @@ async def test_end_to_end_minimal_run(tmp_path: Path) -> None:
             input=verifier_context,
             output=verifier_result,
             scores={"quality": verifier_result.scores.get("quality", 0.0)},
-            phase=PipelinePhase.VERIFY.value,
+            phase=PipelineLifecycle.VERIFY.value,
             prompt_hash="hash-verifier",
             model_hash="mock-model",
             run_id="e2e-minimal",
