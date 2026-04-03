@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_canon_reason.boundaries.serde.trace_jsonl import read_trace_jsonl
+from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
 
 from tests.e2e._helpers import read_json, run_cli, write_spec
 

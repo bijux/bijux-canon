@@ -119,5 +119,5 @@ version-file = "src/bijux_canon_reason/_version.py"
 packages = ["src/bijux_canon_reason"]
 
 [project.scripts]
-bijux-canon-reason = "bijux_canon_reason.boundaries.cli:app"
-bijux-rar = "bijux_canon_reason.boundaries.cli:app"
+bijux-canon-reason = "bijux_canon_reason.interfaces.cli:app"
+bijux-rar = "bijux_canon_reason.interfaces.cli:app"

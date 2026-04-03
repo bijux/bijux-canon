@@ -46,12 +46,18 @@ def _default_suite_root() -> Path:
     """Locate `benchmarks/suites`.
 
     - repo checkout: CWD contains benchmarks/suites
-    - installed package: resolve relative to this file
+    - package checkout: resolve by walking upward from this module
     """
     cwd_candidate = Path.cwd() / "benchmarks" / "suites"
     if cwd_candidate.exists():
         return cwd_candidate
-    return Path(__file__).resolve().parents[4] / "benchmarks" / "suites"
+
+    module_path = Path(__file__).resolve()
+    for parent in module_path.parents:
+        candidate = parent / "benchmarks" / "suites"
+        if candidate.exists():
+            return candidate
+    return module_path.parents[3] / "benchmarks" / "suites"
 
 
 def _read_jsonl(path: Path) -> list[dict[str, object]]:

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""FastAPI boundary for bijux-rar (production-hardened).
+"""FastAPI application for bijux-canon-reason.
 
 Endpoints (v1):
   POST /v1/runs           -> create+execute a run (writes artifacts)
@@ -44,13 +44,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from pydantic import BaseModel, Field
 
-from bijux_canon_reason.boundaries.serde.json_file import read_json_file, write_json_file
-from bijux_canon_reason.boundaries.serde.trace_jsonl import read_trace_jsonl
+from bijux_canon_reason.interfaces.serialization.json_file import read_json_file, write_json_file
+from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
 from bijux_canon_reason.core.rar_types import Plan, ProblemSpec
 from bijux_canon_reason.application.runs import RunBuilder, RunInputs
 from bijux_canon_reason.traces.replay import replay_from_artifacts
 from bijux_canon_reason.verification.verifier import verify_trace
-from bijux_canon_reason.security import (
+from bijux_canon_reason.interfaces.security import (
     rate_limit_per_key,
     sanitize_run_id,
 )
@@ -269,12 +269,12 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
         conn.close()
         return result
 
-    @app.delete("/v1/items/{item_id}", status_code=204)
+    @app.delete("/v1/items/{item_id}", status_code=204, response_class=Response)
     @no_type_check
     def delete_item(
         request: Request,
         item_id: int = FastPath(ge=1, le=1_000_000),
-    ) -> None:
+    ) -> Response:
         _guard(request)
         _validate_item_id(item_id)
         conn = sqlite3.connect(app.state.db_path)
@@ -289,7 +289,7 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
         conn.execute("UPDATE items SET deleted = 1 WHERE id = ?", (item_id,))
         conn.commit()
         conn.close()
-        return None
+        return Response(status_code=204)
 
     @app.post("/v1/items", status_code=201)
     @no_type_check

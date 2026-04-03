@@ -11,7 +11,7 @@ from pathlib import Path
 import typer.main
 
 from bijux_canon_reason import __version__
-from bijux_canon_reason.boundaries.cli.main import app
+from bijux_canon_reason.interfaces.cli.main import app
 from bijux_canon_reason.core.rar_types import Claim, EvidenceRef, ProblemSpec, SupportRef
 
 

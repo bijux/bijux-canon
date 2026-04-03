@@ -9,8 +9,8 @@ from pathlib import Path
 import time
 
 from bijux_canon_reason import __version__ as package_version
-from bijux_canon_reason.boundaries.serde.json_file import write_json_file
-from bijux_canon_reason.boundaries.serde.trace_jsonl import (
+from bijux_canon_reason.interfaces.serialization.json_file import write_json_file
+from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
     fingerprint_trace_file,
     write_trace_jsonl,
 )

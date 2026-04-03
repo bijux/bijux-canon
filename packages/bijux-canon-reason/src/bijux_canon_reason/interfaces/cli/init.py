@@ -6,7 +6,7 @@ from pathlib import Path
 
 import typer
 
-from bijux_canon_reason.boundaries.serde.json_file import write_json_file
+from bijux_canon_reason.interfaces.serialization.json_file import write_json_file
 
 app = typer.Typer(add_completion=False, help="Project scaffolding helpers.")
 

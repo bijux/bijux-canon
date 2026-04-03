@@ -79,7 +79,7 @@ Verification or replay failures indicate invariant violations.
 ### HTTP API
 
 ```bash
-uvicorn bijux_canon_reason.httpapi:app --host 127.0.0.1 --port 8000
+uvicorn bijux_canon_reason.api.v1.app:app --host 127.0.0.1 --port 8000
 ```
 
 ```bash
@@ -112,7 +112,7 @@ It is a **core execution and verification engine**.
 * **bijux-cli** — shared CLI conventions and scaffolding
   [https://github.com/bijux/bijux-cli](https://github.com/bijux/bijux-cli)
 
-* **bijux-rag** — retrieval layer and corpus tooling
+* **bijux-canon-ingest** — retrieval layer and corpus tooling
   [https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest)
 
 bijux-canon-reason sits beneath both, enforcing execution and verification invariants.

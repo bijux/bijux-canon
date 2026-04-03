@@ -23,7 +23,7 @@ DOCS_DEV_ADDR     := 127.0.0.1:8000
 DOCS_SITE_URL     := http://127.0.0.1:8000/
 DOCS_DEPLOY_FLAGS := --force --no-history --clean --remote-branch gh-pages
 API_MODE := contract
-API_MODULE := bijux_canon_reason.httpapi
+API_MODULE := bijux_canon_reason.api.v1.app
 API_INSTALL_EDITABLE := 1
 API_NODE_BOOTSTRAP_MODE := npm-ci-sandbox
 API_SCHEMATHESIS_FILTER_MODE := warnings
@@ -33,7 +33,7 @@ BUILD_CHECK_DISTS := 1
 BUILD_CLEAN_PATHS := build dist *.egg-info
 BUILD_CLEAN_PYCACHE := 1
 PUBLISH_VERIFY_INSTALL_CMD := bijux --version
-TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_reason/core) $(abspath src/bijux_canon_reason/boundaries)
+TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_reason/core) $(abspath src/bijux_canon_reason/interfaces)
 TEST_MAIN_ARGS := --maxfail=1
 ENABLE_BENCH := 0
 

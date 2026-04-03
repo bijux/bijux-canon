@@ -2,4 +2,6 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+"""External interfaces for CLI, serialization, and security boundaries."""
+
 __all__: list[str] = []

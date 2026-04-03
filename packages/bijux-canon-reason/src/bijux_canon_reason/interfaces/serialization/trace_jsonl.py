@@ -9,7 +9,7 @@ import tempfile
 
 from pydantic import TypeAdapter
 
-from bijux_canon_reason.boundaries.serde.json_canonical import canonical_json_line
+from bijux_canon_reason.interfaces.serialization.json_canonical import canonical_json_line
 from bijux_canon_reason.core.fingerprints import fingerprint_bytes
 from bijux_canon_reason.core.rar_types import Trace, TraceEvent
 

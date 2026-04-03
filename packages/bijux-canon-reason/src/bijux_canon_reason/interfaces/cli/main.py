@@ -8,8 +8,8 @@ from typing import NoReturn, no_type_check
 
 import typer
 
-from bijux_canon_reason.boundaries.serde.json_file import read_json_file, write_json_file
-from bijux_canon_reason.boundaries.serde.trace_jsonl import read_trace_jsonl
+from bijux_canon_reason.interfaces.serialization.json_file import read_json_file, write_json_file
+from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
 from bijux_canon_reason.core.rar_types import Plan, ProblemSpec
 from bijux_canon_reason.evaluation.suite import run_eval_suite
 from bijux_canon_reason.application.runs import RunArtifacts, RunBuilder, RunInputs

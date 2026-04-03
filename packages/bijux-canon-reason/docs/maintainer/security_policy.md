@@ -2,7 +2,7 @@ STATUS: AUTHORITATIVE
 
 # Security
 
-This document defines the **explicit security model and threat boundaries** of bijux-rar.
+This document defines the **explicit security model and threat boundaries** of bijux-canon-reason.
 
 Security properties outside this document are **not guaranteed**.
 
@@ -13,7 +13,7 @@ Do not open public issues for security concerns.
 
 ## Security posture
 
-bijux-rar is designed as a **deterministic execution and verification engine**, not a hardened multi-tenant service.
+bijux-canon-reason is designed as a **deterministic execution and verification engine**, not a hardened multi-tenant service.
 
 Security controls are **defensive**, **explicit**, and **scope-limited**.
 If a behavior is not described here, it must be assumed unsafe.
@@ -28,7 +28,7 @@ The following inputs are **always untrusted**:
 - Any trace, plan, artifact, or manifest loaded from disk
 - Any corpus or evidence content supplied by the user
 
-The HTTP boundary is defined in `src/bijux_canon_reason/httpapi.py`.
+The HTTP boundary is defined in `src/bijux_canon_reason/api/v1/app.py`.
 
 All validation is fail-fast; malformed or suspicious input is rejected.
 
@@ -79,12 +79,12 @@ No filesystem access outside the artifacts directory is permitted.
 
 ## Content handling
 
-- Request size is capped (`MAX_REQUEST_BYTES` in `httpapi.py`)
+- Request size is capped (`MAX_REQUEST_BYTES` in `api/v1/app.py`)
 - Only JSON media types are accepted
 - XML and other structured formats are explicitly rejected
 - Accept headers are enforced
 
-bijux-rar does not attempt to sanitize or interpret arbitrary user content.
+bijux-canon-reason does not attempt to sanitize or interpret arbitrary user content.
 
 ---
 

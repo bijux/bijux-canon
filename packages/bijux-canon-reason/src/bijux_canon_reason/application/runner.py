@@ -17,7 +17,7 @@ from bijux_canon_reason.execution.executor import ExecutionPolicy, execute_plan
 from bijux_canon_reason.execution.runtime import Runtime
 from bijux_canon_reason.planning.planner import plan_problem
 from bijux_canon_reason.verification.verifier import verify_trace
-from bijux_canon_reason.system_contract import assert_system_contract
+from bijux_canon_reason.core.system_contract import assert_system_contract
 
 
 @dataclass(frozen=True)
