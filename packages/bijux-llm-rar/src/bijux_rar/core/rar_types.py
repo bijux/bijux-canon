@@ -2,7 +2,7 @@
 # Copyright © 2025 Bijan Mousavi
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from pathlib import PurePosixPath
 import re
 from typing import Annotated, Literal, cast
@@ -188,7 +188,7 @@ class ToolResult(StableModel):
         return self.success
 
 
-class SupportKind(str, Enum):
+class SupportKind(StrEnum):
     claim = "claim"
     evidence = "evidence"
     tool_call = "tool_call"
@@ -221,13 +221,13 @@ class SupportRef(StableModel):
         return v
 
 
-class ClaimStatus(str, Enum):
+class ClaimStatus(StrEnum):
     proposed = "proposed"
     validated = "validated"
     rejected = "rejected"
 
 
-class ClaimType(str, Enum):
+class ClaimType(StrEnum):
     derived = "derived"
     observed = "observed"
     assumed = "assumed"
@@ -465,7 +465,7 @@ StepOutput = Annotated[
 ]
 
 
-class TraceEventKind(str, Enum):
+class TraceEventKind(StrEnum):
     step_started = "step_started"
     step_finished = "step_finished"
     tool_called = "tool_called"
@@ -620,13 +620,13 @@ class Trace(StableModel):
         return self.model_copy(update={"id": cid})
 
 
-class VerificationSeverity(str, Enum):
+class VerificationSeverity(StrEnum):
     info = "info"
     warning = "warning"
     error = "error"
 
 
-class VerificationPolicyMode(str, Enum):
+class VerificationPolicyMode(StrEnum):
     strict = "strict"
     audit = "audit"
     permissive = "permissive"
