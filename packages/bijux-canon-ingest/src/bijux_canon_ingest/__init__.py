@@ -229,7 +229,7 @@ from .tree import (
 _LAZY_EXPORTS = {
     "AppConfig": (".config.app", "AppConfig"),
     "DocsReader": (".config.ingest", "DocsReader"),
-    "FSReader": (".interfaces.cli.file_api", "FSReader"),
+    "FSReader": (".interfaces.cli.document_io", "FSReader"),
     "IngestBoundaryDeps": (".config.ingest", "IngestBoundaryDeps"),
     "IngestConfig": (".config.ingest", "IngestConfig"),
     "IngestDeps": (".config.ingest", "IngestDeps"),
@@ -255,7 +255,7 @@ _LAZY_EXPORTS = {
     "unexpected_fail": (".interfaces.errors.exception_bridge", "unexpected_fail"),
     "v_map_try": (".interfaces.errors.exception_bridge", "v_map_try"),
     "v_try": (".interfaces.errors.exception_bridge", "v_try"),
-    "write_chunks_jsonl": (".interfaces.cli.file_api", "write_chunks_jsonl"),
+    "write_chunks_jsonl": (".interfaces.cli.document_io", "write_chunks_jsonl"),
 }
 
 __all__ = [

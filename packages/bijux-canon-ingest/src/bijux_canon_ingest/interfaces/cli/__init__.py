@@ -9,14 +9,14 @@ from importlib import import_module
 from typing import Any
 
 _LAZY_EXPORTS = {
-    "FSReader": (".file_api", "FSReader"),
+    "FSReader": (".document_io", "FSReader"),
     "boundary_app_config": (".pipeline_runner", "boundary_app_config"),
     "main": (".entrypoint", "main"),
     "orchestrate": (".pipeline_runner", "orchestrate"),
     "read_docs": (".pipeline_runner", "read_docs"),
-    "run": (".file_api", "run"),
+    "run": (".document_io", "run"),
     "write_chunks": (".pipeline_runner", "write_chunks"),
-    "write_chunks_jsonl": (".file_api", "write_chunks_jsonl"),
+    "write_chunks_jsonl": (".document_io", "write_chunks_jsonl"),
 }
 
 __all__ = [
