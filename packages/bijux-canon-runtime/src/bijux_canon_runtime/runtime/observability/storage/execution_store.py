@@ -22,7 +22,7 @@ from bijux_canon_runtime.runtime.observability.storage.execution_store_protocol 
     ExecutionReadStoreProtocol,
     ExecutionWriteStoreProtocol,
 )
-from bijux_canon_runtime.spec.contracts.dataset_contract import (
+from bijux_canon_runtime.contracts.dataset_contract import (
     validate_dataset_descriptor,
     validate_transition,
 )

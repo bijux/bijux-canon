@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for spec/contracts/step_contract.py."""
+"""Module definitions for contracts/step_contract.py."""
 
 from __future__ import annotations
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.spec.contracts.artifact_contract import validate
+from bijux_canon_runtime.contracts.artifact_contract import validate
 from bijux_canon_runtime.spec.ontology import ArtifactType
 
 pytestmark = pytest.mark.unit

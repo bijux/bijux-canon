@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.spec.contracts.flow_contract import validate
+from bijux_canon_runtime.contracts.flow_contract import validate
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
@@ -16,7 +16,14 @@ from bijux_canon_runtime.spec.ontology import (
     EntropyMagnitude,
     FlowState,
 )
-from bijux_canon_runtime.spec.ontology.ids import AgentID, DatasetID, FlowID, TenantID
+from bijux_canon_runtime.spec.ontology.ids import (
+    AgentID,
+    ContractID,
+    DatasetID,
+    FlowID,
+    GateID,
+    TenantID,
+)
 from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     ReplayAcceptability,
@@ -25,10 +32,10 @@ from bijux_canon_runtime.spec.ontology.public import (
 pytestmark = pytest.mark.unit
 
 
-def test_ambiguous_dependencies_raise() -> None:
+def test_invalid_manifest_rejected() -> None:
     manifest = FlowManifest(
         spec_version="v1",
-        flow_id=FlowID("flow-ambiguous"),
+        flow_id=FlowID(""),
         tenant_id=TenantID("tenant-a"),
         flow_state=FlowState.VALIDATED,
         determinism_level=DeterminismLevel.STRICT,
@@ -53,11 +60,11 @@ def test_ambiguous_dependencies_raise() -> None:
             storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
         ),
         allow_deprecated_datasets=False,
-        agents=(AgentID("agent-a"), AgentID("agent-b")),
-        dependencies=("agent-a",),
-        retrieval_contracts=(),
-        verification_gates=(),
+        agents=(AgentID("agent-a"),),
+        dependencies=("dep-a",),
+        retrieval_contracts=(ContractID("retrieval-a"),),
+        verification_gates=(GateID("gate-a"),),
     )
 
-    with pytest.raises(ValueError, match="dependencies must use"):
+    with pytest.raises(ValueError, match="flow_id must be a non-empty string"):
         validate(manifest)

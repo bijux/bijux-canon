@@ -5,10 +5,10 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.spec.contracts.execution_plan_contract import (
+from bijux_canon_runtime.contracts.execution_plan_contract import (
     validate as validate_execution_plan,
 )
-from bijux_canon_runtime.spec.contracts.flow_contract import (
+from bijux_canon_runtime.contracts.flow_contract import (
     validate as validate_flow_manifest,
 )
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget

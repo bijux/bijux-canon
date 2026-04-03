@@ -14,10 +14,10 @@ from bijux_canon_runtime.runtime.observability.capture.environment import (
 from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
-from bijux_canon_runtime.spec.contracts.execution_plan_contract import (
+from bijux_canon_runtime.contracts.execution_plan_contract import (
     validate as validate_execution_plan,
 )
-from bijux_canon_runtime.spec.contracts.flow_contract import (
+from bijux_canon_runtime.contracts.flow_contract import (
     validate as validate_flow_manifest,
 )
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
