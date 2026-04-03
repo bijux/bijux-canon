@@ -214,7 +214,7 @@ Report issues or suggest features via GitHub Issues. Pull requests must maintain
 make bootstrap
 ```
 
-Follow the repository guide in [CONTRIBUTING.md](https://github.com/bijux/bijux-llm-nexus/blob/main/CONTRIBUTING.md).
+Follow the package guide in [docs/contributing.md](docs/contributing.md).
 
 [↑ Back to Top](#bijux-rag)
 
