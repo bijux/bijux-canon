@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.24.2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bijux-rar"
+version = "0.1.0"
+dynamic = ["dependencies"]
+description = "Compatibility package for bijux-llm-rar."
+readme = "overview.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Security",
+]
+
+[project.urls]
+Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-rar"
+Repository = "https://github.com/bijux/bijux-llm-nexus"
+Documentation = "https://bijux.github.io/bijux-rar/"
+Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-rar/CHANGELOG.md"
+
+[tool.hatch.metadata.hooks.custom]
+canonical-name = "bijux-llm-rar"
+
+[tool.hatch.build.targets.wheel]
+bypass-selection = true
+
+[tool.hatch.build.targets.sdist]
+include = ["pyproject.toml", "overview.md", "hatch_build.py"]

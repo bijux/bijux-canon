@@ -7,7 +7,7 @@ Layout:
 - `packages/agentic-flows/`
 - `packages/bijux-agent/`
 - `packages/bijux-llm-rag/`
-- `packages/bijux-rar/`
+- `packages/bijux-llm-rar/`
 - `packages/bijux-vex/`
 
 Organization rule:

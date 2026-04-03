@@ -1,0 +1,114 @@
+[build-system]
+requires = ["hatchling>=1.24.2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bijux-llm-rar"
+version = "0.1.0"
+description = "bijux-llm-rar: deterministic, contract-driven Retrieval-Augmented Reasoning runtime."
+readme = "docs/index.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+keywords = ["reasoning", "determinism", "bijux", "rar"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Security",
+]
+
+dependencies = [
+  "pydantic>=2.9.2,<3.0",
+  "typer>=0.12.5",
+  "fastapi>=0.110,<1.0",
+]
+
+[project.optional-dependencies]
+api = [
+  "fastapi>=0.110,<1.0",
+  "uvicorn>=0.30.1,<1.0",
+  "schemathesis>=4.0,<5.0",
+]
+bench = [
+  "pytest-benchmark>=5.0.0,<6.0",
+]
+llm = [
+  # intentionally empty to keep core free of LLM deps; add as needed per project
+]
+dev = [
+  "types-PyYAML>=6.0.12,<7.0",
+  "types-orjson>=3.6.0,<4.0",
+  "types-colorama>=0.0.14,<1.0",
+  "types-psutil>=6.0.0,<7.0",
+  "typing-extensions>=4.5.0,<5.0",
+  "types-pexpect>=4.9.0,<5.0",
+
+  "pytest>=8.4.1,<9.0",
+  "pytest-cov>=6.2.1,<7.0",
+  "pytest-asyncio>=1.0.0,<2.0",
+  "pytest-timeout>=2.4.0,<3.0",
+  "pytest-rerunfailures>=13.0,<14.0",
+  "pytest-benchmark>=4.0.0,<5.0",
+  "hypothesis>=6.103.0,<7.0",
+  "hypothesis-jsonschema>=0.23.0,<1.0",
+  "pexpect>=4.8.0,<5.0",
+
+  "ruff>=0.6.8,<1.0",
+  "mypy>=1.11.2,<2.0",
+  "codespell>=2.3.0,<3.0",
+  "pydocstyle>=6.2.1,<7.0",
+  "radon>=6.0.0",
+
+  "vulture>=2.7,<3.0",
+  "deptry>=0.10.0,<1.0",
+
+  "build>=1.0.3,<2.0",
+  "bandit>=1.7.10,<2.0",
+  "pip-audit>=2.7.3,<3.0",
+  "commitizen>=4.0.0,<5.0",
+
+  "interrogate>=1.7.0,<2.0",
+  "mkdocs>=1.6.1,<2.0",
+  "mkdocs-material>=9.5.39,<10.0",
+  "mkdocstrings[python]>=0.26.1,<1.0",
+  "mkdocs-git-revision-date-localized-plugin>=1.2.0,<2.0",
+  "mkdocs-include-markdown-plugin",
+  "mkdocs-gen-files",
+  "mkdocs-literate-nav",
+  "mkdocs-redirects>=1.2,<2.0",
+  "mkdocs-minify-plugin>=0.7,<1.0",
+  "mkdocs-glightbox>=0.3,<1.0",
+  "mkdocs-material[imaging]>=9.5.39,<10.0",
+
+  "prance>=25.4.0.0",
+  "openapi-spec-validator>=0.7.1,<1.0",
+  "schemathesis>=4.0,<5.0",
+  "anyio>=4.4.0,<5.0",
+  "uvicorn>=0.30.1,<1.0",
+
+  "twine>=6.1.0,<7.0",
+
+  "cyclonedx-bom>=4.6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-rar"
+Repository = "https://github.com/bijux/bijux-llm-nexus"
+Documentation = "https://bijux.github.io/bijux-rar/"
+Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-llm-rar/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bijux_rar"]
+
+[project.scripts]
+bijux-llm-rar = "bijux_rar.boundaries.cli:app"
+bijux-rar = "bijux_rar.boundaries.cli:app"

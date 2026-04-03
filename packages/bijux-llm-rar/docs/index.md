@@ -1,0 +1,145 @@
+STATUS: EXPLANATORY  
+# bijux-llm-rar
+
+[![PyPI](https://img.shields.io/pypi/v/bijux-llm-rar.svg)](https://pypi.org/project/bijux-llm-rar/)
+[![Python](https://img.shields.io/pypi/pyversions/bijux-llm-rar.svg)](https://pypi.org/project/bijux-llm-rar/)
+[![License](https://img.shields.io/github/license/bijux/bijux-llm-nexus.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
+[![Docs](https://img.shields.io/badge/docs-gh--pages-blue)](https://bijux.github.io/bijux-rar/)
+
+**bijux-llm-rar** is a deterministic retrieval-augmented reasoning (RAR) engine.
+
+The legacy package name `bijux-rar` remains available as a compatibility shim that installs `bijux-llm-rar`.
+
+It produces **byte-stable traces**, **versioned artifacts**, and **verifiable provenance**
+for every run. Execution, verification, and replay are first-class constraints,
+not optional features.
+
+---
+
+## Why this exists
+
+Most RAG / RAR systems are:
+- non-deterministic,
+- impossible to replay,
+- unverifiable after the fact,
+- dependent on trust in the author or runtime.
+
+bijux-llm-rar enforces:
+- deterministic execution,
+- immutable artifacts,
+- cryptographically stable traces,
+- replay and verification by default.
+
+If a run cannot be replayed and verified byte-for-byte, it is considered invalid.
+
+---
+
+## Installation
+
+```bash
+pip install bijux-llm-rar
+```
+
+Legacy alias:
+
+```bash
+pip install bijux-rar
+```
+
+Python ≥ 3.11 is required.
+
+---
+
+## Minimal usage
+
+### CLI
+
+```bash
+bijux-llm-rar run \
+  --spec examples/spec.json \
+  --artifacts-dir artifacts/bijux-llm-rar \
+  --seed 0
+
+RUN_DIR=$(cat artifacts/bijux-llm-rar/runs/latest.txt 2>/dev/null || ls artifacts/bijux-llm-rar/runs | head -n1)
+
+bijux-llm-rar verify \
+  --trace artifacts/bijux-llm-rar/runs/$RUN_DIR/trace.jsonl \
+  --plan artifacts/bijux-llm-rar/runs/$RUN_DIR/plan.json \
+  --fail-on-verify
+
+bijux-llm-rar replay \
+  --trace artifacts/bijux-llm-rar/runs/$RUN_DIR/trace.jsonl \
+  --fail-on-diff
+```
+
+Verification or replay failures indicate invariant violations.
+
+---
+
+### HTTP API
+
+```bash
+uvicorn bijux_rar.httpapi:app --host 127.0.0.1 --port 8000
+```
+
+```bash
+curl -X POST http://127.0.0.1:8000/v1/runs \
+  -H "Content-Type: application/json" \
+  -d @examples/spec.json
+```
+
+The API exposes the same deterministic contracts as the CLI.
+
+---
+
+## Project boundaries
+
+bijux-llm-rar is intentionally narrow in scope.
+
+It is **not**:
+
+* a chat framework,
+* a prompt playground,
+* a generic RAG toolkit,
+* an experimentation sandbox.
+
+It is a **core execution and verification engine**.
+
+---
+
+## Relationship to other bijux projects
+
+* **bijux-cli** — shared CLI conventions and scaffolding
+  [https://github.com/bijux/bijux-cli](https://github.com/bijux/bijux-cli)
+
+* **bijux-rag** — retrieval layer and corpus tooling
+  [https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-rag](https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-llm-rag)
+
+bijux-llm-rar sits beneath both, enforcing execution and verification invariants.
+
+---
+
+## Documentation
+
+Authoritative documentation is published at:
+
+[https://bijux.github.io/bijux-rar/](https://bijux.github.io/bijux-rar/)
+
+The documentation is part of the system contract.
+Code and docs are tested for drift.
+
+---
+
+## Stability and compatibility
+
+**Initial public release: v0.1.0**
+
+* Core contracts are frozen.
+* Breaking changes require explicit versioning and migration.
+* Determinism and replay invariants will not be relaxed.
+
+---
+
+## License
+
+MIT. See [LICENSE](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE).
