@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.spec.contracts.artifact_contract import validate
-from agentic_flows.spec.ontology import ArtifactType
+from bijux_canon_runtime.spec.contracts.artifact_contract import validate
+from bijux_canon_runtime.spec.ontology import ArtifactType
 
 pytestmark = pytest.mark.unit
 

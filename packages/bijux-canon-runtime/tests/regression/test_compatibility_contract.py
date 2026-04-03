@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.spec.contracts.compatibility_contract import (
+from bijux_canon_runtime.spec.contracts.compatibility_contract import (
     allowed_to_evolve,
     breaks_determinism,
     breaks_replay,

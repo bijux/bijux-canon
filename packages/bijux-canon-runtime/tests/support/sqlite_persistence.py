@@ -9,18 +9,18 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
-from agentic_flows.runtime.artifact_store import ArtifactStore
-from agentic_flows.spec.model.artifact.artifact import Artifact
-from agentic_flows.spec.model.artifact.entropy_usage import EntropyUsage
-from agentic_flows.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
+from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
+from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.execution_trace import ExecutionTrace
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.identifiers.execution_event import ExecutionEvent
-from agentic_flows.spec.model.identifiers.tool_invocation import ToolInvocation
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.spec.model.identifiers.tool_invocation import ToolInvocation
+from bijux_canon_runtime.spec.ontology import (
     ArtifactScope,
     ArtifactType,
     CausalityTag,
@@ -28,7 +28,7 @@ from agentic_flows.spec.ontology import (
     DeterminismLevel,
     EntropyMagnitude,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     ArtifactID,
     ClaimID,
     ContentHash,
@@ -42,7 +42,7 @@ from agentic_flows.spec.ontology.ids import (
     TenantID,
     ToolID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     EventType,
     ReplayAcceptability,

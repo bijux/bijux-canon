@@ -7,20 +7,20 @@ import dataclasses
 
 import pytest
 
-from agentic_flows.spec.model.artifact.entropy_budget import EntropyBudget
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.execution_steps import ExecutionSteps
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.execution.resolved_step import ResolvedStep
-from agentic_flows.spec.model.identifiers.agent_invocation import AgentInvocation
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
     StepType,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     DatasetID,
     EnvironmentFingerprint,
@@ -30,7 +30,7 @@ from agentic_flows.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )

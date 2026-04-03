@@ -7,14 +7,14 @@ from dataclasses import replace
 
 import pytest
 
-from agentic_flows.runtime.orchestration.determinism_guard import validate_replay
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.determinism_guard import validate_replay
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from agentic_flows.spec.model.verification.arbitration_policy import ArbitrationPolicy
-from agentic_flows.spec.ontology import ArbitrationRule
+from bijux_canon_runtime.spec.model.verification.arbitration_policy import ArbitrationPolicy
+from bijux_canon_runtime.spec.ontology import ArbitrationRule
 
 pytestmark = pytest.mark.regression
 

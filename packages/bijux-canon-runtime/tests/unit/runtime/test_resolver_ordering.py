@@ -5,19 +5,19 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.runtime.orchestration.planner import ExecutionPlanner
-from agentic_flows.spec.model.artifact.entropy_budget import EntropyBudget
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
+from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
 )
-from agentic_flows.spec.ontology.ids import AgentID, DatasetID, FlowID, TenantID
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.ids import AgentID, DatasetID, FlowID, TenantID
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )

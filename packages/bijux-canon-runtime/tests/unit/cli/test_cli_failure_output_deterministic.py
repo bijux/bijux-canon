@@ -7,26 +7,26 @@ import argparse
 import json
 from pathlib import Path
 
-from agentic_flows.cli import main as cli_main
-from agentic_flows.core.authority import finalize_trace
-from agentic_flows.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.cli import main as cli_main
+from bijux_canon_runtime.core.authority import finalize_trace
+from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
-from agentic_flows.runtime.orchestration.execute_flow import RunMode
-from agentic_flows.spec.model.artifact.entropy_budget import EntropyBudget
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.execution_steps import ExecutionSteps
-from agentic_flows.spec.model.execution.execution_trace import ExecutionTrace
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.identifiers.execution_event import ExecutionEvent
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.runtime.orchestration.execute_flow import RunMode
+from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.spec.ontology import (
     CausalityTag,
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     DatasetID,
     EnvironmentFingerprint,
     FlowID,
@@ -34,7 +34,7 @@ from agentic_flows.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     EventType,
     ReplayAcceptability,

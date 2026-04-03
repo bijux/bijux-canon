@@ -5,10 +5,10 @@ from __future__ import annotations
 
 import pytest
 
-import agentic_flows
-from agentic_flows.core import authority
-from agentic_flows.spec.contracts import compatibility_contract
-from agentic_flows.spec.ontology import (
+import bijux_canon_runtime
+from bijux_canon_runtime.core import authority
+from bijux_canon_runtime.spec.contracts import compatibility_contract
+from bijux_canon_runtime.spec.ontology import (
     ArbitrationRule,
     ArtifactScope,
     StepType,
@@ -19,7 +19,7 @@ pytestmark = pytest.mark.regression
 
 
 def test_system_invariant_snapshot() -> None:
-    assert set(agentic_flows.__all__) == {
+    assert set(bijux_canon_runtime.__all__) == {
         "FlowManifest",
         "RunMode",
         "execute_flow",

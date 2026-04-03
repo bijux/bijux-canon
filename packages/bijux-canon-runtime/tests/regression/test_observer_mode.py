@@ -6,8 +6,8 @@ from __future__ import annotations
 import bijux_agent
 import pytest
 
-from agentic_flows.runtime.observability.capture.observed_run import ObservedRun
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.observability.capture.observed_run import ObservedRun
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,

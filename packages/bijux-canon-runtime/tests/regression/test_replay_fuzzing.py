@@ -5,18 +5,18 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.runtime.orchestration.determinism_guard import (
+from bijux_canon_runtime.runtime.orchestration.determinism_guard import (
     semantic_artifact_fingerprint,
     semantic_evidence_fingerprint,
 )
-from agentic_flows.spec.model.artifact.artifact import Artifact
-from agentic_flows.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
+from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.spec.ontology import (
     ArtifactScope,
     ArtifactType,
     EvidenceDeterminism,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     ArtifactID,
     ContentHash,
     ContractID,

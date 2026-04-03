@@ -5,10 +5,10 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.runtime.observability.analysis.comparative_analysis import (
+from bijux_canon_runtime.runtime.observability.analysis.comparative_analysis import (
     compare_runs,
 )
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,

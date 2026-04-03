@@ -3,17 +3,17 @@
 
 from __future__ import annotations
 
-from agentic_flows.runtime.orchestration.determinism_guard import validate_replay
-from agentic_flows.spec.model.artifact.entropy_budget import EntropyBudget
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.execution_steps import ExecutionSteps
-from agentic_flows.spec.model.execution.execution_trace import ExecutionTrace
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.execution.resolved_step import ResolvedStep
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.model.identifiers.agent_invocation import AgentInvocation
-from agentic_flows.spec.model.identifiers.execution_event import ExecutionEvent
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.runtime.orchestration.determinism_guard import validate_replay
+from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.spec.ontology import (
     CausalityTag,
     DatasetState,
     DeterminismLevel,
@@ -21,7 +21,7 @@ from agentic_flows.spec.ontology import (
     FlowState,
     StepType,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     ContractID,
     DatasetID,
@@ -34,7 +34,7 @@ from agentic_flows.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     EventType,
     ReplayAcceptability,

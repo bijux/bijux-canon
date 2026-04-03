@@ -5,19 +5,19 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.runtime.orchestration.determinism_guard import validate_replay
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.determinism_guard import validate_replay
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from agentic_flows.spec.model.execution.execution_trace import ExecutionTrace
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.ontology import (
     DeterminismLevel,
     FlowState,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     ContractID,
     FlowID,
@@ -25,7 +25,7 @@ from agentic_flows.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from agentic_flows.spec.ontology.public import ReplayAcceptability
+from bijux_canon_runtime.spec.ontology.public import ReplayAcceptability
 
 pytestmark = pytest.mark.regression
 

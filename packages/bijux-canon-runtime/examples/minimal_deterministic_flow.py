@@ -5,28 +5,28 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from agentic_flows.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from agentic_flows.runtime.orchestration.planner import ExecutionPlanner
-from agentic_flows.runtime.orchestration.replay_store import replay_with_store
-from agentic_flows.spec.model.artifact.entropy_budget import EntropyBudget
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
+from bijux_canon_runtime.runtime.orchestration.replay_store import replay_with_store
+from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     ContractID,
     DatasetID,
@@ -34,7 +34,7 @@ from agentic_flows.spec.ontology.ids import (
     GateID,
     TenantID,
 )
-from agentic_flows.spec.ontology.public import EntropySource, ReplayAcceptability
+from bijux_canon_runtime.spec.ontology.public import EntropySource, ReplayAcceptability
 
 
 def build_manifest() -> FlowManifest:

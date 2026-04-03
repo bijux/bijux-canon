@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-from agentic_flows.spec.model.artifact.artifact import Artifact
-from agentic_flows.spec.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
+from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
 
 
 def build_claim_statement(

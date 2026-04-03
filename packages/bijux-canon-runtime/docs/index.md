@@ -189,7 +189,7 @@ Artifacts: Generated in CI; see GitHub Actions for logs and reports.
 docs/           # MkDocs site
 ../../makes/agentic-flows/  # Root-managed task modules (docs, test, lint, etc.)
 ../../scripts/bijux-canon-runtime/  # Root-managed helper scripts
-src/agentic_flows/  # Runtime + CLI implementation
+src/bijux_canon_runtime/  # Runtime + CLI implementation
 tests/          # unit / regression / e2e
 ```
 

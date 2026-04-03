@@ -9,31 +9,31 @@ import bijux_rar
 import bijux_vex
 import pytest
 
-from agentic_flows.core.authority import authority_token
-from agentic_flows.runtime.artifact_store import InMemoryArtifactStore
-from agentic_flows.runtime.budget import BudgetState
-from agentic_flows.runtime.context import ExecutionContext, RunMode
-from agentic_flows.runtime.observability.capture.trace_recorder import TraceRecorder
-from agentic_flows.runtime.observability.classification.entropy import EntropyLedger
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.core.authority import authority_token
+from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
+from bijux_canon_runtime.runtime.budget import BudgetState
+from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
+from bijux_canon_runtime.runtime.observability.capture.trace_recorder import TraceRecorder
+from bijux_canon_runtime.runtime.observability.classification.entropy import EntropyLedger
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     execute_flow,
 )
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     RunMode as FlowRunMode,
 )
-from agentic_flows.spec.model.artifact.artifact import Artifact
-from agentic_flows.spec.model.artifact.entropy_budget import EntropyBudget
-from agentic_flows.spec.model.artifact.reasoning_claim import ReasoningClaim
-from agentic_flows.spec.model.datasets.retrieval_request import RetrievalRequest
-from agentic_flows.spec.model.execution.resolved_step import ResolvedStep
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.model.identifiers.agent_invocation import AgentInvocation
-from agentic_flows.spec.model.reasoning_bundle import ReasoningBundle
-from agentic_flows.spec.model.reasoning_step import ReasoningStep
-from agentic_flows.spec.model.verification.arbitration_policy import ArbitrationPolicy
-from agentic_flows.spec.model.verification.verification import VerificationPolicy
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.artifact.artifact import Artifact
+from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.spec.model.artifact.reasoning_claim import ReasoningClaim
+from bijux_canon_runtime.spec.model.datasets.retrieval_request import RetrievalRequest
+from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.spec.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.spec.model.reasoning_step import ReasoningStep
+from bijux_canon_runtime.spec.model.verification.arbitration_policy import ArbitrationPolicy
+from bijux_canon_runtime.spec.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.spec.ontology import (
     ArbitrationRule,
     ArtifactScope,
     ArtifactType,
@@ -44,7 +44,7 @@ from agentic_flows.spec.ontology import (
     StepType,
     VerificationRandomness,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     ArtifactID,
     BundleID,
@@ -61,7 +61,7 @@ from agentic_flows.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     EventType,
     ReplayAcceptability,

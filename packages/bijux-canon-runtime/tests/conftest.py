@@ -9,31 +9,31 @@ from pathlib import Path
 
 import pytest
 
-from agentic_flows.runtime.artifact_store import InMemoryArtifactStore
-from agentic_flows.runtime.observability.capture.environment import (
+from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
+from bijux_canon_runtime.runtime.observability.capture.environment import (
     compute_environment_fingerprint,
 )
-from agentic_flows.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
-from agentic_flows.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
-from agentic_flows.spec.model.artifact.entropy_budget import EntropyBudget
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.execution_plan import ExecutionPlan
-from agentic_flows.spec.model.execution.execution_steps import ExecutionSteps
-from agentic_flows.spec.model.execution.non_deterministic_intent import (
+from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.spec.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.execution.resolved_step import ResolvedStep
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.model.identifiers.agent_invocation import AgentInvocation
-from agentic_flows.spec.model.verification.arbitration_policy import ArbitrationPolicy
-from agentic_flows.spec.model.verification.verification import VerificationPolicy
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.spec.model.verification.arbitration_policy import ArbitrationPolicy
+from bijux_canon_runtime.spec.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.spec.ontology import (
     ArbitrationRule,
     DatasetState,
     DeterminismLevel,
@@ -42,7 +42,7 @@ from agentic_flows.spec.ontology import (
     StepType,
     VerificationRandomness,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     ContractID,
     DatasetID,
@@ -55,7 +55,7 @@ from agentic_flows.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     ReplayAcceptability,
     ReplayMode,
@@ -89,12 +89,12 @@ def pytest_configure() -> None:
 @pytest.fixture(autouse=True)
 def _stable_bijux_versions(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "agentic_flows.runtime.orchestration.planner.ExecutionPlanner._bijux_cli_version",
+        "bijux_canon_runtime.runtime.orchestration.planner.ExecutionPlanner._bijux_cli_version",
         "0.0.0",
         raising=False,
     )
     monkeypatch.setattr(
-        "agentic_flows.runtime.orchestration.planner.ExecutionPlanner._bijux_agent_version",
+        "bijux_canon_runtime.runtime.orchestration.planner.ExecutionPlanner._bijux_agent_version",
         "0.0.0",
         raising=False,
     )
@@ -167,15 +167,15 @@ def deterministic_environment(
 ) -> EnvironmentFingerprint:
     fingerprint = EnvironmentFingerprint("env-fingerprint")
     monkeypatch.setattr(
-        "agentic_flows.runtime.observability.capture.environment.compute_environment_fingerprint",
+        "bijux_canon_runtime.runtime.observability.capture.environment.compute_environment_fingerprint",
         lambda: fingerprint,
     )
     monkeypatch.setattr(
-        "agentic_flows.runtime.orchestration.planner.compute_environment_fingerprint",
+        "bijux_canon_runtime.runtime.orchestration.planner.compute_environment_fingerprint",
         lambda: fingerprint,
     )
     monkeypatch.setattr(
-        "agentic_flows.runtime.orchestration.determinism_guard.compute_environment_fingerprint",
+        "bijux_canon_runtime.runtime.orchestration.determinism_guard.compute_environment_fingerprint",
         lambda: fingerprint,
     )
     return fingerprint

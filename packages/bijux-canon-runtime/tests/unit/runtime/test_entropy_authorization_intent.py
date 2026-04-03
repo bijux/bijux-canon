@@ -6,31 +6,31 @@ from __future__ import annotations
 import bijux_agent
 import pytest
 
-from agentic_flows.core.errors import NonDeterminismViolationError
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.core.errors import NonDeterminismViolationError
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from agentic_flows.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from agentic_flows.spec.model.artifact.retrieved_evidence import RetrievedEvidence
-from agentic_flows.spec.model.datasets.retrieval_request import RetrievalRequest
-from agentic_flows.spec.model.execution.resolved_step import ResolvedStep
-from agentic_flows.spec.model.execution.non_deterministic_intent import (
+from bijux_canon_runtime.spec.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.spec.model.datasets.retrieval_request import RetrievalRequest
+from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.spec.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.model.identifiers.agent_invocation import AgentInvocation
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.spec.ontology import (
     DeterminismLevel,
     EntropyMagnitude,
     EvidenceDeterminism,
     FlowState,
     StepType,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     ContentHash,
     ContractID,
@@ -42,7 +42,7 @@ from agentic_flows.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     NonDeterminismIntentSource,
     ReplayAcceptability,
@@ -138,7 +138,7 @@ def test_unauthorized_entropy_intent(
         ]
 
     monkeypatch.setattr(
-        "agentic_flows.runtime.execution.retrieval_executor.RetrievalExecutor.execute",
+        "bijux_canon_runtime.runtime.execution.retrieval_executor.RetrievalExecutor.execute",
         _retrieval_execute,
     )
     bijux_agent.run = lambda **_kwargs: [

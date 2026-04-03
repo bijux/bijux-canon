@@ -8,7 +8,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from agentic_flows.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     MIGRATIONS_DIR,
     SCHEMA_CONTRACT_PATH,
     SCHEMA_HASH_PATH,
@@ -74,7 +74,7 @@ def test_duckdb_migrations_rollback_on_failure(tmp_path: Path, monkeypatch) -> N
     migrations_dir.mkdir()
     (migrations_dir / "001_init.sql").write_text("BROKEN SQL", encoding="utf-8")
     monkeypatch.setattr(
-        "agentic_flows.runtime.observability.storage.execution_store.MIGRATIONS_DIR",
+        "bijux_canon_runtime.runtime.observability.storage.execution_store.MIGRATIONS_DIR",
         migrations_dir,
     )
     with pytest.raises(duckdb.Error):
@@ -87,7 +87,7 @@ def test_schema_contract_mismatch_fails(tmp_path: Path, monkeypatch) -> None:
     contract_path = tmp_path / "schema.sql"
     contract_path.write_text("-- bad schema", encoding="utf-8")
     monkeypatch.setattr(
-        "agentic_flows.runtime.observability.storage.execution_store.SCHEMA_CONTRACT_PATH",
+        "bijux_canon_runtime.runtime.observability.storage.execution_store.SCHEMA_CONTRACT_PATH",
         contract_path,
     )
     with pytest.raises(RuntimeError, match="schema.hash"):
@@ -100,7 +100,7 @@ def test_schema_hash_mismatch_fails(tmp_path: Path, monkeypatch) -> None:
     hash_path = tmp_path / "schema.hash"
     hash_path.write_text("deadbeef", encoding="utf-8")
     monkeypatch.setattr(
-        "agentic_flows.runtime.observability.storage.execution_store.SCHEMA_HASH_PATH",
+        "bijux_canon_runtime.runtime.observability.storage.execution_store.SCHEMA_HASH_PATH",
         hash_path,
     )
     with pytest.raises(RuntimeError, match="schema.hash"):

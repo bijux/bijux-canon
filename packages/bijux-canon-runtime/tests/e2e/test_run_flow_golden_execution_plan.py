@@ -10,24 +10,24 @@ from pathlib import Path
 
 import pytest
 
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.ontology import (
     DeterminismLevel,
     FlowState,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     ContractID,
     FlowID,
     GateID,
     TenantID,
 )
-from agentic_flows.spec.ontology.public import ReplayAcceptability
+from bijux_canon_runtime.spec.ontology.public import ReplayAcceptability
 
 pytestmark = pytest.mark.e2e
 

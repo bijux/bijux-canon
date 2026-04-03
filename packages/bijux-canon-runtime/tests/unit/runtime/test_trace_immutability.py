@@ -7,18 +7,18 @@ import dataclasses
 
 import pytest
 
-from agentic_flows.runtime.observability.capture.trace_recorder import AppendOnlyList
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.execution_trace import ExecutionTrace
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.identifiers.execution_event import ExecutionEvent
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.runtime.observability.capture.trace_recorder import AppendOnlyList
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.spec.ontology import (
     CausalityTag,
     DatasetState,
     DeterminismLevel,
     FlowState,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     DatasetID,
     EnvironmentFingerprint,
     FlowID,
@@ -26,7 +26,7 @@ from agentic_flows.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EventType,
     ReplayAcceptability,
 )

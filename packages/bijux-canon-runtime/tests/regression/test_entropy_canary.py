@@ -5,14 +5,14 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.runtime.observability.analysis.trace_diff import entropy_summary
-from agentic_flows.spec.model.artifact.entropy_usage import EntropyUsage
-from agentic_flows.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.runtime.observability.analysis.trace_diff import entropy_summary
+from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from agentic_flows.spec.ontology import EntropyMagnitude
-from agentic_flows.spec.ontology.ids import FlowID, TenantID
-from agentic_flows.spec.ontology.public import EntropySource
+from bijux_canon_runtime.spec.ontology import EntropyMagnitude
+from bijux_canon_runtime.spec.ontology.ids import FlowID, TenantID
+from bijux_canon_runtime.spec.ontology.public import EntropySource
 
 pytestmark = pytest.mark.regression
 

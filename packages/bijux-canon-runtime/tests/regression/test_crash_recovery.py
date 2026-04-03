@@ -12,18 +12,18 @@ import bijux_rar
 import duckdb
 import pytest
 
-from agentic_flows.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from agentic_flows.runtime.orchestration.planner import ExecutionPlanner
-from agentic_flows.spec.model.reasoning_bundle import ReasoningBundle
-from agentic_flows.spec.ontology.ids import AgentID, BundleID, RunID, TenantID
+from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
+from bijux_canon_runtime.spec.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.spec.ontology.ids import AgentID, BundleID, RunID, TenantID
 
 pytestmark = pytest.mark.regression
 

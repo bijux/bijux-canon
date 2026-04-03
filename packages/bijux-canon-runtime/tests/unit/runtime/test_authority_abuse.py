@@ -5,20 +5,20 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.core.authority import enforce_runtime_semantics, finalize_trace
-from agentic_flows.core.errors import SemanticViolationError
-from agentic_flows.runtime.observability.capture.trace_recorder import TraceRecorder
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.execution_trace import ExecutionTrace
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.identifiers.execution_event import ExecutionEvent
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.core.authority import enforce_runtime_semantics, finalize_trace
+from bijux_canon_runtime.core.errors import SemanticViolationError
+from bijux_canon_runtime.runtime.observability.capture.trace_recorder import TraceRecorder
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.spec.ontology import (
     CausalityTag,
     DatasetState,
     DeterminismLevel,
     FlowState,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     DatasetID,
     EnvironmentFingerprint,
     FlowID,
@@ -26,7 +26,7 @@ from agentic_flows.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EventType,
     ReplayAcceptability,
 )

@@ -6,16 +6,16 @@ from __future__ import annotations
 import duckdb
 import pytest
 
-from agentic_flows.runtime.context import RunMode
-from agentic_flows.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.runtime.context import RunMode
+from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
-from agentic_flows.spec.model.artifact.entropy_usage import EntropyUsage
-from agentic_flows.spec.model.artifact.non_determinism_source import (
+from bijux_canon_runtime.spec.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.spec.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
-from agentic_flows.spec.ontology import EntropyMagnitude
-from agentic_flows.spec.ontology.public import EntropySource
+from bijux_canon_runtime.spec.ontology import EntropyMagnitude
+from bijux_canon_runtime.spec.ontology.public import EntropySource
 
 pytestmark = pytest.mark.unit
 

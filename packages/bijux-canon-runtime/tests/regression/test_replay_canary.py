@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 
-from agentic_flows.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
 

@@ -5,12 +5,12 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.runtime.artifact_store import InMemoryArtifactStore
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
+from bijux_canon_runtime.spec.ontology import (
     ArtifactScope,
     ArtifactType,
 )
-from agentic_flows.spec.ontology.ids import ArtifactID, ContentHash, TenantID
+from bijux_canon_runtime.spec.ontology.ids import ArtifactID, ContentHash, TenantID
 
 pytestmark = pytest.mark.unit
 

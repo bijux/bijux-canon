@@ -10,7 +10,7 @@ include ../../makes/shared/python-package.mk
 
 # ---- Single virtualenv (Python 3.11+) ----
 ACT             := $(if $(wildcard $(VENV)/bin/activate),$(VENV)/bin,$(ACT))
-LINT_DIRS       := src/agentic_flows
+LINT_DIRS       := src/bijux_canon_runtime
 ENABLE_CODESPELL := 1
 ENABLE_RADON    := 1
 ENABLE_PYDOCSTYLE := 1
@@ -19,8 +19,8 @@ RUFF_CHECK_FIX  := 0
 MYPY_FLAGS      := --strict --follow-imports silent
 RADON_COMPLEXITY_MAX := 48
 PYDOCSTYLE_ARGS := --convention=google --add-ignore=D100,D101,D102,D103,D104,D105,D106,D107
-INTERROGATE_PATHS := src/agentic_flows
-QUALITY_PATHS     := src/agentic_flows
+INTERROGATE_PATHS := src/bijux_canon_runtime
+QUALITY_PATHS     := src/bijux_canon_runtime
 QUALITY_MYPY_CONFIG := $(MONOREPO_ROOT)/configs/mypy.ini
 QUALITY_MYPY_FLAGS := --strict --follow-imports silent
 SKIP_MYPY         := 0
@@ -28,13 +28,13 @@ QUALITY_VULTURE_MIN_CONFIDENCE := 90
 QUALITY_PYTHON_CHECKS := $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_md_links.py $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_docs_consistency.py $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_no_toys_policy.py
 QUALITY_DOCS_LINK_SCRIPT := $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_md_links.py
 QUALITY_RUN_MKDOCS := 1
-SECURITY_PATHS     := src/agentic_flows
+SECURITY_PATHS     := src/bijux_canon_runtime
 SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
 SECURITY_BANDIT_SKIP_IDS := B311
 SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_dependency_allowlist.py
 API_MODE := contract
 API_BASE_PATH := /api/v1
-API_MODULE := agentic_flows.http_api.app
+API_MODULE := bijux_canon_runtime.http_api.app
 API_DYNAMIC_PORT := 1
 OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@7.14.0
 API_OPENAPI_DRIFT_CHECK := $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_openapi_drift.py

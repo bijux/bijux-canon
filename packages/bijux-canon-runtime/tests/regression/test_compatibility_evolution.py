@@ -7,13 +7,13 @@ from dataclasses import replace
 
 import pytest
 
-from agentic_flows.runtime.orchestration.determinism_guard import validate_replay
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.determinism_guard import validate_replay
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from agentic_flows.spec.ontology.ids import PlanHash
+from bijux_canon_runtime.spec.ontology.ids import PlanHash
 
 pytestmark = pytest.mark.regression
 

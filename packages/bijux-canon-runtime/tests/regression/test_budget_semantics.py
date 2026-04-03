@@ -9,27 +9,27 @@ import bijux_rar
 import bijux_vex
 import pytest
 
-from agentic_flows.runtime.budget import ExecutionBudget
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.budget import ExecutionBudget
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from agentic_flows.spec.model.artifact.reasoning_claim import ReasoningClaim
-from agentic_flows.spec.model.datasets.retrieval_request import RetrievalRequest
-from agentic_flows.spec.model.execution.resolved_step import ResolvedStep
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.model.identifiers.agent_invocation import AgentInvocation
-from agentic_flows.spec.model.reasoning_bundle import ReasoningBundle
-from agentic_flows.spec.model.reasoning_step import ReasoningStep
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.artifact.reasoning_claim import ReasoningClaim
+from bijux_canon_runtime.spec.model.datasets.retrieval_request import RetrievalRequest
+from bijux_canon_runtime.spec.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.spec.model.reasoning_bundle import ReasoningBundle
+from bijux_canon_runtime.spec.model.reasoning_step import ReasoningStep
+from bijux_canon_runtime.spec.ontology import (
     ArtifactType,
     DeterminismLevel,
     EvidenceDeterminism,
     FlowState,
     StepType,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     BundleID,
     ClaimID,
@@ -43,7 +43,7 @@ from agentic_flows.spec.ontology.ids import (
     TenantID,
     VersionID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EventType,
     ReplayAcceptability,
 )

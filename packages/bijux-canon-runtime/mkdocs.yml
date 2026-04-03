@@ -36,7 +36,7 @@ nav:
   - Overview:
       - getting_started: overview/getting_started.md
       - why-agentic-flows: overview/why-agentic-flows.md
-      - why-agentic-flows-contract: overview/why_agentic_flows.md
+      - why-agentic-flows-contract: overview/why_bijux_canon_runtime.md
       - mental-model: overview/mental-model.md
       - minimal-run: overview/minimal-run.md
       - boring-path: overview/boring-path.md

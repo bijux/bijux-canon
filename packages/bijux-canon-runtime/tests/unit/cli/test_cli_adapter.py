@@ -10,26 +10,26 @@ from pathlib import Path
 
 import pytest
 
-from agentic_flows.cli import main as cli_main
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.cli import main as cli_main
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     FlowRunResult,
     RunMode,
 )
-from agentic_flows.spec.model.artifact.entropy_budget import EntropyBudget
-from agentic_flows.spec.model.datasets.dataset_descriptor import DatasetDescriptor
-from agentic_flows.spec.model.execution.execution_plan import ExecutionPlan
-from agentic_flows.spec.model.execution.execution_steps import ExecutionSteps
-from agentic_flows.spec.model.execution.execution_trace import ExecutionTrace
-from agentic_flows.spec.model.execution.replay_envelope import ReplayEnvelope
-from agentic_flows.spec.model.flow_manifest import FlowManifest
-from agentic_flows.spec.ontology import (
+from bijux_canon_runtime.spec.model.artifact.entropy_budget import EntropyBudget
+from bijux_canon_runtime.spec.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.spec.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.spec.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.spec.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.spec.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.spec.model.flow_manifest import FlowManifest
+from bijux_canon_runtime.spec.ontology import (
     DatasetState,
     DeterminismLevel,
     EntropyMagnitude,
     FlowState,
 )
-from agentic_flows.spec.ontology.ids import (
+from bijux_canon_runtime.spec.ontology.ids import (
     AgentID,
     DatasetID,
     EnvironmentFingerprint,
@@ -38,7 +38,7 @@ from agentic_flows.spec.ontology.ids import (
     ResolverID,
     TenantID,
 )
-from agentic_flows.spec.ontology.public import (
+from bijux_canon_runtime.spec.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )
@@ -172,7 +172,7 @@ def test_cli_delegates_to_api_run_flow(tmp_path: Path, monkeypatch) -> None:
             run_id=None,
         )
 
-    cli_main_module = importlib.import_module("agentic_flows.cli.main")
+    cli_main_module = importlib.import_module("bijux_canon_runtime.cli.main")
     monkeypatch.setattr(cli_main_module, "execute_flow", _fake_run_flow)
     monkeypatch.setattr(
         "sys.argv", ["agentic-flows", "experimental", "plan", str(manifest_path)]
@@ -325,7 +325,7 @@ def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
             run_id=None,
         )
 
-    cli_main_module = importlib.import_module("agentic_flows.cli.main")
+    cli_main_module = importlib.import_module("bijux_canon_runtime.cli.main")
     monkeypatch.setattr(cli_main_module, "execute_flow", _fake_run_flow)
     monkeypatch.setattr(
         "sys.argv",
@@ -385,6 +385,6 @@ def test_cli_replay_envelope_requires_fields(tmp_path: Path, missing_key: str) -
     payload["replay_envelope"].pop(missing_key)
     manifest_path.write_text(json.dumps(payload), encoding="utf-8")
 
-    cli_main_module = importlib.import_module("agentic_flows.cli.main")
+    cli_main_module = importlib.import_module("bijux_canon_runtime.cli.main")
     with pytest.raises(KeyError):
         cli_main_module._load_manifest(manifest_path)

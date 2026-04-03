@@ -7,10 +7,10 @@ from dataclasses import asdict
 
 import pytest
 
-from agentic_flows.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
-from agentic_flows.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.runtime.orchestration.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,

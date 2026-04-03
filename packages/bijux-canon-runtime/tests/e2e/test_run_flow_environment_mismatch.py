@@ -5,10 +5,10 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.runtime.orchestration.determinism_guard import (
+from bijux_canon_runtime.runtime.orchestration.determinism_guard import (
     validate_determinism,
 )
-from agentic_flows.spec.ontology import DeterminismLevel
+from bijux_canon_runtime.spec.ontology import DeterminismLevel
 
 pytestmark = pytest.mark.e2e
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_flows.core.errors import (
+from bijux_canon_runtime.core.errors import (
     FAILURE_CLASS_MAP,
     FailureClass,
     NonDeterminismViolationError,

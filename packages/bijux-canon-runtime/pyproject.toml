@@ -102,14 +102,14 @@ dev = [
 ]
 
 [project.scripts]
-bijux-canon-runtime = "agentic_flows.cli.main:main"
-agentic-flows = "agentic_flows.cli.main:main"
+bijux-canon-runtime = "bijux_canon_runtime.cli.main:main"
+agentic-flows = "bijux_canon_runtime.cli.main:main"
 
 [tool.hatch.build]
 include = [
   "docs/index.md",
   "CHANGELOG.md",
-  "src/agentic_flows/py.typed",
+  "src/bijux_canon_runtime/py.typed",
 ]
 
 [tool.hatch.version]
@@ -119,14 +119,14 @@ raw-options = { git_describe_command = "git describe --dirty --tags --long --mat
 fallback-version = "0.3.0"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agentic_flows"]
+packages = ["src/bijux_canon_runtime"]
 zip-safe = false
 
 [tool.hatch.build.targets.wheel.package-data]
-"agentic_flows" = ["py.typed", "http_api/v1/schema.hash"]
+"bijux_canon_runtime" = ["py.typed", "http_api/v1/schema.hash"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"../../apis/bijux-canon-runtime/v1/schema.hash" = "agentic_flows.schema.hash"
+"../../apis/bijux-canon-runtime/v1/schema.hash" = "bijux_canon_runtime.schema.hash"
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"
