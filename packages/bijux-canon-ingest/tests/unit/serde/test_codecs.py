@@ -6,7 +6,7 @@ from __future__ import annotations
 from hypothesis import given
 from hypothesis import strategies as st
 
-from bijux_rag.boundaries.adapters.serde import (
+from bijux_rag.serde.codecs import (
     MIGRATORS,
     Envelope,
     dec_option,

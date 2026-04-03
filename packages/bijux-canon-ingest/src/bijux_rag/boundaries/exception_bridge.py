@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Bijux RAG: exception bridging helpers (use only at effect boundaries; adapters).
+"""Exception bridging helpers for boundary code.
 
 Expected domain errors should be represented as `Result` / `Validation` values.
 Unexpected failures (bugs) should raise and crash early.

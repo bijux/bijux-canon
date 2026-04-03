@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_rag.boundaries.adapters.exception_bridge import (
+from bijux_rag.boundaries.exception_bridge import (
     UnexpectedFailure,
     result_map_try,
     try_result,

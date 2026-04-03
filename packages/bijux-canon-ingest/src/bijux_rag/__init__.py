@@ -14,6 +14,7 @@ Core namespaces:
 - `bijux_rag.domain`/`bijux_rag.infra`: capabilities, async effects, logging, retries, storage adapters.
 - `bijux_rag.http`: FastAPI transport.
 - `bijux_rag.boundaries`: boundary exception helpers.
+- `bijux_rag.serde`: serialization codecs and Pydantic edge models.
 - `bijux_rag.config`: package configuration models.
 """
 
@@ -21,7 +22,7 @@ from __future__ import annotations
 
 from typing import assert_never
 
-from .boundaries.adapters.exception_bridge import (
+from .boundaries.exception_bridge import (
     UnexpectedFailure,
     result_map_try,
     try_result,

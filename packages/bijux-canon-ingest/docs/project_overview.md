@@ -29,7 +29,8 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ## Source Code (high level)
 
 - `src/bijux_rag/http/` — FastAPI transport entrypoint.
-- `src/bijux_rag/boundaries/` — boundary exception helpers during the remaining cleanup.
+- `src/bijux_rag/boundaries/` — boundary exception helpers.
+- `src/bijux_rag/serde/` — JSON/MessagePack codecs and Pydantic edge models.
 - `src/bijux_rag/cli/` — CLI entrypoints and file-oriented command helpers (`entrypoint`, `pipeline_runner`, `file_api`, `file_pipeline`, `typer_app`).
 - `src/bijux_rag/config/` — package configuration models.
 - `src/bijux_rag/config/` — package and pipeline configuration models (`AppConfig`, `RagConfig`, `CleanConfig`).
@@ -47,7 +48,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 
 ## Tests & Eval
 
-- `tests/unit/` — focused units and property tests (boundaries/adapters, domain async/io/retry/session, fp laws/core/iter/pattern, infra adapters, interop, pipelines, policies, rag domain/api/stages, result option/folds/stream, streaming, tree flatten/folds).
+- `tests/unit/` — focused units and property tests (boundaries, serde, domain async/io/retry/session, fp laws/core/iter/pattern, infra adapters, interop, pipelines, policies, rag domain/api/stages, result option/folds/stream, streaming, tree flatten/folds).
 - `tests/e2e/` — end-to-end smoke/gates (cli_smoke, eval_suite, rag_truthfulness_gate, real_rag_smoke) with fixtures.
 - `tests/eval/` — pinned corpus/queries JSONL with licenses.
 - `tests/strategies.py` — Hypothesis strategies for trees/chains/results.

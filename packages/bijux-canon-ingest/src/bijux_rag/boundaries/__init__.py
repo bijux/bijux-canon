@@ -1,17 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Impure edges and boundary adapters (end-of-Bijux RAG).
-
-This package groups the parts of the project that perform I/O or interact with
-the outside world (CLI, filesystem, JSON/MessagePack, Pydantic schemas).
-
-Reusable edge adapters live in `bijux_rag.boundaries.adapters`.
-"""
+"""Boundary exception helpers for bijux-canon-ingest."""
 
 from __future__ import annotations
 
-from .adapters.exception_bridge import (
+from .exception_bridge import (
     UnexpectedFailure,
     result_map_try,
     try_result,

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Bijux RAG serialization contracts: Envelope + JSON/MessagePack + migrations (end-of-Bijux RAG; adapters)."""
+"""Serialization contracts: envelopes, codecs, and migrations."""
 
 from __future__ import annotations
 

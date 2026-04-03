@@ -19,7 +19,7 @@ def snapshot() -> object:
     if not snap_path.exists():
         raise FileNotFoundError(
             f"Missing snapshot file {snap_path}. Regenerate it by running "
-            '`python -c "from bijux_rag.boundaries.adapters.pydantic_edges import ChunkModel; '
+            '`python -c "from bijux_rag.serde.pydantic_models import ChunkModel; '
             'import json; print(json.dumps(ChunkModel.model_json_schema(), sort_keys=True))"` '
             "and saving the output to that path."
         )

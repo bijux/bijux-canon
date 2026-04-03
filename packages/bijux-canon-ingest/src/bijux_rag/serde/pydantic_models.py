@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Bijux RAG Pydantic-at-the-edges models and codecs (end-of-Bijux RAG; adapters)."""
+"""Pydantic edge models and JSON codecs."""
 
 from __future__ import annotations
 

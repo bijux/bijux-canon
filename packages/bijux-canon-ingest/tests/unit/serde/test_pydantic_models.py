@@ -7,7 +7,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 import pytest
 
-from bijux_rag.boundaries.adapters.pydantic_edges import (
+from bijux_rag.serde.pydantic_models import (
     ChunkModel,
     deserialize_model,
     serialize_model,
