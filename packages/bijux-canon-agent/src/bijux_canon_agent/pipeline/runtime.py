@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from bijux_canon_agent.pipeline.execution.execution import PipelineExecutionMixin
 from bijux_canon_agent.pipeline.execution.lifecycle import PipelineLifecycleMixin
 from bijux_canon_agent.pipeline.orchestration import PipelineOrchestrationMixin
-from bijux_canon_agent.pipeline.results.results import PipelineResultsMixin
+from bijux_canon_agent.pipeline.results.finalization import PipelineResultsMixin
 
 if TYPE_CHECKING:
     from bijux_canon_agent.agents.critique import CritiqueAgent

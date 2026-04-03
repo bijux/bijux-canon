@@ -212,7 +212,7 @@ def test_cli_http_parity(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
         return {"is_valid": True, "issues": []}
 
     monkeypatch.setattr(
-        "bijux_canon_agent.pipeline.results.results.PipelineResultsMixin._validate_final_result",
+        "bijux_canon_agent.pipeline.results.finalization.PipelineResultsMixin._validate_final_result",
         patched_validate,
     )
     monkeypatch.setattr("bijux_canon_agent.interfaces.cli.helpers.datetime", FixedDatetime)
