@@ -22,7 +22,7 @@ import asyncio
 import os
 from pathlib import Path
 
-from bijux_canon_agent.reference.minimal import run_minimal
+from bijux_canon_agent.examples.minimal import run_minimal
 from bijux_canon_agent.tracing.dry_run import write_dry_run_trace
 
 

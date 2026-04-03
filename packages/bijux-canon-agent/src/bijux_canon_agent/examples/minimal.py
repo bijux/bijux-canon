@@ -1,4 +1,4 @@
-"""Minimal reference pipeline with explicit defaults."""
+"""Minimal example pipeline with explicit defaults."""
 
 from __future__ import annotations
 
