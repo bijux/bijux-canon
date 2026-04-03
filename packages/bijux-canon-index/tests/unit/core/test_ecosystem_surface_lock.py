@@ -21,7 +21,7 @@ ALLOWED_ECOSYSTEM_MODULES = {
 
 def test_internal_modules_not_exposed_to_ecosystem():
     forbidden = [
-        "bijux_canon_index.domain.execution_algorithms",
+        "bijux_canon_index.domain.algorithms",
         "bijux_canon_index.infra.adapters.memory.backend",
         "bijux_canon_index.infra.adapters.sqlite.backend",
     ]

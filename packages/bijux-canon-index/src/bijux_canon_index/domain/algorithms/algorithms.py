@@ -11,7 +11,7 @@ from bijux_canon_index.core.contracts.execution_contract import ExecutionContrac
 from bijux_canon_index.core.errors import InvariantError, ValidationError
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile, VectorExecution
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, Result, Vector
-from bijux_canon_index.domain.execution_algorithms.base import (
+from bijux_canon_index.domain.algorithms.base import (
     VectorExecutionAlgorithm,
     register_algorithm,
 )
