@@ -19,8 +19,8 @@ def _matches_forbidden(module: str) -> bool:
     return module in FORBIDDEN_MODULES or module.startswith(FORBIDDEN_PREFIXES)
 
 
-def test_httpapi_isolated_from_agents() -> None:
-    http_root = Path(__file__).resolve().parents[2] / "src" / "bijux_canon_agent" / "httpapi"
+def test_api_http_isolated_from_agents() -> None:
+    http_root = Path(__file__).resolve().parents[2] / "src" / "bijux_canon_agent" / "api"
     violations: list[str] = []
     for path in http_root.rglob("*.py"):
         source = path.read_text(encoding="utf-8")

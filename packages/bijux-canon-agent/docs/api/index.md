@@ -4,11 +4,11 @@ Bijux Agent provides a small HTTP surface meant for embedding the canonical pipe
 
 ## Mounting into FastAPI
 
-`bijux_canon_agent.httpapi.v1.build_router()` returns an `APIRouter` when FastAPI is installed.
+`bijux_canon_agent.api.v1.http.build_router()` returns an `APIRouter` when FastAPI is installed.
 
 ```python
 from fastapi import FastAPI
-from bijux_canon_agent.httpapi.v1 import build_router
+from bijux_canon_agent.api.v1.http import build_router
 
 app = FastAPI()
 router = build_router()

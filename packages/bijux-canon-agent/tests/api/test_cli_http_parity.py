@@ -24,7 +24,7 @@ import yaml
 from bijux_canon_agent.interfaces.cli.helpers import build_trace_from_result
 from bijux_canon_agent.config.defaults import MINIMAL_REFERENCE_CONFIG
 from bijux_canon_agent.enums import DecisionOutcome
-from bijux_canon_agent.httpapi import create_app
+from bijux_canon_agent.api import create_app
 import bijux_canon_agent.interfaces.cli.entrypoint as cli_main
 
 DEFAULT_HTTP_AGENTS = [
