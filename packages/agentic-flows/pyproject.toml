@@ -132,9 +132,6 @@ fragments = [
   { path = "CHANGELOG.md" },
 ]
 
-[tool.deptry]
-ignore = ["DEP002", "DEP003"]
-
 [tool.interrogate]
 fail-under = 100
 color = true

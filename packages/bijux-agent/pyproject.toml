@@ -153,14 +153,6 @@ config-file = "../../configs/bijux-agent/mypy-core.ini"
 config-file = "../../configs/bijux-agent/mypy-extended.ini"
 python_files = ["test_*.py"]
 
-[tool.deptry]
-extend_exclude = [
-    "docs",
-    "mkdocs",
-    "tooling",
-]
-ignore = ["DEP001", "DEP002", "DEP003"]
-
 [tool.coverage.run]
 source = ["bijux_agent"]
 omit = [

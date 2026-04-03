@@ -18,7 +18,7 @@ quality:
 	@echo "   - Dead code (vulture)"
 	@$(VULTURE) $(QUALITY_PATHS) --min-confidence 80 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/vulture.log"
 	@echo "   - Dependency hygiene (deptry)"
-	@$(DEPTRY) $(QUALITY_PATHS) 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/deptry.log"
+	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/deptry_scan.py" --deptry-bin "$(DEPTRY)" --config "$(CONFIG_DIR)/deptry.toml" --project-dir . $(QUALITY_PATHS) 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/deptry.log"
 	@echo "   - REUSE compliance"
 	@$(REUSE) lint 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/reuse.log"
 	@$(MAKE) interrogate-report

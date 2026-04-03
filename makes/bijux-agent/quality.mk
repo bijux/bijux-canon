@@ -45,7 +45,7 @@ quality:
 	else \
 	  set -euo pipefail; \
 	  { $(DEPTRY) --version 2>/dev/null || true; } >"$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
-	  $(DEPTRY) $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
+	  $(VENV_PYTHON) "$(MONOREPO_ROOT)/scripts/deptry_scan.py" --deptry-bin "$(DEPTRY)" --config "$(CONFIG_DIR)/deptry.toml" --project-dir . $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
 	fi
 
 	@echo "   - Cleaning __pycache__ before REUSE lint"
