@@ -24,7 +24,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── pyproject.toml       # Hatchling build + deps
 ├── ../../configs/bijux-rag/pytest.ini # repo-owned pytest config
 ├── ../../tox.ini        # repository tox envs
-└── artifacts/           # generated outputs (test coverage, lint reports, docs site, sbom, etc.)
+└── ../../artifacts/bijux-rag/ # generated outputs (test coverage, lint reports, docs site, sbom, etc.)
 ```
 
 ## Source Code (high level)

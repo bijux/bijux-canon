@@ -1,7 +1,7 @@
 # bijux-rag
 
 > At a glance: **index → retrieve → ask** • offline CI profile • reproducible chunk IDs + index fingerprints • CLI + FastAPI boundaries • OpenAPI drift-gated  
-> Quality: **make/tox gates green** (tests, lint, types, docs strict, security, SBOM, hygiene). Everything writes to `artifacts/`. No telemetry.
+> Quality: **make/tox gates green** (tests, lint, types, docs strict, security, SBOM, hygiene). Everything writes to `artifacts/bijux-rag/`. No telemetry.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/bijux-rag.svg?logo=pypi&logoColor=white)](https://pypi.org/project/bijux-rag)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bijux-rag.svg?logo=python&logoColor=white)](https://pypi.org/project/bijux-rag)
