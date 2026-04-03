@@ -1,11 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Configuration and dependency wiring for the RAG surface (end-of-Bijux RAG).
-
-The config-as-data and dependency-wiring patterns are introduced in Bijux RAG
-and extended in Bijux RAG with streaming entry points.
-"""
+"""Configuration and dependency wiring for the ingest pipeline surface."""
 
 from __future__ import annotations
 
@@ -27,7 +23,11 @@ from bijux_canon_ingest.config.cleaning import (
     CleanConfig,
     make_cleaner,
 )
-from bijux_canon_ingest.application.observability import DebugConfig, Observations, RagTaps
+from bijux_canon_ingest.application.observability import (
+    DebugConfig,
+    Observations,
+    RagTaps,
+)
 from bijux_canon_ingest.processing.stages import embed_chunk
 from bijux_canon_ingest.result import Err, Ok, Result
 
@@ -37,7 +37,7 @@ class DocsReader(Protocol):
 
 
 @dataclass(frozen=True)
-class RagConfig:
+class IngestConfig:
     env: RagEnv
     keep: RulesConfig = DEFAULT_RULES
     clean: CleanConfig = DEFAULT_CLEAN_CONFIG
@@ -45,24 +45,24 @@ class RagConfig:
 
 
 @dataclass(frozen=True)
-class RagCoreDeps:
+class IngestDeps:
     cleaner: Callable[[RawDoc], CleanDoc]
     embedder: Callable[[ChunkWithoutEmbedding], Chunk]
     taps: RagTaps | None = None
 
 
 @dataclass(frozen=True)
-class RagBoundaryDeps:
-    core: RagCoreDeps
+class IngestBoundaryDeps:
+    core: IngestDeps
     reader: DocsReader
 
 
-def get_deps(config: RagConfig, *, taps: RagTaps | None = None) -> RagCoreDeps:
+def build_ingest_deps(config: IngestConfig, *, taps: RagTaps | None = None) -> IngestDeps:
     cleaner = make_cleaner(config.clean)
-    return RagCoreDeps(cleaner=cleaner, embedder=embed_chunk, taps=taps)
+    return IngestDeps(cleaner=cleaner, embedder=embed_chunk, taps=taps)
 
 
-def make_rag_fn(
+def make_ingest_fn(
     *,
     chunk_size: int,
     clean_cfg: CleanConfig = DEFAULT_CLEAN_CONFIG,
@@ -76,10 +76,10 @@ def make_rag_fn(
 
     debug_cfg = debug if debug is not None else DebugConfig()
 
-    config = RagConfig(
+    config = IngestConfig(
         env=RagEnv(chunk_size), keep=keep, clean=clean_cfg, debug=debug_cfg
     )
-    deps = get_deps(config, taps=taps)
+    deps = build_ingest_deps(config, taps=taps)
 
     def run(docs: list[RawDoc]) -> tuple[list[Chunk], Observations]:
         return full_rag_api(docs, config, deps)
@@ -87,19 +87,19 @@ def make_rag_fn(
     return run
 
 
-def make_gen_rag_fn(
+def make_chunk_stream_fn(
     *,
     chunk_size: int,
     max_chunks: int = 10_000,
     clean_cfg: CleanConfig = DEFAULT_CLEAN_CONFIG,
     keep: RulesConfig = DEFAULT_RULES,
 ) -> Callable[[Iterable[RawDoc]], Iterator[ChunkWithoutEmbedding]]:
-    """Pure configurator: build a streaming docs -> chunk stream function (Bijux RAG)."""
+    """Pure configurator that builds a streaming docs -> chunk stream function."""
 
     from bijux_canon_ingest.processing.streaming import gen_bounded_chunks
 
-    config = RagConfig(env=RagEnv(chunk_size), keep=keep, clean=clean_cfg)
-    deps = get_deps(config)
+    config = IngestConfig(env=RagEnv(chunk_size), keep=keep, clean=clean_cfg)
+    deps = build_ingest_deps(config)
 
     def run(docs: Iterable[RawDoc]) -> Iterator[ChunkWithoutEmbedding]:
         return gen_bounded_chunks(docs, config, deps, max_chunks=max_chunks)
@@ -107,8 +107,8 @@ def make_gen_rag_fn(
     return run
 
 
-def boundary_rag_config(raw: Mapping[str, object]) -> Result[RagConfig, str]:
-    """Parse untyped boundary config into frozen RagConfig."""
+def parse_ingest_config(raw: Mapping[str, object]) -> Result[IngestConfig, str]:
+    """Parse untyped boundary config into frozen IngestConfig."""
 
     chunk_size_raw = raw.get("chunk_size", 512)
     if not isinstance(chunk_size_raw, int):
@@ -130,17 +130,17 @@ def boundary_rag_config(raw: Mapping[str, object]) -> Result[RagConfig, str]:
         )
 
     return Ok(
-        RagConfig(env=RagEnv(chunk_size_raw), clean=CleanConfig(rule_names=rule_names))
+        IngestConfig(env=RagEnv(chunk_size_raw), clean=CleanConfig(rule_names=rule_names))
     )
 
 
 __all__ = [
     "DocsReader",
-    "RagConfig",
-    "RagCoreDeps",
-    "RagBoundaryDeps",
-    "get_deps",
-    "make_rag_fn",
-    "make_gen_rag_fn",
-    "boundary_rag_config",
+    "IngestConfig",
+    "IngestDeps",
+    "IngestBoundaryDeps",
+    "build_ingest_deps",
+    "make_ingest_fn",
+    "make_chunk_stream_fn",
+    "parse_ingest_config",
 ]

@@ -34,7 +34,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `src/bijux_rag/cli/` — CLI entrypoints and file-oriented command helpers (`entrypoint`, `pipeline_runner`, `file_api`, `file_pipeline`, `typer_app`).
 - `src/bijux_rag/application/` — orchestration layer (`pipelines`, `api`, `observability`, `rag`).
 - `src/bijux_rag/config/` — package configuration models.
-- `src/bijux_rag/config/` — package and pipeline configuration models (`AppConfig`, `RagConfig`, `CleanConfig`).
+- `src/bijux_rag/config/` — package and pipeline configuration models (`AppConfig`, `IngestConfig`, `CleanConfig`).
 - `src/bijux_rag/core/` — shared RAG types (rag_types), structural dedup, rules (DSL/lint/pred).
 - `src/bijux_rag/processing/` — pure pipeline transforms (`chunking`, `stages`, `streaming`, `stdlib`).
 - `src/bijux_rag/retrieval/` — retrieval backends and domain types (`domain`, `embedders`, `generators`, `indexes`, `ports`, `rerankers`).

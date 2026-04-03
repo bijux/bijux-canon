@@ -19,7 +19,7 @@ from bijux_canon_ingest.core.rules_pred import eval_pred
 from bijux_canon_ingest.core.structural_dedup import structural_dedup_lazy
 from bijux_canon_ingest.streaming import TraceLens, ensure_contiguous, trace_iter
 
-from bijux_canon_ingest.config.rag import RagConfig, RagCoreDeps
+from bijux_canon_ingest.config.ingest import IngestConfig, IngestDeps
 
 from .chunking import gen_chunk_doc
 
@@ -37,8 +37,8 @@ def gen_grouped_chunks(
 
 def stream_chunks(
     docs: Iterable[RawDoc],
-    config: RagConfig,
-    deps: RagCoreDeps,
+    config: IngestConfig,
+    deps: IngestDeps,
     *,
     trace_docs: TraceLens[RawDoc] | None = None,
     trace_cleaned: TraceLens[CleanDoc] | None = None,
@@ -85,8 +85,8 @@ def gen_stream_deduped(chunks: Iterable[Chunk]) -> Iterator[Chunk]:
 
 def gen_bounded_chunks(
     docs: Iterable[RawDoc],
-    config: RagConfig,
-    deps: RagCoreDeps,
+    config: IngestConfig,
+    deps: IngestDeps,
     *,
     max_chunks: int | None = None,
 ) -> Iterator[ChunkWithoutEmbedding]:
@@ -101,8 +101,8 @@ def gen_bounded_chunks(
 
 def safe_rag_pipeline(
     docs: Iterable[RawDoc],
-    config: RagConfig,
-    deps: RagCoreDeps,
+    config: IngestConfig,
+    deps: IngestDeps,
     *,
     max_chunks: int = 10_000,
     min_doc_len: int = 500,

@@ -31,7 +31,7 @@ from bijux_canon_ingest.processing.chunking import gen_chunk_doc
 from bijux_canon_ingest.processing.stages import embed_chunk, structural_dedup_chunks
 from bijux_canon_ingest.result import Err, Ok, Result
 
-from bijux_canon_ingest.config.rag import RagBoundaryDeps, RagConfig, RagCoreDeps
+from bijux_canon_ingest.config.ingest import IngestBoundaryDeps, IngestConfig, IngestDeps
 
 from .observability import Observations
 
@@ -68,7 +68,7 @@ def iter_rag(
 
 
 def iter_rag_core(
-    docs: Iterable[RawDoc], config: RagConfig, deps: RagCoreDeps
+    docs: Iterable[RawDoc], config: IngestConfig, deps: IngestDeps
 ) -> Iterator[Chunk]:
     """Parametric streaming core: filter (RulesConfig) → clean → chunk → embed.
 
@@ -154,7 +154,7 @@ def iter_rag_core(
 
 def iter_chunks_from_cleaned(
     cleaned: Iterable[CleanDoc],
-    config: RagConfig,
+    config: IngestConfig,
     embedder: Callable[[ChunkWithoutEmbedding], Chunk],
 ) -> Iterator[Chunk]:
     """Streaming sub-core: chunk + embed from cleaned docs."""
@@ -166,8 +166,8 @@ def iter_chunks_from_cleaned(
 
 def full_rag_api_docs(
     docs: Iterable[RawDoc],
-    config: RagConfig,
-    deps: RagCoreDeps,
+    config: IngestConfig,
+    deps: IngestDeps,
 ) -> tuple[list[Chunk], Observations]:
     """Doc-based API: materializes at the edge for taps/observations."""
 
@@ -199,8 +199,8 @@ def full_rag_api_docs(
 
 def full_rag_api(
     docs: Iterable[RawDoc],
-    config: RagConfig,
-    deps: RagCoreDeps,
+    config: IngestConfig,
+    deps: IngestDeps,
 ) -> tuple[list[Chunk], Observations]:
     """Doc-based API shape used across Modules 02–03 cores."""
 
@@ -209,8 +209,8 @@ def full_rag_api(
 
 def full_rag_api_path(
     path: str,
-    config: RagConfig,
-    deps: RagBoundaryDeps,
+    config: IngestConfig,
+    deps: IngestBoundaryDeps,
 ) -> Result[tuple[list[Chunk], Observations], str]:
     """Boundary API shape (introduced in M02C05): path in, Result out."""
 

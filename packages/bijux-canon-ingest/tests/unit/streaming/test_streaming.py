@@ -11,7 +11,7 @@ from bijux_rag import (
     Chunk,
     ChunkWithoutEmbedding,
     FakeTime,
-    RagConfig,
+    IngestConfig,
     RagEnv,
     RawDoc,
     TraceLens,
@@ -21,8 +21,8 @@ from bijux_rag import (
     fork2_lockstep,
     gen_bounded_chunks,
     gen_overlapping_chunks,
-    get_deps,
-    make_gen_rag_fn,
+    build_ingest_deps,
+    make_chunk_stream_fn,
     make_peek,
     make_sampler_stable,
     multicast,
@@ -141,11 +141,11 @@ def test_make_gen_rag_fn_equivalence() -> None:
         RawDoc("d1", "t", "a" * 200, "cs.AI"),
         RawDoc("d2", "t", "b" * 200, "cs.AI"),
     ]
-    rag_fn = make_gen_rag_fn(chunk_size=50, max_chunks=3)
+    rag_fn = make_chunk_stream_fn(chunk_size=50, max_chunks=3)
     out1 = list(rag_fn(docs))
 
-    config = RagConfig(env=RagEnv(50))
-    deps = get_deps(config)
+    config = IngestConfig(env=RagEnv(50))
+    deps = build_ingest_deps(config)
     out2 = list(gen_bounded_chunks(docs, config, deps, max_chunks=3))
     assert out1 == out2
 
