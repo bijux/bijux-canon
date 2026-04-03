@@ -34,9 +34,10 @@ TEST_CLEAN_PATHS          ?= .hypothesis .benchmarks
 TEST_PYTHON               ?= $(if $(wildcard $(VENV_PYTHON)),$(abspath $(VENV_PYTHON)),$(if $(wildcard $(VENV)/bin/python),$(abspath $(VENV)/bin/python),$(PYTHON)))
 PYTEST                    ?= $(TEST_PYTHON) -m pytest
 PYTEST_CONFIG             ?= $(MONOREPO_ROOT)/configs/pytest.ini
+COVERAGE_CONFIG           ?= $(MONOREPO_ROOT)/configs/coveragerc.ini
 
 PYTEST_INI_ABS            := $(abspath $(PYTEST_CONFIG))
-COVCFG_ABS                := $(abspath $(CONFIG_DIR)/coveragerc.ini)
+COVCFG_ABS                := $(abspath $(COVERAGE_CONFIG))
 COV_HTML_ABS              := $(abspath $(TEST_ARTIFACTS_DIR)/htmlcov)
 CACHE_DIR_ABS             := $(abspath $(TEST_ARTIFACTS_DIR)/.pytest_cache)
 COV_XML_ABS               := $(abspath $(COV_XML))

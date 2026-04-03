@@ -72,7 +72,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../../tox.ini` — repository tox envs mirroring package make targets.
 - `../../configs/pytest.ini` — repo-wide pytest config.
 - `../../configs/bijux-rag/mkdocs.yml` — repo-owned MkDocs setup (theme, plugins, nav, extensions).
-- `../../configs/bijux-rag/coveragerc.ini` — coverage omit/includes.
+- `../../configs/coveragerc.ini` — repo-wide coverage configuration.
 - `../../configs/mypy.ini` — repo-wide mypy configuration.
 - `../../configs/bijux-rag/package.json` — repo-owned Node manifest for OpenAPI tooling.
 - `../../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.

@@ -87,21 +87,21 @@ jobs:
           set -euo pipefail
           if compgen -G "packages/agentic-flows/src/agentic_flows/providers/*" > /dev/null; then
             python -m coverage report \
-              --rcfile configs/agentic-flows/coveragerc.ini \
+              --rcfile configs/coveragerc.ini \
               --data-file "${ARTIFACTS_DIR}/test/.coverage" \
               --include "packages/agentic-flows/src/agentic_flows/providers/*" \
               --fail-under=65
           fi
           if [ -f "packages/agentic-flows/src/agentic_flows/interfaces/cli.py" ]; then
             python -m coverage report \
-              --rcfile configs/agentic-flows/coveragerc.ini \
+              --rcfile configs/coveragerc.ini \
               --data-file "${ARTIFACTS_DIR}/test/.coverage" \
               --include "packages/agentic-flows/src/agentic_flows/interfaces/cli.py" \
               --fail-under=60
           fi
           if compgen -G "packages/agentic-flows/src/agentic_flows/api/*" > /dev/null; then
             python -m coverage report \
-              --rcfile configs/agentic-flows/coveragerc.ini \
+              --rcfile configs/coveragerc.ini \
               --data-file "${ARTIFACTS_DIR}/test/.coverage" \
               --include "packages/agentic-flows/src/agentic_flows/api/*" \
               --fail-under=75
