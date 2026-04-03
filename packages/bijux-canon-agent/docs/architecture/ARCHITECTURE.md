@@ -41,7 +41,7 @@ This document is a module-level map of the codebase. It describes *where respons
 - LLM runtime helpers for provider-facing execution support
 - A strict output contract (`AgentOutputSchema`) to keep downstream logic stable
 
-### Support (`src/bijux_canon_agent/observability/`, `src/bijux_canon_agent/support/`)
+### Support (`src/bijux_canon_agent/observability/`, `src/bijux_canon_agent/core/`)
 
 - Observability owns structured logging and telemetry plumbing
 - Support owns small shared helpers such as hashing, final decorators, and version helpers

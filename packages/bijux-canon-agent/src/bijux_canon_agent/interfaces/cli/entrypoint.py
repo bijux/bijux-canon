@@ -20,7 +20,7 @@ from bijux_canon_agent.interfaces.cli.helpers import (
 from bijux_canon_agent.config.env import load_environment, validate_keys
 from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
 from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
-from bijux_canon_agent.support.version import get_runtime_version
+from bijux_canon_agent.core.version import get_runtime_version
 
 DEFAULT_TASK_GOAL = "summarize this document"
 

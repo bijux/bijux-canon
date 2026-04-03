@@ -46,7 +46,7 @@ from bijux_canon_agent.tracing import (
     TraceEntry,
     TraceRecorder,
 )
-from bijux_canon_agent.support.hashing import prompt_hash
+from bijux_canon_agent.core.hashing import prompt_hash
 
 STANDARD_TRANSITIONS = [
     (PipelineLifecycle.PLAN, AgentType.PLANNER),

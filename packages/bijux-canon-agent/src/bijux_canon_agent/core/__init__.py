@@ -1,4 +1,4 @@
-"""Shared support helpers for Bijux Canon Agent."""
+"""Core helpers for Bijux Canon Agent."""
 
 from __future__ import annotations
 

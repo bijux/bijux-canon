@@ -18,7 +18,7 @@ from bijux_canon_agent.tracing import (
     TraceEntry,
     TraceRecorder,
 )
-from bijux_canon_agent.support.hashing import prompt_hash
+from bijux_canon_agent.core.hashing import prompt_hash
 
 
 @pytest.mark.live

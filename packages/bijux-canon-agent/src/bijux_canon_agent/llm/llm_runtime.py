@@ -21,7 +21,7 @@ from bijux_canon_agent.observability.logging import (
     LoggerManager,
     MetricType,
 )
-from bijux_canon_agent.support.hashing import prompt_hash
+from bijux_canon_agent.core.hashing import prompt_hash
 
 
 @dataclass

@@ -23,7 +23,7 @@ from bijux_canon_agent.pipeline.results.failure import (
 )
 from bijux_canon_agent.contracts.base import TypedBaseModel
 from bijux_canon_agent.tracing.trace import ModelMetadata
-from bijux_canon_agent.support.hashing import prompt_hash
+from bijux_canon_agent.core.hashing import prompt_hash
 
 _openai_module: ModuleType | None = None
 try:  # pragma: no cover
