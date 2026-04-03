@@ -85,9 +85,11 @@ dev = [
 bijux-rag = "bijux_rag.boundaries.shells.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-rag"
-Repository = "https://github.com/bijux/bijux-rag.git"
-BugTracker = "https://github.com/bijux/bijux-rag/issues"
+Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-rag"
+Repository = "https://github.com/bijux/bijux-llm-nexus"
+Documentation = "https://bijux.github.io/bijux-rag/"
+BugTracker = "https://github.com/bijux/bijux-llm-nexus/issues"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-rag/CHANGELOG.md"
 
 [tool.hatch.version]
 source = "vcs"

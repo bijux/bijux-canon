@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/bijux/bijux-vex/main/docs/assets/bijux_logo_hq.png" alt="Bijux-Vex" width="180" />
+  <img src="https://raw.githubusercontent.com/bijux/bijux-llm-nexus/main/packages/bijux-vex/docs/assets/bijux_logo_hq.png" alt="Bijux-Vex" width="180" />
 </p>
 
 # bijux-vex
@@ -61,7 +61,7 @@ vector store: optional + explicit
 
 ## Getting help / reporting issues
 
-GitHub issues: https://github.com/bijux/bijux-vex/issues
+GitHub issues: https://github.com/bijux/bijux-llm-nexus/issues
 Include `bijux vex debug-bundle` output when reporting a bug.
 
 ## Quick links
@@ -71,4 +71,4 @@ Include `bijux vex debug-bundle` output when reporting a bug.
 - Concept Map: https://bijux.github.io/bijux-vex/user/concept_map/
 - ND Production Guide: https://bijux.github.io/bijux-vex/guides/nd_production/
 - Security Policy: https://github.com/bijux/bijux-llm-nexus/blob/main/SECURITY.md
-- Changelog: https://github.com/bijux/bijux-vex/blob/main/CHANGELOG.md
+- Changelog: https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-vex/CHANGELOG.md

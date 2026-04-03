@@ -2,9 +2,8 @@
 
 [![PyPI](https://img.shields.io/pypi/v/bijux-rar.svg)](https://pypi.org/project/bijux-rar/)
 [![Python](https://img.shields.io/pypi/pyversions/bijux-rar.svg)](https://pypi.org/project/bijux-rar/)
-[![License](https://img.shields.io/github/license/bijux/bijux-rar.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/bijux/bijux-llm-nexus.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-gh--pages-blue)](https://bijux.github.io/bijux-rar/)
-[![CI](https://github.com/bijux/bijux-rar/actions/workflows/ci.yml/badge.svg)](https://github.com/bijux/bijux-rar/actions/workflows/ci.yml)
 
 **bijux-rar** is a deterministic retrieval-augmented reasoning (RAR) engine.
 
@@ -105,7 +104,7 @@ It is a **core execution and verification engine**.
   [https://github.com/bijux/bijux-cli](https://github.com/bijux/bijux-cli)
 
 * **bijux-rag** — retrieval layer and corpus tooling
-  [https://github.com/bijux/bijux-rag](https://github.com/bijux/bijux-rag)
+  [https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-rag](https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-rag)
 
 bijux-rar sits beneath both, enforcing execution and verification invariants.
 

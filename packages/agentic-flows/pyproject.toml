@@ -54,9 +54,9 @@ dependencies = [
 
 [project.urls]
 Documentation = "https://bijux.github.io/agentic-flows/"
-Repository = "https://github.com/bijux/agentic-flows"
-Issues = "https://github.com/bijux/agentic-flows/issues"
-Changelog = "https://github.com/bijux/agentic-flows/blob/main/CHANGELOG.md"
+Repository = "https://github.com/bijux/bijux-llm-nexus"
+Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/agentic-flows/CHANGELOG.md"
 
 [project.optional-dependencies]
 api = [

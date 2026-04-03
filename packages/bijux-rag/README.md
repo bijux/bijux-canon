@@ -5,16 +5,15 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/bijux-rag.svg?logo=pypi&logoColor=white)](https://pypi.org/project/bijux-rag)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bijux-rag.svg?logo=python&logoColor=white)](https://pypi.org/project/bijux-rag)
-[![CI](https://github.com/bijux/bijux-rag/workflows/CI/badge.svg)](https://github.com/bijux/bijux-rag/actions?query=workflow%3ACI)
-[![License](https://img.shields.io/github/license/bijux/bijux-rag.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
-[![REUSE Compliant](https://api.reuse.software/badge/github.com/bijux/bijux-rag)](https://api.reuse.software/info/github.com/bijux/bijux-rag)
+[![License](https://img.shields.io/github/license/bijux/bijux-llm-nexus.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
+[![REUSE Compliant](https://api.reuse.software/badge/github.com/bijux/bijux-llm-nexus)](https://api.reuse.software/info/github.com/bijux/bijux-llm-nexus)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/charliermarsh/ruff)
 [![Documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg)](https://bijux.github.io/bijux-rag/)
 
 **Docs:** https://bijux.github.io/bijux-rag/  
 **PyPI:** https://pypi.org/project/bijux-rag/  
-**Issues:** https://github.com/bijux/bijux-rag/issues  
-**Changelog:** https://bijux.github.io/bijux-rag/changelog/
+**Issues:** https://github.com/bijux/bijux-llm-nexus/issues
+**Changelog:** https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-rag/CHANGELOG.md
 
 
 **bijux-rag** is a standalone Retrieval-Augmented Generation (RAG) toolkit for Python, emphasizing a functional core with pure transformations for document processing, chunking, and retrieval. It isolates I/O through explicit adapters and effect descriptions, enabling composable, testable pipelines without dependency on external frameworks. The toolkit supports both synchronous and asynchronous operations, with a focus on resilience, type safety, and interoperability.
@@ -78,8 +77,8 @@ pip install bijux-rag[dev]
 From source:
 
 ```bash
-git clone https://github.com/bijux/bijux-rag.git
-cd bijux-rag
+git clone https://github.com/bijux/bijux-llm-nexus.git
+cd bijux-llm-nexus/packages/bijux-rag
 make bootstrap  # Sets up virtualenv and installs in editable mode
 ```
 

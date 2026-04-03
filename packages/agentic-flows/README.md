@@ -15,7 +15,6 @@ This system prioritizes replayability and auditability over convenience and spee
 [![Typing: typed (PEP 561)](https://img.shields.io/badge/typing-typed-4F8CC9.svg)](https://peps.python.org/pep-0561/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-brightgreen)](https://bijux.github.io/agentic-flows/)
-[![CI Status](https://github.com/bijux/agentic-flows/actions/workflows/ci.yml/badge.svg)](https://github.com/bijux/agentic-flows/actions)
 
 > **At a glance:** deterministic execution • invariant enforcement • replayable traces • CLI surface • structured telemetry  
 > **Quality:** coverage floors enforced per module, benchmark regression gate active, docs linted and built in CI, no telemetry.
@@ -201,10 +200,10 @@ tests/          # unit / regression / e2e
 * **Concepts**: [Concepts index](https://bijux.github.io/agentic-flows/concepts/) · [Determinism](https://bijux.github.io/agentic-flows/concepts/determinism/) · [Failures](https://bijux.github.io/agentic-flows/concepts/failures/)
 * **Execution**: [Failure paths](https://bijux.github.io/agentic-flows/execution/failure-paths/)
 * **Site**: https://bijux.github.io/agentic-flows/
-* **Changelog**: https://github.com/bijux/agentic-flows/blob/main/CHANGELOG.md
-* **Repository**: https://github.com/bijux/agentic-flows
-* **Issues**: https://github.com/bijux/agentic-flows/issues
-* **Security** (private reports): https://github.com/bijux/agentic-flows/security/advisories/new
+* **Changelog**: https://github.com/bijux/bijux-llm-nexus/blob/main/packages/agentic-flows/CHANGELOG.md
+* **Repository**: https://github.com/bijux/bijux-llm-nexus/tree/main/packages/agentic-flows
+* **Issues**: https://github.com/bijux/bijux-llm-nexus/issues
+* **Security** (private reports): https://github.com/bijux/bijux-llm-nexus/security/advisories/new
 * **Artifacts**: https://bijux.github.io/agentic-flows/artifacts/
 
 

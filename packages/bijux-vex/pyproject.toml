@@ -133,12 +133,11 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/bijux/bijux-vex"
-"Repository" = "https://github.com/bijux/bijux-vex.git"
-"Bug Tracker" = "https://github.com/bijux/bijux-vex/issues"
+"Homepage" = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-vex"
+"Repository" = "https://github.com/bijux/bijux-llm-nexus"
+"Bug Tracker" = "https://github.com/bijux/bijux-llm-nexus/issues"
 "Documentation" = "https://bijux.github.io/bijux-vex/"
-"Changelog" = "https://bijux.github.io/bijux-vex/changelog"
-"Discussions" = "https://github.com/bijux/bijux-vex/discussions"
+"Changelog" = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-vex/CHANGELOG.md"
 "Security" = "https://github.com/bijux/bijux-llm-nexus/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
 

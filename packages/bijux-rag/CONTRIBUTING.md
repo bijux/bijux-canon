@@ -26,8 +26,8 @@ This guide is the single source of truth for local setup, workflows, API validat
 - Optional: **pre-commit** (to catch issues before pushing)
 **Setup**
 ```bash
-git clone https://github.com/bijux/bijux-rag.git
-cd bijux-rag
+git clone https://github.com/bijux/bijux-llm-nexus.git
+cd bijux-llm-nexus/packages/bijux-rag
 make PYTHON=python3.11 install
 source .venv/bin/activate
 # optional but recommended

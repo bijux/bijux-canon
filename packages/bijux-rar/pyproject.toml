@@ -103,11 +103,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.github.io/bijux-rar/"
-Repository = "https://github.com/bijux/bijux-rar"
+Homepage = "https://github.com/bijux/bijux-llm-nexus/tree/main/packages/bijux-rar"
+Repository = "https://github.com/bijux/bijux-llm-nexus"
 Documentation = "https://bijux.github.io/bijux-rar/"
-Issues = "https://github.com/bijux/bijux-rar/issues"
-Changelog = "https://github.com/bijux/bijux-rar/blob/master/CHANGELOG.md"
+Issues = "https://github.com/bijux/bijux-llm-nexus/issues"
+Changelog = "https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-rar/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_rar"]

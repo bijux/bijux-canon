@@ -5,7 +5,6 @@
 [![Typing: typed (PEP 561)](https://img.shields.io/badge/typing-typed-4F8CC9.svg)](https://peps.python.org/pep-0561/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-brightgreen)](https://bijux.github.io/bijux-vex/)
-[![CI Status](https://github.com/bijux/bijux-vex/actions/workflows/ci.yml/badge.svg)](https://github.com/bijux/bijux-vex/actions)
 
 bijux-vex executes vector workloads under **contracts**. Deterministic runs are replayable; non-deterministic runs are bounded, audited, and comparable.
 Nothing is implicit: no silent defaults, retries, or randomness.
@@ -22,7 +21,7 @@ Vector execution engine with explicit determinism contracts. Deterministic paths
 - Start here (single onboarding path): [user/start_here.md](user/start_here.md)
 - Docs home: https://bijux.github.io/bijux-vex/
 - Concepts: [overview/concepts.md](overview/concepts.md)
-- API: [api/index.md](api/index.md) and [`api/v1/schema.yaml`](https://github.com/bijux/bijux-vex/blob/main/api/v1/schema.yaml) (canonical contract)
+- API: [api/index.md](api/index.md) and [`api/v1/schema.yaml`](https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-vex/api/v1/schema.yaml) (canonical contract)
 - Examples: [examples/overview.md](examples/overview.md)
 - Changelog: [changelog.md](changelog.md)
 - Not a vector DB: [user/not_a_vdb.md](user/not_a_vdb.md)
@@ -32,7 +31,7 @@ Vector execution engine with explicit determinism contracts. Deterministic paths
 2) Then [overview/concepts.md](overview/concepts.md) for execution vs storage and determinism vs non-determinism.  
 3) Then [spec/system_contract.md](spec/system_contract.md) and [spec/execution_contracts.md](spec/execution_contracts.md) for the normative rules.  
 4) Run [examples/overview.md](examples/overview.md) for deterministic and ANN flows.  
-5) Consult [api/index.md](api/index.md) and [`api/v1/schema.yaml`](https://github.com/bijux/bijux-vex/blob/main/api/v1/schema.yaml) when integrating.  
+5) Consult [api/index.md](api/index.md) and [`api/v1/schema.yaml`](https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-vex/api/v1/schema.yaml) when integrating.
 Everything else is reference or maintainer material.
 
 ## Start here

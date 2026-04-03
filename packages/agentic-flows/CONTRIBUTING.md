@@ -38,8 +38,8 @@ This guide is the single source of truth for local setup, workflows, API validat
 **Setup**
 
 ```bash
-git clone https://github.com/bijux/agentic-flows.git
-cd agentic-flows
+git clone https://github.com/bijux/bijux-llm-nexus.git
+cd bijux-llm-nexus/packages/agentic-flows
 make PYTHON=python3.11 install
 source .venv/bin/activate
 # optional but recommended
