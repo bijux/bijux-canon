@@ -1,12 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Core 8: functional facades for imperative libraries (end-of-Bijux RAG).
-
-This module provides minimal, dependency-free building blocks:
-- `Keyed[K, T]` for idempotent/keyed effects
-- example ports that return *descriptions* (`IOPlan` / `AsyncPlan`) rather than performing effects
-"""
+"""Domain-owned ports for keyed embedding workflows."""
 
 from __future__ import annotations
 
@@ -15,9 +10,7 @@ from dataclasses import dataclass
 from typing import Generic, Protocol, TypeVar
 
 from bijux_canon_ingest.core.types import Chunk, ChunkWithoutEmbedding
-from bijux_canon_ingest.domain.effects import IOPlan, io_delay
-from bijux_canon_ingest.processing.stages import embed_chunk
-from bijux_canon_ingest.result.types import ErrInfo, Ok, Result
+from bijux_canon_ingest.domain.effects import IOPlan
 
 K = TypeVar("K")
 T = TypeVar("T")
@@ -30,7 +23,7 @@ class Keyed(Generic[K, T]):
 
 
 class EmbedderPort(Protocol):
-    """Pure port: returns an IOPlan description, does not perform embedding."""
+    """Pure port that returns an ``IOPlan`` description rather than performing embedding."""
 
     def embed_batch(
         self, items: list[Keyed[K, ChunkWithoutEmbedding]]
@@ -39,22 +32,14 @@ class EmbedderPort(Protocol):
 
 def deterministic_embedder_port(
     *,
-    embed_one: Callable[[ChunkWithoutEmbedding], Chunk] = embed_chunk,
+    embed_one: Callable[[ChunkWithoutEmbedding], Chunk] | None = None,
 ) -> EmbedderPort:
-    """Reference implementation: deterministic embedding, delayed via IOPlan."""
+    """Compatibility wrapper for the infrastructure-owned deterministic adapter."""
 
-    class _Port(EmbedderPort):
-        def embed_batch(
-            self, items: list[Keyed[K, ChunkWithoutEmbedding]]
-        ) -> IOPlan[list[Keyed[K, Chunk]]]:
-            def thunk() -> Result[list[Keyed[K, Chunk]], ErrInfo]:
-                return Ok(
-                    [Keyed(key=it.key, value=embed_one(it.value)) for it in items]
-                )
+    from bijux_canon_ingest.infra.adapters.embedder_port import (
+        deterministic_embedder_port as build_deterministic_embedder_port,
+    )
 
-            return io_delay(thunk)
-
-    return _Port()
-
+    return build_deterministic_embedder_port(embed_one=embed_one)
 
 __all__ = ["Keyed", "EmbedderPort", "deterministic_embedder_port"]

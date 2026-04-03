@@ -12,6 +12,7 @@ _LAZY_EXPORTS = {
     "AtomicFileStorage": (".atomic_storage", "AtomicFileStorage"),
     "CollectingLogger": (".logger", "CollectingLogger"),
     "ConsoleLogger": (".logger", "ConsoleLogger"),
+    "deterministic_embedder_port": (".embedder_port", "deterministic_embedder_port"),
     "FileStorage": (".file_storage", "FileStorage"),
     "InMemoryStorage": (".memory_storage", "InMemoryStorage"),
     "MonotonicTestClock": (".clock", "MonotonicTestClock"),
@@ -26,6 +27,7 @@ __all__ = [
     "MonotonicTestClock",
     "ConsoleLogger",
     "CollectingLogger",
+    "deterministic_embedder_port",
 ]
 
 

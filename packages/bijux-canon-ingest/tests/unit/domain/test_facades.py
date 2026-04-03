@@ -5,7 +5,8 @@ from __future__ import annotations
 
 from bijux_canon_ingest.core.types import ChunkWithoutEmbedding
 from bijux_canon_ingest.domain.effects import perform
-from bijux_canon_ingest.domain.facades import Keyed, deterministic_embedder_port
+from bijux_canon_ingest.domain.facades import Keyed, deterministic_embedder_port as legacy_embedder_port
+from bijux_canon_ingest.infra.adapters.embedder_port import deterministic_embedder_port
 from bijux_canon_ingest.processing.stages import embed_chunk
 from bijux_canon_ingest.result.types import Ok
 
@@ -35,3 +36,12 @@ def test_facade_interpretation_produces_ok() -> None:
     res = perform(plan)
     assert isinstance(res, Ok)
     assert res.value[0].key == "k"
+
+
+def test_domain_compatibility_wrapper_still_resolves() -> None:
+    port = legacy_embedder_port()
+    plan = port.embed_batch(
+        [Keyed(key="k", value=ChunkWithoutEmbedding("d", "x", 0, 1))]
+    )
+    res = perform(plan)
+    assert isinstance(res, Ok)
