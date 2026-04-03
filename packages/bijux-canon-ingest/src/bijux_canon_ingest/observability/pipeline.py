@@ -34,6 +34,8 @@ class IngestTaps:
 
 @dataclass(frozen=True)
 class DebugConfig:
+    """Boolean switches for tracing ingest stages."""
+
     trace_docs: bool = False
     trace_kept: bool = False
     trace_clean: bool = False
