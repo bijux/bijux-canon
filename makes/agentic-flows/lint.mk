@@ -38,7 +38,7 @@ lint-artifacts: | $(VENV)
 	} 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/ruff-format.log"
 	@set -euo pipefail; $(RUFF) check --config $(CONFIG_DIR)/ruff.toml --cache-dir "$(RUFF_CACHE_DIR)" $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/ruff.log"
 	@set -euo pipefail; $(MYPY) --config-file $(CONFIG_DIR)/mypy.ini --strict --cache-dir "$(MYPY_CACHE_DIR)" $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/mypy.log"
-	@set -euo pipefail; $(CODESPELL) -I $(CONFIG_DIR)/agentic_flows.dic $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/codespell.log"
+	@set -euo pipefail; $(CODESPELL) $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/codespell.log"
 	@set -euo pipefail; $(RADON) cc -s -a $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/radon.log"
 	@set -euo pipefail; $(RADON) cc -j $(LINT_DIRS) | $(VENV_PYTHON) -c 'import json,sys; max_score=48; payload=json.load(sys.stdin); violations=[]; [violations.append((f,i.get("name"),i.get("complexity",0))) for f,items in payload.items() for i in items if i.get("type") in {"function","method"} and i.get("complexity",0)>max_score]; \
 print("Radon complexity threshold exceeded (>{})".format(max_score)) if violations else None; \
@@ -56,7 +56,7 @@ endif
 	@$(call run_tool,RuffFormat,$(RUFF) format --check --cache-dir "$(RUFF_CACHE_DIR)")
 	@$(call run_tool,Ruff,$(RUFF) check --config $(CONFIG_DIR)/ruff.toml --cache-dir "$(RUFF_CACHE_DIR)")
 	@$(call run_tool,Mypy,$(MYPY) --config-file $(CONFIG_DIR)/mypy.ini --strict --cache-dir "$(MYPY_CACHE_DIR)")
-	@$(call run_tool,Codespell,$(CODESPELL) -I $(CONFIG_DIR)/agentic_flows.dic)
+	@$(call run_tool,Codespell,$(CODESPELL))
 	@$(call run_tool,Radon,$(RADON) cc -s -a)
 	@$(call run_tool,Pydocstyle,$(PYDOCSTYLE) --convention=google)
 

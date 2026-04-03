@@ -49,7 +49,7 @@ lint-artifacts: | $(VENV)
 	else \
 	  echo "→ Skipping mypy (set ENABLE_MYPY=1 to enable)" | tee "$(LINT_ARTIFACTS_DIR)/mypy-core.log"; \
 	fi
-	@set -euo pipefail; $(CODESPELL) -I $(CONFIG_DIR)/bijux.dic $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/codespell.log"
+	@set -euo pipefail; $(CODESPELL) $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/codespell.log"
 	@set -euo pipefail; $(RADON) cc -s -a $(LINT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/radon.log"
 	@if [ "$(SKIP_PYDOCSTYLE)" = "1" ]; then \
 	  echo "→ Skipping pydocstyle" | tee "$(LINT_ARTIFACTS_DIR)/pydocstyle.log"; \
@@ -73,7 +73,7 @@ endif
 	@$(call run_tool,RuffFormat,$(RUFF) format --cache-dir "$(RUFF_CACHE_DIR)")
 	@$(call run_tool,Ruff,$(RUFF) check --fix --config $(CONFIG_DIR)/ruff.toml --cache-dir "$(RUFF_CACHE_DIR)")
 	@$(call run_tool,Mypy,$(MYPY) --config-file "$(MYPY_CORE_CONFIG)" --strict --cache-dir "$(MYPY_CACHE_DIR)")
-	@$(call run_tool,Codespell,$(CODESPELL) -I $(CONFIG_DIR)/bijux.dic)
+	@$(call run_tool,Codespell,$(CODESPELL))
 	@$(call run_tool,Radon,$(RADON) cc -s -a)
 ifeq ($(SKIP_PYDOCSTYLE),1)
 	@echo "→ Skipping pydocstyle"
