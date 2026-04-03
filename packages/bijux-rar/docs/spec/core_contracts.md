@@ -11,7 +11,7 @@ Rules (numbered, MUST/SHALL only):
 1. A run MUST emit `trace.jsonl` with strictly increasing `idx`; any rewrite or reorder invalidates the run.
 2. Every derived claim MUST cite evidence using `[evidence:<id>:<b0>-<b1>:<sha256>]` computed over exact evidence bytes; missing/mismatched hashes SHALL be rejected.
 3. Replay MUST reproduce fingerprints when corpus/index/provenance match; fingerprint drift SHALL fail the run.
-4. All artifacts SHALL live under `artifacts/runs/<run_id>/`; writes elsewhere are forbidden.
+4. All artifacts SHALL live under `artifacts/bijux-rar/runs/<run_id>/`; writes elsewhere are forbidden.
 5. Trace/plan/manifest MUST carry supported schema versions; unknown versions SHALL be rejected unless an explicit upgrader exists.
 6. Any invariant violation (span bounds, missing evidence, unknown tool, hash mismatch) SHALL hard-fail verification; no soft modes exist.
 
@@ -38,13 +38,13 @@ What Breaks if You Change This:
 Non-Negotiable Invariants:
 - Trace immutability is enforced; edits invalidate runs.
 - Span+hash grounding is mandatory for derived claims.
-- Artifacts must live under `artifacts/runs/<run_id>/`.
+- Artifacts must live under `artifacts/bijux-rar/runs/<run_id>/`.
 - Only supported schema versions are accepted; unknown versions are rejected.
 
 Rejected Alternatives:
 - Allowing best-effort verification → rejected because it permits silent corruption and breaks auditability.
 - Accepting legacy markers → rejected because citations become unverifiable.
-- Allowing writes outside artifacts/ → rejected because provenance and determinism would be unenforceable.
+- Allowing writes outside artifacts/bijux-rar/ → rejected because provenance and determinism would be unenforceable.
 
 Scope Closure:
 - Does NOT restate trace schema; see trace_format.md.

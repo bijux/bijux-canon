@@ -7,7 +7,7 @@ Trace schema version: 1 (this example is valid for schema_version=1; newer versi
 Input:
 - ProblemSpec: "What is Rust?", preset: "default", seed: 0, corpus: tests/fixtures/corpus_small.jsonl
 
-Generated artifacts (under `artifacts/runs/<run_id>/`):
+Generated artifacts (under `artifacts/bijux-rar/runs/<run_id>/`):
 - `spec.json`, `plan.json`, `trace.jsonl`, `manifest.json`, `verify.json`, `provenance/corpus.jsonl`, `provenance/index/bm25_index.json`
 
 Trace snippet (claim event):

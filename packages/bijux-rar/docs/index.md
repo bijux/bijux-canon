@@ -49,18 +49,18 @@ Python ≥ 3.10 is required.
 ```bash
 bijux-rar run \
   --spec examples/spec.json \
-  --artifacts-dir artifacts/runs \
+  --artifacts-dir artifacts/bijux-rar \
   --seed 0
 
-RUN_DIR=$(cat artifacts/runs/latest.txt 2>/dev/null || ls artifacts/runs | head -n1)
+RUN_DIR=$(cat artifacts/bijux-rar/runs/latest.txt 2>/dev/null || ls artifacts/bijux-rar/runs | head -n1)
 
 bijux-rar verify \
-  --trace artifacts/runs/$RUN_DIR/trace.jsonl \
-  --plan artifacts/runs/$RUN_DIR/plan.json \
+  --trace artifacts/bijux-rar/runs/$RUN_DIR/trace.jsonl \
+  --plan artifacts/bijux-rar/runs/$RUN_DIR/plan.json \
   --fail-on-verify
 
 bijux-rar replay \
-  --trace artifacts/runs/$RUN_DIR/trace.jsonl \
+  --trace artifacts/bijux-rar/runs/$RUN_DIR/trace.jsonl \
   --fail-on-diff
 ```
 

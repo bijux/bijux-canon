@@ -8,7 +8,7 @@ Runtime State:
 - Discarded after run; not relied on for replay.
 
 Persistent Artifacts:
-- Stored under `artifacts/runs/<run_id>/`.
+- Stored under `artifacts/bijux-rar/runs/<run_id>/`.
 - Immutable after creation; mutation invalidates run.
 - Includes corpus snapshot, index, trace, manifest, provenance, verification.
 

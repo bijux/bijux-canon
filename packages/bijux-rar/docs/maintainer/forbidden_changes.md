@@ -3,7 +3,7 @@ STATUS: AUTHORITATIVE
 ## Forbidden Changes
 
 - Changing event kinds or schemas without version bump + migrator.
-- Allowing writes outside `artifacts/runs/<run_id>/`.
+- Allowing writes outside `artifacts/bijux-rar/runs/<run_id>/`.
 - Relaxing span+hash grounding or citation markers.
 - Introducing non-deterministic behavior into replay or verification.
 - Removing or altering invariant IDs without coordination.

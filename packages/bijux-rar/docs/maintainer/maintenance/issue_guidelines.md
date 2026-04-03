@@ -10,7 +10,7 @@ We will close issues immediately if:
 Required evidence for valid issues:
 - Command(s) run + full logs.
 - Trace/plan schema versions and fingerprints.
-- Description of whether artifacts under `artifacts/runs/<run_id>/` are intact.
+- Description of whether artifacts under `artifacts/bijux-rar/runs/<run_id>/` are intact.
 
 Check first:
 - Docs in `docs/start_here.md` and `docs/doc_invariants.md`.

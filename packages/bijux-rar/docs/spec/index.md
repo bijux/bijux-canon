@@ -1,7 +1,7 @@
 STATUS: EXPLANATORY
 # bijux-rar
 
-Deterministic, auditable reasoning runtime with structured plans, claims, evidence, verification, and replay. All artifacts are versioned, fingerprinted, and stored under `artifacts/`.
+Deterministic, auditable reasoning runtime with structured plans, claims, evidence, verification, and replay. All artifacts are versioned, fingerprinted, and stored under `artifacts/bijux-rar/`.
 
 ## Normative Document Hierarchy
 If any documents conflict, authority is resolved in this order:

@@ -21,6 +21,6 @@ This document freezes the scope for v0.1.0. No new features are accepted after t
 - Breaking changes to verification leniency modes (only documented policies apply).
 
 ## May Break Before v1.0 (with notice)
-- Internal file layout inside `artifacts/` but not the mandatory contract files (`spec.json`, `plan.json`, `trace.jsonl`, `verify.json`, `manifest.json`, provenance snapshots).
+- Internal file layout inside `artifacts/bijux-rar/` but not the mandatory contract files (`spec.json`, `plan.json`, `trace.jsonl`, `verify.json`, `manifest.json`, provenance snapshots).
 - Additional CLI flags marked experimental in help text.
 - Optional dependency versions and extras composition.

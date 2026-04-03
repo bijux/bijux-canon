@@ -7,7 +7,7 @@ STATUS: AUTHORITATIVE
 - **Path traversal:** Symlink-safe resolution; relative POSIX paths enforced.
 - **Replay integrity:** Corpus/index provenance pinned; mismatches fail.
 - **API abuse:** API key + rate limiting; request/response size limits; denylisted content types.
-- **Artifact pollution:** No root writes; artifacts confined to `artifacts/`.
+- **Artifact pollution:** No root writes; artifacts confined to `artifacts/bijux-rar/`.
 
 ### Not Defended (by design)
 - **Untrusted plugins:** Only ReasonerBackend is supported; others are rejected.
@@ -16,7 +16,7 @@ STATUS: AUTHORITATIVE
 - **LLM/model risks:** Non-deterministic backends are opt-in and not enabled in CI.
 
 ### Trust Boundaries
-- Filesystem: only `artifacts/` is writable; evidence paths are validated.
+- Filesystem: only `artifacts/bijux-rar/` is writable; evidence paths are validated.
 - Network: runtimes are deterministic; external calls are treated as tools, recorded, and replayed from artifacts when frozen.
 - API: authenticated via header; per-key rate limit; size limits enforced pre-handler.
 
@@ -26,7 +26,7 @@ STATUS: AUTHORITATIVE
 ### Explicit Boundaries (merged from security boundaries)
 - Defended: path traversal, trace/evidence tampering, replay drift, API abuse (token, rate limit, size, denylist).
 - Not defended: host compromise, side channels, untrusted plugins beyond ReasonerBackend, non-deterministic LLM behavior (unless frozen/replayed).
-- Trust assumptions: artifacts/ is the only writable root; ProblemSpecs are not sanitized beyond invariants; locale/time do not affect determinism.
+- Trust assumptions: artifacts/bijux-rar/ is the only writable root; ProblemSpecs are not sanitized beyond invariants; locale/time do not affect determinism.
 - Undefined behavior: missing/altered artifacts; networked tools without recorded outputs for replay.
 
 ### What is NOT guaranteed

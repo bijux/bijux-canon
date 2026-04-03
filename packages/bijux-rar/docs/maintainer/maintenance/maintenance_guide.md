@@ -9,7 +9,7 @@ Allowed:
 
 Forbidden:
 - New event kinds without schema/version bump.
-- New write locations outside `artifacts/runs/<run_id>/`.
+- New write locations outside `artifacts/bijux-rar/runs/<run_id>/`.
 - Relaxing grounding or replay invariants.
 - Adding runtime globals or hidden state.
 

@@ -27,7 +27,7 @@ PRs that do not pass locally will be rejected.
 
 ## Contribution Rules
 
-* No generated files may be committed outside `artifacts/`.
+* No generated files may be committed outside `artifacts/bijux-rar/`.
 * Determinism is non-negotiable.
 * Do not relax invariants without explicit migration or versioning.
 * Configuration, tooling, and workflows must remain aligned with
