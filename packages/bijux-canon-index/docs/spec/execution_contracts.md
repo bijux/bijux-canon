@@ -34,4 +34,4 @@ All MUST be named in the plan via `RandomnessSource`.
 - Contracts: `src/bijux_canon_index/core/contracts/__init__.py`
 - Randomness profile: `src/bijux_canon_index/core/vector_execution.py`
 - Reports: `src/bijux_canon_index/core/execution_result.py`
-- Enforcement: `src/bijux_canon_index/domain/requests/execute.py`, `execution_plan.py`
+- Enforcement: `src/bijux_canon_index/domain/requests/request_execution.py`, `execution_plan.py`

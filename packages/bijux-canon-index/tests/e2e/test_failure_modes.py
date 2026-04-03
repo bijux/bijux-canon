@@ -17,7 +17,7 @@ from bijux_canon_index.core.errors import (
 )
 from bijux_canon_index.core.failures import retry_with_policy
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
-from bijux_canon_index.domain.requests.execute import (
+from bijux_canon_index.domain.requests.request_execution import (
     execute_request,
     start_execution_session,
 )

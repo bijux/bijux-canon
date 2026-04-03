@@ -48,7 +48,7 @@ def test_replay_produces_identical_fingerprint():
         backend.stores.vectors.put_vector(tx, vector)
         backend.stores.ledger.put_artifact(tx, artifact)
 
-    from bijux_canon_index.domain.requests.execute import (
+    from bijux_canon_index.domain.requests.request_execution import (
         execute_request,
         start_execution_session,
     )

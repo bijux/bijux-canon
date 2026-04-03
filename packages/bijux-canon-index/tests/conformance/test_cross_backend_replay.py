@@ -56,7 +56,7 @@ def _seed_backend(
 def test_replay_matches_across_backends(tmp_path):
     mem = memory_backend()
     mem_art, query = _seed_backend(mem, "m-")
-    from bijux_canon_index.domain.requests.execute import (
+    from bijux_canon_index.domain.requests.request_execution import (
         execute_request,
         start_execution_session,
     )

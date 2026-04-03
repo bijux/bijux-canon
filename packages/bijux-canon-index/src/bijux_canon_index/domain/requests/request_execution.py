@@ -18,7 +18,10 @@ from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, Re
 from bijux_canon_index.domain.requests.budget import (
     apply_budget_outcomes,
 )
-from bijux_canon_index.domain.requests.execution import collect_results, estimate_cost
+from bijux_canon_index.domain.requests.result_collection import (
+    collect_results,
+    estimate_cost,
+)
 from bijux_canon_index.domain.requests.nd_quality import (
     build_witness_report,
     should_run_witness,
