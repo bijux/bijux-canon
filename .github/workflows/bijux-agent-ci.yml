@@ -9,10 +9,16 @@ on:
       - "apis/bijux-agent/**"
       - "configs/bijux-agent/**"
       - "makes/bijux-agent/**"
+      - "makes/lint.mk"
+      - "makes/quality.mk"
+      - "makes/security.mk"
+      - "makes/sbom.mk"
       - "makes/shared/**"
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
+      - "scripts/security/**"
+      - "scripts/sbom/**"
       - "scripts/bijux-agent/**"
   pull_request:
     paths:
@@ -21,10 +27,16 @@ on:
       - "apis/bijux-agent/**"
       - "configs/bijux-agent/**"
       - "makes/bijux-agent/**"
+      - "makes/lint.mk"
+      - "makes/quality.mk"
+      - "makes/security.mk"
+      - "makes/sbom.mk"
       - "makes/shared/**"
       - "Makefile"
       - "tox.ini"
       - "scripts/deptry_scan.py"
+      - "scripts/security/**"
+      - "scripts/sbom/**"
       - "scripts/bijux-agent/**"
   workflow_dispatch:
 
