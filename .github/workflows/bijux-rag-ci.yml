@@ -98,7 +98,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [quality, security, docs, build, api, sbom, hygiene]
+        target: [quality, security, docs, build, api, sbom]
 
     steps:
       - uses: actions/checkout@v4

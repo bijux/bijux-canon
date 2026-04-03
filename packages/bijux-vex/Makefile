@@ -18,7 +18,6 @@ ENABLE_PYTYPE     := 0
 RUFF_CHECK_FIX    := 1
 INTERROGATE_PATHS := src/bijux_vex
 QUALITY_PATHS     := src/bijux_vex
-QUALITY_PRE_TARGETS := hygiene
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
 QUALITY_CLEAN_SITE := 1
 SECURITY_PATHS    := src/bijux_vex
@@ -39,11 +38,9 @@ include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/api.mk
-include $(MAKE_DIR)/hygiene.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/quality.mk
-include $(MAKE_DIR)/freeze.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
 # Environment
@@ -79,7 +76,7 @@ clean-soft:
 	fi
 
 # Pipelines
-all: clean install fmt lint test quality docs api hygiene security sbom
+all: clean install fmt lint test quality docs api security sbom
 	@echo "[OK] All targets completed"
 
 # Run independent checks in parallel

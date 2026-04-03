@@ -10,7 +10,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── ../../configs/bijux-rag/ # root-managed lint/type/security configs
 ├── data/                # sample datasets (arxiv abstracts CSV)
 ├── docs/                # MkDocs sources (includes ADRs and reference pages)
-├── ../../makes/bijux-rag/ # root-managed Make modules (api, build, docs, hygiene, lint, publish, quality, sbom, security, test)
+├── ../../makes/bijux-rag/ # root-managed Make modules (api, build, docs, lint, publish, quality, sbom, security, test)
 ├── ../../scripts/bijux-rag/ # root-managed helper scripts (download_data, openapi_drift)
 ├── src/bijux_rag/       # library code (functional core + boundaries + effects)
 ├── tests/               # unit + e2e + strategies + eval assets
@@ -77,7 +77,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 - `../../configs/bijux-rag/package.json` — repo-owned Node manifest for OpenAPI tooling.
 - `../../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
 - `../../configs/ruff.toml` — repo-wide Ruff configuration.
-- `Makefile` + `../../makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make hygiene`, `make all`).
+- `Makefile` + `../../makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make all`).
 - `../../scripts/bijux-rag/download_data.sh` — data fetcher.
 - `../../scripts/bijux-rag/openapi_drift.py` — API schema drift checker.
 

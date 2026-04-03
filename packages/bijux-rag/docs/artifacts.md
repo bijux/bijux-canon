@@ -9,4 +9,4 @@ All tooling writes under `artifacts/bijux-rag/` to maintain zero root pollution.
 - `artifacts/bijux-rag/security/`: bandit and pip-audit reports.
 - `artifacts/bijux-rag/sbom/`: SBOM outputs.
 
-If you see cache or report files at repository root, run `make hygiene` and fix the offender before committing.
+If you see cache or report files at repository root, remove the offender before committing.

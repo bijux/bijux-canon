@@ -5,7 +5,7 @@ The Makefile targets are part of the public tooling surface. Changes require jus
 Stable targets (treated as contracts):
 
 - `install`, `bootstrap`
-- `fmt`, `lint`, `test`, `quality`, `security`, `docs`, `api`, `hygiene`, `sbom`
+- `fmt`, `lint`, `test`, `quality`, `security`, `docs`, `api`, `sbom`
 - `all`, `clean`, `clean-soft`
 - `release`
 

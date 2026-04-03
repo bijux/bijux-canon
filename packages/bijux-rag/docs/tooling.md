@@ -10,7 +10,6 @@ Front-door commands (mirrors bijux-cli):
 - `make quality` — vulture/deptry/interrogate
 - `make security` — bandit + pip-audit (gating)
 - `make sbom` — CycloneDX SBOMs
-- `make hygiene` — zero-root-pollution gate
-- `make all` — clean → install → test → lint → quality → security → api → docs → build → sbom → hygiene
+- `make all` — clean → install → test → lint → quality → security → api → docs → build → sbom
 
 All caches and artifacts are redirected under `artifacts/bijux-rag/` to keep the repo root clean.

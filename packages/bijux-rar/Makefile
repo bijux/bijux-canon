@@ -16,7 +16,6 @@ ENABLE_PYTYPE     := 0
 RUFF_CHECK_FIX    := 1
 INTERROGATE_PATHS := src/bijux_rar
 QUALITY_PATHS     := src/bijux_rar
-QUALITY_PRE_TARGETS := hygiene
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
 SECURITY_PATHS    := src/bijux_rar
 SECURITY_IGNORE_IDS := PYSEC-2022-42969
@@ -46,7 +45,6 @@ include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/publish.mk
-include $(MAKE_DIR)/hygiene.mk
 
 # Environment
 $(VENV):

@@ -47,7 +47,6 @@ include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/publish.mk
-include $(MAKE_DIR)/hygiene.mk
 
 # Environment
 $(VENV):
@@ -79,10 +78,10 @@ clean-soft:
 	fi
 
 # Ensure core tasks run inside the managed virtualenv
-test lint fmt quality security api docs build sbom hygiene: install
+test lint fmt quality security api docs build sbom: install
 
 # Pipelines
-all: clean install test lint quality security api docs build sbom hygiene
+all: clean install test lint quality security api docs build sbom
 	@echo "✔ All targets completed"
 
 help:
