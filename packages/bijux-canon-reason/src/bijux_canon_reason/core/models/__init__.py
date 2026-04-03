@@ -41,6 +41,14 @@ from bijux_canon_reason.core.models.trace import (
     UnderstandOutput,
     VerifyOutput,
 )
+from bijux_canon_reason.core.models.verification import (
+    ReplayResult,
+    VerificationCheck,
+    VerificationFailure,
+    VerificationPolicyMode,
+    VerificationReport,
+    VerificationSeverity,
+)
 
 __all__ = [
     "Claim",
@@ -57,6 +65,7 @@ __all__ = [
     "Plan",
     "PlanNode",
     "ProblemSpec",
+    "ReplayResult",
     "RuntimeDescriptor",
     "StableModel",
     "StepKind",
@@ -76,5 +85,10 @@ __all__ = [
     "TraceEvent",
     "TraceEventKind",
     "UnderstandOutput",
+    "VerificationCheck",
+    "VerificationFailure",
+    "VerificationPolicyMode",
+    "VerificationReport",
+    "VerificationSeverity",
     "VerifyOutput",
 ]

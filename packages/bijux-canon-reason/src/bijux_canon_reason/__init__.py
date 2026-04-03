@@ -2,8 +2,65 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.core import *  # noqa: F403
-from bijux_canon_reason.core import __all__ as _core_all  # noqa: F401
 from bijux_canon_reason._version import __version__
+from bijux_canon_reason.core import (
+    Claim,
+    ClaimStatus,
+    ClaimType,
+    EvidenceRef,
+    Plan,
+    PlanNode,
+    ProblemSpec,
+    RuntimeDescriptor,
+    StepOutput,
+    StepSpec,
+    SupportKind,
+    SupportRef,
+    ToolCall,
+    ToolDescriptor,
+    ToolRequest,
+    ToolResult,
+    Trace,
+    TraceEvent,
+    TraceEventKind,
+    VerificationCheck,
+    VerificationReport,
+    canonical_dumps,
+    fingerprint_bytes,
+    fingerprint_obj,
+    stable_id,
+    validate_plan,
+    validate_trace,
+    validate_verification_report,
+)
 
-__all__ = list(_core_all)
+__all__ = [
+    "Claim",
+    "ClaimStatus",
+    "ClaimType",
+    "EvidenceRef",
+    "Plan",
+    "PlanNode",
+    "ProblemSpec",
+    "RuntimeDescriptor",
+    "StepOutput",
+    "StepSpec",
+    "SupportKind",
+    "SupportRef",
+    "ToolCall",
+    "ToolDescriptor",
+    "ToolRequest",
+    "ToolResult",
+    "Trace",
+    "TraceEvent",
+    "TraceEventKind",
+    "VerificationCheck",
+    "VerificationReport",
+    "canonical_dumps",
+    "fingerprint_bytes",
+    "fingerprint_obj",
+    "stable_id",
+    "validate_plan",
+    "validate_trace",
+    "validate_verification_report",
+]

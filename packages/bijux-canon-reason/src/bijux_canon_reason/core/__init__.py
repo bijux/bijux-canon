@@ -13,26 +13,32 @@ from bijux_canon_reason.core.invariants import (
     validate_trace,
     validate_verification_report,
 )
-from bijux_canon_reason.core.types import (
+from bijux_canon_reason.core.models.claims import (
     Claim,
     ClaimStatus,
     ClaimType,
     EvidenceRef,
+    SupportKind,
+    SupportRef,
+)
+from bijux_canon_reason.core.models.planning import (
     Plan,
     PlanNode,
     ProblemSpec,
+    StepSpec,
+    ToolRequest,
+)
+from bijux_canon_reason.core.models.trace import (
     RuntimeDescriptor,
     StepOutput,
-    StepSpec,
-    SupportKind,
-    SupportRef,
     ToolCall,
     ToolDescriptor,
-    ToolRequest,
     ToolResult,
     Trace,
     TraceEvent,
     TraceEventKind,
+)
+from bijux_canon_reason.core.models.verification import (
     VerificationCheck,
     VerificationReport,
 )
