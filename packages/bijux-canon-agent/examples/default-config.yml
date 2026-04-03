@@ -1,0 +1,39 @@
+# Bijux Agent example configuration
+
+task_goal: "summarize this document"
+
+pipeline:
+  parameters:
+    max_retries: 2
+    chunk_size: 1000
+    max_iterations: 3
+    stage_timeout: 300.0
+    shard_threshold: 1000000
+    concurrency_limit: 10
+    retry_delay: 1.0
+    quality_threshold: 0.8
+  policy:
+    retry_allowed: true
+  feedback_rules:
+    critique:
+      retry_threshold: 0.5
+    summarization:
+      retry_on_empty: true
+
+logging:
+  log_dir: "../bijux-canon-agent_test/logs"
+  log_level: "INFO"
+  structured_logging: true
+  async_logging: true
+  telemetry_enabled: true
+  histogram_buckets: [0.1, 0.5, 1, 5, 10, 30, 60]
+
+output:
+  output_dir: "../bijux-canon-agent_test/results"
+  output_format: "json"
+
+model_metadata:
+  provider: "local"
+  model_name: "auditable-doc-pipeline"
+  temperature: 0.0
+  max_tokens: 512
