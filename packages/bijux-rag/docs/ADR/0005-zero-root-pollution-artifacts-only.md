@@ -57,7 +57,7 @@ Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`, `../../apis/bij
 
 * `PROJECT_ARTIFACTS_DIR = artifacts/bijux-rag` in the package `Makefile`; sub-recipes in
   `../../makes/bijux-rag/*` route outputs under that root (for example,
-  `../../makes/bijux-rag/test.mk` → `artifacts/bijux-rag/test/`; integrates with
+  `../../makes/test.mk` → `artifacts/bijux-rag/test/`; integrates with
   ADR-0004 toolchain targets like `make lint` for logs/caches under
   `artifacts/bijux-rag/lint/`).
 * Tox environments call Make targets; they do **not** set output paths directly.

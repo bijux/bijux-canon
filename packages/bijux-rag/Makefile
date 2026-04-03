@@ -31,7 +31,7 @@ PUBLISH_UPLOAD_ENABLED         := 0
 
 .NOTPARALLEL: all clean
 
-include $(MAKE_DIR)/test.mk
+include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk

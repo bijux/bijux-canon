@@ -30,6 +30,12 @@ SECURITY_IGNORE_IDS  := PYSEC-2022-42969 CVE-2026-21860
 DOCS_DEV_ADDR        := 127.0.0.1:8000
 DOCS_SITE_URL        := http://127.0.0.1:8000/
 PUBLISH_VERIFY_INSTALL_CMD := python -m bijux_agent.main --help >/dev/null 2>&1
+TEST_MAIN_ARGS       := -m "not integration and not e2e"
+TEST_UNIT_DIR_ARGS   := -m "not integration and not e2e and not slow" --maxfail=1 -q
+TEST_UNIT_FALLBACK_ARGS := -k "not e2e and not integration and not functional" -m "not integration and not e2e and not slow" --maxfail=1 -q
+TEST_SYNTAX_PATHS    := src tests
+TEST_PYCACHE_PREFIX  := $(TEST_ARTIFACTS_DIR)/pycache
+TEST_RESET_PYCACHE   := 1
 
 # Modular Includes
 include $(MAKE_DIR)/api.mk
@@ -39,7 +45,7 @@ include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/security.mk
-include $(MAKE_DIR)/test.mk
+include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
 # Environment

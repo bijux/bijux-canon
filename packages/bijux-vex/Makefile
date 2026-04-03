@@ -29,10 +29,11 @@ DOCS_DEV_ADDR    := 0.0.0.0:8000
 DOCS_EXTRA_CLEAN_PATHS := site docs/site
 PUBLISH_DIST_DIR := $(PROJECT_ARTIFACTS_DIR)/release
 PUBLISH_UPLOAD_ENABLED := 0
+TEST_COVERAGE_TARGETS := $(abspath src/bijux_vex/core) $(abspath src/bijux_vex/contracts) $(abspath src/bijux_vex/domain)
 
 # Modular Includes
 include $(ROOT_MAKE_DIR)/lint.mk
-include $(MAKE_DIR)/test.mk
+include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/hygiene.mk

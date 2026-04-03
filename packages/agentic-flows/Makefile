@@ -32,9 +32,16 @@ SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
 SECURITY_BANDIT_SKIP_IDS := B311
 SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/scripts/agentic-flows/check_dependency_allowlist.py
 PUBLISH_UPLOAD_ENABLED := 0
+TEST_PRE_TARGETS := ensure-venv
+TEST_PATHS_E2E := tests/e2e
+TEST_PATHS_REGRESSION := tests/regression
+TEST_PATHS_EVALUATION := tests/regression
+TEST_MAIN_ARGS := -m "not real_local"
+TEST_CI_TARGETS := test-unit test-e2e test-regression test-evaluation
+TEST_REAL_LOCAL_PATH := tests/real_local
 
 # ---- Includes ----
-include $(MAKE_DIR)/test.mk
+include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
