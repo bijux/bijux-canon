@@ -1,6 +1,0 @@
-- execution_store
-- execution_store_protocol
-- schema_contracts
-- migrations
-- schema.sql
-- schema.hash
