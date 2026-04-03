@@ -50,7 +50,7 @@ def main() -> None:
         )
         artifact.raise_for_status()
 
-        os.environ["BIJUX_VEX_ARTIFACT_ID"] = "art-2"
+        os.environ["BIJUX_CANON_INDEX_ARTIFACT_ID"] = "art-2"
         nd_artifact = client.post(
             "/artifact",
             json={

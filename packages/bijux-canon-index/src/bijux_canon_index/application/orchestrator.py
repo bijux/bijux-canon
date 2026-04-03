@@ -78,7 +78,7 @@ from bijux_canon_index.infra.logging import log_event
 from bijux_canon_index.infra.metrics import METRICS, timed
 from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.infra.runners.registry import RUNNERS
-from bijux_canon_index.application.policies.id_policy import (
+from bijux_canon_index.core.identity.policies import (
     ContentAddressedIdPolicy,
     IdGenerationStrategy,
 )

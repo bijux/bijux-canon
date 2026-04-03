@@ -18,7 +18,7 @@ class IdGenerationStrategy(Protocol):
 @dataclass(frozen=True)
 class EnvArtifactIdPolicy(IdGenerationStrategy):
     default_artifact_id: str = "art-1"
-    env_var: str = "BIJUX_VEX_ARTIFACT_ID"
+    env_var: str = "BIJUX_CANON_INDEX_ARTIFACT_ID"
 
     def next_artifact_id(self) -> str:
         return os.getenv(self.env_var, self.default_artifact_id)
@@ -35,7 +35,7 @@ class EnvArtifactIdPolicy(IdGenerationStrategy):
 
 @dataclass(frozen=True)
 class ContentAddressedIdPolicy(IdGenerationStrategy):
-    salt: str = "bijux-vex"
+    salt: str = "bijux-canon-index"
 
     def next_artifact_id(self) -> str:
         return EnvArtifactIdPolicy().next_artifact_id()
