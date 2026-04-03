@@ -12,23 +12,32 @@ Both CLI and FastAPI boundary call into this layer to avoid drift.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 import hashlib
+from pathlib import Path
 
 import msgpack
 
-from bijux_canon_ingest.core.types import Chunk, RawDoc
+from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc
+from bijux_canon_ingest.processing.stages import clean_doc, iter_chunk_doc
+from bijux_canon_ingest.retrieval.embedders import HashEmbedder, SentenceTransformersEmbedder
 from bijux_canon_ingest.retrieval.generators import ExtractiveGenerator
-from bijux_canon_ingest.retrieval.indexes import BM25Index, NumpyCosineIndex
-from bijux_canon_ingest.retrieval.ports import Answer
+from bijux_canon_ingest.retrieval.indexes import (
+    BM25Index,
+    NumpyCosineIndex,
+    build_bm25_index,
+    build_numpy_cosine_index,
+    load_index,
+)
+from bijux_canon_ingest.retrieval.ports import Answer, Candidate
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
 from bijux_canon_ingest.result.types import Err, Ok, Result
 
 
 # ---------------------------
-# Modern RagApp facade (index → retrieve → ask)
+# IngestService facade (build -> store -> retrieve -> answer)
 # ---------------------------
 
 
@@ -42,7 +51,7 @@ def _fingerprint_bytes(b: bytes) -> str:
 
 
 @dataclass(frozen=True, slots=True)
-class RagIndex:
+class StoredIndex:
     """In-memory index wrapper for deterministic CI profile."""
 
     backend: str
@@ -52,7 +61,9 @@ class RagIndex:
 
 
 @dataclass(frozen=True, slots=True)
-class RagApp:
+class IngestService:
+    """Facade over index construction, persistence, retrieval, and answering."""
+
     generator: ExtractiveGenerator = ExtractiveGenerator()
     reranker: LexicalOverlapReranker = LexicalOverlapReranker()
     profile: str = "default"
@@ -115,7 +126,7 @@ class RagApp:
         chunk_size: int = 4096,
         overlap: int = 0,
         tail_policy: str = "emit_short",
-    ) -> Result[RagIndex, str]:
+    ) -> Result[StoredIndex, str]:
         chunk_res = self._raw_docs_to_chunks(
             docs, chunk_size=chunk_size, overlap=overlap, tail_policy=tail_policy
         )
@@ -128,31 +139,31 @@ class RagApp:
 
         if backend == "bm25":
             idx = build_bm25_index(chunks=chunks, buckets=2048)
-            return Ok(RagIndex(backend="bm25", index=idx, fingerprint=idx.fingerprint))
+            return Ok(StoredIndex(backend="bm25", index=idx, fingerprint=idx.fingerprint))
 
         emb = HashEmbedder()
         idx = build_numpy_cosine_index(chunks=chunks, embedder=emb)
         return Ok(
-            RagIndex(backend="numpy-cosine", index=idx, fingerprint=idx.fingerprint)
+            StoredIndex(backend="numpy-cosine", index=idx, fingerprint=idx.fingerprint)
         )
 
-    def save_index(self, index: RagIndex, path: Path) -> Result[None, str]:
+    def save_index(self, index: StoredIndex, path: Path) -> Result[None, str]:
         try:
             index.index.save(str(path))
             return Ok(None)
         except Exception as exc:  # pragma: no cover
             return Err(str(exc))
 
-    def load_index(self, path: Path) -> Result[RagIndex, str]:
+    def load_index(self, path: Path) -> Result[StoredIndex, str]:
         try:
             idx = load_index(str(path))
             if isinstance(idx, BM25Index):
                 return Ok(
-                    RagIndex(backend="bm25", index=idx, fingerprint=idx.fingerprint)
+                    StoredIndex(backend="bm25", index=idx, fingerprint=idx.fingerprint)
                 )
             if isinstance(idx, NumpyCosineIndex):
                 return Ok(
-                    RagIndex(
+                    StoredIndex(
                         backend="numpy-cosine", index=idx, fingerprint=idx.fingerprint
                     )
                 )
@@ -163,7 +174,7 @@ class RagApp:
     # ------------- Retrieve / Ask -------------
     def retrieve(
         self,
-        index: RagIndex,
+        index: StoredIndex,
         query: str,
         top_k: int,
         filters: dict[str, str] | None = None,
@@ -190,7 +201,7 @@ class RagApp:
 
     def ask(
         self,
-        index: RagIndex,
+        index: StoredIndex,
         query: str,
         top_k: int,
         filters: dict[str, str] | None = None,
@@ -291,3 +302,6 @@ class RagApp:
         else:
             cands = cands[:top_k]
         return Ok(self.generator.generate(query=query, candidates=cands))
+
+
+__all__ = ["IndexBackend", "IngestService", "StoredIndex"]

@@ -196,7 +196,7 @@ def rag_eval_suite() -> dict[str, Any]:
 @pytest.fixture(scope="session")
 def rag_app() -> Any:
     """
-    Requires: bijux_rag.application.rag.RagApp(profile="ci") with methods:
+    Requires: bijux_rag.application.service.IngestService(profile="ci") with methods:
       - build_index(docs, backend, chunk_size, overlap, tail_policy)
       - save_index(index, path)
       - load_index(path)
@@ -204,18 +204,18 @@ def rag_app() -> Any:
       - ask(index, query, top_k, filters=None)
     """
     try:
-        from bijux_rag.application.rag import RagApp  # type: ignore
+        from bijux_rag.application.service import IngestService  # type: ignore
     except Exception as exc:
         pytest.fail(
-            "Missing bijux_rag.application.rag.RagApp. This suite enforces real RAG primitives "
+            "Missing bijux_rag.application.service.IngestService. This suite enforces real RAG primitives "
             f"(index/retrieve/ask). Import error: {exc}"
         )
 
-    app = RagApp(profile="ci")
+    app = IngestService(profile="ci")
     # Hard gate: required callables must exist.
     for name in ("build_index", "save_index", "load_index", "retrieve", "ask"):
         if not callable(getattr(app, name, None)):
-            pytest.fail(f"RagApp must implement callable {name}() for E2E RAG gates.")
+            pytest.fail(f"IngestService must implement callable {name}() for E2E RAG gates.")
     return app
 
 

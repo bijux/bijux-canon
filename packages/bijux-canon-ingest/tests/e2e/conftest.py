@@ -100,16 +100,16 @@ def rag_eval_suite() -> dict[str, Any]:
 
 @pytest.fixture(scope="session")
 def rag_app() -> Any:
-    """Requires you to implement bijux_rag.application.rag.RagApp (truthful RAG entrypoint)."""
+    """Requires you to implement bijux_rag.application.service.IngestService (truthful RAG entrypoint)."""
 
     try:
-        from bijux_rag.application.rag import RagApp  # type: ignore
+        from bijux_rag.application.service import IngestService  # type: ignore
     except Exception as exc:  # pragma: no cover
         pytest.fail(
-            "Missing bijux_rag.application.rag.RagApp. Implement real RAG primitives (index/retrieve/ask) first. "
+            "Missing bijux_rag.application.service.IngestService. Implement real RAG primitives (index/retrieve/ask) first. "
             f"Import error: {exc}"
         )
-    return RagApp(profile="ci")
+    return IngestService(profile="ci")
 
 
 @pytest.fixture(scope="session")
@@ -133,7 +133,7 @@ def rag_index(
     load = getattr(rag_app, "load_index", None)
 
     if not callable(build) or not callable(save) or not callable(load):
-        pytest.fail("RagApp must implement build_index/save_index/load_index")
+        pytest.fail("IngestService must implement build_index/save_index/load_index")
 
     index0 = _unwrap_ok(
         build(

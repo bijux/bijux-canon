@@ -37,10 +37,10 @@ from .pipelines import (
     reconstruct_pipeline,
     spec_hash,
 )
-from .rag import (
+from .service import (
     IndexBackend,
-    RagApp,
-    RagIndex,
+    IngestService,
+    StoredIndex,
 )
 
 __all__ = [
@@ -57,8 +57,8 @@ __all__ = [
     "RagTraceV3",
     "IndexBuildConfig",
     "IndexBackend",
-    "RagIndex",
-    "RagApp",
+    "StoredIndex",
+    "IngestService",
     "ingest_csv_to_chunks",
     "ingest_docs_to_chunks",
     "build_index_from_csv",

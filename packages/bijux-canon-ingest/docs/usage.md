@@ -35,7 +35,7 @@ from bijux_rag.application.pipelines.configured import (
     StepConfig,
     build_rag_pipeline,
 )
-from bijux_rag.application.rag import RagApp
+from bijux_rag.application.service import IngestService
 
 docs = [RawDoc(doc_id="1", title="RAG Intro", abstract="Retrieval-Augmented Generation combines search and LLMs.")]
 pipeline = build_rag_pipeline(
@@ -49,7 +49,7 @@ pipeline = build_rag_pipeline(
 )
 embedded = [result.value for result in pipeline(iter(docs))]
 
-app = RagApp()  # Configurable app
+app = IngestService()  # Configurable app
 index = app.build_index(embedded, backend="bm25").unwrap()
 retrieved = app.retrieve(index, query="what is RAG?", top_k=5).unwrap()
 answer = app.ask(index, query="explain RAG", top_k=5, rerank=True).unwrap()["answer"]

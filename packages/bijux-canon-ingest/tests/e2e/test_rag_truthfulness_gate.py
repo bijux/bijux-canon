@@ -6,9 +6,9 @@
 Offline + deterministic by design.
 
 These tests will FAIL until bijux-rag implements:
-  - RagApp.build_index / save_index / load_index
-  - RagApp.retrieve
-  - RagApp.ask
+  - IngestService.build_index / save_index / load_index
+  - IngestService.retrieve
+  - IngestService.ask
 
 Truthfulness contract:
   - retrieval must surface expected docs for a pinned suite

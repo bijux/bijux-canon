@@ -12,7 +12,7 @@ from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field, model_validator
 
 from bijux_canon_ingest.core.types import RawDoc
-from bijux_canon_ingest.application.rag import IndexBackend, RagApp, RagIndex
+from bijux_canon_ingest.application.service import IndexBackend, IngestService, StoredIndex
 from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
 from bijux_canon_ingest.retrieval.ports import Answer, Candidate
 from bijux_canon_ingest.result.types import Err
@@ -131,8 +131,8 @@ def create_app() -> FastAPI:
     app = FastAPI(title="bijux-canon-ingest", openapi_version="3.1.0")
     router = APIRouter(prefix="/v1")
 
-    rag_app = RagApp()
-    index_store: dict[str, RagIndex] = {}
+    rag_app = IngestService()
+    index_store: dict[str, StoredIndex] = {}
 
     @router.get("/healthz")
     async def healthz() -> dict[str, bool]:

@@ -6,12 +6,12 @@ from __future__ import annotations
 from pathlib import Path
 
 from bijux_rag.core.types import RawDoc
-from bijux_rag.application.rag import RagApp
+from bijux_rag.application.service import IngestService
 from bijux_rag.result import is_ok
 
 
 def test_real_rag_smoke_build_retrieve_ask(tmp_path: Path) -> None:
-    app = RagApp()
+    app = IngestService()
     docs = [
         RawDoc(
             doc_id="d1",

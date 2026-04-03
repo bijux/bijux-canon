@@ -49,7 +49,7 @@ class HashEmbedder:
         return self._spec
 
     def embed(self, texts: Sequence[str]) -> list[tuple[float, ...]]:
-        """Return list of tuple embeddings (compat with new RagApp)."""
+        """Return list of tuple embeddings (compat with new IngestService)."""
 
         arr = self.embed_texts(texts)
         return [tuple(map(float, vec)) for vec in arr.tolist()]
