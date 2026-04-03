@@ -22,7 +22,7 @@ from bijux_canon_runtime.observability.classification.fingerprint import (
 from bijux_canon_runtime.observability.classification.retrieval_fingerprint import (
     fingerprint_retrieval,
 )
-from bijux_canon_runtime.runtime.verification_engine import VerificationOrchestrator
+from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 from bijux_canon_runtime.contracts.step_contract import validate_outputs
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence

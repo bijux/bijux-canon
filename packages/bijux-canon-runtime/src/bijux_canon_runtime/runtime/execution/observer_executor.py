@@ -8,7 +8,7 @@ from __future__ import annotations
 from bijux_canon_runtime.core.errors import ExecutionFailure
 from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
-from bijux_canon_runtime.runtime.verification_engine import VerificationOrchestrator
+from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 
 

@@ -5,7 +5,7 @@
 # Copyright © 2026 Bijan Mousavi
 
 # Verification must never call agents or modify artifact; epistemic truth is delegated to authority.
-"""Module definitions for runtime/verification_engine.py."""
+"""Verification orchestration for runtime execution results."""
 
 from __future__ import annotations
 

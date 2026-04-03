@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
     from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
     from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
-    from bijux_canon_runtime.runtime.verification_engine import VerificationOrchestrator
+    from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 
 
 @dataclass
