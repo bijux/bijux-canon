@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 import uuid
 
-from bijux_canon_agent.models.contract import (
+from bijux_canon_agent.contracts.agent_contract import (
     AgentErrorSchema,
     AgentInputSchema,
     AgentOutputSchema,

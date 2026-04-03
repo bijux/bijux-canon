@@ -9,8 +9,8 @@ from typing import Any
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome, FailureMode
-from bijux_canon_agent.models.contract import AgentOutputSchema
-from bijux_canon_agent.schema import AgentOutput
+from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
+from bijux_canon_agent.contracts import AgentOutput
 
 
 class JudgeAgent(BaseAgent):

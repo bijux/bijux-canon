@@ -7,7 +7,7 @@ import pytest
 from tests.utils.trace_helpers import default_model_metadata
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
-from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
+from bijux_canon_agent.contracts.agent_contract import AgentInputSchema, AgentOutputSchema
 from bijux_canon_agent.application.dag_runtime.orchestrator import (
     DagNode,
     DagOrchestrator,

@@ -5,7 +5,7 @@ from __future__ import annotations
 from pydantic import ConfigDict, Field
 
 from bijux_canon_agent.enums import DecisionOutcome
-from bijux_canon_agent.schema.base import TypedBaseModel
+from bijux_canon_agent.contracts.base import TypedBaseModel
 from bijux_canon_agent.support.final import final_class
 
 

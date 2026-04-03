@@ -7,7 +7,7 @@ import time
 from typing import Any, cast
 
 from bijux_canon_agent.agents.critique import CritiqueAgent
-from bijux_canon_agent.models.contract import AgentOutputSchema
+from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.pipeline.results.types import (
     FinalStatus,
     MergedShardResult,

@@ -8,7 +8,7 @@ from pydantic.config import ConfigDict as _RuntimeConfigDict
 from pydantic.main import BaseModel as _RuntimeBaseModel
 
 if TYPE_CHECKING:
-    from bijux_canon_agent.schema._pydantic_typing import BaseModel as PydanticBase
+    from bijux_canon_agent.contracts._pydantic_typing import BaseModel as PydanticBase
 else:
     PydanticBase = _RuntimeBaseModel  # type: ignore[assignment]
 

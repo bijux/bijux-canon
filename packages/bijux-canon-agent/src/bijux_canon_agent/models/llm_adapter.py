@@ -21,7 +21,7 @@ from bijux_canon_agent.pipeline.results.failure import (
     FailureClass,
     failure_profile_for,
 )
-from bijux_canon_agent.schema.base import TypedBaseModel
+from bijux_canon_agent.contracts.base import TypedBaseModel
 from bijux_canon_agent.tracing.trace import ModelMetadata
 from bijux_canon_agent.support.hashing import prompt_hash
 

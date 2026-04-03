@@ -9,7 +9,7 @@ from pydantic import ConfigDict, Field
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_canon_agent.schema.base import TypedBaseModel
+from bijux_canon_agent.contracts.base import TypedBaseModel
 from bijux_canon_agent.tracing.trace import ModelMetadata, RunTrace
 from bijux_canon_agent.support.final import final_class
 

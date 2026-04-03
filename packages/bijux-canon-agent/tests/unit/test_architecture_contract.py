@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import cast
 
 import bijux_canon_agent
-from bijux_canon_agent.models.contract import AgentOutputSchema
+from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
 from bijux_canon_agent.tracing.trace import RunFingerprint, TraceEntry
 

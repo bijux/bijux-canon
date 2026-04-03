@@ -10,7 +10,7 @@ include ../../makes/shared/python-package.mk
 LINT_DIRS            := src/bijux_canon_agent tests
 MYPY_CONFIG          := $(MONOREPO_ROOT)/configs/mypy.ini
 MYPY_FLAGS           := --follow-imports silent --ignore-missing-imports --strict-optional --disallow-untyped-defs --warn-return-any --check-untyped-defs
-MYPY_TARGETS         := src/bijux_canon_agent/pipeline src/bijux_canon_agent/tracing src/bijux_canon_agent/models src/bijux_canon_agent/schema src/bijux_canon_agent/agents/base.py
+MYPY_TARGETS         := src/bijux_canon_agent/contracts src/bijux_canon_agent/pipeline src/bijux_canon_agent/tracing src/bijux_canon_agent/models src/bijux_canon_agent/agents/base.py
 MYPY_CORE_CONFIG     := $(MONOREPO_ROOT)/configs/mypy.ini
 MYPY_CORE_FLAGS      := $(MYPY_FLAGS)
 MYPY_CORE_TARGETS    := $(MYPY_TARGETS)

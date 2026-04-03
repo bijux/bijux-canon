@@ -9,7 +9,7 @@ from typing import Any
 from pydantic import ConfigDict, Field
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
-from bijux_canon_agent.schema.base import TypedBaseModel
+from bijux_canon_agent.contracts.base import TypedBaseModel
 from bijux_canon_agent.support.final import final_class
 
 

@@ -16,7 +16,7 @@ from bijux_canon_agent.enums import (
     ExecutionMode,
     FailureMode,
 )
-from bijux_canon_agent.schema.base import TypedBaseModel
+from bijux_canon_agent.contracts.base import TypedBaseModel
 
 
 class AgentScore(TypedBaseModel):
