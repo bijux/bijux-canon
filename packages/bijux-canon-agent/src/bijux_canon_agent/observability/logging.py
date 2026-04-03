@@ -3,12 +3,8 @@
 from __future__ import annotations
 
 import asyncio
-from collections import defaultdict
 from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
-import datetime
-from enum import Enum
-import json
 import logging
 from logging import (
     Handler,
@@ -17,8 +13,6 @@ from logging import (
     getLevelName,
 )
 from pathlib import Path
-import sys
-import threading
 from typing import Any
 
 from bijux_canon_agent.observability.log_handlers import (
@@ -27,14 +21,7 @@ from bijux_canon_agent.observability.log_handlers import (
     contextual_log_records,
     install_custom_log_record_factory,
 )
-
-
-class MetricType(Enum):
-    """Enum for supported metric types."""
-
-    COUNTER = "counter"
-    GAUGE = "gauge"
-    HISTOGRAM = "histogram"
+from bijux_canon_agent.observability.log_metrics import LoggerTelemetry, MetricType
 
 
 install_custom_log_record_factory()
@@ -108,18 +95,8 @@ class LoggerManager:
         self.config = config or LoggerConfig()
         self.settings = LoggerSettings(self.config)
         self._async_handlers: list[Handler] = []
-        self._metric_tasks: list[asyncio.Task[Any]] = []
-        self._telemetry_metrics: dict[str, dict[str, Any]] = defaultdict(
-            lambda: {
-                "type": MetricType.COUNTER.value,
-                "value": 0,
-                "histogram": (
-                    defaultdict(int) if self.config.histogram_buckets else None
-                ),
-            }
-        )
-        self._metrics_lock = threading.Lock()
         self._logger = self._configure_logger()
+        self.telemetry = LoggerTelemetry(self.config, self._logger)
 
     def get_logger(self) -> CustomLogger:
         """Return the configured custom logger."""
@@ -161,87 +138,11 @@ class LoggerManager:
         tags: Mapping[str, str] | None = None,
     ) -> None:
         """Log a telemetry metric with support for counters, gauges, and histograms."""
-        if not self.config.telemetry_enabled:
-            return
-
-        tags_dict: dict[str, str] = dict(tags or {})
-        with self._metrics_lock:
-            metric = self._telemetry_metrics[metric_name]
-            metric["type"] = metric_type.value
-            metric["tags"] = tags_dict
-
-            if metric_type == MetricType.COUNTER:
-                metric["value"] += value
-            elif metric_type == MetricType.GAUGE:
-                metric["value"] = value
-            elif metric_type == MetricType.HISTOGRAM and self.config.histogram_buckets:
-                metric["value"] += value
-                histogram = metric.get("histogram")
-                if isinstance(histogram, dict):
-                    for bucket in self.config.histogram_buckets:
-                        if value <= bucket:
-                            histogram[f"le_{bucket}"] = (
-                                histogram.get(f"le_{bucket}", 0) + 1
-                            )
-                            break
-
-            self._logger.debug(
-                f"Metric recorded: {metric_name} = {value}",
-                extra={
-                    "metric_name": metric_name,
-                    "metric_type": metric_type.value,
-                    "tags": tags_dict,
-                    "metrics": {
-                        metric_name: {"value": value, "type": metric_type.value}
-                    },
-                },
-            )
-
-            if self.config.metric_export_callback:
-                metric_data = {
-                    "name": metric_name,
-                    "type": metric_type.value,
-                    "value": metric["value"],
-                    "tags": tags_dict,
-                    "histogram": (
-                        dict(metric["histogram"])
-                        if metric_type == MetricType.HISTOGRAM
-                        else None
-                    ),
-                    "timestamp": datetime.datetime.now().isoformat(),
-                }
-                try:
-                    task = asyncio.create_task(self._async_export_metric(metric_data))
-                    self._metric_tasks.append(task)
-                    self._metric_tasks = [t for t in self._metric_tasks if not t.done()]
-                except RuntimeError:
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    loop.run_until_complete(self._async_export_metric(metric_data))
-                    loop.close()
-                except Exception as e:
-                    self._logger.error(
-                        f"Metric export failed: {e}",
-                        extra={"metric_name": metric_name, "error": str(e)},
-                    )
-
-    async def _async_export_metric(self, metric_data: dict[str, Any]) -> None:
-        """Asynchronously export metric data."""
-        callback = self.config.metric_export_callback
-        if callback is None:
-            return
-        try:
-            await asyncio.to_thread(callback, metric_data)
-        except Exception as e:
-            self._logger.error(
-                f"Async metric export failed: {e}",
-                extra={"metric_name": metric_data["name"], "error": str(e)},
-            )
+        self.telemetry.record(metric_name, value, metric_type, dict(tags or {}))
 
     def get_metrics(self) -> dict[str, dict[str, Any]]:
         """Return collected telemetry metrics."""
-        with self._metrics_lock:
-            return dict(self._telemetry_metrics)
+        return self.telemetry.snapshot()
 
     def add_filter(self, name: str, filter_fn: Callable[[LogRecord], bool]) -> None:
         """Add a custom log filter."""
@@ -292,22 +193,8 @@ class LoggerManager:
 
     def reset_metrics(self) -> None:
         """Reset all telemetry metrics."""
-        with self._metrics_lock:
-            self._telemetry_metrics.clear()
-        self._logger.debug("Telemetry metrics reset", extra={"stage": "metrics_reset"})
+        self.telemetry.reset()
 
     def export_metrics_to_file(self, file_path: str | Path) -> None:
         """Export telemetry metrics to a file."""
-        metrics = self.get_metrics()
-        try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                json.dump(metrics, f, indent=2)
-            self._logger.info(
-                f"Metrics exported to {file_path}",
-                extra={"stage": "metrics_export"},
-            )
-        except Exception as e:
-            self._logger.error(
-                f"Metrics export to file failed: {e}",
-                extra={"file_path": str(file_path), "error": str(e)},
-            )
+        self.telemetry.export_to_file(file_path)
