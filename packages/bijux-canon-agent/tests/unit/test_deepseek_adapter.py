@@ -7,13 +7,13 @@ from urllib import error as urllib_error
 import pytest
 import requests
 
-from bijux_canon_agent.models.adapter_factory import build_adapter
-from bijux_canon_agent.models.llm_adapter import (
+from bijux_canon_agent.llm.adapter_factory import build_adapter
+from bijux_canon_agent.llm.llm_adapter import (
     AdapterConfig,
     DeepSeekAdapter,
     DeepSeekAdapterError,
 )
-from bijux_canon_agent.models.registry import Provider, resolve_provider
+from bijux_canon_agent.llm.registry import Provider, resolve_provider
 from bijux_canon_agent.pipeline.results.failure import (
     FailureCategory,
     FailureClass,
@@ -78,7 +78,7 @@ def test_config_drives_model_selection(monkeypatch: pytest.MonkeyPatch) -> None:
     def _boom(*args, **kwargs):  # noqa: ANN001 - test helper
         raise AssertionError("OpenAI adapter should not be instantiated")
 
-    monkeypatch.setattr("bijux_canon_agent.models.adapter_factory.OpenAIAdapter", _boom)
+    monkeypatch.setattr("bijux_canon_agent.llm.adapter_factory.OpenAIAdapter", _boom)
     adapter = build_adapter({"model": "deepseek-chat"})
     assert isinstance(adapter, DeepSeekAdapter)
 

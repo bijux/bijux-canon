@@ -1,9 +1,9 @@
 """
-Models package.
+LLM runtime package.
 
 IMPORTANT: keep this module import-light.
-Importing adapters/factories here can pull in `bijux_canon_agent.pipeline` early and
-create circular imports (especially under tox/installed-wheel imports).
+Importing adapters or factories here can pull in `bijux_canon_agent.pipeline`
+early and create circular imports.
 """
 
 from __future__ import annotations

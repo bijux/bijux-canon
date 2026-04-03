@@ -16,7 +16,7 @@ from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.config.env import key_for_provider, load_environment
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
-from bijux_canon_agent.models.llm_adapter import AdapterConfig, OpenAIAdapter
+from bijux_canon_agent.llm.llm_adapter import AdapterConfig, OpenAIAdapter
 from bijux_canon_agent.pipeline.control.controller import PipelineController
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.convergence.monitor import (

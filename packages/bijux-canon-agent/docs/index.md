@@ -77,7 +77,7 @@ python -m bijux_canon_agent run path/to/file.txt --out artifacts/bijux-canon-age
 - docs/spec/invariants/convergence-guarantees.md
 - docs/spec/invariants/core-invariants.md
 - docs/spec/invariants/determinism.md
-- docs/spec/models/deepseek.md
+- docs/spec/llm/deepseek.md
 - docs/spec/read_this_first.md
 - docs/spec/refusals.md
 - docs/spec/system_contract.md

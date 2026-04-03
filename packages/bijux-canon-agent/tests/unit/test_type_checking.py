@@ -35,7 +35,7 @@ def test_pipeline_mypy_has_no_regressions() -> None:
             "src/bijux_canon_agent/contracts",
             "src/bijux_canon_agent/pipeline",
             "src/bijux_canon_agent/tracing",
-            "src/bijux_canon_agent/models",
+            "src/bijux_canon_agent/llm",
             "src/bijux_canon_agent/agents/base.py",
         ],
         capture_output=True,

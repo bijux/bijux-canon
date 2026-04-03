@@ -63,7 +63,7 @@ nav:
       - Determinism: spec/invariants/determinism.md
       - Convergence Guarantees: spec/invariants/convergence-guarantees.md
       - Architecture Invariants: spec/invariants/architecture-invariants.md
-      - Model Support: spec/models/deepseek.md
+      - Model Support: spec/llm/deepseek.md
   - Design:
       - Determinism: design/determinism.md
   - API:

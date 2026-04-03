@@ -35,7 +35,7 @@ This document is a module-level map of the codebase. It describes *where respons
 - Field classification (deterministic vs observational)
 - Run fingerprinting (pipeline definition + config snapshot hashing)
 
-### Models (`src/bijux_canon_agent/models/`)
+### LLM Runtime (`src/bijux_canon_agent/llm/`)
 
 - Adapter registry and contracts for LLM backends
 - LLM runtime helpers for provider-facing execution support

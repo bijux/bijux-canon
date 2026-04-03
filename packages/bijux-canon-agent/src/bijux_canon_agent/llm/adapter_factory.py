@@ -7,7 +7,7 @@ import os
 from typing import Any
 
 from bijux_canon_agent.config.env import load_environment
-from bijux_canon_agent.models.llm_adapter import (
+from bijux_canon_agent.llm.llm_adapter import (
     AdapterConfig,
     BaseLLMAdapter,
     DeepSeekAdapter,
@@ -16,7 +16,7 @@ from bijux_canon_agent.models.llm_adapter import (
     MockAdapter,
     OpenAIAdapter,
 )
-from bijux_canon_agent.models.registry import (
+from bijux_canon_agent.llm.registry import (
     DEEPSEEK_PREFIX,
     Provider,
     resolve_provider,
