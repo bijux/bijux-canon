@@ -21,7 +21,6 @@ include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/dictionary.mk
-include $(MAKE_DIR)/changelog.mk
 include $(MAKE_DIR)/architecture.mk
 
 -include .env

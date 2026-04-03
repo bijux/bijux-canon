@@ -40,7 +40,7 @@ quality:
 	  { $(DEPTRY) --version 2>/dev/null || true; } >"$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
 	  $(DEPTRY) \
 	    --ignore DEP001 \
-	    --per-rule-ignores "DEP002=types-PyYAML|types-orjson|types-colorama|types-psutil|typing-extensions|types-pexpect|pytest|pytest-cov|pytest-asyncio|pytest-timeout|pytest-rerunfailures|pytest-benchmark|hypothesis|hypothesis-jsonschema|pexpect|ruff|mypy|pytype|codespell|pyright|pydocstyle|radon|vulture|deptry|reuse|build|bandit|pip-audit|commitizen|interrogate|mkdocs|mkdocs-material|mkdocstrings|mkdocs-git-revision-date-localized-plugin|mkdocs-include-markdown-plugin|mkdocs-gen-files|mkdocs-literate-nav|mkdocs-redirects|mkdocs-minify-plugin|mkdocs-glightbox|prance|openapi-spec-validator|schemathesis|anyio|uvicorn|pre-commit|twine|towncrier|cyclonedx-bom|faiss-cpu,DEP003=bijux_vex" \
+	    --per-rule-ignores "DEP002=types-PyYAML|types-orjson|types-colorama|types-psutil|typing-extensions|types-pexpect|pytest|pytest-cov|pytest-asyncio|pytest-timeout|pytest-rerunfailures|pytest-benchmark|hypothesis|hypothesis-jsonschema|pexpect|ruff|mypy|pytype|codespell|pyright|pydocstyle|radon|vulture|deptry|reuse|build|bandit|pip-audit|commitizen|interrogate|mkdocs|mkdocs-material|mkdocstrings|mkdocs-git-revision-date-localized-plugin|mkdocs-include-markdown-plugin|mkdocs-gen-files|mkdocs-literate-nav|mkdocs-redirects|mkdocs-minify-plugin|mkdocs-glightbox|prance|openapi-spec-validator|schemathesis|anyio|uvicorn|pre-commit|twine|cyclonedx-bom|faiss-cpu,DEP003=bijux_vex" \
 	    --pep621-dev-dependency-groups dev \
 	    --exclude "tests|docs|api|artifacts" \
 	    $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"

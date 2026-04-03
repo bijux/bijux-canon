@@ -1,4 +1,4 @@
-ma# Contributing to bijux-vex
+# Contributing to bijux-vex
 
 Keep the process boring and predictable.
 
@@ -9,16 +9,15 @@ Keep the process boring and predictable.
 - Do not merge with a dirty worktree or failing CI.
 
 ## Workflow
-1) Fork/branch from `main`.
-2) Add a towncrier fragment in `changelog.d/` (`feature`, `bugfix`, `internal`).
-3) Implement code + tests + docs together.
-4) Run the full gate: `make lint quality security test`.
-5) Open a PR with a concise description and link to relevant docs/specs.
+1. Fork/branch from `main`.
+2. Implement code + tests + docs together.
+3. Run the full gate: `make lint quality security test`.
+4. Open a PR with a concise description and link to relevant docs/specs.
 
 ## Commit/tag hygiene
 - Versions are derived from git tags via `hatch-vcs`; never hard-code.
 - Breaking changes require explicit ABI/public API version bumps and doc updates.
-- Licensing: code is MIT, docs/config CC0; see `docs/legal/licensing.md`.
+- Licensing: repository content is MIT; see `LICENSE`.
 
 ## Questions
 File an issue or start a discussion on GitHub. Be explicit about contracts and invariants you’re touching.

@@ -7,7 +7,7 @@
 - [ ] `api/v1/schema.yaml` committed; `make api-freeze` passes (no drift).
 - [ ] OpenAPI validation tests green; schema reachable in docs.
 - [ ] README badges and docs links verified.
-- [ ] CHANGELOG updated via towncrier; v0.1.0 section accurate.
+- [ ] CHANGELOG updated manually; v0.1.0 section accurate.
 - [ ] Release artifacts built (`make release`): wheel/sdist, SBOM, refreshed OpenAPI.
 - [ ] Tags signed: `git tag -s v0.1.x`.
 - [ ] CI workflows (ci.yml, release.yml) green on tag.

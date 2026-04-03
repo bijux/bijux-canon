@@ -10,7 +10,6 @@ include ../makes/shared/python-package.mk
 # Modular Includes
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
-include $(MAKE_DIR)/changelog.mk
 include $(MAKE_DIR)/dictionary.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/lint.mk
@@ -73,7 +72,6 @@ pre-push:
 	@$(MAKE) security
 	@$(MAKE) api
 	@$(MAKE) docs
-	@$(MAKE) changelog-check
 	@echo "✔ pre-push gate passed"
 .PHONY: pre-push
 
@@ -118,5 +116,5 @@ install: ## Install project in editable mode into .venv
 bootstrap: ## Setup environment & install git hooks
 all: ## Run full pipeline (clean → sbom)
 all-parallel: ## Run pipeline with parallelized lint, quality, security, api, and docs
-pre-push: ## Run pre-push gate: tests, quality, security, API, docs, changelog-check
+pre-push: ## Run pre-push gate: tests, quality, security, API, and docs
 help: ## Show this help

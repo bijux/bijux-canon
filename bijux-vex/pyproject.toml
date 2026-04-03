@@ -129,7 +129,6 @@ dev = [
 
   "pre-commit>=4.0",
   "twine>=6.1.0,<7.0",
-  "towncrier>=23.0,<25.0",
 
   "cyclonedx-bom>=4.6.0",
 ]
@@ -189,22 +188,6 @@ content-type = "text/markdown"
 fragments = [
   { path = "README.md" },
   { path = "CHANGELOG.md" },
-]
-
-[tool.towncrier]
-package = "bijux_vex"
-package_dir = "src"
-filename = "CHANGELOG.md"
-directory = "changelog.d"
-issue_format = "#{issue}"
-start_string = "# Changelog\n\nAll notable changes to this project are documented here. This file is generated via towncrier; do not edit by hand.\n\n"
-title_format = "## {version} ({project_date})"
-underlines = ["", ""]
-template = ""
-types = [
-  { directory = "feature", name = "Features", showcontent = true },
-  { directory = "bugfix", name = "Bugfixes", showcontent = true },
-  { directory = "internal", name = "Internal", showcontent = true },
 ]
 
 [tool.pytest.ini_options]

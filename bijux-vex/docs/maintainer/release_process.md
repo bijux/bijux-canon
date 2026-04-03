@@ -16,7 +16,7 @@
 2) `make docs` (mkdocs build --strict)
 3) `make api-freeze` (ensures schema.yaml → openapi.v1.json drift-free)
 4) `make release` (builds wheel+sdist, SBOM, refreshes OpenAPI)
-5) Update CHANGELOG via towncrier if needed.
+5) Update CHANGELOG manually if needed.
 6) Confirm `docs/maintainer/release_checklist.md` is complete.
 7) Create signed tag `git tag -s v0.1.0 -m "v0.1.0"`
 8) Push tag: `git push origin v0.1.0`

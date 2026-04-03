@@ -10,7 +10,7 @@ This project adheres to [Semantic Versioning](https://semver.org) and the
 
 <!-- unreleased start -->
 ### Added
-* (add new entries via fragments in `changelog.d/`)
+* (add new entries here)
 
 ### Changed
 * (add here)

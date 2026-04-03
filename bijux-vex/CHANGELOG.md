@@ -6,7 +6,7 @@ All notable changes to Bijux Vex are documented here. This project adheres to Se
 
 ### Added
 
-- (add new entries via Towncrier fragments in `changelog.d/`)
+- (add new entries here)
 
 ### Changed
 

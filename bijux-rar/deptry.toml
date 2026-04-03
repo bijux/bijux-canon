@@ -49,7 +49,6 @@ ignore_not_used = [
   "uvicorn",
   "pre-commit",
   "twine",
-  "towncrier",
   "cyclonedx-bom",
 ]
 ignore_transitive = ["bijux_rar"]
