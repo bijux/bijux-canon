@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from bijux_canon_reason.core.fingerprints import stable_id
 from bijux_canon_reason.core.rar_types import JsonValue, Plan, PlanNode, ProblemSpec
-from bijux_canon_reason.rar.planning.ir import StepSpec, ToolRequest
+from bijux_canon_reason.planning.ir import StepSpec, ToolRequest
 
 
 def plan_problem(spec: ProblemSpec, preset: str) -> Plan:

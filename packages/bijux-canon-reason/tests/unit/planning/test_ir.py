@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.rar.planning.ir import StepSpec, ToolRequest
+from bijux_canon_reason.planning.ir import StepSpec, ToolRequest
 
 
 def test_stepspec_defaults_and_tool_requests() -> None:

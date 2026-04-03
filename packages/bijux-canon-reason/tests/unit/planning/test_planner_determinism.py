@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.rar_types import ProblemSpec
-from bijux_canon_reason.rar.planning.planner import plan_problem
+from bijux_canon_reason.planning.planner import plan_problem
 
 
 def test_planner_is_deterministic_same_input_same_plan_id() -> None:
