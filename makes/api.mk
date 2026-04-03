@@ -51,9 +51,7 @@ OPENAPI_GENERATOR_NPM_PACKAGE   ?= @openapitools/openapi-generator-cli@7.14.0
 OPENAPI_GENERATOR_FALLBACK_PACKAGE ?= @openapitools/openapi-generator-cli@latest
 REDOCLY_NPM_PACKAGE             ?= @redocly/cli
 OPENAPI_GENERATOR_JAR_VERSION   ?=
-NODE_VERSION_FILE               ?= $(CONFIG_DIR)/node-version.nvmrc
-NODE_REQUIRED_FILE              := $(strip $(shell sed -n 's/^[^0-9]*\([0-9][0-9]*\).*/\1/p' "$(NODE_VERSION_FILE)" 2>/dev/null | head -n 1))
-NODE_REQUIRED                   ?= $(if $(NODE_REQUIRED_FILE),$(NODE_REQUIRED_FILE),20)
+NODE_REQUIRED                   ?= 20
 NODE_DIST_VERSION               ?= v20.18.0
 API_NODE_PACKAGE_MANIFEST       ?= $(MONOREPO_ROOT)/configs/package.json
 API_NODE_PACKAGE_MANIFEST_ABS   := $(abspath $(API_NODE_PACKAGE_MANIFEST))
@@ -297,7 +295,7 @@ $(API_NODE_READY_MARKER):
 	    NODE_ACTUAL_FULL="$$(node -v | sed 's/^v//')"; \
 	    NODE_ACTUAL="$${NODE_ACTUAL_FULL%%.*}"; \
 	    if [ "$$NODE_ACTUAL" != "$(NODE_REQUIRED)" ]; then \
-	      echo "✘ Node $$NODE_ACTUAL_FULL detected; require $(NODE_REQUIRED).x (see $(NODE_VERSION_FILE))"; exit 1; \
+	      echo "✘ Node $$NODE_ACTUAL_FULL detected; require $(NODE_REQUIRED).x"; exit 1; \
 	    fi; \
 	    test -f "$(API_NODE_PACKAGE_MANIFEST_ABS)" || { echo "✘ missing $(API_NODE_PACKAGE_MANIFEST_ABS)"; exit 1; }; \
 	    test -f "$(API_NODE_LOCKFILE_ABS)" || { echo "✘ missing $(API_NODE_LOCKFILE_ABS)"; exit 1; }; \
