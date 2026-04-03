@@ -1,4 +1,4 @@
-"""Example pipelines intended for documentation and adoption."""
+"""Reference pipeline builders intended for documentation and adoption."""
 
 from __future__ import annotations
 

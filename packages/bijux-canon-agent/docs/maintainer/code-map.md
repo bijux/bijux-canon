@@ -8,7 +8,7 @@ High-signal locations:
 - `src/bijux_canon_agent/api/v1/` — v1 schemas and handlers
 - `src/bijux_canon_agent/application/` — orchestration policies and state machines
 - `src/bijux_canon_agent/pipeline/` — canonical pipeline, lifecycle control, execution, results
-- `src/bijux_canon_agent/examples/` — packaged example pipelines
+- `src/bijux_canon_agent/reference_pipelines/` — reference pipeline builders
 - `src/bijux_canon_agent/observability/` — logging and telemetry helpers
 - `src/bijux_canon_agent/support/` — hashing, final markers, and version helpers
 - `src/bijux_canon_agent/tracing/` — trace schema, validation, upgrades, fingerprints

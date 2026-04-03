@@ -21,7 +21,7 @@ MODULE_SNAPSHOT = {
         "Pipeline",
         "PipelineDefinition",
     ),
-    "bijux_canon_agent.examples": (
+    "bijux_canon_agent.reference_pipelines": (
         "MinimalPipeline",
         "run_minimal",
         "DocumentReviewPipeline",

@@ -52,7 +52,7 @@ This document is a module-level map of the codebase. It describes *where respons
 - Environment key loading/validation (`src/bijux_canon_agent/config/env.py`)
 - Example runtime YAML (`examples/default-config.yml`)
 
-### Examples (`src/bijux_canon_agent/examples/`)
+### Examples (`src/bijux_canon_agent/reference_pipelines/`)
 
 - Example pipelines intended for adoption, docs, and smoke coverage
 
