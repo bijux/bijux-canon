@@ -41,6 +41,7 @@ from .ports import (
     Reranker,
 )
 from .rerankers import LexicalOverlapReranker
+from .text_analysis import stable_token_bucket, tokenize
 
 __all__ = [
     "Answer",
@@ -60,6 +61,8 @@ __all__ = [
     "load_index",
     "ExtractiveAnswerer",
     "LexicalOverlapReranker",
+    "tokenize",
+    "stable_token_bucket",
     "ChunkId",
     "ChunkText",
     "ChunkMetadata",

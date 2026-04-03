@@ -11,8 +11,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from bijux_canon_ingest.retrieval.indexes import _tokenize
 from bijux_canon_ingest.retrieval.ports import Candidate
+from bijux_canon_ingest.retrieval.text_analysis import tokenize
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,13 +32,13 @@ class LexicalOverlapReranker:
                 return tok[:-1]
             return tok
 
-        qtoks = {_stem(t) for t in _tokenize(query)}
+        qtoks = {_stem(token) for token in tokenize(query)}
         if not qtoks:
             return list(candidates)[: max(0, int(top_k))]
 
         scored: list[tuple[float, Candidate]] = []
         for c in candidates:
-            ctoks = {_stem(t) for t in _tokenize(c.chunk.text)}
+            ctoks = {_stem(token) for token in tokenize(c.chunk.text)}
             inter = len(qtoks & ctoks)
             denom = max(1, len(qtoks))
             boost = inter / denom
