@@ -35,7 +35,7 @@ from bijux_rag.application.pipelines.configured import (
     StepConfig,
     build_rag_pipeline,
 )
-from bijux_rag.rag.app import RagApp
+from bijux_rag.application.rag import RagApp
 
 docs = [RawDoc(doc_id="1", title="RAG Intro", abstract="Retrieval-Augmented Generation combines search and LLMs.")]
 pipeline = build_rag_pipeline(

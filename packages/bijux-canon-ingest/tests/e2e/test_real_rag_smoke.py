@@ -6,7 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from bijux_rag.core.rag_types import RawDoc
-from bijux_rag.rag.app import RagApp
+from bijux_rag.application.rag import RagApp
 from bijux_rag.result import is_ok
 
 

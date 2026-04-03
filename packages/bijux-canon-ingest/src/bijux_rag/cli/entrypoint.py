@@ -27,9 +27,9 @@ from bijux_rag.application.pipelines.configured import (
     StepConfig,
     build_rag_pipeline,
 )
-from bijux_rag.rag.app import RagBuildConfig, build_index_from_csv, parse_filters
-from bijux_rag.rag.app import ask as rag_ask
-from bijux_rag.rag.app import retrieve as rag_retrieve
+from bijux_rag.application.rag import RagBuildConfig, build_index_from_csv, parse_filters
+from bijux_rag.application.rag import ask as rag_ask
+from bijux_rag.application.rag import retrieve as rag_retrieve
 from bijux_rag.result.types import Err, ErrInfo, Ok, Result
 
 

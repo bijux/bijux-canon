@@ -13,8 +13,8 @@ from bijux_rag.config.app import AppConfig
 from bijux_rag.config.cleaning import CleanConfig
 from bijux_rag.config.rag import RagConfig, get_deps
 from bijux_rag.core.rag_types import Chunk, RagEnv, RawDoc
-from bijux_rag.rag.rag_api import full_rag_api_docs
-from bijux_rag.rag.types import DebugConfig
+from bijux_rag.application.api import full_rag_api_docs
+from bijux_rag.application.observability import DebugConfig
 from bijux_rag.result import Err, Ok, Result, result_and_then, result_map
 
 

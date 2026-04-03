@@ -12,7 +12,7 @@ from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field, model_validator
 
 from bijux_rag.core.rag_types import RawDoc
-from bijux_rag.rag.app import IndexBackend, RagApp, RagIndex
+from bijux_rag.application.rag import IndexBackend, RagApp, RagIndex
 from bijux_rag.rag.ports import Answer, Candidate
 from bijux_rag.rag.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
 from bijux_rag.result.types import Err

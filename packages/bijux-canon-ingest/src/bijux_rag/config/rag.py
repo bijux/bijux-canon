@@ -27,8 +27,8 @@ from bijux_rag.config.cleaning import (
     CleanConfig,
     make_cleaner,
 )
+from bijux_rag.application.observability import DebugConfig, Observations, RagTaps
 from bijux_rag.rag.stages import embed_chunk
-from bijux_rag.rag.types import DebugConfig, Observations, RagTaps
 from bijux_rag.result import Err, Ok, Result
 
 
@@ -72,7 +72,7 @@ def make_rag_fn(
 ) -> Callable[[list[RawDoc]], tuple[list[Chunk], Observations]]:
     """Pure configurator: capture immutable config into a reusable callable."""
 
-    from bijux_rag.rag.rag_api import full_rag_api
+    from bijux_rag.application.api import full_rag_api
 
     debug_cfg = debug if debug is not None else DebugConfig()
 

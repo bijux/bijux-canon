@@ -130,7 +130,7 @@ from .chunking import (
     gen_overlapping_chunks,
     sliding_windows,
 )
-from .rag_api import (
+from ..application.api import (
     full_rag_api,
     full_rag_api_docs,
     full_rag_api_path,

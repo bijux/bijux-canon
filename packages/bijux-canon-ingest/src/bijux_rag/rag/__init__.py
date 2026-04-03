@@ -41,7 +41,14 @@ from .core import (
     stream_chunks,
     throttle,
 )
-from .types import DebugConfig, DocRule, Observations, RagTaps, RagTraceV3, TraceLens
+from ..application.observability import (
+    DebugConfig,
+    DocRule,
+    Observations,
+    RagTaps,
+    RagTraceV3,
+    TraceLens,
+)
 
 __all__ = [
     "DocRule",

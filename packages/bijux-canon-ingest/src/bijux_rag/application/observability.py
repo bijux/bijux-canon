@@ -1,11 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""Public API types for the RAG surface (end-of-Bijux RAG).
-
-Most of these types are introduced in Bijux RAG and extended in Bijux RAG
-(notably tracing/stream observability).
-"""
+"""Observability and debug types for application-level RAG flows."""
 
 from __future__ import annotations
 

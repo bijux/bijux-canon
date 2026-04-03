@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
-"""RAG pipeline APIs (Bijux RAG–08; end-of-Bijux RAG).
+"""Application-facing RAG pipeline APIs.
 
-This module contains the domain-specific core pipeline entry points:
+This module contains the application entry points for:
 - a minimal lazy pipeline (`iter_rag`)
 - the fully-configurable instrumented core (`iter_rag_core`)
 - the doc-materializing API for taps/observations (`full_rag_api_docs`)
@@ -30,9 +30,10 @@ from bijux_rag.fp import StageInstrumentation, instrument_stage
 from bijux_rag.rag.stages import embed_chunk, structural_dedup_chunks
 from bijux_rag.result import Err, Ok, Result
 
-from .chunking import gen_chunk_doc
-from .config import RagBoundaryDeps, RagConfig, RagCoreDeps
-from .types import Observations
+from bijux_rag.config.rag import RagBoundaryDeps, RagConfig, RagCoreDeps
+from bijux_rag.rag.chunking import gen_chunk_doc
+
+from .observability import Observations
 
 T = TypeVar("T")
 

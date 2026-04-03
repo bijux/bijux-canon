@@ -2,7 +2,7 @@
 # Copyright © 2025 Bijan Mousavi <bijan@bijux.io>
 
 # mypy: ignore-errors
-"""Application services for the 'real RAG' path.
+"""Application services for the RAG ingestion flow.
 
 This module wires:
     clean -> chunk -> index -> retrieve -> (optional rerank) -> generate.

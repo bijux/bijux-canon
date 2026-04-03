@@ -100,13 +100,13 @@ def rag_eval_suite() -> dict[str, Any]:
 
 @pytest.fixture(scope="session")
 def rag_app() -> Any:
-    """Requires you to implement bijux_rag.rag.app.RagApp (truthful RAG entrypoint)."""
+    """Requires you to implement bijux_rag.application.rag.RagApp (truthful RAG entrypoint)."""
 
     try:
-        from bijux_rag.rag.app import RagApp  # type: ignore
+        from bijux_rag.application.rag import RagApp  # type: ignore
     except Exception as exc:  # pragma: no cover
         pytest.fail(
-            "Missing bijux_rag.rag.app.RagApp. Implement real RAG primitives (index/retrieve/ask) first. "
+            "Missing bijux_rag.application.rag.RagApp. Implement real RAG primitives (index/retrieve/ask) first. "
             f"Import error: {exc}"
         )
     return RagApp(profile="ci")
