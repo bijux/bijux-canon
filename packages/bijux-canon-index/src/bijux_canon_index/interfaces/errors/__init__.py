@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from bijux_canon_index.core import errors
 from bijux_canon_index.core.errors.refusal import is_refusal, refusal_payload
-from bijux_canon_index.infra.metrics import METRICS
 
 HTTP_MAPPING: dict[type[BaseException], int] = {
     errors.ValidationError: 400,
@@ -63,24 +62,9 @@ def to_cli_exit(exc: Exception) -> int:
         if isinstance(exc, exc_type):
             return code
     raise exc
-
-
-def record_failure(exc: Exception) -> None:
-    if isinstance(
-        exc,
-        (
-            errors.BackendUnavailableError,
-            errors.BackendCapabilityError,
-            errors.BackendDivergenceError,
-        ),
-    ):
-        METRICS.increment("backend_failures_total", 1)
-
-
 __all__ = [
     "to_http_status",
     "to_cli_exit",
     "is_refusal",
     "refusal_payload",
-    "record_failure",
 ]

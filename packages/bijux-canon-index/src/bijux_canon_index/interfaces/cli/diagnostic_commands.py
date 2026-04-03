@@ -20,9 +20,9 @@ from bijux_canon_index.interfaces.cli.rendering import (
     emit as _emit,
     redact_config as _redact_config,
 )
+from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
-    record_failure,
     refusal_payload,
     to_cli_exit,
 )

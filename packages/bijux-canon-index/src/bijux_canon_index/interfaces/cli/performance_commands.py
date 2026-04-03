@@ -29,9 +29,9 @@ from bijux_canon_index.interfaces.cli.options import (
     ND_TUNE_DATASET_DIR_OPTION,
 )
 from bijux_canon_index.interfaces.cli.rendering import emit as _emit
+from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
-    record_failure,
     refusal_payload,
     to_cli_exit,
 )
