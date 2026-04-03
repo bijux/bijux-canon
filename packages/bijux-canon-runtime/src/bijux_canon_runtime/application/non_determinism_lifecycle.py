@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/orchestration/non_determinism_lifecycle.py."""
+"""Module definitions for application/non_determinism_lifecycle.py."""
 
 from __future__ import annotations
 

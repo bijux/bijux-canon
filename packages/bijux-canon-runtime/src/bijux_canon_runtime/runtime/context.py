@@ -15,7 +15,7 @@ from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.observability.capture.hooks import RuntimeObserver
 from bijux_canon_runtime.runtime.observability.capture.observed_run import ObservedRun
 from bijux_canon_runtime.runtime.observability.capture.trace_recorder import TraceRecorder
-from bijux_canon_runtime.runtime.orchestration.non_determinism_lifecycle import (
+from bijux_canon_runtime.application.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
 from bijux_canon_runtime.model.artifact.artifact import Artifact

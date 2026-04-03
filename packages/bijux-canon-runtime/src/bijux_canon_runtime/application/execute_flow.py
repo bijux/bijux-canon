@@ -3,7 +3,7 @@
 # Copyright © 2026 Bijan Mousavi
 # INTERNAL CORE — CHANGES REQUIRE REPLAY REVIEW
 
-"""Module definitions for runtime/orchestration/execute_flow.py."""
+"""Module definitions for application/execute_flow.py."""
 
 from __future__ import annotations
 
@@ -33,10 +33,10 @@ from bijux_canon_runtime.runtime.observability.storage.execution_store_protocol 
     ExecutionReadStoreProtocol,
     ExecutionWriteStoreProtocol,
 )
-from bijux_canon_runtime.runtime.orchestration.non_determinism_lifecycle import (
+from bijux_canon_runtime.application.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
-from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
+from bijux_canon_runtime.application.planner import ExecutionPlanner
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence

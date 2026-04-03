@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from bijux_canon_runtime.interfaces.cli import main as cli_main
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     FlowRunResult,
     RunMode,

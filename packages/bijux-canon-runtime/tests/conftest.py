@@ -89,12 +89,12 @@ def pytest_configure() -> None:
 @pytest.fixture(autouse=True)
 def _stable_bijux_versions(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "bijux_canon_runtime.runtime.orchestration.planner.ExecutionPlanner._bijux_cli_version",
+        "bijux_canon_runtime.application.planner.ExecutionPlanner._bijux_cli_version",
         "0.0.0",
         raising=False,
     )
     monkeypatch.setattr(
-        "bijux_canon_runtime.runtime.orchestration.planner.ExecutionPlanner._bijux_agent_version",
+        "bijux_canon_runtime.application.planner.ExecutionPlanner._bijux_agent_version",
         "0.0.0",
         raising=False,
     )
@@ -171,11 +171,11 @@ def deterministic_environment(
         lambda: fingerprint,
     )
     monkeypatch.setattr(
-        "bijux_canon_runtime.runtime.orchestration.planner.compute_environment_fingerprint",
+        "bijux_canon_runtime.application.planner.compute_environment_fingerprint",
         lambda: fingerprint,
     )
     monkeypatch.setattr(
-        "bijux_canon_runtime.runtime.orchestration.determinism_guard.compute_environment_fingerprint",
+        "bijux_canon_runtime.application.determinism_guard.compute_environment_fingerprint",
         lambda: fingerprint,
     )
     return fingerprint

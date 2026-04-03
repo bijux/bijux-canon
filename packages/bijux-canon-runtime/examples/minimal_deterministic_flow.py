@@ -9,13 +9,13 @@ from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
-from bijux_canon_runtime.runtime.orchestration.replay_store import replay_with_store
+from bijux_canon_runtime.application.planner import ExecutionPlanner
+from bijux_canon_runtime.application.replay_store import replay_with_store
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope

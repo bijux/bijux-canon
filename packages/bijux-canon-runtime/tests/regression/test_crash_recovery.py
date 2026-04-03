@@ -16,12 +16,12 @@ from bijux_canon_runtime.runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.runtime.orchestration.planner import ExecutionPlanner
+from bijux_canon_runtime.application.planner import ExecutionPlanner
 from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
 from bijux_canon_runtime.ontology.ids import AgentID, BundleID, RunID, TenantID
 

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/orchestration/determinism_guard.py."""
+"""Module definitions for application/determinism_guard.py."""
 
 from __future__ import annotations
 

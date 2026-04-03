@@ -15,11 +15,11 @@ from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 from bijux_canon_runtime.runtime.observability.capture.trace_recorder import TraceRecorder
 from bijux_canon_runtime.runtime.observability.classification.entropy import EntropyLedger
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     execute_flow,
 )
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     RunMode as FlowRunMode,
 )
 from bijux_canon_runtime.model.artifact.artifact import Artifact

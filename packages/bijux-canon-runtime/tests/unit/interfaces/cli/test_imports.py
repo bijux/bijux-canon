@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 
 import bijux_canon_runtime
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,

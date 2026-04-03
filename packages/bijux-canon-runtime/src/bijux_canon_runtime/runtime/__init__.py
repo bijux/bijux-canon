@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     FlowRunResult,
     RunMode,
     execute_flow,

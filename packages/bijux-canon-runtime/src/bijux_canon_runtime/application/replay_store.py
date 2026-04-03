@@ -9,8 +9,8 @@ from bijux_canon_runtime.runtime.observability.analysis.trace_diff import semant
 from bijux_canon_runtime.runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
 )
-from bijux_canon_runtime.runtime.orchestration.determinism_guard import validate_replay
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.determinism_guard import validate_replay
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     FlowRunResult,
     execute_flow,

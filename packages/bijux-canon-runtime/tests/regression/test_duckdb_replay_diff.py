@@ -5,12 +5,12 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.runtime.orchestration.replay_store import replay_with_store
+from bijux_canon_runtime.application.replay_store import replay_with_store
 
 pytestmark = pytest.mark.regression
 

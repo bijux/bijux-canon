@@ -2,14 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/orchestration/flow_boundary.py."""
+"""Module definitions for application/flow_boundary.py."""
 
 from __future__ import annotations
 
 from collections.abc import Callable
 
 from bijux_canon_runtime.core.authority import SEMANTICS_SOURCE, SEMANTICS_VERSION
-from bijux_canon_runtime.runtime.orchestration.determinism_guard import validate_determinism
+from bijux_canon_runtime.application.determinism_guard import validate_determinism
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 
 

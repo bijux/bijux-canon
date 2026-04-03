@@ -19,7 +19,7 @@ from bijux_canon_runtime.runtime.observability.classification.fingerprint import
     fingerprint_inputs,
     fingerprint_policy,
 )
-from bijux_canon_runtime.runtime.orchestration.flow_boundary import enforce_flow_boundary
+from bijux_canon_runtime.application.flow_boundary import enforce_flow_boundary
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace

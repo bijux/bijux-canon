@@ -10,7 +10,7 @@ from bijux_canon_runtime.runtime.observability.analysis.drift import (
     outcome_drift,
 )
 from bijux_canon_runtime.runtime.observability.analysis.trace_diff import entropy_summary
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,

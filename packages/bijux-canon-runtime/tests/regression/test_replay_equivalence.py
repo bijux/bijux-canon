@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.runtime.orchestration.determinism_guard import validate_replay
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.determinism_guard import validate_replay
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,

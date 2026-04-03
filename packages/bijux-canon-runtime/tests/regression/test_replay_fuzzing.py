@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.runtime.orchestration.determinism_guard import (
+from bijux_canon_runtime.application.determinism_guard import (
     semantic_artifact_fingerprint,
     semantic_evidence_fingerprint,
 )

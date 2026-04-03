@@ -10,7 +10,7 @@ import bijux_vex
 import pytest
 
 from bijux_canon_runtime.runtime.artifact_store import HostileArtifactStore
-from bijux_canon_runtime.runtime.orchestration.execute_flow import (
+from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
