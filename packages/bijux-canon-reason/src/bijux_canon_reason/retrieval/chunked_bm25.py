@@ -18,9 +18,9 @@ import json
 from pathlib import Path
 
 from bijux_canon_reason.core.fingerprints import canonical_dumps, fingerprint_bytes
-from bijux_canon_reason.rar.retrieval.bm25 import tokenize
-from bijux_canon_reason.rar.retrieval.chunking import Chunk, chunk_document
-from bijux_canon_reason.rar.retrieval.corpus import (
+from bijux_canon_reason.retrieval.bm25 import tokenize
+from bijux_canon_reason.retrieval.chunking import Chunk, chunk_document
+from bijux_canon_reason.retrieval.corpus import (
     CorpusDoc,
     load_corpus_jsonl_stream,
 )

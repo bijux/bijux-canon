@@ -15,7 +15,7 @@ from dataclasses import dataclass
 import math
 import re
 
-from bijux_canon_reason.rar.retrieval.corpus import CorpusDoc
+from bijux_canon_reason.retrieval.corpus import CorpusDoc
 
 # Locale-independent tokenizer to avoid locale drift.
 _WORD_RE = re.compile(r"[A-Za-z0-9_]+", flags=re.ASCII)

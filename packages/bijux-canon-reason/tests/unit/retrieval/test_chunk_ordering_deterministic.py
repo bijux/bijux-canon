@@ -2,8 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.rar.retrieval.chunked_bm25 import ChunkedBM25Index
-from bijux_canon_reason.rar.retrieval.corpus import CorpusDoc
+from bijux_canon_reason.retrieval.chunked_bm25 import ChunkedBM25Index
+from bijux_canon_reason.retrieval.corpus import CorpusDoc
 
 
 def test_chunks_sorted_by_doc_and_span() -> None:

@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from bijux_canon_reason.execution.runtime import Runtime
-from bijux_canon_reason.rar.retrieval.chunked_bm25 import build_or_load_index
+from bijux_canon_reason.retrieval.chunked_bm25 import build_or_load_index
 
 
 def test_local_bm25_descriptor_and_provenance(tmp_path: Path) -> None:

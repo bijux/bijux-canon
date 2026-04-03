@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.rar.retrieval.chunking import chunk_document
+from bijux_canon_reason.retrieval.chunking import chunk_document
 
 
 def test_chunk_document_uses_utf8_byte_spans_and_stable_ids() -> None:

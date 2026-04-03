@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import hashlib
 import re
 
-from bijux_canon_reason.rar.retrieval.bm25 import tokenize
+from bijux_canon_reason.retrieval.bm25 import tokenize
 
 _SENT_SPLIT = re.compile(r"(?<=[.!?])\s+")
 

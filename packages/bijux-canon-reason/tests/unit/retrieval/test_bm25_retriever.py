@@ -11,15 +11,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.rar.retrieval.bm25 import BM25Index
-from bijux_canon_reason.rar.retrieval.corpus import CorpusDoc
-from bijux_canon_reason.rar.retrieval.corpus import load_corpus_jsonl
+from bijux_canon_reason.retrieval.bm25 import BM25Index
+from bijux_canon_reason.retrieval.corpus import CorpusDoc
+from bijux_canon_reason.retrieval.corpus import load_corpus_jsonl
 
 
 def test_bm25_ranks_relevant_doc_first() -> None:
-    corpus_path = (
-        Path(__file__).resolve().parents[3] / "fixtures" / "corpus_small.jsonl"
-    )
+    corpus_path = Path(__file__).resolve().parents[2] / "fixtures" / "corpus_small.jsonl"
     docs = load_corpus_jsonl(corpus_path)
     idx = BM25Index.build(docs)
 
@@ -28,9 +26,7 @@ def test_bm25_ranks_relevant_doc_first() -> None:
 
 
 def test_bm25_is_deterministic_when_all_scores_zero() -> None:
-    corpus_path = (
-        Path(__file__).resolve().parents[3] / "fixtures" / "corpus_small.jsonl"
-    )
+    corpus_path = Path(__file__).resolve().parents[2] / "fixtures" / "corpus_small.jsonl"
     docs = load_corpus_jsonl(corpus_path)
     idx = BM25Index.build(docs)
 
