@@ -34,8 +34,6 @@ ALLOWED_DIRS = {
     "src/bijux_agent/api/v1/",
     "tests/snapshots/",
     "docs/",
-    "api/",
-    "api/v1/",
     "docs/architecture/",
     "docs/agents/",
     "docs/cli/",

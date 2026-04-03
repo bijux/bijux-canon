@@ -71,4 +71,4 @@ This is deliberate: API runs must still be auditable.
 
 ## OpenAPI schema
 
-The repository includes an OpenAPI file at `api/v1/schema.yaml`. Keep the router implementation and schema aligned (avoid “spec drift”).
+The repository includes an OpenAPI file at `../../apis/bijux-agent/v1/schema.yaml`. Keep the router implementation and schema aligned (avoid “spec drift”).

@@ -38,7 +38,7 @@ OPENAPI_GENERATOR_CLI_VERSION ?= 2.27.0
 OPENAPI_GENERATOR_JAR_VERSION ?= 7.18.0
 
 # Find schemas
-ALL_API_SCHEMAS       := $(shell if [ -d api ]; then find api -type f \( -name '*.yaml' -o -name '*.yml' \); fi)
+ALL_API_SCHEMAS       := $(shell if [ -d "$(API_DIR)" ]; then find "$(API_DIR)" -type f \( -name '*.yaml' -o -name '*.yml' \); fi)
 ALL_API_SCHEMAS_ABS   := $(abspath $(ALL_API_SCHEMAS))
 
 # Python CLIs (prefer ACT if present)
@@ -108,14 +108,14 @@ api-install: | $(VENV) node_deps
 	@echo "✔ API toolchain ready."
 
 api-lint: | node_deps
-	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "→ No API schemas found under api/*.y*ml; skipping API lint"; exit 0; fi
+	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "→ No API schemas found under $(API_DIR); skipping API lint"; exit 0; fi
 	@echo "→ Linting OpenAPI specs..."
 	$(foreach s,$(ALL_API_SCHEMAS),$(call VALIDATE_ONE_SCHEMA,$(s)))
 	@echo "✔ All schemas validated. Logs → $(API_LINT_DIR_ABS)"
 
 # ── Start server, wait for readiness, run Schemathesis (sandboxed Hypothesis DB), stop server
 api-test: | $(VENV) node_deps
-	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "→ No API schemas found under api/*.y*ml; skipping API tests"; exit 0; fi
+	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "→ No API schemas found under $(API_DIR); skipping API tests"; exit 0; fi
 	@mkdir -p "$(API_ARTIFACTS_DIR_ABS)" "$(API_TEST_DIR_ABS)"
 	@echo "→ Starting API server"
 	@script="$(API_ARTIFACTS_DIR_ABS)/run_api_test.sh"; \

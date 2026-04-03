@@ -9,9 +9,10 @@ from pathlib import Path
 
 
 def test_openapi_schema_checksum_matches_manifest() -> None:
-    root = Path(__file__).resolve().parents[2]
-    schema_path = root / "api" / "v1" / "schema.yaml"
-    checksum_path = root / "docs" / "checksums" / "openapi_v1.sha256"
+    package_root = Path(__file__).resolve().parents[2]
+    repo_root = package_root.parents[1]
+    schema_path = repo_root / "apis" / "bijux-agent" / "v1" / "schema.yaml"
+    checksum_path = package_root / "docs" / "checksums" / "openapi_v1.sha256"
     checksum_content = checksum_path.read_text(encoding="utf-8")
     relevant_lines = [
         line

@@ -8,6 +8,7 @@ on:
       - "packages/bijux-agent/docs/**"
       - "packages/bijux-agent/README.md"
       - "packages/bijux-agent/CHANGELOG.md"
+      - "apis/bijux-agent/**"
       - "scripts/bijux-agent/**"
       - "configs/bijux-agent/mkdocs.yml"
       - "makes/bijux-agent/docs.mk"

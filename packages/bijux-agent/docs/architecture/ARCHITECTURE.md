@@ -14,7 +14,7 @@ This document is a module-level map of the codebase. It describes *where respons
 ### HTTP API (`src/bijux_agent/httpapi/`, `src/bijux_agent/api/v1/`)
 
 - `httpapi/v1.py` exposes a small FastAPI router (when FastAPI is installed)
-- `api/v1/*` owns request/response schemas and the execution handler
+- `src/bijux_agent/api/v1/*` owns request/response schemas and the execution handler
 - The v1 handler is intentionally narrow: it runs the canonical pipeline with a minimal config baseline
 
 ### Pipeline core (`src/bijux_agent/pipeline/`)

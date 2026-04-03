@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/bijux-agent-ci.yml"
       - "packages/bijux-agent/**"
+      - "apis/bijux-agent/**"
       - "configs/bijux-agent/**"
       - "makes/bijux-agent/**"
       - "makes/shared/**"
@@ -17,6 +18,7 @@ on:
     paths:
       - ".github/workflows/bijux-agent-ci.yml"
       - "packages/bijux-agent/**"
+      - "apis/bijux-agent/**"
       - "configs/bijux-agent/**"
       - "makes/bijux-agent/**"
       - "makes/shared/**"

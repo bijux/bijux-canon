@@ -7,7 +7,7 @@ High-signal directories:
 - `docs/` — MkDocs sources (this directory)
 - `examples/default-config.yml` — example runtime configuration for CLI runs
 - `../../configs/bijux-agent/` — root-managed tooling configuration
-- `api/` — OpenAPI schema and API assets
+- `../../apis/bijux-agent/` — root-managed OpenAPI schema and API assets
 - `../../makes/bijux-agent/` — Make targets used by CI and developers
 
 Generated artifacts belong under `artifacts/bijux-agent/` (or under the CLI `--out` directory).

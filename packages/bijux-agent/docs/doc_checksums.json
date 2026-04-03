@@ -1,6 +1,6 @@
 {
-  "docs/api/index.md": "2318d90bf50a6bb5da8f9ce9f1e90fef8bd7e26aa92a49a4c5f489be2d8b1087",
-  "docs/architecture/ARCHITECTURE.md": "ab91fa4a5626ae92f3c41a0dfb256763cf40d2cc6d8be96d8770900ceec2fe2d",
+  "docs/api/index.md": "2ecb0459e840ca4e7d12021eb120a8059c3a330bc6b6f2ed491f6074efad6eaf",
+  "docs/architecture/ARCHITECTURE.md": "d52e901fd37dd3d9bc1f16433be2afff0a8ac18859c0a8fb43bc8cea9de162a0",
   "docs/design/determinism.md": "ab37ac57cdf51c76f5ecf76ff9d77cdcd2773350b5545093eede45483f05cbf9",
   "docs/examples/document-review.md": "257a35d9cfbd3a3f322289124f82dec322d527e6d57067293712de7ea677b7f0",
   "docs/examples/minimal-pipeline.md": "32b979a8a496b87b170d7658f7071ec5701e7478bc2c5bc8006185a1f20e0568",
@@ -19,7 +19,7 @@
   "docs/maintainer/evaluation.md": "b85da1c581a276a6525f66261c7656bf555d96283bdfa398f3b6e2eaf22ea237",
   "docs/maintainer/first-refactor-plan.md": "826d7a80260e002396bad139222a686848757deb69a5a7da38025b9c74de5626",
   "docs/maintainer/pipeline_refactor_rules.md": "0fdb0339e8b5e442d076e4e6d89227aa49d79558bfb1a45ff9b36b63d7b4d8dc",
-  "docs/maintainer/project_tree.md": "7e17ab9a51fabe209a71aa54b7016d6960d9cc238b4d7dbefed00308a48b6300",
+  "docs/maintainer/project_tree.md": "567037c114f742cdd1884841c3484dca9bf8dbc48df63a4be85047177b5038c9",
   "docs/maintainer/refactor-invariants.md": "06dd3a8c28c8bf4d685e6901b6afefc685f8fbd3fd9facecb31f915971db195e",
   "docs/maintainer/refactor-plan.md": "5a46be353c6eb1d95da83c039b57edf6debdb3a3fd6d8bef6be271c579fe1d0b",
   "docs/maintainer/refactor-priority.md": "959fb5d75c6abef6af0ed9f3fa831e78152029d89d62af46959fd3e1d2201a75",
