@@ -29,12 +29,12 @@ Style violations require a rewrite.
 
 ## Extension Points  
 Style changes occur in this file.  
-Style changes update [scripts/check_docs_consistency.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_docs_consistency.py).  
+Style changes stay aligned with the surrounding runtime docs.  
 Style changes update [Docs Voice](DOCS_VOICE.md).  
 
 ## Exit Criteria  
 This doc becomes obsolete when docs are generated.  
-The replacement is [scripts/check_docs_consistency.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_docs_consistency.py).  
+The replacement is a generated documentation contract.  
 Obsolete docs are removed.  
 
-Code refs: [scripts/check_docs_consistency.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_docs_consistency.py).  
+Code refs: `docs/packages/bijux-canon-runtime/meta/DOCS_STYLE.md`.  

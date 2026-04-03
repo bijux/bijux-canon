@@ -15,7 +15,7 @@ Architecture context lives in [Architecture](../architecture/architecture.md).
 The example uses only MPI entry points.  
 The example shows agenticity, failure, and recovery.  
 The example runtime stays under 60 seconds on default hardware.  
-Example code lives in [scripts/golden_path_example.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/golden_path_example.py).  
+Example code lives alongside the published runtime examples.  
 
 ## Invariants  
 The golden path remains single and canonical.  
@@ -37,4 +37,4 @@ This doc is obsolete when examples are generated.
 The replacement is [Mpi](mpi.md).  
 Obsolete docs are removed.  
 
-Code refs: [scripts/golden_path_example.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/golden_path_example.py).  
+Code refs: `docs/packages/bijux-canon-runtime/externalization/golden_path.md`.  

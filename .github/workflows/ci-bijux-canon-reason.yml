@@ -18,11 +18,7 @@ on:
       - "makes/shared/**"
       - "Makefile"
       - "tox.ini"
-      - "scripts/deptry_scan.py"
-      - "scripts/security/**"
-      - "scripts/sbom/**"
-      - "scripts/release/**"
-      - "scripts/bijux-canon-reason/**"
+      - "packages/bijux-canon-dev/**"
   pull_request:
     paths:
       - ".github/workflows/ci-bijux-canon-reason.yml"
@@ -39,11 +35,7 @@ on:
       - "makes/shared/**"
       - "Makefile"
       - "tox.ini"
-      - "scripts/deptry_scan.py"
-      - "scripts/security/**"
-      - "scripts/sbom/**"
-      - "scripts/release/**"
-      - "scripts/bijux-canon-reason/**"
+      - "packages/bijux-canon-dev/**"
   workflow_dispatch:
 
 permissions:

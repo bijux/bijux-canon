@@ -187,7 +187,7 @@ Artifacts: Generated in CI; see GitHub Actions for logs and reports.
 ../../configs/bijux-canon-runtime/  # Root-managed lint/type/security configs
 docs/           # MkDocs site
 ../../makes/bijux-canon-runtime/  # Root-managed task modules (docs, test, lint, etc.)
-../../scripts/bijux-canon-runtime/  # Root-managed helper scripts
+../../packages/bijux-canon-dev/  # Root-managed maintenance helpers
 src/bijux_canon_runtime/  # Runtime + CLI implementation
 tests/          # unit / regression / e2e
 ```

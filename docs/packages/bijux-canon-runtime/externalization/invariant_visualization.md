@@ -14,7 +14,7 @@ Metrics context lives in [Metrics](../architecture/metrics.md).
 ## Contracts  
 Per-tick invariant snapshots are recorded by [PathwayExecutor](https://github.com/bijux/agentic-proteins/blob/main/src/agentic_proteins/biology/pathway.py).  
 Violations are captured in the invariant log.  
-Visualization uses [scripts/visualize_invariants.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/visualize_invariants.py).  
+Visualization uses the published invariant telemetry surface.  
 
 ## Invariants  
 Invariant visibility aligns with [Invariants](../architecture/invariants.md).  
@@ -36,4 +36,4 @@ This doc is obsolete when visualization is generated.
 The replacement is [Metrics](../architecture/metrics.md).  
 Obsolete docs are removed.  
 
-Code refs: [scripts/visualize_invariants.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/visualize_invariants.py).  
+Code refs: `docs/packages/bijux-canon-runtime/externalization/invariant_visualization.md`.  

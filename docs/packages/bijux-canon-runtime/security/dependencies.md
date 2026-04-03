@@ -14,30 +14,30 @@ Read [Docs Style](../meta/DOCS_STYLE.md) for context.
 
 ## Contracts  
 Each statement is a contract.  
-Contracts align with [scripts/check_dependency_allowlist.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_dependency_allowlist.py).  
+Contracts align with `bijux_canon_dev.packages.runtime.check_dependency_allowlist`.  
 Contracts link to [Threat Model](threat_model.md) and [Docs Style](../meta/DOCS_STYLE.md).  
 
 ## Invariants  
 Invariants describe stable behavior.  
-Checks align with [scripts/check_dependency_allowlist.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_dependency_allowlist.py).  
+Checks align with `bijux_canon_dev.packages.runtime.check_dependency_allowlist`.  
 Invariants align with [Threat Model](threat_model.md).  
 
 ## Failure Modes  
 Failures are explicit and tested.  
-Failure coverage aligns with [scripts/check_dependency_allowlist.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_dependency_allowlist.py).  
+Failure coverage aligns with `bijux_canon_dev.packages.runtime.check_dependency_allowlist`.  
 Failures align with [Docs Style](../meta/DOCS_STYLE.md).  
 
 ## Extension Points  
 Extensions require tests and docs.  
 Extensions are tracked in [Threat Model](threat_model.md).  
-Extensions align with [scripts/check_dependency_allowlist.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_dependency_allowlist.py).  
+Extensions align with `bijux_canon_dev.packages.runtime.check_dependency_allowlist`.  
 
 ## Exit Criteria  
 This doc becomes obsolete when the surface ends.  
 The replacement is linked in [Docs Style](../meta/DOCS_STYLE.md).  
 Obsolete docs are removed.  
 
-Code refs: [scripts/check_dependency_allowlist.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_dependency_allowlist.py).  
+Code refs: `packages/bijux-canon-dev/src/bijux_canon_dev/packages/runtime/check_dependency_allowlist.py`.  
 Allowlist:  
 - requests  
 - biopython  
