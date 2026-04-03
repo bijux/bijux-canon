@@ -7,7 +7,7 @@ import dataclasses
 
 import pytest
 
-from bijux_canon_runtime.runtime.observability.capture.trace_recorder import AppendOnlyList
+from bijux_canon_runtime.observability.capture.trace_recorder import AppendOnlyList
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope

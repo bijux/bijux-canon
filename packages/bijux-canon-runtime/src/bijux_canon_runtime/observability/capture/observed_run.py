@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/observability/capture/observed_run.py."""
+"""Module definitions for observability/capture/observed_run.py."""
 
 from __future__ import annotations
 

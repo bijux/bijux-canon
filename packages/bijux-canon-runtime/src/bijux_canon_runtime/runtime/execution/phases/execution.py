@@ -15,11 +15,11 @@ from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
 from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
 from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
-from bijux_canon_runtime.runtime.observability.capture.time import utc_now_deterministic
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.capture.time import utc_now_deterministic
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
-from bijux_canon_runtime.runtime.observability.classification.retrieval_fingerprint import (
+from bijux_canon_runtime.observability.classification.retrieval_fingerprint import (
     fingerprint_retrieval,
 )
 from bijux_canon_runtime.runtime.verification_engine import VerificationOrchestrator

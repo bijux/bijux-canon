@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from importlib.metadata import PackageNotFoundError, version
 
-from bijux_canon_runtime.runtime.observability.capture.environment import (
+from bijux_canon_runtime.observability.capture.environment import (
     compute_environment_fingerprint,
 )
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
 from bijux_canon_runtime.contracts.execution_plan_contract import (

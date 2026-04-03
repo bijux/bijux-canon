@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.runtime.observability.analysis.trace_diff import entropy_summary
+from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summary
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,

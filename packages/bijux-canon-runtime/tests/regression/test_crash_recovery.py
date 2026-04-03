@@ -12,7 +12,7 @@ import bijux_rar
 import duckdb
 import pytest
 
-from bijux_canon_runtime.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )

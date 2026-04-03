@@ -14,8 +14,8 @@ from bijux_canon_runtime.core.authority import finalize_trace
 from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.state_tracker import ExecutionStateTracker
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
-from bijux_canon_runtime.runtime.observability.capture.time import utc_now_deterministic
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.capture.time import utc_now_deterministic
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
     fingerprint_policy,
 )

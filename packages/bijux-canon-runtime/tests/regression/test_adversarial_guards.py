@@ -13,8 +13,8 @@ from bijux_canon_runtime.core.authority import authority_token
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
-from bijux_canon_runtime.runtime.observability.capture.trace_recorder import TraceRecorder
-from bijux_canon_runtime.runtime.observability.classification.entropy import EntropyLedger
+from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
+from bijux_canon_runtime.observability.classification.entropy import EntropyLedger
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     execute_flow,

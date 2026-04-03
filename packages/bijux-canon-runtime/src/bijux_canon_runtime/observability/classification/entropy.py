@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/observability/classification/entropy.py."""
+"""Module definitions for observability/classification/entropy.py."""
 
 from __future__ import annotations
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.runtime.observability.analysis.flow_correlation import (
+from bijux_canon_runtime.observability.analysis.flow_correlation import (
     validate_flow_correlation,
 )
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor

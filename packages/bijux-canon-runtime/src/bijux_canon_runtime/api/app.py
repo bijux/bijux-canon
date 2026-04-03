@@ -26,7 +26,7 @@ from bijux_canon_runtime.api.v1.schemas import (
     FlowRunRequest,
     ReplayRequest,
 )
-from bijux_canon_runtime.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
 

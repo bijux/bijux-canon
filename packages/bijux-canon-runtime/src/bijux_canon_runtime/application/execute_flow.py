@@ -18,18 +18,18 @@ from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 from bijux_canon_runtime.runtime.execution.dry_run_executor import DryRunExecutor
 from bijux_canon_runtime.runtime.execution.live_executor import LiveExecutor
 from bijux_canon_runtime.runtime.execution.observer_executor import ObserverExecutor
-from bijux_canon_runtime.runtime.observability.capture.hooks import RuntimeObserver
-from bijux_canon_runtime.runtime.observability.capture.observed_run import ObservedRun
-from bijux_canon_runtime.runtime.observability.capture.time import utc_now_deterministic
-from bijux_canon_runtime.runtime.observability.capture.trace_recorder import TraceRecorder
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.capture.hooks import RuntimeObserver
+from bijux_canon_runtime.observability.capture.observed_run import ObservedRun
+from bijux_canon_runtime.observability.capture.time import utc_now_deterministic
+from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
-from bijux_canon_runtime.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
-from bijux_canon_runtime.runtime.observability.storage.execution_store_protocol import (
+from bijux_canon_runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
     ExecutionWriteStoreProtocol,
 )

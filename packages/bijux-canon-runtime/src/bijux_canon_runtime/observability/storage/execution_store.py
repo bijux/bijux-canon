@@ -3,7 +3,7 @@
 # Never persists: in-memory executor state, transient runtime caches, or raw tool sessions.
 # Incorrect assumption: live process environment variables are persisted.
 
-"""Module definitions for runtime/observability/storage/execution_store.py."""
+"""Module definitions for observability/storage/execution_store.py."""
 
 from __future__ import annotations
 
@@ -17,8 +17,8 @@ from uuid import uuid4
 import duckdb
 
 from bijux_canon_runtime.runtime.context import RunMode
-from bijux_canon_runtime.runtime.observability.storage import schema_contracts
-from bijux_canon_runtime.runtime.observability.storage.execution_store_protocol import (
+from bijux_canon_runtime.observability.storage import schema_contracts
+from bijux_canon_runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
     ExecutionWriteStoreProtocol,
 )

@@ -9,10 +9,10 @@ from bijux_canon_runtime.core.authority import finalize_trace
 from bijux_canon_runtime.core.errors import ExecutionFailure
 from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
-from bijux_canon_runtime.runtime.observability.analysis.flow_invariants import (
+from bijux_canon_runtime.observability.analysis.flow_invariants import (
     validate_flow_invariants,
 )
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_policy,
 )
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace

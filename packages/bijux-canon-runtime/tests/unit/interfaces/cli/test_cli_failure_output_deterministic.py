@@ -9,7 +9,7 @@ from pathlib import Path
 
 from bijux_canon_runtime.interfaces.cli import main as cli_main
 from bijux_canon_runtime.core.authority import finalize_trace
-from bijux_canon_runtime.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
 from bijux_canon_runtime.application.execute_flow import RunMode

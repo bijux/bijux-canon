@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from bijux_canon_runtime.runtime.observability.capture.environment import (
+from bijux_canon_runtime.observability.capture.environment import (
     compute_environment_fingerprint,
 )
 from bijux_canon_runtime.application.determinism_guard import validate_determinism

@@ -6,7 +6,7 @@ from __future__ import annotations
 import bijux_agent
 import pytest
 
-from bijux_canon_runtime.runtime.observability.capture.observed_run import ObservedRun
+from bijux_canon_runtime.observability.capture.observed_run import ObservedRun
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,

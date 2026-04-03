@@ -12,9 +12,9 @@ from typing import TYPE_CHECKING
 from bijux_canon_runtime.core.authority import AuthorityToken
 from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState
-from bijux_canon_runtime.runtime.observability.capture.hooks import RuntimeObserver
-from bijux_canon_runtime.runtime.observability.capture.observed_run import ObservedRun
-from bijux_canon_runtime.runtime.observability.capture.trace_recorder import TraceRecorder
+from bijux_canon_runtime.observability.capture.hooks import RuntimeObserver
+from bijux_canon_runtime.observability.capture.observed_run import ObservedRun
+from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
 from bijux_canon_runtime.application.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
@@ -37,7 +37,7 @@ from bijux_canon_runtime.ontology.ids import (
 from bijux_canon_runtime.ontology.public import EntropySource
 
 if TYPE_CHECKING:
-    from bijux_canon_runtime.runtime.observability.storage.execution_store_protocol import (
+    from bijux_canon_runtime.observability.storage.execution_store_protocol import (
         ExecutionWriteStoreProtocol,
     )
 

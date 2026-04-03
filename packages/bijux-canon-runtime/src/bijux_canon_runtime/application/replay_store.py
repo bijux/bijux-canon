@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.runtime.observability.analysis.trace_diff import semantic_trace_diff
-from bijux_canon_runtime.runtime.observability.storage.execution_store_protocol import (
+from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
+from bijux_canon_runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
 )
 from bijux_canon_runtime.application.determinism_guard import validate_replay

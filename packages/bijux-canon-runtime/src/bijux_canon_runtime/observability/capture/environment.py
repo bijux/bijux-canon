@@ -3,7 +3,7 @@
 # Fingerprinted: python version, OS platform, bijux package versions.
 # Ignored: hostnames, environment variables.
 
-"""Module definitions for runtime/observability/capture/environment.py."""
+"""Module definitions for observability/capture/environment.py."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from importlib import metadata
 import platform
 import sys
 
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
 

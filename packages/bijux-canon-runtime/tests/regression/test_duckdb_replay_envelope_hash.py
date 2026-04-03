@@ -7,7 +7,7 @@ from dataclasses import asdict
 
 import pytest
 
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
 from bijux_canon_runtime.application.execute_flow import (

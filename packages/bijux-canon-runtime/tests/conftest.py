@@ -10,13 +10,13 @@ from pathlib import Path
 import pytest
 
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
-from bijux_canon_runtime.runtime.observability.capture.environment import (
+from bijux_canon_runtime.observability.capture.environment import (
     compute_environment_fingerprint,
 )
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
-from bijux_canon_runtime.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
@@ -167,7 +167,7 @@ def deterministic_environment(
 ) -> EnvironmentFingerprint:
     fingerprint = EnvironmentFingerprint("env-fingerprint")
     monkeypatch.setattr(
-        "bijux_canon_runtime.runtime.observability.capture.environment.compute_environment_fingerprint",
+        "bijux_canon_runtime.observability.capture.environment.compute_environment_fingerprint",
         lambda: fingerprint,
     )
     monkeypatch.setattr(

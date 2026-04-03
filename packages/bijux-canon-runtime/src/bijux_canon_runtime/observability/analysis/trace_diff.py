@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/observability/analysis/trace_diff.py."""
+"""Module definitions for observability/analysis/trace_diff.py."""
 
 from __future__ import annotations
 
 from dataclasses import asdict
 
-from bijux_canon_runtime.runtime.observability.classification.determinism_classification import (
+from bijux_canon_runtime.observability.classification.determinism_classification import (
     determinism_classes_for_trace,
     determinism_profile_for_trace,
 )

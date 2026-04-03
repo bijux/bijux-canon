@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from bijux_canon_runtime.core.authority import evaluate_verification
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_policy,
 )
 from bijux_canon_runtime.model.artifact.artifact import Artifact

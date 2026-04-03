@@ -7,7 +7,7 @@ import duckdb
 import pytest
 
 from bijux_canon_runtime.runtime.context import RunMode
-from bijux_canon_runtime.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage

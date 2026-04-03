@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.runtime.observability.analysis.trace_diff import semantic_trace_diff
+from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,

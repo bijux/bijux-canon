@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/observability/storage/schema_contracts.py."""
+"""Module definitions for observability/storage/schema_contracts.py."""
 
 from __future__ import annotations
 

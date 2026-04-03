@@ -12,15 +12,15 @@ from pathlib import Path
 import sys
 
 from bijux_canon_runtime.core.errors import ConfigurationError, classify_failure
-from bijux_canon_runtime.runtime.observability.analysis.trace_diff import (
+from bijux_canon_runtime.observability.analysis.trace_diff import (
     entropy_summary,
     semantic_trace_diff,
 )
-from bijux_canon_runtime.runtime.observability.classification.determinism_classification import (
+from bijux_canon_runtime.observability.classification.determinism_classification import (
     determinism_classes_for_trace,
     determinism_profile_for_trace,
 )
-from bijux_canon_runtime.runtime.observability.storage.execution_store import (
+from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )

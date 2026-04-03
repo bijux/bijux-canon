@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/observability/analysis/flow_correlation.py."""
+"""Module definitions for observability/analysis/flow_correlation.py."""
 
 from __future__ import annotations
 

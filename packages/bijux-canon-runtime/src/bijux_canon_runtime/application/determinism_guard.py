@@ -9,13 +9,13 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
-from bijux_canon_runtime.runtime.observability.analysis.trace_diff import (
+from bijux_canon_runtime.observability.analysis.trace_diff import (
     non_determinism_report,
 )
-from bijux_canon_runtime.runtime.observability.capture.environment import (
+from bijux_canon_runtime.observability.capture.environment import (
     compute_environment_fingerprint,
 )
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
     fingerprint_policy,
 )

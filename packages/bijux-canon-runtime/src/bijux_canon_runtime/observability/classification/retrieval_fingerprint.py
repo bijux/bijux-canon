@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for runtime/observability/classification/retrieval_fingerprint.py."""
+"""Module definitions for observability/classification/retrieval_fingerprint.py."""
 
 from __future__ import annotations
 
-from bijux_canon_runtime.runtime.observability.classification.fingerprint import (
+from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
 from bijux_canon_runtime.model.datasets.retrieval_request import RetrievalRequest

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_runtime.runtime.observability.analysis.trace_diff import (
+from bijux_canon_runtime.observability.analysis.trace_diff import (
     render_semantic_diff,
     semantic_trace_diff,
 )
