@@ -7,7 +7,7 @@
 - `src/bijux_canon_agent/application/`
   Runtime orchestration owned by the package, including workflow-graph execution policy.
 - `src/bijux_canon_agent/agents/`
-  Agent implementations and their local kernels.
+  Agent implementations and their local kernels, with per-agent input/reporting helpers kept beside the core class instead of folded into monolith files.
 - `src/bijux_canon_agent/pipeline/`
   Canonical lifecycle, execution flow, trace semantics, and final-result assembly.
 - `src/bijux_canon_agent/interfaces/`
@@ -31,4 +31,5 @@
 
 - Keep runtime artifacts under `artifacts/` or test fixtures, never under `src/`.
 - Keep product-specific workflows out of this package; this package provides reusable runtime behavior.
+- Keep agent result shaping, telemetry access, and schema-report helpers in focused modules such as `interfaces/cli/*`, `observability/*`, and `agents/*/reporting.py` or `agents/*/inputs.py`.
 - Keep docs and package metadata aligned with the real tree so the package can be understood without archaeology.

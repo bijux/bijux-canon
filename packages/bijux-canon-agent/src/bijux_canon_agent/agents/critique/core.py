@@ -13,6 +13,15 @@ from typing import Any, ClassVar, cast
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager
 
+from .reporting import (
+    build_critique_coverage_report,
+    build_critique_error_payload,
+    build_critique_output,
+    build_critique_schema,
+    build_final_report,
+    create_criterion_result,
+    log_critique_completion,
+)
 from .rules import consistency, content, formatting
 from .rules.types import (
     CriterionResult,
@@ -488,141 +497,12 @@ class CritiqueAgent(BaseAgent):
         source_text: str,
     ) -> dict[str, Any]:
         """Format the critique output with detailed feedback."""
-        scores = {
-            "accuracy": 5,
-            "completeness": 5,
-            "clarity": 5,
-            "brevity": 5,
-            "critical_tone": 5,
-            "relevance": 5,  # Added relevance score
-        }
-        strengths, weaknesses = [], []
-
-        overall_score = int(result["score"] * 5)
-        for key in scores:
-            scores[key] = overall_score
-
-        for crit in result["per_criterion"]:
-            crit_name = crit["name"]
-            if crit["result"] == "PASS":
-                strengths.append(
-                    f"Criterion '{crit_name}' passed: Meets expectations "
-                    f"(Confidence: {crit['confidence']})."
-                )
-            else:
-                if crit_name == self.Criteria.NO_HALLUCINATION and source_text:
-                    issue_text = crit["issues"][0].lower()
-                    if not any(
-                        word in source_text.lower() for word in issue_text.split()
-                    ):
-                        weaknesses.append(
-                            f"Hallucination: '{issue_text}' not in source "
-                            f"(Confidence: {crit['confidence']})."
-                        )
-                    else:
-                        weaknesses.append(
-                            f"Criterion '{crit_name}' failed: {crit['issues'][0]} "
-                            f"(Confidence: {crit['confidence']})."
-                        )
-                elif crit_name == self.Criteria.RELEVANCE:
-                    weaknesses.append(
-                        f"Relevance issue: {crit['issues'][0]} "
-                        f"(Confidence: {crit['confidence']})."
-                    )
-                else:
-                    weaknesses.append(
-                        f"Criterion '{crit_name}' failed: {crit['issues'][0]} "
-                        f"(Confidence: {crit['confidence']})."
-                    )
-
-                self._adjust_scores(crit_name, scores)
-
-        for key in scores:
-            scores[key] = max(0, min(5, scores[key]))
-
-        return self._finalize_critique_output(scores, strengths, weaknesses, result)
-
-    def _adjust_scores(self, crit_name: str, scores: dict[str, int]) -> None:
-        """Adjust critique scores based on specific failures."""
-        if crit_name == self.Criteria.NOT_EMPTY:
-            scores["completeness"] -= 2
-        elif crit_name == self.Criteria.NO_HALLUCINATION:
-            scores["accuracy"] -= 2
-        elif crit_name == self.Criteria.NO_REPETITION:
-            scores["clarity"] -= 1
-        elif crit_name == self.Criteria.LENGTH_REASONABLE:
-            scores["brevity"] -= 1
-        elif (
-            crit_name == self.Criteria.FORMATTING_BASIC
-            or crit_name == self.Criteria.PUNCTUATION_EXCESSIVE
-        ):
-            scores["clarity"] -= 1
-        elif crit_name == self.Criteria.NO_UNSUPPORTED:
-            scores["critical_tone"] -= 1
-        elif crit_name == self.Criteria.RELEVANCE:
-            scores["relevance"] -= 2
-            scores["completeness"] -= 1
-
-    def _finalize_critique_output(
-        self,
-        scores: dict[str, int],
-        strengths: list[str],
-        weaknesses: list[str],
-        result: CritiqueResult,
-    ) -> dict[str, Any]:
-        """Finalize the critique output with quality assessment."""
-        avg_score = sum(scores.values()) / len(scores)
-        final_quality = (
-            "OUTSTANDING"
-            if avg_score >= 4.5
-            else (
-                "GOOD"
-                if avg_score >= 3.5
-                else (
-                    "OK" if avg_score >= 2.5 else "POOR" if avg_score >= 1.5 else "FAIL"
-                )
-            )
+        return build_critique_output(
+            result,
+            summary,
+            source_text,
+            criteria=self.Criteria,
         )
-
-        hallucination_flag = any(
-            crit["name"] == self.Criteria.NO_HALLUCINATION and crit["result"] == "FAIL"
-            for crit in result["per_criterion"]
-        )
-        missing_info_flag = any(
-            crit["name"] == self.Criteria.NOT_EMPTY and crit["result"] == "FAIL"
-            for crit in result["per_criterion"]
-        )
-        relevance_flag = any(
-            crit["name"] == self.Criteria.RELEVANCE and crit["result"] == "FAIL"
-            for crit in result["per_criterion"]
-        )
-
-        if len(strengths) < 2:
-            strengths.extend(
-                ["No additional strengths identified."] * (2 - len(strengths))
-            )
-        if len(weaknesses) < 2:
-            weaknesses.extend(
-                ["No additional weaknesses identified."] * (2 - len(weaknesses))
-            )
-
-        return {
-            "critique_status": result["critique_status"],
-            "score": result["score"],
-            "per_criterion": result["per_criterion"],
-            "warnings": result["warnings"],
-            "issues": result["issues"],
-            "criteria": result["criteria"],
-            "action_plan": result["action_plan"],
-            "audit": result["audit"],
-            "scores": scores,
-            "strengths": strengths[:2],
-            "weaknesses": weaknesses[:2],
-            "hallucination_flag": hallucination_flag,
-            "missing_info_flag": missing_info_flag,
-            "relevance_flag": relevance_flag,  # Added relevance flag
-            "final_quality": final_quality,
-        }
 
     def _create_result(
         self,
@@ -633,12 +513,13 @@ class CritiqueAgent(BaseAgent):
         confidence: float = 1.0,
     ) -> CriterionResult:
         """Create a CriterionResult object with confidence."""
-        return CriterionResult(
-            name=name,
-            result="PASS" if passed else "FAIL",
-            issues=issues,
-            suggestion=self.suggestion_map[name] if not passed else "",
-            severity=severity or self.severity_map[name] if not passed else "",
+        return create_criterion_result(
+            name,
+            passed,
+            issues,
+            suggestion_map=self.suggestion_map,
+            severity_map=self.severity_map,
+            severity=severity,
             confidence=confidence,
         )
 
@@ -651,44 +532,15 @@ class CritiqueAgent(BaseAgent):
         issues: list[str],
     ) -> CritiqueResult:
         """Generate the final critique report with detailed action plan."""
-        fails = [c for c in per_critique if c.result == "FAIL"]
-        fails_sorted = sorted(
-            fails,
-            key=lambda x: {"Critical": 1, "Major": 2, "Minor": 3}.get(x.severity, 4),
+        return await build_final_report(
+            status,
+            score,
+            per_critique,
+            warnings,
+            issues,
+            criteria=self.criteria,
+            relevance_name=self.Criteria.RELEVANCE,
         )
-        action_plan = [
-            f"{c.severity}: {c.suggestion} (Issue: {', '.join(c.issues)}, "
-            f"Confidence: {c.confidence})"
-            for c in fails_sorted
-        ]
-
-        # Add specific guidance for relevance failures
-        for crit in fails_sorted:
-            if crit.name == self.Criteria.RELEVANCE:
-                missing_topics = (
-                    crit.issues[0].split(": ")[1]
-                    if ": " in crit.issues[0]
-                    else crit.issues[0]
-                )
-                action_plan.append(
-                    f"Critical: Focus on including details about {missing_topics} "
-                    "in the summary."
-                )
-
-        final_result: CritiqueResult = {
-            "critique_status": status,
-            "score": score,
-            "per_criterion": [vars(c) for c in per_critique],
-            "warnings": warnings,
-            "issues": issues,
-            "criteria": self.criteria,
-            "action_plan": action_plan,
-            "audit": {
-                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "shards_merged": 1,
-            },
-        }
-        return final_result
 
     def error_payload(
         self,
@@ -699,19 +551,7 @@ class CritiqueAgent(BaseAgent):
     ) -> CritiqueResult:
         """Return a standardized error result with detailed logging."""
         _ = (context, stage, extra)
-        return {
-            "critique_status": "failed",
-            "score": 0.0,
-            "per_criterion": [],
-            "warnings": [msg],
-            "issues": [msg],
-            "criteria": self.criteria,
-            "action_plan": [],
-            "audit": {
-                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "shards_merged": 1,
-            },
-        }
+        return build_critique_error_payload(msg, self.criteria)
 
     def _revise_payload(
         self, feedback: dict[str, Any], context: dict[str, Any]
@@ -735,27 +575,7 @@ class CritiqueAgent(BaseAgent):
     @classmethod
     def self_report_schema(cls) -> dict[str, Any]:
         """Describe the agent's output schema for validation and composition."""
-        return {
-            "critique": {
-                "scores": dict.fromkeys(
-                    [
-                        "accuracy",
-                        "completeness",
-                        "clarity",
-                        "brevity",
-                        "critical_tone",
-                        "relevance",
-                    ],
-                    "int (0-5)",
-                ),
-                "strengths": "list[str] (length 2)",
-                "weaknesses": "list[str] (length 2)",
-                "hallucination_flag": "bool",
-                "missing_info_flag": "bool",
-                "relevance_flag": "bool",
-                "final_quality": "str (OUTSTANDING/GOOD/OK/POOR/FAIL)",
-            }
-        }
+        return build_critique_schema()
 
     @classmethod
     def coverage_report(
@@ -763,36 +583,14 @@ class CritiqueAgent(BaseAgent):
         context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Describe the parts of the context this agent consumes or modifies."""
-        return {
-            "consumes": [
-                "summary",
-                "text",
-                "content",
-                "source_text",
-                "task_goal_keywords",
-            ],
-            "modifies": [],
-            "produces": ["critique"],
-        }
+        return build_critique_coverage_report()
 
     def _log_critique_completion(self, result: CritiqueResult, duration: float) -> None:
         """Log the completion of the critique process with detailed metrics."""
-        status = result.get("critique_status", "unknown")
-        score = result.get("score", 0.0)
-        issues = result.get("issues", [])
-        warnings = result.get("warnings", [])
-        self.logger.info(
-            "Critique completed",
-            extra={
-                "context": {
-                    "stage": "completion",
-                    "status": status,
-                    "score": score,
-                    "duration_sec": duration,
-                    "issues": issues,
-                    "warnings": warnings,
-                }
-            },
+        log_critique_completion(
+            logger=self.logger,
+            result=result,
+            duration=duration,
         )
 
     async def shutdown(self) -> None:

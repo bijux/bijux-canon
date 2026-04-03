@@ -8,10 +8,8 @@ structured summaries.
 
 from __future__ import annotations
 
-from collections import Counter
 from collections.abc import Callable
 import hashlib
-import re
 import time
 from typing import Any, TypedDict, cast
 
@@ -23,6 +21,14 @@ from .rules import (
     abstractive,
     extractive,
     postprocessing,
+)
+from .inputs import extract_keywords, extract_summarizer_text
+from .reporting import (
+    build_summarizer_coverage_report,
+    build_summarizer_error_result,
+    build_summarizer_result,
+    build_summarizer_schema,
+    get_summarizer_telemetry,
 )
 
 
@@ -349,22 +355,18 @@ class SummarizerAgent(BaseAgent):
                 ),
             )
 
-            result: SummarizerResult = {
-                "summary": structured_summary,
-                "method": method,
-                "input_length": len(text),
-                "backend": self.backend,
-                "strategy": self.strategy,
-                "warnings": [],
-                "audit": {
-                    "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                    "duration_sec": round(duration, 2),
-                    "input_tokens": len(text.split()),
-                    "output_tokens": len(summary_text.split()),
-                    "chunks_processed": (len(text) + self.chunk_size - 1)
-                    // self.chunk_size,
-                },
-            }
+            result: SummarizerResult = cast(
+                SummarizerResult,
+                build_summarizer_result(
+                    structured_summary=structured_summary,
+                    method=method,
+                    text=text,
+                    backend=self.backend,
+                    strategy=self.strategy,
+                    chunk_size=self.chunk_size,
+                    duration=duration,
+                ),
+            )
 
             # Post-hook
             if self.post_hook:
@@ -419,12 +421,7 @@ class SummarizerAgent(BaseAgent):
     @staticmethod
     def _extract_text(context: dict[str, Any]) -> str:
         """Extract text from context, handling both direct and nested cases."""
-        text = context.get("text", "")
-        if not text and "file_extraction" in context:
-            file_extraction = context["file_extraction"]
-            if isinstance(file_extraction, dict) and "text" in file_extraction:
-                text = file_extraction["text"]
-        return text if isinstance(text, str) else ""
+        return extract_summarizer_text(context)
 
     def _extract_keywords(self, text: str, task_goal: str) -> list[str]:
         """Extract keywords dynamically from the task goal and text.
@@ -436,34 +433,13 @@ class SummarizerAgent(BaseAgent):
         Returns:
             List of keywords relevant to the task.
         """
-        # Extract words from task goal
-        task_words = task_goal.lower().split()
-        task_keywords = [
-            word for word in task_words if len(word) >= self.min_keyword_length
-        ]
-
-        # Extract frequent words from text
-        words = re.findall(r"\b\w+\b", text.lower())
-        words = [
-            word
-            for word in words
-            if len(word) >= self.min_keyword_length and word.isalpha()
-        ]
-        word_counts = Counter(words)
-        common_words = [
-            word for word, count in word_counts.most_common(self.top_keywords_count)
-        ]
-
-        # Combine and prioritize task goal keywords
-        keywords = task_keywords + common_words
-        keywords = list(dict.fromkeys(keywords))  # Remove duplicates
-        keywords = keywords[: self.top_keywords_count]  # Limit number of keywords
-
-        self.logger.debug(
-            "Extracted keywords",
-            extra={"context": {"keywords": keywords}},
+        return extract_keywords(
+            text,
+            task_goal,
+            min_keyword_length=self.min_keyword_length,
+            top_keywords_count=self.top_keywords_count,
+            logger=self.logger,
         )
-        return keywords
 
     async def _summarize(
         self, text: str, prompt_prefix: str, task_goal: str, keywords: list[str]
@@ -556,91 +532,31 @@ class SummarizerAgent(BaseAgent):
     ) -> SummarizerErrorResult:
         """Build a standardized error payload for summarization."""
         _ = extra
-        return {
-            "error": msg,
-            "stage": stage,
-            "input": context or {},
-            "summary": {
-                "executive_summary": "Error occurred during summarization.",
-                "key_points": ["- N/A"],
-                "actionable_insights": "N/A",
-                "critical_risks": "Unable to assess due to error.",
-                "missing_info": "Summary not generated.",
-            },
-            "method": "",
-            "input_length": len(self._extract_text(context)),
-            "backend": self.backend,
-            "strategy": self.strategy,
-            "warnings": [],
-            "audit": {
-                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "duration_sec": 0.0,
-                "input_tokens": 0,
-                "output_tokens": 0,
-                "chunks_processed": 0,
-            },
-        }
+        error_result = build_summarizer_error_result(
+            msg,
+            {**(context or {}), "stage": stage},
+            input_length=len(self._extract_text(context)),
+            backend=self.backend,
+            strategy=self.strategy,
+        )
+        return cast(SummarizerErrorResult, error_result)
 
     @classmethod
     def self_report_schema(cls) -> dict[str, Any]:
         """Return the output schema for documentation and validation."""
-        return {
-            "summary": {
-                "executive_summary": "str",
-                "key_points": "list[str]",
-                "actionable_insights": "str",
-                "critical_risks": "str",
-                "missing_info": "str",
-            },
-            "method": "str",
-            "input_length": "int",
-            "backend": "str",
-            "strategy": "str",
-            "warnings": "list[str]",
-            "audit": {
-                "timestamp": "str",
-                "duration_sec": "float",
-                "input_tokens": "int",
-                "output_tokens": "int",
-                "chunks_processed": "int",
-            },
-        }
+        return build_summarizer_schema()
 
     @classmethod
     def coverage_report(cls, context: dict[str, Any] | None = None) -> dict[str, Any]:
         """Describe the parts of the context this agent consumes or modifies."""
-        return {
-            "consumes": ["text", "file_extraction", "feedback", "task_goal"],
-            "modifies": [],
-            "produces": ["summary"],
-        }
+        return build_summarizer_coverage_report()
 
     async def get_telemetry(self) -> dict[str, dict[str, Any]]:
         """Retrieve telemetry metrics."""
-        try:
-            metrics = self.logger_manager.get_metrics()
-            self.logger.debug(
-                "Telemetry metrics retrieved",
-                extra={
-                    "context": {
-                        "stage": "telemetry",
-                        "metric_names": list(metrics.keys()),
-                    }
-                },
-            )
-            self.logger_manager.log_metric(
-                "telemetry_retrieved",
-                1,
-                MetricType.COUNTER,
-                tags={"stage": "telemetry"},
-            )
-            return metrics
-        except Exception as e:
-            self.logger.error(
-                f"Failed to retrieve telemetry: {e!s}",
-                extra={"context": {"stage": "telemetry", "error": str(e)}},
-            )
-            return {}
+        return await get_summarizer_telemetry(
+            logger=self.logger,
+            logger_manager=self.logger_manager,
+        )
 
     async def shutdown(self) -> None:
         """Shutdown the agent and flush logs."""
