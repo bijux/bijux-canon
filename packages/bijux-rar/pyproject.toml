@@ -9,7 +9,7 @@ description = "bijux-rar: deterministic, contract-driven Retrieval-Augmented Rea
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "Bijan Mousavi", email = "mousavi.bijan@gmail.com" }]
+authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 keywords = ["reasoning", "determinism", "bijux", "rar"]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
