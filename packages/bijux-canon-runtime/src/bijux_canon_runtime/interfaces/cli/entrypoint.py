@@ -15,9 +15,14 @@ from bijux_canon_runtime.core.errors import ConfigurationError, classify_failure
 from bijux_canon_runtime.interfaces.cli.manifest_loader import load_manifest
 from bijux_canon_runtime.interfaces.cli.parser import build_parser
 from bijux_canon_runtime.interfaces.cli.policy_loader import load_policy
+from bijux_canon_runtime.interfaces.cli.store_commands import (
+    diff_runs,
+    explain_failure,
+    inspect_run,
+    validate_db,
+)
 from bijux_canon_runtime.observability.analysis.trace_diff import (
     entropy_summary,
-    semantic_trace_diff,
 )
 from bijux_canon_runtime.observability.classification.determinism_classification import (
     determinism_classes_for_trace,
@@ -46,6 +51,10 @@ from bijux_canon_runtime.ontology.public import (
 )
 _load_manifest = load_manifest
 _load_policy = load_policy
+_inspect_run = inspect_run
+_diff_runs = diff_runs
+_explain_failure = explain_failure
+_validate_db = validate_db
 
 
 # Stable commands: plan, dry-run, run, unsafe-run, replay, inspect, diff, explain, validate.
@@ -260,114 +269,6 @@ def _render_human_result(command: str, result) -> None:
             )
         return
     print(f"Flow loaded: {result.resolved_flow.manifest.flow_id}")
-
-
-def _normalize_for_json(value, *, normalize_timestamps: bool = False):
-    """Internal helper; not part of the public API."""
-    if isinstance(value, tuple):
-        return [
-            _normalize_for_json(item, normalize_timestamps=normalize_timestamps)
-            for item in value
-        ]
-    if isinstance(value, list):
-        normalized = [
-            _normalize_for_json(item, normalize_timestamps=normalize_timestamps)
-            for item in value
-        ]
-        if normalize_timestamps and all(isinstance(item, str) for item in normalized):
-            return sorted(normalized)
-        return normalized
-    if isinstance(value, dict):
-        normalized: dict[str, object] = {}
-        for key, item in value.items():
-            if normalize_timestamps and "timestamp" in key:
-                normalized[key] = "normalized"
-            else:
-                normalized[key] = _normalize_for_json(
-                    item, normalize_timestamps=normalize_timestamps
-                )
-        return normalized
-    if hasattr(value, "value"):
-        return value.value
-    return value
-
-
-def _inspect_run(args: argparse.Namespace, *, json_output: bool) -> None:
-    """Internal helper; not part of the public API."""
-    store = DuckDBExecutionReadStore(Path(args.db_path))
-    trace = store.load_trace(RunID(args.run_id), tenant_id=TenantID(args.tenant_id))
-    if json_output:
-        payload = _normalize_for_json(asdict(trace))
-        print(json.dumps(payload, sort_keys=True))
-        return
-    print(
-        f"Run {args.run_id}: events={len(trace.events)} "
-        f"tool_invocations={len(trace.tool_invocations)} "
-        f"entropy_entries={len(trace.entropy_usage)}"
-    )
-
-
-def _diff_runs(args: argparse.Namespace, *, json_output: bool) -> None:
-    """Internal helper; not part of the public API."""
-    store = DuckDBExecutionReadStore(Path(args.db_path))
-    tenant_id = TenantID(args.tenant_id)
-    trace_a = store.load_trace(RunID(args.run_a), tenant_id=tenant_id)
-    trace_b = store.load_trace(RunID(args.run_b), tenant_id=tenant_id)
-    diff = semantic_trace_diff(
-        trace_a, trace_b, acceptability=trace_a.replay_acceptability
-    )
-    if json_output:
-        print(json.dumps(_normalize_for_json(diff), sort_keys=True))
-        return
-    if diff:
-        print(f"Diff detected: keys={', '.join(sorted(diff.keys()))}")
-    else:
-        print("Diff clean: no semantic differences")
-
-
-def _explain_failure(args: argparse.Namespace, *, json_output: bool) -> None:
-    """Internal helper; not part of the public API."""
-    store = DuckDBExecutionReadStore(Path(args.db_path))
-    trace = store.load_trace(RunID(args.run_id), tenant_id=TenantID(args.tenant_id))
-    failure_events = [
-        event
-        for event in trace.events
-        if event.event_type.value
-        in {
-            "STEP_FAILED",
-            "RETRIEVAL_FAILED",
-            "REASONING_FAILED",
-            "VERIFICATION_FAIL",
-            "TOOL_CALL_FAIL",
-            "EXECUTION_INTERRUPTED",
-        }
-    ]
-    payload = {
-        "run_id": args.run_id,
-        "failure": _normalize_for_json(
-            failure_events[-1].payload, normalize_timestamps=True
-        )
-        if failure_events
-        else None,
-        "event_type": failure_events[-1].event_type.value if failure_events else None,
-    }
-    if json_output:
-        print(json.dumps(payload, sort_keys=True))
-        return
-    if failure_events:
-        last = failure_events[-1]
-        print(f"Failure {last.event_type.value}: {_normalize_for_json(last.payload)}")
-    else:
-        print("No failure events recorded")
-
-
-def _validate_db(args: argparse.Namespace, *, json_output: bool) -> None:
-    """Internal helper; not part of the public API."""
-    DuckDBExecutionReadStore(Path(args.db_path))
-    if json_output:
-        print(json.dumps({"status": "ok"}, sort_keys=True))
-        return
-    print("DB validated: ok")
 
 
 def _replay_confidence(acceptability: ReplayAcceptability) -> str:
