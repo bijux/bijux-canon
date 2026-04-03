@@ -58,7 +58,7 @@ EXPECTED = {
         "derive_execution_id",
         "execution_signature",
     },
-    "bijux_canon_index.domain.requests.plan": {
+    "bijux_canon_index.domain.requests.execution_plan": {
         "build_execution_plan",
         "run_plan",
     },

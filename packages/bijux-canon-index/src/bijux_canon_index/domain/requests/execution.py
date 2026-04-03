@@ -19,7 +19,7 @@ from bijux_canon_index.core.runtime.execution_session import (
 )
 from bijux_canon_index.core.types import ExecutionRequest, Result
 from bijux_canon_index.domain.requests.budget import check_budget
-from bijux_canon_index.domain.requests.plan import run_plan
+from bijux_canon_index.domain.requests.execution_plan import run_plan
 from bijux_canon_index.domain.requests.scoring import tie_break_key
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.logging import log_event

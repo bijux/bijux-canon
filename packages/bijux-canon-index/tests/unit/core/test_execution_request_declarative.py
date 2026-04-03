@@ -39,7 +39,7 @@ def test_execution_request_cannot_execute_directly():
     )
     with pytest.raises(InvariantError):
         # Direct run_plan without session should not be allowed
-        from bijux_canon_index.domain.requests.plan import run_plan
+        from bijux_canon_index.domain.requests.execution_plan import run_plan
 
         art = backend.stores.ledger.get_artifact("art")
         run_plan(

@@ -12,7 +12,7 @@ Minimum modules to enforce:
 - `core/runtime/execution_plan.py` (plan fingerprint, randomness labels)
 - `core/runtime/execution_session.py` (state machine, contract alignment)
 - `core/contracts/execution_contract.py` + `core/contracts/determinism.py`
-- `domain/requests/plan.py` (capability + contract checks)
+- `domain/requests/execution_plan.py` (capability + contract checks)
 - `domain/provenance/replay.py` (provenance gate)
 - `core/invariants.py` + `core/contracts/invariants.py` (guardrails)
 

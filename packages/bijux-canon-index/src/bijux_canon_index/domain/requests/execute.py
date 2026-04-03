@@ -23,7 +23,7 @@ from bijux_canon_index.domain.requests.nd_quality import (
     build_witness_report,
     should_run_witness,
 )
-from bijux_canon_index.domain.requests.planning import start_session
+from bijux_canon_index.domain.requests.session_start import start_session
 from bijux_canon_index.domain.requests.postprocess import (
     build_execution_result,
     guard_nd_randomness,

@@ -28,6 +28,6 @@ Docs → code
 
 - `src/bijux_canon_index/core/runtime/execution_plan.py`
 - `src/bijux_canon_index/core/runtime/execution_session.py`
-- `src/bijux_canon_index/domain/requests/plan.py`
+- `src/bijux_canon_index/domain/requests/execution_plan.py`
 - `src/bijux_canon_index/domain/requests/execute.py`
 - `src/bijux_canon_index/domain/provenance/replay.py`
