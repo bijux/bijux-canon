@@ -19,7 +19,7 @@ def test_pipeline_mypy_has_no_regressions() -> None:
             "-m",
             "mypy",
             "--config-file",
-            "config/mypy-core.ini",
+            "../configs/bijux-agent/mypy-core.ini",
             "--cache-dir",
             str(cache_dir),
         ],
@@ -31,5 +31,5 @@ def test_pipeline_mypy_has_no_regressions() -> None:
         pytest.fail(
             "Mypy regression detected:\n"
             f"{completed.stdout}\n"
-            "Check config/mypy-core.ini scope if this is intentional."
+            "Check ../configs/bijux-agent/mypy-core.ini scope if this is intentional."
         )

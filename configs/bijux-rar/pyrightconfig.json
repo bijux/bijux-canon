@@ -1,0 +1,19 @@
+{
+  "extends": "../shared/pyright/off.json",
+  "include": [
+    "../../bijux-rar/src/bijux_rar",
+    "../../bijux-rar/tests"
+  ],
+  "extraPaths": [
+    "../../bijux-rar/src",
+    "../../bijux-rar"
+  ],
+  "executionEnvironments": [
+    {
+      "root": "../../bijux-rar",
+      "extraPaths": [
+        "../../bijux-rar/src"
+      ]
+    }
+  ]
+}

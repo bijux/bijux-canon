@@ -1,14 +1,8 @@
 # SPDX-License-Identifier: MIT
 
-.DELETE_ON_ERROR:
-.DEFAULT_GOAL         := all
-.SHELLFLAGS           := -eu -o pipefail -c
-SHELL                 := bash
-PYTHON                := python3
-VENV                  := .venv
-VENV_PYTHON           := $(VENV)/bin/python
-ACT                   := $(VENV)/bin
-RM                    := rm -rf
+PROJECT_SLUG := bijux-rag
+
+include ../makes/shared/python-package.mk
 
 export PYTHONDONTWRITEBYTECODE := 1
 export PYTHONPYCACHEPREFIX     := artifacts/pycache
@@ -17,17 +11,17 @@ export COVERAGE_FILE           := artifacts/test/.coverage
 
 .NOTPARALLEL: all clean
 
-include makefiles/test.mk
-include makefiles/lint.mk
-include makefiles/docs.mk
-include makefiles/api.mk
-include makefiles/build.mk
-include makefiles/quality.mk
-include makefiles/security.mk
-include makefiles/sbom.mk
-include makefiles/citation.mk
-include makefiles/publish.mk
-include makefiles/hygiene.mk
+include $(MAKE_DIR)/test.mk
+include $(MAKE_DIR)/lint.mk
+include $(MAKE_DIR)/docs.mk
+include $(MAKE_DIR)/api.mk
+include $(MAKE_DIR)/build.mk
+include $(MAKE_DIR)/quality.mk
+include $(MAKE_DIR)/security.mk
+include $(MAKE_DIR)/sbom.mk
+include $(MAKE_DIR)/citation.mk
+include $(MAKE_DIR)/publish.mk
+include $(MAKE_DIR)/hygiene.mk
 
 # Environment
 $(VENV):

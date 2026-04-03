@@ -1,0 +1,19 @@
+{
+  "extends": "../shared/pyright/strict.json",
+  "include": [
+    "../../agentic-flows/src/agentic_flows"
+  ],
+  "extraPaths": [
+    "../../agentic-flows/src",
+    "../../agentic-flows"
+  ],
+  "reportMethodAssign": "none",
+  "executionEnvironments": [
+    {
+      "root": "../../agentic-flows",
+      "extraPaths": [
+        "../../agentic-flows/src"
+      ]
+    }
+  ]
+}

@@ -12,7 +12,7 @@ Build, test, docs, and release steps produce transient outputs (wheels/sdists, c
 
 All generated outputs **must** be written beneath a single top-level directory: `artifacts/`. No Make/Tox/CI task may write transient files to the repo root or source trees. Standard caches (e.g., `.venv/`, `.tox/`, `.pytest_cache/`) are permitted and ignored via `.gitignore`.
 
-This policy is enforced **centrally by the Makefile system**. The root `Makefile` and `makefiles/*` define orchestration and output paths (`ARTIFACTS ?= artifacts`). Tox and GitHub Actions **call Make targets**; they do not choose paths.
+This policy is enforced **centrally by the Makefile system**. The root `Makefile` and `makes/bijux-rag/*` define orchestration and output paths (`ARTIFACTS ?= artifacts`). Tox and GitHub Actions **call Make targets**; they do not choose paths.
 
 ### Canonical Layout (Generated Only)
 
@@ -53,7 +53,7 @@ Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`, `CITATION.cff`)
 
 ### Local (Make + Tox)
 
-* `ARTIFACTS ?= artifacts` in the root `Makefile`; sub-recipes in `makefiles/*` route outputs under that root (e.g., `makefiles/test.mk` → `artifacts/test/`; integrates with ADR-0004 toolchain targets like `make lint` for logs/caches under `artifacts/lint/`).
+* `ARTIFACTS ?= artifacts` in the root `Makefile`; sub-recipes in `makes/bijux-rag/*` route outputs under that root (e.g., `makes/bijux-rag/test.mk` → `artifacts/test/`; integrates with ADR-0004 toolchain targets like `make lint` for logs/caches under `artifacts/lint/`).
 * Tox environments call Make targets; they do **not** set output paths directly.
 * For docs, `make docs-prep` copies tracked sources (e.g., `docs/ADR/`) into `artifacts/docs/docs/` before build (aligning with ADR-0003's storage rules).
 

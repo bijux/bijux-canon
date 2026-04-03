@@ -32,7 +32,7 @@ We standardized on the following tools:
 * **Bandit** for security static analysis.
 * **pip-audit** for dependency vulnerability audits.
 
-All configuration lives under `config/` (with a few root files like `REUSE.toml`), ensuring CI/local parity.
+Tooling configuration lives under `../configs/bijux-rag/`, ensuring CI/local parity across the monorepo.
 
 ---
 
@@ -46,7 +46,7 @@ We enforce Makefile targets to run the full toolchain consistently.
 <summary>Lint (<code>Makefile</code>)</summary>
 
 ```make
---8<-- "makefiles/lint.mk"
+--8<-- "makes/bijux-rag/lint.mk"
 ```
 
 </details>
@@ -55,7 +55,7 @@ We enforce Makefile targets to run the full toolchain consistently.
 <summary>Quality (<code>Makefile</code>)</summary>
 
 ```make
---8<-- "makefiles/quality.mk"
+--8<-- "makes/bijux-rag/quality.mk"
 ```
 
 </details>
@@ -64,7 +64,7 @@ We enforce Makefile targets to run the full toolchain consistently.
 <summary>Security (<code>Makefile</code>)</summary>
 
 ```make
---8<-- "makefiles/security.mk"
+--8<-- "makes/bijux-rag/security.mk"
 ```
 
 </details>
@@ -76,28 +76,28 @@ This setup supports whole-project runs as well as per-directory/per-file runs, w
 The toolchain is driven by unified configs:
 
 <details>
-<summary>Ruff (<code>config/ruff.toml</code>)</summary>
+<summary>Ruff (<code>../configs/bijux-rag/ruff.toml</code>)</summary>
 
 ```toml
---8<-- "config/ruff.toml"
+--8<-- "../configs/bijux-rag/ruff.toml"
 ```
 
 </details>
 
 <details>
-<summary>Mypy (<code>config/mypy.ini</code>)</summary>
+<summary>Mypy (<code>../configs/bijux-rag/mypy.ini</code>)</summary>
 
 ```ini
---8<-- "config/mypy.ini"
+--8<-- "../configs/bijux-rag/mypy.ini"
 ```
 
 </details>
 
 <details>
-<summary>Pyright (<code>config/pyrightconfig.json</code>)</summary>
+<summary>Pyright (<code>../configs/bijux-rag/pyrightconfig.json</code>)</summary>
 
 ```json
---8<-- "config/pyrightconfig.json"
+--8<-- "../configs/bijux-rag/pyrightconfig.json"
 ```
 
 </details>
@@ -161,7 +161,7 @@ Interrogate enforces documentation coverage thresholds as configured.
 * Maintainability boosted by **Vulture** (dead code), **Deptry** (deps), **Radon** (complexity).
 * SPDX compliance via **REUSE**.
 * Security posture improved through **Bandit** + **pip-audit**.
-* All configs centralized under `config/`, ensuring local/CI parity.
+* All tooling configs centralized under `../configs/bijux-rag/`, ensuring local/CI parity.
 
 ### Cons
 

@@ -2,31 +2,24 @@
 # Copyright © 2025 Bijan Mousavi
 # Testing policy: gates (lint/quality/security/typing) intentionally run on lowest supported Python (3.11); full matrix via tox.
 
-# Core Config
-.DELETE_ON_ERROR:
-.DEFAULT_GOAL         := all
-.SHELLFLAGS           := -eu -o pipefail -c
-SHELL                 := bash
-PYTHON                := python3
-VENV                  := .venv
-VENV_PYTHON           := $(VENV)/bin/python
-ACT                   := $(VENV)/bin
-RM                    := rm -rf
+PROJECT_SLUG := bijux-vex
+
+include ../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
 # Modular Includes
-include makefiles/fmt.mk
-include makefiles/lint.mk
-include makefiles/test.mk
-include makefiles/docs.mk
-include makefiles/api.mk
-include makefiles/hygiene.mk
-include makefiles/security.mk
-include makefiles/sbom.mk
-include makefiles/quality.mk
-include makefiles/freeze.mk
-include makefiles/citation.mk
+include $(MAKE_DIR)/fmt.mk
+include $(MAKE_DIR)/lint.mk
+include $(MAKE_DIR)/test.mk
+include $(MAKE_DIR)/docs.mk
+include $(MAKE_DIR)/api.mk
+include $(MAKE_DIR)/hygiene.mk
+include $(MAKE_DIR)/security.mk
+include $(MAKE_DIR)/sbom.mk
+include $(MAKE_DIR)/quality.mk
+include $(MAKE_DIR)/freeze.mk
+include $(MAKE_DIR)/citation.mk
 
 # Environment
 $(VENV):
@@ -54,7 +47,7 @@ clean-soft:
 	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
 	  spec.json openapitools.json node_modules session.sqlite site \
 	  docs/site artifacts || true
-	@$(RM) config/.ruff_cache || true
+	@$(RM) $(CONFIG_DIR)/.ruff_cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
 	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
 	  find . -type f -name '*.pyc' -delete; \

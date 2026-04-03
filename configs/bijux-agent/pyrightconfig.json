@@ -1,0 +1,19 @@
+{
+  "extends": "../shared/pyright/strict.json",
+  "include": [
+    "../../bijux-agent/src/bijux_agent",
+    "../../bijux-agent/tests"
+  ],
+  "extraPaths": [
+    "../../bijux-agent/src",
+    "../../bijux-agent"
+  ],
+  "executionEnvironments": [
+    {
+      "root": "../../bijux-agent",
+      "extraPaths": [
+        "../../bijux-agent/src"
+      ]
+    }
+  ]
+}

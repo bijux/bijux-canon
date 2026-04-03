@@ -1,0 +1,17 @@
+extend = "../shared/ruff/base.toml"
+src = ["../../agentic-flows/src", "../../agentic-flows/tests"]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101"]
+"__init__.py" = ["F401"]
+
+[lint.isort]
+force-sort-within-sections = true
+known-first-party = ["agentic_flows"]
+required-imports = ["from __future__ import annotations"]
+
+[lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+[lint.mccabe]
+max-complexity = 10

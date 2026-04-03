@@ -182,9 +182,9 @@ Artifacts: Generated in CI; see GitHub Actions for logs and reports.
 
 ```
 api/            # OpenAPI schemas
-config/         # Lint/type/security configs
+../configs/agentic-flows/  # Root-managed lint/type/security configs
 docs/           # MkDocs site
-makefiles/      # Task modules (docs, test, lint, etc.)
+makes/agentic-flows/  # Root-managed task modules (docs, test, lint, etc.)
 scripts/        # Helper scripts
 src/agentic_flows/  # Runtime + CLI implementation
 tests/          # unit / regression / e2e

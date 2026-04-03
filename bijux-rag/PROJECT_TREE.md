@@ -7,10 +7,10 @@ Quick map of the bijux-rag repository (aligned with the bijux-cli documentation 
 ```
 .
 ├── .github/workflows/   # CI/CD (ci, deploy-docs, publish)
-├── config/              # lint/type/security configs (coveragerc, mypy, pyright, pytype, ruff)
+├── ../configs/bijux-rag/ # root-managed lint/type/security configs
 ├── data/                # sample datasets (arxiv abstracts CSV)
 ├── docs/                # MkDocs sources (includes ADRs and reference pages)
-├── makefiles/           # Makefile modules (api, build, citation, docs, hygiene, lint, publish, quality, sbom, security, test)
+├── makes/bijux-rag/     # Makefile modules (api, build, citation, docs, hygiene, lint, publish, quality, sbom, security, test)
 ├── scripts/             # helper scripts (download_data, openapi_drift)
 ├── src/bijux_rag/       # library code (functional core + boundaries + effects)
 ├── tests/               # unit + e2e + strategies + eval assets
@@ -79,12 +79,12 @@ Quick map of the bijux-rag repository (aligned with the bijux-cli documentation 
 - `tox.ini` — multi-Python envs mirroring make targets.
 - `pytest.ini` — pytest config (paths, markers, asyncio, timeouts).
 - `mkdocs.yml` — MkDocs setup (theme, plugins, nav, extensions).
-- `config/coveragerc.ini` — coverage omit/includes.
-- `config/mypy.ini` — mypy strict settings.
-- `config/pyrightconfig.json` — pyright includes/excludes.
-- `config/pytype.cfg` — pytype inputs/excludes.
-- `config/ruff.toml` — ruff line-length/target-version/selects.
-- `Makefile` + `makefiles/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make citation`, `make hygiene`, `make all`).
+- `../configs/bijux-rag/coveragerc.ini` — coverage omit/includes.
+- `../configs/bijux-rag/mypy.ini` — mypy strict settings.
+- `../configs/bijux-rag/pyrightconfig.json` — pyright includes/excludes.
+- `../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
+- `../configs/bijux-rag/ruff.toml` — ruff line-length/target-version/selects.
+- `Makefile` + `makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make citation`, `make hygiene`, `make all`).
 - `scripts/download_data.sh` — data fetcher.
 - `scripts/openapi_drift.py` — API schema drift checker.
 

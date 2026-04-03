@@ -9,7 +9,7 @@ Why: This doc exists to record its single responsibility for review.
 ## Overview  
 This doc defines the citation surface for releases.  
 Canonical metadata lives in [CITATION.cff](https://github.com/bijux/agentic-proteins/blob/main/CITATION.cff).  
-Citation artifacts are generated via [makefiles/citation.mk](https://github.com/bijux/agentic-proteins/blob/main/makefiles/citation.mk).  
+Citation artifacts are generated via [makes/agentic-flows/citation.mk](https://github.com/bijux/agentic-proteins/blob/main/makes/agentic-flows/citation.mk).  
 
 ## Contracts  
 Each statement is a contract.  
@@ -39,7 +39,7 @@ Failures align with [Docs Style](../meta/DOCS_STYLE.md).
 Extensions require tests and docs.  
 Extensions are tracked in [Dependencies](dependencies.md).  
 Extensions align with [scripts/check_changelog_version.py](https://github.com/bijux/agentic-proteins/blob/main/scripts/check_changelog_version.py).  
-- New citation formats require updates to `makefiles/citation.mk`.  
+- New citation formats require updates to `makes/agentic-flows/citation.mk`.  
 - New metadata fields require `CITATION.cff` changes.  
 
 ## Exit Criteria  

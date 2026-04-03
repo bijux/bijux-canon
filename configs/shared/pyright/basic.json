@@ -1,0 +1,14 @@
+{
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "basic",
+  "useLibraryCodeForTypes": true,
+  "reportMissingTypeStubs": "warning",
+  "reportMissingImports": "warning",
+  "reportUnknownVariableType": "none",
+  "reportUnknownParameterType": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnusedFunction": "none",
+  "reportPrivateUsage": "none",
+  "reportUnnecessaryIsInstance": "none"
+}

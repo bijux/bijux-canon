@@ -1,35 +1,28 @@
 # SPDX-License-Identifier: MIT
 # Copyright © 2025 Bijan Mousavi
 
-# Core Config
-.DELETE_ON_ERROR:
-.DEFAULT_GOAL         := all
-.SHELLFLAGS           := -eu -o pipefail -c
-SHELL                 := bash
-PYTHON                := python3
-VENV                  := .venv
-VENV_PYTHON           := $(VENV)/bin/python
-ACT                   := $(VENV)/bin
-RM                    := rm -rf
+PROJECT_SLUG := bijux-rar
+
+include ../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
 # Modular Includes
-include makefiles/api.mk
-include makefiles/build.mk
-include makefiles/changelog.mk
-include makefiles/citation.mk
-include makefiles/dictionary.mk
-include makefiles/docs.mk
-include makefiles/lint.mk
-include makefiles/mutation.mk
-include makefiles/quality.mk
-include makefiles/sbom.mk
-include makefiles/security.mk
-include makefiles/test.mk
-include makefiles/publish.mk
-include makefiles/hooks.mk
-include makefiles/hygiene.mk
+include $(MAKE_DIR)/api.mk
+include $(MAKE_DIR)/build.mk
+include $(MAKE_DIR)/changelog.mk
+include $(MAKE_DIR)/citation.mk
+include $(MAKE_DIR)/dictionary.mk
+include $(MAKE_DIR)/docs.mk
+include $(MAKE_DIR)/lint.mk
+include $(MAKE_DIR)/mutation.mk
+include $(MAKE_DIR)/quality.mk
+include $(MAKE_DIR)/sbom.mk
+include $(MAKE_DIR)/security.mk
+include $(MAKE_DIR)/test.mk
+include $(MAKE_DIR)/publish.mk
+include $(MAKE_DIR)/hooks.mk
+include $(MAKE_DIR)/hygiene.mk
 
 # Environment
 $(VENV):
@@ -57,7 +50,7 @@ clean-soft:
 	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
 	  spec.json openapitools.json node_modules .mutmut-cache session.sqlite site \
 	  docs/reference artifacts usage_test usage_test_artifacts citation.bib .cache || true
-	@$(RM) config/.ruff_cache || true
+	@$(RM) $(CONFIG_DIR)/.ruff_cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
 	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
 	  find . -type f -name '*.pyc' -delete; \

@@ -132,6 +132,6 @@ extra_javascript:
 watch:
   - src
   - tests
-  - config
+  - ../configs/bijux-rag
   - docs
   - artifacts

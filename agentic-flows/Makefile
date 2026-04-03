@@ -1,33 +1,29 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 Bijan Mousavi
 
-.DELETE_ON_ERROR:
-.DEFAULT_GOAL := all
-.SHELLFLAGS   := -eu -o pipefail -c
-SHELL         := bash
-PYTHON        := python3.11
-RM            := rm -rf
+PROJECT_SLUG := agentic-flows
+PYTHON := python3.11
+
+include ../makes/shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
 # ---- Single virtualenv (Python 3.11+) ----
-VENV            := .venv
-VENV_PYTHON     := $(if $(shell test -x "$(VENV)/bin/python" && echo yes),$(VENV)/bin/python,python3)
-ACT             := $(if $(wildcard $(VENV)/bin/activate),$(VENV)/bin,)
+ACT             := $(if $(wildcard $(VENV)/bin/activate),$(VENV)/bin,$(ACT))
 
 # ---- Includes ----
-include makefiles/test.mk
-include makefiles/lint.mk
-include makefiles/quality.mk
-include makefiles/security.mk
-include makefiles/build.mk
-include makefiles/sbom.mk
-include makefiles/docs.mk
-include makefiles/api.mk
-include makefiles/citation.mk
-include makefiles/dictionary.mk
-include makefiles/changelog.mk
-include makefiles/architecture.mk
+include $(MAKE_DIR)/test.mk
+include $(MAKE_DIR)/lint.mk
+include $(MAKE_DIR)/quality.mk
+include $(MAKE_DIR)/security.mk
+include $(MAKE_DIR)/build.mk
+include $(MAKE_DIR)/sbom.mk
+include $(MAKE_DIR)/docs.mk
+include $(MAKE_DIR)/api.mk
+include $(MAKE_DIR)/citation.mk
+include $(MAKE_DIR)/dictionary.mk
+include $(MAKE_DIR)/changelog.mk
+include $(MAKE_DIR)/architecture.mk
 
 -include .env
 export
