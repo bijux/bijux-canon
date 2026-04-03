@@ -154,8 +154,8 @@ async def process_shard(
         iteration_result: IterationResult = {"iteration": iteration, "stages": {}}
         iteration_context = current_context.copy()
 
-        pipeline.workflow_executor.set_stages(required_stages)
-        task_result = await pipeline.workflow_executor.run(iteration_context)
+        pipeline.stage_runner.set_stages(required_stages)
+        task_result = await pipeline.stage_runner.run(iteration_context)
         iteration_result["stages"] = task_result.get("stages", {})
         audit_entries = task_result.get("audit_trail", [])
         shard_result["audit_trail"].extend(

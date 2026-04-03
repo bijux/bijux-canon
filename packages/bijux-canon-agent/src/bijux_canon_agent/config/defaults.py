@@ -15,5 +15,5 @@ PIPELINE_DEFAULTS: dict[str, object] = {
 
 MINIMAL_REFERENCE_CONFIG: dict[str, object] = {
     "pipeline": {"parameters": {"stage_timeout": 15}},
-    "agents": ["file_reader", "workflow_executor"],
+    "agents": ["file_reader", "stage_runner"],
 }

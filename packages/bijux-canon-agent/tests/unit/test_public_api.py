@@ -11,7 +11,7 @@ MODULE_SNAPSHOT = {
         "FileReaderAgent",
         "PlannerAgent",
         "SummarizerAgent",
-        "WorkflowExecutorAgent",
+        "StageRunnerAgent",
         "ValidatorAgent",
         "JudgeAgent",
         "VerifierAgent",

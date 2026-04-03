@@ -2,7 +2,7 @@
 
 This package contains agent implementations for the Bijux Agent system,
 including base classes and specialized agents like FileReaderAgent,
-SummarizerAgent, CritiqueAgent, WorkflowExecutorAgent, and ValidatorAgent.
+SummarizerAgent, CritiqueAgent, StageRunnerAgent, and ValidatorAgent.
 Each agent is designed to perform specific tasks within a multi-agent pipeline,
 supporting features like async execution, telemetry, and feedback-driven revision.
 """
@@ -14,7 +14,7 @@ from .file_reader import FileReaderAgent
 from .judge import JudgeAgent
 from .planner import PlannerAgent
 from .summarizer import SummarizerAgent
-from .workflow_executor import WorkflowExecutorAgent
+from .stage_runner import StageRunnerAgent
 from .validator import ValidatorAgent
 from .verifier import VerifierAgent
 
@@ -23,7 +23,7 @@ __all__ = [
     "FileReaderAgent",
     "PlannerAgent",
     "SummarizerAgent",
-    "WorkflowExecutorAgent",
+    "StageRunnerAgent",
     "ValidatorAgent",
     "JudgeAgent",
     "VerifierAgent",

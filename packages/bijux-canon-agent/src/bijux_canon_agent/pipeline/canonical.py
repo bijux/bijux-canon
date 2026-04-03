@@ -14,7 +14,7 @@ if TYPE_CHECKING:
         UniversalFileReader,
     )
     from bijux_canon_agent.agents.summarizer import SummarizerAgent
-    from bijux_canon_agent.agents.workflow_executor import WorkflowExecutorAgent
+    from bijux_canon_agent.agents.stage_runner import StageRunnerAgent
     from bijux_canon_agent.agents.validator import ValidatorAgent
     from bijux_canon_agent.observability.logging import LoggerManager
 
@@ -28,7 +28,7 @@ class AuditableDocPipeline(Pipeline):
         self,
         config: dict[str, Any],
         logger_manager: LoggerManager,
-        workflow_executor_agent: WorkflowExecutorAgent | None = None,
+        stage_runner_agent: StageRunnerAgent | None = None,
         file_reader_agent: FileReaderAgent | None = None,
         summarizer_agent: SummarizerAgent | None = None,
         validator_agent: ValidatorAgent | None = None,
@@ -53,7 +53,7 @@ class AuditableDocPipeline(Pipeline):
         super().__init__(
             config,
             logger_manager,
-            workflow_executor_agent,
+            stage_runner_agent,
             file_reader_agent,
             summarizer_agent,
             validator_agent,

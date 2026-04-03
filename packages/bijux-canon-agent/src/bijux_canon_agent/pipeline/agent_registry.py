@@ -16,14 +16,14 @@ if TYPE_CHECKING:
         UniversalFileReader,
     )
     from bijux_canon_agent.agents.summarizer import SummarizerAgent
-    from bijux_canon_agent.agents.workflow_executor import WorkflowExecutorAgent
+    from bijux_canon_agent.agents.stage_runner import StageRunnerAgent
     from bijux_canon_agent.agents.validator import ValidatorAgent
 
 
-def load_workflow_executor_agent() -> type[WorkflowExecutorAgent]:
-    from bijux_canon_agent.agents.workflow_executor import WorkflowExecutorAgent
+def load_stage_runner_agent() -> type[StageRunnerAgent]:
+    from bijux_canon_agent.agents.stage_runner import StageRunnerAgent
 
-    return WorkflowExecutorAgent
+    return StageRunnerAgent
 
 
 def load_file_reader_agent() -> type[FileReaderAgent]:
