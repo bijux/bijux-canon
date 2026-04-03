@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for model/reasoning_step.py."""
+"""Reasoning step model for bijux-canon-runtime."""
 
 from __future__ import annotations
 

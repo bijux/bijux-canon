@@ -17,7 +17,7 @@ from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.model.reasoning_bundle import ReasoningBundle
-from bijux_canon_runtime.model.reasoning_step import ReasoningStep
+from bijux_canon_runtime.model.reasoning.step import ReasoningStep
 from bijux_canon_runtime.ontology import (
     ArtifactType,
     DeterminismLevel,

@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from bijux_canon_runtime.model.artifact.reasoning_claim import ReasoningClaim
-from bijux_canon_runtime.model.reasoning_step import ReasoningStep
+from bijux_canon_runtime.model.reasoning.step import ReasoningStep
 from bijux_canon_runtime.ontology.ids import AgentID, BundleID, EvidenceID
 
 
