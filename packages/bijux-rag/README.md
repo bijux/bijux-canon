@@ -6,7 +6,7 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/bijux-rag.svg?logo=pypi&logoColor=white)](https://pypi.org/project/bijux-rag)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bijux-rag.svg?logo=python&logoColor=white)](https://pypi.org/project/bijux-rag)
 [![CI](https://github.com/bijux/bijux-rag/workflows/CI/badge.svg)](https://github.com/bijux/bijux-rag/actions?query=workflow%3ACI)
-[![License](https://img.shields.io/github/license/bijux/bijux-rag.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-rag/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/bijux/bijux-rag.svg?logo=open-source-initiative&logoColor=white)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![REUSE Compliant](https://api.reuse.software/badge/github.com/bijux/bijux-rag)](https://api.reuse.software/info/github.com/bijux/bijux-rag)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/charliermarsh/ruff)
 [![Documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg)](https://bijux.github.io/bijux-rag/)
@@ -216,13 +216,13 @@ Report issues or suggest features via GitHub Issues. Pull requests must maintain
 make bootstrap
 ```
 
-Follow guidelines in CONTRIBUTING.md.
+Follow the repository guide in [CONTRIBUTING.md](https://github.com/bijux/bijux-llm-nexus/blob/main/CONTRIBUTING.md).
 
 [↑ Back to Top](#bijux-rag)
 
 ## License
 
-MIT License—see [LICENSE](LICENSE). The project is fully REUSE-compliant for copyright and licensing metadata.
+MIT License—see [LICENSE](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE). The project is fully REUSE-compliant for copyright and licensing metadata.
 
 [↑ Back to Top](#bijux-rag)
 

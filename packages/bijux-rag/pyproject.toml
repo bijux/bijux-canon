@@ -118,7 +118,6 @@ include = [
   "src/bijux_rag/**",
   "README.md",
   "pyproject.toml",
-  "LICENSE",
 ]
 
 [tool.hatch.build.targets.wheel]

@@ -11,7 +11,7 @@ name = "agentic-flows"
 dynamic = ["version"]
 description = "Governed execution and replay with auditable non-determinism"
 readme = { file = "README.md", content-type = "text/markdown" }
-license = { file = "LICENSE" }
+license = { text = "MIT" }
 requires-python = ">=3.11"
 authors = [{ name = "Bijan Mousavi", email = "mousavi.bijan@gmail.com" }]
 keywords = [
@@ -108,7 +108,6 @@ agentic-flows = "agentic_flows.cli.main:main"
 include = [
   "README.md",
   "CHANGELOG.md",
-  "LICENSE",
   "REUSE.toml",
   "src/agentic_flows/py.typed",
 ]

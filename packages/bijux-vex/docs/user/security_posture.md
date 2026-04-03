@@ -17,4 +17,5 @@ Out of scope
 
 Reporting issues
 
-- See `SECURITY.md` in the repository.
+- See the repository security policy at
+  `https://github.com/bijux/bijux-llm-nexus/blob/main/SECURITY.md`.

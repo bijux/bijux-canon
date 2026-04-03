@@ -70,5 +70,5 @@ Include `bijux vex debug-bundle` output when reporting a bug.
 - Start Here (human): https://bijux.github.io/bijux-vex/user/start_here_human/
 - Concept Map: https://bijux.github.io/bijux-vex/user/concept_map/
 - ND Production Guide: https://bijux.github.io/bijux-vex/guides/nd_production/
-- Security Policy: https://github.com/bijux/bijux-vex/blob/main/SECURITY.md
+- Security Policy: https://github.com/bijux/bijux-llm-nexus/blob/main/SECURITY.md
 - Changelog: https://github.com/bijux/bijux-vex/blob/main/CHANGELOG.md

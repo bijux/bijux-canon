@@ -13,7 +13,7 @@ This system prioritizes replayability and auditability over convenience and spee
 [![PyPI - Version](https://img.shields.io/pypi/v/agentic-flows.svg)](https://pypi.org/project/agentic-flows/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://pypi.org/project/agentic-flows/)
 [![Typing: typed (PEP 561)](https://img.shields.io/badge/typing-typed-4F8CC9.svg)](https://peps.python.org/pep-0561/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/agentic-flows/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-brightgreen)](https://bijux.github.io/agentic-flows/)
 [![CI Status](https://github.com/bijux/agentic-flows/actions/workflows/ci.yml/badge.svg)](https://github.com/bijux/agentic-flows/actions)
 
@@ -214,7 +214,7 @@ tests/          # unit / regression / e2e
 <a id="contributing"></a>
 ## Contributing
 
-Welcome. See **[CONTRIBUTING.md](https://github.com/bijux/agentic-flows/blob/main/CONTRIBUTING.md)** for setup and test guidance.
+Welcome. See **[CONTRIBUTING.md](https://github.com/bijux/bijux-llm-nexus/blob/main/CONTRIBUTING.md)** for repository-wide setup and workflow guidance.
 
 
 
@@ -223,7 +223,7 @@ Welcome. See **[CONTRIBUTING.md](https://github.com/bijux/agentic-flows/blob/mai
 <a id="license"></a>
 ## License
 
-MIT — see **[LICENSE](https://github.com/bijux/agentic-flows/blob/main/LICENSE)**.
+MIT — see **[LICENSE](https://github.com/bijux/bijux-llm-nexus/blob/main/LICENSE)**.
 © 2025 Bijan Mousavi.
 
 

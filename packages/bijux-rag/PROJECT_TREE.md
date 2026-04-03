@@ -17,14 +17,10 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── typings/             # custom stubs (msgpack)
 ├── .gitignore           # git ignores
 ├── CHANGELOG.md         # version history
-├── CODE_OF_CONDUCT.md   # community guidelines
-├── CONTRIBUTING.md      # contributor guide
-├── LICENSE              # MIT license
 ├── Makefile             # main Makefile entrypoint
 ├── PROJECT_TREE.md      # this file
 ├── README.md            # project overview
 ├── REUSE.toml           # REUSE annotations
-├── SECURITY.md          # security policy
 ├── TESTS.md             # tests overview
 ├── TOOLING.md           # tooling guide
 ├── USAGE.md             # usage instructions
@@ -88,10 +84,10 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ## Policies & Governance
 
 - `CHANGELOG.md` — version history (Keep a Changelog format).
-- `CODE_OF_CONDUCT.md` — Contributor Covenant.
-- `CONTRIBUTING.md` — setup/workflow/PR guide.
-- `SECURITY.md` — vulnerability reporting.
+- `../../CODE_OF_CONDUCT.md` — repository-wide community standards.
+- `../../CONTRIBUTING.md` — repository-wide setup/workflow/PR guide.
+- `../../SECURITY.md` — repository-wide vulnerability reporting.
 - `REUSE.toml` — license annotations (MIT across current repository content).
-- `LICENSE` — MIT license text.
+- `../../LICENSE` — repository-wide MIT license text.
 
 [Back to top](#project-tree--guide)
