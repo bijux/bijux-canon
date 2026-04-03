@@ -12,6 +12,5 @@ Stable targets (treated as contracts):
 Reserved/UX-parity targets:
 
 - `build`: intentionally fails with guidance to use `make release`.
-- `citation`: intentionally fails until citation metadata is published.
 
 Any new target added for CI or user workflows must be documented here before release.

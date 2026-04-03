@@ -19,7 +19,6 @@ include $(MAKE_DIR)/security.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/quality.mk
 include $(MAKE_DIR)/freeze.mk
-include $(MAKE_DIR)/citation.mk
 
 # Environment
 $(VENV):

@@ -11,7 +11,6 @@ include ../makes/shared/python-package.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/changelog.mk
-include $(MAKE_DIR)/citation.mk
 include $(MAKE_DIR)/dictionary.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/lint.mk
@@ -48,14 +47,14 @@ clean-soft:
 	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox demo .tmp_home \
 	  .ruff_cache .mypy_cache .pytype .hypothesis .coverage.* .coverage .benchmarks \
 	  spec.json openapitools.json node_modules .mutmut-cache session.sqlite site \
-	  docs/reference artifacts usage_test usage_test_artifacts citation.bib .cache || true
+	  docs/reference artifacts usage_test usage_test_artifacts .cache || true
 	@$(RM) $(CONFIG_DIR)/.ruff_cache || true
 	@if [ "$(OS)" != "Windows_NT" ]; then \
 	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
 	fi
 
 # Pipelines
-all: clean install test lint quality security api docs build sbom citation
+all: clean install test lint quality security api docs build sbom
 	@echo "✔ All targets completed"
 
 # Run independent checks in parallel
@@ -64,7 +63,7 @@ lint quality security api docs: | bootstrap
 
 all-parallel: clean install
 	@$(MAKE) -j4 quality security api docs
-	@$(MAKE) build sbom citation
+	@$(MAKE) build sbom
 	@echo "✔ All targets completed (parallel mode)"
 
 # Pre-push Gate - Pre-Commit!
@@ -117,7 +116,7 @@ clean: ## Remove virtualenv, caches, build, and artifacts
 clean-soft: ## Remove build artifacts but keep .venv
 install: ## Install project in editable mode into .venv
 bootstrap: ## Setup environment & install git hooks
-all: ## Run full pipeline (clean → citation)
+all: ## Run full pipeline (clean → sbom)
 all-parallel: ## Run pipeline with parallelized lint, quality, security, api, and docs
 pre-push: ## Run pre-push gate: tests, quality, security, API, docs, changelog-check
 help: ## Show this help

@@ -10,14 +10,13 @@ Quick map of the bijux-rag repository (aligned with the bijux-cli documentation 
 ├── ../configs/bijux-rag/ # root-managed lint/type/security configs
 ├── data/                # sample datasets (arxiv abstracts CSV)
 ├── docs/                # MkDocs sources (includes ADRs and reference pages)
-├── makes/bijux-rag/     # Makefile modules (api, build, citation, docs, hygiene, lint, publish, quality, sbom, security, test)
+├── makes/bijux-rag/     # Makefile modules (api, build, docs, hygiene, lint, publish, quality, sbom, security, test)
 ├── scripts/             # helper scripts (download_data, openapi_drift)
 ├── src/bijux_rag/       # library code (functional core + boundaries + effects)
 ├── tests/               # unit + e2e + strategies + eval assets
 ├── typings/             # custom stubs (msgpack)
 ├── .gitignore           # git ignores
 ├── CHANGELOG.md         # version history
-├── CITATION.cff         # citation metadata
 ├── CODE_OF_CONDUCT.md   # community guidelines
 ├── CONTRIBUTING.md      # contributor guide
 ├── LICENSE              # MIT license
@@ -83,14 +82,13 @@ Quick map of the bijux-rag repository (aligned with the bijux-cli documentation 
 - `../configs/bijux-rag/pyrightconfig.json` — pyright includes/excludes.
 - `../configs/bijux-rag/pytype.cfg` — pytype inputs/excludes.
 - `../configs/bijux-rag/ruff.toml` — ruff line-length/target-version/selects.
-- `Makefile` + `makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make citation`, `make hygiene`, `make all`).
+- `Makefile` + `makes/bijux-rag/` — entrypoints (`make test`, `make lint`, `make quality`, `make security`, `make api`, `make docs`, `make build`, `make sbom`, `make hygiene`, `make all`).
 - `scripts/download_data.sh` — data fetcher.
 - `scripts/openapi_drift.py` — API schema drift checker.
 
 ## Policies & Governance
 
 - `CHANGELOG.md` — version history (Keep a Changelog format).
-- `CITATION.cff` — citation metadata.
 - `CODE_OF_CONDUCT.md` — Contributor Covenant.
 - `CONTRIBUTING.md` — setup/workflow/PR guide.
 - `SECURITY.md` — vulnerability reporting.

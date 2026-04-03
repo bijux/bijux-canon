@@ -111,7 +111,6 @@ include = [
   "CHANGELOG.md",
   "LICENSE",
   "REUSE.toml",
-  "CITATION.cff",
   "src/agentic_flows/py.typed",
 ]
 

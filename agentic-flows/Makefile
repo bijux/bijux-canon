@@ -20,7 +20,6 @@ include $(MAKE_DIR)/build.mk
 include $(MAKE_DIR)/sbom.mk
 include $(MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
-include $(MAKE_DIR)/citation.mk
 include $(MAKE_DIR)/dictionary.mk
 include $(MAKE_DIR)/changelog.mk
 include $(MAKE_DIR)/architecture.mk
@@ -70,7 +69,7 @@ clean-venv:
 
 clean: clean-soft clean-venv ## Remove venv + artifacts
 
-all: clean install test lint quality security sbom build docs api citation dictionary ## Full pipeline
+all: clean install test lint quality security sbom build docs api dictionary ## Full pipeline
 	@echo "✔ All targets completed"
 
 manage_examples:

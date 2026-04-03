@@ -45,7 +45,7 @@
 - No hype, no roadmap, no promises.
 
 ## 9. Final artifact hygiene
-- Final artifacts only: wheel, sdist, SBOM (prod + dev), citation outputs, OpenAPI schema, test + API JUnit reports.
+- Final artifacts only: wheel, sdist, SBOM (prod + dev), OpenAPI schema, test + API JUnit reports.
 - Remove intermediate builds, local-only outputs, and .dev artifacts.
 
 ## 10. `agentic-flows --help` must succeed

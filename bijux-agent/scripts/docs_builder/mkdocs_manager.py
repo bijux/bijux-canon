@@ -29,7 +29,6 @@ from typing import Callable
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.docs_builder.artifacts_pages.api_page import APIArtifactPage
-from scripts.docs_builder.artifacts_pages.citation_page import CitationArtifactPage
 from scripts.docs_builder.artifacts_pages.lint_page import LintArtifactPage
 from scripts.docs_builder.artifacts_pages.quality_page import QualityArtifactPage
 from scripts.docs_builder.artifacts_pages.sbom_page import SBOMArtifactPage
@@ -123,7 +122,7 @@ def _materialize_root_docs() -> None:
         (REPO_ROOT / "CODE_OF_CONDUCT.md",Path("code_of_conduct.md"), rewrite_links_general),
         (REPO_ROOT / "CONTRIBUTING.md",   Path("contributing.md"), rewrite_links_general),
         (REPO_ROOT / "CHANGELOG.md",      Path("changelog.md"),    rewrite_links_general),
-        (REPO_ROOT / "LICENSES" / "MIT.txt", Path("license.md"),   rewrite_links_general),
+        (REPO_ROOT / "LICENSE",             Path("license.md"),   rewrite_links_general),
     ]
     have_index = False
     for src, dst, fixer in pairs:
@@ -349,7 +348,6 @@ def _compose_nav(ref_dir_to_pages: Dict[str, List[Tuple[str, str]]], all_dirs: s
         ("Security Artifacts", "artifacts/security.md"),
         ("API Artifacts", "artifacts/api.md"),
         ("SBOM Artifacts", "artifacts/sbom.md"),
-        ("Citation Artifacts", "artifacts/citation.md")
     ]
     landing = [PAGE_META_NO_EDIT, "# Artifacts {#top}\n\n",
                     "Collected CI/test reports and logs.\n\n"]
@@ -386,7 +384,6 @@ def main() -> None:
     SecurityArtifactPage().build()
     APIArtifactPage().build()
     SBOMArtifactPage().build()
-    CitationArtifactPage().build()
     _compose_nav(ref, dirs)
 
 

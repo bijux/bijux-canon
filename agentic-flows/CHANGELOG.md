@@ -54,7 +54,7 @@ This project adheres to [Semantic Versioning](https://semver.org) and the
   - Determinism/non-determinism contract docs and storage model guidance.
   - Examples for deterministic and replay behavior.
 - **Quality gates**
-  - Makefile orchestration for tests, linting, docs, API checks, SBOM, and citation outputs.
+  - Makefile orchestration for tests, linting, docs, API checks, and SBOM outputs.
 
 
 <!-- release end -->

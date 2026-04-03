@@ -170,7 +170,6 @@ include = [
   "CHANGELOG.md",
   "LICENSE",
   "REUSE.toml",
-  "CITATION.cff",
   "PYPI.md",
   "src/bijux_vex/py.typed",
 ]
@@ -181,7 +180,6 @@ include = [
   "CHANGELOG.md",
   "LICENSE",
   "REUSE.toml",
-  "CITATION.cff",
   "PYPI.md",
   "src/bijux_vex/py.typed",
 ]

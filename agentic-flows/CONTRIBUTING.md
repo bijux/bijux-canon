@@ -79,7 +79,6 @@ make lint test docs api
 | `make docs`     | Build MkDocs (strict)                                                        |
 | `make build`    | Build sdist + wheel                                                          |
 | `make sbom`     | CycloneDX SBOM → `artifacts/sbom/`                                           |
-| `make citation` | Validate `CITATION.cff` and generate citation formats                        |
 
 **Handy helpers**
 

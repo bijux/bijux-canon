@@ -31,7 +31,6 @@ artifacts/
     tmp/            # temp test files
   api/              # schemas, API logs/reports
   sbom/             # SBOM outputs
-  citation/         # citation exports
   quality/          # interrogate, vulture, deptry, reuse, etc.
   security/         # bandit, pip-audit, etc.
   lint/             # linter/type checker reports
@@ -39,7 +38,7 @@ artifacts/
 
 > Note: Locally we emit to `artifacts/build/`. In CI, the uploaded artifact named **`dist`** extracts as `artifacts/dist/` when downloaded—both represent the same build bundle at different stages.
 
-Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`, `CITATION.cff`) remain in place and are **not** artifacts.
+Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`) remain in place and are **not** artifacts.
 
 ## Rationale
 
@@ -61,7 +60,7 @@ Tracked sources (e.g., `pyproject.toml`, `README.md`, `LICENSE`, `CITATION.cff`)
 
 * **`ci.yml`** (CI workflow) uploads only from `artifacts/**`.
 * **`deploy-docs.yml`** (Deploy Docs workflow) hydrates into `./artifacts/**`, builds from `artifacts/docs/docs` to `artifacts/docs/site`, and checks required pages.
-* **`publish.yml`** (Publish to PyPI workflow) assembles release bundles from `artifacts/**`, computes checksums for the build bundle, and attaches curated ZIPs (tests per-py, lint, quality, security, api, docs, sbom, citation, build).
+* **`publish.yml`** (Publish to PyPI workflow) assembles release bundles from `artifacts/**`, computes checksums for the build bundle, and attaches curated ZIPs (tests per-py, lint, quality, security, api, docs, sbom, build).
 
 ## Consequences
 
