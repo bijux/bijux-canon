@@ -38,7 +38,7 @@ NODE_PACKAGE_MANIFEST ?= $(CONFIG_DIR)/package.json
 NODE_LOCKFILE         ?= $(CONFIG_DIR)/package-lock.json
 
 # Find schemas
-ALL_API_SCHEMAS       := $(shell find api -type f \( -name '*.yaml' -o -name '*.yml' \))
+ALL_API_SCHEMAS       := $(shell find "$(API_DIR)" -type f \( -name '*.yaml' -o -name '*.yml' \))
 ALL_API_SCHEMAS_ABS   := $(abspath $(ALL_API_SCHEMAS))
 
 # Python CLIs (prefer ACT if present)
@@ -112,7 +112,7 @@ api-install: | $(VENV) node_deps
 	@echo "✔ API toolchain ready."
 
 api-lint: | node_deps
-	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "✘ No API schemas found under api/*.y*ml"; exit 1; fi
+	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "✘ No API schemas found under $(API_DIR)"; exit 1; fi
 	@echo "→ Linting OpenAPI specs..."
 	$(foreach s,$(ALL_API_SCHEMAS),$(call VALIDATE_ONE_SCHEMA,$(s)))
 	@[ -f ./openapitools.json ] && echo "→ Removing stray openapitools.json (root)" && rm -f ./openapitools.json || true
@@ -120,7 +120,7 @@ api-lint: | node_deps
 
 # ── Start server, wait for readiness, run Schemathesis (sandboxed Hypothesis DB), stop server
 api-test: | $(VENV) node_deps
-	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "✘ No API schemas found under api/*.y*ml"; exit 1; fi
+	@if [ -z "$(ALL_API_SCHEMAS)" ]; then echo "✘ No API schemas found under $(API_DIR)"; exit 1; fi
 	@mkdir -p "$(API_ARTIFACTS_DIR_ABS)" "$(API_TEST_DIR_ABS)"
 	@FILTER_PATH="$(API_ARTIFACTS_DIR_ABS)/schemathesis_filter.py"; \
 	  printf 'import sys\nskip=False\nfor line in sys.stdin:\n    if "WARNINGS" in line or line.startswith("Warnings:") or "validation mismatch" in line or line.strip().startswith("💡") or line.strip().startswith("- "):\n        skip=True\n        continue\n    if skip and (line.startswith("SUMMARY") or line.startswith("Test cases:") or line.strip() == ""):\n        skip=False\n        if line.startswith("SUMMARY") or line.startswith("Test cases:"):\n            print(line, end="")\n        continue\n    if not skip:\n        print(line, end="")\n' >"$$FILTER_PATH"

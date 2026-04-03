@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/bijux-rar-ci.yml"
       - "packages/bijux-rar/**"
+      - "apis/bijux-rar/**"
       - "configs/bijux-rar/**"
       - "makes/bijux-rar/**"
       - "makes/shared/**"
@@ -17,6 +18,7 @@ on:
     paths:
       - ".github/workflows/bijux-rar-ci.yml"
       - "packages/bijux-rar/**"
+      - "apis/bijux-rar/**"
       - "configs/bijux-rar/**"
       - "makes/bijux-rar/**"
       - "makes/shared/**"
