@@ -20,11 +20,14 @@ QUALITY_PRE_TARGETS := hygiene
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
 SECURITY_PATHS    := src/bijux_rar
 SECURITY_IGNORE_IDS := PYSEC-2022-42969
+DOCS_DEV_ADDR     := 127.0.0.1:8000
+DOCS_SITE_URL     := http://127.0.0.1:8000/
+DOCS_DEPLOY_FLAGS := --force --no-history --clean --remote-branch gh-pages
 
 # Modular Includes
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
-include $(MAKE_DIR)/docs.mk
+include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/sbom.mk

@@ -11,7 +11,7 @@ on:
       - "apis/bijux-vex/**"
       - "scripts/bijux-vex/**"
       - "configs/bijux-vex/mkdocs.yml"
-      - "makes/bijux-vex/docs.mk"
+      - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:
 
@@ -46,4 +46,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Deploy docs
-        run: packages/bijux-vex/.venv/bin/mkdocs gh-deploy --strict --force --config-file configs/bijux-vex/mkdocs.yml
+        run: make -C packages/bijux-vex docs-deploy

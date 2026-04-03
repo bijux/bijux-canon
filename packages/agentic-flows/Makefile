@@ -39,7 +39,7 @@ include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
-include $(MAKE_DIR)/docs.mk
+include $(ROOT_MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/architecture.mk
 

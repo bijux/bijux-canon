@@ -11,7 +11,7 @@ on:
       - "apis/bijux-agent/**"
       - "scripts/bijux-agent/**"
       - "configs/bijux-agent/mkdocs.yml"
-      - "makes/bijux-agent/docs.mk"
+      - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:
 

@@ -32,7 +32,7 @@ PIP_AUDIT_CONSOLE_FLAGS        := --progress-spinner off
 
 include $(MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
-include $(MAKE_DIR)/docs.mk
+include $(ROOT_MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/quality.mk

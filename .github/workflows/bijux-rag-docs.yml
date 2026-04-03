@@ -11,7 +11,7 @@ on:
       - "apis/bijux-rag/**"
       - "scripts/bijux-rag/**"
       - "configs/bijux-rag/mkdocs.yml"
-      - "makes/bijux-rag/docs.mk"
+      - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:
 
@@ -46,4 +46,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Deploy docs
-        run: packages/bijux-rag/.venv/bin/mkdocs gh-deploy --strict --force --config-file configs/bijux-rag/mkdocs.yml
+        run: make -C packages/bijux-rag docs-deploy

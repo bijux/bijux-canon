@@ -11,7 +11,7 @@ on:
       - "apis/bijux-rar/**"
       - "scripts/bijux-rar/**"
       - "configs/bijux-rar/mkdocs.yml"
-      - "makes/bijux-rar/docs.mk"
+      - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:
 

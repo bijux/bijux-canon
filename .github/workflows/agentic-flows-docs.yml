@@ -11,7 +11,7 @@ on:
       - "apis/agentic-flows/**"
       - "scripts/agentic-flows/**"
       - "configs/agentic-flows/mkdocs.yml"
-      - "makes/agentic-flows/docs.mk"
+      - "makes/docs.mk"
       - "makes/shared/**"
   workflow_dispatch:
 

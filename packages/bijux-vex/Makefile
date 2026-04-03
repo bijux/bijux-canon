@@ -25,11 +25,13 @@ SECURITY_PATHS    := src/bijux_vex
 SECURITY_IGNORE_IDS := PYSEC-2022-42969
 SECURITY_AUDIT_PREPARE_MODE := pyproject
 PIP_AUDIT_INPUTS = -r "$(SECURITY_REQS)"
+DOCS_DEV_ADDR    := 0.0.0.0:8000
+DOCS_EXTRA_CLEAN_PATHS := site docs/site
 
 # Modular Includes
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(MAKE_DIR)/test.mk
-include $(MAKE_DIR)/docs.mk
+include $(ROOT_MAKE_DIR)/docs.mk
 include $(MAKE_DIR)/api.mk
 include $(MAKE_DIR)/hygiene.mk
 include $(ROOT_MAKE_DIR)/security.mk
