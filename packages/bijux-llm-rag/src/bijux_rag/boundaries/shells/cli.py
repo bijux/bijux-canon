@@ -286,7 +286,7 @@ def _main_rag(argv: list[str]) -> int:
         if args.format == "yaml":
             try:
                 yaml_module = cast(_YamlModule, importlib.import_module("yaml"))
-            except Exception as e:
+            except ModuleNotFoundError as e:
                 raise SystemExit("YAML output requires PyYAML") from e
             out_s = yaml_module.safe_dump(
                 ask_payload, sort_keys=False, allow_unicode=True
