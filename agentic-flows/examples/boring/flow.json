@@ -1,0 +1,28 @@
+{
+  "flow_id": "flow-boring",
+  "tenant_id": "tenant-a",
+  "flow_state": "validated",
+  "determinism_level": "strict",
+  "replay_acceptability": "exact_match",
+  "entropy_budget": {
+    "allowed_sources": ["seeded_rng", "data"],
+    "max_magnitude": "low"
+  },
+  "dataset": {
+    "dataset_id": "retrieval_corpus",
+    "tenant_id": "tenant-a",
+    "dataset_version": "1.0.0",
+    "dataset_hash": "136275faf776ff9aae3823d7d6f928e9",
+    "dataset_state": "frozen",
+    "storage_uri": "file://datasets/retrieval_corpus.jsonl"
+  },
+  "allow_deprecated_datasets": false,
+  "replay_envelope": {
+    "min_claim_overlap": 1.0,
+    "max_contradiction_delta": 0
+  },
+  "agents": ["agent-boring"],
+  "dependencies": [],
+  "retrieval_contracts": [],
+  "verification_gates": []
+}

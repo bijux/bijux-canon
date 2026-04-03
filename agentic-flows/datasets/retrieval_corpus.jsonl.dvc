@@ -1,0 +1,4 @@
+outs:
+- md5: 136275faf776ff9aae3823d7d6f928e9
+  size: 365
+  path: datasets/retrieval_corpus.jsonl

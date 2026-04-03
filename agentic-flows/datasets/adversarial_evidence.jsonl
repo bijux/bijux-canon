@@ -1,0 +1,3 @@
+{"evidence_id":"adv-1","claim":"All flows are deterministic.","label":"contradiction"}
+{"evidence_id":"adv-2","claim":"Replay accepts invariant-preserving drift.","label":"support"}
+{"evidence_id":"adv-3","claim":"Entropy sources must be declared.","label":"support"}

@@ -1,0 +1,5 @@
+- trace_diff
+- comparative_analysis
+- drift
+- flow_invariants
+- flow_correlation

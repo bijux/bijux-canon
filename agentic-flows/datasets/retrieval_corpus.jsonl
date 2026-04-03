@@ -1,0 +1,3 @@
+{"doc_id":"doc-1","title":"Determinism Basics","content":"Determinism requires stable inputs and normalized ordering."}
+{"doc_id":"doc-2","title":"Replay Policies","content":"Replay acceptability can allow invariant-preserving differences."}
+{"doc_id":"doc-3","title":"Verification Signals","content":"Verification summarizes evidence and rejects contradictions."}

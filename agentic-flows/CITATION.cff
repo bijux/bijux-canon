@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as:"
+title: "agentic-flows"
+version: "0.1.0"
+date-released: 2025-01-18
+authors:
+  - family-names: "Mousavi"
+    given-names: "Bijan"
+    orcid: "https://orcid.org/0009-0002-4092-2854"
+repository-code: "https://github.com/bijux/agentic-flows"
+url: "https://github.com/bijux/agentic-flows"
+license: "Apache-2.0"
+keywords: ["agentic-flows", "agents", "determinism", "verification"]
+preferred-citation:
+  type: software
+  title: "agentic-flows"
+  version: "0.1.0"
+  authors:
+    - family-names: "Mousavi"
+      given-names: "Bijan"
+  year: 2025
+  month: 1
+  url: "https://github.com/bijux/agentic-flows"

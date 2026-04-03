@@ -1,0 +1,183 @@
+# Test Configuration — zero root pollution (pytest runs from artifacts_pages/test)
+
+TEST_PATHS            ?= tests
+TEST_PATHS_UNIT       ?= tests/unit
+TEST_PATHS_E2E        ?= tests/e2e
+TEST_PATHS_REGRESSION ?= tests/regression
+TEST_PATHS_EVAL       ?= tests/regression
+
+TEST_ARTIFACTS_DIR    ?= artifacts/test
+JUNIT_XML             ?= $(TEST_ARTIFACTS_DIR)/junit.xml
+TMP_DIR               ?= $(TEST_ARTIFACTS_DIR)/tmp
+HYPOTHESIS_DB_DIR     ?= $(TEST_ARTIFACTS_DIR)/hypothesis
+BENCHMARK_DIR         ?= $(TEST_ARTIFACTS_DIR)/benchmarks
+
+ENABLE_BENCH          ?= 1
+PYTEST_ADDOPTS_EXTRA  ?=
+
+# Use absolute venv Python for pytest to avoid missing entrypoints after cd.
+PY                   ?= $(if $(wildcard $(VENV)/bin/python),$(abspath $(VENV)/bin/python),python3)
+PYTEST               ?= $(PY) -m pytest
+
+# absolute paths so running from artifacts_pages/test works cleanly
+PYTEST_INI_ABS        := $(abspath pytest.ini)
+COVCFG_ABS            := $(abspath config/coveragerc.ini)
+COV_HTML_ABS          := $(abspath $(TEST_ARTIFACTS_DIR)/htmlcov)
+CACHE_DIR_ABS         := $(abspath $(TEST_ARTIFACTS_DIR)/.pytest_cache)
+COV_XML_ABS           := $(abspath $(TEST_ARTIFACTS_DIR)/coverage.xml)
+COV_DATA_ABS          := $(abspath $(TEST_ARTIFACTS_DIR)/.coverage)
+
+TEST_PATHS_ABS        := $(abspath $(TEST_PATHS))
+TEST_PATHS_UNIT_ABS   := $(abspath $(TEST_PATHS_UNIT))
+TEST_PATHS_E2E_ABS    := $(abspath $(TEST_PATHS_E2E))
+TEST_PATHS_REGRESSION_ABS := $(abspath $(TEST_PATHS_REGRESSION))
+TEST_PATHS_EVAL_ABS   := $(abspath $(TEST_PATHS_EVAL))
+SRC_ABS               := $(abspath src)
+JUNIT_XML_ABS         := $(abspath $(JUNIT_XML))
+TMP_DIR_ABS           := $(abspath $(TMP_DIR))
+HYPOTHESIS_DB_ABS     := $(abspath $(HYPOTHESIS_DB_DIR))
+BENCHMARK_DIR_ABS     := $(abspath $(BENCHMARK_DIR))
+
+# override ini-relative bits with absolute paths
+PYTEST_FLAGS = \
+  --junitxml "$(JUNIT_XML_ABS)" \
+  --basetemp "$(TMP_DIR_ABS)" \
+  --cov-config "$(COVCFG_ABS)" \
+  --cov-report=html:"$(COV_HTML_ABS)" \
+  --cov-report=xml:"$(COV_XML_ABS)" \
+  -o cache_dir="$(CACHE_DIR_ABS)" \
+  $(PYTEST_ADDOPTS_EXTRA)
+
+.PHONY: test test-unit test-e2e test-regression test-evaluation test-ci test-clean real-local
+
+test:
+	@echo "→ Running full test suite on $(TEST_PATHS)"
+	@$(MAKE) ensure-venv
+	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)"
+	@rm -rf .hypothesis .benchmarks || true
+	@echo "   • JUnit XML → $(JUNIT_XML_ABS)"
+	@echo "   • Hypothesis DB → $(HYPOTHESIS_DB_ABS)"
+	@echo "   • Using pytest → $(PYTEST)"
+	@BENCH_FLAGS=""; \
+	if [ "$(ENABLE_BENCH)" = "1" ] && sh -c "$(PYTEST) -q --help" 2>/dev/null | grep -q -- '--benchmark-storage'; then \
+	  BENCH_FLAGS="--benchmark-autosave --benchmark-storage=file://$(BENCHMARK_DIR_ABS)"; \
+	  echo "   • pytest-benchmark detected → storing in $(BENCHMARK_DIR_ABS)"; \
+	else \
+	  echo "   • pytest-benchmark disabled or not installed"; \
+	fi; \
+	( cd "$(TEST_ARTIFACTS_DIR)" && \
+	  PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
+	  HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
+	  COVERAGE_FILE="$(COV_DATA_ABS)" \
+	  sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" -m "not real_local" $(PYTEST_FLAGS) '"$$BENCH_FLAGS" )
+	@rm -rf .hypothesis .benchmarks || true
+
+test-unit:
+	@echo "→ Running unit tests only"
+	@$(MAKE) ensure-venv
+	@$(PYTEST) --version
+	@echo "pytest cmd: $(PYTEST) -c '$(PYTEST_INI_ABS)' …"
+	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)"
+	@rm -rf .hypothesis .benchmarks || true
+
+test-e2e:
+	@echo "→ Running end-to-end tests only"
+	@$(MAKE) ensure-venv
+	@$(PYTEST) --version
+	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)"
+	@rm -rf .hypothesis .benchmarks || true
+	@if [ -d "$(TEST_PATHS_E2E)" ] && find "$(TEST_PATHS_E2E)" -type f -name 'test_*.py' | grep -q .; then \
+	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
+	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
+	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
+	    COVERAGE_FILE="$(COV_DATA_ABS)" \
+	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_E2E_ABS)" -m "e2e" --maxfail=1 -q $(PYTEST_FLAGS)' ); \
+	else \
+	  echo "   • no $(TEST_PATHS_E2E); skipping"; \
+	fi
+	@rm -rf .hypothesis .benchmarks || true
+
+test-regression:
+	@echo "→ Running regression tests only"
+	@$(MAKE) ensure-venv
+	@$(PYTEST) --version
+	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)"
+	@rm -rf .hypothesis .benchmarks || true
+
+test-evaluation:
+	@echo "→ Running evaluation benchmarks"
+	@$(MAKE) ensure-venv
+	@$(PYTEST) --version
+	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)"
+	@rm -rf .hypothesis .benchmarks || true
+	@if [ -d "$(TEST_PATHS_EVAL)" ] && find "$(TEST_PATHS_EVAL)" -type f -name 'test_*.py' | grep -q .; then \
+	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
+	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
+	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
+	    COVERAGE_FILE="$(COV_DATA_ABS)" \
+	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_EVAL_ABS)" -m "evaluation" --maxfail=1 -q $(PYTEST_FLAGS)' ); \
+	else \
+	  echo "   • no $(TEST_PATHS_EVAL); skipping"; \
+	fi
+	@rm -rf .hypothesis .benchmarks || true
+	@if [ -d "$(TEST_PATHS_REGRESSION)" ] && find "$(TEST_PATHS_REGRESSION)" -type f -name 'test_*.py' | grep -q .; then \
+	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
+	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
+	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
+	    COVERAGE_FILE="$(COV_DATA_ABS)" \
+	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_REGRESSION_ABS)" -m "regression" --maxfail=1 -q $(PYTEST_FLAGS)' ); \
+	else \
+	  echo "   • no $(TEST_PATHS_REGRESSION); skipping"; \
+	fi
+	@rm -rf .hypothesis .benchmarks || true
+
+test-ci: test-unit test-e2e test-regression test-evaluation
+	@echo "✔ CI test categories completed"
+	@echo "   • JUnit XML → $(JUNIT_XML_ABS)"
+	@echo "   • Hypothesis DB → $(HYPOTHESIS_DB_ABS)"
+	@echo "   • Using pytest → $(PYTEST)"
+	@BENCH_FLAGS=""; \
+	if [ "$(ENABLE_BENCH)" = "1" ] && sh -c "$(PYTEST) -q --help" 2>/dev/null | grep -q -- '--benchmark-storage'; then \
+	  BENCH_FLAGS="--benchmark-autosave --benchmark-storage=file://$(BENCHMARK_DIR_ABS)"; \
+	  echo "   • pytest-benchmark detected → storing in $(BENCHMARK_DIR_ABS)"; \
+	else \
+	  echo "   • pytest-benchmark disabled or not installed"; \
+	fi; \
+	if [ -d "$(TEST_PATHS_UNIT)" ] && find "$(TEST_PATHS_UNIT)" -type f -name 'test_*.py' | grep -q .; then \
+	  echo "   • detected $(TEST_PATHS_UNIT) — targeting that directory"; \
+	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
+	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
+	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
+	    COVERAGE_FILE="$(COV_DATA_ABS)" \
+	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_UNIT_ABS)" -m "not slow" --maxfail=1 -q $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
+	else \
+	  echo "   • no $(TEST_PATHS_UNIT); excluding e2e/integration/functional/slow"; \
+	  ( cd "$(TEST_ARTIFACTS_DIR)" && \
+	    PYTHONPATH="$(SRC_ABS)$${PYTHONPATH:+:$${PYTHONPATH}}" \
+	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
+	    COVERAGE_FILE="$(COV_DATA_ABS)" \
+	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" -k "not e2e and not integration and not functional" -m "not slow" --maxfail=1 -q $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
+	fi
+	@rm -rf .hypothesis .benchmarks || true
+
+test-clean:
+	@echo "→ Cleaning test artifacts"
+	@rm -rf ".hypothesis" ".benchmarks" || true
+	@$(RM) .coverage* || true
+	@echo "✔ done"
+
+real-local:
+	@echo "→ Running real local model tests (manual only)"
+	@$(MAKE) ensure-venv
+	@$(PYTEST) --version
+	@$(PYTEST) -c "$(PYTEST_INI_ABS)" -o addopts= "$(abspath tests/real_local)" -m "real_local" -s -p no:cov
+
+##@ Test
+test: ## Run full test suite; side-effects contained in artifacts_pages/test/
+test-unit: ## Run unit tests only; same containment; fallback excludes e2e/integration/functional/slow
+test-e2e: ## Run end-to-end tests only (LocalExecutor only)
+test-regression: ## Run regression tests only (deterministic, pinned)
+test-evaluation: ## Run evaluation benchmarks (deterministic, pinned)
+test-ci: ## Run unit, e2e, and regression tests sequentially (fail fast)
+test-clean: ## Remove stray root .hypothesis/.benchmarks and coverage files
+real-local: ## Run real local model tests (manual; not for CI)

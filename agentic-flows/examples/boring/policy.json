@@ -1,0 +1,16 @@
+{
+  "spec_version": "v1",
+  "verification_level": "baseline",
+  "failure_mode": "halt",
+  "randomness_tolerance": "deterministic",
+  "arbitration_policy": {
+    "spec_version": "v1",
+    "rule": "unanimous",
+    "quorum_threshold": null
+  },
+  "required_evidence": [],
+  "max_rule_cost": 100,
+  "rules": [],
+  "fail_on": [],
+  "escalate_on": []
+}

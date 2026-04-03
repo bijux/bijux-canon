@@ -1,0 +1,118 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install tox
+        run: python -m pip install -U pip tox
+      - name: Install project tooling
+        run: python -m pip install -U pip && python -m pip install ".[dev]"
+      - name: Tests
+        run: make test
+      - name: Coverage floors
+        run: |
+          if compgen -G "src/agentic_flows/providers/*" > /dev/null; then
+            python -m coverage report --rcfile config/coveragerc.ini --data-file artifacts/test/.coverage --include "src/agentic_flows/providers/*" --fail-under=65
+          else
+            echo "Skipping providers coverage floor (path missing)"
+          fi
+          if [ -f "src/agentic_flows/interfaces/cli.py" ]; then
+            python -m coverage report --rcfile config/coveragerc.ini --data-file artifacts/test/.coverage --include "src/agentic_flows/interfaces/cli.py" --fail-under=60
+          else
+            echo "Skipping interfaces CLI coverage floor (path missing)"
+          fi
+          if compgen -G "src/agentic_flows/api/*" > /dev/null; then
+            python -m coverage report --rcfile config/coveragerc.ini --data-file artifacts/test/.coverage --include "src/agentic_flows/api/*" --fail-under=75
+          else
+            echo "Skipping API coverage floor (path missing)"
+          fi
+      - name: Upload test artifacts
+        if: ${{ always() && hashFiles('artifacts/test/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-py311
+          path: artifacts/test
+
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - quality
+          - security
+          - docs
+          - build
+          - sbom
+          - api
+          - citation
+          - dictionary-check
+          - openapi-drift
+          - changelog-ci
+          - architecture-check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install tox
+        run: python -m pip install -U pip tox
+      - name: Install project tooling
+        run: python -m pip install -U pip && python -m pip install ".[dev]"
+      - name: Install docs tooling
+        if: ${{ matrix.target == 'docs' }}
+        run: python -m pip install -U mkdocs mkdocs-material
+      - name: Run gate
+        run: |
+          if [ "${{ matrix.target }}" = "dictionary-check" ]; then
+            make dictionary-check
+          else
+            make ${{ matrix.target }}
+          fi
+      - name: Upload ${{ matrix.target }} artifacts
+        if: ${{ always() && hashFiles(format('artifacts/{0}/**', matrix.target)) != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: artifacts/${{ matrix.target }}
+      - name: Upload dist artifacts
+        if: ${{ always() && matrix.target == 'build' && hashFiles('artifacts/build/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: artifacts/build
+
+  lint:
+    runs-on: ubuntu-latest
+    needs:
+      - tests
+      - checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install tox
+        run: python -m pip install -U pip tox
+      - name: Install project tooling
+        run: python -m pip install -U pip && python -m pip install ".[dev]"
+      - name: Lint
+        run: make lint
+      - name: Upload lint artifacts
+        if: ${{ always() && hashFiles('artifacts/lint/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint
+          path: artifacts/lint

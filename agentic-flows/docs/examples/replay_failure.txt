@@ -1,0 +1,3 @@
+$ agentic-flows replay examples/boring/flow.json --policy examples/boring/policy.json --run-id run-bad --tenant-id tenant-a --db-path /tmp/flows.duckdb
+stderr: Replay diff detected: keys=dataset,summary
+exit code: 1
