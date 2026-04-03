@@ -1,14 +1,15 @@
-extend = "../shared/ruff/base.toml"
-src = ["../../packages/bijux-vex/src", "../../packages/bijux-vex/tests"]
-extend-exclude = ["../../packages/bijux-vex/src/bijux_vex/_version.py"]
+extend = "shared/ruff/base.toml"
+src = ["src", "tests"]
+extend-exclude = ["artifacts", "node_modules", "src/**/_version.py"]
 
 [lint.per-file-ignores]
 "tests/**" = ["S101"]
 "__init__.py" = ["F401"]
+"src/bijux_agent/schema/models.py" = ["PT011"]
+"src/bijux_agent/models/contract.py" = ["PT011"]
 
 [lint.isort]
 force-sort-within-sections = true
-known-first-party = ["bijux_vex"]
 required-imports = ["from __future__ import annotations"]
 
 [lint.flake8-tidy-imports]

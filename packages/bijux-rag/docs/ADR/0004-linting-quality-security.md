@@ -74,10 +74,10 @@ This setup supports whole-project runs as well as per-directory/per-file runs, w
 The toolchain is driven by unified configs:
 
 <details>
-<summary>Ruff (<code>../../configs/bijux-rag/ruff.toml</code>)</summary>
+<summary>Ruff (<code>../../configs/ruff.toml</code>)</summary>
 
 ```toml
---8<-- "../../configs/bijux-rag/ruff.toml"
+--8<-- "../../configs/ruff.toml"
 ```
 
 </details>
