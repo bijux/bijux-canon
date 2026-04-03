@@ -8,7 +8,7 @@ Planner:
 Verifier:
 - Rejected “best-effort” checks because fail-closed is required for auditability. Soft verification would allow silent corruption.
 
-FrozenRuntime:
+ReplayRuntime:
 - Rejected “re-run tools live” for replay because determinism requires pinned outputs/config. Live replay would allow drift and tampering.
 
 ReasonerBackend:

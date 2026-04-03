@@ -19,7 +19,7 @@ class RecordedCall:
     result: ToolResult
 
 
-class FrozenToolRegistry:
+class ReplayToolRegistry:
     def __init__(self, recordings: Mapping[str, RecordedCall]):
         self.recordings = recordings
 
@@ -33,15 +33,15 @@ class FrozenToolRegistry:
 
 
 @dataclass(frozen=True)
-class FrozenRuntime:
+class ReplayRuntime:
     recordings: Mapping[str, RecordedCall]
     seed: int
-    runtime_kind: str = "FrozenRuntime"
+    runtime_kind: str = "ReplayRuntime"
     descriptor_override: RuntimeDescriptor | None = None
 
     @property
-    def tools(self) -> FrozenToolRegistry:
-        return FrozenToolRegistry(self.recordings)
+    def tools(self) -> ReplayToolRegistry:
+        return ReplayToolRegistry(self.recordings)
 
     @property
     def descriptor(self) -> RuntimeDescriptor:

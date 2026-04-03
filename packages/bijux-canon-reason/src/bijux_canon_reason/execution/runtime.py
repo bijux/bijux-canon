@@ -95,7 +95,7 @@ class Runtime:
         artifacts_dir: Path | None = None,
         descriptors: list[ToolDescriptor] | None = None,
         mode: Literal["live", "frozen"] = "frozen",
-        runtime_kind: str = "FrozenRuntime",
+        runtime_kind: str = "ReplayRuntime",
     ) -> Runtime:
         frozen_tools = FrozenToolRegistry(
             recorded=dict(recorded_results),

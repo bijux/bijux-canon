@@ -9,7 +9,7 @@ Endpoints (v1):
   GET  /v1/runs/{run_id}/manifest -> read manifest.json
   GET  /v1/runs/{run_id}/trace    -> stream trace.jsonl
   POST /v1/runs/{run_id}/verify   -> verify trace against plan/evidence
-  POST /v1/runs/{run_id}/replay   -> replay using FrozenRuntime
+  POST /v1/runs/{run_id}/replay   -> replay using ReplayRuntime
 
   CRUD demo (persistent, deterministic):
   POST /v1/items          -> create (idempotent by name)
