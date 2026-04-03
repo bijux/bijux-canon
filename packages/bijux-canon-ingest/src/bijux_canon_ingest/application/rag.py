@@ -12,7 +12,7 @@ Both CLI and FastAPI boundary call into this layer to avoid drift.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 import hashlib
@@ -20,139 +20,17 @@ from pathlib import Path
 
 import msgpack
 
-from bijux_canon_ingest.core.types import (
-    Chunk,
-    ChunkWithoutEmbedding,
-    CleanDoc,
-    RagEnv,
-    RawDoc,
-)
-from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
+from bijux_canon_ingest.core.types import Chunk, RawDoc
 from bijux_canon_ingest.retrieval.embedders import HashEmbedder, SentenceTransformersEmbedder
 from bijux_canon_ingest.retrieval.generators import ExtractiveGenerator
 from bijux_canon_ingest.retrieval.indexes import (
     BM25Index,
     NumpyCosineIndex,
-    build_bm25_index,
-    build_numpy_cosine_index,
     load_index,
 )
 from bijux_canon_ingest.retrieval.ports import Answer, Candidate, Embedder
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
-from bijux_canon_ingest.processing.stages import clean_doc, iter_chunk_doc
-from bijux_canon_ingest.result.types import Err, Ok, Result, is_err, is_ok
-
-
-@dataclass(frozen=True, slots=True)
-class RagBuildConfig:
-    """RAG build configuration."""
-
-    chunk_env: RagEnv
-    backend: str = "bm25"
-    embedder: str = "hash16"
-    sbert_model: str = "all-MiniLM-L6-v2"
-    bm25_buckets: int = 2048
-
-
-def _iter_clean_docs(docs: Iterable[RawDoc]) -> Iterator[CleanDoc]:
-    for d in docs:
-        yield clean_doc(d)
-
-
-def _iter_chunks(
-    cleaned: Iterable[CleanDoc], env: RagEnv
-) -> Iterator[ChunkWithoutEmbedding]:
-    for cd in cleaned:
-        yield from iter_chunk_doc(cd, env)
-
-
-def _make_embedder(cfg: RagBuildConfig) -> Embedder:
-    if cfg.embedder == "hash16":
-        return HashEmbedder()
-    if cfg.embedder == "sbert":
-        return SentenceTransformersEmbedder(model_name=cfg.sbert_model)
-    raise ValueError(f"unknown embedder backend: {cfg.embedder}")
-
-
-def ingest_csv_to_chunks(*, csv_path: Path, env: RagEnv) -> list[Chunk]:
-    """Ingest a CSV and return chunks.
-
-    Args:
-        csv_path: CSV path with columns: doc_id,title,abstract,categories.
-        env: Chunking configuration.
-
-    Returns:
-        A list of chunks (without embeddings for lexical backends).
-    """
-
-    storage = FileStorage()
-    docs: list[RawDoc] = []
-    errors: list[str] = []
-    for res in storage.read_docs(str(csv_path)):
-        if is_ok(res):
-            docs.append(res.value)
-        elif is_err(res):
-            errors.append(f"{res.error.code}: {res.error.msg}")
-        else:  # pragma: no cover
-            errors.append("unknown error")
-
-    if errors:
-        # Fail fast: ingestion is a boundary operation.
-        raise ValueError("CSV parse failures: " + "; ".join(errors[:3]))
-
-    cleaned = list(_iter_clean_docs(docs))
-    raw_chunks = list(_iter_chunks(cleaned, env))
-    return [
-        Chunk(
-            doc_id=c.doc_id,
-            text=c.text,
-            start=c.start,
-            end=c.end,
-            metadata=c.metadata,
-            embedding=(),
-        )
-        for c in raw_chunks
-    ]
-
-
-def ingest_docs_to_chunks(*, docs: Iterable[RawDoc], env: RagEnv) -> list[Chunk]:
-    """Ingest in-memory docs and return chunks."""
-
-    cleaned = list(_iter_clean_docs(docs))
-    raw_chunks = list(_iter_chunks(cleaned, env))
-    return [
-        Chunk(
-            doc_id=c.doc_id,
-            text=c.text,
-            start=c.start,
-            end=c.end,
-            metadata=c.metadata,
-            embedding=(),
-        )
-        for c in raw_chunks
-    ]
-
-
-def build_index_from_csv(*, csv_path: Path, out_path: Path, cfg: RagBuildConfig) -> str:
-    """Build and persist an index.
-
-    Returns:
-        The index fingerprint.
-    """
-
-    chunks = ingest_csv_to_chunks(csv_path=csv_path, env=cfg.chunk_env)
-    if cfg.backend == "bm25":
-        idx = build_bm25_index(chunks=chunks, buckets=cfg.bm25_buckets)
-        idx.save(str(out_path))
-        return idx.fingerprint
-
-    if cfg.backend == "numpy-cosine":
-        emb = _make_embedder(cfg)
-        idx = build_numpy_cosine_index(chunks=chunks, embedder=emb)
-        idx.save(str(out_path))
-        return idx.fingerprint
-
-    raise ValueError(f"unknown index backend: {cfg.backend}")
+from bijux_canon_ingest.result.types import Err, Ok, Result
 
 
 def retrieve(
@@ -230,12 +108,8 @@ def parse_filters(filters: list[str] | None) -> dict[str, str]:
 
 __all__ = [
     "IndexBackend",
-    "RagBuildConfig",
     "RagIndex",
     "ask",
-    "build_index_from_csv",
-    "ingest_docs_to_chunks",
-    "ingest_csv_to_chunks",
     "parse_filters",
     "retrieve",
     "RagApp",

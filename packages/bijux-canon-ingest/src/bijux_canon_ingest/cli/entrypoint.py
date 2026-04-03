@@ -27,9 +27,10 @@ from bijux_canon_ingest.application.pipelines.configured import (
     StepConfig,
     build_rag_pipeline,
 )
-from bijux_canon_ingest.application.rag import RagBuildConfig, build_index_from_csv, parse_filters
+from bijux_canon_ingest.application.indexing import IndexBuildConfig, build_index_from_csv
 from bijux_canon_ingest.application.rag import ask as rag_ask
 from bijux_canon_ingest.application.rag import retrieve as rag_retrieve
+from bijux_canon_ingest.application.rag import parse_filters
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 
@@ -217,7 +218,7 @@ def _main_rag(argv: list[str]) -> int:
             overlap=args.overlap,
             tail_policy=args.tail_policy,
         )
-        cfg = RagBuildConfig(
+        cfg = IndexBuildConfig(
             chunk_env=env,
             backend=args.backend,
             embedder=args.embedder,

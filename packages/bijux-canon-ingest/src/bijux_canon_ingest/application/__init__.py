@@ -14,6 +14,12 @@ from .pipeline import (
     iter_ingest_pipeline_core,
 )
 from .observability import DebugConfig, Observations, RagTaps, RagTraceV3, TraceLens
+from .indexing import (
+    IndexBuildConfig,
+    build_index_from_csv,
+    ingest_csv_to_chunks,
+    ingest_docs_to_chunks,
+)
 from .pipelines import (
     ErrorPolicy,
     OperatorSpec,
@@ -33,12 +39,8 @@ from .pipelines import (
 from .rag import (
     IndexBackend,
     RagApp,
-    RagBuildConfig,
     RagIndex,
     ask,
-    build_index_from_csv,
-    ingest_csv_to_chunks,
-    ingest_docs_to_chunks,
     parse_filters,
     retrieve,
 )
@@ -55,8 +57,8 @@ __all__ = [
     "Observations",
     "TraceLens",
     "RagTraceV3",
+    "IndexBuildConfig",
     "IndexBackend",
-    "RagBuildConfig",
     "RagIndex",
     "RagApp",
     "ingest_csv_to_chunks",
