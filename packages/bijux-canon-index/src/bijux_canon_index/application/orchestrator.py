@@ -8,7 +8,6 @@ from pathlib import Path
 import threading
 import time
 from typing import Any, cast
-import uuid
 
 from bijux_canon_index.interfaces.schemas.models import (
     CreateRequest,
@@ -80,10 +79,15 @@ from bijux_canon_index.infra.runners.registry import RUNNERS
 from bijux_canon_index.application.orchestration.runtime_bootstrap import (
     bootstrap_runtime,
 )
-
-
-def _resolve_correlation_id(raw: str | None) -> str:
-    return raw or "req-1"
+from bijux_canon_index.application.orchestration.execution_runtime import (
+    build_execution_request,
+    build_randomness_profile,
+    dispatch_execution,
+    normalize_execute_request,
+    resolve_execution_artifact,
+    resolve_correlation_id,
+    validate_execute_limits,
+)
 
 
 class Orchestrator:
@@ -176,37 +180,17 @@ class Orchestrator:
         return {"artifacts": artifacts}
 
     def _validate_execute_limits(self, req: ExecutionRequestPayload) -> None:
-        if req.vector is None:
-            raise ValidationError(message="execution vector required")
-        limits = self.config.resource_limits
-        if limits and limits.max_k is not None and req.top_k > int(limits.max_k):
-            raise BudgetExceededError(message="top_k exceeds max_k limit")
-        if (
-            limits
-            and limits.max_query_size is not None
-            and req.request_text
-            and len(req.request_text) > int(limits.max_query_size)
-        ):
-            raise BudgetExceededError(
-                message="request_text exceeds max_query_size limit"
-            )
+        validate_execute_limits(self.config, req)
 
     def _resolve_execution_artifact(
         self, req: ExecutionRequestPayload
     ) -> ExecutionArtifact:
-        artifact_id = req.artifact_id
-        if artifact_id is None:
-            available = tuple(self.stores.ledger.list_artifacts())
-            if len(available) == 1:
-                artifact_id = available[0].artifact_id
-            else:
-                raise ValidationError(message="artifact_id required for execution")
-        artifact = self._require_artifact(artifact_id)
-        if artifact.execution_contract is not req.execution_contract:
-            raise InvariantError(
-                message="Execution contract does not match artifact execution contract"
-            )
-        return artifact
+        return resolve_execution_artifact(
+            req,
+            default_artifact_id=self.default_artifact_id,
+            stores=self.stores,
+            require_artifact=self._require_artifact,
+        )
 
     def _enforce_nd_circuit(self, req: ExecutionRequestPayload) -> None:
         if req.execution_contract is not ExecutionContract.NON_DETERMINISTIC:
@@ -229,31 +213,7 @@ class Orchestrator:
     def _build_randomness_profile(
         self, req: ExecutionRequestPayload
     ) -> RandomnessProfile | None:
-        randomness_budget = None
-        if req.execution_budget:
-            randomness_budget = {
-                key: value
-                for key, value in {
-                    "max_latency_ms": req.execution_budget.max_latency_ms,
-                    "max_memory_mb": req.execution_budget.max_memory_mb,
-                    "max_error": req.execution_budget.max_error,
-                }.items()
-                if value is not None
-            }
-        if not req.randomness_profile:
-            return None
-        return RandomnessProfile(
-            seed=req.randomness_profile.seed,
-            sources=tuple(req.randomness_profile.sources or ()),
-            bounded=req.randomness_profile.bounded,
-            non_replayable=req.randomness_profile.non_replayable,
-            budget=randomness_budget if randomness_budget else None,
-            envelopes=tuple(
-                (k, float(v))
-                for k, v in (randomness_budget or {}).items()
-                if isinstance(v, (int, float))
-            ),
-        )
+        return build_randomness_profile(req)
 
     def _build_execution_request(
         self,
@@ -261,27 +221,7 @@ class Orchestrator:
         correlation_id: str,
         nd_settings: NDSettings | None,
     ) -> ExecutionRequest:
-        return ExecutionRequest(
-            request_id=correlation_id,
-            text=req.request_text,
-            vector=tuple(req.vector or ()),
-            top_k=req.top_k,
-            execution_contract=req.execution_contract,
-            execution_intent=req.execution_intent,
-            execution_mode=req.execution_mode,
-            execution_budget=ExecutionBudget(
-                max_latency_ms=req.execution_budget.max_latency_ms
-                if req.execution_budget
-                else None,
-                max_memory_mb=req.execution_budget.max_memory_mb
-                if req.execution_budget
-                else None,
-                max_error=req.execution_budget.max_error
-                if req.execution_budget
-                else None,
-            ),
-            nd_settings=nd_settings,
-        )
+        return build_execution_request(req, correlation_id, nd_settings)
 
     def _build_run_metadata(
         self,
@@ -476,7 +416,7 @@ class Orchestrator:
                 cached = self._idempotency_cache.get(req.idempotency_key)
                 if cached is not None:
                     return dict(cached)
-        correlation_id = _resolve_correlation_id(req.correlation_id)
+        correlation_id = resolve_correlation_id(req.correlation_id)
         log_event(
             "ingest_start", correlation_id=correlation_id, count=len(req.documents)
         )
@@ -853,28 +793,25 @@ class Orchestrator:
         NonDeterministicExecutionModel,
         ExecutionRequest,
     ]:
-        self._validate_execute_limits(req)
-        correlation_id = _resolve_correlation_id(req.correlation_id)
-        run_id = f"{correlation_id}-{uuid.uuid4().hex}"
-        artifact = self._resolve_execution_artifact(req)
-        randomness_profile = self._build_randomness_profile(req)
-        nd_model = NonDeterministicExecutionModel(
+        normalized = normalize_execute_request(
+            req,
+            config=self.config,
             stores=self.stores,
-            ann_runner=getattr(self.backend, "ann", None),
+            default_artifact_id=self.default_artifact_id,
+            require_artifact=self._require_artifact,
             latest_vector_fingerprint=self._latest_vector_fingerprint,
             tx_factory=self._tx,
+            ann_runner=getattr(self.backend, "ann", None),
         )
-        nd_settings = nd_model.build_settings(req)
-        request = self._build_execution_request(req, correlation_id, nd_settings)
         if req.execution_contract is ExecutionContract.NON_DETERMINISTIC:
             self._enforce_nd_circuit(req)
         return (
-            correlation_id,
-            run_id,
-            artifact,
-            randomness_profile,
-            nd_model,
-            request,
+            normalized.correlation_id,
+            normalized.run_id,
+            normalized.artifact,
+            normalized.randomness_profile,
+            normalized.nd_model,
+            normalized.request,
         )
 
     def _dispatch_execution(
@@ -885,23 +822,13 @@ class Orchestrator:
         randomness_profile: RandomnessProfile | None,
         nd_model: NonDeterministicExecutionModel,
     ) -> tuple[Any, Any]:
-        if req.execution_contract is ExecutionContract.NON_DETERMINISTIC:
-            return nd_model.execute(
-                artifact,
-                request,
-                randomness_profile,
-                build_on_demand=req.nd_build_on_demand,
-            )
-        session = start_execution_session(
-            artifact,
-            request,
-            self.stores,
-            randomness=randomness_profile,
-            ann_runner=getattr(self.backend, "ann", None),
-        )
-        return execute_request(
-            session,
-            self.stores,
+        return dispatch_execution(
+            req,
+            artifact=artifact,
+            request=request,
+            randomness_profile=randomness_profile,
+            nd_model=nd_model,
+            stores=self.stores,
             ann_runner=getattr(self.backend, "ann", None),
         )
 
