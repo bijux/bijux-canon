@@ -2,6 +2,7 @@
 
 Package-local documentation for `bijux-canon-ingest`:
 
+- [Project Overview](project_overview.md)
 - [LAYOUT](LAYOUT.md)
 - [SCOPE](SCOPE.md)
 - [ARCHITECTURE](ARCHITECTURE.md)
