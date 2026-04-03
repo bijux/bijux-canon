@@ -1,0 +1,12 @@
+{
+  "artifact_id": "art-1",
+  "request_text": "hello v01",
+  "vector": [
+    0.0,
+    1.0,
+    0.0
+  ],
+  "top_k": 1,
+  "execution_intent": "exact_validation",
+  "execution_mode": "strict"
+}

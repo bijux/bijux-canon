@@ -1,0 +1,943 @@
+openapi: 3.1.0
+info:
+  title: bijux-vex execution API
+  version: v1
+paths:
+  /capabilities:
+    get:
+      summary: Capabilities
+      operationId: capabilities_capabilities_get
+      parameters:
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendCapabilitiesReport'
+              examples:
+                capabilities:
+                  value:
+                    backend: sqlite
+                    contracts:
+                    - deterministic
+                    - non_deterministic
+                    deterministic_query: true
+                    supports_ann: false
+                    replayable: true
+                    metrics:
+                    - l2
+                    - cosine
+                    max_vector_size: 4096
+                    isolation_level: read_committed
+                    execution_modes:
+                    - strict
+                    - bounded
+                    - exploratory
+                    ann_status: unavailable
+                    storage_backends: []
+                    vector_stores: []
+                    plugins: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /artifacts:
+    get:
+      summary: List Artifacts
+      operationId: list_artifacts_artifacts_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Artifacts Artifacts Get
+              examples:
+                artifacts:
+                  value:
+                    artifacts:
+                    - art-1
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /runs:
+    get:
+      summary: List Runs
+      operationId: list_runs_runs_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Runs Runs Get
+              examples:
+                runs:
+                  value:
+                    runs:
+                    - run-1
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /create:
+    post:
+      summary: Create
+      operationId: create_create_post
+      parameters:
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequest'
+            examples:
+              create:
+                value:
+                  name: my-corpus
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Create Post
+              examples:
+                created:
+                  value:
+                    name: my-corpus
+                    status: created
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      reason: determinism_violation
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ingest:
+    post:
+      summary: Ingest
+      operationId: ingest_ingest_post
+      parameters:
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      - name: Idempotency-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestRequest'
+            examples:
+              ingest:
+                value:
+                  documents:
+                  - hello
+                  vectors:
+                  - - 0.0
+                    - 1.0
+                    - 0.0
+                  vector_store: faiss
+                  vector_store_uri: index.faiss
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Ingest Ingest Post
+              examples:
+                ingested:
+                  value:
+                    ingested: 1
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      reason: determinism_violation
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /artifact:
+    post:
+      summary: Artifact
+      operationId: artifact_artifact_post
+      parameters:
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecutionArtifactRequest'
+            examples:
+              artifact:
+                value:
+                  execution_contract: deterministic
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Artifact Artifact Post
+              examples:
+                artifact:
+                  value:
+                    artifact_id: art-1
+                    execution_contract: deterministic
+                    execution_contract_status: stable
+                    replayable: true
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      reason: determinism_violation
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /execute:
+    post:
+      summary: Execute
+      operationId: execute_execute_post
+      parameters:
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecutionRequestPayload'
+            examples:
+              execute:
+                value:
+                  artifact_id: art-1
+                  vector:
+                  - 0.0
+                  - 1.0
+                  - 0.0
+                  top_k: 3
+                  execution_contract: deterministic
+                  execution_intent: exact_validation
+                  execution_mode: strict
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Execute Execute Post
+              examples:
+                execute:
+                  value:
+                    results:
+                    - vec-1
+                    correlation_id: req-1
+                    execution_contract: deterministic
+                    execution_contract_status: stable
+                    replayable: true
+                    execution_id: exec-1
+        '422':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      reason: determinism_violation
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Unprocessable Entity
+  /explain:
+    post:
+      summary: Explain
+      operationId: explain_explain_post
+      parameters:
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplainRequest'
+            examples:
+              explain:
+                value:
+                  result_id: res-1
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Explain Explain Post
+              examples:
+                explain:
+                  value:
+                    result_id: res-1
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      reason: determinism_violation
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /replay:
+    post:
+      summary: Replay
+      operationId: replay_replay_post
+      parameters:
+      - name: X-Correlation-Id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecutionRequestPayload'
+            examples:
+              replay:
+                value:
+                  artifact_id: art-1
+                  request_text: hello
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Replay Replay Post
+              examples:
+                replay:
+                  value:
+                    matches: true
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      reason: determinism_violation
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    BackendCapabilitiesReport:
+      properties:
+        backend:
+          type: string
+          title: Backend
+        contracts:
+          items:
+            type: string
+          type: array
+          title: Contracts
+        deterministic_query:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Deterministic Query
+        supports_ann:
+          type: boolean
+          title: Supports Ann
+        replayable:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Replayable
+        metrics:
+          items:
+            type: string
+          type: array
+          title: Metrics
+        max_vector_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Vector Size
+        isolation_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Isolation Level
+        execution_modes:
+          items:
+            type: string
+          type: array
+          title: Execution Modes
+        ann_status:
+          type: string
+          title: Ann Status
+        storage_backends:
+          items:
+            $ref: '#/components/schemas/StorageBackendDescriptor'
+          type: array
+          title: Storage Backends
+        vector_stores:
+          items:
+            $ref: '#/components/schemas/VectorStoreDescriptor'
+          type: array
+          title: Vector Stores
+        plugins:
+          additionalProperties:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+          type: object
+          title: Plugins
+      additionalProperties: false
+      type: object
+      required:
+      - backend
+      - contracts
+      - deterministic_query
+      - supports_ann
+      - replayable
+      - metrics
+      - max_vector_size
+      - isolation_level
+      - execution_modes
+      - ann_status
+      - storage_backends
+      - vector_stores
+      - plugins
+      title: BackendCapabilitiesReport
+    CreateRequest:
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      title: CreateRequest
+    ExecutionArtifactRequest:
+      properties:
+        execution_contract:
+          $ref: '#/components/schemas/ExecutionContract'
+        vector_store:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store
+        vector_store_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store Uri
+        vector_store_options:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Vector Store Options
+      additionalProperties: false
+      type: object
+      required:
+      - execution_contract
+      title: ExecutionArtifactRequest
+    ExecutionBudgetPayload:
+      properties:
+        max_latency_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Latency Ms
+        max_memory_mb:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Memory Mb
+        max_error:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Max Error
+      additionalProperties: false
+      type: object
+      title: ExecutionBudgetPayload
+    ExecutionContract:
+      type: string
+      enum:
+      - deterministic
+      - non_deterministic
+      title: ExecutionContract
+    ExecutionIntent:
+      type: string
+      enum:
+      - exact_validation
+      - reproducible_research
+      - exploratory_search
+      - production_retrieval
+      title: ExecutionIntent
+    ExecutionMode:
+      type: string
+      enum:
+      - strict
+      - bounded
+      - exploratory
+      title: ExecutionMode
+    ExecutionRequestPayload:
+      properties:
+        artifact_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Artifact Id
+        request_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Text
+        vector:
+          anyOf:
+          - items:
+              type: number
+            type: array
+          - type: 'null'
+          title: Vector
+        top_k:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Top K
+          default: 5
+        execution_contract:
+          $ref: '#/components/schemas/ExecutionContract'
+        execution_intent:
+          $ref: '#/components/schemas/ExecutionIntent'
+        execution_mode:
+          $ref: '#/components/schemas/ExecutionMode'
+          default: strict
+        execution_budget:
+          anyOf:
+          - $ref: '#/components/schemas/ExecutionBudgetPayload'
+          - type: 'null'
+        randomness_profile:
+          anyOf:
+          - $ref: '#/components/schemas/RandomnessProfilePayload'
+          - type: 'null'
+        correlation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correlation Id
+        vector_store:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store
+        vector_store_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store Uri
+        vector_store_options:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Vector Store Options
+      additionalProperties: false
+      type: object
+      required:
+      - execution_contract
+      - execution_intent
+      title: ExecutionRequestPayload
+    ExplainRequest:
+      properties:
+        result_id:
+          type: string
+          minLength: 1
+          title: Result Id
+        artifact_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Artifact Id
+      additionalProperties: false
+      type: object
+      required:
+      - result_id
+      title: ExplainRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    IngestRequest:
+      properties:
+        documents:
+          items:
+            type: string
+          type: array
+          title: Documents
+        vectors:
+          anyOf:
+          - items:
+              items:
+                type: number
+              type: array
+            type: array
+          - type: 'null'
+          title: Vectors
+        embed_provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Embed Provider
+        embed_model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Embed Model
+        cache_embeddings:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cache Embeddings
+        correlation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correlation Id
+        idempotency_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency Key
+        vector_store:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store
+        vector_store_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store Uri
+        vector_store_options:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Vector Store Options
+      additionalProperties: false
+      type: object
+      required:
+      - documents
+      title: IngestRequest
+    RandomnessProfilePayload:
+      properties:
+        seed:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Seed
+        sources:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Sources
+        bounded:
+          type: boolean
+          title: Bounded
+          default: false
+      additionalProperties: false
+      type: object
+      title: RandomnessProfilePayload
+    StorageBackendDescriptor:
+      properties:
+        name:
+          type: string
+          title: Name
+        status:
+          type: string
+          title: Status
+        persistence:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Persistence
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - status
+      title: StorageBackendDescriptor
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    VectorStoreDescriptor:
+      properties:
+        name:
+          type: string
+          title: Name
+        available:
+          type: boolean
+          title: Available
+        supports_exact:
+          type: boolean
+          title: Supports Exact
+        supports_ann:
+          type: boolean
+          title: Supports Ann
+        delete_supported:
+          type: boolean
+          title: Delete Supported
+        filtering_supported:
+          type: boolean
+          title: Filtering Supported
+        deterministic_exact:
+          type: boolean
+          title: Deterministic Exact
+        experimental:
+          type: boolean
+          title: Experimental
+        consistency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Consistency
+        version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - available
+      - supports_exact
+      - supports_ann
+      - delete_supported
+      - filtering_supported
+      - deterministic_exact
+      - experimental
+      title: VectorStoreDescriptor

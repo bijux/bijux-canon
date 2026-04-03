@@ -1,0 +1,1429 @@
+[
+  {
+    "command": "artifact",
+    "params": []
+  },
+  {
+    "command": "artifact pack",
+    "params": [
+      {
+        "default": null,
+        "name": "run_id",
+        "nargs": 1,
+        "param_type": "argument",
+        "required": true
+      },
+      {
+        "default": false,
+        "name": "include_vectors",
+        "opts": [
+          "--include-vectors"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": "bundle.zip",
+        "name": "out",
+        "opts": [
+          "--out"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "artifact unpack",
+    "params": [
+      {
+        "default": null,
+        "name": "bundle",
+        "nargs": 1,
+        "param_type": "argument",
+        "required": true
+      },
+      {
+        "default": "bundle_out",
+        "name": "out_dir",
+        "opts": [
+          "--out-dir"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "audit",
+    "params": [
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "bench",
+    "params": [
+      {
+        "default": null,
+        "name": "baseline",
+        "opts": [
+          "--baseline"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": "benchmarks/artifacts",
+        "name": "dataset_dir",
+        "opts": [
+          "--dataset-dir"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 32,
+        "name": "dimension",
+        "opts": [
+          "--dimension"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "fail_on_regression",
+        "opts": [
+          "--fail-on-regression"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": "exact",
+        "name": "mode",
+        "opts": [
+          "--mode"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 0.05,
+        "name": "overlap_regress_threshold",
+        "opts": [
+          "--overlap-regress-threshold"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 256,
+        "name": "query_count",
+        "opts": [
+          "--query-count"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 0.2,
+        "name": "regress_threshold",
+        "opts": [
+          "--regress-threshold"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 3,
+        "name": "repeats",
+        "opts": [
+          "--repeats"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 1337,
+        "name": "seed",
+        "opts": [
+          "--seed"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 1000,
+        "name": "size",
+        "opts": [
+          "--size"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": "memory",
+        "name": "store",
+        "opts": [
+          "--store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 1,
+        "name": "warmup",
+        "opts": [
+          "--warmup"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "capabilities",
+    "params": []
+  },
+  {
+    "command": "compare",
+    "params": [
+      {
+        "default": "art-1",
+        "name": "artifact_a",
+        "opts": [
+          "--artifact-a"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": "art-1",
+        "name": "artifact_b",
+        "opts": [
+          "--artifact-b"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "bundle_a",
+        "opts": [
+          "--bundle-a"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "bundle_b",
+        "opts": [
+          "--bundle-b"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": "deterministic",
+        "name": "execution_contract",
+        "opts": [
+          "--execution-contract"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "execution_intent",
+        "opts": [
+          "--execution-intent"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": null,
+        "name": "run_a",
+        "opts": [
+          "--run-a"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "run_b",
+        "opts": [
+          "--run-b"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 5,
+        "name": "top_k",
+        "opts": [
+          "--top-k"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector",
+        "opts": [
+          "--vector"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "config",
+    "params": []
+  },
+  {
+    "command": "config show",
+    "params": []
+  },
+  {
+    "command": "debug-bundle",
+    "params": [
+      {
+        "default": false,
+        "name": "include_provenance",
+        "opts": [
+          "--include-provenance"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "doctor",
+    "params": [
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "execute",
+    "params": [
+      {
+        "default": "art-1",
+        "name": "artifact_id",
+        "opts": [
+          "--artifact-id"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "compare_artifact_id",
+        "opts": [
+          "--compare-artifact-id"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "compare_to",
+        "opts": [
+          "--compare-to"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "correlation_id",
+        "opts": [
+          "--correlation-id"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "dry_run",
+        "opts": [
+          "--dry-run"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "execution_contract",
+        "opts": [
+          "--execution-contract"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": null,
+        "name": "execution_intent",
+        "opts": [
+          "--execution-intent"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": "strict",
+        "name": "execution_mode",
+        "opts": [
+          "--execution-mode"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "explain",
+        "opts": [
+          "--explain"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "max_error",
+        "opts": [
+          "--max-error"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "max_latency_ms",
+        "opts": [
+          "--max-latency-ms"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "max_memory_mb",
+        "opts": [
+          "--max-memory-mb"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "nd_adaptive_k",
+        "opts": [
+          "--nd-adaptive-k"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "nd_build_on_demand",
+        "opts": [
+          "--nd-build-on-demand"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_candidate_k",
+        "opts": [
+          "--nd-candidate-k"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_diversity_lambda",
+        "opts": [
+          "--nd-diversity-lambda"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_ef_construction",
+        "opts": [
+          "--nd-ef-construction"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_ef_search",
+        "opts": [
+          "--nd-ef-search"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_incremental_index",
+        "opts": [
+          "--nd-incremental-index",
+          "--nd-no-incremental-index"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_latency_budget_ms",
+        "opts": [
+          "--nd-latency-budget-ms"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_low_signal_margin",
+        "opts": [
+          "--nd-low-signal-margin"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "nd_low_signal_refuse",
+        "opts": [
+          "--nd-low-signal-refuse"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_m",
+        "opts": [
+          "--nd-m"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_max_candidates",
+        "opts": [
+          "--nd-max-candidates"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_max_ef_search",
+        "opts": [
+          "--nd-max-ef-search"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_max_index_memory_mb",
+        "opts": [
+          "--nd-max-index-memory-mb"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "nd_normalize_query",
+        "opts": [
+          "--nd-normalize-query"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "nd_normalize_vectors",
+        "opts": [
+          "--nd-normalize-vectors"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_outlier_threshold",
+        "opts": [
+          "--nd-outlier-threshold"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_profile",
+        "opts": [
+          "--nd-profile"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "nd_replay_strict",
+        "opts": [
+          "--nd-replay-strict"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_space",
+        "opts": [
+          "--nd-space"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_target_recall",
+        "opts": [
+          "--nd-target-recall"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": true,
+        "name": "nd_two_stage",
+        "opts": [
+          "--nd-two-stage",
+          "--no-nd-two-stage"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_warmup_queries",
+        "opts": [
+          "--nd-warmup-queries"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_witness_mode",
+        "opts": [
+          "--nd-witness-mode"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_witness_rate",
+        "opts": [
+          "--nd-witness-rate"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "nd_witness_sample_k",
+        "opts": [
+          "--nd-witness-sample-k"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "randomness_bounded",
+        "opts": [
+          "--randomness-bounded"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "randomness_non_replayable",
+        "opts": [
+          "--randomness-non-replayable"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "randomness_seed",
+        "opts": [
+          "--randomness-seed"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "randomness_sources",
+        "opts": [
+          "--randomness-sources"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "request_text",
+        "opts": [
+          "--request-text"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 5,
+        "name": "top_k",
+        "opts": [
+          "--top-k"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector",
+        "opts": [
+          "--vector"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "explain",
+    "params": [
+      {
+        "default": null,
+        "name": "result_id",
+        "opts": [
+          "--result-id"
+        ],
+        "param_type": "option",
+        "required": true
+      }
+    ]
+  },
+  {
+    "command": "ingest",
+    "params": [
+      {
+        "default": null,
+        "name": "cache_embeddings",
+        "opts": [
+          "--cache-embeddings"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "correlation_id",
+        "opts": [
+          "--correlation-id"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "doc",
+        "opts": [
+          "--doc"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": false,
+        "name": "dry_run",
+        "opts": [
+          "--dry-run"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "embed_model",
+        "opts": [
+          "--embed-model"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "embed_provider",
+        "opts": [
+          "--embed-provider"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector",
+        "opts": [
+          "--vector"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "init",
+    "params": [
+      {
+        "default": "bijux_vex.toml",
+        "name": "config_path",
+        "opts": [
+          "--config-path"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "force",
+        "opts": [
+          "--force"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "list-artifacts",
+    "params": [
+      {
+        "default": null,
+        "name": "limit",
+        "opts": [
+          "--limit"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 0,
+        "name": "offset",
+        "opts": [
+          "--offset"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "list-runs",
+    "params": [
+      {
+        "default": null,
+        "name": "limit",
+        "opts": [
+          "--limit"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 0,
+        "name": "offset",
+        "opts": [
+          "--offset"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "materialize",
+    "params": [
+      {
+        "default": null,
+        "name": "execution_contract",
+        "opts": [
+          "--execution-contract"
+        ],
+        "param_type": "option",
+        "required": true
+      },
+      {
+        "default": "exact",
+        "name": "index_mode",
+        "opts": [
+          "--index-mode"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "metrics",
+    "params": []
+  },
+  {
+    "command": "nd",
+    "params": []
+  },
+  {
+    "command": "nd tune",
+    "params": [
+      {
+        "default": null,
+        "name": "cache",
+        "opts": [
+          "--cache"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "dataset_dir",
+        "opts": [
+          "--dataset-dir"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 32,
+        "name": "dimension",
+        "opts": [
+          "--dimension"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 256,
+        "name": "query_count",
+        "opts": [
+          "--query-count"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 10,
+        "name": "samples",
+        "opts": [
+          "--samples"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 1337,
+        "name": "seed",
+        "opts": [
+          "--seed"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 1000,
+        "name": "size",
+        "opts": [
+          "--size"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": 10,
+        "name": "top_k",
+        "opts": [
+          "--top-k"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "uri",
+        "opts": [
+          "--uri"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "use_existing",
+        "opts": [
+          "--use-existing"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": "memory",
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "replay",
+    "params": [
+      {
+        "default": null,
+        "name": "max_error",
+        "opts": [
+          "--max-error"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "max_latency_ms",
+        "opts": [
+          "--max-latency-ms"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "max_memory_mb",
+        "opts": [
+          "--max-memory-mb"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "randomness_bounded",
+        "opts": [
+          "--randomness-bounded"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "randomness_non_replayable",
+        "opts": [
+          "--randomness-non-replayable"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "randomness_seed",
+        "opts": [
+          "--randomness-seed"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "randomness_sources",
+        "opts": [
+          "--randomness-sources"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "request_text",
+        "opts": [
+          "--request-text"
+        ],
+        "param_type": "option",
+        "required": true
+      }
+    ]
+  },
+  {
+    "command": "root",
+    "params": [
+      {
+        "default": null,
+        "name": "config",
+        "opts": [
+          "--config"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "fmt",
+        "opts": [
+          "--format"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "no_color",
+        "opts": [
+          "--no-color"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "output",
+        "opts": [
+          "--output"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "quiet",
+        "opts": [
+          "--quiet"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": false,
+        "name": "trace",
+        "opts": [
+          "--trace"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "validate",
+    "params": [
+      {
+        "default": null,
+        "name": "doc",
+        "opts": [
+          "--doc"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "execution_contract",
+        "opts": [
+          "--execution-contract"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector",
+        "opts": [
+          "--vector"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store_uri",
+        "opts": [
+          "--vector-store-uri"
+        ],
+        "param_type": "option",
+        "required": false
+      }
+    ]
+  },
+  {
+    "command": "vdb",
+    "params": []
+  },
+  {
+    "command": "vdb compact",
+    "params": [
+      {
+        "default": "ann",
+        "name": "mode",
+        "opts": [
+          "--mode"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "uri",
+        "opts": [
+          "--uri"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": true
+      }
+    ]
+  },
+  {
+    "command": "vdb rebuild",
+    "params": [
+      {
+        "default": "exact",
+        "name": "mode",
+        "opts": [
+          "--mode"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "uri",
+        "opts": [
+          "--uri"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": true
+      }
+    ]
+  },
+  {
+    "command": "vdb status",
+    "params": [
+      {
+        "default": null,
+        "name": "uri",
+        "opts": [
+          "--uri"
+        ],
+        "param_type": "option",
+        "required": false
+      },
+      {
+        "default": null,
+        "name": "vector_store",
+        "opts": [
+          "--vector-store"
+        ],
+        "param_type": "option",
+        "required": true
+      }
+    ]
+  }
+]

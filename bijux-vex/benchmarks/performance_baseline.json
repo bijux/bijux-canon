@@ -1,0 +1,20 @@
+{
+  "memory_exact": {
+    "vector_reads": 2,
+    "distance_computations": 2,
+    "graph_hops": 0,
+    "wall_time_estimate_ms": 2.0,
+    "cpu_time_ms": 2.0,
+    "memory_estimate_mb": 0.2,
+    "vector_ops": 4
+  },
+  "memory_ann": {
+    "vector_reads": 1,
+    "distance_computations": 1,
+    "graph_hops": 1,
+    "wall_time_estimate_ms": 1.0,
+    "cpu_time_ms": 1.0,
+    "memory_estimate_mb": 0.1,
+    "vector_ops": 2
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "details": {},
+  "execution_contract": "deterministic",
+  "execution_contract_status": "stable",
+  "execution_id": "1b8a627df2047d3daa36c9f7ede40a2e0520af0bb6ba100680fc9294ee201c62",
+  "matches": true,
+  "nondeterministic_sources": [],
+  "original_fingerprint": "a56eb72532e3bb6b6ad40c8aa0472b79f6e5e5987a5675101c196c156fffe4fd",
+  "replay_fingerprint": "a56eb72532e3bb6b6ad40c8aa0472b79f6e5e5987a5675101c196c156fffe4fd",
+  "replayable": true
+}

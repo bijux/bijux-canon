@@ -1,0 +1,13 @@
+[project]
+name = "bijux-vex-template-plugin"
+version = "0.0.0"
+description = "Template plugin for Bijux Vex"
+requires-python = ">=3.10"
+dependencies = ["bijux-vex"]
+
+[project.entry-points."bijux_vex.vectorstores"]
+template = "bijux_vex_plugin_example:register"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

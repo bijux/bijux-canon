@@ -1,0 +1,6 @@
+{
+  "include": ["src", "tests"],
+  "stubPath": "stubs",
+  "reportMissingModuleSource": false,
+  "reportMissingImports": false
+}
