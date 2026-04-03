@@ -6,82 +6,28 @@ import argparse
 import asyncio
 from datetime import UTC, datetime
 import json
-import logging
 from pathlib import Path
 import sys
 
 from bijux_canon_agent.interfaces.cli.helpers import (
-    ensure_directory,
     handle_replay,
     load_config,
     process_files,
     write_final_artifacts,
 )
+from bijux_canon_agent.interfaces.cli.parser import DEFAULT_TASK_GOAL, build_parser
+from bijux_canon_agent.interfaces.cli.runtime_setup import (
+    create_bootstrap_logger,
+    create_logger_manager,
+    resolve_input_files,
+)
 from bijux_canon_agent.config.env import load_environment, validate_keys
 from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
-from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
-from bijux_canon_agent.core.version import get_runtime_version
-
-DEFAULT_TASK_GOAL = "summarize this document"
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Run the flagship Bijux Agent pipeline.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "--version",
-        "-V",
-        action="version",
-        version=get_runtime_version(),
-        help="Show the runtime version and exit.",
-    )
-    subparsers = parser.add_subparsers(dest="command", required=True)
-    run_parser = subparsers.add_parser(
-        "run",
-        help="Process files using the auditable document pipeline.",
-    )
-    run_parser.add_argument(
-        "input_path",
-        type=str,
-        help="Path to a file or directory to process.",
-    )
-    run_parser.add_argument(
-        "--out",
-        dest="results_dir",
-        required=True,
-        help="Directory to save structured output (JSON).",
-    )
-    run_parser.add_argument(
-        "--config",
-        type=str,
-        default="examples/reference-config.yml",
-        help="Path to the configuration file (YAML).",
-    )
-    run_parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Simulate pipeline execution without running it.",
-    )
-    run_parser.add_argument(
-        "--replay",
-        type=str,
-        default=None,
-        metavar="TRACE",
-        help="Optional trace file to inform replay tooling.",
-    )
-    replay_parser = subparsers.add_parser(
-        "replay",
-        help=argparse.SUPPRESS,
-        description=argparse.SUPPRESS,
-    )
-    replay_parser.add_argument(
-        "trace_path",
-        type=str,
-        help="Path to a trace JSON file produced by bijux-canon-agent run.",
-    )
+    parser = build_parser()
     return parser.parse_args(argv)
 
 
@@ -98,34 +44,10 @@ async def main() -> None:
     if args.command == "replay":
         handle_replay(Path(args.trace_path))
         return
-    bootstrap_logger = logging.getLogger("bijux_canon_agent.bootstrap")
-    bootstrap_logger.setLevel(logging.INFO)
-    if not bootstrap_logger.handlers:
-        handler = logging.StreamHandler(sys.stderr)
-        handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
-        bootstrap_logger.addHandler(handler)
-
+    bootstrap_logger = create_bootstrap_logger()
     config = load_config(args.config, bootstrap_logger)
     task_goal = config.get("task_goal", DEFAULT_TASK_GOAL)
-
-    logging_config = config.get("logging", {})
-    log_dir = logging_config.get("log_dir", "artifacts/bijux-canon-agent/test/logs")
-    log_level = logging_config.get("log_level", "INFO")
-    log_file_name = logging_config.get("log_file_name", "application.log")
-    structured_logging = logging_config.get("structured_logging", True)
-    async_logging = logging_config.get("async_logging", True)
-    telemetry_enabled = logging_config.get("telemetry_enabled", True)
-
-    ensure_directory(log_dir)
-    logger_config = LoggerConfig(
-        log_dir=log_dir,
-        log_level=log_level,
-        log_file_name=log_file_name,
-        structured_logging=structured_logging,
-        async_logging=async_logging,
-        telemetry_enabled=telemetry_enabled,
-    )
-    logger_manager = LoggerManager(name="Bijux Agent", config=logger_config)
+    logger_manager = create_logger_manager(config)
     logger = logger_manager.get_logger()
 
     logger.info(
@@ -152,8 +74,8 @@ async def main() -> None:
             extra={"context": {"replay_trace": str(replay_trace)}},
         )
 
-    ensure_directory(args.results_dir)
     results_dir_path = Path(args.results_dir)
+    results_dir_path.mkdir(parents=True, exist_ok=True)
     pipeline = AuditableDocPipeline(
         config=config,
         logger_manager=logger_manager,
@@ -161,26 +83,18 @@ async def main() -> None:
     )
 
     input_path = Path(args.input_path)
-    if not input_path.exists():
+    try:
+        files = resolve_input_files(input_path)
+    except FileNotFoundError:
         logger.error(f"Input path does not exist: {input_path}")
         sys.exit(2)
-
-    if input_path.is_file():
-        files = [input_path]
-        logger.info("Processing single file input")
-    elif input_path.is_dir():
-        files = [file for file in input_path.iterdir() if file.is_file()]
-        if not files:
-            logger.error(
-                "Input directory is empty; add documents (e.g. .txt, .md) and retry."
-            )
-            sys.exit(2)
-        logger.info("Processing directory input")
-    else:
-        logger.error(
-            f"Invalid input path: {input_path} (neither a file nor a directory)"
-        )
+    except RuntimeError as exc:
+        logger.error(str(exc))
         sys.exit(2)
+    except ValueError as exc:
+        logger.error(str(exc))
+        sys.exit(2)
+    logger.info("Processing single file input" if input_path.is_file() else "Processing directory input")
 
     try:
         result = await process_files(
