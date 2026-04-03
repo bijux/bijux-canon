@@ -7,6 +7,13 @@ import sys
 import pytest
 
 
+def _resolve_mypy_python(package_root: Path) -> str:
+    venv_python = package_root / ".venv" / "bin" / "python"
+    if venv_python.is_file():
+        return str(venv_python)
+    return sys.executable
+
+
 def test_pipeline_mypy_has_no_regressions() -> None:
     """Ensure the focused mypy scope stays green."""
 
@@ -14,9 +21,10 @@ def test_pipeline_mypy_has_no_regressions() -> None:
     repo_root = package_root.parents[1]
     cache_dir = repo_root / "artifacts" / "bijux-canon-agent" / "test" / ".mypy_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
+    mypy_python = _resolve_mypy_python(package_root)
     completed = subprocess.run(  # noqa: S603 - executes local mypy for regression coverage
         [
-            sys.executable,
+            mypy_python,
             "-m",
             "mypy",
             "--config-file",

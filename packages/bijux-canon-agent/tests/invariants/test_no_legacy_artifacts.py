@@ -40,6 +40,7 @@ EXCLUDED_DIRS = {
     ".venv",
     ".mypy_cache",
     "artifacts",
+    "site",
     ".pytest_cache",
     ".benchmarks",
     ".ruff_cache",
