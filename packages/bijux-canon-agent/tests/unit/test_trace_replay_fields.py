@@ -10,7 +10,7 @@ from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
-from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
+from bijux_canon_agent.pipeline.trace_validation.trace_validator import TraceValidator
 from bijux_canon_agent.traces import (
     ReplayMetadata,
     RunFingerprint,

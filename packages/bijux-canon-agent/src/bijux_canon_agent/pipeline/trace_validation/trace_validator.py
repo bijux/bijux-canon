@@ -8,7 +8,7 @@ from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.semantics import PipelineSemantics
-from bijux_canon_agent.pipeline.tracing import completeness, epistemic, ordering
+from bijux_canon_agent.pipeline.trace_validation import completeness, epistemic, ordering
 from bijux_canon_agent.traces import ReplayStatus, RunTraceHeader, TraceEntry
 
 

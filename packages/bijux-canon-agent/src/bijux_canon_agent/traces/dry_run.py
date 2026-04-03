@@ -22,7 +22,7 @@ from bijux_canon_agent.pipeline.definition import (
 )
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
-from bijux_canon_agent.pipeline.tracing.trace_validator import TraceValidator
+from bijux_canon_agent.pipeline.trace_validation.trace_validator import TraceValidator
 from bijux_canon_agent.traces.trace import (
     EpistemicStatus,
     ModelMetadata,
