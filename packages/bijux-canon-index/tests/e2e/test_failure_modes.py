@@ -21,7 +21,7 @@ from bijux_canon_index.domain.requests.request_execution import (
     execute_request,
     start_execution_session,
 )
-from bijux_canon_index.domain.monitoring.divergence import detect_backend_drift
+from bijux_canon_index.domain.drift.backend_drift import detect_backend_drift
 from bijux_canon_index.domain.provenance.replay import replay
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 

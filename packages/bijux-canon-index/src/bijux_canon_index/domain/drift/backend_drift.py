@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
-"""Divergence detection across backends."""
+"""Backend drift detection across execution backends."""
 
 from __future__ import annotations
 

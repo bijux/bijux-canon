@@ -14,7 +14,7 @@ from bijux_canon_index.core.types import (
     Vector,
     ExecutionBudget,
 )
-from bijux_canon_index.domain.monitoring.divergence import detect_backend_drift
+from bijux_canon_index.domain.drift.backend_drift import detect_backend_drift
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 from bijux_canon_index.core.errors import BackendDivergenceError
 
