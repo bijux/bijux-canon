@@ -1,0 +1,30 @@
+site_name: bijux-llm-nexus
+site_url: https://bijux.github.io/bijux-llm-nexus/
+repo_name: bijux/bijux-llm-nexus
+repo_url: https://github.com/bijux/bijux-llm-nexus
+docs_dir: docs
+strict: true
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.sections
+    - content.code.copy
+    - navigation.footer
+
+nav:
+  - Home: index.md
+  - Tooling: tooling.md
+  - Governance: governance.md
+  - History: repository-history.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - tables

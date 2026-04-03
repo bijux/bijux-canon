@@ -18,8 +18,13 @@ Projects:
 Shared repository assets:
 
 - `configs/` for root-managed tooling configuration
+- `Makefile` for root package orchestration
 - `makes/` for root-managed build and quality targets
 - `LICENSE` for the repository-wide MIT license
+- `mkdocs.yml` for the repository handbook
 - `packages/` for publishable Python distributions
+- `pyproject.toml` for repository tooling metadata
+- `tox.ini` for root validation environments
 
 History preservation details are documented in `docs/repository-history.md`.
+Repository handbook pages live under `docs/`.
