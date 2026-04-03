@@ -71,7 +71,7 @@ release: clean install fmt lint test quality security sbom
 	fi
 	@$(PIP_AUDIT) $(PIP_AUDIT_FLAGS) --output "$(PROJECT_ARTIFACTS_DIR)/release/sbom.json" || true
 	@echo "[INFO] Refreshing OpenAPI v1"
-	@$(VENV_PYTHON) - <<'PY'\nfrom pathlib import Path\nimport json\nfrom bijux_vex.api.v1 import build_app\nPath('api/v1').mkdir(parents=True, exist_ok=True)\nPath('api/v1/openapi.v1.json').write_text(json.dumps(build_app().openapi(), indent=2))\nPY
+	@$(VENV_PYTHON) - <<'PY'\nfrom pathlib import Path\nimport json\nfrom bijux_vex.api.v1 import build_app\nPath('$(API_DIR)/v1').mkdir(parents=True, exist_ok=True)\nPath('$(API_DIR)/v1/openapi.v1.json').write_text(json.dumps(build_app().openapi(), indent=2))\nPY
 	@cd "$(PROJECT_ARTIFACTS_DIR)/release" && shasum -a 256 *.whl *.tar.gz > SHA256SUMS
 	@echo "[OK] Release artifacts ready under $(PROJECT_ARTIFACTS_DIR)/release"
 

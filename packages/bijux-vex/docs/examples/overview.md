@@ -26,5 +26,5 @@ Use these scenarios to learn the system quickly. Follow them in order.
 
 Tips:
 
-- Cross-check each example with the API schema (`api/v1/schema.yaml`) if using HTTP.
+- Cross-check each example with the API schema (`../../apis/bijux-vex/v1/schema.yaml`) if using HTTP.
 - Keep the non-goals in mind: this is not a vector DB or RAG system.

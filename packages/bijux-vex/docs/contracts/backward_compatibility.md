@@ -55,7 +55,7 @@ They are contractually frozen unless a new major version is released.
 - `POST /replay` → `matches`, `original_fingerprint`, `replay_fingerprint`, `details`, `nondeterministic_sources`, `execution_contract`, `execution_contract_status`, `replayable`, `execution_id`
 
 ## Canonical schemas
-- API request schemas are frozen in `api/v1/schema.yaml`.
-- The OpenAPI JSON is generated in `api/v1/openapi.v1.json`.
+- API request schemas are frozen in `apis/bijux-vex/v1/schema.yaml`.
+- The OpenAPI JSON is generated in `apis/bijux-vex/v1/openapi.v1.json`.
 
 If you depend on a field, you can rely on this document and the schema file as the legal contract.

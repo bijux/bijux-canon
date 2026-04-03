@@ -6,7 +6,7 @@ Use this before tagging any v0.1.x release. Documentation is a release artifact.
 - [ ] All Markdown files are reachable from navigation (see `tests/unit/test_docs_invariants.py`).
 - [ ] README links and badges validated (docs, spec, API, examples, license, start_here).
 - [ ] `docs/user/start_here.md` present and linked from README and docs home.
-- [ ] API contract: `api/v1/schema.yaml` committed; `make api-freeze` produces no drift.
+- [ ] API contract: `apis/bijux-vex/v1/schema.yaml` committed; `make api-freeze` produces no drift.
 - [ ] Docs are self-contained (no cross-repo references).
 - [ ] Experimental surfaces (ND/ANN) labeled consistently across README, spec, and API.
 - [ ] Changelog reflects current release and states “first public release” history squash.

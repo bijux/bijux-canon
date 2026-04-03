@@ -84,4 +84,6 @@ def test_no_bijux_rar_mentions_in_docs():
 def test_schema_is_referenced_from_api_docs():
     repo_root = pathlib.Path(__file__).resolve().parents[2]
     api_docs = (repo_root / "docs/api/index.md").read_text()
-    assert "api/v1/schema.yaml" in api_docs, "API docs must reference canonical schema"
+    assert "apis/bijux-vex/v1/schema.yaml" in api_docs, (
+        "API docs must reference canonical schema"
+    )

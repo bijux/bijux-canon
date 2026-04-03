@@ -27,6 +27,6 @@ Vector execution often hides determinism assumptions. bijux-vex makes execution 
 1) Concepts: [overview/concepts.md](../overview/concepts.md) — mental model of execution vs storage.
 2) Contracts: [spec/system_contract.md](../spec/system_contract.md) and [spec/execution_contracts.md](../spec/execution_contracts.md).
 3) Examples: [examples/overview.md](../examples/overview.md) — deterministic and ANN flows.
-4) API: [api/index.md](../api/index.md) and the canonical schema [api/v1/schema.yaml](https://github.com/bijux/bijux-llm-nexus/blob/main/packages/bijux-vex/api/v1/schema.yaml).
+4) API: [api/index.md](../api/index.md) and the canonical schema [apis/bijux-vex/v1/schema.yaml](https://github.com/bijux/bijux-llm-nexus/blob/main/apis/bijux-vex/v1/schema.yaml).
 5) Not a vector DB: [user/not_a_vdb.md](not_a_vdb.md).
 6) BYO vectors vs auto-embeddings: [user/byo_vectors_vs_embeddings.md](byo_vectors_vs_embeddings.md).

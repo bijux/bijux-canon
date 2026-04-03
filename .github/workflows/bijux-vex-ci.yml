@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/bijux-vex-ci.yml"
       - "packages/bijux-vex/**"
+      - "apis/bijux-vex/**"
       - "configs/bijux-vex/**"
       - "makes/bijux-vex/**"
       - "makes/shared/**"
@@ -17,6 +18,7 @@ on:
     paths:
       - ".github/workflows/bijux-vex-ci.yml"
       - "packages/bijux-vex/**"
+      - "apis/bijux-vex/**"
       - "configs/bijux-vex/**"
       - "makes/bijux-vex/**"
       - "makes/shared/**"

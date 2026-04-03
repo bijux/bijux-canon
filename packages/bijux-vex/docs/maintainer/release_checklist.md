@@ -4,7 +4,7 @@
 - [ ] `make lint quality security test` passes with zero warnings.
 - [ ] `make docs` (mkdocs build --strict) passes; no navigation warnings.
 - [ ] `docs/maintainer/docs_freeze_checklist.md` reviewed and satisfied.
-- [ ] `api/v1/schema.yaml` committed; `make api-freeze` passes (no drift).
+- [ ] `apis/bijux-vex/v1/schema.yaml` committed; `make api-freeze` passes (no drift).
 - [ ] OpenAPI validation tests green; schema reachable in docs.
 - [ ] README badges and docs links verified.
 - [ ] CHANGELOG updated manually; v0.1.0 section accurate.

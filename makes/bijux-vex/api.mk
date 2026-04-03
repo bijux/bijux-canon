@@ -2,8 +2,8 @@
 
 API_ARTIFACTS_DIR ?= $(PROJECT_ARTIFACTS_DIR)/api
 API_LOG           ?= $(API_ARTIFACTS_DIR)/openapi_drift.log
-API_SCHEMA_YAML   ?= api/v1/schema.yaml
-API_SCHEMA_JSON   ?= api/v1/openapi.v1.json
+API_SCHEMA_YAML   ?= $(API_DIR)/v1/schema.yaml
+API_SCHEMA_JSON   ?= $(API_DIR)/v1/openapi.v1.json
 PACKAGE_SCRIPTS_DIR ?= $(MONOREPO_ROOT)/scripts/bijux-vex
 
 .PHONY: api api-clean api-freeze

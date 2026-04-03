@@ -8,7 +8,9 @@ from openapi_spec_validator import validate
 
 
 def test_openapi_v1_is_valid() -> None:
-    schema_path = Path(__file__).parents[3] / "api" / "v1" / "openapi.v1.json"
+    package_root = Path(__file__).resolve().parents[3]
+    repo_root = package_root.parents[1]
+    schema_path = repo_root / "apis" / "bijux-vex" / "v1" / "openapi.v1.json"
     assert schema_path.exists(), "OpenAPI v1 schema must be generated"
     data = json.loads(schema_path.read_text())
     validate(data)

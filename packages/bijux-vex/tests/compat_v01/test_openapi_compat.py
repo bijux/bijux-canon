@@ -13,8 +13,9 @@ def _load(path: Path) -> dict:
 def test_openapi_v01_compatibility() -> None:
     fixtures = Path(__file__).resolve().parents[1] / "fixtures"
     v01 = _load(fixtures / "openapi_v0_1.json")
-    repo_root = Path(__file__).resolve().parents[2]
-    v02 = _load(repo_root / "api/v1/openapi.v1.json")
+    package_root = Path(__file__).resolve().parents[2]
+    repo_root = package_root.parents[1]
+    v02 = _load(repo_root / "apis/bijux-vex/v1/openapi.v1.json")
 
     v01_paths = v01.get("paths", {})
     v02_paths = v02.get("paths", {})

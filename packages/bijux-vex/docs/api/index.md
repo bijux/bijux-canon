@@ -1,6 +1,6 @@
 # API v1 overview
 
-The API is versioned and contract-driven. This page is descriptive; the canonical contract is `api/v1/schema.yaml`, and the generated JSON is `api/v1/openapi.v1.json` (derived; do not edit).
+The API is versioned and contract-driven. This page is descriptive; the canonical contract is `../../apis/bijux-vex/v1/schema.yaml`, and the generated JSON is `../../apis/bijux-vex/v1/openapi.v1.json` (derived; do not edit).
 
 ## Guarantees
 - Versioned under `/api/v1`; breaking changes require a new version.
@@ -12,13 +12,13 @@ The API is versioned and contract-driven. This page is descriptive; the canonica
 - Package versioning is tag-driven (hatch-vcs), and API stability is documented separately from package version.
 
 ## How to use
-- Consult `api/v1/schema.yaml` to generate clients or validate requests/responses.
+- Consult `../../apis/bijux-vex/v1/schema.yaml` to generate clients or validate requests/responses.
 - CLI mirror: ingest → materialize → execute → explain → replay → compare.
 - API endpoints: `/ingest` → `/artifact` → `/execute` → `/explain` → `/replay` (no `/compare` endpoint in v1).
 - Optional routing fields: `vector_store`, `vector_store_uri` (ingest/execute/artifact) and `embed_model` (ingest).
 - For non-deterministic executions, supply execution budgets and randomness profiles as required by the schema.
 
 ## References
-- Canonical schema (YAML): `api/v1/schema.yaml`
-- Generated JSON: `api/v1/openapi.v1.json`
+- Canonical schema (YAML): `../../apis/bijux-vex/v1/schema.yaml`
+- Generated JSON: `../../apis/bijux-vex/v1/openapi.v1.json`
 - Errors: `api/errors.md`
