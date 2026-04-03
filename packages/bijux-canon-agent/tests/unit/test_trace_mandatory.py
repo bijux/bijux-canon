@@ -8,8 +8,11 @@ from tests.utils.trace_helpers import default_model_metadata
 
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
-from bijux_canon_agent.application.orchestration.engine import AgentNode, Orchestrator
-from bijux_canon_agent.application.orchestration.policy import FailurePolicy
+from bijux_canon_agent.application.dag_runtime.orchestrator import (
+    DagNode,
+    DagOrchestrator,
+)
+from bijux_canon_agent.application.dag_runtime.policy import FailurePolicy
 
 
 def _drop_trace_entry(record_fn: Callable, target_node: str) -> Callable:
@@ -38,14 +41,14 @@ async def test_trace_is_mandatory(tmp_path: Path) -> None:
         )
 
     nodes = [
-        AgentNode(name="node_one", runner=simple_runner),
-        AgentNode(
+        DagNode(name="node_one", runner=simple_runner),
+        DagNode(
             name="node_two",
             runner=simple_runner,
             dependencies=["node_one"],
         ),
     ]
-    orchestrator = Orchestrator(
+    orchestrator = DagOrchestrator(
         nodes=nodes,
         trace_path=tmp_path / "mandatory.json",
         failure_policy=FailurePolicy(),

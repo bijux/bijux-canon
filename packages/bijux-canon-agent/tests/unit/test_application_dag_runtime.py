@@ -9,18 +9,21 @@ from tests.utils.trace_helpers import default_model_metadata
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import PipelineState
 from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
-from bijux_canon_agent.application.orchestration.engine import AgentNode, Orchestrator
-from bijux_canon_agent.application.orchestration.policy import (
+from bijux_canon_agent.application.dag_runtime.orchestrator import (
+    DagNode,
+    DagOrchestrator,
+)
+from bijux_canon_agent.application.dag_runtime.policy import (
     FailurePolicy,
     ScopeReductionPolicy,
 )
-from bijux_canon_agent.application.orchestration.state_machine import OrchestratorStateMachine
+from bijux_canon_agent.application.dag_runtime.state_machine import DagRunStateMachine
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 
 
 @pytest.mark.asyncio
-async def test_application_orchestration_run_happy_path(tmp_path: Path) -> None:
-    """Orchestrator should execute nodes in dependency order and complete."""
+async def test_dag_runtime_run_happy_path(tmp_path: Path) -> None:
+    """DagOrchestrator should execute nodes in dependency order and complete."""
 
     async def fake_runner(context: AgentInputSchema) -> AgentOutputSchema:
         return AgentOutputSchema(
@@ -31,8 +34,8 @@ async def test_application_orchestration_run_happy_path(tmp_path: Path) -> None:
             metadata={"contract_version": CONTRACT_VERSION},
         )
 
-    node = AgentNode(name="node1", runner=fake_runner)
-    orchestrator = Orchestrator(
+    node = DagNode(name="node1", runner=fake_runner)
+    orchestrator = DagOrchestrator(
         nodes=[node],
         trace_path=tmp_path / "trace.json",
         failure_policy=FailurePolicy(),
@@ -52,7 +55,7 @@ async def test_application_orchestration_run_happy_path(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_application_orchestration_abort_records_stop_reason(tmp_path: Path) -> None:
+async def test_dag_runtime_abort_records_stop_reason(tmp_path: Path) -> None:
     """Abort path should record a StopReason on the last trace entry."""
 
     class StopSignalError(RuntimeError):
@@ -62,8 +65,8 @@ async def test_application_orchestration_abort_records_stop_reason(tmp_path: Pat
     async def stop_runner(context: AgentInputSchema) -> AgentOutputSchema:
         raise StopSignalError("manual stop requested")
 
-    node = AgentNode(name="stopper", runner=stop_runner, max_retries=1)
-    orchestrator = Orchestrator(
+    node = DagNode(name="stopper", runner=stop_runner, max_retries=1)
+    orchestrator = DagOrchestrator(
         nodes=[node],
         trace_path=tmp_path / "stop_trace.json",
         failure_policy=FailurePolicy(),
@@ -83,7 +86,7 @@ async def test_application_orchestration_abort_records_stop_reason(tmp_path: Pat
 
 
 @pytest.mark.asyncio
-async def test_application_orchestration_partial_failure_stops_downstream(tmp_path: Path) -> None:
+async def test_dag_runtime_partial_failure_stops_downstream(tmp_path: Path) -> None:
     """A failing node should abort and prevent downstream execution."""
 
     async def failing_runner(context: AgentInputSchema) -> AgentOutputSchema:
@@ -93,14 +96,14 @@ async def test_application_orchestration_partial_failure_stops_downstream(tmp_pa
         raise AssertionError("Downstream node must not run")
 
     nodes = [
-        AgentNode(name="fail_step", runner=failing_runner, max_retries=1),
-        AgentNode(
+        DagNode(name="fail_step", runner=failing_runner, max_retries=1),
+        DagNode(
             name="dependent",
             runner=never_run,
             dependencies=["fail_step"],
         ),
     ]
-    orchestrator = Orchestrator(
+    orchestrator = DagOrchestrator(
         nodes=nodes,
         trace_path=tmp_path / "partial_failure.json",
         failure_policy=FailurePolicy(),
@@ -122,7 +125,7 @@ async def test_application_orchestration_partial_failure_stops_downstream(tmp_pa
 
 
 @pytest.mark.asyncio
-async def test_application_orchestration_retry_policy_retries_until_success(tmp_path: Path) -> None:
+async def test_dag_runtime_retry_policy_retries_until_success(tmp_path: Path) -> None:
     """Retry policy should allow a node to recover after a transient failure."""
 
     attempts: dict[str, int] = {"count": 0}
@@ -139,8 +142,8 @@ async def test_application_orchestration_retry_policy_retries_until_success(tmp_
             metadata={"contract_version": CONTRACT_VERSION},
         )
 
-    node = AgentNode(name="retry_step", runner=flaky_runner)
-    orchestrator = Orchestrator(
+    node = DagNode(name="retry_step", runner=flaky_runner)
+    orchestrator = DagOrchestrator(
         nodes=[node],
         trace_path=tmp_path / "retry_trace.json",
         failure_policy=FailurePolicy(),
@@ -179,8 +182,8 @@ async def test_scope_reduction_policy_reduces_payload(tmp_path: Path) -> None:
     policy = FailurePolicy(
         scope_reduction=ScopeReductionPolicy(steps=["drop:secret_key"])
     )
-    node = AgentNode(name="node", runner=observing_runner)
-    orchestrator = Orchestrator(
+    node = DagNode(name="node", runner=observing_runner)
+    orchestrator = DagOrchestrator(
         nodes=[node],
         trace_path=tmp_path / "scope_trace.json",
         failure_policy=policy,
@@ -199,14 +202,14 @@ async def test_scope_reduction_policy_reduces_payload(tmp_path: Path) -> None:
         assert payload.get("keep") == "value"
 
 
-def test_application_orchestration_state_machine_transitions() -> None:
+def test_dag_runtime_state_machine_transitions() -> None:
     """State machine should only allow declared transitions."""
-    machine = OrchestratorStateMachine()
+    machine = DagRunStateMachine()
     machine.transition_to(PipelineState.RUNNING)
     machine.abort()
     assert machine.state == PipelineState.ABORTED
 
-    machine = OrchestratorStateMachine()
+    machine = DagRunStateMachine()
     machine.transition_to(PipelineState.RUNNING)
     machine.transition_to(PipelineState.JUDGING)
     with pytest.raises(RuntimeError):

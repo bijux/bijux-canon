@@ -24,7 +24,7 @@ AgentCallable = Callable[[AgentInputSchema], Awaitable[AgentOutputSchema]]
 
 
 @dataclass
-class AgentNode:
+class DagNode:
     """Represents a DAG node that executes an agent with retry metadata."""
 
     name: str
@@ -35,7 +35,7 @@ class AgentNode:
 
 
 @dataclass
-class AgentExecutionState:
+class DagExecutionState:
     """Tracks per-node outputs, errors, and retry counts for the DAG run."""
 
     completed: dict[str, AgentOutputSchema] = field(default_factory=dict)
@@ -52,12 +52,12 @@ class AgentExecutionState:
         self.attempts[name] = self.attempts.get(name, 0) + 1
 
 
-class Orchestrator:
+class DagOrchestrator:
     """Simple deterministic orchestrator that executes DAG nodes in order."""
 
     def __init__(
         self,
-        nodes: Iterable[AgentNode],
+        nodes: Iterable[DagNode],
         trace_path: Path | str = Path("src/bijux_canon_agent/tracing/run_trace.json"),
         model_metadata: ModelMetadata | None = None,
         failure_policy: FailurePolicy | None = None,
@@ -68,9 +68,9 @@ class Orchestrator:
             run_id=str(uuid.uuid4()), path=trace_path, model_metadata=model_metadata
         )
 
-    async def run(self, initial_input: AgentInputSchema) -> AgentExecutionState:
+    async def run(self, initial_input: AgentInputSchema) -> DagExecutionState:
         """Execute the DAG nodes in dependency order and record their outcomes."""
-        state = AgentExecutionState()
+        state = DagExecutionState()
         pending = list(self.nodes)
         context_payload = dict(initial_input.payload)
 
@@ -92,14 +92,14 @@ class Orchestrator:
         self.trace_recorder.finish(status="aborted" if state.aborted else "completed")
         return state
 
-    def _dependencies_met(self, node: AgentNode, state: AgentExecutionState) -> bool:
+    def _dependencies_met(self, node: DagNode, state: DagExecutionState) -> bool:
         return all(dep in state.completed for dep in node.dependencies)
 
     def _prepare_context(
         self,
-        node: AgentNode,
+        node: DagNode,
         initial_input: AgentInputSchema,
-        state: AgentExecutionState,
+        state: DagExecutionState,
         payload: dict[str, Any],
     ) -> AgentInputSchema:
         enriched_payload = dict(payload)
@@ -128,7 +128,7 @@ class Orchestrator:
         return reduced
 
     async def _execute(
-        self, node: AgentNode, context: AgentInputSchema, state: AgentExecutionState
+        self, node: DagNode, context: AgentInputSchema, state: DagExecutionState
     ) -> None:
         attempt = 0
         while attempt < node.max_retries:

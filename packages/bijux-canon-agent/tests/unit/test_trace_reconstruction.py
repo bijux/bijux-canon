@@ -10,8 +10,11 @@ from bijux_canon_agent.interfaces.cli.helpers import load_trace
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.models.contract import AgentInputSchema, AgentOutputSchema
-from bijux_canon_agent.application.orchestration.engine import AgentNode, Orchestrator
-from bijux_canon_agent.application.orchestration.policy import FailurePolicy
+from bijux_canon_agent.application.dag_runtime.orchestrator import (
+    DagNode,
+    DagOrchestrator,
+)
+from bijux_canon_agent.application.dag_runtime.policy import FailurePolicy
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
 
@@ -39,15 +42,15 @@ async def test_trace_reconstructs_result_after_runtime_cleanup(tmp_path: Path) -
         )
 
     nodes = [
-        AgentNode(name="initial", runner=initial_runner),
-        AgentNode(
+        DagNode(name="initial", runner=initial_runner),
+        DagNode(
             name="final",
             runner=final_runner,
             dependencies=["initial"],
         ),
     ]
 
-    orchestrator = Orchestrator(
+    orchestrator = DagOrchestrator(
         nodes=nodes,
         trace_path=tmp_path / "reconstruct_trace.json",
         failure_policy=FailurePolicy(),

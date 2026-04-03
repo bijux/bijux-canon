@@ -1,4 +1,4 @@
-"""Enum-driven orchestrator state machine."""
+"""Enum-driven DAG run state machine."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from bijux_canon_agent.enums import PipelineState
 
 
 @dataclass
-class OrchestratorStateMachine:
+class DagRunStateMachine:
     state: PipelineState = PipelineState.INIT
     _transitions: dict[PipelineState, tuple[PipelineState, ...]] = field(init=False)
 
