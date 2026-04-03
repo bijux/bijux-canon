@@ -1,6 +1,6 @@
-# How to Think With Bijux‑Vex
+# How to Think With bijux-canon-index
 
-Bijux‑Vex is a system for making **correctness a conscious decision**. The core habit it teaches is this: decide what you need to be true, then ask the system to enforce it.
+bijux-canon-index is a system for making **correctness a conscious decision**. The core habit it teaches is this: decide what you need to be true, then ask the system to enforce it.
 
 Reasoning about correctness
 

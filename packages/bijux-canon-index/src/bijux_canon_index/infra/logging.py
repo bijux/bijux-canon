@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from typing import Any
+
+from bijux_canon_index.infra.environment import read_env
 
 _LOGGER = logging.getLogger("bijux_canon_index")
 _TRACE_ENABLED = False
@@ -16,7 +17,14 @@ def log_event(name: str, **fields: Any) -> None:
     if not _LOGGER.handlers:
         logging.basicConfig(level=logging.INFO)
     payload = {"event": name, **fields}
-    fmt = (os.getenv("BIJUX_VEX_LOG_FORMAT") or "").lower()
+    fmt = (
+        read_env(
+            "BIJUX_CANON_INDEX_LOG_FORMAT",
+            legacy="BIJUX_VEX_LOG_FORMAT",
+            default="",
+        )
+        or ""
+    ).lower()
     if fmt == "json":
         _LOGGER.info(json.dumps(payload, sort_keys=True))
     else:

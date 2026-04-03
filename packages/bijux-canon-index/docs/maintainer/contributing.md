@@ -1,4 +1,4 @@
-# Contributing to bijux-vex
+# Contributing to bijux-canon-index
 
 Keep the process boring and predictable.
 

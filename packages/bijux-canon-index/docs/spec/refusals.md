@@ -1,4 +1,4 @@
-# What bijux-vex refuses to be
+# What bijux-canon-index refuses to be
 
 - Not a vector database: no storage SLAs, no CRUD API beyond execution ingestion.
 - Not a retrieval framework: no RAG orchestration, no ranking pipelines beyond execution plans.

@@ -15,7 +15,7 @@ A team turns on ANN with default parameters. Latency improves, but recall drops 
 - Teams copy parameters from unrelated benchmarks.
 - Budgets are set without understanding the trade-offs.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 Use explicit profiles and budgets to control ND behavior safely.
 
@@ -49,7 +49,7 @@ Target recall
 
 When to tune
 
-- Use `bijux vex nd tune` on a representative dataset.
+- Use `bijux nd tune` on a representative dataset.
 - Apply the recommended config in your `bijux_canon_index.toml`.
 
 When to refuse

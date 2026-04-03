@@ -16,7 +16,7 @@ A ranking change seems safe, but users complain a week later. Replay against the
 - Backends change versions without tracking it.
 - Replay is attempted with a different config.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 Replay is allowed only when fingerprints match. Otherwise it refuses with a precise reason.
 

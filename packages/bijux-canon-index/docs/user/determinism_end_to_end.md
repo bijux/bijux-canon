@@ -16,7 +16,7 @@ You deploy a search change, and suddenly rankings differ between staging and pro
 - Backends or embeddings change behavior without being captured in artifacts.
 - Replay claims are made without a matching index or config.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 Deterministic execution means **exact search, stable ordering, and replayable results**. If any component would violate determinism, the system refuses and explains why.
 
@@ -67,13 +67,13 @@ If you only need approximate similarity for exploration, recommendations, or ear
 CLI example
 
 ```bash
-bijux vex ingest --doc "hello" --vector "[0.0, 1.0, 0.0]" \
+bijux ingest --doc "hello" --vector "[0.0, 1.0, 0.0]" \
   --vector-store memory
 
-bijux vex materialize --execution-contract deterministic \
+bijux materialize --execution-contract deterministic \
   --vector-store memory
 
-bijux vex execute --artifact-id art-1 \
+bijux execute --artifact-id art-1 \
   --execution-contract deterministic --execution-intent exact_validation \
   --execution-mode strict --vector "[0.0, 1.0, 0.0]"
 ```

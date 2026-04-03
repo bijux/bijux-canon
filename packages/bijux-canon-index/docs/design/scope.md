@@ -1,6 +1,6 @@
 # Scope
 
-bijux-vex delivers contract-driven vector execution semantics (not a database). v1 focuses on:
+bijux-canon-index delivers contract-driven vector execution semantics (not a database). v1 focuses on:
 
 - deterministic canonicalization and IDs
 - transactional mutation with authz + audit

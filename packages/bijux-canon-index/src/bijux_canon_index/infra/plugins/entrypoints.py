@@ -6,8 +6,9 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from importlib import metadata
 import logging
-import os
 from typing import Any
+
+from bijux_canon_index.infra.environment import read_env
 
 
 def load_entrypoints(group: str, registry: Any) -> None:
@@ -59,7 +60,14 @@ def _register_plugin(plugin: Any, registry: Any) -> None:
 
 
 def _call_with_timeout(func: Callable[[], None]) -> None:
-    timeout_ms = int(os.getenv("BIJUX_VEX_PLUGIN_TIMEOUT_MS", "2000"))
+    timeout_ms = int(
+        read_env(
+            "BIJUX_CANON_INDEX_PLUGIN_TIMEOUT_MS",
+            legacy="BIJUX_VEX_PLUGIN_TIMEOUT_MS",
+            default="2000",
+        )
+        or "2000"
+    )
     if timeout_ms <= 0:
         func()
         return

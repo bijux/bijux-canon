@@ -10,7 +10,7 @@ from bijux_canon_index.api.v1.app import build_app
 
 
 def test_ingest_idempotency_key(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("BIJUX_VEX_STATE_PATH", str(tmp_path / "api.sqlite"))
+    monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", str(tmp_path / "api.sqlite"))
     app = build_app()
     client = TestClient(app)
 

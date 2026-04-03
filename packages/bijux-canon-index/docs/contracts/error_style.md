@@ -1,6 +1,6 @@
 # Error Message Style Guide
 
-Bijux-Vex error messages must be human-first and actionable. Every message should answer four questions:
+bijux-canon-index error messages must be human-first and actionable. Every message should answer four questions:
 
 1. What happened  
 State the failure in plain language. No internal jargon unless necessary.

@@ -11,7 +11,7 @@ from pathlib import Path
 def test_plugin_contracts_report_json():
     package_root = Path(__file__).resolve().parents[3]
     repo_root = package_root.parents[1]
-    script = repo_root / "scripts" / "bijux-vex" / "plugin_test_kit.py"
+    script = repo_root / "scripts" / "bijux-canon-index" / "plugin_test_kit.py"
     result = subprocess.run(
         [sys.executable, str(script), "--format", "json"],
         check=True,

@@ -6,8 +6,8 @@ Note: Workflows B and C require the FAISS backend (`pip install faiss-cpu`).
 
 ## Preflight Checks
 
-- Validate inputs/config before ingest: `bijux vex validate --doc "text" --vector "[0.0,1.0]" --vector-store memory`
-- Diagnose setup: `bijux vex doctor --vector-store faiss --vector-store-uri index.faiss`
+- Validate inputs/config before ingest: `bijux validate --doc "text" --vector "[0.0,1.0]" --vector-store memory`
+- Diagnose setup: `bijux doctor --vector-store faiss --vector-store-uri index.faiss`
 
 ## Workflow A: BYO Vectors → Memory → Exact Execute
 

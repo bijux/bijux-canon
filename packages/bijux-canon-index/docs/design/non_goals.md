@@ -4,7 +4,7 @@ title: Non-goals
 
 # Non-goals (hard exclusions)
 
-bijux-vex is a vector execution engine. The following are explicitly out of scope:
+bijux-canon-index is a vector execution engine. The following are explicitly out of scope:
 
 - Not a vector database or general-purpose datastore.
 - Not a model runner or embedding factory.

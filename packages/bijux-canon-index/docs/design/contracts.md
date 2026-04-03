@@ -1,6 +1,6 @@
-# bijux-vex v1 Contract Spec
+# bijux-canon-index v1 Contract Spec
 
-bijux-vex is a contract-driven vector execution system with explicit determinism semantics. Every surface binds to a small set of contracts; anything outside these contracts is rejected.
+bijux-canon-index is a contract-driven vector execution system with explicit determinism semantics. Every surface binds to a small set of contracts; anything outside these contracts is rejected.
 
 ## Canonicalization + IDs
 - Canonical bytes and fingerprints are stable and versioned.

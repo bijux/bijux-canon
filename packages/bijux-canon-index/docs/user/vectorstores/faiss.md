@@ -38,5 +38,5 @@ python -m bijux_canon_index.interfaces.cli.app ingest \
 
 ## Operational Tips
 
-- Use `bijux vex vdb status` to inspect index metadata.
-- Use `bijux vex vdb rebuild` after delete-heavy workloads.
+- Use `bijux vdb status` to inspect index metadata.
+- Use `bijux vdb rebuild` after delete-heavy workloads.

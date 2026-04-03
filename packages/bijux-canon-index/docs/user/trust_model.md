@@ -1,6 +1,6 @@
 # Trust Model & Guarantees
 
-Bijux-Vex separates **hard guarantees** from **best-effort behavior**. When a guarantee cannot be met, the system refuses instead of guessing.
+bijux-canon-index separates **hard guarantees** from **best-effort behavior**. When a guarantee cannot be met, the system refuses instead of guessing.
 
 Hard guarantees
 

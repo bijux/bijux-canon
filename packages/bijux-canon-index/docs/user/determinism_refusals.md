@@ -16,7 +16,7 @@ A team ships a fix, but results still drift. The root cause is an ANN index used
 - ND features creep into deterministic execution.
 - Replay is attempted without matching artifacts.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 The system refuses with a structured payload and remediation guidance.
 

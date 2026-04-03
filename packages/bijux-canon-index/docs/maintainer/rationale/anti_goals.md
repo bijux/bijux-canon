@@ -1,4 +1,4 @@
-# bijux-vex anti-goals
+# bijux-canon-index anti-goals
 
 - Not a vector database or key-value store.
 - Not an embedding or model inference framework.

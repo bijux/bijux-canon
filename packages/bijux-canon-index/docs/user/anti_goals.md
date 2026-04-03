@@ -1,6 +1,6 @@
 # Anti‑Goals
 
-Bijux‑Vex is intentionally **not**:
+bijux-canon-index is intentionally **not**:
 
 - A vector database
 - A RAG framework

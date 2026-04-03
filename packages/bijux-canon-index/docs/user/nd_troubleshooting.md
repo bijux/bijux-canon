@@ -16,7 +16,7 @@ An ops team sees rising latency and unstable results after a deployment. The iss
 - Budgets set without realistic expectations.
 - Backend outages mistaken for quality issues.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 ND exposes explicit refusal reasons and quality metrics so you can pinpoint the issue.
 
@@ -49,7 +49,7 @@ Unstable results
 
 Backend unavailable
 
-- Check `bijux vex vdb status`.
+- Check `bijux vdb status`.
 - Verify backend installation and credentials.
 
 Index drift

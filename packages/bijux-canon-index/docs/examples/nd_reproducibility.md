@@ -6,15 +6,15 @@ ND behavior is **experimental**; use this to observe and audit variance.
 ## Setup
 
 ```bash
-bijux vex ingest --doc "hi" --vector "[0.0, 0.0]"
-bijux vex materialize --execution-contract non_deterministic
+bijux ingest --doc "hi" --vector "[0.0, 0.0]"
+bijux materialize --execution-contract non_deterministic
 ```
 
 ## Run the same ND execution 3 times
 
 ```bash
 for i in 1 2 3; do
-  bijux vex execute --artifact-id art-1 --vector "[0.0,0.0]" --top-k 1 \
+  bijux execute --artifact-id art-1 --vector "[0.0,0.0]" --top-k 1 \
     --execution-contract non_deterministic --execution-intent exploratory_search --execution-mode bounded \
     --randomness-seed $i --randomness-sources reference_ann_hnsw --randomness-bounded \
     --max-latency-ms 5 --max-memory-mb 5 --max-error 0.2

@@ -36,5 +36,5 @@ python -m bijux_canon_index.interfaces.cli.app ingest \
 
 ## Operational Tips
 
-- Use `bijux vex vdb status` to validate connectivity.
+- Use `bijux vdb status` to validate connectivity.
 - Configure batch sizes and retries via adapter options.

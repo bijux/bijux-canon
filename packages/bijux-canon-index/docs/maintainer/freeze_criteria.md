@@ -13,6 +13,6 @@ Freeze is allowed only when all gates are satisfied:
 - Exclusions honored: `pgvector_backend` remains excluded (see `core/v1_exclusions.py`).
 - Deterministic execution surface and ABI are frozen; breaking deterministic changes require a major version bump.
 - Non-deterministic/ANN execution is **experimental** and may change; users must treat ND behavior as unstable.
-- Posture: bijux-vex is **contract-complete** and open to empirical refinement; feature changes must be framed as contract extensions and approved through freeze governance.
+- Posture: bijux-canon-index is **contract-complete** and open to empirical refinement; feature changes must be framed as contract extensions and approved through freeze governance.
 
 Kill-switch: if any criterion fails, release tagging is blocked and freeze is revoked.

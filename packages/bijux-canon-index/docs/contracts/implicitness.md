@@ -1,6 +1,6 @@
 # Implicitness Contract (Nothing Is Implicit)
 
-bijux-vex forbids silent behavior. Any decision that can change results, persistence, or replayability must be **explicit** in the request or configuration.
+bijux-canon-index forbids silent behavior. Any decision that can change results, persistence, or replayability must be **explicit** in the request or configuration.
 
 ## What counts as implicit behavior
 The following are **not allowed** without an explicit flag or field:

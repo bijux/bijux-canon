@@ -42,7 +42,7 @@ nav:
       - Reading Order: user/reading_order.md
       - v0.2 User Contract: user/v0_2_user_contract.md
       - Stability & Evolution: user/stability_evolution_policy.md
-      - Why Bijux-Vex Exists: user/why_bijux_canon_index_exists.md
+      - Why bijux-canon-index Exists: user/why_bijux_canon_index_exists.md
       - Who Should Use This: user/who_should_use.md
       - Tutorial: user/tutorial.md
       - Workflows: user/workflows.md
@@ -94,7 +94,7 @@ nav:
       - Security Posture: user/security_posture.md
       - Before Production: user/before_production_checklist.md
       - Project Values: user/project_values.md
-      - How To Think With Bijux-Vex: user/how_to_think_with_bijux_canon_index.md
+      - How To Think With bijux-canon-index: user/how_to_think_with_bijux_canon_index.md
       - Freeze Meanings: user/freeze_meanings.md
       - Known Limitations: user/known_limitations.md
       - Release Narrative: user/release_notes_narrative.md
@@ -106,6 +106,7 @@ nav:
       - Misuse Patterns: user/misuse.md
       - External Misuse: user/external_misuse.md
   - Concepts:
+      - Package Overview: project_overview.md
       - Conceptual Overview: overview/concepts.md
       - Architecture Overview: overview/architecture_overview.md
   - Reference:

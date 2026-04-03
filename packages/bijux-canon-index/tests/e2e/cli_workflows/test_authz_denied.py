@@ -15,8 +15,8 @@ import pytest
 def test_cli_denies_mutations_when_authz_disabled(tmp_path: Path, monkeypatch):
     repo_root = Path(__file__).resolve().parents[3]
     env = os.environ.copy()
-    env["BIJUX_VEX_STATE_PATH"] = str(tmp_path / "authz.sqlite")
-    env["BIJUX_VEX_AUTHZ_MODE"] = "deny"
+    env["BIJUX_CANON_INDEX_STATE_PATH"] = str(tmp_path / "authz.sqlite")
+    env["BIJUX_CANON_INDEX_AUTHZ_MODE"] = "deny"
     env["PYTHONPATH"] = str(repo_root / "src")
     monkeypatch.chdir(tmp_path)
     cmd = [

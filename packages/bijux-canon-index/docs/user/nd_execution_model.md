@@ -16,7 +16,7 @@ A recommendation pipeline switches to ANN for scale. Latency drops, but results 
 - Randomness is not declared or tracked.
 - Budgets are exceeded silently.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 ND (non-deterministic) execution is an **explicit** mode with declared randomness, bounded quality, and refusal when bounds are violated.
 

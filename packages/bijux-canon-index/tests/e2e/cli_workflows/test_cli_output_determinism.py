@@ -22,7 +22,7 @@ def run_cmd(args, env):
 def test_cli_outputs_are_deterministic(tmp_path: Path, monkeypatch):
     db_path = tmp_path / "cli.sqlite"
     env = os.environ.copy()
-    env["BIJUX_VEX_STATE_PATH"] = str(db_path)
+    env["BIJUX_CANON_INDEX_STATE_PATH"] = str(db_path)
     monkeypatch.chdir(tmp_path)
 
     vec = json.dumps([0.0, 0.0])

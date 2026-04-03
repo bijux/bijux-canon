@@ -1,7 +1,7 @@
 [project]
-name = "bijux-vex-qdrant-plugin"
+name = "bijux-canon-index-qdrant-plugin"
 version = "0.0.0"
-description = "Example remote vector store plugin for Bijux-Vex"
+description = "Example remote vector store plugin for bijux-canon-index"
 requires-python = ">=3.10"
 dependencies = [
   "bijux-canon-index",

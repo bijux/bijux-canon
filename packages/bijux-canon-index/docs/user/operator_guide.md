@@ -1,6 +1,6 @@
 # Operator Guide
 
-This guide covers production operations for Bijux Vex.
+This guide covers production operations for bijux-canon-index.
 
 ## Running FastAPI
 
@@ -10,13 +10,13 @@ This guide covers production operations for Bijux Vex.
 
 ## Config + Env Patterns
 
-- Prefer explicit config files created via `bijux vex init`.
-- Use `BIJUX_VEX_STATE_PATH` and `BIJUX_VEX_RUN_DIR` to isolate storage per service.
+- Prefer explicit config files created via `bijux init`.
+- Use `BIJUX_CANON_INDEX_STATE_PATH` and `BIJUX_CANON_INDEX_RUN_DIR` to isolate storage per service.
 - Avoid implicit vector store selection; set `vector_store.backend` explicitly.
 
 ## Safe Logging
 
-- Use `BIJUX_VEX_LOG_FORMAT=json` for structured logs.
+- Use `BIJUX_CANON_INDEX_LOG_FORMAT=json` for structured logs.
 - Never log raw URIs with credentials; redaction is enforced on vector store URIs.
 
 ## Scaling Guidance

@@ -1,6 +1,6 @@
-# bijux-vex — read this first
+# bijux-canon-index — read this first
 
-bijux-vex is a **vector execution engine**. It **MUST** run vector computations under explicit execution contracts, record the consequences, and make determinism vs. non-determinism auditable.
+bijux-canon-index is a **vector execution engine**. It **MUST** run vector computations under explicit execution contracts, record the consequences, and make determinism vs. non-determinism auditable.
 
 ## What vector execution means
 - Inputs are execution requests (text or vectors) routed through explicit plans.

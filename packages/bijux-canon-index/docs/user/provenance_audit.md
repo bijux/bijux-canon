@@ -15,7 +15,7 @@ A customer asks why results changed between two runs. Provenance shows the exact
 - Provenance is treated as optional logging.
 - Results are stored without the plan that produced them.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 Provenance is emitted for every execution and includes the decisions and artifacts needed to audit results.
 

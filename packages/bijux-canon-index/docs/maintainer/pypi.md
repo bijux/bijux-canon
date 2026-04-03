@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/bijux/bijux-canon/main/docs/assets/bijux_logo_hq.png" alt="Bijux-Vex" width="180" />
+  <img src="https://raw.githubusercontent.com/bijux/bijux-canon/main/docs/assets/bijux_logo_hq.png" alt="bijux-canon-index" width="180" />
 </p>
 
-# bijux-vex
+# bijux-canon-index
 
 **Vector execution runtime with replayable determinism + audited ANN (nothing implicit).**
 
-Why this exists: production vector search drifts quietly. Bijux‑Vex makes correctness explicit, and refuses when guarantees cannot be met.
+Why this exists: production vector search drifts quietly. bijux-canon-index makes correctness explicit, and refuses when guarantees cannot be met.
 
 If you only read one page, read this: https://bijux.github.io/bijux-canon-index/user/only_read_one_page/
 
-## Why bijux-vex
+## Why bijux-canon-index
 
 - Replayable determinism for results you can defend
 - Audited, bounded ND (ANN) instead of silent approximation
@@ -19,10 +19,10 @@ If you only read one page, read this: https://bijux.github.io/bijux-canon-index/
 ## Hello world (deterministic, exact)
 
 ```bash
-bijux vex ingest --doc "hello" --vector "[0.0, 1.0, 0.0]" \
+bijux ingest --doc "hello" --vector "[0.0, 1.0, 0.0]" \
   --vector-store memory
-bijux vex materialize --execution-contract deterministic --vector-store memory
-bijux vex execute --artifact-id art-1 \
+bijux materialize --execution-contract deterministic --vector-store memory
+bijux execute --artifact-id art-1 \
   --execution-contract deterministic --execution-intent exact_validation \
   --execution-mode strict --vector "[0.0, 1.0, 0.0]"
 ```
@@ -30,9 +30,9 @@ bijux vex execute --artifact-id art-1 \
 ## Hello world (ND / ANN with quality)
 
 ```bash
-bijux vex materialize --execution-contract non_deterministic --index-mode ann \
+bijux materialize --execution-contract non_deterministic --index-mode ann \
   --vector-store faiss --vector-store-uri ./index.faiss
-bijux vex execute --artifact-id art-1 \
+bijux execute --artifact-id art-1 \
   --execution-contract non_deterministic --execution-intent exploratory_search \
   --execution-mode bounded --randomness-seed 42 --randomness-sources ann_probe \
   --nd-witness sample --vector "[0.0, 1.0, 0.0]"
@@ -62,7 +62,7 @@ vector store: optional + explicit
 ## Getting help / reporting issues
 
 GitHub issues: https://github.com/bijux/bijux-canon/issues
-Include `bijux vex debug-bundle` output when reporting a bug.
+Include `bijux debug-bundle` output when reporting a bug.
 
 ## Quick links
 

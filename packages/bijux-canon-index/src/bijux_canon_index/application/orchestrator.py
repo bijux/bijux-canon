@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import replace
 import json
-import os
 from pathlib import Path
 import threading
 import time
@@ -76,6 +75,7 @@ from bijux_canon_index.infra.embeddings.cache import (
     metadata_as_dict,
 )
 from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
+from bijux_canon_index.infra.environment import read_env
 from bijux_canon_index.infra.logging import log_event
 from bijux_canon_index.infra.metrics import METRICS, timed
 from bijux_canon_index.infra.run_store import RunStore
@@ -105,7 +105,10 @@ def _resolve_backend(backend_env: str, chosen_path: Path) -> Any:
 
             backend = hnsw_backend(
                 db_path=str(chosen_path),
-                index_dir=os.getenv("BIJUX_VEX_HNSW_PATH"),
+                index_dir=read_env(
+                    "BIJUX_CANON_INDEX_HNSW_PATH",
+                    legacy="BIJUX_VEX_HNSW_PATH",
+                ),
             )
         else:
             backend = sqlite_backend(str(chosen_path))
@@ -131,9 +134,22 @@ class Orchestrator:
         if backend is not None:
             self.backend = backend
         else:
-            backend_env = (os.getenv("BIJUX_VEX_BACKEND") or "").lower()
+            backend_env = (
+                read_env(
+                    "BIJUX_CANON_INDEX_BACKEND",
+                    legacy="BIJUX_VEX_BACKEND",
+                    default="",
+                )
+                or ""
+            ).lower()
             chosen_raw: str | Path = (
-                state_path or os.getenv("BIJUX_VEX_STATE_PATH") or "session.sqlite"
+                state_path
+                or read_env(
+                    "BIJUX_CANON_INDEX_STATE_PATH",
+                    legacy="BIJUX_VEX_STATE_PATH",
+                    default="session.sqlite",
+                )
+                or "session.sqlite"
             )
             chosen_path = Path(chosen_raw)
             self.backend = _resolve_backend(backend_env, chosen_path)
@@ -161,11 +177,25 @@ class Orchestrator:
         if authz is not None:
             self.authz = authz
         else:
-            auth_mode = (os.getenv("BIJUX_VEX_AUTHZ_MODE") or "").lower()
+            auth_mode = (
+                read_env(
+                    "BIJUX_CANON_INDEX_AUTHZ_MODE",
+                    legacy="BIJUX_VEX_AUTHZ_MODE",
+                    default="",
+                )
+                or ""
+            ).lower()
             self.authz = (
                 DenyAllAuthz() if auth_mode in {"deny", "deny_all"} else AllowAllAuthz()
             )
-        ro = (os.getenv("BIJUX_VEX_READ_ONLY") or "").lower()
+        ro = (
+            read_env(
+                "BIJUX_CANON_INDEX_READ_ONLY",
+                legacy="BIJUX_VEX_READ_ONLY",
+                default="",
+            )
+            or ""
+        ).lower()
         self.read_only = ro in {"1", "true", "yes"}
         self.id_policy: IdGenerationStrategy = ContentAddressedIdPolicy()
         self.default_artifact_id = self.id_policy.next_artifact_id()
@@ -174,18 +204,40 @@ class Orchestrator:
         self._run_store = RunStore()
         self._idempotency_lock = threading.Lock()
         self._idempotency_cache: dict[str, dict[str, Any]] = {}
-        self._nd_rate_limit = int(os.getenv("BIJUX_VEX_ND_RATE_LIMIT") or "0")
+        self._nd_rate_limit = int(
+            read_env(
+                "BIJUX_CANON_INDEX_ND_RATE_LIMIT",
+                legacy="BIJUX_VEX_ND_RATE_LIMIT",
+                default="0",
+            )
+            or "0"
+        )
         self._nd_rate_window_seconds = int(
-            os.getenv("BIJUX_VEX_ND_RATE_WINDOW_S") or "60"
+            read_env(
+                "BIJUX_CANON_INDEX_ND_RATE_WINDOW_S",
+                legacy="BIJUX_VEX_ND_RATE_WINDOW_S",
+                default="60",
+            )
+            or "60"
         )
         self._nd_rate_window_start = time.time()
         self._nd_rate_count = 0
         self._nd_circuit_failures = 0
         self._nd_circuit_max_failures = int(
-            os.getenv("BIJUX_VEX_ND_CIRCUIT_MAX_FAILURES") or "3"
+            read_env(
+                "BIJUX_CANON_INDEX_ND_CIRCUIT_MAX_FAILURES",
+                legacy="BIJUX_VEX_ND_CIRCUIT_MAX_FAILURES",
+                default="3",
+            )
+            or "3"
         )
         self._nd_circuit_cooldown_s = int(
-            os.getenv("BIJUX_VEX_ND_CIRCUIT_COOLDOWN_S") or "30"
+            read_env(
+                "BIJUX_CANON_INDEX_ND_CIRCUIT_COOLDOWN_S",
+                legacy="BIJUX_VEX_ND_CIRCUIT_COOLDOWN_S",
+                default="30",
+            )
+            or "30"
         )
         self._nd_circuit_open_until = 0.0
 

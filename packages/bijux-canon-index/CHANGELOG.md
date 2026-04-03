@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Bijux Vex are documented here. This project adheres to Semantic Versioning and the Keep a Changelog format.
+All notable changes to bijux-canon-index are documented here. This project adheres to Semantic Versioning and the Keep a Changelog format.
 
 ## Unreleased
 
@@ -42,7 +42,7 @@ All notable changes to Bijux Vex are documented here. This project adheres to Se
 
 ### Added
 
-- First public, contract‑complete release of bijux‑vex.
+- First public, contract-complete release of bijux-canon-index.
 - Deterministic execution with replayable artifacts and provenance.
 - Non‑deterministic execution via ANN with approximation reports and randomness audit.
 - CLI and FastAPI v1 surfaces frozen; OpenAPI schema versioned.

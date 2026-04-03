@@ -21,9 +21,9 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory() as workdir:
         workdir_path = Path(workdir)
-        os.environ["BIJUX_VEX_STATE_PATH"] = str(workdir_path / "session.sqlite")
-        os.environ["BIJUX_VEX_RUN_DIR"] = str(workdir_path / "runs")
-        os.environ["BIJUX_VEX_BACKEND"] = "sqlite"
+        os.environ["BIJUX_CANON_INDEX_STATE_PATH"] = str(workdir_path / "session.sqlite")
+        os.environ["BIJUX_CANON_INDEX_RUN_DIR"] = str(workdir_path / "runs")
+        os.environ["BIJUX_CANON_INDEX_BACKEND"] = "sqlite"
         index_path = str(workdir_path / "demo.faiss")
 
         client = TestClient(app)

@@ -2,10 +2,10 @@
 set -euo pipefail
 
 WORKDIR="$(mktemp -d)"
-export BIJUX_VEX_STATE_PATH="$WORKDIR/session.sqlite"
-export BIJUX_VEX_RUN_DIR="$WORKDIR/runs"
-export BIJUX_VEX_BACKEND="hnsw"
-export BIJUX_VEX_HNSW_PATH="$WORKDIR/hnsw_index"
+export BIJUX_CANON_INDEX_STATE_PATH="$WORKDIR/session.sqlite"
+export BIJUX_CANON_INDEX_RUN_DIR="$WORKDIR/runs"
+export BIJUX_CANON_INDEX_BACKEND="hnsw"
+export BIJUX_CANON_INDEX_HNSW_PATH="$WORKDIR/hnsw_index"
 export PYTHONPATH="${PYTHONPATH:-}:src"
 
 if [ -z "${PYTHON_BIN:-}" ]; then

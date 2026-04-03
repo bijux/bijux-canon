@@ -10,8 +10,8 @@ from bijux_canon_index.api.v1.app import build_app
 
 
 def test_list_artifacts_and_runs(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("BIJUX_VEX_STATE_PATH", str(tmp_path / "api.sqlite"))
-    monkeypatch.setenv("BIJUX_VEX_RUN_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", str(tmp_path / "api.sqlite"))
+    monkeypatch.setenv("BIJUX_CANON_INDEX_RUN_DIR", str(tmp_path / "runs"))
     app = build_app()
     client = TestClient(app)
 

@@ -1,6 +1,6 @@
-# What Bijux-Vex Is (and Is Not)
+# What bijux-canon-index Is (and Is Not)
 
-Bijux-Vex is a **vector execution system**. It gives you a strict, auditable way to run vector search with hard determinism contracts, explicit non-determinism (ND) bounds, and first-class provenance. It is built for correctness, replay, and refusal when guarantees cannot be met.
+bijux-canon-index is a **vector execution system**. It gives you a strict, auditable way to run vector search with hard determinism contracts, explicit non-determinism (ND) bounds, and first-class provenance. It is built for correctness, replay, and refusal when guarantees cannot be met.
 
 What it solves
 
@@ -17,23 +17,23 @@ What it intentionally refuses to do
 
 How it differs from vector DBs
 
-- Bijux-Vex is not a database. It does not promise CRUD semantics, query languages, or availability guarantees.
+- bijux-canon-index is not a database. It does not promise CRUD semantics, query languages, or availability guarantees.
 - It treats storage as a pluggable adapter and makes capability differences explicit.
 
 How it differs from RAG frameworks
 
-- Bijux-Vex is not an application framework. It does not manage prompt templates, retrieval pipelines, or LLM orchestration.
+- bijux-canon-index is not an application framework. It does not manage prompt templates, retrieval pipelines, or LLM orchestration.
 - It focuses on the execution contract and provenance, not end-to-end UX.
 
 How it differs from ML pipelines
 
-- Bijux-Vex is not a training or feature pipeline.
+- bijux-canon-index is not a training or feature pipeline.
 - It does not manage model lifecycle, training data, or inference services.
 
-When **not** to use Bijux-Vex
+When **not** to use bijux-canon-index
 
 - If you need a general-purpose vector database with rich filtering and schema management.
 - If you want an end-to-end RAG stack or LLM framework.
 - If you are fine with “probably correct” results and don’t need auditability.
 
-If you need **contractual correctness**, **explicit ND behavior**, and **provenance you can defend**, Bijux-Vex is the right tool.
+If you need **contractual correctness**, **explicit ND behavior**, and **provenance you can defend**, bijux-canon-index is the right tool.

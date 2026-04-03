@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "bijux-vex execution API",
+    "title": "bijux-canon-index execution API",
     "version": "v1"
   },
   "paths": {

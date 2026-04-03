@@ -1,7 +1,7 @@
 # Deterministic replay example
 
 ```bash
-bijux vex replay --request-text "hello"
+bijux replay --request-text "hello"
 ```
 
 Expected:

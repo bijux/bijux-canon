@@ -9,16 +9,16 @@
 bijux-canon-index executes vector workloads under **contracts**. Deterministic runs are replayable; non-deterministic runs are bounded, audited, and comparable.
 Nothing is implicit: no silent defaults, retries, or randomness.
 
-Install `bijux-canon-index` for new projects. The legacy package name `bijux-vex` remains available as a compatibility shim.
+Install `bijux-canon-index` for new projects and use the current package identity consistently in docs, config, and automation.
 
 ```bash
 pip install bijux-canon-index
 ```
 
-## What bijux-vex is
+## What bijux-canon-index is
 Vector execution engine with explicit determinism contracts. Deterministic paths are bit-stable and replayable; non-deterministic paths (ANN) are supported but **experimental** and always emit approximation + randomness provenance.
 
-## What bijux-vex is not
+## What bijux-canon-index is not
 - Not a vector DB or storage layer.
 - Not an embedding or RAG framework.
 - Not a serving platform with SLAs.
@@ -41,21 +41,21 @@ Vector execution engine with explicit determinism contracts. Deterministic paths
 Everything else is reference or maintainer material.
 
 ## Start here
-Read `docs/user/start_here.md`. It explains the problem, when to use bijux-vex, deterministic vs non-deterministic execution, and where to go next.
+Read `docs/user/start_here.md`. It explains the problem, when to use bijux-canon-index, deterministic vs non-deterministic execution, and where to go next.
 
 ## Minimal example (CLI, 10 lines)
 ```sh
-bijux vex ingest --doc "hello" --vector "[0,1,0]"
-bijux vex materialize --execution-contract deterministic
-bijux vex execute --artifact-id art-1 --vector "[0,1,0]" --top-k 1 \
+bijux ingest --doc "hello" --vector "[0,1,0]"
+bijux materialize --execution-contract deterministic
+bijux execute --artifact-id art-1 --vector "[0,1,0]" --top-k 1 \
   --execution-contract deterministic --execution-intent exact_validation --execution-mode strict
-bijux vex replay --request-text "hello"
-bijux vex materialize --execution-contract non_deterministic
-bijux vex execute --artifact-id art-1 --vector "[0,1,0]" --top-k 1 \
+bijux replay --request-text "hello"
+bijux materialize --execution-contract non_deterministic
+bijux execute --artifact-id art-1 --vector "[0,1,0]" --top-k 1 \
   --execution-contract non_deterministic --execution-intent exploratory_search --execution-mode bounded \
   --randomness-seed 1 --randomness-sources reference_ann_hnsw --randomness-bounded \
   --max-latency-ms 10 --max-memory-mb 10 --max-error 0.5
-bijux vex compare --vector "[0,1,0]" --execution-intent exact_validation
+bijux compare --vector "[0,1,0]" --execution-intent exact_validation
 ```
 
 ## Execution truth table (canonical)

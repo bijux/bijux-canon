@@ -7,7 +7,7 @@ This guide shows how to run non-deterministic (ND) execution safely and intentio
 Use an explicit profile to set baseline quality:
 
 ```bash
-bijux vex execute \
+bijux execute \
   --execution-contract non_deterministic \
   --execution-intent exploratory_search \
   --execution-mode bounded \
@@ -45,7 +45,7 @@ reduce `k`, switch profile, or refuse.
 Run a small tuning session against current data:
 
 ```bash
-bijux vex nd tune --vector-store faiss --top-k 10 --samples 10
+bijux nd tune --vector-store faiss --top-k 10 --samples 10
 ```
 
 This reports per-profile latency and recommends a profile for your workload.
@@ -98,13 +98,13 @@ false claims of replayability when the index has drifted.
 Separate index building from query:
 
 ```bash
-bijux vex materialize --execution-contract non_deterministic --index-mode ann
+bijux materialize --execution-contract non_deterministic --index-mode ann
 ```
 
 To rebuild:
 
 ```bash
-bijux vex vdb rebuild --vector-store faiss --mode ann
+bijux vdb rebuild --vector-store faiss --mode ann
 ```
 
 If you need on-demand builds for development, opt in:

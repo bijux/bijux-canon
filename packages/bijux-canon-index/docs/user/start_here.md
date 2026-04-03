@@ -1,7 +1,7 @@
-# Start here — bijux-vex onboarding
+# Start here — bijux-canon-index onboarding
 
-## What problem does bijux-vex solve?
-Vector execution often hides determinism assumptions. bijux-vex makes execution contracts explicit, auditable, and replayable so you can compare deterministic (exact) and non-deterministic (ANN) runs side by side.
+## What problem does bijux-canon-index solve?
+Vector execution often hides determinism assumptions. bijux-canon-index makes execution contracts explicit, auditable, and replayable so you can compare deterministic (exact) and non-deterministic (ANN) runs side by side.
 
 ## When should you use it?
 - You need reproducible deterministic vector execution with provenance you can replay.

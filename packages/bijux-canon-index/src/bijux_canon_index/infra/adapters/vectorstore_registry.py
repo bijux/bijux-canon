@@ -140,7 +140,7 @@ class VectorStoreRegistry:
                 message=(
                     "What happened: unknown vector store backend.\n"
                     f"Why: '{name}' is not registered.\n"
-                    "How to fix: choose a backend listed in `bijux vex capabilities` or install the plugin.\n"
+                    "How to fix: choose a backend listed in `bijux capabilities` or install the plugin.\n"
                     "Where to learn more: docs/spec/vectorstore_adapter.md"
                 )
             )

@@ -1,6 +1,6 @@
 # Mental model (non-negotiable)
 
-This file is the single-page spine for bijux-vex v0.1.0. Read this before any other doc.
+This file is the single-page spine for bijux-canon-index v0.1.0. Read this before any other doc.
 
 ## What an execution is
 

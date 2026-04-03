@@ -7,4 +7,4 @@ Do not declare maintenance-only until:
 - no pending contract changes or experimental ND features.
 - governance decision recorded in design_diary and freeze_criteria.
 
-Until then: bijux-vex is contract-complete and open to empirical refinement.
+Until then: bijux-canon-index is contract-complete and open to empirical refinement.

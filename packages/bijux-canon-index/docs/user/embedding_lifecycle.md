@@ -28,7 +28,7 @@ Failure handling
 Ingest example
 
 ```bash
-bijux vex ingest --doc "hello" \
+bijux ingest --doc "hello" \
   --embed-provider sentence-transformers \
   --embed-model all-MiniLM-L6-v2 \
   --vector-store memory

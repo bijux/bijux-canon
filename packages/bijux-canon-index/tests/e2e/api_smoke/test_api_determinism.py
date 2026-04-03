@@ -14,7 +14,7 @@ from bijux_canon_index.core.identity.ids import fingerprint
 
 def test_api_responses_are_deterministic(tmp_path: Path, monkeypatch):
     db_path = tmp_path / "api.sqlite"
-    monkeypatch.setenv("BIJUX_VEX_STATE_PATH", str(db_path))
+    monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", str(db_path))
     app = build_app()
     client = TestClient(app)
 

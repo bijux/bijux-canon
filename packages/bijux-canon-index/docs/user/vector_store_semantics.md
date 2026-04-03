@@ -16,9 +16,9 @@ A team deletes records in a vector store and assumes they are gone. Weeks later,
 - ANN indices are assumed to update automatically.
 - Consistency is assumed without checking.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
-Vector stores are adapters with explicit capabilities. Bijux-Vex does not assume database semantics.
+Vector stores are adapters with explicit capabilities. bijux-canon-index does not assume database semantics.
 
 ## What trade-offs remain
 

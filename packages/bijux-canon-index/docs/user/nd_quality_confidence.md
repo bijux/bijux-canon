@@ -15,7 +15,7 @@ A recommendation model drifts after a data update. Metrics reveal a spike in ins
 - Teams treat ANN results as “good enough” without measuring.
 - Confidence labels are not used to gate downstream behavior.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 ND results include quality metrics and a confidence label so downstream systems can act safely.
 

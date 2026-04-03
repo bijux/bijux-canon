@@ -2,7 +2,7 @@
 
 Threat model
 
-- Bijux‑Vex assumes you control the runtime environment.
+- bijux-canon-index assumes you control the runtime environment.
 - It does not protect against compromised hosts or malicious backends.
 
 In scope

@@ -1,6 +1,6 @@
 # Backward Compatibility Contract (v0.1.x → v0.2.x)
 
-This document defines what **will not change** for v0.1.x users as bijux-vex moves through v0.2.x.
+This document defines what **will not change** for v0.1.x users as bijux-canon-index moves through v0.2.x.
 If it is not listed here, it is not guaranteed.
 
 ## CLI commands guaranteed unchanged

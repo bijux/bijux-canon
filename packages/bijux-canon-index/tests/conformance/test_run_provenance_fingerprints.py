@@ -19,8 +19,8 @@ from bijux_canon_index.application.engine import VectorExecutionEngine
 def test_run_metadata_includes_determinism_fingerprints(
     tmp_path: Path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("BIJUX_VEX_BACKEND", "memory")
-    monkeypatch.setenv("BIJUX_VEX_RUN_DIR", str(tmp_path))
+    monkeypatch.setenv("BIJUX_CANON_INDEX_BACKEND", "memory")
+    monkeypatch.setenv("BIJUX_CANON_INDEX_RUN_DIR", str(tmp_path))
     engine = VectorExecutionEngine()
     engine.ingest(
         IngestRequest(documents=["hello"], vectors=[[0.1, 0.2]], correlation_id="req-1")

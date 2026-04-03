@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
-import os
 from pathlib import Path
 from typing import Any
 
 from bijux_canon_index.core.errors import ValidationError
+from bijux_canon_index.infra.environment import read_env
 
 
 def _atomic_write(path: Path, payload: dict[str, Any]) -> None:
@@ -31,7 +31,13 @@ class RunRecord:
 class RunStore:
     def __init__(self, base_dir: str | Path | None = None) -> None:
         base = (
-            base_dir or os.getenv("BIJUX_VEX_RUN_DIR") or "artifacts/bijux-canon-index/runs"
+            base_dir
+            or read_env(
+                "BIJUX_CANON_INDEX_RUN_DIR",
+                legacy="BIJUX_VEX_RUN_DIR",
+                default="artifacts/bijux-canon-index/runs",
+            )
+            or "artifacts/bijux-canon-index/runs"
         )
         self._base = Path(base)
 

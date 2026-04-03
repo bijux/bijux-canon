@@ -18,7 +18,7 @@ from bijux_canon_index.application.engine import VectorExecutionEngine
 
 
 def test_read_only_blocks_mutations(monkeypatch):
-    monkeypatch.setenv("BIJUX_VEX_READ_ONLY", "1")
+    monkeypatch.setenv("BIJUX_CANON_INDEX_READ_ONLY", "1")
     orch = VectorExecutionEngine()
     with pytest.raises(AuthzDeniedError):
         orch.ingest(IngestRequest(documents=["hi"], vectors=[[0.0]]))
@@ -30,14 +30,14 @@ def test_read_only_blocks_mutations(monkeypatch):
 
 def test_read_only_allows_reads(tmp_path, monkeypatch):
     db_path = str(tmp_path / "read-only.sqlite")
-    monkeypatch.setenv("BIJUX_VEX_STATE_PATH", db_path)
+    monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", db_path)
     setup = VectorExecutionEngine()
     setup.ingest(IngestRequest(documents=["hi"], vectors=[[0.0, 0.0]]))
     setup.materialize(
         ExecutionArtifactRequest(execution_contract=ExecutionContract.DETERMINISTIC)
     )
 
-    monkeypatch.setenv("BIJUX_VEX_READ_ONLY", "1")
+    monkeypatch.setenv("BIJUX_CANON_INDEX_READ_ONLY", "1")
     orch = VectorExecutionEngine(state_path=db_path)
     search = orch.execute(
         ExecutionRequestPayload(

@@ -1,6 +1,6 @@
 # Canonical vector execution pipeline
 
-This is the single example to understand bijux-vex:
+This is the single example to understand bijux-canon-index:
 
 1. ingest a small corpus (document + vector)
 2. materialize an execution artifact (deterministic)
@@ -9,4 +9,4 @@ This is the single example to understand bijux-vex:
 5. compare the two executions
 6. explain a result
 
-Everything else in bijux-vex is this pipeline with different knobs.
+Everything else in bijux-canon-index is this pipeline with different knobs.

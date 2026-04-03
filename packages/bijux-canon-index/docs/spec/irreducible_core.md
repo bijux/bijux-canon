@@ -16,4 +16,4 @@ Minimum modules to enforce:
 - `domain/provenance/replay.py` (provenance gate)
 - `core/invariants.py` + `core/contracts/invariants.py` (guardrails)
 
-Everything else is supportive. If removed, these must remain intact for vex to stay itself.
+Everything else is supportive. If removed, these must remain intact for bijux-canon-index to stay itself.

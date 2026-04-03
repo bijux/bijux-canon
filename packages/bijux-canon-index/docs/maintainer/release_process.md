@@ -1,4 +1,4 @@
-# Release process (bijux-vex v0.1.x)
+# Release process (bijux-canon-index v0.1.x)
 
 ## Preconditions
 - Working tree clean; `git status` empty.

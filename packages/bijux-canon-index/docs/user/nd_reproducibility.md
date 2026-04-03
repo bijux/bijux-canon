@@ -16,7 +16,7 @@ An incident review asks, “Why did the system show those results?” Without ND
 - Index hashes drift without being noticed.
 - ND runs are treated as deterministic.
 
-## How Bijux-Vex handles it
+## How bijux-canon-index handles it
 
 ND can be reproducible **within bounds**, but it is not deterministic. Reproducibility depends on index hash, parameters, and randomness declarations.
 

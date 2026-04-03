@@ -1,6 +1,6 @@
 # Benchmark Truth Table
 
-This document defines what Bijux Vex benchmarks measure, what they do not claim, and when results are comparable.
+This document defines what bijux-canon-index benchmarks measure, what they do not claim, and when results are comparable.
 
 ## Measurements
 

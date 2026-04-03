@@ -1,7 +1,7 @@
 [project]
-name = "bijux-vex-template-plugin"
+name = "bijux-canon-index-template-plugin"
 version = "0.0.0"
-description = "Template plugin for Bijux Vex"
+description = "Template plugin for bijux-canon-index"
 requires-python = ">=3.10"
 dependencies = ["bijux-canon-index"]
 

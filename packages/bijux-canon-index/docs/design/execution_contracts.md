@@ -1,6 +1,6 @@
 # Execution Contracts
 
-bijux-vex supports two explicit execution contracts. There is no default: callers must choose the contract when materializing execution artifacts and when issuing execution requests.
+bijux-canon-index supports two explicit execution contracts. There is no default: callers must choose the contract when materializing execution artifacts and when issuing execution requests.
 
 ## Deterministic
 - Exact execution; vector scores are stable and tie-broken deterministically.

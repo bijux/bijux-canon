@@ -17,13 +17,13 @@
 
 ## Threat Model Boundaries
 
-Bijux Vex does **not**:
+bijux-canon-index does **not**:
 
 - Prevent malicious data in vectors or documents.
 - Validate external service credentials beyond connectivity.
 - Provide encryption at rest for local files.
 
-Bijux Vex **does**:
+bijux-canon-index **does**:
 
 - Enforce explicit configuration for vector stores and embeddings.
 - Refuse deterministic runs when determinism cannot be guaranteed.

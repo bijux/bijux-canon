@@ -12,8 +12,8 @@ from bijux_canon_index.api.v1 import build_app
 
 def test_api_nd_execution_path(tmp_path: Path, monkeypatch) -> None:
     db_path = tmp_path / "api.sqlite"
-    monkeypatch.setenv("BIJUX_VEX_STATE_PATH", str(db_path))
-    monkeypatch.setenv("BIJUX_VEX_BACKEND", "hnsw")
+    monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", str(db_path))
+    monkeypatch.setenv("BIJUX_CANON_INDEX_BACKEND", "hnsw")
     app = build_app()
     client = TestClient(app)
 

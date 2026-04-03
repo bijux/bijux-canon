@@ -1,6 +1,6 @@
 # Contributor Architecture & Invariants
 
-This guide explains where guarantees live and how to extend Bijux-Vex safely.
+This guide explains where guarantees live and how to extend bijux-canon-index safely.
 
 Core invariants
 

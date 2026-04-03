@@ -13,8 +13,8 @@ def _env(repo_root: Path, tmp_path: Path) -> dict[str, str]:
     env = os.environ.copy()
     python_bin = str(repo_root / ".venv" / "bin" / "python")
     env["PYTHONPATH"] = f"{repo_root / 'src'}:{env.get('PYTHONPATH', '')}"
-    env["BIJUX_VEX_STATE_PATH"] = str(tmp_path / "session.sqlite")
-    env["BIJUX_VEX_RUN_DIR"] = str(tmp_path / "runs")
+    env["BIJUX_CANON_INDEX_STATE_PATH"] = str(tmp_path / "session.sqlite")
+    env["BIJUX_CANON_INDEX_RUN_DIR"] = str(tmp_path / "runs")
     env["PYTHON_BIN"] = python_bin
     env["PATH"] = f"{repo_root / '.venv' / 'bin'}:{env.get('PATH', '')}"
     return env

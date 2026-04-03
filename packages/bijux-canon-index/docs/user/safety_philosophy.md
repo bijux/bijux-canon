@@ -1,6 +1,6 @@
 # Safety Philosophy
 
-Bijux-Vex is built to fail closed, not fail quietly.
+bijux-canon-index is built to fail closed, not fail quietly.
 
 Refusal is a feature
 
@@ -19,4 +19,4 @@ Why silence is dangerous
 - Hidden approximation makes audits meaningless.
 - Undeclared randomness turns production into guesswork.
 
-This philosophy is why Bijux-Vex feels strict. It is strict so you can trust it.
+This philosophy is why bijux-canon-index feels strict. It is strict so you can trust it.

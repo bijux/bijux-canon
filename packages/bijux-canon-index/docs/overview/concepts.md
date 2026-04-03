@@ -1,8 +1,8 @@
 # Conceptual overview
 
-This page is descriptive, not normative. It explains bijux-vex in plain language without APIs or enums.
+This page is descriptive, not normative. It explains bijux-canon-index in plain language without APIs or enums.
 
-## What bijux-vex is
+## What bijux-canon-index is
 - A vector execution engine: it runs vector similarity computations under explicit contracts.
 - Contracts come in two flavors:
   - **Deterministic**: exact algorithms, replayable outputs, bit-stable provenance.
@@ -11,7 +11,7 @@ This page is descriptive, not normative. It explains bijux-vex in plain language
 
 ## Vector execution vs. vector DB
 - Vector DBs focus on storage and serving; execution is implicit and often approximate by default.
-- bijux-vex focuses on execution semantics: what was run, under which guarantees, and how to replay or compare results.
+- bijux-canon-index focuses on execution semantics: what was run, under which guarantees, and how to replay or compare results.
 - Artifacts, plans, and provenance are first-class; storage backends are just sources and ledgers.
 
 ## Core objects (conceptual)

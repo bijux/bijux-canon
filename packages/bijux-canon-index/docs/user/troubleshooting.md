@@ -7,7 +7,7 @@
 
 1. Verify the backend is installed (`pip install "bijux-canon-index[vdb]"`).
 2. Check the URI or file path.
-3. Run `bijux vex vdb status --vector-store <name>`.
+3. Run `bijux vdb status --vector-store <name>`.
 
 ## ANN Not Installed
 
@@ -38,5 +38,5 @@
 **What happened**: `--vector-store` name not registered.  
 **Fix**:
 
-1. Check `bijux vex capabilities`.
+1. Check `bijux capabilities`.
 2. Install the plugin that provides the backend.

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-import os
 from pathlib import Path
 from typing import NamedTuple
 
@@ -14,6 +13,7 @@ from bijux_canon_index.infra.adapters.sqlite.backend import (
     SQLiteTx,
     sqlite_backend,
 )
+from bijux_canon_index.infra.environment import read_env
 
 
 class HnswFixture(NamedTuple):
@@ -64,8 +64,10 @@ def hnsw_backend(
     diagnostics["index_dir"] = lambda: str(
         Path(
             index_dir
-            or os.environ.get(
-                "BIJUX_VEX_HNSW_PATH", "artifacts/bijux-canon-index/hnsw_index"
+            or read_env(
+                "BIJUX_CANON_INDEX_HNSW_PATH",
+                legacy="BIJUX_VEX_HNSW_PATH",
+                default="artifacts/bijux-canon-index/hnsw_index",
             )
         ).resolve()
     )
