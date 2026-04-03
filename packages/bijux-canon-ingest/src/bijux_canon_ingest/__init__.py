@@ -1,51 +1,27 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""bijux_canon_ingest - deterministic ingestion and retrieval toolkit.
+"""Stable package API for ``bijux_canon_ingest``.
 
-The package keeps the ingestion path pure (clean → chunk → embed) while exposing typed boundaries for
-storage, config parsing, and CLI execution. Functional helpers (Result/Option, Reader/State/Writer),
-streaming combinators, retries, and idempotent IO plans are all dependency-lite and deterministic so
-pipelines stay reproducible.
-
-Core namespaces:
-- `bijux_canon_ingest.fp`: functional toolkit and error primitives.
-- `bijux_canon_ingest.retrieval`: retrieval backends, ports, and ranking internals.
-- `bijux_canon_ingest.domain`/`bijux_canon_ingest.infra`: capabilities, async effects, logging, retries, storage adapters.
-- `bijux_canon_ingest.interfaces.http`: FastAPI transport.
-- `bijux_canon_ingest.interfaces.errors`: boundary exception helpers.
-- `bijux_canon_ingest.application`: orchestration, services, and pipeline builders.
-- `bijux_canon_ingest.integrations`: optional adapters for adjacent Python ecosystems.
-- `bijux_canon_ingest.processing`: pure chunking, embedding, and streaming transforms.
-- `bijux_canon_ingest.interfaces.serialization`: serialization codecs and Pydantic edge models.
-- `bijux_canon_ingest.config`: package configuration models.
+The package root intentionally favors low-level, dependency-light exports.
+Application services, CLI shims, and configuration builders stay available for
+backward compatibility, but they are resolved lazily so importing the package
+does not eagerly pull interface and orchestration code into every consumer.
 """
 
 from __future__ import annotations
 
-from typing import assert_never
+from importlib import import_module
+from typing import Any
 
-from .interfaces.errors.exception_bridge import (
-    UnexpectedFailure,
-    result_map_try,
-    try_result,
-    unexpected_fail,
-    v_map_try,
-    v_try,
-)
-from .interfaces.cli.file_api import FSReader, write_chunks_jsonl
-from .config.app import AppConfig
+try:
+    from typing import assert_never
+except ImportError:  # pragma: no cover - Python < 3.11 compatibility for tooling
+    def assert_never(value: object) -> None:
+        raise AssertionError(f"Expected code to be unreachable, got: {value!r}")
 
-# Domain value types – immutable, hashable where needed
-from .core.types import (
-    Chunk,
-    ChunkWithoutEmbedding,
-    CleanDoc,
-    RagEnv,
-    RawDoc,
-    TextNode,
-    TreeDoc,
-)
+from ._version import __version__
+from .config.cleaning import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
 from .core.rules_dsl import (
     abstract_min_len,
     any_doc,
@@ -60,9 +36,9 @@ from .core.rules_dsl import (
 )
 from .core.rules_lint import SafeVisitor, assert_rule_is_safe_expr
 from .core.rules_pred import (
-    DEFAULT_RULES,
     All,
     AnyOf,
+    DEFAULT_RULES,
     Eq,
     LenGt,
     Not,
@@ -72,8 +48,7 @@ from .core.rules_pred import (
     eval_pred,
 )
 from .core.structural_dedup import DedupIterator, structural_dedup_lazy
-
-# Functional composition helpers (Modules 02–03)
+from .core.types import Chunk, ChunkWithoutEmbedding, CleanDoc, RagEnv, RawDoc, TextNode, TreeDoc
 from .fp import (
     FakeTime,
     Reader,
@@ -112,6 +87,69 @@ from .fp import (
     wr_map,
     wr_pure,
 )
+from .observability import DebugConfig, DocRule, IngestTaps, IngestTrace, Observations, TraceLens
+from .processing.chunking import (
+    gen_chunk_doc,
+    gen_chunk_spans,
+    gen_overlapping_chunks,
+    sliding_windows,
+)
+from .processing.stages import (
+    chunk_doc,
+    clean_doc,
+    embed_chunk,
+    iter_chunk_doc,
+    iter_chunk_spans,
+    iter_overlapping_chunks_text,
+    structural_dedup_chunks,
+)
+from .result import (
+    NONE,
+    Err,
+    ErrInfo,
+    NoneVal,
+    Ok,
+    Option,
+    Result,
+    ResultsBoth,
+    Some,
+    all_ok_fail_fast,
+    bind_option,
+    bind_result,
+    collect_both,
+    filter_err,
+    filter_ok,
+    fold_results_collect_errs,
+    fold_results_collect_errs_capped,
+    fold_results_fail_fast,
+    fold_until_error_rate,
+    is_err,
+    is_none,
+    is_ok,
+    is_some,
+    make_errinfo,
+    map_err,
+    map_option,
+    map_result,
+    map_result_iter,
+    option_from_nullable,
+    option_to_nullable,
+    par_try_map_iter,
+    partition_results,
+    recover,
+    recover_iter,
+    recover_result_iter,
+    result_and_then,
+    result_map,
+    split_results_to_sinks,
+    split_results_to_sinks_guarded,
+    tap_err,
+    tap_ok,
+    to_option,
+    try_map_iter,
+    unwrap_or,
+    unwrap_or_else,
+)
 from .safeguards.breakers import (
     BreakInfo,
     circuit_breaker_count_emit,
@@ -131,12 +169,7 @@ from .safeguards.reports import (
     fold_error_report,
     report_to_jsonable,
 )
-from .safeguards.resources import (
-    auto_close,
-    managed_stream,
-    nested_managed,
-    with_resource_stream,
-)
+from .safeguards.resources import auto_close, managed_stream, nested_managed, with_resource_stream
 from .safeguards.retries import (
     RetryCtx,
     RetryDecision,
@@ -145,91 +178,6 @@ from .safeguards.retries import (
     is_retriable_errinfo,
     restore_input_order,
     retry_map_iter,
-)
-from .config.cleaning import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
-from .config.ingest import (
-    DocsReader,
-    IngestBoundaryDeps,
-    IngestConfig,
-    IngestDeps,
-    parse_ingest_config,
-    build_ingest_deps,
-    make_chunk_stream_fn,
-    make_ingest_fn,
-)
-from .application.pipeline import (
-    run_ingest_pipeline,
-    run_ingest_pipeline_docs,
-    run_ingest_pipeline_path,
-    iter_chunks_from_cleaned,
-    iter_ingest_pipeline,
-    iter_ingest_pipeline_core,
-)
-from .processing import (
-    gen_bounded_chunks,
-    gen_chunk_doc,
-    gen_chunk_spans,
-    gen_grouped_chunks,
-    gen_overlapping_chunks,
-    gen_stream_deduped,
-    gen_stream_embedded,
-    safe_rag_pipeline,
-    sliding_windows,
-    stream_chunks,
-)
-from .streaming import trace_iter as _trace_iter
-
-# Pure pipeline stages – the building blocks
-from .processing.stages import (
-    chunk_doc,
-    clean_doc,
-    embed_chunk,
-    iter_chunk_doc,
-    iter_chunk_spans,
-    iter_overlapping_chunks_text,
-    structural_dedup_chunks,
-)
-from .observability import (
-    DebugConfig,
-    DocRule,
-    IngestTaps,
-    IngestTrace,
-    Observations,
-    TraceLens,
-)
-
-# Modules 02–09 public API layer (end-of-Bijux RAG)
-from .result import (
-    NONE,
-    Err,
-    ErrInfo,
-    NoneVal,
-    Ok,
-    Option,
-    Result,
-    Some,
-    bind_option,
-    bind_result,
-    filter_err,
-    filter_ok,
-    is_err,
-    is_none,
-    is_ok,
-    is_some,
-    make_errinfo,
-    map_err,
-    map_option,
-    map_result,
-    map_result_iter,
-    option_from_nullable,
-    option_to_nullable,
-    partition_results,
-    recover,
-    result_and_then,
-    result_map,
-    to_option,
-    unwrap_or,
-    unwrap_or_else,
 )
 from .streaming import (
     Source,
@@ -259,6 +207,7 @@ from .streaming import (
     throttle,
     trace_iter,
 )
+from .streaming import trace_iter as _trace_iter
 from .tree import (
     assert_acyclic,
     flatten,
@@ -277,9 +226,40 @@ from .tree import (
     scan_tree,
 )
 
+_LAZY_EXPORTS = {
+    "AppConfig": (".config.app", "AppConfig"),
+    "DocsReader": (".config.ingest", "DocsReader"),
+    "FSReader": (".interfaces.cli.file_api", "FSReader"),
+    "IngestBoundaryDeps": (".config.ingest", "IngestBoundaryDeps"),
+    "IngestConfig": (".config.ingest", "IngestConfig"),
+    "IngestDeps": (".config.ingest", "IngestDeps"),
+    "UnexpectedFailure": (".interfaces.errors.exception_bridge", "UnexpectedFailure"),
+    "build_ingest_deps": (".config.ingest", "build_ingest_deps"),
+    "iter_chunks_from_cleaned": (".application.pipeline", "iter_chunks_from_cleaned"),
+    "iter_ingest_pipeline": (".application.pipeline", "iter_ingest_pipeline"),
+    "iter_ingest_pipeline_core": (".application.pipeline", "iter_ingest_pipeline_core"),
+    "make_chunk_stream_fn": (".config.ingest", "make_chunk_stream_fn"),
+    "make_ingest_fn": (".config.ingest", "make_ingest_fn"),
+    "parse_ingest_config": (".config.ingest", "parse_ingest_config"),
+    "gen_bounded_chunks": (".processing.streaming", "gen_bounded_chunks"),
+    "gen_grouped_chunks": (".processing.streaming", "gen_grouped_chunks"),
+    "gen_stream_deduped": (".processing.streaming", "gen_stream_deduped"),
+    "gen_stream_embedded": (".processing.streaming", "gen_stream_embedded"),
+    "safe_rag_pipeline": (".processing.streaming", "safe_rag_pipeline"),
+    "stream_chunks": (".processing.streaming", "stream_chunks"),
+    "result_map_try": (".interfaces.errors.exception_bridge", "result_map_try"),
+    "run_ingest_pipeline": (".application.pipeline", "run_ingest_pipeline"),
+    "run_ingest_pipeline_docs": (".application.pipeline", "run_ingest_pipeline_docs"),
+    "run_ingest_pipeline_path": (".application.pipeline", "run_ingest_pipeline_path"),
+    "try_result": (".interfaces.errors.exception_bridge", "try_result"),
+    "unexpected_fail": (".interfaces.errors.exception_bridge", "unexpected_fail"),
+    "v_map_try": (".interfaces.errors.exception_bridge", "v_map_try"),
+    "v_try": (".interfaces.errors.exception_bridge", "v_try"),
+    "write_chunks_jsonl": (".interfaces.cli.file_api", "write_chunks_jsonl"),
+}
+
 __all__ = [
     "assert_never",
-    # Types
     "RawDoc",
     "CleanDoc",
     "ChunkWithoutEmbedding",
@@ -287,7 +267,6 @@ __all__ = [
     "RagEnv",
     "TextNode",
     "TreeDoc",
-    # Pure stages
     "clean_doc",
     "chunk_doc",
     "iter_chunk_spans",
@@ -297,7 +276,6 @@ __all__ = [
     "structural_dedup_chunks",
     "DedupIterator",
     "structural_dedup_lazy",
-    # Functional composition
     "identity",
     "compose",
     "flow",
@@ -311,7 +289,6 @@ __all__ = [
     "StageInstrumentation",
     "instrument_stage",
     "FakeTime",
-    # Result/Option + structured errors (Bijux RAG; includes legacy aliases)
     "Ok",
     "Err",
     "Result",
@@ -342,7 +319,6 @@ __all__ = [
     "partition_results",
     "result_map",
     "result_and_then",
-    # Tree traversal + folds (Bijux RAG)
     "assert_acyclic",
     "flatten",
     "recursive_flatten",
@@ -358,12 +334,10 @@ __all__ = [
     "linear_accumulate",
     "fold_count_length_maxdepth",
     "scan_count_length_maxdepth",
-    # Memoization (Bijux RAG)
     "lru_cache_custom",
     "memoize_keyed",
     "DiskCache",
     "content_hash_key",
-    # Result stream combinators (Bijux RAG)
     "try_map_iter",
     "par_try_map_iter",
     "tap_ok",
@@ -372,7 +346,6 @@ __all__ = [
     "recover_result_iter",
     "split_results_to_sinks",
     "split_results_to_sinks_guarded",
-    # Result stream aggregation (Bijux RAG)
     "ResultsBoth",
     "fold_results_fail_fast",
     "fold_results_collect_errs",
@@ -380,7 +353,6 @@ __all__ = [
     "fold_until_error_rate",
     "all_ok_fail_fast",
     "collect_both",
-    # Breakers (Bijux RAG)
     "BreakInfo",
     "short_circuit_on_err_emit",
     "short_circuit_on_err_truncate",
@@ -390,12 +362,10 @@ __all__ = [
     "circuit_breaker_count_truncate",
     "circuit_breaker_pred_emit",
     "circuit_breaker_pred_truncate",
-    # Resource safety (Bijux RAG)
     "with_resource_stream",
     "managed_stream",
     "nested_managed",
     "auto_close",
-    # Retries (Bijux RAG)
     "RetryCtx",
     "RetryDecision",
     "retry_map_iter",
@@ -403,13 +373,11 @@ __all__ = [
     "exp_policy",
     "is_retriable_errinfo",
     "restore_input_order",
-    # Error reporting (Bijux RAG)
     "ErrGroup",
     "ErrReport",
     "fold_error_counts",
     "fold_error_report",
     "report_to_jsonable",
-    # Rules (Modules 02–03)
     "DocRule",
     "Pred",
     "Eq",
@@ -433,7 +401,6 @@ __all__ = [
     "parse_rule",
     "SafeVisitor",
     "assert_rule_is_safe_expr",
-    # Config + API (Modules 02–03)
     "CleanConfig",
     "DEFAULT_CLEAN_CONFIG",
     "make_cleaner",
@@ -472,7 +439,6 @@ __all__ = [
     "FSReader",
     "write_chunks_jsonl",
     "AppConfig",
-    # Bijux RAG: monads, layering, configurable pipelines, boundary exception bridge
     "Reader",
     "State",
     "Writer",
@@ -502,7 +468,6 @@ __all__ = [
     "v_map_try",
     "UnexpectedFailure",
     "unexpected_fail",
-    # Bijux RAG: generic streaming helpers
     "Source",
     "Transform",
     "trace_iter",
@@ -529,4 +494,16 @@ __all__ = [
     "as_source",
 ]
 
-__version__ = "0.1.0"
+
+def __getattr__(name: str) -> Any:
+    module_name, attr_name = _LAZY_EXPORTS.get(name, (None, None))
+    if module_name is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+    value = getattr(import_module(module_name, __name__), attr_name)
+    globals()[name] = value
+    return value
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(__all__) | set(_LAZY_EXPORTS))
