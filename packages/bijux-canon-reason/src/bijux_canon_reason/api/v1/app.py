@@ -47,7 +47,7 @@ from pydantic import BaseModel, Field
 from bijux_canon_reason.interfaces.serialization.json_file import read_json_file, write_json_file
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
 from bijux_canon_reason.core.types import Plan, ProblemSpec
-from bijux_canon_reason.application.runs import RunBuilder, RunInputs
+from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
 from bijux_canon_reason.traces.replay import replay_from_artifacts
 from bijux_canon_reason.verification.verifier import verify_trace
 from bijux_canon_reason.interfaces.security import (
