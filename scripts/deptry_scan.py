@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -39,9 +40,20 @@ def main() -> int:
     if not config_path.is_file():
         raise SystemExit(f"deptry config not found at {config_path}")
 
-    deptry_bin = shutil.which(args.deptry_bin)
-    if deptry_bin is None:
-        raise SystemExit(f"deptry executable not found: {args.deptry_bin}")
+    deptry_command = shlex.split(args.deptry_bin)
+    if not deptry_command:
+        raise SystemExit("deptry executable not found: empty command")
+
+    deptry_bin_arg = Path(deptry_command[0]).expanduser()
+    if deptry_bin_arg.is_absolute() or len(deptry_bin_arg.parts) > 1:
+        deptry_bin = deptry_bin_arg.resolve()
+        if not deptry_bin.is_file():
+            raise SystemExit(f"deptry executable not found: {args.deptry_bin}")
+    else:
+        resolved_deptry = shutil.which(deptry_command[0])
+        if resolved_deptry is None:
+            raise SystemExit(f"deptry executable not found: {args.deptry_bin}")
+        deptry_bin = Path(resolved_deptry)
 
     pyproject_text = pyproject_path.read_text(encoding="utf-8").rstrip()
     root_config = tomllib.loads(config_path.read_text(encoding="utf-8"))
@@ -71,7 +83,8 @@ def main() -> int:
         merged_pyproject.write_text(merged_text, encoding="utf-8")
 
         command = [
-            deptry_bin,
+            os.fspath(deptry_bin),
+            *deptry_command[1:],
             "--config",
             os.fspath(merged_pyproject),
             *args.roots,

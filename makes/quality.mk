@@ -14,11 +14,11 @@ QUALITY_MKDOCS_CONFIG     ?= $(MKDOCS_CFG)
 QUALITY_CLEAN_SITE        ?= 0
 QUALITY_MYPY_CACHE_DIR    ?= $(QUALITY_ARTIFACTS_DIR)/.mypy_cache
 
-VULTURE     ?= $(if $(ACT),$(ACT)/vulture,vulture)
-DEPTRY      ?= $(if $(ACT),$(ACT)/deptry,deptry)
-INTERROGATE ?= $(if $(ACT),$(ACT)/interrogate,interrogate)
-MYPY        ?= $(if $(ACT),$(ACT)/mypy,mypy)
 PYTHON      ?= $(shell command -v python3 || command -v python)
+VULTURE     ?= $(VENV_PYTHON) -m vulture
+DEPTRY      ?= $(VENV_PYTHON) -m deptry
+INTERROGATE ?= $(VENV_PYTHON) -m interrogate
+MYPY        ?= $(VENV_PYTHON) -m mypy
 DEPTRY_SCAN_SCRIPT ?= $(MONOREPO_ROOT)/scripts/deptry_scan.py
 DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
 

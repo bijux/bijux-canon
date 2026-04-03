@@ -1,9 +1,9 @@
-RUFF        ?= $(if $(ACT),$(ACT)/ruff,ruff)
-MYPY        ?= $(if $(ACT),$(ACT)/mypy,mypy)
-CODESPELL   ?= $(if $(ACT),$(ACT)/codespell,codespell)
-PYDOCSTYLE  ?= $(if $(ACT),$(ACT)/pydocstyle,pydocstyle)
-RADON       ?= $(if $(ACT),$(ACT)/radon,radon)
 VENV_PYTHON ?= python3
+RUFF        ?= $(VENV_PYTHON) -m ruff
+MYPY        ?= $(VENV_PYTHON) -m mypy
+CODESPELL   ?= $(VENV_PYTHON) -m codespell
+PYDOCSTYLE  ?= $(VENV_PYTHON) -m pydocstyle
+RADON       ?= $(VENV_PYTHON) -m radon
 
 LINT_SCOPE             ?=
 LINT_DIRS              ?= src tests

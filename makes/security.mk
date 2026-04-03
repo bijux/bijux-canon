@@ -1,7 +1,7 @@
 SECURITY_PATHS            ?= src
-BANDIT                    ?= $(if $(ACT),$(ACT)/bandit,bandit)
-PIP_AUDIT                 ?= $(if $(ACT),$(ACT)/pip-audit,pip-audit)
 VENV_PYTHON               ?= $(if $(VIRTUAL_ENV),$(VIRTUAL_ENV)/bin/python,python)
+BANDIT                    ?= $(VENV_PYTHON) -m bandit
+PIP_AUDIT                 ?= $(VENV_PYTHON) -m pip_audit
 SKIP_BANDIT               ?= 0
 
 SECURITY_REPORT_DIR       ?= $(PROJECT_ARTIFACTS_DIR)/security
