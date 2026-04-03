@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from bijux_canon_reason.core.rar_types import ProblemSpec
-from bijux_canon_reason.rar.skeleton.run_builder import RunArtifacts, RunBuilder, RunInputs
+from bijux_canon_reason.application.runs import RunArtifacts, RunBuilder, RunInputs
 from bijux_canon_reason.rar.verification.types import Severity
 
 

@@ -12,7 +12,7 @@ from bijux_canon_reason.boundaries.serde.json_file import read_json_file, write_
 from bijux_canon_reason.boundaries.serde.trace_jsonl import read_trace_jsonl
 from bijux_canon_reason.core.rar_types import Plan, ProblemSpec
 from bijux_canon_reason.rar.eval.suite import run_eval_suite
-from bijux_canon_reason.rar.skeleton.run_builder import RunArtifacts, RunBuilder, RunInputs
+from bijux_canon_reason.application.runs import RunArtifacts, RunBuilder, RunInputs
 from bijux_canon_reason.rar.traces.replay import replay_from_artifacts
 from bijux_canon_reason.rar.verification.verifier import verify_trace
 

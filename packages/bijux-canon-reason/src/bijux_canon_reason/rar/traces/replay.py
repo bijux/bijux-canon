@@ -20,7 +20,7 @@ from bijux_canon_reason.core.rar_types import (
     RuntimeDescriptor,
     TraceEventKind,
 )
-from bijux_canon_reason.rar.app import run_app
+from bijux_canon_reason.application.runner import run_app
 from bijux_canon_reason.rar.execution.frozen_runtime import RecordedCall
 from bijux_canon_reason.rar.execution.runtime import Runtime
 from bijux_canon_reason.rar.traces.checksum import compute_invariant_checksum

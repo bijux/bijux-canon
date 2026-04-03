@@ -10,7 +10,7 @@ from bijux_canon_reason.boundaries.serde.trace_jsonl import (
 )
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
 from bijux_canon_reason.core.rar_types import ProblemSpec
-from bijux_canon_reason.rar.skeleton.run_builder import RunBuilder, RunInputs
+from bijux_canon_reason.application.runs import RunBuilder, RunInputs
 
 
 def test_run_artifacts_are_versioned_and_fingerprinted(tmp_path: Path) -> None:

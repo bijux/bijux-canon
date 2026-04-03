@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from bijux_canon_reason.core.rar_types import ProblemSpec
-from bijux_canon_reason.rar.app import run_app
+from bijux_canon_reason.application.runner import run_app
 from bijux_canon_reason.rar.execution.runtime import Runtime
 
 
