@@ -125,14 +125,14 @@ make sbom # CycloneDX, saved to artifacts/
 
 | Env | Runs |
 | --------------------------- | --------------- |
-| `py311` / `py312` / `py313` | `make test` |
-| `lint` | `make lint` |
-| `quality` | `make quality` |
-| `security` | `make security` |
-| `api` | `make api` |
-| `docs` | `make docs` |
-| `build` | `make build` |
-| `sbom` | `make sbom` |
+| `test-bijux_rag` | `make test` |
+| `lint-bijux_rag` | `make lint` |
+| `quality-bijux_rag` | `make quality` |
+| `security-bijux_rag` | `make security` |
+| `api-bijux_rag` | `make api` |
+| `docs-bijux_rag` | `make docs` |
+| `build-bijux_rag` | `make build` |
+| `sbom-bijux_rag` | `make sbom` |
 List all:
 ```bash
 tox -av

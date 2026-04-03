@@ -28,7 +28,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ├── package.json         # Node deps (for OpenAPI validation tooling)
 ├── pyproject.toml       # Hatchling build + deps
 ├── ../../configs/bijux-rag/pytest.ini # repo-owned pytest config
-├── tox.ini              # tox envs
+├── ../../tox.ini        # repository tox envs
 └── artifacts/           # generated outputs (test coverage, lint reports, docs site, sbom, etc.)
 ```
 
@@ -70,7 +70,7 @@ Quick map of the bijux-rag package directory (aligned with the bijux-cli documen
 ## Config & Tooling
 
 - `pyproject.toml` — Hatchling build, deps, scripts, classifiers.
-- `tox.ini` — multi-Python envs mirroring make targets.
+- `../../tox.ini` — repository tox envs mirroring package make targets.
 - `../../configs/bijux-rag/pytest.ini` — repo-owned pytest config (paths, markers, asyncio, timeouts).
 - `../../configs/bijux-rag/mkdocs.yml` — repo-owned MkDocs setup (theme, plugins, nav, extensions).
 - `../../configs/bijux-rag/coveragerc.ini` — coverage omit/includes.
