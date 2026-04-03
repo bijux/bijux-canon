@@ -117,7 +117,7 @@ def replay_from_artifacts(trace_path: Path) -> tuple[ReplayResult, Path]:
             recordings[ev.result.call_id] = RecordedCall(
                 call_id=ev.result.call_id, result=ev.result
             )
-    frozen_runtime = Runtime.frozen(
+    replay_runtime = Runtime.frozen(
         seed=seed,
         recorded_results={k: v.result for k, v in recordings.items()},
         artifacts_dir=replay_dir,
@@ -126,7 +126,7 @@ def replay_from_artifacts(trace_path: Path) -> tuple[ReplayResult, Path]:
         runtime_kind=runtime_kind,
     )
     replay_result = run_app(
-        spec=spec_obj, preset=preset, seed=seed, runtime=frozen_runtime
+        spec=spec_obj, preset=preset, seed=seed, runtime=replay_runtime
     )
     replayed = replay_result.trace.model_copy(
         update={"metadata": original_trace.metadata}

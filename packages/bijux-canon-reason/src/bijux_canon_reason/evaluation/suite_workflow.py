@@ -43,21 +43,28 @@ class EvalResult(dict[str, object]):
 
 
 def _default_suite_root() -> Path:
-    """Locate `tooling/evaluation_suites`.
+    """Locate bundled or caller-provided evaluation suites.
 
-    - repo checkout: CWD contains tooling/evaluation_suites
+    - caller override: CWD contains tooling/evaluation_suites or legacy benchmarks/suites
     - package checkout: resolve by walking upward from this module
     """
-    cwd_candidate = Path.cwd() / "benchmarks" / "suites"
-    if cwd_candidate.exists():
-        return cwd_candidate
+    cwd_candidates = (
+        Path.cwd() / "tooling" / "evaluation_suites",
+        Path.cwd() / "benchmarks" / "suites",
+    )
+    for candidate in cwd_candidates:
+        if candidate.exists():
+            return candidate
 
     module_path = Path(__file__).resolve()
     for parent in module_path.parents:
-        candidate = parent / "benchmarks" / "suites"
-        if candidate.exists():
-            return candidate
-    return module_path.parents[3] / "benchmarks" / "suites"
+        for candidate in (
+            parent / "tooling" / "evaluation_suites",
+            parent / "benchmarks" / "suites",
+        ):
+            if candidate.exists():
+                return candidate
+    return module_path.parents[3] / "tooling" / "evaluation_suites"
 
 
 def _read_jsonl(path: Path) -> list[dict[str, object]]:

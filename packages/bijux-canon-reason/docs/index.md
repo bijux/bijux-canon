@@ -8,7 +8,7 @@ STATUS: EXPLANATORY
 
 **bijux-canon-reason** is a deterministic retrieval-augmented reasoning (RAR) engine.
 
-The legacy package name `bijux-rar` remains available as a compatibility shim that installs `bijux-canon-reason`.
+The legacy CLI alias `bijux-rar` remains available for compatibility, but the package identity is `bijux-canon-reason`.
 
 It produces **byte-stable traces**, **versioned artifacts**, and **verifiable provenance**
 for every run. Execution, verification, and replay are first-class constraints,
@@ -38,12 +38,6 @@ If a run cannot be replayed and verified byte-for-byte, it is considered invalid
 
 ```bash
 pip install bijux-canon-reason
-```
-
-Legacy alias:
-
-```bash
-pip install bijux-rar
 ```
 
 Python ≥ 3.11 is required.

@@ -1,5 +1,5 @@
 
-## What bijux-rar is NOT
+## What bijux-canon-reason Is Not
 STATUS: EXPLANATORY
 
 - Not a chat framework.

@@ -1,5 +1,5 @@
 STATUS: EXPLANATORY
-# bijux-rar
+# bijux-canon-reason
 
 Deterministic, auditable reasoning runtime with structured plans, claims, evidence, verification, and replay. All artifacts are versioned, fingerprinted, and stored under `artifacts/bijux-canon-reason/`.
 

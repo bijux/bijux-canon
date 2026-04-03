@@ -29,9 +29,6 @@ theme:
         icon: material/toggle-switch
         name: Switch to light mode
 
-extra_css:
-  - assets/styles/bijux-rar.css
-
 extra:
   version:
     provider: manual
@@ -78,7 +75,7 @@ nav:
       - forbidden_changes: maintainer/forbidden_changes.md
       - glossary: maintainer/glossary.md
       - why_this_is_hard: maintainer/why_this_is_hard.md
-      - project_tree: maintainer/project_tree.md
+      - project_overview: project_overview.md
       - security_policy: maintainer/security_policy.md
       - tests: maintainer/tests.md
       - tooling: maintainer/tooling.md

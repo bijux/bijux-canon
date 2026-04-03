@@ -25,5 +25,5 @@ What breaks if schema_version changes:
 
 Broken run (intentional failure):
 - Delete one evidence file after manifest generation.
-- Run `bijux-rar verify --trace trace.jsonl --plan plan.json --fail-on-verify`.
+- Run `bijux-canon-reason verify --trace trace.jsonl --plan plan.json --fail-on-verify`.
 - Expected: verifier fails `support_span_hashes` with missing file/hash mismatch; run is invalid.***
