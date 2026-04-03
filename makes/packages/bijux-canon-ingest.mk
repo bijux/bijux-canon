@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
+PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJECT_SLUG := bijux-canon-ingest
 
-include ../../makes/shared/python-package.mk
+include $(PACKAGE_MAKEFILE_DIR)/../shared/python-package.mk
 
 export PYTHONDONTWRITEBYTECODE := 1
 export PYTHONPYCACHEPREFIX     := $(PROJECT_ARTIFACTS_DIR)/pycache
@@ -37,7 +39,6 @@ PUBLISH_UPLOAD_ENABLED         := 0
 
 include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
-include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/api.mk
 include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/quality.mk
@@ -59,8 +60,7 @@ bootstrap: install
 .PHONY: bootstrap
 
 # Cleanup
-clean:
-	@$(MAKE) clean-soft
+clean: clean-soft
 	@echo "→ Cleaning ($(VENV)) ..."
 	@$(RM) $(VENV)
 
@@ -75,10 +75,10 @@ clean-soft:
 	fi
 
 # Ensure core tasks run inside the managed virtualenv
-test lint fmt quality security api docs build sbom: install
+test lint fmt quality security api build sbom: install
 
 # Pipelines
-all: clean install test lint quality security api docs build sbom
+all: clean install test lint quality security api build sbom
 	@echo "✔ All targets completed"
 
 help:

@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
+PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJECT_SLUG := bijux-canon-runtime
 PYTHON := python3.11
 
-include ../../makes/shared/python-package.mk
+include $(PACKAGE_MAKEFILE_DIR)/../shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
@@ -25,9 +27,7 @@ QUALITY_MYPY_CONFIG := $(MONOREPO_ROOT)/configs/mypy.ini
 QUALITY_MYPY_FLAGS := --strict --follow-imports silent
 SKIP_MYPY         := 0
 QUALITY_VULTURE_MIN_CONFIDENCE := 90
-QUALITY_PYTHON_CHECKS := $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_md_links.py $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_docs_consistency.py $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_no_toys_policy.py
-QUALITY_DOCS_LINK_SCRIPT := $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_md_links.py
-QUALITY_RUN_MKDOCS := 1
+QUALITY_PYTHON_CHECKS := $(MONOREPO_ROOT)/scripts/bijux-canon-runtime/check_no_toys_policy.py
 SECURITY_PATHS     := src/bijux_canon_runtime
 SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
 SECURITY_BANDIT_SKIP_IDS := B311
@@ -59,7 +59,6 @@ include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/build.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
-include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/api.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
@@ -113,7 +112,7 @@ clean-venv:
 
 clean: clean-soft clean-venv ## Remove venv + artifacts
 
-all: clean install test lint quality security sbom build docs api ## Full pipeline
+all: clean install test lint quality security sbom build api ## Full pipeline
 	@echo "✔ All targets completed"
 
 help: ## Show this help

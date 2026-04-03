@@ -2,10 +2,12 @@
 # Copyright © 2026 Bijan Mousavi
 # Testing policy: gates (lint/quality/security/typing) intentionally run on lowest supported Python (3.11); full matrix via tox.
 
+PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJECT_SLUG := bijux-canon-index
 PYTHON := python3.11
 
-include ../../makes/shared/python-package.mk
+include $(PACKAGE_MAKEFILE_DIR)/../shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
@@ -39,7 +41,6 @@ TEST_MAIN_ARGS := --maxfail=1
 # Modular Includes
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/test.mk
-include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/api.mk
 include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
@@ -60,8 +61,7 @@ bootstrap: $(VENV)
 .PHONY: bootstrap
 
 # Cleanup
-clean:
-	@$(MAKE) clean-soft
+clean: clean-soft
 	@echo "[INFO] Cleaning (.venv) ..."
 	@rm -rf $(VENV)
 
@@ -79,7 +79,7 @@ clean-soft:
 	fi
 
 # Pipelines
-all: clean install fmt lint test quality docs api security sbom
+all: clean install fmt lint test quality api security sbom
 	@echo "[OK] All targets completed"
 
 # Run independent checks in parallel

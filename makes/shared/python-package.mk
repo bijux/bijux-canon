@@ -15,10 +15,22 @@ PROJECT_ARTIFACTS_DIR := $(ARTIFACTS_ROOT)/$(PROJECT_SLUG)
 .DEFAULT_GOAL ?= all
 .SHELLFLAGS ?= -eu -o pipefail -c
 SHELL ?= bash
-PYTHON ?= python3
-VENV ?= .venv
-VENV_PYTHON ?= $(if $(shell test -x "$(VENV)/bin/python" && echo yes),$(VENV)/bin/python,python3)
+PYTHON ?= $(shell command -v python3.11 || command -v python3)
+VENV ?= $(PROJECT_ARTIFACTS_DIR)/venv
+VENV_PYTHON ?= $(VENV)/bin/python
 ACT ?= $(VENV)/bin
-RM ?= rm -rf
+override RM := rm -rf
+
+ifneq ($(strip $(PACKAGE_PROFILE_MAKEFILE)),)
+MAKEFLAGS += -f $(PACKAGE_PROFILE_MAKEFILE)
+endif
+
+export PYTHONDONTWRITEBYTECODE ?= 1
+export PYTHONPYCACHEPREFIX ?= $(PROJECT_ARTIFACTS_DIR)/pycache
+export XDG_CACHE_HOME ?= $(PROJECT_ARTIFACTS_DIR)/xdg_cache
+export HYPOTHESIS_STORAGE_DIRECTORY ?= $(PROJECT_ARTIFACTS_DIR)/hypothesis
+export COVERAGE_FILE ?= $(PROJECT_ARTIFACTS_DIR)/test/.coverage
+export PIP_CACHE_DIR ?= $(PROJECT_ARTIFACTS_DIR)/pip_cache
+export NPM_CONFIG_CACHE ?= $(PROJECT_ARTIFACTS_DIR)/npm_cache
 
 export MONOREPO_ROOT PROJECT_DIR PROJECT_SLUG ROOT_MAKE_DIR CONFIG_DIR API_DIR MAKE_DIR MKDOCS_CFG ARTIFACTS_ROOT PROJECT_ARTIFACTS_DIR

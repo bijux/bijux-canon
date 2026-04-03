@@ -15,12 +15,16 @@ COMPAT_PACKAGES := \
 ALL_PACKAGES := $(PRIMARY_PACKAGES) $(COMPAT_PACKAGES)
 CHECK_PACKAGES := $(ALL_PACKAGES)
 PACKAGE ?=
+PACKAGE_MAKE_DIR := $(CURDIR)/makes/packages
 
 ARTIFACTS_ROOT := $(CURDIR)/artifacts
 ROOT_ARTIFACTS_DIR := $(ARTIFACTS_ROOT)/root
 ROOT_CHECK_VENV := $(ROOT_ARTIFACTS_DIR)/check-venv
 ROOT_CHECK_PYTHON := $(ROOT_CHECK_VENV)/bin/python
 ROOT_CHECK_STAMP := $(ROOT_ARTIFACTS_DIR)/.check-tools.stamp
+ROOT_DOCS_ARTIFACTS_DIR := $(ROOT_ARTIFACTS_DIR)/docs
+ROOT_DOCS_SITE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/site
+ROOT_DOCS_CACHE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/cache
 ROOT_CHECK_BOOTSTRAP_PYTHON := $(shell command -v python3.11 || command -v python3)
 ROOT_CHECK_PACKAGES := \
 	bandit \
@@ -94,9 +98,15 @@ define run_target
 	fi; \
 	failures=""; \
 	for package in $$package_list; do \
+	  profile_path="$(PACKAGE_MAKE_DIR)/$$package.mk"; \
+	  if [ ! -f "$$profile_path" ]; then \
+	    echo "Missing package profile: $$profile_path"; \
+	    failures="$$failures $$package"; \
+	    continue; \
+	  fi; \
 	  echo "==> $$package: $(1)"; \
 	  if [ "$(3)" = "1" ]; then \
-	    if ! $(MAKE) -o install -o bootstrap -o ensure-venv -C "packages/$$package" \
+	    if ! $(MAKE) -o install -o bootstrap -o ensure-venv -C "packages/$$package" -f "$$profile_path" \
 	      VENV="$(ROOT_CHECK_VENV)" \
 	      VENV_PYTHON="$(ROOT_CHECK_PYTHON)" \
 	      PYTHON="$(ROOT_CHECK_PYTHON)" \
@@ -104,7 +114,7 @@ define run_target
 	      $(1); then \
 	      failures="$$failures $$package"; \
 	    fi; \
-	  elif ! $(MAKE) -C "packages/$$package" $(1); then \
+	  elif ! $(MAKE) -C "packages/$$package" -f "$$profile_path" $(1); then \
 	    failures="$$failures $$package"; \
 	  fi; \
 	done; \
@@ -124,7 +134,7 @@ help:
 	  "  lint                Run lint package by package" \
 	  "  quality             Run quality package by package" \
 	  "  security            Run security package by package" \
-	  "  docs                Build docs package by package" \
+	  "  docs                Build the monorepo docs site from root/docs" \
 	  "  api                 Run API checks package by package" \
 	  "  build               Build package artifacts package by package" \
 	  "  sbom                Generate package SBOMs package by package" \
@@ -183,8 +193,16 @@ security:
 	$(call run_target,security,$(CHECK_PACKAGES),1)
 
 docs:
-	$(call assert_package)
-	$(call run_target,docs,$(PRIMARY_PACKAGES))
+	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
+	@$(MAKE) root-check-env >/dev/null
+	@echo "==> root docs"
+	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" \
+	  "$(ROOT_CHECK_PYTHON)" -m mkdocs build --strict \
+	  --config-file "$(CURDIR)/mkdocs.yml" \
+	  --site-dir "$(ROOT_DOCS_SITE_DIR)"
+	@test ! -e "$(CURDIR)/site"
+	@test ! -e "$(CURDIR)/.cache"
+	@echo "Docs built in $(ROOT_DOCS_SITE_DIR)"
 
 api:
 	$(call assert_package)

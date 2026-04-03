@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
+PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJECT_SLUG := bijux-canon-reason
 
-include ../../makes/shared/python-package.mk
+include $(PACKAGE_MAKEFILE_DIR)/../shared/python-package.mk
 
 .NOTPARALLEL: all clean
 
@@ -19,9 +21,6 @@ QUALITY_PATHS     := src/bijux_canon_reason
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
 SECURITY_PATHS    := src/bijux_canon_reason
 SECURITY_IGNORE_IDS := PYSEC-2022-42969
-DOCS_DEV_ADDR     := 127.0.0.1:8000
-DOCS_SITE_URL     := http://127.0.0.1:8000/
-DOCS_DEPLOY_FLAGS := --force --no-history --clean --remote-branch gh-pages
 API_MODE := contract
 API_MODULE := bijux_canon_reason.api.v1.app
 API_INSTALL_EDITABLE := 1
@@ -40,7 +39,6 @@ ENABLE_BENCH := 0
 # Modular Includes
 include $(ROOT_MAKE_DIR)/api.mk
 include $(ROOT_MAKE_DIR)/build.mk
-include $(ROOT_MAKE_DIR)/docs.mk
 include $(ROOT_MAKE_DIR)/lint.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
@@ -62,8 +60,7 @@ bootstrap: install
 .PHONY: bootstrap
 
 # Cleanup
-clean:
-	@$(MAKE) clean-soft
+clean: clean-soft
 	@echo "→ Cleaning (.venv) ..."
 	@$(RM) $(VENV)
 
@@ -81,15 +78,15 @@ clean-soft:
 	fi
 
 # Pipelines
-all: clean install test lint quality security api docs build sbom
+all: clean install test lint quality security api build sbom
 	@echo "✔ All targets completed"
 
 # Run independent checks in parallel
-lint quality security api docs: | bootstrap
+lint quality security api: | bootstrap
 .NOTPARALLEL:
 
 all-parallel: clean install
-	@$(MAKE) -j4 quality security api docs
+	@$(MAKE) -j4 quality security api
 	@$(MAKE) build sbom
 	@echo "✔ All targets completed (parallel mode)"
 
@@ -106,5 +103,5 @@ clean-soft: ## Remove build artifacts but keep .venv
 install: ## Install project in editable mode into .venv
 bootstrap: ## Setup environment
 all: ## Run full pipeline (clean → sbom)
-all-parallel: ## Run pipeline with parallelized lint, quality, security, api, and docs
+all-parallel: ## Run pipeline with parallelized lint, quality, security, and api
 help: ## Show this help
