@@ -15,8 +15,6 @@ import typer
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BijuxError, ValidationError
-from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
-from bijux_canon_index.core.types import ExecutionBudget
 from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
 from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.infra.run_store import RunStore
@@ -24,8 +22,6 @@ from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
     load_config as _load_config,
     parse_contract as _parse_contract,
-    parse_intent as _parse_intent,
-    parse_mode as _parse_mode,
 )
 from bijux_canon_index.interfaces.cli.options import ND_WARMUP_OPTION
 from bijux_canon_index.interfaces.cli.rendering import (
@@ -33,6 +29,12 @@ from bijux_canon_index.interfaces.cli.rendering import (
     emit as _emit,
     load_bundle as _load_bundle,
     resolve_correlation_id as _resolve_correlation_id,
+)
+from bijux_canon_index.interfaces.cli.execution_payloads import (
+    build_artifact_compare_payload,
+    build_execute_payload,
+    build_replay_runtime,
+    build_run_or_bundle_comparison,
 )
 from bijux_canon_index.interfaces.cli.workspace_setup import initialize_workspace
 from bijux_canon_index.interfaces.errors.reporting import record_failure
@@ -43,11 +45,8 @@ from bijux_canon_index.interfaces.errors import (
 )
 from bijux_canon_index.interfaces.schemas.requests import (
     ExecutionArtifactRequest,
-    ExecutionBudgetPayload,
-    ExecutionRequestPayload,
     ExplainRequest,
     IngestRequest,
-    RandomnessProfilePayload,
 )
 
 
@@ -497,38 +496,23 @@ def execute(
 ) -> None:
     try:
         resolved_correlation_id = _resolve_correlation_id(correlation_id)
-        vector_parsed = json.loads(vector) if vector else None
-        contract = _parse_contract(execution_contract)
-        intent = _parse_intent(execution_intent)
-        mode = _parse_mode(execution_mode)
-        sources = (
-            [s.strip() for s in randomness_sources.split(",")]
-            if randomness_sources
-            else None
-        )
-        req = ExecutionRequestPayload(
+        req, contract = build_execute_payload(
             request_text=request_text,
-            vector=tuple(vector_parsed) if vector_parsed else None,
+            vector=vector,
             top_k=top_k,
             artifact_id=artifact_id,
-            execution_contract=contract,
-            execution_intent=intent,
-            execution_mode=mode,
-            randomness_profile=RandomnessProfilePayload.model_validate(
-                {
-                    "seed": randomness_seed,
-                    "sources": sources,
-                    "bounded": randomness_bounded,
-                    "non_replayable": randomness_non_replayable,
-                }
-            )
-            if contract is ExecutionContract.NON_DETERMINISTIC
-            else None,
-            execution_budget=ExecutionBudgetPayload(
-                max_latency_ms=max_latency_ms,
-                max_memory_mb=max_memory_mb,
-                max_error=max_error,
-            ),
+            execution_contract=execution_contract,
+            execution_intent=execution_intent,
+            execution_mode=execution_mode,
+            randomness_seed=randomness_seed,
+            randomness_sources=randomness_sources,
+            randomness_bounded=randomness_bounded,
+            randomness_non_replayable=randomness_non_replayable,
+            max_latency_ms=max_latency_ms,
+            max_memory_mb=max_memory_mb,
+            max_error=max_error,
+            vector_store=vector_store,
+            vector_store_uri=vector_store_uri,
             nd_profile=nd_profile,
             nd_target_recall=nd_target_recall,
             nd_latency_budget_ms=nd_latency_budget_ms,
@@ -545,7 +529,7 @@ def execute(
             nd_adaptive_k=nd_adaptive_k,
             nd_low_signal_refuse=nd_low_signal_refuse,
             nd_replay_strict=nd_replay_strict,
-            nd_warmup_queries=str(nd_warmup_queries) if nd_warmup_queries else None,
+            nd_warmup_queries=nd_warmup_queries,
             nd_incremental_index=nd_incremental_index,
             nd_max_candidates=nd_max_candidates,
             nd_max_index_memory_mb=nd_max_index_memory_mb,
@@ -556,8 +540,6 @@ def execute(
             nd_max_ef_search=nd_max_ef_search,
             nd_space=nd_space,
             correlation_id=resolved_correlation_id,
-            vector_store=vector_store,
-            vector_store_uri=vector_store_uri,
         )
         base_config = _load_config(ctx.obj.config_path) if ctx.obj else None
         config = _build_config(
@@ -660,18 +642,11 @@ def replay(
 ) -> None:
     try:
         engine = VectorExecutionEngine()
-        sources = (
-            [s.strip() for s in randomness_sources.split(",")]
-            if randomness_sources
-            else None
-        )
-        randomness_profile = RandomnessProfile(
-            seed=randomness_seed,
-            sources=tuple(sources or ()),
-            bounded=randomness_bounded,
-            non_replayable=randomness_non_replayable,
-        )
-        execution_budget = ExecutionBudget(
+        randomness_profile, execution_budget = build_replay_runtime(
+            randomness_seed=randomness_seed,
+            randomness_sources=randomness_sources,
+            randomness_bounded=randomness_bounded,
+            randomness_non_replayable=randomness_non_replayable,
             max_latency_ms=max_latency_ms,
             max_memory_mb=max_memory_mb,
             max_error=max_error,
@@ -715,63 +690,24 @@ def compare(
     bundle_b: Path | None = typer.Option(None, "--bundle-b"),  # noqa: B008
 ) -> None:
     try:
-        if run_a or run_b or bundle_a or bundle_b:
-            if not (run_a and run_b) and not (bundle_a and bundle_b):
-                raise ValidationError(
-                    message="compare requires both --run-a/--run-b or both --bundle-a/--bundle-b"
-                )
-            if run_a and run_b:
-                rec_a = RunStore().load(run_a)
-                rec_b = RunStore().load(run_b)
-                results_a = rec_a.result.get("results", []) if rec_a.result else []
-                results_b = rec_b.result.get("results", []) if rec_b.result else []
-                meta_a = rec_a.metadata
-                meta_b = rec_b.metadata
-            else:
-                bundle_a_data = _load_bundle(bundle_a)
-                bundle_b_data = _load_bundle(bundle_b)
-                results_a = bundle_a_data["result"].get("results", [])
-                results_b = bundle_b_data["result"].get("results", [])
-                meta_a = bundle_a_data["metadata"]
-                meta_b = bundle_b_data["metadata"]
-            set_a = set(results_a)
-            set_b = set(results_b)
-            overlap = set_a & set_b
-            union = set_a | set_b
-            overlap_ratio = len(overlap) / len(union) if union else 1.0
-            recall_delta = (len(overlap) / len(set_a) if set_a else 1.0) - (
-                len(overlap) / len(set_b) if set_b else 1.0
-            )
-            output = {
-                "execution_a": meta_a.get("execution_id"),
-                "execution_b": meta_b.get("execution_id"),
-                "overlap_ratio": overlap_ratio,
-                "recall_delta": recall_delta,
-                "execution_contract_diff": {
-                    "a": meta_a.get("request", {}).get("execution_contract"),
-                    "b": meta_b.get("request", {}).get("execution_contract"),
-                },
-                "backend_diff": {
-                    "a": meta_a.get("backend"),
-                    "b": meta_b.get("backend"),
-                },
-                "vector_store_diff": {
-                    "a": meta_a.get("vector_store", {}),
-                    "b": meta_b.get("vector_store", {}),
-                },
-            }
-            _emit(ctx, output)
+        comparison = build_run_or_bundle_comparison(
+            run_a=run_a,
+            run_b=run_b,
+            bundle_a=bundle_a,
+            bundle_b=bundle_b,
+            load_run=RunStore().load,
+            load_bundle=_load_bundle,
+        )
+        if comparison is not None:
+            _emit(ctx, comparison)
             return
         if vector is None:
             raise ValidationError(message="--vector required for artifact comparison")
-        intent = _parse_intent(execution_intent)
-        contract = _parse_contract(execution_contract)
-        payload = ExecutionRequestPayload(
-            request_text=None,
-            vector=tuple(json.loads(vector)),
+        payload = build_artifact_compare_payload(
+            vector=vector,
             top_k=top_k,
-            execution_contract=contract,
-            execution_intent=intent,
+            execution_intent=execution_intent,
+            execution_contract=execution_contract,
             vector_store=vector_store,
             vector_store_uri=vector_store_uri,
         )
