@@ -13,11 +13,13 @@ MYPY_TARGETS           ?= $(LINT_TARGETS)
 CODESPELL_TARGETS      ?= $(LINT_TARGETS)
 RADON_TARGETS          ?= $(LINT_TARGETS)
 PYDOCSTYLE_TARGETS     ?= $(LINT_TARGETS)
+LINT_PRE_TARGETS       ?=
 
 LINT_ARTIFACTS_DIR     ?= $(PROJECT_ARTIFACTS_DIR)/lint
 FMT_LOG                ?= $(LINT_ARTIFACTS_DIR)/fmt.log
 RUFF_CACHE_DIR         ?= $(LINT_ARTIFACTS_DIR)/.ruff_cache
 MYPY_CACHE_DIR         ?= $(LINT_ARTIFACTS_DIR)/.mypy_cache
+LINT_SELF_MAKE         ?= $(if $(PACKAGE_PROFILE_MAKEFILE),$(MAKE) -f "$(PACKAGE_PROFILE_MAKEFILE)",$(MAKE))
 
 RUFF_CONFIG            ?= $(MONOREPO_ROOT)/configs/ruff.toml
 MYPY_CONFIG            ?= $(MONOREPO_ROOT)/configs/mypy.ini
@@ -57,6 +59,10 @@ lint: lint-artifacts
 
 lint-artifacts: | $(VENV)
 	@mkdir -p "$(LINT_ARTIFACTS_DIR)" "$(RUFF_CACHE_DIR)" "$(MYPY_CACHE_DIR)"
+	@for target in $(LINT_PRE_TARGETS); do \
+	  echo "→ Running $$target"; \
+	  $(LINT_SELF_MAKE) "$$target"; \
+	done
 	@set -euo pipefail; { \
 	  echo "→ Ruff format (check)"; \
 	  $(RUFF) format --check --config "$(RUFF_CONFIG)" --cache-dir "$(RUFF_CACHE_DIR)" $(LINT_TARGETS); \
