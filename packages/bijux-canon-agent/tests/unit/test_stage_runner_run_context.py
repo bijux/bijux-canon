@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from bijux_canon_agent.agents.stage_runner.run_context import (
     apply_stage_output_to_context,
     stage_skip_warning,
@@ -7,12 +9,15 @@ from bijux_canon_agent.agents.stage_runner.run_context import (
 )
 
 
-def test_validate_stage_runner_context_requires_file_path() -> None:
+def test_validate_stage_runner_context_requires_file_path(tmp_path: Path) -> None:
     assert (
         validate_stage_runner_context({})
         == "Input context must provide 'file_path' for stage execution"
     )
-    assert validate_stage_runner_context({"file_path": "/tmp/input.txt"}) is None
+    assert (
+        validate_stage_runner_context({"file_path": str(tmp_path / "input.txt")})
+        is None
+    )
 
 
 def test_stage_skip_warning_uses_stage_condition() -> None:
@@ -31,8 +36,8 @@ def test_stage_skip_warning_uses_stage_condition() -> None:
     )
 
 
-def test_apply_stage_output_to_context_uses_explicit_output_key() -> None:
-    context = {"file_path": "/tmp/input.txt"}
+def test_apply_stage_output_to_context_uses_explicit_output_key(tmp_path: Path) -> None:
+    context = {"file_path": str(tmp_path / "input.txt")}
 
     apply_stage_output_to_context(
         context,

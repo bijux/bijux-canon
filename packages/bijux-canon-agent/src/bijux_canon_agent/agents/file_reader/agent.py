@@ -16,12 +16,12 @@ from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
 from .capabilities.universal_file_reader_core import UniversalFileReader
+from .read_request import build_file_read_request
 from .reporting import (
     build_coverage_report,
     build_file_reader_error_payload,
     build_self_report_schema,
 )
-from .read_request import build_file_read_request
 from .result_assembly import (
     apply_extra_analyzers,
     finalize_read_result,
