@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 Installation for `bijux-canon-ingest` should start from the package metadata and the specific
 optional dependencies that matter for the work being done.
 
+This page exists to keep setup honest. A maintainer should be able to tell which
+files actually define installation truth and which dependencies are merely
+present in the environment for unrelated reasons.
+
 Read the operations pages for `bijux-canon-ingest` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
 
 ## Page Maps

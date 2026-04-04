@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 Security review in `bijux-canon-reason` should focus on the package's real boundary surfaces and outputs.
 
+This page keeps safety work concrete. A useful security discussion starts from
+the actual interfaces, artifacts, and authority the package holds, not from
+generic caution language detached from the codebase.
+
 Read the operations pages for `bijux-canon-reason` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
 
 ## Page Maps

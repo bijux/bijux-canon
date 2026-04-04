@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 Performance work should preserve the deterministic and contract-driven behavior the package already promises.
 
+This page keeps optimization work honest. A package is not healthier if it gets
+faster by becoming harder to reason about, harder to replay, or easier to break
+for downstream readers.
+
 Read the operations pages for `bijux-canon-ingest` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
 
 ## Page Maps

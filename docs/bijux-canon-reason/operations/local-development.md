@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 Local development should happen inside `packages/bijux-canon-reason` with tests and docs updated
 in the same change series as the code.
 
+The point is not to prescribe one favorite workflow. It is to keep local work
+close enough to the owning package that changes remain easy to explain and easy
+to validate before they spread outward.
+
 Read the operations pages for `bijux-canon-reason` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
 
 ## Page Maps

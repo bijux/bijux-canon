@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 Release work for `bijux-canon-index` depends on package metadata, tracked release notes, and
 the repository's commit conventions.
 
+The release path is part of the product story because it determines how readers
+learn what changed and what stayed stable. This page should make package-local
+release mechanics understandable without separating them from repository rules.
+
 Read the operations pages for `bijux-canon-index` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
 
 ## Page Maps

@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 Failure recovery starts with knowing which artifacts, interfaces, and tests expose the problem.
 
+This page should help a maintainer stabilize the situation before they try to
+improve it. The first question is not always how to fix the bug; it is how to
+locate the right evidence quickly.
+
 Read the operations pages for `bijux-canon-runtime` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
 
 ## Page Maps

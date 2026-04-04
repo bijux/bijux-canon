@@ -4176,6 +4176,10 @@ Keep it aligned with the package's actual public surfaces and release process.
 Installation for `{package.title}` should start from the package metadata and the specific
 optional dependencies that matter for the work being done.
 
+This page exists to keep setup honest. A maintainer should be able to tell which
+files actually define installation truth and which dependencies are merely
+present in the environment for unrelated reasons.
+
 ## Package Metadata Anchors
 
 - package root: `{package.package_dir}`
@@ -4199,6 +4203,10 @@ Keep it aligned with `pyproject.toml` and the checked-in package metadata.
 Local development should happen inside `{package.package_dir}` with tests and docs updated
 in the same change series as the code.
 
+The point is not to prescribe one favorite workflow. It is to keep local work
+close enough to the owning package that changes remain easy to explain and easy
+to validate before they spread outward.
+
 ## Development Anchors
 
 {bullet_lines(package.tests)}
@@ -4214,6 +4222,10 @@ Keep it aligned with the actual test layout and maintenance workflow.
             "common-workflows": f"""# {title}
 
 Most work on `{package.title}` follows one of a few recurring paths.
+
+This page should make those paths feel familiar and repeatable. Readers should
+not have to rediscover the same workflow from scratch every time they debug,
+extend, or review the package.
 
 ## Recurring Paths
 
@@ -4237,6 +4249,9 @@ Keep it aligned with the actual package structure and tests.
 
 Diagnostics should make it easier to explain what `{package.title}` did, not merely that it ran.
 
+Good diagnostics shorten both incidents and reviews. They give maintainers a
+way to connect visible outputs back to the package behavior that produced them.
+
 ## Diagnostic Anchors
 
 {bullet_lines(package.artifacts)}
@@ -4256,6 +4271,10 @@ Keep it aligned with the package modules and artifacts that currently support di
             "performance-and-scaling": f"""# {title}
 
 Performance work should preserve the deterministic and contract-driven behavior the package already promises.
+
+This page keeps optimization work honest. A package is not healthier if it gets
+faster by becoming harder to reason about, harder to replay, or easier to break
+for downstream readers.
 
 ## Performance Review Anchors
 
@@ -4279,6 +4298,10 @@ Keep it aligned with the package's actual performance-sensitive paths and valida
 
 Failure recovery starts with knowing which artifacts, interfaces, and tests expose the problem.
 
+This page should help a maintainer stabilize the situation before they try to
+improve it. The first question is not always how to fix the bug; it is how to
+locate the right evidence quickly.
+
 ## Recovery Anchors
 
 - interface surfaces: {", ".join(package.interfaces)}
@@ -4297,6 +4320,10 @@ Keep it aligned with the package entrypoints and diagnostic outputs.
 
 Release work for `{package.title}` depends on package metadata, tracked release notes, and
 the repository's commit conventions.
+
+The release path is part of the product story because it determines how readers
+learn what changed and what stayed stable. This page should make package-local
+release mechanics understandable without separating them from repository rules.
 
 ## Release Anchors
 
@@ -4319,6 +4346,10 @@ Keep it aligned with the package metadata and current versioning configuration.
 
 Security review in `{package.title}` should focus on the package's real boundary surfaces and outputs.
 
+This page keeps safety work concrete. A useful security discussion starts from
+the actual interfaces, artifacts, and authority the package holds, not from
+generic caution language detached from the codebase.
+
 ## Review Anchors
 
 {bullet_lines(package.interfaces)}
@@ -4338,6 +4369,10 @@ Keep it aligned with the package interfaces and operational risk profile.
             "deployment-boundaries": f"""# {title}
 
 Deployment for `{package.title}` should respect the package boundary instead of assuming the full repository is always present.
+
+The point of this page is to protect the idea that packages are publishable
+units. Even inside a monorepo, deployment assumptions should stay narrow enough
+that the package can still be understood and operated as its own surface.
 
 ## Boundary Facts
 

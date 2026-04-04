@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 Most work on `bijux-canon-reason` follows one of a few recurring paths.
 
+This page should make those paths feel familiar and repeatable. Readers should
+not have to rediscover the same workflow from scratch every time they debug,
+extend, or review the package.
+
 Read the operations pages for `bijux-canon-reason` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
 
 ## Page Maps
