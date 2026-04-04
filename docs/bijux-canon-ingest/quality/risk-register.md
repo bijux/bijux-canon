@@ -121,6 +121,12 @@ Update it when the durable risk profile changes, not for routine day-to-day chur
 - reviewers disagree on whether the work is done because the standard is too implicit
 - limitations remain unchanged even when package behavior has obviously shifted
 
+## Cross Implications
+
+- changes here influence how all other `bijux-canon-ingest` sections should be trusted after modification
+- foundation, architecture, interface, and operations claims all become weaker if proof expectations drift
+- review discipline here determines whether neighboring sections remain explanatory or merely aspirational
+
 ## Core Claim
 
 The quality claim of `bijux-canon-ingest` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

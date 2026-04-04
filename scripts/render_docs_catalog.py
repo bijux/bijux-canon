@@ -1152,6 +1152,37 @@ def package_failure_signals(package: PackageInfo, category: str, title: str) -> 
     return signal_map[category]
 
 
+def package_cross_implications(package: PackageInfo, category: str) -> tuple[str, ...]:
+    implication_map = {
+        "foundation": (
+            f"changes here influence how neighboring packages are allowed to stay narrow around `{package.title}`",
+            "a weak boundary explanation raises architectural and quality ambiguity immediately",
+            "interface and operations pages inherit confusion when foundational ownership is unclear",
+        ),
+        "architecture": (
+            f"changes here alter how interface, operations, and quality pages for `{package.title}` should be read",
+            "structural drift often becomes visible in caller-facing seams before it is obvious in prose",
+            "quality expectations need to move when the architecture adds new execution or dependency pressure",
+        ),
+        "interfaces": (
+            f"changes here shape what downstream packages and operators can safely assume about `{package.title}`",
+            "operations and quality pages become stale quickly if contract surfaces move silently",
+            "architectural seams need review whenever a new public surface appears for convenience",
+        ),
+        "operations": (
+            f"changes here affect how maintainers and CI interact with `{package.title}` across environments",
+            "interface expectations often surface again as operational preconditions or diagnostics",
+            "quality pages must evolve when the operational path changes what counts as sufficient validation",
+        ),
+        "quality": (
+            f"changes here influence how all other `{package.title}` sections should be trusted after modification",
+            "foundation, architecture, interface, and operations claims all become weaker if proof expectations drift",
+            "review discipline here determines whether neighboring sections remain explanatory or merely aspirational",
+        ),
+    }
+    return implication_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1355,6 +1386,17 @@ def add_failure_signals(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "If It Drifts", block)
 
 
+def add_cross_implications(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Cross Implications",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Source Of Truth Order", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1464,6 +1506,14 @@ def render_home(
             "the root page starts sounding like a summary of everything instead of a route to somewhere specific",
             "readers still need trial-and-error to find the right handbook branch",
             "the distinction between repository, package, maintainer, and compatibility docs becomes blurry again",
+        ),
+    )
+    body = add_cross_implications(
+        body,
+        (
+            "when this page drifts, every handbook branch becomes harder to discover correctly",
+            "root routing mistakes amplify the cost of weak package or maintainer pages because readers reach them later",
+            "the value of the whole docs system depends on this page remaining a fast orientation surface",
         ),
     )
     body = add_question_section(
@@ -1915,6 +1965,14 @@ def render_root_page(
             "reviewers cannot tell whether the page is describing policy, process, or one local implementation",
         ),
     )
+    body = add_cross_implications(
+        body,
+        (
+            "weak repository pages force package docs to carry root context they should not own",
+            "schema, release, and automation review all become more fragmented when root guidance drifts",
+            "maintainer pages become harder to interpret if repository policy is not clear first",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2304,6 +2362,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "the page stops making package impact explicit when automation changes",
         ),
     )
+    body = add_cross_implications(
+        body,
+        (
+            "maintainer ambiguity leaks quickly into product package docs and repository workflows",
+            "release and validation pressure becomes harder to reason about across the monorepo",
+            "root governance pages become less actionable when maintainer intent is implicit",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2687,6 +2753,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "retirement conversations keep stalling because the remaining need is not described concretely",
         ),
     )
+    body = add_cross_implications(
+        body,
+        (
+            "unclear compatibility pages slow adoption of the canonical package docs",
+            "retirement planning becomes harder because repository and package owners lack one shared migration story",
+            "legacy naming pressure can distort product package expectations if it is not kept explicitly separate",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2883,6 +2957,7 @@ def render_package_page(
     body = add_decision_rule(body, package_decision_rule(package, category, title))
     body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
     body = add_failure_signals(body, package_failure_signals(package, category, title))
+    body = add_cross_implications(body, package_cross_implications(package, category))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))

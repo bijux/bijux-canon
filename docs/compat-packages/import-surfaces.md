@@ -123,6 +123,12 @@ Keep it aligned with the `src/` roots inside the compatibility packages.
 - the canonical target is harder to find than the old name
 - retirement conversations keep stalling because the remaining need is not described concretely
 
+## Cross Implications
+
+- unclear compatibility pages slow adoption of the canonical package docs
+- retirement planning becomes harder because repository and package owners lack one shared migration story
+- legacy naming pressure can distort product package expectations if it is not kept explicitly separate
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

@@ -126,6 +126,12 @@ Keep it aligned with the package's checked-in directories and actual neighboring
 - the out-of-scope list starts looking like shadow ownership instead of a real boundary
 - review conversations keep falling back to package adjacency rather than package intent
 
+## Cross Implications
+
+- changes here influence how neighboring packages are allowed to stay narrow around `bijux-canon-ingest`
+- a weak boundary explanation raises architectural and quality ambiguity immediately
+- interface and operations pages inherit confusion when foundational ownership is unclear
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-ingest` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

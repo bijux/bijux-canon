@@ -154,6 +154,12 @@ This page is part of the canonical docs spine. Keep it aligned with the current 
 - the page stops naming concrete root assets that support its claims
 - reviewers cannot tell whether the page is describing policy, process, or one local implementation
 
+## Cross Implications
+
+- weak repository pages force package docs to carry root context they should not own
+- schema, release, and automation review all become more fragmented when root guidance drifts
+- maintainer pages become harder to interpret if repository policy is not clear first
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

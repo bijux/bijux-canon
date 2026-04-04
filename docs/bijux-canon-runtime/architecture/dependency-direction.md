@@ -159,3 +159,9 @@ Keep it aligned with current imports and directory responsibilities.
 - `Dependency Direction` points to modules that no longer carry the behavior the page claims they do
 - dependency direction has to be explained with caveats instead of a clean structural story
 - the path from interface to domain to proof no longer feels traceable in one pass
+
+## Cross Implications
+
+- changes here alter how interface, operations, and quality pages for `bijux-canon-runtime` should be read
+- structural drift often becomes visible in caller-facing seams before it is obvious in prose
+- quality expectations need to move when the architecture adds new execution or dependency pressure

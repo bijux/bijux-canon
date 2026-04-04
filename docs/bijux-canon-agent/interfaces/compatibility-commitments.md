@@ -126,6 +126,12 @@ Keep it aligned with the package's actual public surfaces and release process.
 - callers have to infer stability from examples instead of from explicit contract evidence
 - compatibility review starts after change has already landed instead of before
 
+## Cross Implications
+
+- changes here shape what downstream packages and operators can safely assume about `bijux-canon-agent`
+- operations and quality pages become stale quickly if contract surfaces move silently
+- architectural seams need review whenever a new public surface appears for convenience
+
 ## Core Claim
 
 The interface claim of `bijux-canon-agent` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

@@ -120,6 +120,12 @@ Keep it aligned with the package entrypoints and diagnostic outputs.
 - package metadata, runtime behavior, and operational docs start telling different stories
 - incident handling requires reverse-engineering workflow from code instead of following checked-in guidance
 
+## Cross Implications
+
+- changes here affect how maintainers and CI interact with `bijux-canon-ingest` across environments
+- interface expectations often surface again as operational preconditions or diagnostics
+- quality pages must evolve when the operational path changes what counts as sufficient validation
+
 ## Core Claim
 
 The operational claim of `bijux-canon-ingest` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

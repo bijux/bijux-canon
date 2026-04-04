@@ -178,6 +178,12 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 - readers still need trial-and-error to find the right handbook branch
 - the distinction between repository, package, maintainer, and compatibility docs becomes blurry again
 
+## Cross Implications
+
+- when this page drifts, every handbook branch becomes harder to discover correctly
+- root routing mistakes amplify the cost of weak package or maintainer pages because readers reach them later
+- the value of the whole docs system depends on this page remaining a fast orientation surface
+
 ## Core Claim
 
 The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.

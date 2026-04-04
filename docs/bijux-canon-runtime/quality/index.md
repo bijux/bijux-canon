@@ -145,6 +145,12 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 - reviewers disagree on whether the work is done because the standard is too implicit
 - limitations remain unchanged even when package behavior has obviously shifted
 
+## Cross Implications
+
+- changes here influence how all other `bijux-canon-runtime` sections should be trusted after modification
+- foundation, architecture, interface, and operations claims all become weaker if proof expectations drift
+- review discipline here determines whether neighboring sections remain explanatory or merely aspirational
+
 ## Core Claim
 
 The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

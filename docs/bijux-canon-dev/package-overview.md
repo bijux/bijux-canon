@@ -123,6 +123,12 @@ Keep this page aligned with real maintainer behavior, not aspirational tooling t
 - contributors can only discover maintainer behavior by reading scripts or CI output directly
 - the page stops making package impact explicit when automation changes
 
+## Cross Implications
+
+- maintainer ambiguity leaks quickly into product package docs and repository workflows
+- release and validation pressure becomes harder to reason about across the monorepo
+- root governance pages become less actionable when maintainer intent is implicit
+
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

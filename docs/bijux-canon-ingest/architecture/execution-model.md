@@ -121,6 +121,12 @@ Keep it aligned with the actual workflow code and entrypoints.
 - dependency direction has to be explained with caveats instead of a clean structural story
 - the path from interface to domain to proof no longer feels traceable in one pass
 
+## Cross Implications
+
+- changes here alter how interface, operations, and quality pages for `bijux-canon-ingest` should be read
+- structural drift often becomes visible in caller-facing seams before it is obvious in prose
+- quality expectations need to move when the architecture adds new execution or dependency pressure
+
 ## Core Claim
 
 The architectural claim of `bijux-canon-ingest` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.
