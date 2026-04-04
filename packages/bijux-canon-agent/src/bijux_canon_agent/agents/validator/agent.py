@@ -28,6 +28,10 @@ from .run_context import (
     build_validation_run_context,
     cache_schema,
 )
+from .validation_issues import (
+    collect_extra_key_warning,
+    run_custom_validation_issues,
+)
 
 
 class ValidationError(Exception):
@@ -182,49 +186,30 @@ class ValidatorAgent(BaseAgent):
         audit.update(validation_audit)
 
         # Custom validator
-        if self.custom_validator:
-            try:
-                user_result = await rule_execution.run_custom_validator(
-                    self, cast(dict[str, Any], data), self.config
-                )
-                errors.extend(user_result.get("errors", []))
-                warnings.extend(user_result.get("warnings", []))
-                audit["custom_validator"] = user_result.get("details", {})
-                self.logger.debug(
-                    "Custom validator applied",
-                    extra={"context": {"stage": "custom_validator"}},
-                )
-                self.logger_manager.log_metric(
-                    "custom_validator_success",
-                    1,
-                    MetricType.COUNTER,
-                    tags={"stage": "custom_validator"},
-                )
-            except Exception as e:
-                error_msg = f"Custom validator failed: {e!s}"
-                self.logger.error(
-                    error_msg,
-                    extra={"context": {"stage": "custom_validator", "error": str(e)}},
-                )
-                self.logger_manager.log_metric(
-                    "custom_validator_errors",
-                    1,
-                    MetricType.COUNTER,
-                    tags={"stage": "custom_validator"},
-                )
-                errors.append(error_msg)
+        custom_errors, custom_warnings = await run_custom_validation_issues(
+            self,
+            data=data,
+            audit=audit,
+            run_custom_validator=rule_execution.run_custom_validator,
+        )
+        errors.extend(custom_errors)
+        warnings.extend(custom_warnings)
 
         # Extra keys check
-        if self.strict and isinstance(data, dict):
-            schema_keys = set(schema_walker.get_all_schema_keys(self.schema))
-            data_keys = set(schema_walker.get_all_data_keys(data))
-            extra_keys = data_keys - schema_keys
-            if extra_keys and not self.allow_extra:
-                warning_msg = f"Unexpected extra keys: {sorted(extra_keys)}"
-                warnings.append(warning_msg)
-                self.logger.warning(
-                    warning_msg, extra={"context": {"stage": "extra_keys_check"}}
-                )
+        warning_msg = collect_extra_key_warning(
+            data=data,
+            schema_keys=set(schema_walker.get_all_schema_keys(self.schema)),
+            data_keys=set(schema_walker.get_all_data_keys(data))
+            if isinstance(data, dict)
+            else set(),
+            strict=self.strict,
+            allow_extra=self.allow_extra,
+        )
+        if warning_msg is not None:
+            warnings.append(warning_msg)
+            self.logger.warning(
+                warning_msg, extra={"context": {"stage": "extra_keys_check"}}
+            )
 
         plugin_errors = rule_execution.run_validation_plugins(self, data, audit)
         errors.extend(plugin_errors)
