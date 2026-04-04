@@ -4886,6 +4886,15 @@ def validate_rendered_docs() -> None:
         "## Purpose",
         "## Stability",
     )
+    narrative_headings = (
+        "## What Good Looks Like",
+        "## Failure Signals",
+        "## Tradeoffs To Hold",
+        "## Approval Questions",
+        "## Evidence Checklist",
+        "## Anti-Patterns",
+        "## Escalate When",
+    )
     failures: list[str] = []
     for path in sorted(DOCS_ROOT.rglob("*.md")):
         text = path.read_text(encoding="utf-8")
@@ -4894,6 +4903,20 @@ def validate_rendered_docs() -> None:
         for heading in required_headings:
             if heading not in text:
                 failures.append(f"{path}: missing heading {heading}")
+        lines = text.splitlines()
+        for heading in narrative_headings:
+            try:
+                index = lines.index(heading)
+            except ValueError:
+                continue
+            probe = index + 1
+            while probe < len(lines) and not lines[probe].strip():
+                probe += 1
+            if probe >= len(lines):
+                failures.append(f"{path}: heading {heading} has no narrative lead-in")
+                continue
+            if lines[probe].startswith("- ") or lines[probe].startswith("## "):
+                failures.append(f"{path}: heading {heading} is missing a narrative lead-in")
         if text.count("- ") < 45:
             failures.append(f"{path}: too few bullet points for current handbook depth standard")
         word_count = len(text.split())
