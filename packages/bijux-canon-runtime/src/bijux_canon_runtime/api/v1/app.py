@@ -32,7 +32,7 @@ from bijux_canon_runtime.api.v1.schemas import (
     ReplayRequest,
 )
 from bijux_canon_runtime.observability.storage.execution_store import (
-    DuckDBExecutionWriteStore,
+    DuckDBExecutionStore,
 )
 
 app = FastAPI(
@@ -106,16 +106,17 @@ def health() -> dict[str, str]:
 
 @app.get("/ready")
 @app.get("/api/v1/ready")
-def ready() -> JSONResponse | dict[str, str]:
+def ready() -> JSONResponse:
     """Provide a readiness signal without performing deep dependency checks."""
     db_path = os.environ.get("AGENTIC_FLOWS_DB_PATH")
     if not db_path:
         return JSONResponse(status_code=503, content={"ready": False})
     try:
-        DuckDBExecutionWriteStore(Path(db_path))
+        store = DuckDBExecutionStore(Path(db_path))
+        store.close()
     except Exception:
         return JSONResponse(status_code=503, content={"ready": False})
-    return {"ready": "true"}
+    return JSONResponse(content={"ready": True})
 
 
 @app.post("/api/v1/flows/run")
