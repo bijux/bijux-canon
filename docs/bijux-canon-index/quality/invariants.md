@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 Invariants are the promises that should survive ordinary implementation change.
 
+This page names the truths the package is trying hardest not to lose. If an
+invariant changes, that should feel more like a design event than a routine code
+edit.
+
 Read the quality pages for `bijux-canon-index` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
 ## Page Maps

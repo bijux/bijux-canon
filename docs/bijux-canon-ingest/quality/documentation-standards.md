@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 Package docs should stay consistent with the shared handbook layout used across the repository.
 
+Consistency matters here because readers should not need to relearn how to read
+every package. The shared layout is part of the user experience, but honesty is
+more important than uniformity for its own sake.
+
 Read the quality pages for `bijux-canon-ingest` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
 ## Page Maps

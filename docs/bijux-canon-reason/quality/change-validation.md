@@ -11,6 +11,9 @@ last_reviewed: 2026-04-04
 
 Validation after a change should target the package surfaces that were actually touched.
 
+This page is about choosing proof that matches the real risk. Strong validation
+is not just more testing; it is testing and review aimed at the seam that moved.
+
 Read the quality pages for `bijux-canon-reason` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
 ## Page Maps

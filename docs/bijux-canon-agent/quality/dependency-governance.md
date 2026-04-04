@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 Dependency changes in `bijux-canon-agent` should be treated as contract changes when they
 alter package authority, operational risk, or public setup expectations.
 
+This page should keep dependency review from feeling bureaucratic. Dependencies
+matter because they reshape what the package relies on, what it exposes, and
+what downstream maintainers must now trust.
+
 Read the quality pages for `bijux-canon-agent` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
 ## Page Maps

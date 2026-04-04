@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 No package is improved by pretending its limitations do not exist.
 
+This page protects credibility by keeping the current limits visible. Readers
+should be able to tell what the package does not promise without mining issue
+threads or learning the hard way in production.
+
 Read the quality pages for `bijux-canon-runtime` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
 ## Page Maps

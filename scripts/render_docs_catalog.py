@@ -4394,6 +4394,10 @@ Keep it aligned with the package's actual distributable surface.
 
 The tests for `{package.title}` are the executable proof of its package contract.
 
+This page should help readers see the broad proof shape of the package rather
+than treating the test tree like a bag of unrelated checks. A good strategy page
+explains why these tests exist, not just where they live.
+
 ## Test Areas
 
 {bullet_lines(package.tests)}
@@ -4409,6 +4413,10 @@ Keep it aligned with the real test directories and the behaviors they protect.
             "invariants": f"""# {title}
 
 Invariants are the promises that should survive ordinary implementation change.
+
+This page names the truths the package is trying hardest not to lose. If an
+invariant changes, that should feel more like a design event than a routine code
+edit.
 
 ## Invariant Anchors
 
@@ -4432,6 +4440,10 @@ Keep it aligned with invariant-focused tests and documented package guarantees.
 
 Reviewing changes in `{package.title}` should include both behavior and documentation.
 
+The checklist is not here to slow people down with ceremony. It is here to stop
+fast review from becoming shallow review when a change touches boundaries,
+contracts, or proof.
+
 ## Checklist
 
 - did ownership stay inside the correct package boundary
@@ -4449,6 +4461,10 @@ Update it only when the package review posture genuinely changes.
             "documentation-standards": f"""# {title}
 
 Package docs should stay consistent with the shared handbook layout used across the repository.
+
+Consistency matters here because readers should not need to relearn how to read
+every package. The shared layout is part of the user experience, but honesty is
+more important than uniformity for its own sake.
 
 ## Standards
 
@@ -4469,6 +4485,9 @@ Update it only when the shared documentation system itself changes.
 A change in `{package.title}` is not done when code passes locally but the package contract
 is still unclear or unprotected.
 
+This page is where the package draws the line against false confidence. Done
+should mean that behavior, explanation, and proof all move together.
+
 ## Done Means
 
 - code, docs, and tests agree on the new behavior
@@ -4488,6 +4507,10 @@ Keep it aligned with the package validation and release expectations.
 Dependency changes in `{package.title}` should be treated as contract changes when they
 alter package authority, operational risk, or public setup expectations.
 
+This page should keep dependency review from feeling bureaucratic. Dependencies
+matter because they reshape what the package relies on, what it exposes, and
+what downstream maintainers must now trust.
+
 ## Current Dependency Themes
 
 {bullet_lines(package.dependencies)}
@@ -4503,6 +4526,9 @@ Keep it aligned with `pyproject.toml` and the package's real dependency posture.
             "change-validation": f"""# {title}
 
 Validation after a change should target the package surfaces that were actually touched.
+
+This page is about choosing proof that matches the real risk. Strong validation
+is not just more testing; it is testing and review aimed at the seam that moved.
 
 ## Validation Targets
 
@@ -4526,6 +4552,10 @@ Keep it aligned with the package's current test layout and docs structure.
 
 No package is improved by pretending its limitations do not exist.
 
+This page protects credibility by keeping the current limits visible. Readers
+should be able to tell what the package does not promise without mining issue
+threads or learning the hard way in production.
+
 ## Honest Boundaries
 
 {bullet_lines(package.not_owns)}
@@ -4542,6 +4572,10 @@ Keep it aligned with the limitations that remain intentionally true today.
 
 The durable risks for `{package.title}` are the ones that make the package boundary, interface contract,
 or produced artifacts harder to trust.
+
+This page should keep long-lived risk language attached to the package instead
+of scattering it across reviews and memory. The goal is not alarmism; it is to
+help maintainers remember which failures would actually cost credibility.
 
 ## Ongoing Risks to Watch
 

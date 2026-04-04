@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 Reviewing changes in `bijux-canon-reason` should include both behavior and documentation.
 
+The checklist is not here to slow people down with ceremony. It is here to stop
+fast review from becoming shallow review when a change touches boundaries,
+contracts, or proof.
+
 Read the quality pages for `bijux-canon-reason` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
 ## Page Maps

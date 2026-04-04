@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 The tests for `bijux-canon-index` are the executable proof of its package contract.
 
+This page should help readers see the broad proof shape of the package rather
+than treating the test tree like a bag of unrelated checks. A good strategy page
+explains why these tests exist, not just where they live.
+
 Read the quality pages for `bijux-canon-index` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
 ## Page Maps

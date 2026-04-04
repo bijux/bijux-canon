@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 The durable risks for `bijux-canon-agent` are the ones that make the package boundary, interface contract,
 or produced artifacts harder to trust.
 
+This page should keep long-lived risk language attached to the package instead
+of scattering it across reviews and memory. The goal is not alarmism; it is to
+help maintainers remember which failures would actually cost credibility.
+
 Read the quality pages for `bijux-canon-agent` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
 ## Page Maps
