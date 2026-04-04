@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from bijux_canon_ingest.application.service import AnswerPayload
+from bijux_canon_ingest.application.answer_payloads import AnswerPayload
 from bijux_canon_ingest.core.types import Chunk, RawDoc
 from bijux_canon_ingest.interfaces.http.models import (
     AskResponse,

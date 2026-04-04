@@ -11,11 +11,16 @@ Both CLI and FastAPI boundaries call into this layer to avoid drift.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TypedDict
 
+from bijux_canon_ingest.application.answer_payloads import (
+    AnswerPayload,
+    CandidatePayload,
+    CitationPayload,
+    answer_payload_from_candidates,
+)
 from bijux_canon_ingest.application.index_runtime import (
     IndexBackend,
     StoredIndex,
@@ -29,30 +34,6 @@ from bijux_canon_ingest.retrieval.answering import ExtractiveAnswerer
 from bijux_canon_ingest.retrieval.ports import Answer, Candidate
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
 from bijux_canon_ingest.result.types import Err, Ok, Result
-
-
-class CandidatePayload(TypedDict):
-    doc_id: str
-    text: str
-    start: int
-    end: int
-    chunk_id: str
-    score: float
-
-
-class CitationPayload(TypedDict):
-    doc_id: str
-    chunk_id: str
-    start: int
-    end: int
-    text: str
-
-
-class AnswerPayload(TypedDict):
-    answer: str
-    citations: list[CitationPayload]
-    contexts: list[CandidatePayload]
-    candidates: list[CandidatePayload]
 
 
 @dataclass(frozen=True, slots=True)
@@ -126,7 +107,7 @@ class IngestService:
             )
         else:
             candidates = candidates[:top_k]
-        return Ok(_answer_payload(candidates, top_k=top_k))
+        return Ok(answer_payload_from_candidates(candidates, top_k=top_k))
 
     def retrieve_blob(
         self,
@@ -167,38 +148,6 @@ class IngestService:
         else:
             candidates = candidates[:top_k]
         return Ok(self.answerer.generate(query=query, candidates=candidates))
-
-
-def _answer_payload(candidates: Sequence[Candidate], *, top_k: int) -> AnswerPayload:
-    top = candidates[0]
-    contexts: list[CandidatePayload] = [
-        {
-            "doc_id": candidate.doc_id,
-            "text": candidate.text,
-            "start": candidate.start,
-            "end": candidate.end,
-            "chunk_id": candidate.chunk_id,
-            "score": candidate.score,
-        }
-        for candidate in candidates[: max(1, top_k)]
-    ]
-    citations: list[CitationPayload] = [
-        {
-            "doc_id": context["doc_id"],
-            "chunk_id": context["chunk_id"],
-            "start": context["start"],
-            "end": context["end"],
-            "text": context["text"],
-        }
-        for context in contexts
-    ]
-    return {
-        "answer": top.chunk.text,
-        "citations": citations,
-        "contexts": contexts,
-        "candidates": contexts,
-    }
-
 
 __all__ = [
     "AnswerPayload",
