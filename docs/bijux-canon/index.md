@@ -9,15 +9,25 @@ last_reviewed: 2026-04-04
 
 # bijux-canon
 
-The repository handbook explains the shared boundary around the monorepo:
-package layout, schema governance, documentation standards, validation, and
-release expectations that apply above any single package.
+The repository handbook explains the shared story above the package level:
+why this repository is split, which rules genuinely live at the root, and
+how the packages stay coordinated without collapsing back into one blurry
+codebase.
 
-<div class="bijux-callout"><strong>The monorepo is a coordination layer.</strong>
-Product behavior lives in the publishable packages under `packages/`. Shared
-repository rules live here only when they genuinely belong above package level.</div>
+`bijux-canon` is easiest to understand if you start from intent instead of
+from filenames. The repository exists to keep several deterministic,
+reviewable surfaces moving together: ingest prepares evidence, index makes
+retrieval executable, reason makes claims inspectable, agent turns role-based
+work into orchestrated runs, and runtime decides what execution and replay
+results are acceptable.
 
-These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+<div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
+Product behavior should stay inside the publishable packages under `packages/`.
+The root only owns what is genuinely shared: workspace layout, schema
+governance, documentation rules, validation posture, and release
+coordination.</div>
+
+These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
 ## Page Maps
 
@@ -92,7 +102,7 @@ flowchart TD
 
 ## Decision Rule
 
-Use `bijux-canon` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.
+Use `bijux-canon` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
 
 ## What This Page Answers
 
@@ -120,7 +130,7 @@ Use `bijux-canon` to decide whether the current question is genuinely repository
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.
+These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
 
 ## Section Contract
 
@@ -136,7 +146,7 @@ These pages explain repository-level intent and shared rules, but they do not ov
 
 ## Purpose
 
-This page explains how to use the repository handbook without duplicating the package-specific detail that belongs in the package handbooks.
+This page gives the shortest credible explanation of why the monorepo exists and what kind of questions belong in the repository handbook instead of a package handbook.
 
 ## Stability
 
@@ -196,7 +206,7 @@ Each repository handbook page should make one monorepo-level decision legible en
 
 ## Why It Matters
 
-Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.
+Repository pages matter because they explain the rules of coordination. Without them, every package has to re-explain shared schemas, release posture, and workspace expectations in slightly different words, and trust erodes fast.
 
 ## If It Drifts
 
@@ -206,7 +216,7 @@ Repository pages matter because they keep shared rules, schemas, workflows, and 
 
 ## Representative Scenario
 
-A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.
+A cross-package change touches schemas, automation, and release behavior at once. The repository page should help the reviewer separate root-owned coordination from package-owned behavior instead of merging everything into one fuzzy story.
 
 ## Source Of Truth Order
 

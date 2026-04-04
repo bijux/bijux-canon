@@ -9,19 +9,25 @@ last_reviewed: 2026-04-04
 
 # Docs Index
 
-`bijux-canon` is the canonical documentation site for the monorepo, the five
-product packages, the repository maintenance package, and the legacy
-compatibility shims that still preserve older installation names.
+`bijux-canon` is a deliberately split retrieval-and-reasoning workspace.
+The repository does not hide everything behind one oversized package. It
+keeps ingest, index, reason, agent, and runtime as separate publishable
+packages so each boundary stays reviewable, testable, and explainable.
 
-<div class="bijux-callout"><strong>Use this site as the current contract.</strong> 
-The sections beneath it are intentionally organized with one repository
-handbook, one maintainer handbook, one compatibility handbook, and five
-package handbooks that all share the same five-category spine.</div>
+This site is meant to be self-sufficient. A reader should be able to skim
+the root pages, understand why the split exists, and know where to go next
+without needing a meeting first.
+
+<div class="bijux-callout"><strong>Start with the package split, not the file tree.</strong> 
+Ingest prepares deterministic inputs. Index executes retrieval. Reason turns
+evidence into claims. Agent orchestrates role-based workflows. Runtime holds
+execution, replay, and acceptance authority. The root docs explain how those
+parts fit together without blurring their ownership.</div>
 
 <div class="bijux-panel-grid">
-  <div class="bijux-panel"><h3>Repository</h3><p>Explains the monorepo boundary, shared workflows, schemas, validation, and release intent.</p></div>
-  <div class="bijux-panel"><h3>Packages</h3><p>Each canonical package uses the same foundation, architecture, interfaces, operations, and quality layout.</p></div>
-  <div class="bijux-panel"><h3>Maintenance</h3><p>Separate sections cover the repository tooling package and the compatibility shims so their intent stays explicit.</p></div>
+  <div class="bijux-panel"><h3>What This Site Explains</h3><p>Why the repository is split, what each package owns, where shared schemas and rules live, and how maintainers prove that the split still holds.</p></div>
+  <div class="bijux-panel"><h3>What This Site Does Not Pretend</h3><p>It does not claim the docs are the source of truth by themselves. Every page is expected to point back to concrete code, schemas, tests, and release assets.</p></div>
+  <div class="bijux-panel"><h3>How To Read It Fast</h3><p>Use the repository handbook for cross-package questions, a product handbook for owned behavior, the maintainer handbook for repository automation, and the compatibility handbook for old names.</p></div>
 </div>
 
 <div class="bijux-quicklinks">
@@ -35,7 +41,7 @@ package handbooks that all share the same five-category spine.</div>
 <a class="md-button" href="compat-packages/">Open compatibility docs</a>
 </div>
 
-Treat the root page as the routing layer for the whole documentation system. Its job is not to duplicate every handbook, but to make the correct next reading choice obvious before the reader commits to a longer path.
+Treat the root page as the shortest honest explanation of the whole documentation system. It should help a reader understand the package split, the handbook layout, and the right next page before they commit to a longer read.
 
 ## Page Maps
 
@@ -97,10 +103,10 @@ flowchart TD
 
 ## Reading Map
 
-- start with [bijux-canon](bijux-canon/index.md) for repository-wide behavior
-- move into one product package when you need ownership details or operator guidance
-- use [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer automation and quality gates
-- use [compatibility packages](compat-packages/index.md) when tracing a legacy install name
+- start with [bijux-canon](bijux-canon/index.md) when the question crosses package boundaries or touches shared governance
+- open one product package when you need to know who owns behavior, interfaces, operations, or proof
+- use [bijux-canon-dev](bijux-canon-dev/index.md) for repository automation, schema enforcement, and maintainer-only guardrails
+- use [compatibility packages](compat-packages/index.md) when you encounter an old distribution or import name and need the canonical replacement
 
 ## Concrete Anchors
 
@@ -116,7 +122,7 @@ flowchart TD
 
 ## Decision Rule
 
-Use this page to decide where a question belongs in the documentation system before you spend time reading deeply. If the page cannot route the reader to a single clearly better next section, then the root documentation structure itself needs revision.
+Use this page to decide which handbook branch owns the current question. If a reader still cannot tell whether the issue is repository-wide, package-local, maintainer-only, or legacy-only after reading this page, then the root story is not clear enough yet.
 
 ## What This Page Answers
 
@@ -160,11 +166,11 @@ This page can route readers to the right section quickly, but it does not replac
 
 ## Purpose
 
-This page routes readers into the canonical repository and package handbooks without mixing product ownership with maintenance-only or legacy-only concerns.
+This page is the front door to the handbook. Its job is to explain the shape of the system quickly enough that readers can choose the right branch before they drown in detail.
 
 ## Stability
 
-This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/` and the packages that still ship from this repository.
+This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/`, the packages that still ship from this repository, and the reasons the split exists.
 
 ## What Good Looks Like
 
@@ -220,7 +226,7 @@ The root page should let a reviewer choose the right handbook path in seconds in
 
 ## Why It Matters
 
-If this page is vague, readers enter the wrong handbook branch first and the cost of reviewing the repository rises immediately because context has to be rebuilt page by page.
+If this page is vague, readers start with the wrong mental model. They confuse package boundaries, over-ascribe responsibility to the root, and lose trust in the documentation before they ever reach the detailed pages.
 
 ## If It Drifts
 

@@ -1637,19 +1637,25 @@ def render_home(
         [
             "# Docs Index",
             "",
-            "`bijux-canon` is the canonical documentation site for the monorepo, the five",
-            "product packages, the repository maintenance package, and the legacy",
-            "compatibility shims that still preserve older installation names.",
+            "`bijux-canon` is a deliberately split retrieval-and-reasoning workspace.",
+            "The repository does not hide everything behind one oversized package. It",
+            "keeps ingest, index, reason, agent, and runtime as separate publishable",
+            "packages so each boundary stays reviewable, testable, and explainable.",
             "",
-            '<div class="bijux-callout"><strong>Use this site as the current contract.</strong> ',
-            "The sections beneath it are intentionally organized with one repository",
-            "handbook, one maintainer handbook, one compatibility handbook, and five",
-            "package handbooks that all share the same five-category spine.</div>",
+            "This site is meant to be self-sufficient. A reader should be able to skim",
+            "the root pages, understand why the split exists, and know where to go next",
+            "without needing a meeting first.",
+            "",
+            '<div class="bijux-callout"><strong>Start with the package split, not the file tree.</strong> ',
+            "Ingest prepares deterministic inputs. Index executes retrieval. Reason turns",
+            "evidence into claims. Agent orchestrates role-based workflows. Runtime holds",
+            "execution, replay, and acceptance authority. The root docs explain how those",
+            "parts fit together without blurring their ownership.</div>",
             "",
             '<div class="bijux-panel-grid">',
-            '  <div class="bijux-panel"><h3>Repository</h3><p>Explains the monorepo boundary, shared workflows, schemas, validation, and release intent.</p></div>',
-            '  <div class="bijux-panel"><h3>Packages</h3><p>Each canonical package uses the same foundation, architecture, interfaces, operations, and quality layout.</p></div>',
-            '  <div class="bijux-panel"><h3>Maintenance</h3><p>Separate sections cover the repository tooling package and the compatibility shims so their intent stays explicit.</p></div>',
+            '  <div class="bijux-panel"><h3>What This Site Explains</h3><p>Why the repository is split, what each package owns, where shared schemas and rules live, and how maintainers prove that the split still holds.</p></div>',
+            '  <div class="bijux-panel"><h3>What This Site Does Not Pretend</h3><p>It does not claim the docs are the source of truth by themselves. Every page is expected to point back to concrete code, schemas, tests, and release assets.</p></div>',
+            '  <div class="bijux-panel"><h3>How To Read It Fast</h3><p>Use the repository handbook for cross-package questions, a product handbook for owned behavior, the maintainer handbook for repository automation, and the compatibility handbook for old names.</p></div>',
             "</div>",
             "",
             '<div class="bijux-quicklinks">',
@@ -1662,18 +1668,18 @@ def render_home(
             "",
             "## Reading Map",
             "",
-            "- start with [bijux-canon](bijux-canon/index.md) for repository-wide behavior",
-            "- move into one product package when you need ownership details or operator guidance",
-            "- use [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer automation and quality gates" if "dev" in targets else "- maintainer automation pages are added when the dev section is rendered",
-            "- use [compatibility packages](compat-packages/index.md) when tracing a legacy install name" if "compat" in targets else "- compatibility guidance is added when the compat section is rendered",
+            "- start with [bijux-canon](bijux-canon/index.md) when the question crosses package boundaries or touches shared governance",
+            "- open one product package when you need to know who owns behavior, interfaces, operations, or proof",
+            "- use [bijux-canon-dev](bijux-canon-dev/index.md) for repository automation, schema enforcement, and maintainer-only guardrails" if "dev" in targets else "- maintainer automation pages are added when the dev section is rendered",
+            "- use [compatibility packages](compat-packages/index.md) when you encounter an old distribution or import name and need the canonical replacement" if "compat" in targets else "- compatibility guidance is added when the compat section is rendered",
             "",
             "## Purpose",
             "",
-            "This page routes readers into the canonical repository and package handbooks without mixing product ownership with maintenance-only or legacy-only concerns.",
+            "This page is the front door to the handbook. Its job is to explain the shape of the system quickly enough that readers can choose the right branch before they drown in detail.",
             "",
             "## Stability",
             "",
-            "This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/` and the packages that still ship from this repository.",
+            "This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/`, the packages that still ship from this repository, and the reasons the split exists.",
         ]
     )
     body = add_page_route_map(
@@ -1690,7 +1696,7 @@ def render_home(
     )
     body = add_working_interpretation(
         body,
-        "Treat the root page as the routing layer for the whole documentation system. Its job is not to duplicate every handbook, but to make the correct next reading choice obvious before the reader commits to a longer path.",
+        "Treat the root page as the shortest honest explanation of the whole documentation system. It should help a reader understand the package split, the handbook layout, and the right next page before they commit to a longer read.",
     )
     body = add_reader_fit_section(
         body,
@@ -1702,7 +1708,7 @@ def render_home(
     )
     body = add_decision_rule(
         body,
-        "Use this page to decide where a question belongs in the documentation system before you spend time reading deeply. If the page cannot route the reader to a single clearly better next section, then the root documentation structure itself needs revision.",
+        "Use this page to decide which handbook branch owns the current question. If a reader still cannot tell whether the issue is repository-wide, package-local, maintainer-only, or legacy-only after reading this page, then the root story is not clear enough yet.",
     )
     body = add_what_good_looks_like(
         body,
@@ -1810,7 +1816,7 @@ def render_home(
     )
     body = add_why_it_matters(
         body,
-        "If this page is vague, readers enter the wrong handbook branch first and the cost of reviewing the repository rises immediately because context has to be rebuilt page by page.",
+        "If this page is vague, readers start with the wrong mental model. They confuse package boundaries, over-ascribe responsibility to the root, and lose trust in the documentation before they ever reach the detailed pages.",
     )
     body = add_if_it_drifts(
         body,
@@ -1894,13 +1900,23 @@ def render_root_page(
             f"""\
             # bijux-canon
 
-            The repository handbook explains the shared boundary around the monorepo:
-            package layout, schema governance, documentation standards, validation, and
-            release expectations that apply above any single package.
+            The repository handbook explains the shared story above the package level:
+            why this repository is split, which rules genuinely live at the root, and
+            how the packages stay coordinated without collapsing back into one blurry
+            codebase.
 
-            <div class="bijux-callout"><strong>The monorepo is a coordination layer.</strong>
-            Product behavior lives in the publishable packages under `packages/`. Shared
-            repository rules live here only when they genuinely belong above package level.</div>
+            `bijux-canon` is easiest to understand if you start from intent instead of
+            from filenames. The repository exists to keep several deterministic,
+            reviewable surfaces moving together: ingest prepares evidence, index makes
+            retrieval executable, reason makes claims inspectable, agent turns role-based
+            work into orchestrated runs, and runtime decides what execution and replay
+            results are acceptable.
+
+            <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
+            Product behavior should stay inside the publishable packages under `packages/`.
+            The root only owns what is genuinely shared: workspace layout, schema
+            governance, documentation rules, validation posture, and release
+            coordination.</div>
 
             ## Pages in This Section
 
@@ -1912,7 +1928,7 @@ def render_root_page(
 
             ## Purpose
 
-            This page explains how to use the repository handbook without duplicating the package-specific detail that belongs in the package handbooks.
+            This page gives the shortest credible explanation of why the monorepo exists and what kind of questions belong in the repository handbook instead of a package handbook.
 
             ## Stability
 
@@ -1923,10 +1939,16 @@ def render_root_page(
             """\
             # Platform Overview
 
-            `bijux-canon` is a multi-package repository for deterministic ingest,
-            indexing, reasoning, agent execution, runtime governance, and repository
-            maintenance. Each package is publishable on its own, but the repository keeps
-            their interfaces, schemas, and shared validation work in one place.
+            `bijux-canon` is a multi-package system because the work is easier to reason
+            about when preparation, retrieval, reasoning, orchestration, and runtime
+            governance stay distinct. The split is not cosmetic. It is the main mechanism
+            that keeps ownership explicit and review conversations short.
+
+            Read the platform as a pipeline of responsibilities rather than a stack of
+            directories. Ingest prepares deterministic material. Index turns retrieval
+            behavior into an executable contract. Reason shapes evidence-backed claims.
+            Agent coordinates role-local behavior and traceable runs. Runtime owns
+            execution, replay, and acceptance authority across the wider flow.
 
             ## What the Repository Provides
 
@@ -1954,8 +1976,14 @@ def render_root_page(
             """\
             # Repository Scope
 
-            The root repository owns only the concerns that are shared across packages or
-            that coordinate them as one releasable workspace.
+            The repository root is intentionally narrow. It exists to coordinate packages
+            that must move together, not to become a second implementation layer above
+            them.
+
+            A good scope test is simple: if a question can be answered honestly from one
+            package handbook, it probably does not belong at the root. Root scope should
+            stay reserved for rules, assets, and workflows that genuinely sit across
+            package boundaries.
 
             ## In Scope
 
@@ -1984,7 +2012,9 @@ def render_root_page(
             # Workspace Layout
 
             The repository layout is intentionally direct so maintainers can see where a
-            concern belongs before they open any code.
+            concern belongs before they open any code. The directory tree is part of the
+            design language: it should reinforce the package split instead of making it
+            harder to see.
 
             ## Top-Level Directories
 
@@ -2013,6 +2043,16 @@ def render_root_page(
             f"""\
             # Package Map
 
+            The package map is the clearest explanation of the product idea in this
+            repository. Each canonical package owns a distinct part of one larger system,
+            and the split is the point:
+
+            - `bijux-canon-ingest` prepares deterministic material from upstream inputs
+            - `bijux-canon-index` executes retrieval and backend-facing vector behavior
+            - `bijux-canon-reason` turns evidence into inspectable reasoning outcomes
+            - `bijux-canon-agent` orchestrates role-based workflows and trace-backed runs
+            - `bijux-canon-runtime` governs execution, replay, and acceptance authority
+
             The canonical packages each own a distinct slice of the overall system:
 
             {package_links}
@@ -2024,7 +2064,7 @@ def render_root_page(
 
             ## Purpose
 
-            This page keeps the package relationships visible from one place before a reader dives into package-local detail.
+            This page lets a reader see the whole system shape from one place before diving into package-local detail.
 
             ## Stability
 
@@ -2038,6 +2078,10 @@ def render_root_page(
             Shared API artifacts live under `apis/` so schema review does not depend on
             reading package source alone. This repository currently tracks schemas for
             ingest, index, reason, agent, and runtime.
+
+            That matters because the repository wants public surfaces to be reviewable in
+            the open. A caller or reviewer should not need to reverse-engineer Python
+            modules just to understand whether an HTTP or artifact contract changed.
 
             ## Governance Rules
 
@@ -2067,7 +2111,9 @@ def render_root_page(
             # Local Development
 
             Local work should happen through the publishable packages plus the root
-            orchestration commands that keep the repository consistent.
+            orchestration commands that keep the repository consistent. The goal is not to
+            make every task happen at the root; it is to make cross-package work visible
+            when it truly becomes cross-package.
 
             ## Working Rules
 
@@ -2098,6 +2144,10 @@ def render_root_page(
             while the repository protects the seams between packages, schemas, docs, and
             release conventions.
 
+            This distinction is essential for credibility. The repository should never ask
+            readers to trust prose alone. If a rule matters, some checked-in package test,
+            drift check, or CI workflow should be able to notice when it stops being true.
+
             ## Validation Layers
 
             - package-local unit, integration, e2e, and invariant suites
@@ -2125,6 +2175,10 @@ def render_root_page(
             The repository uses commitizen for conventional commit messages and package
             tags for version discovery through Hatch VCS. Version resolution is therefore
             both a repository concern and a package concern.
+
+            The wording of the commit history matters here because the repository is meant
+            to stay understandable years later. A good commit message should explain
+            durable intent, not just what happened to be touched in one diff.
 
             ## Shared Release Facts
 
@@ -2154,6 +2208,11 @@ def render_root_page(
             package behavior. It is intentionally structured like the reference documentation
             in `bijux-pollenomics` and `bijux-masterclass`: one root index, section indexes,
             and topic pages with stable names and repeated layout.
+
+            The goal is not just consistency. The goal is reader trust. The handbook
+            should let a new reviewer understand the design quickly, let a maintainer find
+            concrete anchors without guesswork, and stay honest about what the docs can
+            explain versus what only code and tests can prove.
 
             ## Documentation Rules
 
@@ -2187,7 +2246,7 @@ def render_root_page(
     )
     body = add_working_interpretation(
         body,
-        "These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.",
+        "These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.",
     )
     body = add_reader_fit_section(
         body,
@@ -2199,7 +2258,7 @@ def render_root_page(
     )
     body = add_decision_rule(
         body,
-        f"Use `{title}` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.",
+        f"Use `{title}` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.",
     )
     body = add_what_good_looks_like(
         body,
@@ -2287,7 +2346,7 @@ def render_root_page(
     )
     body = add_why_it_matters(
         body,
-        "Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.",
+        "Repository pages matter because they explain the rules of coordination. Without them, every package has to re-explain shared schemas, release posture, and workspace expectations in slightly different words, and trust erodes fast.",
     )
     body = add_if_it_drifts(
         body,
@@ -2299,7 +2358,7 @@ def render_root_page(
     )
     body = add_representative_scenario(
         body,
-        "A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.",
+        "A cross-package change touches schemas, automation, and release behavior at once. The repository page should help the reviewer separate root-owned coordination from package-owned behavior instead of merging everything into one fuzzy story.",
     )
     body = add_source_of_truth(
         body,
@@ -2335,7 +2394,7 @@ def render_root_page(
     )
     body = add_honesty_boundary(
         body,
-        "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
+        "These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.",
     )
     if slug == "index":
         body = add_section_contract(

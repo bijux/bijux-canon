@@ -13,7 +13,11 @@ Validation in `bijux-canon` is layered: packages protect their own behavior,
 while the repository protects the seams between packages, schemas, docs, and
 release conventions.
 
-These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+This distinction is essential for credibility. The repository should never ask
+readers to trust prose alone. If a rule matters, some checked-in package test,
+drift check, or CI workflow should be able to notice when it stops being true.
+
+These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
 ## Page Maps
 
@@ -79,7 +83,7 @@ can detect its drift.
 
 ## Decision Rule
 
-Use `Testing and Validation` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.
+Use `Testing and Validation` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
 
 ## What This Page Answers
 
@@ -107,7 +111,7 @@ Use `Testing and Validation` to decide whether the current question is genuinely
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.
+These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
 
 ## Purpose
 
@@ -171,7 +175,7 @@ Each repository handbook page should make one monorepo-level decision legible en
 
 ## Why It Matters
 
-Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.
+Repository pages matter because they explain the rules of coordination. Without them, every package has to re-explain shared schemas, release posture, and workspace expectations in slightly different words, and trust erodes fast.
 
 ## If It Drifts
 
@@ -181,7 +185,7 @@ Repository pages matter because they keep shared rules, schemas, workflows, and 
 
 ## Representative Scenario
 
-A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.
+A cross-package change touches schemas, automation, and release behavior at once. The repository page should help the reviewer separate root-owned coordination from package-owned behavior instead of merging everything into one fuzzy story.
 
 ## Source Of Truth Order
 

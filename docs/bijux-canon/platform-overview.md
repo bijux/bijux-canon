@@ -9,12 +9,18 @@ last_reviewed: 2026-04-04
 
 # Platform Overview
 
-`bijux-canon` is a multi-package repository for deterministic ingest,
-indexing, reasoning, agent execution, runtime governance, and repository
-maintenance. Each package is publishable on its own, but the repository keeps
-their interfaces, schemas, and shared validation work in one place.
+`bijux-canon` is a multi-package system because the work is easier to reason
+about when preparation, retrieval, reasoning, orchestration, and runtime
+governance stay distinct. The split is not cosmetic. It is the main mechanism
+that keeps ownership explicit and review conversations short.
 
-These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+Read the platform as a pipeline of responsibilities rather than a stack of
+directories. Ingest prepares deterministic material. Index turns retrieval
+behavior into an executable contract. Reason shapes evidence-backed claims.
+Agent coordinates role-local behavior and traceable runs. Runtime owns
+execution, replay, and acceptance authority across the wider flow.
+
+These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
 ## Page Maps
 
@@ -82,7 +88,7 @@ flowchart TD
 
 ## Decision Rule
 
-Use `Platform Overview` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.
+Use `Platform Overview` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
 
 ## What This Page Answers
 
@@ -110,7 +116,7 @@ Use `Platform Overview` to decide whether the current question is genuinely repo
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.
+These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
 
 ## Purpose
 
@@ -174,7 +180,7 @@ Each repository handbook page should make one monorepo-level decision legible en
 
 ## Why It Matters
 
-Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.
+Repository pages matter because they explain the rules of coordination. Without them, every package has to re-explain shared schemas, release posture, and workspace expectations in slightly different words, and trust erodes fast.
 
 ## If It Drifts
 
@@ -184,7 +190,7 @@ Repository pages matter because they keep shared rules, schemas, workflows, and 
 
 ## Representative Scenario
 
-A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.
+A cross-package change touches schemas, automation, and release behavior at once. The repository page should help the reviewer separate root-owned coordination from package-owned behavior instead of merging everything into one fuzzy story.
 
 ## Source Of Truth Order
 

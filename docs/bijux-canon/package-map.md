@@ -9,6 +9,16 @@ last_reviewed: 2026-04-04
 
 # Package Map
 
+The package map is the clearest explanation of the product idea in this
+repository. Each canonical package owns a distinct part of one larger system,
+and the split is the point:
+
+- `bijux-canon-ingest` prepares deterministic material from upstream inputs
+- `bijux-canon-index` executes retrieval and backend-facing vector behavior
+- `bijux-canon-reason` turns evidence into inspectable reasoning outcomes
+- `bijux-canon-agent` orchestrates role-based workflows and trace-backed runs
+- `bijux-canon-runtime` governs execution, replay, and acceptance authority
+
 The canonical packages each own a distinct slice of the overall system:
 
 - [bijux-canon-ingest](../bijux-canon-ingest/foundation/index.md) for deterministic document ingestion, chunking, retrieval assembly, and ingest-facing boundaries.
@@ -17,7 +27,7 @@ The canonical packages each own a distinct slice of the overall system:
 - [bijux-canon-agent](../bijux-canon-agent/foundation/index.md) for deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
 - [bijux-canon-runtime](../bijux-canon-runtime/foundation/index.md) for governed execution and replay authority with auditable non-determinism handling, persistence, and package-to-package coordination.
 
-These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
 ## Page Maps
 
@@ -77,7 +87,7 @@ flowchart TD
 
 ## Decision Rule
 
-Use `Package Map` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.
+Use `Package Map` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
 
 ## What This Page Answers
 
@@ -105,11 +115,11 @@ Use `Package Map` to decide whether the current question is genuinely repository
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.
+These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
 
 ## Purpose
 
-This page keeps the package relationships visible from one place before a reader dives into package-local detail.
+This page lets a reader see the whole system shape from one place before diving into package-local detail.
 
 ## Stability
 
@@ -169,7 +179,7 @@ Each repository handbook page should make one monorepo-level decision legible en
 
 ## Why It Matters
 
-Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.
+Repository pages matter because they explain the rules of coordination. Without them, every package has to re-explain shared schemas, release posture, and workspace expectations in slightly different words, and trust erodes fast.
 
 ## If It Drifts
 
@@ -179,7 +189,7 @@ Repository pages matter because they keep shared rules, schemas, workflows, and 
 
 ## Representative Scenario
 
-A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.
+A cross-package change touches schemas, automation, and release behavior at once. The repository page should help the reviewer separate root-owned coordination from package-owned behavior instead of merging everything into one fuzzy story.
 
 ## Source Of Truth Order
 

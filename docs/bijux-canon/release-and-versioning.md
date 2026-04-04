@@ -13,7 +13,11 @@ The repository uses commitizen for conventional commit messages and package
 tags for version discovery through Hatch VCS. Version resolution is therefore
 both a repository concern and a package concern.
 
-These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+The wording of the commit history matters here because the repository is meant
+to stay understandable years later. A good commit message should explain
+durable intent, not just what happened to be touched in one diff.
+
+These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
 ## Page Maps
 
@@ -79,7 +83,7 @@ maintainer can understand them years later without opening the diff first.
 
 ## Decision Rule
 
-Use `Release and Versioning` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.
+Use `Release and Versioning` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
 
 ## What This Page Answers
 
@@ -107,7 +111,7 @@ Use `Release and Versioning` to decide whether the current question is genuinely
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.
+These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
 
 ## Purpose
 
@@ -171,7 +175,7 @@ Each repository handbook page should make one monorepo-level decision legible en
 
 ## Why It Matters
 
-Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.
+Repository pages matter because they explain the rules of coordination. Without them, every package has to re-explain shared schemas, release posture, and workspace expectations in slightly different words, and trust erodes fast.
 
 ## If It Drifts
 
@@ -181,7 +185,7 @@ Repository pages matter because they keep shared rules, schemas, workflows, and 
 
 ## Representative Scenario
 
-A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.
+A cross-package change touches schemas, automation, and release behavior at once. The repository page should help the reviewer separate root-owned coordination from package-owned behavior instead of merging everything into one fuzzy story.
 
 ## Source Of Truth Order
 
