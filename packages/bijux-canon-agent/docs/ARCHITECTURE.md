@@ -1,12 +1,26 @@
-# ARCHITECTURE
+# Architecture
 
-`bijux-canon-agent` is a deterministic agent-pipeline package.
+The package is organized around a simple shape: thin boundaries, a durable
+pipeline core, and role-local behavior that stays close to the role it serves.
 
-Core layout:
-- `src/bijux_canon_agent/agents/` implements agent roles and role-local helpers.
-- `src/bijux_canon_agent/pipeline/` owns lifecycle, execution flow, termination, and result shaping.
-- `src/bijux_canon_agent/application/` owns orchestration policies that coordinate the pipeline.
-- `src/bijux_canon_agent/interfaces/cli/` and `src/bijux_canon_agent/api/v1/` expose the operator boundaries.
-- `src/bijux_canon_agent/observability/`, `traces/`, and `config/` support telemetry, replay, and configuration.
+## Main layers
 
-The intended architecture is thin boundaries over a durable pipeline core. Agent implementations belong beside their own input, reporting, and validation helpers rather than inside cross-cutting monolith files.
+- `agents/` holds concrete roles and helpers that are meaningful only for those roles
+- `pipeline/` owns lifecycle coordination, step sequencing, termination, and result shaping
+- `application/` composes pipeline pieces into package-level workflows
+- `interfaces/cli/` and `api/v1/` expose operator-facing boundaries
+- `traces/`, `observability/`, and `config/` support traceability, telemetry, and configuration loading
+
+## Intended flow
+
+1. A CLI or HTTP boundary accepts a request and validates package-facing input.
+2. The application layer turns that request into a pipeline invocation.
+3. The pipeline coordinates roles, produces outputs, and records traceable artifacts.
+4. Boundary code serializes the outcome without absorbing pipeline business logic.
+
+## Design expectations
+
+- boundary modules should stay thin and reversible
+- pipeline code should explain execution clearly enough that traces make sense later
+- role-specific logic should not be hidden inside generic orchestration helpers
+- observability should describe execution, not secretly control it

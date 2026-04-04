@@ -1,9 +1,12 @@
-# INVARIANTS
+# Invariants
 
-`bijux-canon-agent` keeps these invariants:
-- pipeline execution remains auditable and trace-backed
-- agent implementations do not absorb runtime persistence authority
-- package boundaries stay thin around CLI, HTTP, and artifact serialization
-- generated artifacts stay outside `src/`
+These are the truths maintainers should defend even during aggressive refactors.
 
-If a change weakens auditability, boundary clarity, or artifact discipline, it should be treated as a design regression.
+- every meaningful execution remains explainable through traces and result artifacts
+- runtime governance stays outside this package
+- CLI and HTTP layers stay thin enough that the core workflow remains reusable
+- generated output never becomes hand-maintained source
+- role-local logic stays near the role instead of disappearing into orchestration sprawl
+
+If a change improves convenience by weakening auditability, boundary clarity, or
+trace quality, it is probably a regression.

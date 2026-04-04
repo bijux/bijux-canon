@@ -1,15 +1,24 @@
-# BOUNDARIES
+# Boundaries
 
-`bijux-canon-agent` owns agent orchestration, trace-backed execution, and final-result assembly.
+`bijux-canon-agent` sits between callers on one side and deeper domain packages
+or runtime governance on the other.
 
-It does own:
-- reusable agent lifecycle and pipeline coordination
-- package CLI and HTTP boundaries
-- trace and replay-facing agent artifacts
+## This package owns
 
-It does not own:
-- canonical runtime persistence or replay governance from `bijux-canon-runtime`
-- retrieval/index execution internals from `bijux-canon-ingest` and `bijux-canon-index`
-- reasoning policy engines from `bijux-canon-reason`
+- local agent orchestration and lifecycle control
+- trace-backed execution records that explain what the agent package did
+- package-local CLI and HTTP request handling
+- final result assembly that is specific to the agent package's workflow
 
-When a concern is package-specific orchestration, it belongs here. When it is cross-package runtime authority or domain-specific execution logic, it belongs elsewhere.
+## Neighbor packages own
+
+- `bijux-canon-runtime`: persistence, replay policy, and execution authority
+- `bijux-canon-ingest`: document preparation and ingest-local retrieval assembly
+- `bijux-canon-index`: vector execution and replay-aware index behavior
+- `bijux-canon-reason`: reasoning, claims, and verification semantics
+
+## Boundary discipline
+
+- do not move runtime governance into agent helpers
+- do not hide domain-specific reasoning or indexing logic inside the pipeline
+- do not let interface code accumulate orchestration policy that belongs in application or pipeline code
