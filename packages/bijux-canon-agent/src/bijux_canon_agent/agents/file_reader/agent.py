@@ -31,7 +31,7 @@ from .runtime_flow import (
     read_with_retries,
     store_cached_result,
 )
-from .telemetry_support import (
+from .telemetry_events import (
     emit_cache_key_metric,
     flush_agent_logs,
     get_agent_telemetry,
