@@ -3156,6 +3156,29 @@ def write_mkdocs(
     (ROOT / "mkdocs.yml").write_text(body + "\n", encoding="utf-8")
 
 
+def validate_rendered_docs() -> None:
+    required_headings = (
+        "## Page Maps",
+        "## Use This Page When",
+        "## What This Page Answers",
+        "## Reviewer Lens",
+        "## Honesty Boundary",
+        "## Purpose",
+        "## Stability",
+    )
+    failures: list[str] = []
+    for path in sorted(DOCS_ROOT.rglob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        if text.count("```mermaid") < 2:
+            failures.append(f"{path}: fewer than two Mermaid diagrams")
+        for heading in required_headings:
+            if heading not in text:
+                failures.append(f"{path}: missing heading {heading}")
+    if failures:
+        joined = "\n".join(failures[:50])
+        raise RuntimeError(f"Rendered docs validation failed:\n{joined}")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Render the canonical bijux-canon documentation catalog."
@@ -3227,6 +3250,7 @@ def main() -> None:
     else:
         write_doc(DOCS_ROOT / "index.md", render_home(targets, categories_by_package))
     write_mkdocs(targets, categories_by_package)
+    validate_rendered_docs()
     count = len(list(DOCS_ROOT.rglob("*.md")))
     print(f"Rendered {count} Markdown files for targets: {', '.join(sorted(targets))}")
 
