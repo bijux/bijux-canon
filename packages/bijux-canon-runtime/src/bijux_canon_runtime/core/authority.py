@@ -97,28 +97,13 @@ def evaluate_verification(
     policy: VerificationPolicy,
 ) -> VerificationResult:
     """Evaluate verification; misuse breaks verification trust."""
-    registry = default_rule_registry()
-    violations, total_cost, randomness_violations = registry.evaluate(
-        policy, reasoning, evidence, artifacts
+    violations = _verification_violations(
+        reasoning=reasoning,
+        evidence=evidence,
+        artifacts=artifacts,
+        policy=policy,
     )
-    if total_cost > policy.max_rule_cost:
-        violations.append(RuleID("verification_cost_budget"))
-    violations.extend(randomness_violations)
-    status = "PASS"
-    reason = "verification_passed"
-
-    if violations:
-        status = "FAIL"
-        reason = "baseline_rule_violation"
-
-    if status == "PASS":
-        if any(rule_id in policy.fail_on for rule_id in violations):
-            status = "FAIL"
-            reason = "policy_fail_on"
-        elif any(rule_id in policy.escalate_on for rule_id in violations):
-            status = "ESCALATE"
-            reason = "policy_escalate_on"
-
+    status, reason = _verification_decision(violations=violations, policy=policy)
     return VerificationResult(
         spec_version="v1",
         engine_id="content",
@@ -142,36 +127,10 @@ def baseline_violations(
     violations: list[RuleID] = []
     evidence_map = {item.evidence_id: item for item in evidence}
     artifact_hashes = {artifact.content_hash for artifact in artifacts}
-
-    if any(len(claim.supported_by) == 0 for claim in reasoning.claims):
-        violations.append(RuleID("claim_requires_evidence"))
-
-    if any(not (0.0 <= claim.confidence <= 1.0) for claim in reasoning.claims):
-        violations.append(RuleID("confidence_in_range"))
-
-    claim_ids = [claim.claim_id for claim in reasoning.claims]
-    if len(set(claim_ids)) != len(claim_ids):
-        violations.append(RuleID("unique_claim_ids"))
-
-    if set(reasoning.evidence_ids) != set(evidence_map.keys()):
-        violations.append(RuleID("bundle_evidence_ids_match_inputs"))
-
+    violations.extend(_claim_integrity_violations(reasoning, evidence_map))
     for claim in reasoning.claims:
-        for evidence_id in claim.supported_by:
-            evidence_item = evidence_map.get(evidence_id)
-            if evidence_item is None:
-                violations.append(RuleID("claim_supports_known_evidence"))
-                continue
-            if str(evidence_id) not in claim.statement:
-                violations.append(RuleID("claim_mentions_evidence_id"))
-            if str(evidence_item.content_hash) not in claim.statement:
-                violations.append(RuleID("claim_mentions_evidence_hash"))
-
-        if artifact_hashes and not any(
-            str(artifact_hash) in claim.statement for artifact_hash in artifact_hashes
-        ):
-            violations.append(RuleID("claim_mentions_artifact_hash"))
-
+        violations.extend(_claim_support_violations(claim, evidence_map))
+        violations.extend(_claim_artifact_hash_violations(claim, artifact_hashes))
     return tuple(violations)
 
 
@@ -185,35 +144,128 @@ def _require_trace_finalized(result: _RunResult) -> None:
 
 def _require_verification_once_per_step(result: _RunResult) -> None:
     """Internal helper; not part of the public API."""
-    reasoning_bundle_ids = {
-        bundle.bundle_id
-        for bundle in result.reasoning_bundles
-        if hasattr(bundle, "bundle_id")
-    }
-    arbitration_bundle_ids: set[str] = set()
-    for arbitration in result.verification_arbitrations:
-        arbitration_bundle_ids.update(
-            str(item) for item in arbitration.target_artifact_ids
-        )
-    if reasoning_bundle_ids and arbitration_bundle_ids.issuperset(
-        {str(bundle_id) for bundle_id in reasoning_bundle_ids}
-    ):
+    if _has_complete_verification_coverage(result):
         return
     trace = result.trace
     if trace is None:
         raise SemanticViolationError("verification must run exactly once per step")
-    failure_events = {
-        EventType.REASONING_FAILED,
-        EventType.RETRIEVAL_FAILED,
-        EventType.STEP_FAILED,
-    }
-    if not _has_event(trace.events, failure_events):
+    if not _has_verification_terminating_failure(trace.events):
         raise SemanticViolationError("verification must run exactly once per step")
 
 
 def _has_event(events: Iterable[_Event], failure_events: set[EventType]) -> bool:
     """Internal helper; not part of the public API."""
     return any(event.event_type in failure_events for event in events)
+
+
+def _verification_violations(
+    *,
+    reasoning: ReasoningBundle,
+    evidence: Sequence[RetrievedEvidence],
+    artifacts: Sequence[Artifact],
+    policy: VerificationPolicy,
+) -> list[RuleID]:
+    """Internal helper; not part of the public API."""
+    registry = default_rule_registry()
+    violations, total_cost, randomness_violations = registry.evaluate(
+        policy, reasoning, evidence, artifacts
+    )
+    if total_cost > policy.max_rule_cost:
+        violations.append(RuleID("verification_cost_budget"))
+    violations.extend(randomness_violations)
+    return violations
+
+
+def _verification_decision(
+    *,
+    violations: Sequence[RuleID],
+    policy: VerificationPolicy,
+) -> tuple[str, str]:
+    """Internal helper; not part of the public API."""
+    if not violations:
+        return "PASS", "verification_passed"
+    if any(rule_id in policy.fail_on for rule_id in violations):
+        return "FAIL", "policy_fail_on"
+    if any(rule_id in policy.escalate_on for rule_id in violations):
+        return "ESCALATE", "policy_escalate_on"
+    return "FAIL", "baseline_rule_violation"
+
+
+def _claim_integrity_violations(
+    reasoning: ReasoningBundle,
+    evidence_map: dict[object, RetrievedEvidence],
+) -> tuple[RuleID, ...]:
+    """Internal helper; not part of the public API."""
+    violations: list[RuleID] = []
+    if any(len(claim.supported_by) == 0 for claim in reasoning.claims):
+        violations.append(RuleID("claim_requires_evidence"))
+    if any(not (0.0 <= claim.confidence <= 1.0) for claim in reasoning.claims):
+        violations.append(RuleID("confidence_in_range"))
+    claim_ids = [claim.claim_id for claim in reasoning.claims]
+    if len(set(claim_ids)) != len(claim_ids):
+        violations.append(RuleID("unique_claim_ids"))
+    if set(reasoning.evidence_ids) != set(evidence_map.keys()):
+        violations.append(RuleID("bundle_evidence_ids_match_inputs"))
+    return tuple(violations)
+
+
+def _claim_support_violations(
+    claim,
+    evidence_map: dict[object, RetrievedEvidence],
+) -> tuple[RuleID, ...]:
+    """Internal helper; not part of the public API."""
+    violations: list[RuleID] = []
+    for evidence_id in claim.supported_by:
+        evidence_item = evidence_map.get(evidence_id)
+        if evidence_item is None:
+            violations.append(RuleID("claim_supports_known_evidence"))
+            continue
+        if str(evidence_id) not in claim.statement:
+            violations.append(RuleID("claim_mentions_evidence_id"))
+        if str(evidence_item.content_hash) not in claim.statement:
+            violations.append(RuleID("claim_mentions_evidence_hash"))
+    return tuple(violations)
+
+
+def _claim_artifact_hash_violations(
+    claim,
+    artifact_hashes: set[object],
+) -> tuple[RuleID, ...]:
+    """Internal helper; not part of the public API."""
+    if not artifact_hashes:
+        return ()
+    if any(str(artifact_hash) in claim.statement for artifact_hash in artifact_hashes):
+        return ()
+    return (RuleID("claim_mentions_artifact_hash"),)
+
+
+def _has_complete_verification_coverage(result: _RunResult) -> bool:
+    """Internal helper; not part of the public API."""
+    reasoning_bundle_ids = {
+        str(bundle.bundle_id)
+        for bundle in result.reasoning_bundles
+        if hasattr(bundle, "bundle_id")
+    }
+    if not reasoning_bundle_ids:
+        return False
+    arbitration_bundle_ids = {
+        str(item)
+        for arbitration in result.verification_arbitrations
+        for item in arbitration.target_artifact_ids
+    }
+    return arbitration_bundle_ids.issuperset(reasoning_bundle_ids)
+
+
+def _has_verification_terminating_failure(events: Iterable[_Event]) -> bool:
+    """Internal helper; not part of the public API."""
+    return _has_event(
+        events,
+        {
+            EventType.REASONING_FAILED,
+            EventType.RETRIEVAL_FAILED,
+            EventType.STEP_FAILED,
+        },
+    )
 
 
 __all__ = [
