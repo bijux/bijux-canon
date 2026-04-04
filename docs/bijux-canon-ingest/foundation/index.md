@@ -27,6 +27,8 @@ bijux-canon-ingest exists to own deterministic document ingestion, chunking, ret
 
 - [Architecture](../architecture/index.md)
 - [Interfaces](../interfaces/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 
