@@ -1,20 +1,36 @@
-Owner: Bijan Mousavi <bijan@bijux.io>
+Owner: Bijan Mousavi
 Status: stable
 Scope: Changelog.
 
 # Changelog
 
-This file records user-visible package changes.
+All notable changes to this project are documented here. This file is generated via towncrier; do not edit by hand.
 
-The changelog should stay focused on durable behavior:
+Historical release entries below preserve the wording that shipped with the
+tagged release.
 
-- public CLI and API changes
-- trace or artifact shape changes
-- compatibility and replay-impacting changes
-- operator-visible workflow changes
+## Unreleased
 
-Implementation-only refactors belong in commit history unless they change the
-package contract in a way that downstream users need to know about.
+### Added
+
+- Package-local documentation now explains scope, architecture, boundaries,
+  contracts, and test strategy in maintainer-facing language.
+
+### Changed
+
+- The package was realigned under the canonical `bijux-canon-agent` identity,
+  with module names, package surfaces, and docs updated to match durable
+  ownership.
+- CLI and HTTP boundaries were reorganized under explicit `interfaces/` and
+  versioned `api/` packages.
+- Pipeline internals were split into smaller modules for validation, critique,
+  summarization, file reading, lifecycle control, convergence, and trace
+  handling.
+
+### Fixed
+
+- Root package quality gates were restored after the refactor series, including
+  compatibility exports needed by CLI helpers.
 
 ## v0.1.0 (first public release)
 
@@ -26,4 +42,4 @@ package contract in a way that downstream users need to know about.
 - Agent execution kernel, lifecycle invariants, and passive-agent enforcement.
 - Trace schema versioning, migration guards, and runtime compatibility checks.
 - Convergence strategies and dry-run trace generator for deterministic tests.
-- Example pipelines, public API boundary docs, and star-import invariants.
+- Reference pipelines, public API boundary docs, and star-import invariants.

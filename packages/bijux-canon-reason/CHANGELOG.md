@@ -1,12 +1,30 @@
+
 # Changelog
 
-This changelog should record reasoning-package changes that affect users,
-operators, or maintainers directly:
+Historical release entries below preserve the wording that shipped with the
+tagged release.
 
-- reasoning and verification behavior changes
-- evidence and provenance contract changes
-- package-facing API or CLI changes
-- compatibility changes that alter how the package is consumed
+## Unreleased
+
+### Added
+
+- Package-local documentation now explains reasoning-package ownership,
+  architecture, boundaries, contracts, and test strategy in clearer human-facing
+  language.
+
+### Changed
+
+- The package was realigned under the canonical `bijux-canon-reason` identity,
+  with planning, execution, retrieval, reasoning, trace, and verification code
+  promoted into clearer top-level package areas.
+- Runtime and API code were decomposed into smaller units for step execution,
+  tool dispatch, provenance handling, evaluation summaries, replay
+  orchestration, and invariant validation.
+
+### Fixed
+
+- Fail-fast execution policy handling and root package gates were repaired after
+  the refactor series.
 
 ## v0.1.0 — Initial public release
 

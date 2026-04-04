@@ -2,15 +2,32 @@
 
 All notable changes to `bijux-canon-ingest` are documented here.
 
-This changelog should focus on:
+Historical release entries below preserve the wording that shipped with the
+tagged release, including legacy distribution naming where applicable.
 
-- ingest and retrieval behavior that changes user-visible output
-- package-facing CLI or HTTP changes
-- schema and compatibility changes
-- operator-visible changes to deterministic ingest guarantees
+## [Unreleased]
 
-Historical names such as `bijux-rag` may appear in older compatibility notes,
-but the canonical package described here is `bijux-canon-ingest`.
+### Added
+
+- Package-local documentation now explains ingest ownership, layout,
+  architecture, and test strategy in clearer maintainers-first language.
+- Package layout and docs integrity checks were added to keep source structure
+  and package guides aligned.
+
+### Changed
+
+- The package was realigned under the canonical `bijux-canon-ingest` identity,
+  with source packages and docs renamed away from legacy `rag` terminology.
+- Ingest workflows were reorganized around clearer `application/`, `config/`,
+  `interfaces/`, `processing/`, `retrieval/`, `observability/`, and
+  `integrations/` ownership.
+- CLI, HTTP, retrieval, and document I/O paths were split into smaller modules
+  so deterministic ingest behavior is easier to follow and maintain.
+
+### Fixed
+
+- Root package checks, package-local typing configuration, and fallback version
+  behavior were aligned for the current `0.3.0` line.
 
 ## [0.1.0] – 2025-12-26
 
@@ -24,9 +41,9 @@ but the canonical package described here is `bijux-canon-ingest`.
 - **Interop and Helpers**: Included stdlib FP utilities (`merge_streams`, `running_sum`) and Toolz-compatible functions (`compose`, `curried_map`, `reduceby`); added chunking policies (`fixed_size_chunk`).
 - **Adapters and Pipelines**: Implemented storage adapters (`FileStorage`, `InMemoryStorage`) with CSV support; defined composable pipelines like `embed_docs`.
 - **Boundaries and APIs**: Added CLI entrypoint (`bijux-rag`) for processing/serving; FastAPI HTTP API with embedding/retrieval endpoints and OpenAPI schema.
-- **Typing and Testing**: Included `py.typed` markers, msgpack stubs, and strict configs for MyPy/Pytype; comprehensive tests with Hypothesis (laws, equivalence), coverage, and E2E markers.
+- **Typing and Testing**: Included `py.typed` markers, msgpack stubs, and strict configs for MyPy/Pyright/Pytype; comprehensive tests with Hypothesis (laws, equivalence), coverage, and E2E markers.
 - **Documentation and Tooling**: MkDocs setup with Material theme, plugins (mkdocstrings, minify), and pages for overview, usage, API reference, architecture (ADRs), and changelog.
 - **Quality Pipeline**: Linting (Ruff), code health (Vulture, Deptry, Interrogate), security (Bandit, Pip-Audit), modular Makefiles (test, lint, docs, build), Tox envs (3.11-3.13), and CI with GitHub Actions.
-- **Build and Compliance**: Hatchling packaging with VCS versioning; SBOM (CycloneDX), citations (CFF, BibTeX), and consolidated repository licensing.
+- **Build and Compliance**: Hatchling packaging with VCS versioning; SBOM (CycloneDX), citations (CFF, BibTeX); REUSE compliance with MIT/CC0 licenses.
 
 [Back to top](#top)

@@ -3,26 +3,40 @@
 
 All notable changes to **bijux-canon-runtime** are documented here.
 
-This changelog should emphasize:
-
-- execution and replay behavior changes
-- schema and persistence changes
-- non-determinism and policy changes
-- package-facing CLI or API changes
+Historical release entries below preserve the wording that shipped with the
+tagged release, including legacy distribution naming where applicable.
 
 <a id="unreleased"></a>  
 ## [Unreleased]  
 
+<!-- unreleased start -->
 ### Added
-* (add new entries here)
+* Package-local documentation now explains execution authority, replay
+  semantics, operator boundaries, API contract testing, and example datasets in
+  clearer human-facing language.
 
 ### Changed
-* (add here)
+* The package was realigned under the canonical `bijux-canon-runtime` identity,
+  with runtime models, contracts, ontology, observability, interfaces, and API
+  surfaces renamed around durable ownership.
+* Execution orchestration was decomposed into smaller modules for flow
+  preparation, step execution, run recording, replay analysis, policy handling,
+  and persistence support.
+* Runtime command handling, `RunMode` ownership, and non-determinism lifecycle
+  plumbing were consolidated into clearer runtime-facing modules.
+* Planner behavior now uses normalized dependency ordering and canonical package
+  version discovery for runtime metadata.
 
 ### Fixed
-* (add here)
+* Duplicate dependency declarations are now rejected during planning.
+* Runtime metadata and tests now align with canonical package names and the
+  `bijux-cli` `0.3.3` line.
+* Root package quality gates were repaired after the refactor series.
+<!-- unreleased end -->  
 
 ---  
+
+<!-- release start -->  
 
 <a id="v0-1-0"></a>  
 ## [0.1.0] – 2025-01-21  
@@ -53,4 +67,7 @@ This changelog should emphasize:
   - Determinism/non-determinism contract docs and storage model guidance.
   - Examples for deterministic and replay behavior.
 - **Quality gates**
-  - Makefile orchestration for tests, linting, docs, API checks, and SBOM outputs.
+  - Makefile orchestration for tests, linting, docs, API checks, SBOM, and citation outputs.
+
+
+<!-- release end -->
