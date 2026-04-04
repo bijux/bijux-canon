@@ -7,6 +7,8 @@ from typing import Any
 
 from bijux_canon_agent.observability.logging import MetricType
 
+from .key_sets import get_all_data_keys, get_all_schema_keys
+
 
 def validate_recursive(
     agent: Any, data: Any, schema: Any, path: str
@@ -325,30 +327,6 @@ def validate_recursive(
             }
 
     return errors, audit
-
-
-def get_all_schema_keys(schema: dict[str, Any], path: str = "") -> set[str]:
-    """Return the recursive key set defined by a validation schema."""
-    keys = set()
-    if isinstance(schema, dict):
-        for key, value in schema.items():
-            full_key = f"{path}.{key}" if path else key
-            keys.add(full_key)
-            if isinstance(value, dict) and "schema" in value:
-                keys.update(get_all_schema_keys(value["schema"], full_key))
-    return keys
-
-
-def get_all_data_keys(data: dict[str, Any], path: str = "") -> set[str]:
-    """Return the recursive key set present in a data payload."""
-    keys = set()
-    if isinstance(data, dict):
-        for key, value in data.items():
-            full_key = f"{path}.{key}" if path else key
-            keys.add(full_key)
-            if isinstance(value, dict):
-                keys.update(get_all_data_keys(value, full_key))
-    return keys
 
 
 __all__ = ["get_all_data_keys", "get_all_schema_keys", "validate_recursive"]
