@@ -6,53 +6,19 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: publish-bijux-canon-agent
-  cancel-in-progress: false
-
 jobs:
   publish:
-    runs-on: ubuntu-latest
-    env:
-      ARTIFACTS_DIR: artifacts/bijux-canon-agent
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: packages/bijux-canon-agent/pyproject.toml
-
-      - name: Build distribution and SBOM
-        run: |
-          make -C packages/bijux-canon-agent build
-          make -C packages/bijux-canon-agent sbom
-
-      - name: Stage publish artifacts
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p .github/tmp/bijux-canon-agent-dist
-          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/bijux-canon-agent-dist/
-          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/bijux-canon-agent-dist/
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: .github/tmp/bijux-canon-agent-dist
-          skip-existing: true
-
-      - name: Upload release artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: bijux-canon-agent-release
-          path: |
-            ${{ env.ARTIFACTS_DIR }}/build/*
-            ${{ env.ARTIFACTS_DIR }}/sbom/*
-          if-no-files-found: ignore
-          retention-days: 14
+    uses: ./.github/workflows/publish-package.yml
+    with:
+      package_slug: bijux-canon-agent
+      package_dir: packages/bijux-canon-agent
+      artifacts_dir: artifacts/bijux-canon-agent
+      cache_dependency_path: |
+        packages/bijux-canon-agent/pyproject.toml
+        pyproject.toml
+      build_command: |
+        make -C packages/bijux-canon-agent build
+        make -C packages/bijux-canon-agent sbom
+      upload_paths: |
+        artifacts/bijux-canon-agent/build/*
+        artifacts/bijux-canon-agent/sbom/*

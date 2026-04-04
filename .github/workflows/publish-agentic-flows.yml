@@ -6,49 +6,14 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: publish-agentic-flows
-  cancel-in-progress: false
-
 jobs:
   publish:
-    runs-on: ubuntu-latest
-    env:
-      ARTIFACTS_DIR: artifacts/compat-agentic-flows
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: packages/compat-agentic-flows/pyproject.toml
-
-      - name: Build compatibility distribution
-        run: make PACKAGE=compat-agentic-flows build
-
-      - name: Stage publish artifacts
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p .github/tmp/agentic-flows-dist
-          cp "${ARTIFACTS_DIR}"/build/*.whl .github/tmp/agentic-flows-dist/
-          cp "${ARTIFACTS_DIR}"/build/*.tar.gz .github/tmp/agentic-flows-dist/
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: .github/tmp/agentic-flows-dist
-          skip-existing: true
-
-      - name: Upload release artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: agentic-flows-release
-          path: ${{ env.ARTIFACTS_DIR }}/build/*
-          if-no-files-found: ignore
-          retention-days: 14
+    uses: ./.github/workflows/publish-package.yml
+    with:
+      package_slug: agentic-flows
+      package_dir: packages/compat-agentic-flows
+      artifacts_dir: artifacts/compat-agentic-flows
+      cache_dependency_path: |
+        packages/compat-agentic-flows/pyproject.toml
+        pyproject.toml
+      build_command: make PACKAGE=compat-agentic-flows build

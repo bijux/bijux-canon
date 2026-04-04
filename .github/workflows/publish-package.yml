@@ -1,0 +1,80 @@
+name: publish-package
+
+on:
+  workflow_call:
+    inputs:
+      package_slug:
+        required: true
+        type: string
+      package_dir:
+        required: true
+        type: string
+      artifacts_dir:
+        required: true
+        type: string
+      cache_dependency_path:
+        required: true
+        type: string
+      build_command:
+        required: true
+        type: string
+      dist_subdir:
+        required: false
+        type: string
+        default: build
+      upload_paths:
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ inputs.package_slug }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACTS_DIR: ${{ inputs.artifacts_dir }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: ${{ inputs.cache_dependency_path }}
+
+      - name: Build release artifacts
+        shell: bash
+        run: ${{ inputs.build_command }}
+
+      - name: Stage publish artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage_dir=".github/tmp/${{ inputs.package_slug }}-dist"
+          mkdir -p "$stage_dir"
+          cp "${ARTIFACTS_DIR}/${{ inputs.dist_subdir }}"/*.whl "$stage_dir"/
+          cp "${ARTIFACTS_DIR}/${{ inputs.dist_subdir }}"/*.tar.gz "$stage_dir"/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: .github/tmp/${{ inputs.package_slug }}-dist
+          skip-existing: true
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.package_slug }}-release
+          path: ${{ inputs.upload_paths != '' && inputs.upload_paths || format('{0}/{1}/*', env.ARTIFACTS_DIR, inputs.dist_subdir) }}
+          if-no-files-found: ignore
+          retention-days: 14
