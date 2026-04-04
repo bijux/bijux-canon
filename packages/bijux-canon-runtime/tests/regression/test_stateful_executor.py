@@ -52,7 +52,7 @@ def test_dry_run_emits_state_artifact(
         agent_invocation=AgentInvocation(
             spec_version="v1",
             agent_id=AgentID("agent-state"),
-            agent_version=VersionID("0.0.0"),
+            agent_version=VersionID("0.3.0"),
             inputs_fingerprint=InputsFingerprint("inputs"),
             declared_outputs=(),
             execution_mode="seeded",

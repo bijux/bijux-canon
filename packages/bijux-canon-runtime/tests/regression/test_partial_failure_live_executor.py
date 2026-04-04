@@ -55,7 +55,7 @@ def test_budget_exhaustion_records_failure(
         agent_invocation=AgentInvocation(
             spec_version="v1",
             agent_id=AgentID("agent-budget"),
-            agent_version=VersionID("0.0.0"),
+            agent_version=VersionID("0.3.0"),
             inputs_fingerprint=InputsFingerprint("inputs"),
             declared_outputs=(),
             execution_mode="seeded",

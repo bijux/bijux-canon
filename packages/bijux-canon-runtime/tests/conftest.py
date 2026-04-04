@@ -65,11 +65,11 @@ from bijux_canon_runtime.ontology.public import (
 def pytest_configure() -> None:
     if "bijux_cli" not in sys.modules:
         stub = types.ModuleType("bijux_cli")
-        stub.__version__ = "0.0.0"
+        stub.__version__ = "0.3.3"
         sys.modules["bijux_cli"] = stub
     if "bijux_canon_agent" not in sys.modules:
         stub = types.ModuleType("bijux_canon_agent")
-        stub.__version__ = "0.0.0"
+        stub.__version__ = "0.3.0"
         stub.run = lambda **_kwargs: []
         sys.modules["bijux_canon_agent"] = stub
     if "bijux_rag" not in sys.modules:
@@ -90,12 +90,12 @@ def pytest_configure() -> None:
 def _stable_bijux_versions(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         "bijux_canon_runtime.application.planner.ExecutionPlanner._bijux_cli_version",
-        "0.0.0",
+        "0.3.3",
         raising=False,
     )
     monkeypatch.setattr(
         "bijux_canon_runtime.application.planner.ExecutionPlanner._bijux_canon_agent_version",
-        "0.0.0",
+        "0.3.0",
         raising=False,
     )
 
@@ -326,7 +326,7 @@ def resolved_flow(
         agent_invocation=AgentInvocation(
             spec_version="v1",
             agent_id=AgentID("agent-a"),
-            agent_version=VersionID("0.0.0"),
+            agent_version=VersionID("0.3.0"),
             inputs_fingerprint=InputsFingerprint("inputs"),
             declared_outputs=(),
             execution_mode="seeded",

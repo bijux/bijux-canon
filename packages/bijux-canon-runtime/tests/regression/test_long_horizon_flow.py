@@ -135,7 +135,7 @@ def test_long_horizon_flow_is_stable(
                 agent_invocation=AgentInvocation(
                     spec_version="v1",
                     agent_id=agent_id,
-                    agent_version=VersionID("0.0.0"),
+                    agent_version=VersionID("0.3.0"),
                     inputs_fingerprint=InputsFingerprint(f"inputs-{index}"),
                     declared_outputs=(),
                     execution_mode="seeded",

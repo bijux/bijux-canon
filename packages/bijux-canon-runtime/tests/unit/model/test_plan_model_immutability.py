@@ -51,7 +51,7 @@ def _make_step(index: int) -> ResolvedStep:
         agent_invocation=AgentInvocation(
             spec_version="v1",
             agent_id=AgentID(f"agent-{index}"),
-            agent_version=VersionID("0.0.0"),
+            agent_version=VersionID("0.3.0"),
             inputs_fingerprint=InputsFingerprint(f"inputs-{index}"),
             declared_outputs=(),
             execution_mode="seeded",

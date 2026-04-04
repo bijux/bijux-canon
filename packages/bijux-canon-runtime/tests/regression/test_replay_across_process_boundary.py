@@ -129,7 +129,7 @@ def test_replay_across_process_boundary(
         agent_invocation=AgentInvocation(
             spec_version="v1",
             agent_id=AgentID("agent-a"),
-            agent_version=VersionID("0.0.0"),
+            agent_version=VersionID("0.3.0"),
             inputs_fingerprint=InputsFingerprint("inputs"),
             declared_outputs=(),
             execution_mode="seeded",

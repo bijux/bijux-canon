@@ -51,7 +51,7 @@ def test_dry_run_records_arbitration_slot(
         agent_invocation=AgentInvocation(
             spec_version="v1",
             agent_id=AgentID("agent-arbitration"),
-            agent_version=VersionID("0.0.0"),
+            agent_version=VersionID("0.3.0"),
             inputs_fingerprint=InputsFingerprint("inputs"),
             declared_outputs=(),
             execution_mode="seeded",
