@@ -1,449 +1,912 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: bijux-canon-reason API
-  version: 1.0.0
-  description: 'OpenAPI schema for Bijux LLM RAR item management.
-
-    Includes robust error handling, pagination, and industry-standard response objects.
-
-    Designed for SDK/code generation, documentation, monitoring, and security review.
-
-    '
+  summary: Deterministic item and run management for the reasoning runtime.
+  description: The bijux-canon-reason HTTP API exposes the v1 operational surface
+    for managing lightweight item state and creating auditable run artifacts. It is
+    intentionally split between simple CRUD and run lifecycle endpoints so operators
+    can review stored state and generated reasoning evidence with the same contract
+    boundary.
   contact:
-    name: Bijux LLM RAR Support
-    url: https://bijux.dev/bijux-canon-reason/support
-    email: bijan@bijux.io
+    name: Bijux
+    url: https://github.com/bijux/bijux-canon
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
-tags:
-- name: Items
-  description: Operations related to items
+  version: v1
 servers:
-- url: http://127.0.0.1:8000/v1
-  description: Local development server
-- url: https://api.bijux.dev/bijux-canon-reason/v1
-  description: 'Production API server (planned; not live yet).
-
-    This URL is a placeholder. API endpoints are not currently deployed.
-
-    '
-security: []
+- url: /
 paths:
-  /items:
+  /health:
     get:
       tags:
-      - Items
-      summary: List items
-      description: 'Return a paginated list of items.
-
-        Use `limit` and `offset` for pagination.
-
-        '
-      operationId: listItems
-      parameters:
-      - name: limit
-        in: query
-        description: Maximum number of items to return (default 10, max 100)
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 10
-        example: 20
-      - name: offset
-        in: query
-        description: Offset from the start of the list (for pagination)
-        required: false
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-        example: 0
+      - Health
+      summary: Report API health
+      description: Return a lightweight liveness signal for the reasoning API.
+      operationId: getReasonHealth
       responses:
         '200':
-          description: A paginated list of items
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ItemList'
-              examples:
-                success:
-                  value:
-                    items:
-                    - id: 1
-                      name: Item One
-                      description: Description one
-                    - id: 2
-                      name: Item Two
-                      description: Description two
-                    total: 2
-        '406':
-          $ref: '#/components/responses/NotAcceptable'
+                $ref: '#/components/schemas/HealthResponse'
+  /v1/items:
+    get:
+      tags:
+      - Items
+      summary: List active items
+      description: Return the current page of active items. Deleted records are hidden
+        from this listing and pagination is controlled with limit and offset.
+      operationId: listReasonItems
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 10
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000000
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemListResponse'
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '422':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/ServerError'
+          description: Validation failed for a query parameter.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
     post:
       tags:
       - Items
-      summary: Create a new item
-      description: Create a new item with the provided data. If an item with the same
-        name exists, returns the existing item (idempotent).
-      operationId: createItem
+      summary: Create an item
+      description: Create a new item. If the name already exists and is active, the
+        runtime returns the existing record instead of creating a duplicate.
+      operationId: createReasonItem
       requestBody:
-        description: Data for the new item
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ItemCreate'
-            examples:
-              minimalItem:
-                summary: A request with only the required fields
-                value:
-                  name: Minimal Item
-              fullItem:
-                summary: A request with all optional fields included
-                value:
-                  name: Full Item
-                  description: This item has a detailed description.
       responses:
         '201':
-          description: Item created successfully
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
-              examples:
-                created:
-                  value:
-                    id: 3
-                    name: New Item
-                    description: A new item description
-          links:
-            GetCreatedItem:
-              operationId: getItemById
-              parameters:
-                item_id: $response.body#/id
-            UpdateCreatedItem:
-              operationId: updateItemById
-              parameters:
-                item_id: $response.body#/id
-            DeleteCreatedItem:
-              operationId: deleteItemById
-              parameters:
-                item_id: $response.body#/id
-        '200':
-          description: Item already exists (idempotent create); existing resource
-            is returned
+                $ref: '#/components/schemas/ItemResponse'
+        '401':
+          description: Authentication failed for the requested endpoint.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
-              examples:
-                existed:
-                  value:
-                    id: 3
-                    name: Full Item
-                    description: This item has a detailed description.
-        '406':
-          $ref: '#/components/responses/NotAcceptable'
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '409':
-          $ref: '#/components/responses/Conflict'
+          description: The submitted name conflicts with another item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '422':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/ServerError'
-  /items/{item_id}:
-    parameters:
-    - name: item_id
-      in: path
-      required: true
-      description: Unique item identifier
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 1000000
-      example: 1
+          description: Validation failed for the submitted payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+  /v1/items/{item_id}:
     get:
       tags:
       - Items
-      summary: Get item by ID
-      description: Retrieve item details by unique ID.
-      operationId: getItemById
+      summary: Get an item
+      description: Return a single active item by identifier.
+      operationId: getReasonItem
+      parameters:
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          maximum: 1000000
+          minimum: 1
+          title: Item Id
       responses:
         '200':
-          description: Item details
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
-              examples:
-                found:
-                  value:
-                    id: 1
-                    name: Item One
-                    description: Description one
-        '410':
-          $ref: '#/components/responses/Gone'
+                $ref: '#/components/schemas/ItemResponse'
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '404':
-          $ref: '#/components/responses/NotFound'
-        '406':
-          $ref: '#/components/responses/NotAcceptable'
+          description: The requested item does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '422':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/ServerError'
+          description: Validation failed for the requested item id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+    delete:
+      tags:
+      - Items
+      summary: Delete an item
+      description: Mark an active item as deleted so it no longer appears in listings.
+      operationId: deleteReasonItem
+      parameters:
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          maximum: 1000000
+          minimum: 1
+          title: Item Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '404':
+          description: The requested item does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '422':
+          description: Validation failed for the requested item id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
     put:
       tags:
       - Items
-      summary: Update item by ID
-      description: Update an existing item with the provided data. Raises conflict
-        if the new name is already in use by another item.
-      operationId: updateItemById
+      summary: Update an item
+      description: Update an active item or create the requested identifier when it
+        does not yet exist.
+      operationId: updateReasonItem
+      parameters:
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          maximum: 1000000
+          minimum: 1
+          title: Item Id
       requestBody:
-        description: Updated data for the item
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ItemUpdate'
-            examples:
-              valid1:
-                value:
-                  name: Alpha
-                  description: ok
-              valid2:
-                value:
-                  name: Beta
-              update:
-                value:
-                  name: Updated Item
-                  description: Updated description
       responses:
         '200':
-          description: Item updated successfully
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
-              examples:
-                updated:
-                  value:
-                    id: 1
-                    name: Updated Item
-                    description: Updated description
-          links:
-            GetUpdatedItem:
-              operationId: getItemById
-              parameters:
-                item_id: $response.body#/id
-            DeleteUpdatedItem:
-              operationId: deleteItemById
-              parameters:
-                item_id: $response.body#/id
-        '410':
-          $ref: '#/components/responses/Gone'
+                $ref: '#/components/schemas/ItemResponse'
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '404':
-          $ref: '#/components/responses/NotFound'
-        '406':
-          $ref: '#/components/responses/NotAcceptable'
+          description: The requested item is deleted or unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '409':
-          $ref: '#/components/responses/Conflict'
+          description: The submitted name conflicts with another item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '422':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/ServerError'
-    delete:
+          description: Validation failed for the submitted payload or item id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+  /v1/runs:
+    post:
       tags:
-      - Items
-      summary: Delete item by ID
-      description: Delete an item by its unique ID. Returns 404 if the item does not
-        exist.
-      operationId: deleteItemById
+      - Runs
+      summary: Create a run
+      description: Build a deterministic run directory from the submitted problem
+        spec and return the identifiers needed to inspect, verify, or replay it later.
+      operationId: createReasonRun
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunCreateRequest'
+        required: true
       responses:
-        '204':
-          description: Item deleted successfully
-        '410':
-          $ref: '#/components/responses/Gone'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '406':
-          $ref: '#/components/responses/NotAcceptable'
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunCreateResponse'
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
         '422':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/ServerError'
+          description: Validation failed for the run creation payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+  /v1/runs/{run_id}:
+    get:
+      tags:
+      - Runs
+      summary: Get run metadata
+      description: Return the stored run metadata document for a previously created
+        run.
+      operationId: getReasonRun
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Run Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getreasonrun
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '404':
+          description: The requested run was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/runs/{run_id}/manifest:
+    get:
+      tags:
+      - Runs
+      summary: Get run manifest
+      description: Return the persisted manifest document for a previously created
+        run.
+      operationId: getReasonRunManifest
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Run Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getreasonrunmanifest
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '404':
+          description: The requested manifest was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/runs/{run_id}/trace:
+    get:
+      tags:
+      - Runs
+      summary: Get run trace
+      description: Return the recorded trace for a run as newline-delimited JSON.
+      operationId: getReasonRunTrace
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Run Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '404':
+          description: The requested trace was not found.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/runs/{run_id}/verify:
+    post:
+      tags:
+      - Runs
+      summary: Verify a run
+      description: Verify a stored run trace against its persisted plan and return
+        the verification report.
+      operationId: verifyReasonRun
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Run Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Verifyreasonrun
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '404':
+          description: Required run artifacts were not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/runs/{run_id}/replay:
+    post:
+      tags:
+      - Runs
+      summary: Replay a run
+      description: Replay a stored run trace and report the resulting fingerprint
+        comparison.
+      operationId: replayReasonRun
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Run Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunReplayResponse'
+        '401':
+          description: Authentication failed for the requested endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '413':
+          description: The request or response exceeded the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '415':
+          description: The submitted content type is not accepted by the API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '429':
+          description: The caller exceeded the configured rate limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '404':
+          description: The requested trace was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ItemCreate:
-      type: object
-      additionalProperties: true
+    ErrorDetail:
       properties:
-        name:
+        detail:
           type: string
-          nullable: true
-          description: Optional item name
-        description:
-          type: string
-          nullable: true
-          description: Optional item description
-    Item:
+          title: Detail
+          description: Human-readable explanation for the API failure.
       type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: integer
-          description: Item ID
-          example: 1
-        name:
-          type: string
-          description: Item name
-          example: Item One
-        description:
-          type: string
-          description: Optional item description
-          nullable: true
-          example: Description one
       required:
-      - id
-      - name
-    ItemList:
+      - detail
+      title: ErrorDetail
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
+      title: HTTPValidationError
+    HealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+          description: Liveness indicator returned by the API.
+      type: object
+      required:
+      - status
+      title: HealthResponse
+    ItemCreate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      additionalProperties: true
+      type: object
+      title: ItemCreate
+    ItemListResponse:
       properties:
         items:
-          type: array
           items:
-            $ref: '#/components/schemas/Item'
+            $ref: '#/components/schemas/ItemResponse'
+          type: array
+          title: Items
+          description: Ordered page of active items returned by the API.
         total:
           type: integer
-          description: Total items available
-          example: 2
+          minimum: 0.0
+          title: Total
+          description: Total number of active items available.
+      type: object
       required:
       - items
       - total
-      additionalProperties: false
-    ItemUpdate:
-      type: object
-      additionalProperties: true
+      title: ItemListResponse
+    ItemResponse:
       properties:
+        id:
+          type: integer
+          minimum: 1.0
+          title: Id
+          description: Stable item identifier.
         name:
           type: string
-          nullable: true
-          description: Optional item name
+          title: Name
+          description: Reader-facing item name.
         description:
           type: string
-          nullable: true
-          description: Optional item description
-    Problem:
+          title: Description
+          description: Free-form item description.
       type: object
-      description: Error object in RFC7807 format
+      required:
+      - id
+      - name
+      - description
+      title: ItemResponse
+    ItemUpdate:
       properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      additionalProperties: true
+      type: object
+      title: ItemUpdate
+    JsonValue: {}
+    ProblemSpec:
+      properties:
+        id:
+          type: string
+          title: Id
+          default: ''
+        description:
+          type: string
+          title: Description
+        constraints:
+          additionalProperties:
+            $ref: '#/components/schemas/JsonValue'
+          type: object
+          title: Constraints
+        expected_output_type:
+          type: string
+          title: Expected Output Type
+          default: Claim
+        expected:
+          anyOf:
+          - additionalProperties:
+              $ref: '#/components/schemas/JsonValue'
+            type: object
+          - type: 'null'
+          title: Expected
+        version:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Version
+      additionalProperties: false
+      type: object
+      required:
+      - description
+      title: ProblemSpec
+    RunCreateRequest:
+      properties:
+        spec:
+          $ref: '#/components/schemas/ProblemSpec'
+        preset:
+          type: string
+          title: Preset
+          default: default
+        seed:
+          type: integer
+          minimum: 0.0
+          title: Seed
+          default: 0
+      type: object
+      required:
+      - spec
+      title: RunCreateRequest
+    RunCreateResponse:
+      properties:
+        run_id:
+          type: string
+          title: Run Id
+        run_dir:
+          type: string
+          title: Run Dir
+        trace_id:
+          type: string
+          title: Trace Id
+        fingerprint:
+          type: string
+          title: Fingerprint
+      type: object
+      required:
+      - run_id
+      - run_dir
+      - trace_id
+      - fingerprint
+      title: RunCreateResponse
+    RunReplayResponse:
+      properties:
+        original_trace_fingerprint:
+          type: string
+          title: Original Trace Fingerprint
+        replayed_trace_fingerprint:
+          type: string
+          title: Replayed Trace Fingerprint
+        diff_summary:
+          additionalProperties: true
+          type: object
+          title: Diff Summary
+        replay_trace_path:
+          type: string
+          title: Replay Trace Path
+      type: object
+      required:
+      - original_trace_fingerprint
+      - replayed_trace_fingerprint
+      - diff_summary
+      - replay_trace_path
+      title: RunReplayResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
         type:
           type: string
-          description: Error type URI
-          example: https://bijux.dev/bijux-canon-reason/docs/errors/invalid-request
-        title:
-          type: string
-          description: Short, human-readable summary
-          example: Invalid request
-        status:
-          type: integer
-          description: HTTP status code
-          example: 400
-        detail:
-          type: string
-          description: Detailed explanation
-          example: Query parameter 'limit' must be between 1 and 100
-        instance:
-          type: string
-          description: URI of the request/instance
-          example: /items?limit=1000
-  responses:
-    NotFound:
-      description: Item not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-          examples:
-            notFound:
-              value:
-                type: https://bijux.dev/bijux-canon-reason/docs/errors/not-found
-                title: Not found
-                status: 404
-                detail: Item not found
-                instance: /items/99
-    NotAcceptable:
-      description: Client must accept application/json
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-          examples:
-            notAcceptable:
-              value:
-                type: https://bijux.dev/bijux-canon-reason/docs/errors/not-acceptable
-                title: Not Acceptable
-                status: 406
-                detail: 'Set ''Accept: application/json'' for this endpoint'
-                instance: /items/1
-    Gone:
-      description: Item has been deleted (410)
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-          examples:
-            gone:
-              value:
-                type: https://bijux.dev/bijux-canon-reason/docs/errors/gone
-                title: Gone
-                status: 410
-                detail: Item deleted
-                instance: /items/1
-    Conflict:
-      description: Conflict (e.g., duplicate name)
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-          examples:
-            conflict:
-              value:
-                type: https://bijux.dev/bijux-canon-reason/docs/errors/conflict
-                title: Conflict
-                status: 409
-                detail: Item with this name already exists
-                instance: /items
-    ValidationError:
-      description: Unprocessable entity (validation failed)
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              detail:
-                type: string
-            required:
-            - detail
-          examples:
-            validation:
-              value:
-                detail: invalid request
-    ServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-          examples:
-            serverError:
-              value:
-                type: https://bijux.dev/bijux-canon-reason/docs/errors/internal-server-error
-                title: Internal server error
-                status: 500
-                detail: An unexpected error occurred
-                instance: /items
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+tags:
+- name: Health
+  description: Operational health signals for the reasoning API.
+- name: Items
+  description: Lightweight persisted items owned by the runtime.
+- name: Runs
+  description: Run creation, inspection, verification, and replay endpoints.

@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
+from bijux_canon_reason.api.v1.openapi_models import ErrorDetail
 from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
 from bijux_canon_reason.core.types import Plan, ProblemSpec
 from bijux_canon_reason.interfaces.access_guards import sanitize_run_id
@@ -54,7 +55,40 @@ def register_run_routes(
     guard_request: Callable[[Request], None],
     max_request_bytes: int,
 ) -> None:
-    @app.post("/v1/runs", response_model=RunCreateResponse)
+    guard_responses = {
+        401: {
+            "description": "Authentication failed for the requested endpoint.",
+            "model": ErrorDetail,
+        },
+        413: {
+            "description": "The request or response exceeded the configured size limit.",
+            "model": ErrorDetail,
+        },
+        415: {
+            "description": "The submitted content type is not accepted by the API.",
+            "model": ErrorDetail,
+        },
+        429: {
+            "description": "The caller exceeded the configured rate limit.",
+            "model": ErrorDetail,
+        },
+    }
+
+    @app.post(
+        "/v1/runs",
+        response_model=RunCreateResponse,
+        tags=["Runs"],
+        summary="Create a run",
+        description=(
+            "Build a deterministic run directory from the submitted problem spec and "
+            "return the identifiers needed to inspect, verify, or replay it later."
+        ),
+        operation_id="createReasonRun",
+        responses={
+            **guard_responses,
+            422: {"description": "Validation failed for the run creation payload.", "model": ErrorDetail},
+        },
+    )
     def create_run(req: RunCreateRequest, request: Request) -> RunCreateResponse:
         guard_request(request)
         artifacts = RunBuilder().build(
@@ -69,7 +103,18 @@ def register_run_routes(
             fingerprint=fingerprint,
         )
 
-    @app.get("/v1/runs/{run_id}")
+    @app.get(
+        "/v1/runs/{run_id}",
+        response_model=dict[str, object],
+        tags=["Runs"],
+        summary="Get run metadata",
+        description="Return the stored run metadata document for a previously created run.",
+        operation_id="getReasonRun",
+        responses={
+            **guard_responses,
+            404: {"description": "The requested run was not found.", "model": ErrorDetail},
+        },
+    )
     def get_run(run_id: str, request: Request) -> JsonDocument:
         guard_request(request)
         return _load_run_document(
@@ -79,7 +124,18 @@ def register_run_routes(
             missing_detail="run not found",
         )
 
-    @app.get("/v1/runs/{run_id}/manifest")
+    @app.get(
+        "/v1/runs/{run_id}/manifest",
+        response_model=dict[str, object],
+        tags=["Runs"],
+        summary="Get run manifest",
+        description="Return the persisted manifest document for a previously created run.",
+        operation_id="getReasonRunManifest",
+        responses={
+            **guard_responses,
+            404: {"description": "The requested manifest was not found.", "model": ErrorDetail},
+        },
+    )
     def get_manifest(run_id: str, request: Request) -> JsonDocument:
         guard_request(request)
         return _load_run_document(
@@ -89,7 +145,18 @@ def register_run_routes(
             missing_detail="manifest not found",
         )
 
-    @app.get("/v1/runs/{run_id}/trace", response_class=PlainTextResponse)
+    @app.get(
+        "/v1/runs/{run_id}/trace",
+        response_class=PlainTextResponse,
+        tags=["Runs"],
+        summary="Get run trace",
+        description="Return the recorded trace for a run as newline-delimited JSON.",
+        operation_id="getReasonRunTrace",
+        responses={
+            **guard_responses,
+            404: {"description": "The requested trace was not found.", "model": ErrorDetail},
+        },
+    )
     def fetch_trace(run_id: str, request: Request) -> str:
         guard_request(request)
         path = _run_dir(artifacts_dir, run_id) / "trace.jsonl"
@@ -97,7 +164,18 @@ def register_run_routes(
             raise HTTPException(status_code=404, detail="trace not found")
         return _read_trace_content(path=path, max_request_bytes=max_request_bytes)
 
-    @app.post("/v1/runs/{run_id}/verify")
+    @app.post(
+        "/v1/runs/{run_id}/verify",
+        response_model=dict[str, object],
+        tags=["Runs"],
+        summary="Verify a run",
+        description="Verify a stored run trace against its persisted plan and return the verification report.",
+        operation_id="verifyReasonRun",
+        responses={
+            **guard_responses,
+            404: {"description": "Required run artifacts were not found.", "model": ErrorDetail},
+        },
+    )
     def verify_run(run_id: str, request: Request) -> dict[str, object]:
         guard_request(request)
         run_dir = _run_dir(artifacts_dir, run_id)
@@ -115,7 +193,18 @@ def register_run_routes(
         payload = json.loads(output_path.read_text(encoding="utf-8"))
         return payload if isinstance(payload, dict) else {"report": payload}
 
-    @app.post("/v1/runs/{run_id}/replay", response_model=RunReplayResponse)
+    @app.post(
+        "/v1/runs/{run_id}/replay",
+        response_model=RunReplayResponse,
+        tags=["Runs"],
+        summary="Replay a run",
+        description="Replay a stored run trace and report the resulting fingerprint comparison.",
+        operation_id="replayReasonRun",
+        responses={
+            **guard_responses,
+            404: {"description": "The requested trace was not found.", "model": ErrorDetail},
+        },
+    )
     def replay_run(run_id: str, request: Request) -> RunReplayResponse:
         guard_request(request)
         trace_path = _run_dir(artifacts_dir, run_id) / "trace.jsonl"

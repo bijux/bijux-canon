@@ -12,6 +12,12 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi import Path as FastPath
 from pydantic import BaseModel
 
+from bijux_canon_reason.api.v1.openapi_models import (
+    ErrorDetail,
+    ItemListResponse,
+    ItemResponse,
+)
+
 
 class ItemCreate(BaseModel):
     model_config = {"extra": "allow"}
@@ -52,8 +58,43 @@ def register_item_routes(
     max_offset: int,
 ) -> None:
     db_path = Path(app.state.db_path)
+    guard_responses = {
+        401: {
+            "description": "Authentication failed for the requested endpoint.",
+            "model": ErrorDetail,
+        },
+        413: {
+            "description": "The request or response exceeded the configured size limit.",
+            "model": ErrorDetail,
+        },
+        415: {
+            "description": "The submitted content type is not accepted by the API.",
+            "model": ErrorDetail,
+        },
+        429: {
+            "description": "The caller exceeded the configured rate limit.",
+            "model": ErrorDetail,
+        },
+    }
 
-    @app.get("/v1/items")
+    @app.get(
+        "/v1/items",
+        response_model=ItemListResponse,
+        tags=["Items"],
+        summary="List active items",
+        description=(
+            "Return the current page of active items. Deleted records are hidden from "
+            "this listing and pagination is controlled with limit and offset."
+        ),
+        operation_id="listReasonItems",
+        responses={
+            **guard_responses,
+            422: {
+                "description": "Validation failed for a query parameter.",
+                "model": ErrorDetail,
+            },
+        },
+    )
     def list_items(
         request: Request,
         limit: int = Query(default=10, ge=1, le=max_response_items),
@@ -80,7 +121,19 @@ def register_item_routes(
             {"items": [_row_to_item(row) for row in rows], "total": total}
         )
 
-    @app.get("/v1/items/{item_id}")
+    @app.get(
+        "/v1/items/{item_id}",
+        response_model=ItemResponse,
+        tags=["Items"],
+        summary="Get an item",
+        description="Return a single active item by identifier.",
+        operation_id="getReasonItem",
+        responses={
+            **guard_responses,
+            404: {"description": "The requested item does not exist.", "model": ErrorDetail},
+            422: {"description": "Validation failed for the requested item id.", "model": ErrorDetail},
+        },
+    )
     def get_item(
         request: Request,
         item_id: int = FastPath(ge=1, le=1_000_000),
@@ -90,7 +143,20 @@ def register_item_routes(
         with closing(_connect_item_store(db_path)) as conn:
             return _read_active_item(conn, item_id=item_id)
 
-    @app.delete("/v1/items/{item_id}", status_code=204, response_class=Response)
+    @app.delete(
+        "/v1/items/{item_id}",
+        status_code=204,
+        response_class=Response,
+        tags=["Items"],
+        summary="Delete an item",
+        description="Mark an active item as deleted so it no longer appears in listings.",
+        operation_id="deleteReasonItem",
+        responses={
+            **guard_responses,
+            404: {"description": "The requested item does not exist.", "model": ErrorDetail},
+            422: {"description": "Validation failed for the requested item id.", "model": ErrorDetail},
+        },
+    )
     def delete_item(
         request: Request,
         item_id: int = FastPath(ge=1, le=1_000_000),
@@ -107,7 +173,23 @@ def register_item_routes(
             conn.commit()
         return Response(status_code=204)
 
-    @app.post("/v1/items", status_code=201)
+    @app.post(
+        "/v1/items",
+        status_code=201,
+        response_model=ItemResponse,
+        tags=["Items"],
+        summary="Create an item",
+        description=(
+            "Create a new item. If the name already exists and is active, the runtime "
+            "returns the existing record instead of creating a duplicate."
+        ),
+        operation_id="createReasonItem",
+        responses={
+            **guard_responses,
+            409: {"description": "The submitted name conflicts with another item.", "model": ErrorDetail},
+            422: {"description": "Validation failed for the submitted payload.", "model": ErrorDetail},
+        },
+    )
     def create_item(request: Request, payload: ItemCreate) -> dict[str, object]:
         guard_request(request)
         item_name = payload.name or f"item-{uuid.uuid4().hex[:8]}"
@@ -130,7 +212,20 @@ def register_item_routes(
                 conn.rollback()
                 raise HTTPException(status_code=422, detail="invalid request") from exc
 
-    @app.put("/v1/items/{item_id}")
+    @app.put(
+        "/v1/items/{item_id}",
+        response_model=ItemResponse,
+        tags=["Items"],
+        summary="Update an item",
+        description="Update an active item or create the requested identifier when it does not yet exist.",
+        operation_id="updateReasonItem",
+        responses={
+            **guard_responses,
+            404: {"description": "The requested item is deleted or unavailable.", "model": ErrorDetail},
+            409: {"description": "The submitted name conflicts with another item.", "model": ErrorDetail},
+            422: {"description": "Validation failed for the submitted payload or item id.", "model": ErrorDetail},
+        },
+    )
     def update_item(
         request: Request,
         item_id: int = FastPath(ge=1, le=1_000_000),

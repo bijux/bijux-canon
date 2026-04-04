@@ -25,6 +25,7 @@ from bijux_canon_reason.api.v1.item_routes import (
     configure_item_store,
     register_item_routes,
 )
+from bijux_canon_reason.api.v1.openapi_models import HealthResponse
 from bijux_canon_reason.api.v1.run_routes import register_run_routes
 
 RequestGuard = Callable[[Request], None]
@@ -33,7 +34,39 @@ NextHandler = Callable[[Request], Awaitable[Response]]
 
 def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
     artifacts_root = artifacts_dir or Path("artifacts/bijux-canon-reason")
-    app = FastAPI(title="bijux-canon-reason", version="1")
+    app = FastAPI(
+        title="bijux-canon-reason API",
+        summary="Deterministic item and run management for the reasoning runtime.",
+        description=(
+            "The bijux-canon-reason HTTP API exposes the v1 operational surface for "
+            "managing lightweight item state and creating auditable run artifacts. "
+            "It is intentionally split between simple CRUD and run lifecycle endpoints "
+            "so operators can review stored state and generated reasoning evidence with "
+            "the same contract boundary."
+        ),
+        version="v1",
+        openapi_version="3.1.0",
+        contact={"name": "Bijux", "url": "https://github.com/bijux/bijux-canon"},
+        license_info={
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        },
+        servers=[{"url": "/"}],
+        openapi_tags=[
+            {
+                "name": "Health",
+                "description": "Operational health signals for the reasoning API.",
+            },
+            {
+                "name": "Items",
+                "description": "Lightweight persisted items owned by the runtime.",
+            },
+            {
+                "name": "Runs",
+                "description": "Run creation, inspection, verification, and replay endpoints.",
+            },
+        ],
+    )
     app.state.db_path = configure_item_store(artifacts_root)
 
     rate_limit = _read_rate_limit()
@@ -47,7 +80,14 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
     _install_guard_middleware(app, request_guard)
     _install_validation_handler(app)
 
-    @app.get("/health")
+    @app.get(
+        "/health",
+        response_model=HealthResponse,
+        tags=["Health"],
+        summary="Report API health",
+        description="Return a lightweight liveness signal for the reasoning API.",
+        operation_id="getReasonHealth",
+    )
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
