@@ -971,6 +971,37 @@ def package_common_misreadings(package: PackageInfo, category: str) -> tuple[str
     return misreading_map[category]
 
 
+def package_next_checks(package: PackageInfo, category: str) -> tuple[str, ...]:
+    next_map = {
+        "foundation": (
+            "move to architecture when the question becomes structural rather than boundary-oriented",
+            "move to interfaces when the question becomes contract-facing",
+            "move to quality when the question becomes proof or review sufficiency",
+        ),
+        "architecture": (
+            "move to interfaces when the review reaches a public or operator-facing seam",
+            "move to operations when the concern becomes repeatable runtime behavior",
+            "move to quality when you need proof that the documented structure is still protected",
+        ),
+        "interfaces": (
+            "move to operations when the caller-facing question becomes procedural or environmental",
+            "move to quality when compatibility or evidence of protection becomes the real issue",
+            "move back to architecture when a public-surface question reveals a deeper structural drift",
+        ),
+        "operations": (
+            "move to interfaces when the operational path depends on a specific surface contract",
+            "move to quality when the question becomes whether the workflow is sufficiently proven",
+            "move back to architecture when operational complexity suggests a structural problem",
+        ),
+        "quality": (
+            "move to foundation when the risk appears to be boundary confusion rather than missing tests",
+            "move to architecture when the proof gap points to structural drift",
+            "move to interfaces or operations when the proof question is really about a contract or workflow",
+        ),
+    }
+    return next_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1103,6 +1134,17 @@ def add_common_misreadings(body: str, bullets: tuple[str, ...]) -> str:
         ]
     )
     return insert_before_heading(body, "Concrete Anchors", block)
+
+
+def add_next_checks(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Next Checks",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Purpose", block)
 
 
 def render_home(
@@ -1262,6 +1304,14 @@ def render_home(
             "that the root page itself should contain all of the repository detail",
             "that package, maintainer, and compatibility docs are interchangeable reading paths",
             "that the navigation tree alone is enough without explicit routing guidance",
+        ),
+    )
+    body = add_next_checks(
+        body,
+        (
+            "open the repository handbook when the question spans packages or schemas",
+            "open a product package handbook when the question is about ownership or package behavior",
+            "open the maintainer or compatibility handbooks only when the question is explicitly about those concerns",
         ),
     )
     body = add_anchor_section(
@@ -1653,6 +1703,14 @@ def render_root_page(
             "that repository guidance is authoritative without corresponding checked-in assets",
         ),
     )
+    body = add_next_checks(
+        body,
+        (
+            "move to the owning package docs when the question stops being repository-wide",
+            "check root files, schemas, or workflows named here before trusting prose alone",
+            "use maintainer docs next if the root issue is really about automation or drift tooling",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
@@ -2002,6 +2060,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "that repository-health tools are part of the public runtime product surface",
         ),
     )
+    body = add_next_checks(
+        body,
+        (
+            "move to product package docs if the question is user-facing behavior rather than repository health",
+            "open the relevant helper module or test after using this page to orient yourself",
+            "return to repository handbook pages when the maintainer issue turns out to be root policy instead",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
@@ -2345,6 +2411,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "that preserved import or distribution names prove long-term architectural importance",
         ),
     )
+    body = add_next_checks(
+        body,
+        (
+            "move to the canonical package docs once the current target package is known",
+            "inspect compatibility package metadata if the question is about what remains preserved",
+            "use this section again only when evaluating migration progress or retirement readiness",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
@@ -2476,6 +2550,7 @@ def render_package_page(
     body = add_source_of_truth(body, package_source_of_truth(package, category))
     body = add_common_misreadings(body, package_common_misreadings(package, category))
     body = add_anchor_section(body, package_anchor_bullets(package, category))
+    body = add_next_checks(body, package_next_checks(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
     body = add_honesty_boundary(body, package_honesty_boundary(package, category))

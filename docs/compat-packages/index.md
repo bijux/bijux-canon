@@ -94,6 +94,12 @@ flowchart TD
 - check that migration advice still points at current canonical docs
 - confirm that compatibility language does not accidentally encourage new work to start here
 
+## Next Checks
+
+- move to the canonical package docs once the current target package is known
+- inspect compatibility package metadata if the question is about what remains preserved
+- use this section again only when evaluating migration progress or retirement readiness
+
 ## Honesty Boundary
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.

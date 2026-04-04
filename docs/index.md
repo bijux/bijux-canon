@@ -140,6 +140,12 @@ This page can route readers to the right section quickly, but it does not replac
 - move into a product package when you need ownership, interfaces, operations, or quality detail
 - use the maintainer or compatibility sections only when the problem is explicitly about those concerns
 
+## Next Checks
+
+- open the repository handbook when the question spans packages or schemas
+- open a product package handbook when the question is about ownership or package behavior
+- open the maintainer or compatibility handbooks only when the question is explicitly about those concerns
+
 ## Purpose
 
 This page routes readers into the canonical repository and package handbooks without mixing product ownership with maintenance-only or legacy-only concerns.

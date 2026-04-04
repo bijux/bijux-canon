@@ -80,6 +80,12 @@ flowchart TD
 - you are checking whether a caller can rely on a given shape or entrypoint
 - you need the contract-facing side of the package before using it
 
+## Next Checks
+
+- move to operations when the caller-facing question becomes procedural or environmental
+- move to quality when compatibility or evidence of protection becomes the real issue
+- move back to architecture when a public-surface question reveals a deeper structural drift
+
 ## What This Page Answers
 
 - which public or operator-facing surfaces bijux-canon-reason exposes

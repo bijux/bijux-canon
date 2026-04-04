@@ -68,6 +68,12 @@ flowchart TD
 - you are deciding whether work belongs in this package or a neighboring one
 - you need the shortest stable description of package intent
 
+## Next Checks
+
+- move to architecture when the question becomes structural rather than boundary-oriented
+- move to interfaces when the question becomes contract-facing
+- move to quality when the question becomes proof or review sufficiency
+
 ## What This Page Answers
 
 - what bijux-canon-ingest is expected to own

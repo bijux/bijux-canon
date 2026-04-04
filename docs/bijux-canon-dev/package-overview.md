@@ -81,6 +81,12 @@ flowchart TD
 - check that maintainer-only guidance has not leaked into product-facing pages
 - confirm that repository automation still names its package impact explicitly
 
+## Next Checks
+
+- move to product package docs if the question is user-facing behavior rather than repository health
+- open the relevant helper module or test after using this page to orient yourself
+- return to repository handbook pages when the maintainer issue turns out to be root policy instead
+
 ## Honesty Boundary
 
 This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.

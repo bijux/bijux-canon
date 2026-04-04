@@ -67,6 +67,12 @@ flowchart TD
 - you need evidence that the documented contract is actually protected
 - you are deciding whether a change is done rather than merely implemented
 
+## Next Checks
+
+- move to foundation when the risk appears to be boundary confusion rather than missing tests
+- move to architecture when the proof gap points to structural drift
+- move to interfaces or operations when the proof question is really about a contract or workflow
+
 ## What This Page Answers
 
 - what proves the bijux-canon-agent contract today

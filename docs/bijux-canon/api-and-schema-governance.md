@@ -90,6 +90,12 @@ flowchart TD
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
+## Next Checks
+
+- move to the owning package docs when the question stops being repository-wide
+- check root files, schemas, or workflows named here before trusting prose alone
+- use maintainer docs next if the root issue is really about automation or drift tooling
+
 ## Honesty Boundary
 
 These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.

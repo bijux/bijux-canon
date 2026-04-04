@@ -106,6 +106,12 @@ A reviewer is tracing a refactor through `bijux-canon-reason` and needs to know 
 - you need to understand where modules fit before refactoring
 - you are reviewing architectural drift instead of one local bug
 
+## Next Checks
+
+- move to interfaces when the review reaches a public or operator-facing seam
+- move to operations when the concern becomes repeatable runtime behavior
+- move to quality when you need proof that the documented structure is still protected
+
 ## What This Page Answers
 
 - how bijux-canon-reason is structured internally
