@@ -3230,7 +3230,7 @@ def render_package_page(
     body = add_working_interpretation(body, package_working_interpretation(package, category))
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_decision_rule(body, package_decision_rule(package, category, title))
-    if category in {"foundation", "architecture", "interfaces"}:
+    if category in {"foundation", "architecture", "interfaces", "operations"}:
         body = add_question_section(body, package_page_questions(package, category, title))
         body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
         body = add_honesty_boundary(body, package_honesty_boundary(package, category))
