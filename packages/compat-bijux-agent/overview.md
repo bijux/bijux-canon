@@ -4,6 +4,10 @@ Use this package only when an existing installation still depends on the legacy
 agent package name. Each release continues the published `bijux-agent`
 distribution and installs `bijux-canon-agent` at the same version.
 
+The canonical package family now lives in `bijux-canon`, and the standalone
+`bijux-agent` repository is scheduled for retirement in favor of
+`https://github.com/bijux/bijux-canon`.
+
 ## What it does
 
 - installs the canonical package `bijux-canon-agent`
@@ -23,4 +27,5 @@ When updating callers, move to:
 
 - distribution: `bijux-canon-agent`
 - Python import: `bijux_canon_agent`
-- docs entrypoint: `packages/bijux-canon-agent/docs/index.md`
+- docs entrypoint: `https://bijux.io/bijux-canon-agent/`
+- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`

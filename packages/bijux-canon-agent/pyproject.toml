@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-canon-agent"
 dynamic = ["version"]
-description = "Deterministic agent workflow execution with auditable traces, replay support, and document-processing pipelines from Bijux."
+description = "Deterministic agent orchestration, auditable traces, and workflow execution for the bijux-canon package family from Bijux."
 authors = [
     { name = "Bijan Mousavi", email = "bijan@bijux.io" }
 ]
@@ -15,19 +15,33 @@ maintainers = [
 readme = "README.md"
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
-keywords = ["bijux", "agent", "workflow", "document-processing", "audit-trace", "replay", "llm"]
+keywords = [
+    "bijux",
+    "bijux-canon",
+    "bijux.io",
+    "agent",
+    "workflow",
+    "orchestration",
+    "audit-trace",
+    "replay",
+    "llm",
+]
 classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
     "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "Development Status :: 4 - Beta",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Text Processing :: General"
+    "Topic :: Text Processing :: General",
+    "Typing :: Typed",
 ]
 dependencies = [
     "aiohttp>=3.10,<4.0",
@@ -55,7 +69,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/"
+Homepage = "https://bijux.io/bijux-canon-agent/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-agent/"
@@ -63,6 +77,8 @@ Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
+PackageMap = "https://bijux.io/bijux-canon/package-map/"
+CompatibilityGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
 
 [project.optional-dependencies]
 dev = [
