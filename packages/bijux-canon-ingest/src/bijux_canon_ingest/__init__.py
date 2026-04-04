@@ -11,15 +11,9 @@ does not eagerly pull interface and orchestration code into every consumer.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, assert_never
 
 from ._lazy_exports import LazyExport, resolve_lazy_export
-
-try:
-    from typing import assert_never
-except ImportError:  # pragma: no cover - Python < 3.11 compatibility for tooling
-    def assert_never(value: object) -> None:
-        raise AssertionError(f"Expected code to be unreachable, got: {value!r}")
 
 from ._version import __version__
 from .config.cleaning import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
