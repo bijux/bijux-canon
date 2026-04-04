@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG infra: filesystem storage adapter (CSV in, JSONL out).
+"""Filesystem storage adapter for ingest artifacts.
 
 This adapter is resource-safe:
 - reads are implemented as a resource-owning iterator (generator + `with open`)

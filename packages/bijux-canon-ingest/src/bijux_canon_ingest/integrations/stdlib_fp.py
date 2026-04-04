@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Core 1: stdlib functional programming utilities (end-of-Bijux RAG).
+"""Standard-library functional programming utilities.
 
 These helpers are intentionally thin wrappers around the standard library.
 They exist primarily for documentation/tests and to keep example snippets

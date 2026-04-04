@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG subsystem ADT: chunk metadata (end-of-Bijux RAG; domain-modeling)."""
+"""Chunk metadata value objects for retrieval-domain models."""
 
 from __future__ import annotations
 

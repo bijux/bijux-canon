@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG infra: in-memory storage adapter (test double)."""
+"""In-memory storage adapter for tests and local workflows."""
 
 from __future__ import annotations
 

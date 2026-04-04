@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: compositional domain-modeling helpers (end-of-Bijux RAG).
+"""Compositional retrieval domain-modeling helpers.
 
-These ADTs are used in the Bijux RAG "type-driven design" cores:
+These ADTs provide:
 - independent, immutable subsystem records (`ChunkText`, `ChunkMetadata`, `Embedding`)
 - safe assembly into a coherent `Chunk` via applicative `Validation`
 - an optional NumPy hybrid path with equivalence tests

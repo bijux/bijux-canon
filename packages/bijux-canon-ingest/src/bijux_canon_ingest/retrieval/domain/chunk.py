@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG compositional domain model: assemble subsystem ADTs safely (end-of-Bijux RAG; domain-modeling)."""
+"""Compose retrieval-domain value objects into validated chunks."""
 
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG infra: log sinks (console + test collector)."""
+"""Log sink adapters for console and test collection."""
 
 from __future__ import annotations
 

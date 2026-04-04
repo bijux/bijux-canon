@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Core 3: optional dataframe-style processing helpers (end-of-Bijux RAG).
+"""Optional dataframe-style processing helpers.
 
 These functions provide FP-style transforms for dataframes when libraries are
 available (pandas/polars/dask). When they are not, callers can use the
-record-based helpers (list[dict]) which require only stdlib.
+record-based helpers (`list[dict]`) which require only stdlib.
 """
 
 from __future__ import annotations

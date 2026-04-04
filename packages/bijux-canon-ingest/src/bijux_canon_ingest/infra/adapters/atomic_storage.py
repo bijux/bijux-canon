@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG infra: atomic write-if-absent adapter for idempotent writes."""
+"""Atomic write-if-absent adapter for idempotent writes."""
 
 from __future__ import annotations
 

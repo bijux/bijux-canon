@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG infra: async runtime interpreter (shell-only)."""
+"""Async runtime interpreter for shell-owned workflows."""
 
 from __future__ import annotations
 
