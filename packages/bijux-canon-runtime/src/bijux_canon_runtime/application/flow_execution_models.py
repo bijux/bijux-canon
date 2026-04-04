@@ -7,6 +7,7 @@ from typing import Protocol
 
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.execution.command_modes import run_mode_for_command
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.run_mode import RunMode
@@ -73,17 +74,7 @@ class ExecutionConfig:
     @classmethod
     def from_command(cls, command: str) -> ExecutionConfig:
         """Build config from the command-line command name."""
-        if command == "plan":
-            return cls(mode=RunMode.PLAN, determinism_level=None)
-        if command == "dry-run":
-            return cls(mode=RunMode.DRY_RUN, determinism_level=None)
-        if command == "run":
-            return cls(mode=RunMode.LIVE, determinism_level=None)
-        if command == "observe":
-            return cls(mode=RunMode.OBSERVE, determinism_level=None)
-        if command == "unsafe-run":
-            return cls(mode=RunMode.UNSAFE, determinism_level=None)
-        raise ValueError(f"Unsupported command: {command}")
+        return cls(mode=run_mode_for_command(command), determinism_level=None)
 
 
 @dataclass(frozen=True)

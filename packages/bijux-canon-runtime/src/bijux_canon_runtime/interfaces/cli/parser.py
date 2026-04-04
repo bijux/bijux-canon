@@ -7,6 +7,11 @@ from __future__ import annotations
 
 import argparse
 
+from bijux_canon_runtime.model.execution.command_modes import DRY_RUN_COMMAND
+from bijux_canon_runtime.model.execution.command_modes import PLAN_COMMAND
+from bijux_canon_runtime.model.execution.command_modes import RUN_COMMAND
+from bijux_canon_runtime.model.execution.command_modes import UNSAFE_RUN_COMMAND
+
 
 def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     """Build the runtime CLI parser."""
@@ -20,7 +25,7 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command")
 
     run_parser = subparsers.add_parser(
-        "run",
+        RUN_COMMAND,
         help=(
             "Deterministic when strict mode and declared contracts are satisfied; "
             "output stability is guaranteed only within v1."
@@ -56,7 +61,7 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     )
     inspect_subparsers = inspect_parser.add_subparsers(dest="inspect_command")
     inspect_run_parser = inspect_subparsers.add_parser(
-        "run",
+        RUN_COMMAND,
         help=argparse.SUPPRESS,
     )
     inspect_run_parser.add_argument("run_id")
@@ -65,7 +70,7 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     inspect_run_parser.add_argument("--json", action="store_true")
 
     plan_parser = subparsers.add_parser(
-        "plan",
+        PLAN_COMMAND,
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
     )
@@ -74,7 +79,7 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     plan_parser.add_argument("--json", action="store_true")
 
     dry_run_parser = subparsers.add_parser(
-        "dry-run",
+        DRY_RUN_COMMAND,
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
     )
@@ -84,7 +89,7 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     dry_run_parser.add_argument("--json", action="store_true")
 
     unsafe_parser = subparsers.add_parser(
-        "unsafe-run",
+        UNSAFE_RUN_COMMAND,
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
     )
@@ -100,7 +105,7 @@ def build_parser(*, prog_name: str) -> argparse.ArgumentParser:
     )
     diff_subparsers = diff_parser.add_subparsers(dest="diff_command")
     diff_run_parser = diff_subparsers.add_parser(
-        "run",
+        RUN_COMMAND,
         help=argparse.SUPPRESS,
         description=argparse.SUPPRESS,
     )

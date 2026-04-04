@@ -9,6 +9,9 @@ from dataclasses import asdict
 import json
 from typing import Any
 
+from bijux_canon_runtime.model.execution.command_modes import DRY_RUN_COMMAND
+from bijux_canon_runtime.model.execution.command_modes import EXECUTION_TRACE_COMMANDS
+from bijux_canon_runtime.model.execution.command_modes import PLAN_COMMAND
 from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summary
 from bijux_canon_runtime.observability.classification.determinism_classification import (
     determinism_classes_for_trace,
@@ -27,15 +30,15 @@ def render_result(command: str, result: Any, *, json_output: bool) -> None:
 
 def render_json_result(command: str, result: Any) -> None:
     """Render a runtime result as stable JSON."""
-    if command == "plan":
+    if command == PLAN_COMMAND:
         payload = asdict(result.resolved_flow.plan)
         print(json.dumps(payload, sort_keys=True))
         return
-    if command == "dry-run":
+    if command == DRY_RUN_COMMAND:
         payload = asdict(result.trace)
         print(json.dumps(payload, sort_keys=True))
         return
-    if command in {"run", "unsafe-run"}:
+    if command in EXECUTION_TRACE_COMMANDS:
         payload = asdict(result.trace)
         artifact_list = [
             {"artifact_id": artifact.artifact_id, "content_hash": artifact.content_hash}
@@ -120,14 +123,14 @@ def render_json_result(command: str, result: Any) -> None:
 
 def render_human_result(command: str, result: Any) -> None:
     """Render a runtime result as human-readable text."""
-    if command == "plan":
+    if command == PLAN_COMMAND:
         plan = result.resolved_flow.plan
         print(
             f"Plan ready: flow_id={plan.flow_id} steps={len(plan.steps)} "
             f"dataset={plan.dataset.dataset_id}"
         )
         return
-    if command == "dry-run":
+    if command == DRY_RUN_COMMAND:
         trace = result.trace
         print(
             f"Dry-run trace: run_id={result.run_id} events={len(trace.events)} "
@@ -145,7 +148,7 @@ def render_human_result(command: str, result: Any) -> None:
                 f"decay={profile.confidence_decay:.2f}"
             )
         return
-    if command in {"run", "unsafe-run"}:
+    if command in EXECUTION_TRACE_COMMANDS:
         trace = result.trace
         entropy_count = len(trace.entropy_usage) if trace is not None else 0
         print(
