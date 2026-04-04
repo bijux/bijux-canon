@@ -85,6 +85,10 @@ flowchart TD
 - check whether schema or artifact changes need compatibility review
 - confirm that operator-facing examples still point at real entrypoints
 
+## Honesty Boundary
+
+This page can identify the intended public surfaces of bijux-canon-reason, but real compatibility still depends on code, schemas, artifacts, and tests staying aligned.
+
 ## Purpose
 
 This page explains how to use the interfaces section for `bijux-canon-reason` without repeating the detail that belongs on the topic pages beneath it.

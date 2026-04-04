@@ -76,6 +76,10 @@ flowchart TD
 - check that operational docs point at current diagnostics and validation paths
 - confirm that release-facing claims match the package's actual versioning files
 
+## Honesty Boundary
+
+This page explains how bijux-canon-agent is expected to be operated, but it does not replace package metadata, runtime behavior, or validation runs in a real environment.
+
 ## Purpose
 
 This page points readers toward the package's observable output and diagnostic support.

@@ -85,6 +85,10 @@ flowchart TD
 - look for dependency direction that now contradicts the documented seam
 - verify that architectural risks still match the current code structure
 
+## Honesty Boundary
+
+This page describes the current structural model of bijux-canon-runtime, but it does not by itself prove that every import or runtime path still obeys that model.
+
 ## Purpose
 
 This page explains how to use the architecture section for `bijux-canon-runtime` without repeating the detail that belongs on the topic pages beneath it.

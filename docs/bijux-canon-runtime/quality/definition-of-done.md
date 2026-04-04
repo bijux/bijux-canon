@@ -73,6 +73,10 @@ flowchart TD
 - look for limitations or risks that should have been updated by recent changes
 - verify that the page's definition of done still reflects real validation practice
 
+## Honesty Boundary
+
+This page explains how bijux-canon-runtime protects itself, but it does not claim that prose alone is enough without the listed tests, checks, and review practice.
+
 ## Purpose
 
 This page records the package's completion threshold.

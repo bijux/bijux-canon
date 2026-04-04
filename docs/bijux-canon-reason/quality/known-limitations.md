@@ -72,6 +72,10 @@ flowchart TD
 - look for limitations or risks that should have been updated by recent changes
 - verify that the page's definition of done still reflects real validation practice
 
+## Honesty Boundary
+
+This page explains how bijux-canon-reason protects itself, but it does not claim that prose alone is enough without the listed tests, checks, and review practice.
+
 ## Purpose
 
 This page keeps limitation language attached to the package boundary instead of scattered through issue comments.

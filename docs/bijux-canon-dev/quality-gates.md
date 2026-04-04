@@ -73,6 +73,10 @@ flowchart TD
 - check that maintainer-only guidance has not leaked into product-facing pages
 - confirm that repository automation still names its package impact explicitly
 
+## Honesty Boundary
+
+This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.
+
 ## Purpose
 
 This page explains how the package participates in repository-wide correctness and consistency.

@@ -79,6 +79,10 @@ flowchart TD
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
+## Honesty Boundary
+
+These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.
+
 ## Purpose
 
 This page keeps the package relationships visible from one place before a reader dives into package-local detail.

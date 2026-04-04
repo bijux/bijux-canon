@@ -70,6 +70,10 @@ flowchart TD
 - check that migration advice still points at current canonical docs
 - confirm that compatibility language does not accidentally encourage new work to start here
 
+## Honesty Boundary
+
+This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.
+
 ## Purpose
 
 This page provides the exact mapping between retired public names and current canonical names.

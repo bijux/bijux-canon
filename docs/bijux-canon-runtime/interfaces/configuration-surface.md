@@ -76,6 +76,10 @@ Configuration changes should update the operator docs, schema docs, and tests th
 - check whether schema or artifact changes need compatibility review
 - confirm that operator-facing examples still point at real entrypoints
 
+## Honesty Boundary
+
+This page can identify the intended public surfaces of bijux-canon-runtime, but real compatibility still depends on code, schemas, artifacts, and tests staying aligned.
+
 ## Purpose
 
 This page explains where configuration enters the package and how it should be reviewed.

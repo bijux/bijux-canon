@@ -736,6 +736,32 @@ def package_page_reviewer_lens(
     return lens_map[category]
 
 
+def package_honesty_boundary(package: PackageInfo, category: str) -> str:
+    honesty_map = {
+        "foundation": (
+            f"This page can explain the intended boundary of {package.title}, but it does not"
+            " replace the code and tests that ultimately prove that boundary."
+        ),
+        "architecture": (
+            f"This page describes the current structural model of {package.title}, but it does"
+            " not by itself prove that every import or runtime path still obeys that model."
+        ),
+        "interfaces": (
+            f"This page can identify the intended public surfaces of {package.title}, but real"
+            " compatibility still depends on code, schemas, artifacts, and tests staying aligned."
+        ),
+        "operations": (
+            f"This page explains how {package.title} is expected to be operated, but it does"
+            " not replace package metadata, runtime behavior, or validation runs in a real environment."
+        ),
+        "quality": (
+            f"This page explains how {package.title} protects itself, but it does not claim"
+            " that prose alone is enough without the listed tests, checks, and review practice."
+        ),
+    }
+    return honesty_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -755,6 +781,17 @@ def add_reviewer_lens_section(body: str, bullets: tuple[str, ...]) -> str:
             "## Reviewer Lens",
             "",
             bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Purpose", block)
+
+
+def add_honesty_boundary(body: str, text: str) -> str:
+    block = "\n".join(
+        [
+            "## Honesty Boundary",
+            "",
+            text,
         ]
     )
     return insert_before_heading(body, "Purpose", block)
@@ -862,6 +899,10 @@ def render_home(
             "look for package or maintainer material that should have moved to a more specific section",
             "confirm that the home page still routes readers to the fastest useful entrypoint",
         ),
+    )
+    body = add_honesty_boundary(
+        body,
+        "This page can route readers to the right section quickly, but it does not replace the more specific handbook pages that prove package, maintainer, or compatibility details.",
     )
     return "\n".join(
         [
@@ -1208,6 +1249,10 @@ def render_root_page(
             "confirm that any repository rule described here is still enforceable in code or automation",
         ),
     )
+    body = add_honesty_boundary(
+        body,
+        "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "guide"),
@@ -1492,6 +1537,10 @@ def render_dev_page(slug: str, title: str) -> str:
             "confirm that repository automation still names its package impact explicitly",
         ),
     )
+    body = add_honesty_boundary(
+        body,
+        "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "guide"),
@@ -1770,6 +1819,10 @@ def render_compat_page(slug: str, title: str) -> str:
             "confirm that compatibility language does not accidentally encourage new work to start here",
         ),
     )
+    body = add_honesty_boundary(
+        body,
+        "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "guide"),
@@ -1867,6 +1920,7 @@ def render_package_page(
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
+    body = add_honesty_boundary(body, package_honesty_boundary(package, category))
     return "\n".join(
         [
             front_matter(title, package.owner, "index" if slug == "index" else "guide"),

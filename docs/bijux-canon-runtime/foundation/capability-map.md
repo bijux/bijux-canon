@@ -81,6 +81,10 @@ flowchart TD
 - check that out-of-scope work is not quietly reintroduced through adjacent packages
 - confirm that the package description still matches the real repository layout
 
+## Honesty Boundary
+
+This page can explain the intended boundary of bijux-canon-runtime, but it does not replace the code and tests that ultimately prove that boundary.
+
 ## Purpose
 
 This page helps a reader quickly map package claims to code areas.

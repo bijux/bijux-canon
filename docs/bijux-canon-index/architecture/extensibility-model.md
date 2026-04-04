@@ -79,6 +79,10 @@ Add extension points where the package already expects variation, and document t
 - look for dependency direction that now contradicts the documented seam
 - verify that architectural risks still match the current code structure
 
+## Honesty Boundary
+
+This page describes the current structural model of bijux-canon-index, but it does not by itself prove that every import or runtime path still obeys that model.
+
 ## Purpose
 
 This page helps maintainers extend the package without smearing responsibilities together.

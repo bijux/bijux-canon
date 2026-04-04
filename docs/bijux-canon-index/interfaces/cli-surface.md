@@ -71,6 +71,10 @@ flowchart TD
 - check whether schema or artifact changes need compatibility review
 - confirm that operator-facing examples still point at real entrypoints
 
+## Honesty Boundary
+
+This page can identify the intended public surfaces of bijux-canon-index, but real compatibility still depends on code, schemas, artifacts, and tests staying aligned.
+
 ## Purpose
 
 This page points maintainers toward the command entrypoints and their owning code.

@@ -118,6 +118,10 @@ flowchart TD
 - look for package or maintainer material that should have moved to a more specific section
 - confirm that the home page still routes readers to the fastest useful entrypoint
 
+## Honesty Boundary
+
+This page can route readers to the right section quickly, but it does not replace the more specific handbook pages that prove package, maintainer, or compatibility details.
+
 ## Purpose
 
 This page routes readers into the canonical repository and package handbooks without mixing product ownership with maintenance-only or legacy-only concerns.
