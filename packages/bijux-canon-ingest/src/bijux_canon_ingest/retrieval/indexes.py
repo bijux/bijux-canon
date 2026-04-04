@@ -15,8 +15,8 @@ from bijux_canon_ingest.retrieval.dense_index import NumpyCosineIndex
 from bijux_canon_ingest.retrieval.index_builders import (
     build_bm25_index,
     build_numpy_cosine_index,
-    load_index,
 )
+from bijux_canon_ingest.retrieval.index_loading import load_index
 from bijux_canon_ingest.retrieval.lexical_index import BM25Index
 
 __all__ = [

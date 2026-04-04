@@ -28,8 +28,8 @@ from .indexes import (
     NumpyCosineIndex,
     build_bm25_index,
     build_numpy_cosine_index,
-    load_index,
 )
+from .index_loading import load_index
 from .ports import (
     Answer,
     Candidate,

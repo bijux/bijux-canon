@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Factories and loaders for retrieval indexes."""
+"""Factories for retrieval indexes."""
 
 from __future__ import annotations
 
 from collections.abc import Sequence
 
-import msgpack
 import numpy as np
 
 from bijux_canon_ingest.core.types import Chunk, EmbeddingSpec
 from bijux_canon_ingest.retrieval._index_common import l2_normalize
 from bijux_canon_ingest.retrieval.dense_index import NumpyCosineIndex
+from bijux_canon_ingest.retrieval.index_loading import load_index
 from bijux_canon_ingest.retrieval.lexical_index import BM25Index
 from bijux_canon_ingest.retrieval.ports import Embedder
 from bijux_canon_ingest.retrieval.text_analysis import stable_token_bucket, tokenize
@@ -103,20 +103,4 @@ def build_bm25_index(
         k1=float(k1),
         b=float(b),
     )
-
-
-def load_index(path: str) -> NumpyCosineIndex | BM25Index:
-    """Load an index from disk."""
-
-    with open(path, "rb") as handle:
-        payload = msgpack.unpackb(handle.read(), raw=False)
-
-    backend = payload.get("backend")
-    if backend == "bm25":
-        return BM25Index.load(path)
-    if backend == "numpy-cosine":
-        return NumpyCosineIndex.load(path)
-    raise ValueError(f"unknown index backend: {backend}")
-
-
 __all__ = ["build_bm25_index", "build_numpy_cosine_index", "load_index"]
