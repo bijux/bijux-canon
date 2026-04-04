@@ -27,6 +27,8 @@ bijux-canon-index interface pages describe the command, API, configuration, impo
 
 - [Foundation](../foundation/index.md)
 - [Architecture](../architecture/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 

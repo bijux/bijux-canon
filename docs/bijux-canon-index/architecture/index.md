@@ -27,6 +27,8 @@ bijux-canon-index architecture pages describe how modules and responsibilities f
 
 - [Foundation](../foundation/index.md)
 - [Interfaces](../interfaces/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 

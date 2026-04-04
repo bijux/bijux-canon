@@ -27,6 +27,8 @@ bijux-canon-index exists to own contract-driven vector execution with replay-awa
 
 - [Architecture](../architecture/index.md)
 - [Interfaces](../interfaces/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 
