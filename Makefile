@@ -47,53 +47,12 @@ export XDG_CACHE_HOME := $(ROOT_ARTIFACTS_DIR)/xdg_cache
 export HYPOTHESIS_STORAGE_DIRECTORY := $(ROOT_ARTIFACTS_DIR)/hypothesis
 export PYTHONPATH := $(CURDIR)/packages/bijux-canon-dev/src$(if $(PYTHONPATH),:$(PYTHONPATH))
 
+include $(CURDIR)/makes/root/dispatch.mk
+
 DEFAULT_GOAL := help
 .PHONY: \
 	help list list-all lint quality security test docs docs-check docs-serve api build sbom clean all \
 	clean-root-artifacts root-check-env
-
-define run_target
-	@set -eu; \
-	resolved_package="$(call resolve_package,$(PACKAGE))"; \
-	if [ -n "$$resolved_package" ]; then \
-	  package_list="$$resolved_package"; \
-	else \
-	  package_list="$(2)"; \
-	fi; \
-	mkdir -p "$(ROOT_ARTIFACTS_DIR)"; \
-	cleanup() { $(MAKE) clean-root-artifacts >/dev/null; }; \
-	trap cleanup EXIT; \
-	if [ "$(3)" = "1" ]; then \
-	  $(MAKE) root-check-env >/dev/null; \
-	fi; \
-	failures=""; \
-	for package in $$package_list; do \
-	  profile_path="$(PACKAGE_MAKE_DIR)/$$package.mk"; \
-	  if [ ! -f "$$profile_path" ]; then \
-	    echo "Missing package profile: $$profile_path"; \
-	    failures="$$failures $$package"; \
-	    continue; \
-	  fi; \
-	  echo "==> $$package: $(1)"; \
-	  if [ "$(3)" = "1" ]; then \
-	    if ! $(MAKE) -C "packages/$$package" -f "$$profile_path" \
-	      VENV="$(ROOT_CHECK_VENV)" \
-	      VENV_PYTHON="$(ROOT_CHECK_PYTHON)" \
-	      PYTHON="$(ROOT_CHECK_PYTHON)" \
-	      ACT="$(ROOT_CHECK_VENV)/bin" \
-	      $(1); then \
-	      failures="$$failures $$package"; \
-	    fi; \
-	  elif ! $(MAKE) -C "packages/$$package" -f "$$profile_path" $(1); then \
-	    failures="$$failures $$package"; \
-	  fi; \
-	done; \
-	if [ -n "$$failures" ]; then \
-	  echo; \
-	  echo "Packages with $(1) failures:$$failures"; \
-	  exit 2; \
-	fi
-endef
 
 help:
 	@printf "%s\n" \
@@ -145,22 +104,6 @@ $(ROOT_CHECK_STAMP):
 	@"$(ROOT_CHECK_PYTHON)" -m pip install --upgrade pip setuptools wheel >/dev/null
 	@"$(ROOT_CHECK_PYTHON)" -m pip install --upgrade $(ROOT_CHECK_PACKAGES) >/dev/null
 	@touch "$(ROOT_CHECK_STAMP)"
-
-test:
-	$(call assert_package)
-	$(call run_target,test,$(PRIMARY_PACKAGES))
-
-lint:
-	$(call assert_package)
-	$(call run_target,lint,$(CHECK_PACKAGES),1)
-
-quality:
-	$(call assert_package)
-	$(call run_target,quality,$(CHECK_PACKAGES),1)
-
-security:
-	$(call assert_package)
-	$(call run_target,security,$(CHECK_PACKAGES),1)
 
 docs:
 	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
@@ -262,22 +205,5 @@ docs-serve:
 	    "$(ROOT_CHECK_PYTHON)" -m mkdocs serve --strict \
 	    --config-file "$(ROOT_DOCS_SERVE_CFG)" \
 	    --dev-addr "$(ROOT_DOCS_DEV_ADDR)"
-
-api:
-	$(call assert_package)
-	$(call run_target,api,$(PRIMARY_PACKAGES))
-
-build:
-	$(call assert_package)
-	$(call run_target,build,$(PRIMARY_PACKAGES))
-
-sbom:
-	$(call assert_package)
-	$(call run_target,sbom,$(PRIMARY_PACKAGES))
-
-clean:
-	$(call assert_package)
-	$(call run_target,clean,$(ALL_PACKAGES))
-	@$(MAKE) clean-root-artifacts
 
 all: test lint quality security docs api build sbom
