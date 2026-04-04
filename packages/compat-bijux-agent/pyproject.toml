@@ -64,6 +64,12 @@ fallback-version = "0.3.0"
 [tool.hatch.metadata.hooks.custom]
 canonical-name = "bijux-canon-agent"
 
+[tool.hatch.build]
+ignore-vcs = true
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/bijux_agent/**"]
+exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
+force-include = { "../../LICENSE" = "LICENSE" }
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_agent"]
 include = ["src/bijux_agent/py.typed"]
@@ -73,3 +79,5 @@ include = ["src/bijux_agent/py.typed"]
 
 [tool.hatch.build.targets.sdist]
 include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/bijux_agent/**"]
+only-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/bijux_agent"]
+exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
