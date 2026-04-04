@@ -3008,70 +3008,6 @@ def render_compat_page(slug: str, title: str) -> str:
         body,
         f"Use `{title}` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.",
     )
-    body = add_what_good_looks_like(
-        body,
-        (
-            f"`{title}` makes the legacy-to-canonical path obvious",
-            "migration pressure is clearer than nostalgia for old package names",
-            "retirement can be discussed from evidence rather than from vague discomfort",
-        ),
-    )
-    body = add_failure_signals(
-        body,
-        (
-            f"`{title}` spends more time defending legacy names than clarifying migration",
-            "the canonical target is harder to find than the old name",
-            "retirement conversations keep stalling because the remaining need is not described concretely",
-        ),
-    )
-    body = add_cross_implications(
-        body,
-        (
-            "unclear compatibility pages slow adoption of the canonical package docs",
-            "retirement planning becomes harder because repository and package owners lack one shared migration story",
-            "legacy naming pressure can distort product package expectations if it is not kept explicitly separate",
-        ),
-    )
-    body = add_tradeoffs(
-        body,
-        (
-            "prefer a clear migration path over preserving every historical detail equally",
-            "prefer honest legacy labeling over making old surfaces look more current than they are",
-            "prefer repository-wide contract clarity over retaining compatibility language that now conflicts with canonical package docs",
-        ),
-    )
-    body = add_approval_questions(
-        body,
-        (
-            "does the page make the canonical replacement clearer than the legacy name itself",
-            "is there still real evidence for preservation or is the section only reflecting habit",
-            "would a reader leave knowing whether to migrate, preserve temporarily, or retire the legacy surface",
-        ),
-    )
-    body = add_evidence_checklist(
-        body,
-        (
-            "inspect the relevant `packages/compat-*` metadata and README files",
-            "check the canonical target package docs named by this page",
-            "confirm there is still a real migration consumer before accepting preservation as necessary",
-        ),
-    )
-    body = add_antipatterns(
-        body,
-        (
-            "treating compatibility shims like long-term product expansion points",
-            "preserving legacy names because they are familiar rather than because they are needed",
-            "letting migration guidance become less visible than the legacy label itself",
-        ),
-    )
-    body = add_escalate_when(
-        body,
-        (
-            "a legacy surface is still present but no one can name a real dependent consumer",
-            "migration guidance now conflicts with the canonical package story",
-            "retirement or preservation would affect more than one repository stakeholder group",
-        ),
-    )
     body = add_question_section(
         body,
         (
@@ -3088,42 +3024,6 @@ def render_compat_page(slug: str, title: str) -> str:
             "confirm that compatibility language does not accidentally encourage new work to start here",
         ),
     )
-    body = add_core_claim(
-        body,
-        "Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.",
-    )
-    body = add_why_it_matters(
-        body,
-        "Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist. Without explicit migration guidance, old names become sticky and retirement decisions become emotionally expensive instead of evidence-based.",
-    )
-    body = add_if_it_drifts(
-        body,
-        (
-            "legacy names become easier to keep using than to migrate away from",
-            "canonical targets become ambiguous in old automation or docs",
-            "retirement decisions get delayed because the actual migration state is unclear",
-        ),
-    )
-    body = add_representative_scenario(
-        body,
-        "A legacy dependency name appears in an old environment file. The compatibility docs should let a maintainer map it to the canonical package and judge whether that old name still deserves to survive.",
-    )
-    body = add_source_of_truth(
-        body,
-        (
-            "the `packages/compat-*` metadata and README files for preserved legacy surfaces",
-            "the matching canonical package docs for current behavior",
-            "this section for the migration and retirement explanation that ties them together",
-        ),
-    )
-    body = add_common_misreadings(
-        body,
-        (
-            "that legacy names are still the preferred public names",
-            "that compatibility packages should grow like first-class product packages",
-            "that preserved import or distribution names prove long-term architectural importance",
-        ),
-    )
     body = add_next_checks(
         body,
         (
@@ -3132,35 +3032,10 @@ def render_compat_page(slug: str, title: str) -> str:
             "use this section again only when evaluating migration progress or retirement readiness",
         ),
     )
-    body = add_update_triggers(
-        body,
-        (
-            "a legacy package is added, retired, or repointed to a different canonical target",
-            "migration guidance becomes stale compared with the current package set",
-            "compatibility scope changes materially enough to affect retirement decisions",
-        ),
-    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.",
     )
-    if slug == "index":
-        body = add_section_contract(
-            body,
-            (
-                "record which legacy package names remain supported",
-                "make migration guidance faster than guessing from old names",
-                "keep retirement decisions tied to explicit evidence rather than habit",
-            ),
-        )
-        body = add_reading_advice(
-            body,
-            (
-                "start here when you encounter a legacy package name in old automation or documentation",
-                "move to the canonical package docs once you know the current target",
-                "use this section to evaluate whether a compatibility surface should remain",
-            ),
-        )
     body = add_anchor_section(
         body,
         (
