@@ -43,6 +43,10 @@ sequenceDiagram
 - every publishable package keeps its own `CHANGELOG.md`
 - the root `CHANGELOG.md` only records repository-wide changes that span more
   than one package or alter shared release machinery
+- the public `0.3.0` release line covers 10 packages: 5 canonical
+  `bijux-canon-*` distributions plus 5 compatibility packages
+- `bijux-canon-dev` remains versioned for internal maintainer work, but it is
+  not part of the public `0.3.0` publication set
 
 ## Versioning Rule
 

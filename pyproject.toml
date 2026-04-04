@@ -5,6 +5,21 @@ annotated_tag = true
 update_changelog_on_bump = false
 
 [tool.bijux_canon]
+public_release_packages = [
+  "bijux-canon-runtime",
+  "bijux-canon-agent",
+  "bijux-canon-ingest",
+  "bijux-canon-reason",
+  "bijux-canon-index",
+  "compat-agentic-flows",
+  "compat-bijux-agent",
+  "compat-bijux-rag",
+  "compat-bijux-rar",
+  "compat-bijux-vex",
+]
+internal_support_packages = [
+  "bijux-canon-dev",
+]
 primary_packages = [
   "bijux-canon-dev",
   "bijux-canon-runtime",
