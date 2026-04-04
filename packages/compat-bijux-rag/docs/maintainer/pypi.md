@@ -37,6 +37,10 @@ Publish this package when the legacy `bijux-rag` distribution must keep
 tracking `bijux-canon-ingest` with the same install, import, and command
 continuity guarantees.
 
+The published package docs URL for this legacy name is
+<https://bijux.io/bijux-canon/compat-packages/bijux-rag/> so PyPI readers land
+on migration-specific guidance before moving to the canonical ingest handbook.
+
 ## Pre-publish checks
 
 - confirm the compatibility wheel still depends on `bijux-canon-ingest` at the

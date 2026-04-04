@@ -28,6 +28,9 @@
 PyPI. Each release keeps the legacy distribution, import, and command surfaces
 available while installing `bijux-canon-ingest` at the same version.
 
+Its package handbook lives at
+<https://bijux.io/bijux-canon/compat-packages/bijux-rag/>.
+
 ## Migration note
 
 - new installs should use `pip install bijux-canon-ingest`
@@ -58,6 +61,7 @@ available while installing `bijux-canon-ingest` at the same version.
 Use `bijux-canon-ingest` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest>
+- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/bijux-rag/>
 - package docs: <https://bijux.io/bijux-canon/bijux-canon-ingest/>
 - migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md>
