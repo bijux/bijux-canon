@@ -37,6 +37,8 @@ PYTEST_CONFIG             ?= $(MONOREPO_ROOT)/configs/pytest.ini
 COVERAGE_CONFIG           ?= $(MONOREPO_ROOT)/configs/coveragerc.ini
 TEST_SELF_MAKE            ?= $(SELF_MAKE)
 
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/util.mk
+
 PYTEST_INI_ABS            := $(abspath $(PYTEST_CONFIG))
 COVCFG_ABS                := $(abspath $(COVERAGE_CONFIG))
 COV_HTML_ABS              := $(abspath $(TEST_ARTIFACTS_DIR)/htmlcov)
@@ -71,7 +73,7 @@ PYTEST_INFO_FLAGS = -o cache_dir="$(CACHE_DIR_ABS)"
 
 test:
 	@echo "→ Running full test suite on $(TEST_PATHS)"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	$(call run_make_targets,$(TEST_PRE_TARGETS),$(TEST_SELF_MAKE))
 	@$(TEST_SELF_MAKE) test-syntax
 	@if [ "$(TEST_RESET_PYCACHE)" = "1" ]; then find . -type d -name '__pycache__' -exec rm -rf {} + >/dev/null 2>&1 || true; fi
 	@rm -rf "$(TMP_DIR_ABS)"
@@ -99,7 +101,7 @@ test:
 
 test-unit:
 	@echo "→ Running unit tests only"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	$(call run_make_targets,$(TEST_PRE_TARGETS),$(TEST_SELF_MAKE))
 	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@echo "pytest cmd: $(PYTEST) -c '$(PYTEST_INI_ABS)' …"
 	@rm -rf "$(TMP_DIR_ABS)"
@@ -139,7 +141,7 @@ test-unit:
 
 test-e2e:
 	@echo "→ Running end-to-end tests only"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	$(call run_make_targets,$(TEST_PRE_TARGETS),$(TEST_SELF_MAKE))
 	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@rm -rf "$(TMP_DIR_ABS)"
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)" "$(COV_HTML_ABS)"
@@ -160,7 +162,7 @@ test-e2e:
 
 test-regression:
 	@echo "→ Running regression tests only"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	$(call run_make_targets,$(TEST_PRE_TARGETS),$(TEST_SELF_MAKE))
 	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@rm -rf "$(TMP_DIR_ABS)"
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)" "$(COV_HTML_ABS)"
@@ -181,7 +183,7 @@ test-regression:
 
 test-evaluation:
 	@echo "→ Running evaluation tests only"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	$(call run_make_targets,$(TEST_PRE_TARGETS),$(TEST_SELF_MAKE))
 	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@rm -rf "$(TMP_DIR_ABS)"
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)" "$(COV_HTML_ABS)"
@@ -240,7 +242,7 @@ real-local:
 	  exit 0; \
 	fi
 	@echo "→ Running real local model tests (manual only)"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	$(call run_make_targets,$(TEST_PRE_TARGETS),$(TEST_SELF_MAKE))
 	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@$(PYTEST) -c "$(PYTEST_INI_ABS)" -o addopts= "$(TEST_REAL_LOCAL_ABS)" $(TEST_REAL_LOCAL_ARGS)
 	@rm -rf .pytest_cache || true

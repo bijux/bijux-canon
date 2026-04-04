@@ -23,6 +23,8 @@ DEPTRY_SCAN_SCRIPT ?= $(VENV_PYTHON) -m bijux_canon_dev.quality.deptry_scan
 DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
 QUALITY_SELF_MAKE ?= $(SELF_MAKE)
 
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/util.mk
+
 SKIP_DEPTRY      ?= 0
 SKIP_INTERROGATE ?= 0
 SKIP_MYPY        ?= 1
@@ -41,10 +43,7 @@ quality:
 	@echo "→ Running quality checks..."
 	@mkdir -p "$(QUALITY_ARTIFACTS_DIR)" "$(QUALITY_MYPY_CACHE_DIR)"
 	@if [ "$(QUALITY_CLEAN_SITE)" = "1" ]; then rm -rf site; fi
-	@for target in $(QUALITY_PRE_TARGETS); do \
-	  echo "   - Running $$target"; \
-	  $(QUALITY_SELF_MAKE) "$$target"; \
-	done
+	$(call run_make_targets,$(QUALITY_PRE_TARGETS),$(QUALITY_SELF_MAKE))
 	@echo "   - Dead code analysis (Vulture)"
 	@set -euo pipefail; \
 	  { $(VULTURE) --version 2>/dev/null || echo vulture; } >"$(QUALITY_ARTIFACTS_DIR)/vulture.log"; \

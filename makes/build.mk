@@ -15,6 +15,8 @@ BUILD_WHEEL_COMMAND      ?= $(BUILD_PYTHON) -m build --wheel --outdir "$(BUILD_D
 BUILD_SUCCESS_MESSAGE    ?= ✔ Build artifacts ready in '$(BUILD_DIR_ABS)'
 BUILD_SELF_MAKE          ?= $(SELF_MAKE)
 
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/util.mk
+
 BUILD_DIR_ABS             := $(abspath $(BUILD_DIR))
 PYPROJECT_ABS             := $(abspath pyproject.toml)
 TWINE                     ?= $(BUILD_PYTHON) -m twine
@@ -28,10 +30,7 @@ build-tools: | $(VENV)
 
 build: build-tools
 	@if [ "$(BUILD_REQUIRE_PYPROJECT)" = "1" ] && [ ! -f "$(PYPROJECT_ABS)" ]; then echo "✘ pyproject.toml not found"; exit 1; fi
-	@for target in $(BUILD_PRE_TARGETS); do \
-	  echo "→ Running $$target"; \
-	  $(BUILD_SELF_MAKE) "$$target"; \
-	done
+	$(call run_make_targets,$(BUILD_PRE_TARGETS),$(BUILD_SELF_MAKE))
 	@echo "→ Preparing Python package artifacts..."
 	@mkdir -p "$(BUILD_DIR_ABS)"
 	@echo "→ Building wheel + sdist → $(BUILD_DIR_ABS)"
@@ -42,10 +41,7 @@ build: build-tools
 	else \
 	  echo "→ Skipping twine check (BUILD_CHECK_DISTS=$(BUILD_CHECK_DISTS))"; \
 	fi
-	@for target in $(BUILD_POST_TARGETS); do \
-	  echo "→ Running $$target"; \
-	  $(BUILD_SELF_MAKE) "$$target"; \
-	done
+	$(call run_make_targets,$(BUILD_POST_TARGETS),$(BUILD_SELF_MAKE))
 	@echo "$(BUILD_SUCCESS_MESSAGE)"
 	@ls -l "$(BUILD_DIR_ABS)" || true
 	@$(BUILD_SELF_MAKE) build-clean-temp

@@ -5,6 +5,8 @@ CODESPELL   ?= $(if $(ACT),$(ACT)/codespell,codespell)
 PYDOCSTYLE  ?= $(VENV_PYTHON) -m pydocstyle
 RADON       ?= $(VENV_PYTHON) -m radon
 
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/util.mk
+
 LINT_SCOPE             ?=
 LINT_DIRS              ?= src tests
 FMT_DIRS               ?= $(if $(LINT_SCOPE),$(LINT_SCOPE),$(LINT_DIRS))
@@ -59,10 +61,7 @@ lint: lint-artifacts
 
 lint-artifacts: | $(VENV)
 	@mkdir -p "$(LINT_ARTIFACTS_DIR)" "$(RUFF_CACHE_DIR)" "$(MYPY_CACHE_DIR)"
-	@for target in $(LINT_PRE_TARGETS); do \
-	  echo "→ Running $$target"; \
-	  $(LINT_SELF_MAKE) "$$target"; \
-	done
+	$(call run_make_targets,$(LINT_PRE_TARGETS),$(LINT_SELF_MAKE))
 	@set -euo pipefail; { \
 	  echo "→ Ruff format (check)"; \
 	  $(RUFF) format --check --config "$(RUFF_CONFIG)" --cache-dir "$(RUFF_CACHE_DIR)" $(LINT_TARGETS); \

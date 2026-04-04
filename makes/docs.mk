@@ -60,28 +60,15 @@ ifneq ($(strip $(DOCS_GOALS)),)
   endif
 endif
 
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/util.mk
+
 .PHONY: docs docs-serve docs-serve-run docs-deploy docs-check docs-clean docs-hygiene docs-prepare-source docs-assert-serve-port docs-render-serve-config
 
-define run_docs_targets
-	@if [ -n "$(strip $(1))" ]; then \
-	  for target in $(1); do \
-	    echo "→ Running $$target"; \
-	    $(MAKE) "$$target"; \
-	  done; \
-	fi
-endef
-
-define clean_docs_paths
-	@if [ -n "$(strip $(1))" ]; then \
-	  rm -rf $(1); \
-	fi
-endef
-
 docs:
-	$(call run_docs_targets,$(DOCS_BUILD_BOOTSTRAP_TARGETS))
-	$(call run_docs_targets,$(DOCS_BUILD_GUARD_TARGETS))
-	$(call clean_docs_paths,$(DOCS_BUILD_PRE_CLEAN_PATHS))
-	$(call run_docs_targets,$(DOCS_BUILD_PREPARE_TARGETS))
+	$(call run_make_targets,$(DOCS_BUILD_BOOTSTRAP_TARGETS),$(MAKE))
+	$(call run_make_targets,$(DOCS_BUILD_GUARD_TARGETS),$(MAKE))
+	$(call clean_paths,$(DOCS_BUILD_PRE_CLEAN_PATHS))
+	$(call run_make_targets,$(DOCS_BUILD_PREPARE_TARGETS),$(MAKE))
 	@echo "→ Building documentation"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
 	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) $(DOCS_BUILD_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" SITE_URL="$(DOCS_BUILD_SITE_URL)" \
@@ -112,27 +99,27 @@ docs-serve:
 	$(MAKE) docs-serve-run
 
 docs-serve-run:
-	$(call run_docs_targets,$(DOCS_SERVE_BOOTSTRAP_TARGETS))
-	$(call clean_docs_paths,$(DOCS_SERVE_PRE_CLEAN_PATHS))
-	$(call run_docs_targets,$(DOCS_SERVE_PREPARE_TARGETS))
+	$(call run_make_targets,$(DOCS_SERVE_BOOTSTRAP_TARGETS),$(MAKE))
+	$(call clean_paths,$(DOCS_SERVE_PRE_CLEAN_PATHS))
+	$(call run_make_targets,$(DOCS_SERVE_PREPARE_TARGETS),$(MAKE))
 	@echo "→ Serving documentation on http://$(DOCS_DEV_ADDR)/"
 	@exec env XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) $(DOCS_SERVE_ENV) SITE_URL="$(DOCS_SERVE_SITE_URL)" \
 	  "$(DOCS_PYTHON)" -m mkdocs serve $(DOCS_SERVE_FLAGS) --config-file "$(DOCS_SERVE_CONFIG_FILE)" --dev-addr "$(DOCS_DEV_ADDR)"
 
 docs-deploy:
-	$(call run_docs_targets,$(DOCS_BUILD_BOOTSTRAP_TARGETS))
-	$(call clean_docs_paths,$(DOCS_BUILD_PRE_CLEAN_PATHS))
-	$(call run_docs_targets,$(DOCS_BUILD_PREPARE_TARGETS))
+	$(call run_make_targets,$(DOCS_BUILD_BOOTSTRAP_TARGETS),$(MAKE))
+	$(call clean_paths,$(DOCS_BUILD_PRE_CLEAN_PATHS))
+	$(call run_make_targets,$(DOCS_BUILD_PREPARE_TARGETS),$(MAKE))
 	@echo "→ Deploying documentation"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
 	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) $(DOCS_BUILD_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" SITE_URL="$(DOCS_BUILD_SITE_URL)" \
 	  "$(DOCS_PYTHON)" -m mkdocs gh-deploy $(DOCS_BUILD_FLAGS) $(DOCS_DEPLOY_FLAGS) --config-file "$(DOCS_BUILD_CONFIG_FILE)" --site-dir "$(DOCS_BUILD_SITE_DIR)"
 
 docs-check:
-	$(call run_docs_targets,$(DOCS_CHECK_BOOTSTRAP_TARGETS))
-	$(call run_docs_targets,$(DOCS_CHECK_GUARD_TARGETS))
-	$(call clean_docs_paths,$(DOCS_CHECK_PRE_CLEAN_PATHS))
-	$(call run_docs_targets,$(DOCS_CHECK_PREPARE_TARGETS))
+	$(call run_make_targets,$(DOCS_CHECK_BOOTSTRAP_TARGETS),$(MAKE))
+	$(call run_make_targets,$(DOCS_CHECK_GUARD_TARGETS),$(MAKE))
+	$(call clean_paths,$(DOCS_CHECK_PRE_CLEAN_PATHS))
+	$(call run_make_targets,$(DOCS_CHECK_PREPARE_TARGETS),$(MAKE))
 	@echo "→ Checking documentation build integrity"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
 	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) $(DOCS_CHECK_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" SITE_URL="$(DOCS_CHECK_SITE_URL)" \
