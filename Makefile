@@ -24,10 +24,13 @@ ROOT_CHECK_VENV := $(ROOT_ARTIFACTS_DIR)/check-venv
 ROOT_CHECK_PYTHON := $(ROOT_CHECK_VENV)/bin/python
 ROOT_CHECK_STAMP := $(ROOT_ARTIFACTS_DIR)/.check-tools.stamp
 ROOT_DOCS_ARTIFACTS_DIR := $(ROOT_ARTIFACTS_DIR)/docs
-ROOT_DOCS_SITE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/site
+ROOT_DOCS_BUILD_SITE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/build-site
+ROOT_DOCS_CHECK_SITE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/check-site
+ROOT_DOCS_SERVE_SITE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/serve-site
 ROOT_DOCS_CACHE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/cache
 ROOT_DOCS_SERVE_CFG := $(ROOT_DOCS_ARTIFACTS_DIR)/mkdocs.serve.yml
 ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
+ROOT_DOCS_ENV := NO_MKDOCS_2_WARNING=true
 ROOT_CHECK_BOOTSTRAP_PYTHON := $(shell command -v python3.11 || command -v python3)
 ROOT_CHECK_PACKAGES := \
 	bandit \
@@ -198,35 +201,55 @@ security:
 
 docs:
 	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
+	@rm -rf "$(ROOT_DOCS_BUILD_SITE_DIR)"
 	@rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"
 	@$(MAKE) root-check-env >/dev/null
 	@echo "==> root docs"
-	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" \
+	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" $(ROOT_DOCS_ENV) \
 	  "$(ROOT_CHECK_PYTHON)" -m mkdocs build --strict \
 	  --config-file "$(CURDIR)/mkdocs.yml" \
-	  --site-dir "$(ROOT_DOCS_SITE_DIR)"
+	  --site-dir "$(ROOT_DOCS_BUILD_SITE_DIR)"
 	@test ! -e "$(CURDIR)/site"
 	@test ! -e "$(CURDIR)/.cache"
-	@echo "Docs built in $(ROOT_DOCS_SITE_DIR)"
+	@echo "Docs built in $(ROOT_DOCS_BUILD_SITE_DIR)"
 
 docs-check:
 	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
+	@rm -rf "$(ROOT_DOCS_CHECK_SITE_DIR)"
 	@rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"
 	@$(MAKE) root-check-env >/dev/null
 	@echo "==> root docs check"
-	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" \
+	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" $(ROOT_DOCS_ENV) \
 	  "$(ROOT_CHECK_PYTHON)" -m mkdocs build --strict --quiet \
 	  --config-file "$(CURDIR)/mkdocs.yml" \
-	  --site-dir "$(ROOT_DOCS_SITE_DIR)"
+	  --site-dir "$(ROOT_DOCS_CHECK_SITE_DIR)"
 	@test ! -e "$(CURDIR)/site"
 	@test ! -e "$(CURDIR)/.cache"
 	@echo "Docs check passed"
 
 docs-serve:
-	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
-	@rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"
-	@$(MAKE) root-check-env >/dev/null
-	@script="$(ROOT_DOCS_ARTIFACTS_DIR)/render_root_docs_serve_config.py"; \
+	@set -eu; \
+	  mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"; \
+	  rm -rf "$(ROOT_DOCS_SERVE_SITE_DIR)"; \
+	  rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"; \
+	  $(MAKE) root-check-env >/dev/null; \
+	  addr="$(ROOT_DOCS_DEV_ADDR)"; \
+	  port="$${addr##*:}"; \
+	  if lsof_output="$$(lsof -nP -iTCP:$$port -sTCP:LISTEN 2>/dev/null)"; then \
+	    pid="$$(printf '%s\n' "$$lsof_output" | awk 'NR==2 {print $$2}')"; \
+	    command_line="$$(ps -p "$$pid" -o command= 2>/dev/null || true)"; \
+	    if printf '%s\n' "$$command_line" | grep -Fq -- "$(CURDIR)/artifacts/root/docs/mkdocs.serve.yml"; then \
+	      echo "==> root docs serve already running on http://$$addr (pid $$pid)"; \
+	      exit 0; \
+	    fi; \
+	    echo "Port $$addr is already in use by pid $$pid."; \
+	    if [ -n "$$command_line" ]; then \
+	      echo "$$command_line"; \
+	    fi; \
+	    echo "Stop that process or run 'make ROOT_DOCS_DEV_ADDR=127.0.0.1:<port> docs-serve'."; \
+	    exit 2; \
+	  fi; \
+	  script="$(ROOT_DOCS_ARTIFACTS_DIR)/render_root_docs_serve_config.py"; \
 	  printf '%s\n' \
 	    'from pathlib import Path' \
 	    'import os' \
@@ -236,7 +259,7 @@ docs-serve:
 	    'inherit_cfg = Path(os.environ["ROOT_DOCS_SHARED_CFG"]).resolve()' \
 	    'site_url = "http://" + os.environ["ROOT_DOCS_DEV_ADDR"] + "/"' \
 	    'docs_dir = Path(os.environ["ROOT_DOCS_SRC"]).resolve()' \
-	    'site_dir = Path(os.environ["ROOT_DOCS_SITE_DIR"]).resolve()' \
+	    'site_dir = Path(os.environ["ROOT_DOCS_SERVE_SITE_DIR"]).resolve()' \
 	    '' \
 	    'lines = src.read_text(encoding="utf-8").splitlines()' \
 	    'rewritten = []' \
@@ -269,13 +292,13 @@ docs-serve:
 	    '    rewritten.append(f"site_dir: {site_dir}")' \
 	    'dst.write_text("\n".join(rewritten) + "\n", encoding="utf-8")' \
 	    > "$$script"; \
-	  ROOT_DOCS_CFG="$(CURDIR)/mkdocs.yml" ROOT_DOCS_SHARED_CFG="$(CURDIR)/mkdocs.shared.yml" ROOT_DOCS_SERVE_CFG="$(ROOT_DOCS_SERVE_CFG)" ROOT_DOCS_DEV_ADDR="$(ROOT_DOCS_DEV_ADDR)" ROOT_DOCS_SRC="$(CURDIR)/docs" ROOT_DOCS_SITE_DIR="$(ROOT_DOCS_SITE_DIR)" \
-	    "$(ROOT_CHECK_PYTHON)" "$$script"
-	@echo "==> root docs serve on http://$(ROOT_DOCS_DEV_ADDR)"
-	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" \
-	  "$(ROOT_CHECK_PYTHON)" -m mkdocs serve --strict \
-	  --config-file "$(ROOT_DOCS_SERVE_CFG)" \
-	  --dev-addr "$(ROOT_DOCS_DEV_ADDR)"
+	  ROOT_DOCS_CFG="$(CURDIR)/mkdocs.yml" ROOT_DOCS_SHARED_CFG="$(CURDIR)/mkdocs.shared.yml" ROOT_DOCS_SERVE_CFG="$(ROOT_DOCS_SERVE_CFG)" ROOT_DOCS_DEV_ADDR="$(ROOT_DOCS_DEV_ADDR)" ROOT_DOCS_SRC="$(CURDIR)/docs" ROOT_DOCS_SERVE_SITE_DIR="$(ROOT_DOCS_SERVE_SITE_DIR)" \
+	    "$(ROOT_CHECK_PYTHON)" "$$script"; \
+	  echo "==> root docs serve on http://$(ROOT_DOCS_DEV_ADDR)"; \
+	  XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" $(ROOT_DOCS_ENV) \
+	    "$(ROOT_CHECK_PYTHON)" -m mkdocs serve --strict \
+	    --config-file "$(ROOT_DOCS_SERVE_CFG)" \
+	    --dev-addr "$(ROOT_DOCS_DEV_ADDR)"
 
 api:
 	$(call assert_package)
