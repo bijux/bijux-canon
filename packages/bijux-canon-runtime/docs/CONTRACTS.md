@@ -1,10 +1,17 @@
-# CONTRACTS
+# Contracts
 
-Stable contracts in `bijux-canon-runtime` are:
+The runtime contract surface matters across packages because replay and audit
+depend on it.
+
+## Stable surfaces
+
 - console script `bijux-canon-runtime`
 - API surface and schema artifacts under `apis/bijux-canon-runtime/v1/`
-- runtime models under `src/bijux_canon_runtime/model/`
-- CLI behavior under `src/bijux_canon_runtime/interfaces/cli/`
-- execution-store schema artifacts under `src/bijux_canon_runtime/observability/`
+- runtime models under `model/`
+- CLI behavior under `interfaces/cli/`
+- execution-store schema artifacts and migrations
 
-Runtime contract changes should be explicit because they affect replay and audit guarantees across packages.
+## Change policy
+
+Runtime contract changes should be explicit because they affect replay,
+auditability, and package interaction across the system.

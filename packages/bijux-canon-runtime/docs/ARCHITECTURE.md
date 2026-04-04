@@ -1,12 +1,20 @@
-# ARCHITECTURE
+# Architecture
 
-`bijux-canon-runtime` is a governed execution and replay package.
+The runtime package is easiest to understand when you separate durable models,
+execution engines, orchestration, and evidence handling.
 
-Core layout:
-- `src/bijux_canon_runtime/model/` owns durable runtime data models
-- `src/bijux_canon_runtime/runtime/` owns execution engines and lifecycle internals
-- `src/bijux_canon_runtime/application/` owns orchestration and replay coordination
-- `src/bijux_canon_runtime/observability/` owns evidence capture, analysis, and storage
-- `src/bijux_canon_runtime/interfaces/cli/` and `api/v1/` own operator boundaries
+## Main layers
 
-The architecture should keep execution authority and replay semantics inside runtime, with external transport and storage adapters clearly separated.
+- `model/` defines durable runtime data models
+- `runtime/` contains execution engines and lifecycle internals
+- `application/` coordinates planning, execution, replay, and persistence workflows
+- `observability/` captures, stores, and analyzes evidence about execution
+- `interfaces/` and `api/v1/` expose operator-facing boundaries
+
+## Intended flow
+
+1. A boundary receives a manifest, command, or replay request.
+2. Application code resolves the request into a runtime workflow.
+3. Runtime engines execute the flow in the chosen mode.
+4. Observability code records the evidence needed for audit and replay.
+5. Boundaries render the outcome without absorbing runtime authority into transport code.

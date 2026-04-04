@@ -1,13 +1,23 @@
-# BOUNDARIES
+# Boundaries
 
-`bijux-canon-runtime` owns manifest execution, replay, execution evidence capture, and runtime persistence rules.
+`bijux-canon-runtime` owns the authority layer. Other packages may define what a
+step means, but runtime decides how governed execution and replay behave.
 
-It does own:
+## This package owns
+
 - runtime authority and replay semantics
 - trace capture and execution-store behavior
 - operator CLI and API boundaries for runtime flows
+- non-determinism accounting and policy enforcement
 
-It does not own:
-- agent composition policy from `bijux-canon-agent`
-- ingest and vector index package semantics
-- repository tooling from `bijux-canon-dev`
+## Neighbor packages own
+
+- `bijux-canon-agent`: agent composition policy
+- `bijux-canon-ingest` and `bijux-canon-index`: their own domain semantics
+- `bijux-canon-dev`: repository tooling
+
+## Boundary discipline
+
+- do not move authority decisions into domain packages
+- do not let transport code become the real home of runtime policy
+- do not weaken replay semantics by hiding important execution details outside runtime

@@ -1,14 +1,18 @@
 # Changelog  
 <a id="top"></a>  
 
-All notable changes to **bijux-canon-runtime** are documented here.  
-This project adheres to [Semantic Versioning](https://semver.org) and the  
-[Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.  
+All notable changes to **bijux-canon-runtime** are documented here.
+
+This changelog should emphasize:
+
+- execution and replay behavior changes
+- schema and persistence changes
+- non-determinism and policy changes
+- package-facing CLI or API changes
 
 <a id="unreleased"></a>  
 ## [Unreleased]  
 
-<!-- unreleased start -->
 ### Added
 * (add new entries here)
 
@@ -17,13 +21,8 @@ This project adheres to [Semantic Versioning](https://semver.org) and the
 
 ### Fixed
 * (add here)
-<!-- unreleased end -->  
-
-  
 
 ---  
-
-<!-- release start -->  
 
 <a id="v0-1-0"></a>  
 ## [0.1.0] – 2025-01-21  
@@ -55,6 +54,3 @@ This project adheres to [Semantic Versioning](https://semver.org) and the
   - Examples for deterministic and replay behavior.
 - **Quality gates**
   - Makefile orchestration for tests, linting, docs, API checks, and SBOM outputs.
-
-
-<!-- release end -->
