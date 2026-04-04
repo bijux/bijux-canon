@@ -112,6 +112,24 @@ def test_compatibility_packages_publish_package_local_ignore_rules() -> None:
     assert not failures, "compatibility package ignore policy failed:\n" + "\n".join(failures)
 
 
+def test_public_release_packages_define_package_local_ignore_rules() -> None:
+    workspace = _workspace_metadata()
+    failures: list[str] = []
+
+    for package_name in sorted(workspace["public_release_packages"]):
+        gitignore_path = _package_path(package_name) / ".gitignore"
+        if not gitignore_path.exists():
+            failures.append(f"{package_name}: missing package-local .gitignore")
+            continue
+
+        text = gitignore_path.read_text(encoding="utf-8")
+        for required_line in ("dist/", "build/", "*.egg-info/"):
+            if required_line not in text:
+                failures.append(f"{package_name}: .gitignore should include {required_line}")
+
+    assert not failures, "public package ignore files failed:\n" + "\n".join(failures)
+
+
 def test_generated_version_files_write_to_ignored_build_modules() -> None:
     failures: list[str] = []
 
