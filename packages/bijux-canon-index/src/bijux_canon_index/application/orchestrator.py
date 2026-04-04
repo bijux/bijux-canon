@@ -25,12 +25,9 @@ from bijux_canon_index.core.errors import (
     InvariantError,
     NDExecutionUnavailableError,
     NotFoundError,
-    ReplayNotSupportedError,
     ValidationError,
 )
 from bijux_canon_index.core.errors.refusal import is_refusal, refusal_payload
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.identity.fingerprints import (
     corpus_fingerprint,
     determinism_fingerprint,
@@ -39,24 +36,14 @@ from bijux_canon_index.core.identity.fingerprints import (
 from bijux_canon_index.core.identity.ids import fingerprint
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import (
-    Chunk,
-    Document,
     ExecutionArtifact,
     ExecutionBudget,
     ExecutionRequest,
     NDSettings,
-    Vector,
-)
-from bijux_canon_index.domain.requests.execution_diff import compare_executions
-from bijux_canon_index.domain.requests.request_execution import (
-    execute_request,
-    start_execution_session,
 )
 from bijux_canon_index.domain.non_determinism.execution_model import (
     NonDeterministicExecutionModel,
 )
-from bijux_canon_index.domain.provenance.lineage import explain_result
-from bijux_canon_index.domain.provenance.replay import replay
 from bijux_canon_index.infra.logging import log_event
 from bijux_canon_index.infra.metrics import METRICS, timed
 from bijux_canon_index.infra.run_store import RunStore
@@ -74,6 +61,11 @@ from bijux_canon_index.application.orchestration.materialization import (
     attach_ann_index,
     build_materialized_artifact,
     materialization_response,
+)
+from bijux_canon_index.application.orchestration.query_introspection import (
+    build_compare_response,
+    build_explain_response,
+    build_replay_response,
 )
 from bijux_canon_index.application.orchestration.runtime_bootstrap import (
     bootstrap_runtime,
@@ -534,42 +526,11 @@ class Orchestrator:
         )
 
     def explain(self, req: ExplainRequest) -> dict[str, Any]:
-        art_id = req.artifact_id
-        if art_id is None:
-            artifacts = tuple(self.stores.ledger.list_artifacts())
-            if len(artifacts) == 1:
-                art_id = artifacts[0].artifact_id
-            else:
-                raise ValidationError(message="artifact_id required to explain result")
-        artifact = self._require_artifact(art_id)
-        latest = self.stores.ledger.latest_execution_result(artifact.artifact_id)
-        if latest is None:
-            raise NotFoundError(message="No execution results available to explain")
-        target = next((r for r in latest.results if r.vector_id == req.result_id), None)
-        if target is None:
-            raise NotFoundError(message="result not found")
-        data = explain_result(target, self.stores)
-        document = cast(Document, data["document"])
-        chunk = cast(Chunk, data["chunk"])
-        vector = cast(Vector, data["vector"])
-        artifact_meta = cast(ExecutionArtifact, data["artifact"])
-        return {
-            "document_id": document.document_id,
-            "chunk_id": chunk.chunk_id,
-            "vector_id": vector.vector_id,
-            "artifact_id": artifact_meta.artifact_id,
-            "metric": artifact_meta.metric,
-            "score": target.score,
-            "correlation_id": target.request_id,
-            "execution_contract": artifact_meta.execution_contract.value,
-            "execution_contract_status": (
-                "stable"
-                if artifact_meta.execution_contract is ExecutionContract.DETERMINISTIC
-                else "experimental"
-            ),
-            "replayable": artifact_meta.replayable,
-            "execution_id": latest.execution_id,
-        }
+        return build_explain_response(
+            req,
+            stores=self.stores,
+            require_artifact=self._require_artifact,
+        )
 
     def replay(
         self,
@@ -579,75 +540,16 @@ class Orchestrator:
         randomness_profile: RandomnessProfile | None = None,
         execution_budget: ExecutionBudget | None = None,
     ) -> dict[str, Any]:
-        chosen_artifact_id = artifact_id
-        if chosen_artifact_id is None:
-            artifacts = tuple(self.stores.ledger.list_artifacts())
-            if len(artifacts) == 1:
-                chosen_artifact_id = artifacts[0].artifact_id
-            else:
-                raise ValidationError(message="artifact_id required for replay")
-        artifact = self._require_artifact(chosen_artifact_id)
-        if expected_contract and expected_contract is not artifact.execution_contract:
-            raise InvariantError(
-                message="Replay contract does not match artifact execution contract"
-            )
-        if (
-            artifact.execution_contract is ExecutionContract.NON_DETERMINISTIC
-            and randomness_profile is None
-        ):
-            raise ReplayNotSupportedError(
-                message="Non-deterministic replay requires explicit randomness profile"
-            )
-        if (
-            artifact.execution_contract is ExecutionContract.NON_DETERMINISTIC
-            and randomness_profile is not None
-            and randomness_profile.non_replayable
-        ):
-            raise ReplayNotSupportedError(
-                message="Non-deterministic replay refused for non-replayable requests"
-            )
-        if (
-            artifact.execution_contract is ExecutionContract.NON_DETERMINISTIC
-            and randomness_profile is not None
-            and randomness_profile.seed is None
-        ):
-            raise ReplayNotSupportedError(
-                message="Non-deterministic replay requires a seed"
-            )
-        request = ExecutionRequest(
-            request_id="req-replay",
-            text=request_text,
-            vector=(0.0, 0.0),
-            top_k=5,
-            execution_contract=artifact.execution_contract,
-            execution_intent=ExecutionIntent.REPRODUCIBLE_RESEARCH,
-            execution_mode=ExecutionMode.STRICT
-            if artifact.execution_contract is ExecutionContract.DETERMINISTIC
-            else ExecutionMode.BOUNDED,
+        return build_replay_response(
+            request_text,
+            expected_contract=expected_contract,
+            artifact_id=artifact_id,
+            randomness_profile=randomness_profile,
             execution_budget=execution_budget,
-        )
-        outcome = replay(
-            request,
-            artifact,
-            self.stores,
+            stores=self.stores,
             ann_runner=getattr(self.backend, "ann", None),
-            randomness=randomness_profile,
+            require_artifact=self._require_artifact,
         )
-        return {
-            "matches": outcome.matches,
-            "original_fingerprint": outcome.original_fingerprint,
-            "replay_fingerprint": outcome.replay_fingerprint,
-            "details": outcome.details,
-            "nondeterministic_sources": outcome.nondeterministic_sources,
-            "execution_contract": artifact.execution_contract.value,
-            "execution_contract_status": (
-                "stable"
-                if artifact.execution_contract is ExecutionContract.DETERMINISTIC
-                else "experimental"
-            ),
-            "replayable": artifact.replayable,
-            "execution_id": outcome.execution_id,
-        }
 
     def compare(
         self,
@@ -655,62 +557,12 @@ class Orchestrator:
         artifact_a_id: str | None = None,
         artifact_b_id: str | None = None,
     ) -> dict[str, object]:
-        if req.vector is None:
-            raise ValidationError(message="execution vector required for comparison")
-        art_a = self._require_artifact(artifact_a_id or self.default_artifact_id)
-        art_b = self._require_artifact(artifact_b_id or self.default_artifact_id)
-        vector_values = tuple(req.vector)
-
-        def _as_request(artifact: ExecutionArtifact) -> ExecutionRequest:
-            return ExecutionRequest(
-                request_id=f"compare-{artifact.artifact_id}",
-                text=req.request_text,
-                vector=vector_values,
-                top_k=req.top_k,
-                execution_contract=artifact.execution_contract,
-                execution_intent=req.execution_intent,
-                execution_mode=req.execution_mode,
-                execution_budget=ExecutionBudget(
-                    max_latency_ms=req.execution_budget.max_latency_ms
-                    if req.execution_budget
-                    else None,
-                    max_memory_mb=req.execution_budget.max_memory_mb
-                    if req.execution_budget
-                    else None,
-                    max_error=req.execution_budget.max_error
-                    if req.execution_budget
-                    else None,
-                ),
-            )
-
-        req_a = _as_request(art_a)
-        req_b = _as_request(art_b)
-        ann_runner = getattr(self.backend, "ann", None)
-        session_a = start_execution_session(
-            art_a, req_a, self.stores, ann_runner=ann_runner
+        return build_compare_response(
+            req,
+            artifact_a_id=artifact_a_id,
+            artifact_b_id=artifact_b_id,
+            default_artifact_id=self.default_artifact_id,
+            stores=self.stores,
+            ann_runner=getattr(self.backend, "ann", None),
+            require_artifact=self._require_artifact,
         )
-        session_b = start_execution_session(
-            art_b, req_b, self.stores, ann_runner=ann_runner
-        )
-        exec_a, res_a = execute_request(session_a, self.stores, ann_runner=ann_runner)
-        exec_b, res_b = execute_request(session_b, self.stores, ann_runner=ann_runner)
-        diff = compare_executions(exec_a, res_a, exec_b, res_b)
-        return {
-            "execution_a": diff.execution_a.execution_id,
-            "execution_b": diff.execution_b.execution_id,
-            "overlap_ratio": diff.overlap_ratio,
-            "recall_delta": diff.recall_delta,
-            "rank_instability": diff.rank_instability,
-            "execution_a_contract": art_a.execution_contract.value,
-            "execution_b_contract": art_b.execution_contract.value,
-            "execution_a_contract_status": (
-                "stable"
-                if art_a.execution_contract is ExecutionContract.DETERMINISTIC
-                else "experimental"
-            ),
-            "execution_b_contract_status": (
-                "stable"
-                if art_b.execution_contract is ExecutionContract.DETERMINISTIC
-                else "experimental"
-            ),
-        }
