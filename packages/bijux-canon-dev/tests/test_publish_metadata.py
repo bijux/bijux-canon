@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PACKAGE_ROOT = REPO_ROOT / "packages"
 CHANGELOG_URL_PREFIX = "https://github.com/bijux/bijux-canon/blob/main/"
+PUBLIC_RELEASE_VERSION = "0.3.0"
 
 
 def _package_pyprojects() -> list[Path]:
@@ -20,6 +21,11 @@ def _package_pyprojects() -> list[Path]:
 def _project_table(pyproject_path: Path) -> dict[str, object]:
     with pyproject_path.open("rb") as handle:
         return tomllib.load(handle)["project"]
+
+
+def _workspace_metadata() -> dict[str, object]:
+    with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
+        return tomllib.load(handle)["tool"]["bijux_canon"]
 
 
 def test_all_packages_have_package_local_changelogs() -> None:
@@ -55,3 +61,30 @@ def test_typed_packages_ship_py_typed_markers() -> None:
         if not list((pyproject_path.parent / "src").glob("*/py.typed")):
             missing.append(pyproject_path.parent.name)
     assert not missing, f"typed packages missing py.typed markers: {', '.join(missing)}"
+
+
+def test_public_release_matrix_excludes_internal_dev_package() -> None:
+    workspace = _workspace_metadata()
+    public_packages = workspace["public_release_packages"]
+    internal_packages = workspace["internal_support_packages"]
+
+    assert len(public_packages) == 10
+    assert "bijux-canon-dev" not in public_packages
+    assert internal_packages == ["bijux-canon-dev"]
+
+
+def test_public_release_packages_are_aligned_to_v0_3_0() -> None:
+    workspace = _workspace_metadata()
+    public_packages = set(workspace["public_release_packages"])
+    package_dirs = workspace["package_dirs"]
+
+    misaligned: list[str] = []
+    for package_name in public_packages:
+        pyproject_path = REPO_ROOT / package_dirs[package_name] / "pyproject.toml"
+        with pyproject_path.open("rb") as handle:
+            data = tomllib.load(handle)
+        version_config = data.get("tool", {}).get("hatch", {}).get("version", {})
+        fallback = version_config.get("fallback-version")
+        if fallback != PUBLIC_RELEASE_VERSION:
+            misaligned.append(f"{package_name}: fallback-version={fallback!r}")
+    assert not misaligned, "public release version alignment failed:\n" + "\n".join(misaligned)
