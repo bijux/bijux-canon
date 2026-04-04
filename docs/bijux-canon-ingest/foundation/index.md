@@ -85,7 +85,7 @@ flowchart TD
 
 ## Decision Rule
 
-Use `Foundation` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as a bounded package. If the work expands package authority without making ownership clearer, stop and re-check the boundary before treating the change as a local improvement.
+Use `Foundation` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
 
 ## Next Checks
 
@@ -139,17 +139,17 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 
 Use these points as the fast check for whether the page is doing real explanatory work.
 
-- `Foundation` leaves a reviewer able to explain `bijux-canon-ingest` in one boundary sentence without hand-waving
-- the owned and out-of-scope areas read as complementary rather than contradictory
-- neighboring packages become easier to place because this package is clearly bounded
+- `Foundation` leaves a reviewer able to explain `bijux-canon-ingest` in one clean sentence without hand-waving
+- the owned and out-of-scope areas make the package feel narrower and more intentional, not more defensive
+- neighboring packages become easier to place because this package feels like one clear role in a larger flow
 
 ## Failure Signals
 
 These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
 
-- `Foundation` has to explain the same ownership claim with repeated exceptions
-- the out-of-scope list starts looking like shadow ownership instead of a real boundary
-- review conversations keep falling back to package adjacency rather than package intent
+- `Foundation` needs repeated exceptions before the package role makes sense
+- the out-of-scope list starts sounding like shadow ownership instead of a real boundary
+- review conversations fall back to file proximity instead of package intent
 
 ## Tradeoffs To Hold
 
@@ -157,13 +157,13 @@ A strong page names the tensions it is managing instead of pretending every desi
 
 - prefer clean ownership over local convenience, even when nearby code looks easier to reuse
 - prefer an explicit boundary gap over a shadow responsibility that no package clearly owns
-- prefer keeping `bijux-canon-ingest` intelligible as a bounded package over making it look universally useful
+- prefer keeping `bijux-canon-ingest` intelligible as one clear role in the system over making it look universally useful
 
 ## Cross Implications
 
 - changes here influence how neighboring packages are allowed to stay narrow around `bijux-canon-ingest`
-- a weak boundary explanation raises architectural and quality ambiguity immediately
-- interface and operations pages inherit confusion when foundational ownership is unclear
+- a weak foundation story makes architecture, interface, operations, and quality pages feel like disconnected fragments
+- if ownership is unclear here, the rest of the handbook has to waste time repairing that confusion
 
 ## Approval Questions
 
@@ -213,13 +213,13 @@ If the foundation pages for `bijux-canon-ingest` are weak, reviewers stop knowin
 
 ## Representative Scenario
 
-A contributor proposes moving new behavior into `bijux-canon-ingest` because it is nearby in the repository. This page should make it obvious whether that work fits the package boundary or belongs in a neighboring package instead.
+A contributor proposes moving new behavior into `bijux-canon-ingest` because it looks nearby or related. This page should make it obvious whether that work actually belongs to this package role or whether the overall system becomes clearer if the work lands somewhere else.
 
 ## Source Of Truth Order
 
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest` for the real ownership boundary in code
 - `packages/bijux-canon-ingest/tests` for executable proof that the boundary still holds under change
-- `packages/bijux-canon-ingest/README.md` plus this section for the shortest maintained explanation of that boundary
+- `packages/bijux-canon-ingest/README.md` plus this section for the shortest maintained explanation of why that boundary exists
 
 ## Common Misreadings
 

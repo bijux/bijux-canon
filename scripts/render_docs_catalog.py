@@ -894,9 +894,10 @@ def package_if_it_drifts(package: PackageInfo, category: str) -> tuple[str, ...]
 def package_scenario(package: PackageInfo, category: str) -> str:
     scenario_map = {
         "foundation": (
-            f"A contributor proposes moving new behavior into `{package.title}` because it is"
-            " nearby in the repository. This page should make it obvious whether that work"
-            " fits the package boundary or belongs in a neighboring package instead."
+            f"A contributor proposes moving new behavior into `{package.title}` because it"
+            " looks nearby or related. This page should make it obvious whether that work"
+            " actually belongs to this package role or whether the overall system becomes"
+            " clearer if the work lands somewhere else."
         ),
         "architecture": (
             f"A reviewer is tracing a refactor through `{package.title}` and needs to know"
@@ -927,7 +928,7 @@ def package_source_of_truth(package: PackageInfo, category: str) -> tuple[str, .
         "foundation": (
             f"`{package.package_dir}/src/{package.import_name}` for the real ownership boundary in code",
             f"`{package.package_dir}/tests` for executable proof that the boundary still holds under change",
-            f"`{package.package_dir}/README.md` plus this section for the shortest maintained explanation of that boundary",
+            f"`{package.package_dir}/README.md` plus this section for the shortest maintained explanation of why that boundary exists",
         ),
         "architecture": (
             f"`{package.package_dir}/src/{package.import_name}` for the actual dependency direction and module structure",
@@ -1080,8 +1081,8 @@ def package_working_interpretation(package: PackageInfo, category: str) -> str:
 def package_decision_rule(package: PackageInfo, category: str, title: str) -> str:
     rule_map = {
         "foundation": (
-            f"Use `{title}` to decide whether a change makes `{package.title}` easier or harder to defend as a bounded package. "
-            "If the work expands package authority without making ownership clearer, stop and re-check the boundary before treating the change as a local improvement."
+            f"Use `{title}` to decide whether a change makes `{package.title}` easier or harder to defend as one distinct role in the overall system. "
+            "If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement."
         ),
         "architecture": (
             f"Use `{title}` to decide whether a structural change makes `{package.title}` easier or harder to explain in terms of modules, dependency direction, and execution flow. "
@@ -1106,9 +1107,9 @@ def package_decision_rule(package: PackageInfo, category: str, title: str) -> st
 def package_what_good_looks_like(package: PackageInfo, category: str, title: str) -> tuple[str, ...]:
     good_map = {
         "foundation": (
-            f"`{title}` leaves a reviewer able to explain `{package.title}` in one boundary sentence without hand-waving",
-            "the owned and out-of-scope areas read as complementary rather than contradictory",
-            "neighboring packages become easier to place because this package is clearly bounded",
+            f"`{title}` leaves a reviewer able to explain `{package.title}` in one clean sentence without hand-waving",
+            "the owned and out-of-scope areas make the package feel narrower and more intentional, not more defensive",
+            "neighboring packages become easier to place because this package feels like one clear role in a larger flow",
         ),
         "architecture": (
             f"`{title}` lets a reviewer trace structure without guessing where the real pathway lives",
@@ -1137,9 +1138,9 @@ def package_what_good_looks_like(package: PackageInfo, category: str, title: str
 def package_failure_signals(package: PackageInfo, category: str, title: str) -> tuple[str, ...]:
     signal_map = {
         "foundation": (
-            f"`{title}` has to explain the same ownership claim with repeated exceptions",
-            "the out-of-scope list starts looking like shadow ownership instead of a real boundary",
-            "review conversations keep falling back to package adjacency rather than package intent",
+            f"`{title}` needs repeated exceptions before the package role makes sense",
+            "the out-of-scope list starts sounding like shadow ownership instead of a real boundary",
+            "review conversations fall back to file proximity instead of package intent",
         ),
         "architecture": (
             f"`{title}` points to modules that no longer carry the behavior the page claims they do",
@@ -1169,8 +1170,8 @@ def package_cross_implications(package: PackageInfo, category: str) -> tuple[str
     implication_map = {
         "foundation": (
             f"changes here influence how neighboring packages are allowed to stay narrow around `{package.title}`",
-            "a weak boundary explanation raises architectural and quality ambiguity immediately",
-            "interface and operations pages inherit confusion when foundational ownership is unclear",
+            "a weak foundation story makes architecture, interface, operations, and quality pages feel like disconnected fragments",
+            "if ownership is unclear here, the rest of the handbook has to waste time repairing that confusion",
         ),
         "architecture": (
             f"changes here alter how interface, operations, and quality pages for `{package.title}` should be read",
@@ -1294,7 +1295,7 @@ def package_tradeoffs(package: PackageInfo, category: str) -> tuple[str, ...]:
         "foundation": (
             "prefer clean ownership over local convenience, even when nearby code looks easier to reuse",
             "prefer an explicit boundary gap over a shadow responsibility that no package clearly owns",
-            f"prefer keeping `{package.title}` intelligible as a bounded package over making it look universally useful",
+            f"prefer keeping `{package.title}` intelligible as one clear role in the system over making it look universally useful",
         ),
         "architecture": (
             "prefer clean dependency direction over short-term coupling that makes one change easier today",
