@@ -17,9 +17,7 @@ def test_no_generated_files_are_tracked() -> None:
         text=True,
     )
     tracked_paths = [
-        Path(line)
-        for line in completed.stdout.splitlines()
-        if line.strip()
+        Path(line) for line in completed.stdout.splitlines() if line.strip()
     ]
     forbidden_markers = {
         "__pycache__",

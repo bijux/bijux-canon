@@ -215,7 +215,9 @@ def rag_app() -> Any:
     # Hard gate: required callables must exist.
     for name in ("build_index", "save_index", "load_index", "retrieve", "ask"):
         if not callable(getattr(app, name, None)):
-            pytest.fail(f"IngestService must implement callable {name}() for E2E RAG gates.")
+            pytest.fail(
+                f"IngestService must implement callable {name}() for E2E RAG gates."
+            )
     return app
 
 

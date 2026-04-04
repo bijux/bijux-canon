@@ -12,7 +12,10 @@ from bijux_canon_ingest.config.app import AppConfig
 from bijux_canon_ingest.config.cleaning import CleanConfig
 from bijux_canon_ingest.config.ingest import IngestConfig, build_ingest_deps
 from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc
-from bijux_canon_ingest.interfaces.cli.document_io import CsvDocumentReader, write_chunks_jsonl
+from bijux_canon_ingest.interfaces.cli.document_io import (
+    CsvDocumentReader,
+    write_chunks_jsonl,
+)
 from bijux_canon_ingest.application.pipeline import run_ingest_pipeline_docs
 from bijux_canon_ingest.observability import DebugConfig
 from bijux_canon_ingest.result import Err, Ok, Result, result_and_then, result_map
@@ -72,7 +75,9 @@ def orchestrate(args: list[str]) -> Result[None, str]:
 def _run(cfg: AppConfig) -> Result[None, str]:
     deps = build_ingest_deps(cfg.ingest)
     docs_res = read_docs(cfg.input_path)
-    core_res = result_map(docs_res, lambda docs: run_ingest_pipeline_docs(docs, cfg.ingest, deps))
+    core_res = result_map(
+        docs_res, lambda docs: run_ingest_pipeline_docs(docs, cfg.ingest, deps)
+    )
     return result_and_then(core_res, lambda res: write_chunks(cfg.output_path, res[0]))
 
 

@@ -43,7 +43,15 @@ from .core.rules_pred import (
     eval_pred,
 )
 from .core.structural_dedup import DedupIterator, structural_dedup_lazy
-from .core.types import Chunk, ChunkWithoutEmbedding, CleanDoc, RagEnv, RawDoc, TextNode, TreeDoc
+from .core.types import (
+    Chunk,
+    ChunkWithoutEmbedding,
+    CleanDoc,
+    RagEnv,
+    RawDoc,
+    TextNode,
+    TreeDoc,
+)
 from .fp import (
     FakeTime,
     Reader,
@@ -82,7 +90,14 @@ from .fp import (
     wr_map,
     wr_pure,
 )
-from .observability import DebugConfig, DocRule, IngestTaps, IngestTrace, Observations, TraceLens
+from .observability import (
+    DebugConfig,
+    DocRule,
+    IngestTaps,
+    IngestTrace,
+    Observations,
+    TraceLens,
+)
 from .processing.chunking import (
     gen_chunk_doc,
     gen_chunk_spans,
@@ -156,7 +171,12 @@ from .safeguards.breakers import (
     short_circuit_on_err_emit,
     short_circuit_on_err_truncate,
 )
-from .safeguards.memo import DiskCache, content_hash_key, lru_cache_custom, memoize_keyed
+from .safeguards.memo import (
+    DiskCache,
+    content_hash_key,
+    lru_cache_custom,
+    memoize_keyed,
+)
 from .safeguards.reports import (
     ErrGroup,
     ErrReport,
@@ -164,7 +184,12 @@ from .safeguards.reports import (
     fold_error_report,
     report_to_jsonable,
 )
-from .safeguards.resources import auto_close, managed_stream, nested_managed, with_resource_stream
+from .safeguards.resources import (
+    auto_close,
+    managed_stream,
+    nested_managed,
+    with_resource_stream,
+)
 from .safeguards.retries import (
     RetryCtx,
     RetryDecision,

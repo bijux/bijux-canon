@@ -7,7 +7,11 @@ from collections.abc import Iterator
 
 from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.domain.effects.io_plan import perform
-from bijux_canon_ingest.domain.idempotent import AtomicWriteCap, content_key, idempotent_write
+from bijux_canon_ingest.domain.idempotent import (
+    AtomicWriteCap,
+    content_key,
+    idempotent_write,
+)
 from bijux_canon_ingest.result.types import ErrInfo, Ok, Result
 
 

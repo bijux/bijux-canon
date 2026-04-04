@@ -35,6 +35,7 @@ TEST_PYTHON               ?= $(if $(wildcard $(VENV_PYTHON)),$(abspath $(VENV_PY
 PYTEST                    ?= $(TEST_PYTHON) -m pytest
 PYTEST_CONFIG             ?= $(MONOREPO_ROOT)/configs/pytest.ini
 COVERAGE_CONFIG           ?= $(MONOREPO_ROOT)/configs/coveragerc.ini
+TEST_SELF_MAKE            ?= $(if $(PACKAGE_PROFILE_MAKEFILE),$(MAKE) -f "$(PACKAGE_PROFILE_MAKEFILE)",$(MAKE))
 
 PYTEST_INI_ABS            := $(abspath $(PYTEST_CONFIG))
 COVCFG_ABS                := $(abspath $(COVERAGE_CONFIG))
@@ -64,13 +65,14 @@ PYTEST_FLAGS = \
   --cov-report=xml:"$(COV_XML_ABS)" \
   -o cache_dir="$(CACHE_DIR_ABS)" \
   $(PYTEST_ADDOPTS_EXTRA)
+PYTEST_INFO_FLAGS = -o cache_dir="$(CACHE_DIR_ABS)"
 
 .PHONY: test test-unit test-e2e test-regression test-evaluation test-ci test-clean test-syntax coverage-core real-local
 
 test:
 	@echo "→ Running full test suite on $(TEST_PATHS)"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(MAKE) $(TEST_PRE_TARGETS); fi
-	@$(MAKE) test-syntax
+	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	@$(TEST_SELF_MAKE) test-syntax
 	@if [ "$(TEST_RESET_PYCACHE)" = "1" ]; then find . -type d -name '__pycache__' -exec rm -rf {} + >/dev/null 2>&1 || true; fi
 	@rm -rf "$(TMP_DIR_ABS)"
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)" "$(COV_HTML_ABS)"
@@ -79,7 +81,7 @@ test:
 	@echo "   • Hypothesis DB → $(HYPOTHESIS_DB_ABS)"
 	@echo "   • Using pytest → $(PYTEST)"
 	@BENCH_FLAGS=""; \
-	if [ "$(ENABLE_BENCH)" = "1" ] && sh -c "$(PYTEST) -q --help" 2>/dev/null | grep -q -- '--benchmark-storage'; then \
+	if [ "$(ENABLE_BENCH)" = "1" ] && sh -c '$(PYTEST) $(PYTEST_INFO_FLAGS) -q --help' 2>/dev/null | grep -q -- '--benchmark-storage'; then \
 	  BENCH_FLAGS="--benchmark-autosave --benchmark-storage=file://$(BENCHMARK_DIR_ABS)"; \
 	  echo "   • pytest-benchmark detected → storing in $(BENCHMARK_DIR_ABS)"; \
 	else \
@@ -93,11 +95,12 @@ test:
 	  $(TEST_PYCACHE_ENV) \
 	  sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" $(TEST_MAIN_ARGS) $(PYTEST_FLAGS) '"$$BENCH_FLAGS" )
 	@rm -rf $(TEST_CLEAN_PATHS) || true
+	@rm -rf .pytest_cache || true
 
 test-unit:
 	@echo "→ Running unit tests only"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(MAKE) $(TEST_PRE_TARGETS); fi
-	@$(PYTEST) --version
+	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@echo "pytest cmd: $(PYTEST) -c '$(PYTEST_INI_ABS)' …"
 	@rm -rf "$(TMP_DIR_ABS)"
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)" "$(COV_HTML_ABS)"
@@ -106,7 +109,7 @@ test-unit:
 	@echo "   • Hypothesis DB → $(HYPOTHESIS_DB_ABS)"
 	@echo "   • Using pytest → $(PYTEST)"
 	@BENCH_FLAGS=""; \
-	if [ "$(ENABLE_BENCH)" = "1" ] && sh -c "$(PYTEST) -q --help" 2>/dev/null | grep -q -- '--benchmark-storage'; then \
+	if [ "$(ENABLE_BENCH)" = "1" ] && sh -c '$(PYTEST) $(PYTEST_INFO_FLAGS) -q --help' 2>/dev/null | grep -q -- '--benchmark-storage'; then \
 	  BENCH_FLAGS="--benchmark-autosave --benchmark-storage=file://$(BENCHMARK_DIR_ABS)"; \
 	  echo "   • pytest-benchmark detected → storing in $(BENCHMARK_DIR_ABS)"; \
 	else \
@@ -132,11 +135,12 @@ test-unit:
 	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" $(TEST_UNIT_FALLBACK_ARGS) $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
 	fi
 	@rm -rf $(TEST_CLEAN_PATHS) || true
+	@rm -rf .pytest_cache || true
 
 test-e2e:
 	@echo "→ Running end-to-end tests only"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(MAKE) $(TEST_PRE_TARGETS); fi
-	@$(PYTEST) --version
+	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@rm -rf "$(TMP_DIR_ABS)"
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)" "$(COV_HTML_ABS)"
 	@rm -rf $(TEST_CLEAN_PATHS) || true
@@ -152,11 +156,12 @@ test-e2e:
 	  echo "   • no $(TEST_PATHS_E2E); skipping"; \
 	fi
 	@rm -rf $(TEST_CLEAN_PATHS) || true
+	@rm -rf .pytest_cache || true
 
 test-regression:
 	@echo "→ Running regression tests only"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(MAKE) $(TEST_PRE_TARGETS); fi
-	@$(PYTEST) --version
+	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@rm -rf "$(TMP_DIR_ABS)"
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)" "$(COV_HTML_ABS)"
 	@rm -rf $(TEST_CLEAN_PATHS) || true
@@ -172,11 +177,12 @@ test-regression:
 	  echo "   • no $(TEST_PATHS_REGRESSION); skipping"; \
 	fi
 	@rm -rf $(TEST_CLEAN_PATHS) || true
+	@rm -rf .pytest_cache || true
 
 test-evaluation:
 	@echo "→ Running evaluation tests only"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(MAKE) $(TEST_PRE_TARGETS); fi
-	@$(PYTEST) --version
+	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@rm -rf "$(TMP_DIR_ABS)"
 	@mkdir -p "$(TEST_ARTIFACTS_DIR)" "$(HYPOTHESIS_DB_DIR)" "$(BENCHMARK_DIR)" "$(TMP_DIR)" "$(COV_HTML_ABS)"
 	@rm -rf $(TEST_CLEAN_PATHS) || true
@@ -192,6 +198,7 @@ test-evaluation:
 	  echo "   • no $(TEST_PATHS_EVALUATION); skipping"; \
 	fi
 	@rm -rf $(TEST_CLEAN_PATHS) || true
+	@rm -rf .pytest_cache || true
 
 test-ci: $(TEST_CI_TARGETS)
 	@echo "✔ CI test categories completed"
@@ -233,9 +240,10 @@ real-local:
 	  exit 0; \
 	fi
 	@echo "→ Running real local model tests (manual only)"
-	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(MAKE) $(TEST_PRE_TARGETS); fi
-	@$(PYTEST) --version
+	@if [ -n "$(TEST_PRE_TARGETS)" ]; then $(TEST_SELF_MAKE) $(TEST_PRE_TARGETS); fi
+	@$(PYTEST) $(PYTEST_INFO_FLAGS) --version
 	@$(PYTEST) -c "$(PYTEST_INI_ABS)" -o addopts= "$(TEST_REAL_LOCAL_ABS)" $(TEST_REAL_LOCAL_ARGS)
+	@rm -rf .pytest_cache || true
 
 ##@ Test
 test:            ## Run the full test suite with artifacts under $(PROJECT_ARTIFACTS_DIR)/test

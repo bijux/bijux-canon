@@ -29,7 +29,9 @@ def _docs() -> list[RawDoc]:
 
 def test_ask_returns_typed_payload_with_citations(tmp_path: Path) -> None:
     service = IngestService()
-    build_result = service.build_index(_docs(), backend="bm25", chunk_size=64, overlap=0)
+    build_result = service.build_index(
+        _docs(), backend="bm25", chunk_size=64, overlap=0
+    )
     assert isinstance(build_result, Ok)
 
     path = tmp_path / "index.msgpack"
@@ -54,7 +56,9 @@ def test_ask_returns_typed_payload_with_citations(tmp_path: Path) -> None:
 
 def test_ask_blob_returns_grounded_answer(tmp_path: Path) -> None:
     service = IngestService()
-    build_result = service.build_index(_docs(), backend="bm25", chunk_size=64, overlap=0)
+    build_result = service.build_index(
+        _docs(), backend="bm25", chunk_size=64, overlap=0
+    )
     assert isinstance(build_result, Ok)
 
     path = tmp_path / "index.msgpack"

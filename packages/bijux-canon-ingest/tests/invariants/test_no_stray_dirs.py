@@ -10,7 +10,10 @@ def test_no_generated_directories_exist_under_package_root() -> None:
     package_root = Path(__file__).resolve().parents[2]
     src_root = package_root / "src"
 
-    offenders = sorted(path.relative_to(package_root).as_posix() for path in src_root.rglob("__pycache__"))
+    offenders = sorted(
+        path.relative_to(package_root).as_posix()
+        for path in src_root.rglob("__pycache__")
+    )
     offenders.extend(
         sorted(
             name

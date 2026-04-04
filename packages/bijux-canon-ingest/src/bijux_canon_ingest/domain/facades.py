@@ -42,4 +42,5 @@ def deterministic_embedder_port(
 
     return build_deterministic_embedder_port(embed_one=embed_one)
 
+
 __all__ = ["Keyed", "EmbedderPort", "deterministic_embedder_port"]

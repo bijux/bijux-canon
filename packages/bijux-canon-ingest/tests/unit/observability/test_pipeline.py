@@ -3,7 +3,12 @@
 
 from __future__ import annotations
 
-from bijux_canon_ingest.observability import DebugConfig, IngestTaps, IngestTrace, Observations
+from bijux_canon_ingest.observability import (
+    DebugConfig,
+    IngestTaps,
+    IngestTrace,
+    Observations,
+)
 
 
 def test_ingest_taps_keeps_extra_hooks_per_instance() -> None:

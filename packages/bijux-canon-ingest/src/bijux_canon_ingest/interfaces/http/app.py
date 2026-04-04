@@ -18,7 +18,10 @@ from bijux_canon_ingest.application.service import (
     StoredIndex,
 )
 from bijux_canon_ingest.core.types import RawDoc
-from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
+from bijux_canon_ingest.processing.stages import (
+    ChunkAndEmbedConfig,
+    chunk_and_embed_docs,
+)
 from bijux_canon_ingest.retrieval.ports import Candidate
 from bijux_canon_ingest.result.types import Err
 

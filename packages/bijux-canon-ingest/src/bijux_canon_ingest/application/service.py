@@ -121,7 +121,9 @@ class IngestService:
         if not candidates:
             return Err("no candidates retrieved")
         if rerank:
-            candidates = self.reranker.rerank(query=query, candidates=candidates, top_k=top_k)
+            candidates = self.reranker.rerank(
+                query=query, candidates=candidates, top_k=top_k
+            )
         else:
             candidates = candidates[:top_k]
         return Ok(_answer_payload(candidates, top_k=top_k))
@@ -159,7 +161,9 @@ class IngestService:
 
         candidates = retrieved.value
         if rerank and candidates:
-            candidates = self.reranker.rerank(query=query, candidates=candidates, top_k=top_k)
+            candidates = self.reranker.rerank(
+                query=query, candidates=candidates, top_k=top_k
+            )
         else:
             candidates = candidates[:top_k]
         return Ok(self.answerer.generate(query=query, candidates=candidates))

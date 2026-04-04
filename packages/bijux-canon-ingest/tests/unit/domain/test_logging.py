@@ -3,7 +3,12 @@
 
 from __future__ import annotations
 
-from bijux_canon_ingest.domain.logging import LogEntry, LogMonoid, trace_stage, trace_value
+from bijux_canon_ingest.domain.logging import (
+    LogEntry,
+    LogMonoid,
+    trace_stage,
+    trace_value,
+)
 from bijux_canon_ingest.fp.effects.writer import run_writer
 
 

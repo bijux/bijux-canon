@@ -21,6 +21,7 @@ INTERROGATE ?= $(VENV_PYTHON) -m interrogate
 MYPY        ?= $(VENV_PYTHON) -m mypy
 DEPTRY_SCAN_SCRIPT ?= $(VENV_PYTHON) -m bijux_canon_dev.quality.deptry_scan
 DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
+QUALITY_SELF_MAKE ?= $(if $(PACKAGE_PROFILE_MAKEFILE),$(MAKE) -f "$(PACKAGE_PROFILE_MAKEFILE)",$(MAKE))
 
 SKIP_DEPTRY      ?= 0
 SKIP_INTERROGATE ?= 0
@@ -42,7 +43,7 @@ quality:
 	@if [ "$(QUALITY_CLEAN_SITE)" = "1" ]; then rm -rf site; fi
 	@for target in $(QUALITY_PRE_TARGETS); do \
 	  echo "   - Running $$target"; \
-	  $(MAKE) "$$target"; \
+	  $(QUALITY_SELF_MAKE) "$$target"; \
 	done
 	@echo "   - Dead code analysis (Vulture)"
 	@set -euo pipefail; \
@@ -68,7 +69,7 @@ quality:
 	@if [ "$(SKIP_INTERROGATE)" = "1" ]; then \
 	  echo "   • SKIP_INTERROGATE=1; skipping Interrogate" | tee "$(QUALITY_ARTIFACTS_DIR)/interrogate.full.txt"; \
 	else \
-	  $(MAKE) interrogate-report; \
+	  $(QUALITY_SELF_MAKE) interrogate-report; \
 	fi
 	@for script in $(QUALITY_PYTHON_CHECKS); do \
 	  echo "   - Running $$script"; \

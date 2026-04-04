@@ -77,7 +77,9 @@ class NumpyCosineIndex:
             for index in indexes.tolist():
                 chunk = self.chunks[index]
                 metadata = dict(chunk.metadata)
-                if _chunk_matches_filters(chunk=chunk, metadata=metadata, filters=filters):
+                if _chunk_matches_filters(
+                    chunk=chunk, metadata=metadata, filters=filters
+                ):
                     kept.append(index)
             indexes = np.asarray(kept, dtype=int)
 
@@ -86,7 +88,9 @@ class NumpyCosineIndex:
 
         limited_top_k = min(int(top_k), int(indexes.size))
         subset_scores = scores[indexes]
-        top_local = np.argpartition(-subset_scores, kth=limited_top_k - 1)[:limited_top_k]
+        top_local = np.argpartition(-subset_scores, kth=limited_top_k - 1)[
+            :limited_top_k
+        ]
         top_indexes = indexes[top_local]
         top_indexes = top_indexes[np.argsort(-scores[top_indexes])]
 

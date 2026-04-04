@@ -51,6 +51,7 @@ def compile_to_beam(*_args: Any, **_kwargs: Any) -> Any:
 
     raise UnsupportedDistributedCompiler(support=beam_support())
 
+
 __all__ = [
     "DistributedCompilerSupport",
     "UnsupportedDistributedCompiler",

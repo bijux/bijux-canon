@@ -81,9 +81,7 @@ def test_structural_dedup_lazy_preserves_first_seen_chunk() -> None:
     assert isinstance(later, Ok)
 
     chunks = list(
-        structural_dedup_lazy(
-            [first.value, duplicate.value, later.value, first.value]
-        )
+        structural_dedup_lazy([first.value, duplicate.value, later.value, first.value])
     )
 
     assert chunks == [first.value, later.value]

@@ -6,7 +6,13 @@ from __future__ import annotations
 from hypothesis import given, settings
 import hypothesis.strategies as st
 
-from bijux_canon_ingest.domain.effects.io_plan import IOPlan, io_bind, io_delay, io_pure, perform
+from bijux_canon_ingest.domain.effects.io_plan import (
+    IOPlan,
+    io_bind,
+    io_delay,
+    io_pure,
+    perform,
+)
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 settings.register_profile("ci", max_examples=200, derandomize=True, deadline=None)

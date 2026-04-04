@@ -134,7 +134,9 @@ def parse_ingest_config(raw: Mapping[str, object]) -> Result[IngestConfig, str]:
         )
 
     return Ok(
-        IngestConfig(env=RagEnv(chunk_size_raw), clean=CleanConfig(rule_names=rule_names))
+        IngestConfig(
+            env=RagEnv(chunk_size_raw), clean=CleanConfig(rule_names=rule_names)
+        )
     )
 
 

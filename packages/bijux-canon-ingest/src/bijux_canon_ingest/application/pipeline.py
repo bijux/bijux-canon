@@ -31,7 +31,11 @@ from bijux_canon_ingest.processing.chunking import gen_chunk_doc
 from bijux_canon_ingest.processing.stages import embed_chunk, structural_dedup_chunks
 from bijux_canon_ingest.result import Err, Ok, Result
 
-from bijux_canon_ingest.config.ingest import IngestBoundaryDeps, IngestConfig, IngestDeps
+from bijux_canon_ingest.config.ingest import (
+    IngestBoundaryDeps,
+    IngestConfig,
+    IngestDeps,
+)
 
 from bijux_canon_ingest.observability import Observations
 

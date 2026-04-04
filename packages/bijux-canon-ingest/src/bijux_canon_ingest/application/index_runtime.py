@@ -14,7 +14,10 @@ import msgpack
 
 from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc
 from bijux_canon_ingest.processing.stages import clean_doc, iter_chunk_doc
-from bijux_canon_ingest.retrieval.embedders import HashEmbedder, SentenceTransformersEmbedder
+from bijux_canon_ingest.retrieval.embedders import (
+    HashEmbedder,
+    SentenceTransformersEmbedder,
+)
 from bijux_canon_ingest.retrieval.indexes import (
     BM25Index,
     NumpyCosineIndex,
@@ -174,7 +177,9 @@ def retrieve_candidates(
             embedder=embedder,
         )
         if reranker is not None:
-            candidates = reranker.rerank(query=query, candidates=candidates, top_k=top_k)
+            candidates = reranker.rerank(
+                query=query, candidates=candidates, top_k=top_k
+            )
         return Ok(candidates[: max(0, int(top_k))])
     except Exception as exc:  # pragma: no cover
         return Err(str(exc))

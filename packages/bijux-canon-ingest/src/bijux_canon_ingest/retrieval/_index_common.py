@@ -36,4 +36,9 @@ def l2_normalize(x: NDArray[np.float32]) -> NDArray[np.float32]:
     return x / denom
 
 
-__all__ = ["SCHEMA_VERSION", "canonical_json_dumps", "fingerprint_bytes", "l2_normalize"]
+__all__ = [
+    "SCHEMA_VERSION",
+    "canonical_json_dumps",
+    "fingerprint_bytes",
+    "l2_normalize",
+]

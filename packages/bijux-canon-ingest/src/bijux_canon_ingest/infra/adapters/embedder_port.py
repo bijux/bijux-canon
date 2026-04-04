@@ -31,7 +31,9 @@ def deterministic_embedder_port(
             items: list[Keyed[K, ChunkWithoutEmbedding]],
         ) -> IOPlan[list[Keyed[K, Chunk]]]:
             def thunk() -> Result[list[Keyed[K, Chunk]], ErrInfo]:
-                return Ok([Keyed(key=item.key, value=embed(item.value)) for item in items])
+                return Ok(
+                    [Keyed(key=item.key, value=embed(item.value)) for item in items]
+                )
 
             return io_delay(thunk)
 

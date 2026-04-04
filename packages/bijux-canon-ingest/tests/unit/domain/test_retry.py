@@ -11,7 +11,8 @@ from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 def test_retry_idempotent_retries_transient_errors(monkeypatch) -> None:
     sleeps: list[float] = []
     monkeypatch.setattr(
-        "bijux_canon_ingest.domain.effects.io_retry.time.sleep", lambda s: sleeps.append(s)
+        "bijux_canon_ingest.domain.effects.io_retry.time.sleep",
+        lambda s: sleeps.append(s),
     )
 
     calls: list[int] = []

@@ -11,7 +11,10 @@ import json
 from pathlib import Path
 from typing import Any, Protocol, cast
 
-from bijux_canon_ingest.application.indexing import IndexBuildConfig, build_index_from_csv
+from bijux_canon_ingest.application.indexing import (
+    IndexBuildConfig,
+    build_index_from_csv,
+)
 from bijux_canon_ingest.application.querying import ask as rag_ask
 from bijux_canon_ingest.application.querying import parse_filters
 from bijux_canon_ingest.application.querying import retrieve as rag_retrieve
@@ -39,8 +42,12 @@ def run_retrieval_commands(argv: list[str]) -> int:
     build_parser = index_subcommands.add_parser("build", help="Build an index from CSV")
     build_parser.add_argument("--input", type=Path, required=True)
     build_parser.add_argument("--out", type=Path, required=True)
-    build_parser.add_argument("--backend", choices=["bm25", "numpy-cosine"], default="bm25")
-    build_parser.add_argument("--embedder", choices=["hash16", "sbert"], default="hash16")
+    build_parser.add_argument(
+        "--backend", choices=["bm25", "numpy-cosine"], default="bm25"
+    )
+    build_parser.add_argument(
+        "--embedder", choices=["hash16", "sbert"], default="hash16"
+    )
     build_parser.add_argument("--sbert-model", default="all-MiniLM-L6-v2")
     build_parser.add_argument("--bm25-buckets", type=int, default=2048)
     build_parser.add_argument("--chunk-size", type=int, default=128)
@@ -59,7 +66,9 @@ def run_retrieval_commands(argv: list[str]) -> int:
     )
     retrieve_parser.add_argument("--out", type=Path, default=None)
 
-    ask_parser = subcommands.add_parser("ask", help="Answer with citations (extractive)")
+    ask_parser = subcommands.add_parser(
+        "ask", help="Answer with citations (extractive)"
+    )
     ask_parser.add_argument("--index", type=Path, required=True)
     ask_parser.add_argument("--query", required=True)
     ask_parser.add_argument("--top-k", type=int, default=5)
@@ -73,7 +82,9 @@ def run_retrieval_commands(argv: list[str]) -> int:
     ask_parser.add_argument("--format", choices=["json", "yaml"], default="json")
     ask_parser.add_argument("--out", type=Path, default=None)
 
-    eval_parser = subcommands.add_parser("eval", help="Evaluate retrieval vs a query suite")
+    eval_parser = subcommands.add_parser(
+        "eval", help="Evaluate retrieval vs a query suite"
+    )
     eval_parser.add_argument("--index", type=Path, required=True)
     eval_parser.add_argument(
         "--suite",
@@ -116,10 +127,16 @@ def _run_build(args: argparse.Namespace) -> int:
         bm25_buckets=int(args.bm25_buckets),
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    fingerprint = build_index_from_csv(csv_path=args.input, out_path=args.out, cfg=config)
+    fingerprint = build_index_from_csv(
+        csv_path=args.input, out_path=args.out, cfg=config
+    )
     print(
         json.dumps(
-            {"index": str(args.out), "fingerprint": fingerprint, "backend": args.backend},
+            {
+                "index": str(args.out),
+                "fingerprint": fingerprint,
+                "backend": args.backend,
+            },
             ensure_ascii=False,
         )
     )
@@ -148,7 +165,9 @@ def _run_retrieve(args: argparse.Namespace) -> int:
             for candidate in candidates
         ]
     }
-    return _write_output(payload=json.dumps(payload, ensure_ascii=False), out_path=args.out)
+    return _write_output(
+        payload=json.dumps(payload, ensure_ascii=False), out_path=args.out
+    )
 
 
 def _run_ask(args: argparse.Namespace) -> int:
@@ -239,7 +258,9 @@ def _write_output(*, payload: str, out_path: Path | None) -> int:
         print(payload)
         return 0
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(payload + ("" if payload.endswith("\n") else "\n"), encoding="utf-8")
+    out_path.write_text(
+        payload + ("" if payload.endswith("\n") else "\n"), encoding="utf-8"
+    )
     return 0
 
 

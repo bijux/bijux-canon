@@ -9,12 +9,24 @@ from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
-from bijux_canon_ingest.core.types import Chunk, ChunkWithoutEmbedding, CleanDoc, RagEnv, RawDoc
+from bijux_canon_ingest.core.types import (
+    Chunk,
+    ChunkWithoutEmbedding,
+    CleanDoc,
+    RagEnv,
+    RawDoc,
+)
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.processing.stages import clean_doc, iter_chunk_doc
 from bijux_canon_ingest.result.types import is_err, is_ok
-from bijux_canon_ingest.retrieval.embedders import HashEmbedder, SentenceTransformersEmbedder
-from bijux_canon_ingest.retrieval.indexes import build_bm25_index, build_numpy_cosine_index
+from bijux_canon_ingest.retrieval.embedders import (
+    HashEmbedder,
+    SentenceTransformersEmbedder,
+)
+from bijux_canon_ingest.retrieval.indexes import (
+    build_bm25_index,
+    build_numpy_cosine_index,
+)
 from bijux_canon_ingest.retrieval.ports import Embedder
 
 

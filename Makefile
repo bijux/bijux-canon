@@ -108,7 +108,7 @@ define run_target
 	  fi; \
 	  echo "==> $$package: $(1)"; \
 	  if [ "$(3)" = "1" ]; then \
-	    if ! $(MAKE) -o install -o bootstrap -o ensure-venv -C "packages/$$package" -f "$$profile_path" \
+	    if ! $(MAKE) -C "packages/$$package" -f "$$profile_path" \
 	      VENV="$(ROOT_CHECK_VENV)" \
 	      VENV_PYTHON="$(ROOT_CHECK_PYTHON)" \
 	      PYTHON="$(ROOT_CHECK_PYTHON)" \

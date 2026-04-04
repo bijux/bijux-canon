@@ -9,7 +9,10 @@ import json
 from pathlib import Path
 from typing import Any
 
-from bijux_canon_ingest.application.pipeline_definitions.configured import PipelineConfig, StepConfig
+from bijux_canon_ingest.application.pipeline_definitions.configured import (
+    PipelineConfig,
+    StepConfig,
+)
 
 
 def load_pipeline_config(path: Path) -> PipelineConfig:

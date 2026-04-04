@@ -14,7 +14,12 @@ from tests.strategies import (
     raw_doc_strategy,
 )
 
-from bijux_canon_ingest import chunk_doc, clean_doc, embed_chunk, structural_dedup_chunks
+from bijux_canon_ingest import (
+    chunk_doc,
+    clean_doc,
+    embed_chunk,
+    structural_dedup_chunks,
+)
 from bijux_canon_ingest.core.types import ChunkWithoutEmbedding, RagEnv, RawDoc
 
 

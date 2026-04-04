@@ -12,7 +12,10 @@ from pathlib import Path
 import json
 
 from bijux_canon_ingest.core.types import Chunk
-from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
+from bijux_canon_ingest.processing.stages import (
+    ChunkAndEmbedConfig,
+    chunk_and_embed_docs,
+)
 from bijux_canon_ingest.result.types import Err, Ok, Result
 
 

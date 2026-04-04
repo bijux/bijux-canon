@@ -10,7 +10,10 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
-from bijux_canon_ingest.application.pipeline_definitions.cli import deep_merge, parse_override
+from bijux_canon_ingest.application.pipeline_definitions.cli import (
+    deep_merge,
+    parse_override,
+)
 from bijux_canon_ingest.application.pipeline_definitions.configured import (
     PipelineConfig,
     StepConfig,
@@ -62,7 +65,9 @@ def run_pipeline_commands(argv: list[str]) -> int:
         with args.out.open("w", encoding="utf-8") as handle:
             for result in results:
                 if isinstance(result, Ok):
-                    handle.write(json.dumps(_chunk_to_json(result.value), ensure_ascii=False))
+                    handle.write(
+                        json.dumps(_chunk_to_json(result.value), ensure_ascii=False)
+                    )
                     handle.write("\n")
     return 0
 

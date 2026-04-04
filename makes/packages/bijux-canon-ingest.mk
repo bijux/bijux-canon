@@ -10,9 +10,11 @@ export PYTHONDONTWRITEBYTECODE := 1
 export PYTHONPYCACHEPREFIX     := $(PROJECT_ARTIFACTS_DIR)/pycache
 export XDG_CACHE_HOME          := $(PROJECT_ARTIFACTS_DIR)/xdg_cache
 export COVERAGE_FILE           := $(PROJECT_ARTIFACTS_DIR)/test/.coverage
-LINT_DIRS                      := src/bijux_canon_ingest tests
+LINT_DIRS                      := src tests stubs
+RUFF_CONFIG                    := pyproject.toml
 MYPY_TARGETS                   = $(if $(LINT_SCOPE),$(LINT_SCOPE),src/bijux_canon_ingest)
-MYPY_FLAGS                     := --ignore-missing-imports --follow-imports normal --warn-redundant-casts --strict-optional --namespace-packages --check-untyped-defs --disallow-incomplete-defs --disallow-untyped-defs --no-implicit-optional --warn-return-any
+MYPY_CONFIG                    := pyproject.toml
+MYPY_FLAGS                     :=
 ENABLE_CODESPELL               := 0
 ENABLE_RADON                   := 0
 ENABLE_PYDOCSTYLE              := 0
@@ -76,6 +78,7 @@ clean-soft:
 
 # Ensure core tasks run inside the managed virtualenv
 test lint fmt quality security api build sbom: install
+fmt-artifacts lint-artifacts interrogate-report quality security: install
 
 # Pipelines
 all: clean install test lint quality security api build sbom

@@ -15,7 +15,11 @@ import numpy as np
 from numpy.typing import NDArray
 
 from bijux_canon_ingest.core.types import Chunk
-from bijux_canon_ingest.retrieval._index_common import SCHEMA_VERSION, canonical_json_dumps, fingerprint_bytes
+from bijux_canon_ingest.retrieval._index_common import (
+    SCHEMA_VERSION,
+    canonical_json_dumps,
+    fingerprint_bytes,
+)
 from bijux_canon_ingest.retrieval.ports import Candidate, Embedder
 from bijux_canon_ingest.retrieval.text_analysis import stable_token_bucket, tokenize
 
@@ -191,7 +195,9 @@ def _load_bm25_payload(payload: dict[str, Any]) -> BM25Index:
     bucket_count = int(payload["buckets"])
     chunk_count = len(chunks)
     df = np.frombuffer(payload["df"], dtype=np.int32, count=bucket_count).copy()
-    doc_len = np.frombuffer(payload["doc_len"], dtype=np.int32, count=chunk_count).copy()
+    doc_len = np.frombuffer(
+        payload["doc_len"], dtype=np.int32, count=chunk_count
+    ).copy()
     tfs = tuple(tuple((int(a), int(b)) for a, b in row) for row in payload["tfs"])
     return BM25Index(
         chunks=tuple(chunks),
