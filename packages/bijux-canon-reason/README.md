@@ -38,3 +38,7 @@ you are outside this package's boundary.
 - [Contracts](docs/CONTRACTS.md)
 - [Tests](docs/TESTS.md)
 - [Changelog](CHANGELOG.md)
+
+## Primary entrypoint
+
+- console script: `bijux-canon-reason`

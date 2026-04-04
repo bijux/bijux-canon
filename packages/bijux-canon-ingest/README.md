@@ -39,3 +39,8 @@ This package should help a maintainer answer practical questions such as:
 - [Layout and ownership map](docs/LAYOUT.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Tests](docs/TESTS.md)
+- [Changelog](CHANGELOG.md)
+
+## Primary entrypoint
+
+- console script: `bijux-canon-ingest`

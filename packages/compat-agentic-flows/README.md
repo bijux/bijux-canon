@@ -26,13 +26,17 @@ entrypoint for new work.
 - the legacy Python import surface `agentic_flows`
 - the legacy command name `agentic-flows`
 
-## What to do for new work
+## Read this next
 
 Depend on `bijux-canon-runtime` directly and read the canonical docs there:
 
 - package directory: [`../bijux-canon-runtime`](../bijux-canon-runtime)
 - package docs: [`../bijux-canon-runtime/docs/index.md`](../bijux-canon-runtime/docs/index.md)
 - changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## Primary entrypoint
+
+- console script: `agentic-flows`
 
 ## Package contents
 

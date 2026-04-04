@@ -1,10 +1,6 @@
-Owner: Bijan Mousavi
-Status: stable
-Scope: Changelog.
-
 # Changelog
 
-All notable changes to this project are documented here. This file is generated via towncrier; do not edit by hand.
+All notable changes to `bijux-canon-agent` are documented here.
 
 Historical release entries below preserve the wording that shipped with the
 tagged release.

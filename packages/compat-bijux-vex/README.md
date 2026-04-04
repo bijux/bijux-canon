@@ -22,13 +22,17 @@ available while installing `bijux-canon-index` at the same version.
 - the legacy Python import surface `bijux_vex`
 - the legacy command name `bijux-vex`
 
-## What to do for new work
+## Read this next
 
 Use `bijux-canon-index` directly:
 
 - package directory: [`../bijux-canon-index`](../bijux-canon-index)
 - package docs: [`../bijux-canon-index/docs/index.md`](../bijux-canon-index/docs/index.md)
 - changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## Primary entrypoint
+
+- console script: `bijux-vex`
 
 ## Package contents
 

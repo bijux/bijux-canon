@@ -38,6 +38,7 @@ here.
 - [Boundaries](docs/BOUNDARIES.md)
 - [Contracts](docs/CONTRACTS.md)
 - [Tests](docs/TESTS.md)
+- [Changelog](CHANGELOG.md)
 
 ## Primary entrypoint
 

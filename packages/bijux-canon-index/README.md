@@ -40,3 +40,8 @@ tooling, you are outside this package's boundary.
 - [Public API](docs/PUBLIC_API.md)
 - [Mental model](docs/spec/mental_model.md)
 - [Failure semantics](docs/spec/failure_semantics.md)
+- [Changelog](CHANGELOG.md)
+
+## Primary entrypoint
+
+- console script: `bijux-canon-index`

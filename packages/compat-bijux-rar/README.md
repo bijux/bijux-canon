@@ -22,13 +22,17 @@ available while installing `bijux-canon-reason` at the same version.
 - the legacy Python import surface `bijux_rar`
 - the legacy command name `bijux-rar` via the canonical package
 
-## What to do for new work
+## Read this next
 
 Use `bijux-canon-reason` directly:
 
 - package directory: [`../bijux-canon-reason`](../bijux-canon-reason)
 - package docs: [`../bijux-canon-reason/docs/index.md`](../bijux-canon-reason/docs/index.md)
 - changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## Primary entrypoint
+
+- console script: `bijux-rar`
 
 ## Package contents
 

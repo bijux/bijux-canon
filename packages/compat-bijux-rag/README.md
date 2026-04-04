@@ -22,13 +22,17 @@ available while installing `bijux-canon-ingest` at the same version.
 - the legacy Python import surface `bijux_rag`
 - the legacy command name `bijux-rag`
 
-## What to do for new work
+## Read this next
 
 Use `bijux-canon-ingest` directly:
 
 - package directory: [`../bijux-canon-ingest`](../bijux-canon-ingest)
 - package docs: [`../bijux-canon-ingest/docs/index.md`](../bijux-canon-ingest/docs/index.md)
 - changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## Primary entrypoint
+
+- console script: `bijux-rag`
 
 ## Package contents
 

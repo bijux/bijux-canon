@@ -22,13 +22,17 @@ surfaces available while installing `bijux-canon-agent` at the same version.
 - the legacy Python import surface `bijux_agent`
 - the legacy command name `bijux-agent`
 
-## What to do for new work
+## Read this next
 
 Use `bijux-canon-agent` directly:
 
 - package directory: [`../bijux-canon-agent`](../bijux-canon-agent)
 - package docs: [`../bijux-canon-agent/docs/index.md`](../bijux-canon-agent/docs/index.md)
 - changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## Primary entrypoint
+
+- console script: `bijux-agent`
 
 ## Package contents
 
