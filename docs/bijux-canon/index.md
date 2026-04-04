@@ -21,6 +21,11 @@ retrieval executable, reason makes claims inspectable, agent turns role-based
 work into orchestrated runs, and runtime decides what execution and replay
 results are acceptable.
 
+The repository is therefore less like a toolbox and more like a chain of
+accountable boundaries. Each package is meant to carry one kind of promise
+clearly enough that readers do not have to reverse-engineer the whole tree to
+understand where authority lives.
+
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
 Product behavior should stay inside the publishable packages under `packages/`.
 The root only owns what is genuinely shared: workspace layout, schema

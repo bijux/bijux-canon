@@ -20,6 +20,12 @@ behavior into an executable contract. Reason shapes evidence-backed claims.
 Agent coordinates role-local behavior and traceable runs. Runtime owns
 execution, replay, and acceptance authority across the wider flow.
 
+That design pays off in review. A reader can ask a sharper question sooner:
+is this change about preparing material, executing retrieval, reasoning from
+evidence, orchestrating work, or governing runtime outcomes? The repository
+is healthier when that question has one obvious answer instead of five partial
+ones.
+
 These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
 ## Page Maps

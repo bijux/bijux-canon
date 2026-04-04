@@ -17,6 +17,10 @@ This distinction is essential for credibility. The repository should never ask
 readers to trust prose alone. If a rule matters, some checked-in package test,
 drift check, or CI workflow should be able to notice when it stops being true.
 
+The deeper reason for this layout is that trust has to be local before it can
+be global. Each package proves its own promises first. The repository then
+proves that the packages still fit together honestly.
+
 These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
 ## Page Maps

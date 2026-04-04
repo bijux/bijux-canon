@@ -19,6 +19,11 @@ should let a new reviewer understand the design quickly, let a maintainer find
 concrete anchors without guesswork, and stay honest about what the docs can
 explain versus what only code and tests can prove.
 
+A good documentation system should reduce meeting debt. If the handbook is
+working, a reader can understand the whole idea of `bijux-canon`, choose the
+right page, and verify the claims from checked-in assets without needing a
+private walkthrough first.
+
 These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
 ## Page Maps

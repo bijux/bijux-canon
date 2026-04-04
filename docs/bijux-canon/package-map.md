@@ -19,6 +19,10 @@ and the split is the point:
 - `bijux-canon-agent` orchestrates role-based workflows and trace-backed runs
 - `bijux-canon-runtime` governs execution, replay, and acceptance authority
 
+Read that list as a sequence of responsibilities, not as branding. The
+package names matter because they let the system tell the truth about where a
+concern belongs when code, interfaces, and tests evolve over time.
+
 The canonical packages each own a distinct slice of the overall system:
 
 - [bijux-canon-ingest](../bijux-canon-ingest/foundation/index.md) for deterministic document ingestion, chunking, retrieval assembly, and ingest-facing boundaries.

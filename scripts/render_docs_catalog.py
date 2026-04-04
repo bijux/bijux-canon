@@ -1664,25 +1664,31 @@ def render_home(
         [
             "# Docs Index",
             "",
-            "`bijux-canon` is a deliberately split retrieval-and-reasoning workspace.",
-            "The repository does not hide everything behind one oversized package. It",
-            "keeps ingest, index, reason, agent, and runtime as separate publishable",
-            "packages so each boundary stays reviewable, testable, and explainable.",
+            "`bijux-canon` is a deliberately split system for deterministic ingest,",
+            "retrieval, reasoning, agent orchestration, and governed execution.",
+            "The repository does not hide those concerns inside one oversized package.",
+            "It keeps them as separate publishable packages so each promise stays",
+            "easier to explain, easier to test, and harder to blur by accident.",
             "",
             "This site is meant to be self-sufficient. A reader should be able to skim",
             "the root pages, understand why the split exists, and know where to go next",
             "without needing a meeting first.",
             "",
             '<div class="bijux-callout"><strong>Start with the package split, not the file tree.</strong> ',
-            "Ingest prepares deterministic inputs. Index executes retrieval. Reason turns",
-            "evidence into claims. Agent orchestrates role-based workflows. Runtime holds",
-            "execution, replay, and acceptance authority. The root docs explain how those",
-            "parts fit together without blurring their ownership.</div>",
+            "Ingest prepares deterministic material. Index makes retrieval behavior",
+            "reviewable. Reason turns evidence into inspectable claims. Agent",
+            "coordinates role-based work. Runtime decides whether execution and replay",
+            "results are acceptable. The root docs explain how those responsibilities",
+            "fit together without pretending they are one thing.</div>",
+            "",
+            "If you only remember one idea, remember this: the split exists to protect",
+            "clarity. Each package is allowed to be strong because it is not also trying",
+            "to absorb the whole system.",
             "",
             '<div class="bijux-panel-grid">',
-            '  <div class="bijux-panel"><h3>What This Site Explains</h3><p>Why the repository is split, what each package owns, where shared schemas and rules live, and how maintainers prove that the split still holds.</p></div>',
-            '  <div class="bijux-panel"><h3>What This Site Does Not Pretend</h3><p>It does not claim the docs are the source of truth by themselves. Every page is expected to point back to concrete code, schemas, tests, and release assets.</p></div>',
-            '  <div class="bijux-panel"><h3>How To Read It Fast</h3><p>Use the repository handbook for cross-package questions, a product handbook for owned behavior, the maintainer handbook for repository automation, and the compatibility handbook for old names.</p></div>',
+            '  <div class="bijux-panel"><h3>Whole-System Idea</h3><p>Why the repository is split, which package carries which responsibility, and how the full flow stays understandable without collapsing ownership.</p></div>',
+            '  <div class="bijux-panel"><h3>Honesty Rule</h3><p>The docs are not allowed to win arguments against code, schemas, tests, or release assets. They must point back to them clearly enough that readers can verify the story.</p></div>',
+            '  <div class="bijux-panel"><h3>Fast Reading Path</h3><p>Use the repository handbook for cross-package questions, one product handbook for owned behavior, the maintainer handbook for repository health, and the compatibility handbook only for legacy names.</p></div>',
             "</div>",
             "",
             '<div class="bijux-quicklinks">',
@@ -1723,7 +1729,7 @@ def render_home(
     )
     body = add_working_interpretation(
         body,
-        "Treat the root page as the shortest honest explanation of the whole documentation system. It should help a reader understand the package split, the handbook layout, and the right next page before they commit to a longer read.",
+        "Treat the root page as the shortest honest explanation of the whole documentation system. It should help a reader understand the package split, the system-level flow, and the right next page before they commit to a longer read.",
     )
     body = add_reader_fit_section(
         body,
@@ -1939,6 +1945,11 @@ def render_root_page(
             work into orchestrated runs, and runtime decides what execution and replay
             results are acceptable.
 
+            The repository is therefore less like a toolbox and more like a chain of
+            accountable boundaries. Each package is meant to carry one kind of promise
+            clearly enough that readers do not have to reverse-engineer the whole tree to
+            understand where authority lives.
+
             <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
             Product behavior should stay inside the publishable packages under `packages/`.
             The root only owns what is genuinely shared: workspace layout, schema
@@ -1976,6 +1987,12 @@ def render_root_page(
             behavior into an executable contract. Reason shapes evidence-backed claims.
             Agent coordinates role-local behavior and traceable runs. Runtime owns
             execution, replay, and acceptance authority across the wider flow.
+
+            That design pays off in review. A reader can ask a sharper question sooner:
+            is this change about preparing material, executing retrieval, reasoning from
+            evidence, orchestrating work, or governing runtime outcomes? The repository
+            is healthier when that question has one obvious answer instead of five partial
+            ones.
 
             ## What the Repository Provides
 
@@ -2080,6 +2097,10 @@ def render_root_page(
             - `bijux-canon-agent` orchestrates role-based workflows and trace-backed runs
             - `bijux-canon-runtime` governs execution, replay, and acceptance authority
 
+            Read that list as a sequence of responsibilities, not as branding. The
+            package names matter because they let the system tell the truth about where a
+            concern belongs when code, interfaces, and tests evolve over time.
+
             The canonical packages each own a distinct slice of the overall system:
 
             {package_links}
@@ -2175,6 +2196,10 @@ def render_root_page(
             readers to trust prose alone. If a rule matters, some checked-in package test,
             drift check, or CI workflow should be able to notice when it stops being true.
 
+            The deeper reason for this layout is that trust has to be local before it can
+            be global. Each package proves its own promises first. The repository then
+            proves that the packages still fit together honestly.
+
             ## Validation Layers
 
             - package-local unit, integration, e2e, and invariant suites
@@ -2240,6 +2265,11 @@ def render_root_page(
             should let a new reviewer understand the design quickly, let a maintainer find
             concrete anchors without guesswork, and stay honest about what the docs can
             explain versus what only code and tests can prove.
+
+            A good documentation system should reduce meeting debt. If the handbook is
+            working, a reader can understand the whole idea of `bijux-canon`, choose the
+            right page, and verify the claims from checked-in assets without needing a
+            private walkthrough first.
 
             ## Documentation Rules
 
