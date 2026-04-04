@@ -163,6 +163,12 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 - treating temporary implementation shortcuts as if they were enduring architectural seams
 - allowing dependency direction to drift because the code still happens to run
 
+## Escalate When
+
+- the documented structure no longer matches the changed execution path
+- a local refactor introduces a dependency direction question that affects other sections
+- the review cannot explain the change without redefining a major seam
+
 ## Core Claim
 
 The architectural claim of `bijux-canon-index` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

@@ -141,6 +141,12 @@ Keep this page aligned with real maintainer behavior, not aspirational tooling t
 - letting CI behavior become the only place where maintainer intent is visible
 - changing repository-health tools without updating the maintainer story they imply
 
+## Escalate When
+
+- a maintainer-only change starts affecting product package contracts directly
+- the page can no longer describe scope without referencing multiple package ownership changes
+- repository-health automation now requires a wider root policy decision
+
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

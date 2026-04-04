@@ -140,6 +140,12 @@ Keep it aligned with the actual test layout and maintenance workflow.
 - documenting the happy path while leaving diagnostics and failure handling implicit
 - letting release or setup guidance drift away from package metadata
 
+## Escalate When
+
+- the operational path changes enough to affect CI, releases, or another package's expectations
+- the documented workflow depends on environment assumptions that are no longer stable
+- incident or release handling can no longer be explained as a package-local concern
+
 ## Core Claim
 
 The operational claim of `bijux-canon-reason` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

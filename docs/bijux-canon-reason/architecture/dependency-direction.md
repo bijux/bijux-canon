@@ -177,3 +177,9 @@ Keep it aligned with current imports and directory responsibilities.
 - explaining structure with diagrams that no longer match the modules listed
 - treating temporary implementation shortcuts as if they were enduring architectural seams
 - allowing dependency direction to drift because the code still happens to run
+
+## Escalate When
+
+- the documented structure no longer matches the changed execution path
+- a local refactor introduces a dependency direction question that affects other sections
+- the review cannot explain the change without redefining a major seam

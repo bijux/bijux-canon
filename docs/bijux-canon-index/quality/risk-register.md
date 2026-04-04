@@ -139,6 +139,12 @@ Update it when the durable risk profile changes, not for routine day-to-day chur
 - keeping old risk prose after the code and tests have materially changed
 - treating definition-of-done language as ceremonial rather than operational
 
+## Escalate When
+
+- the proof story can no longer be updated without revisiting adjacent sections
+- a local validation gap reveals a larger boundary or architecture issue
+- reviewers cannot agree on done-ness because the underlying contract changed
+
 ## Core Claim
 
 The quality claim of `bijux-canon-index` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

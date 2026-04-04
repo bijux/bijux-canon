@@ -1245,6 +1245,37 @@ def package_antipatterns(package: PackageInfo, category: str) -> tuple[str, ...]
     return antipattern_map[category]
 
 
+def package_escalate_when(package: PackageInfo, category: str) -> tuple[str, ...]:
+    escalate_map = {
+        "foundation": (
+            "the page can no longer explain ownership without repeated cross-package caveats",
+            "a change proposal would shift authority between packages rather than stay local",
+            "tests and docs disagree on who is supposed to own the behavior",
+        ),
+        "architecture": (
+            "the documented structure no longer matches the changed execution path",
+            "a local refactor introduces a dependency direction question that affects other sections",
+            "the review cannot explain the change without redefining a major seam",
+        ),
+        "interfaces": (
+            "a supposedly local change alters a caller-visible schema, artifact, import, or command contract",
+            "compatibility risk extends beyond one implementation file",
+            "operators or downstream packages would need to relearn the surface after the change",
+        ),
+        "operations": (
+            "the operational path changes enough to affect CI, releases, or another package's expectations",
+            "the documented workflow depends on environment assumptions that are no longer stable",
+            "incident or release handling can no longer be explained as a package-local concern",
+        ),
+        "quality": (
+            "the proof story can no longer be updated without revisiting adjacent sections",
+            "a local validation gap reveals a larger boundary or architecture issue",
+            "reviewers cannot agree on done-ness because the underlying contract changed",
+        ),
+    }
+    return escalate_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1481,6 +1512,17 @@ def add_antipatterns(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "Common Misreadings", block)
 
 
+def add_escalate_when(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Escalate When",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Update This Page When", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1614,6 +1656,14 @@ def render_home(
             "turning the root page into a second copy of the whole handbook",
             "assuming navigation clarity emerges automatically from file count or section count",
             "treating handbook routing as cosmetic instead of as part of review efficiency",
+        ),
+    )
+    body = add_escalate_when(
+        body,
+        (
+            "the root page no longer routes readers to one clearly better next section",
+            "major documentation branches overlap so much that readers cannot tell where a question belongs",
+            "a structural handbook change would affect more than one section at once",
         ),
     )
     body = add_question_section(
@@ -2089,6 +2139,14 @@ def render_root_page(
             "letting one successful workflow example stand in for repository-wide truth",
         ),
     )
+    body = add_escalate_when(
+        body,
+        (
+            "a supposedly root decision is really moving package ownership around",
+            "the page cannot stay accurate without changing multiple package handbooks too",
+            "the root rule described here no longer has a clear checked-in enforcement path",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2502,6 +2560,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "changing repository-health tools without updating the maintainer story they imply",
         ),
     )
+    body = add_escalate_when(
+        body,
+        (
+            "a maintainer-only change starts affecting product package contracts directly",
+            "the page can no longer describe scope without referencing multiple package ownership changes",
+            "repository-health automation now requires a wider root policy decision",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2909,6 +2975,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "letting migration guidance become less visible than the legacy label itself",
         ),
     )
+    body = add_escalate_when(
+        body,
+        (
+            "a legacy surface is still present but no one can name a real dependent consumer",
+            "migration guidance now conflicts with the canonical package story",
+            "retirement or preservation would affect more than one repository stakeholder group",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -3108,6 +3182,7 @@ def render_package_page(
     body = add_cross_implications(body, package_cross_implications(package, category))
     body = add_evidence_checklist(body, package_evidence_checklist(package, category))
     body = add_antipatterns(body, package_antipatterns(package, category))
+    body = add_escalate_when(body, package_escalate_when(package, category))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))

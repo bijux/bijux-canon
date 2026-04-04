@@ -196,6 +196,12 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 - assuming navigation clarity emerges automatically from file count or section count
 - treating handbook routing as cosmetic instead of as part of review efficiency
 
+## Escalate When
+
+- the root page no longer routes readers to one clearly better next section
+- major documentation branches overlap so much that readers cannot tell where a question belongs
+- a structural handbook change would affect more than one section at once
+
 ## Core Claim
 
 The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.

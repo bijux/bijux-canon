@@ -136,6 +136,12 @@ Update it only when a compatibility package is added or retired.
 - preserving legacy names because they are familiar rather than because they are needed
 - letting migration guidance become less visible than the legacy label itself
 
+## Escalate When
+
+- a legacy surface is still present but no one can name a real dependent consumer
+- migration guidance now conflicts with the canonical package story
+- retirement or preservation would affect more than one repository stakeholder group
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

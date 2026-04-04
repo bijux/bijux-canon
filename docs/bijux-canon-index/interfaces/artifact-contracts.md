@@ -140,6 +140,12 @@ Keep it aligned with the package outputs that are actually produced and consumed
 - changing schemas or artifacts without a caller-facing compatibility discussion
 - using examples to imply stability that code and tests do not actually promise
 
+## Escalate When
+
+- a supposedly local change alters a caller-visible schema, artifact, import, or command contract
+- compatibility risk extends beyond one implementation file
+- operators or downstream packages would need to relearn the surface after the change
+
 ## Core Claim
 
 The interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

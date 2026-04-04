@@ -163,6 +163,12 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 - letting boundary exceptions accumulate until they become the real rule
 - writing boundary prose that cannot be checked against code or tests
 
+## Escalate When
+
+- the page can no longer explain ownership without repeated cross-package caveats
+- a change proposal would shift authority between packages rather than stay local
+- tests and docs disagree on who is supposed to own the behavior
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-ingest` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

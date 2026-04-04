@@ -145,6 +145,12 @@ Update this page only when package ownership changes, not for ordinary internal 
 - documenting root policy without naming the actual checked-in assets that support it
 - letting one successful workflow example stand in for repository-wide truth
 
+## Escalate When
+
+- a supposedly root decision is really moving package ownership around
+- the page cannot stay accurate without changing multiple package handbooks too
+- the root rule described here no longer has a clear checked-in enforcement path
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.
