@@ -9,9 +9,9 @@ last_reviewed: 2026-04-04
 
 # Operations
 
-Use the operations section when you need to run, diagnose, release, or support `bijux-canon-runtime` without reconstructing the workflow from source.
+Use the operations section when you need to run, diagnose, release, or support `bijux-canon-runtime` without reconstructing the workflow from source, CI logs, or team memory.
 
-These pages are the checked-in operating memory for `bijux-canon-runtime`. They should let a maintainer move from setup to diagnosis to release without depending on private habits or half-remembered shell history.
+These pages are the checked-in operating memory for `bijux-canon-runtime`. They should let a maintainer move from setup to diagnosis to release without depending on private habits, CI archaeology, or half-remembered shell history.
 
 Read the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They should make common tasks repeatable without forcing maintainers to relearn the workflow from code, CI logs, or oral history.
 
@@ -66,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story
-- [Architecture](../architecture/index.md) when the question becomes structural or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing or contract-facing
-- [Quality](../quality/index.md) when the question becomes proof, risk, or review sufficiency
+- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
+- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
+- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
+- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
 
 ## Concrete Anchors
 

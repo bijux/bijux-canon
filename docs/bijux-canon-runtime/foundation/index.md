@@ -9,9 +9,9 @@ last_reviewed: 2026-04-04
 
 # Foundation
 
-Start the bijux-canon-runtime handbook here when you need the package in one honest sentence: what it owns, why it exists, and where its boundary stops.
+Start the bijux-canon-runtime handbook here when you need the package in one honest sentence: why it exists in the system, what it owns on purpose, and where its boundary stops.
 
-These pages establish the durable idea of `bijux-canon-runtime`. A reader should be able to skim this section and understand why the package exists, what neighboring packages should not assume about it, and which claims are worth defending during review.
+These pages establish the durable idea of `bijux-canon-runtime`. A reader should be able to skim this section and understand what job the package performs in the wider system, what neighboring packages should not assume about it, and which boundary claims are worth defending during review.
 
 Read the foundation pages for `bijux-canon-runtime` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
 
@@ -66,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Architecture](../architecture/index.md) when the question becomes structural or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, or review sufficiency
+- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
+- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
+- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
+- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
 
 ## Concrete Anchors
 

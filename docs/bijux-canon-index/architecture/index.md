@@ -9,9 +9,9 @@ last_reviewed: 2026-04-04
 
 # Architecture
 
-Use the architecture section to understand how `bijux_canon_index` is put together before you judge a refactor, a dependency change, or a new seam.
+Use the architecture section to understand how `bijux_canon_index` is put together and why that structure exists before you judge a refactor, dependency change, or new seam.
 
-These pages turn `bijux-canon-index` from a directory tree into a readable design. They should help a reviewer trace responsibilities, execution paths, and pressure points quickly enough to keep structural conversations grounded.
+These pages turn `bijux-canon-index` from a directory tree into a readable design. They should help a reviewer trace responsibilities, execution paths, and pressure points quickly enough to keep structural conversations grounded in the actual package instead of in vague diagrams.
 
 Read the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it, and they should make drift visible before it becomes surprising.
 
@@ -66,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, or review sufficiency
+- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
+- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
+- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
+- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
 
 ## Concrete Anchors
 

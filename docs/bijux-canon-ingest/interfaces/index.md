@@ -9,9 +9,9 @@ last_reviewed: 2026-04-04
 
 # Interfaces
 
-Use the interfaces section to see what `bijux-canon-ingest` is really asking callers and operators to depend on, and which surfaces are stable enough to treat like contracts.
+Use the interfaces section to see what `bijux-canon-ingest` is really asking callers and operators to depend on, which surfaces are stable enough to treat like contracts, and which ones are only implementation detail.
 
-These pages explain the public face of `bijux-canon-ingest`. They exist so a caller can tell which commands, APIs, imports, schemas, and artifacts are deliberate surfaces rather than incidental visibility.
+These pages explain the public face of `bijux-canon-ingest`. They exist so a caller can tell which commands, APIs, imports, schemas, and artifacts are deliberate surfaces rather than incidental visibility, and so operators can see what the package is truly prepared to stand behind.
 
 Read the interfaces pages for `bijux-canon-ingest` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
 
@@ -66,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story
-- [Architecture](../architecture/index.md) when the question becomes structural or execution-oriented
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, or review sufficiency
+- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
+- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
+- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
+- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
 
 ## Concrete Anchors
 

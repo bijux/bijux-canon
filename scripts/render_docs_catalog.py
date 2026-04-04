@@ -3520,25 +3520,28 @@ def package_section_summary(category: str, package: PackageInfo) -> str:
     summaries = {
         "foundation": (
             f"Start the {package.title} handbook here when you need the package in one"
-            " honest sentence: what it owns, why it exists, and where its boundary stops."
+            " honest sentence: why it exists in the system, what it owns on purpose,"
+            " and where its boundary stops."
         ),
         "architecture": (
             f"Use the architecture section to understand how `{package.import_name}` is"
-            " put together before you judge a refactor, a dependency change, or a new seam."
+            " put together and why that structure exists before you judge a refactor,"
+            " dependency change, or new seam."
         ),
         "interfaces": (
             f"Use the interfaces section to see what `{package.title}` is really asking"
-            " callers and operators to depend on, and which surfaces are stable enough to"
-            " treat like contracts."
+            " callers and operators to depend on, which surfaces are stable enough to"
+            " treat like contracts, and which ones are only implementation detail."
         ),
         "operations": (
             f"Use the operations section when you need to run, diagnose, release, or"
-            f" support `{package.title}` without reconstructing the workflow from source."
+            f" support `{package.title}` without reconstructing the workflow from source,"
+            " CI logs, or team memory."
         ),
         "quality": (
             f"Use the quality section to understand how `{package.title}` earns trust:"
-            " which tests matter, which risks remain visible, and what done should mean"
-            " after a real change."
+            " which tests matter most, which risks remain visible, and what done should"
+            " mean after a real change."
         ),
     }
     return summaries[category]
@@ -3548,29 +3551,32 @@ def package_section_orientation(category: str, package: PackageInfo) -> str:
     orientations = {
         "foundation": (
             f"These pages establish the durable idea of `{package.title}`. A reader should"
-            " be able to skim this section and understand why the package exists, what"
-            " neighboring packages should not assume about it, and which claims are worth"
-            " defending during review."
+            " be able to skim this section and understand what job the package performs in"
+            " the wider system, what neighboring packages should not assume about it, and"
+            " which boundary claims are worth defending during review."
         ),
         "architecture": (
             f"These pages turn `{package.title}` from a directory tree into a readable"
             " design. They should help a reviewer trace responsibilities, execution paths,"
-            " and pressure points quickly enough to keep structural conversations grounded."
+            " and pressure points quickly enough to keep structural conversations grounded"
+            " in the actual package instead of in vague diagrams."
         ),
         "interfaces": (
             f"These pages explain the public face of `{package.title}`. They exist so a"
             " caller can tell which commands, APIs, imports, schemas, and artifacts are"
-            " deliberate surfaces rather than incidental visibility."
+            " deliberate surfaces rather than incidental visibility, and so operators can"
+            " see what the package is truly prepared to stand behind."
         ),
         "operations": (
             f"These pages are the checked-in operating memory for `{package.title}`. They"
             " should let a maintainer move from setup to diagnosis to release without"
-            " depending on private habits or half-remembered shell history."
+            " depending on private habits, CI archaeology, or half-remembered shell history."
         ),
         "quality": (
             f"These pages explain the proof story for `{package.title}`. They should make"
             " it clear why the package is trustworthy today, what still needs explicit"
-            " skepticism, and which review questions protect against shallow acceptance."
+            " skepticism, and which review questions protect against shallow acceptance"
+            " disguised as progress."
         ),
     }
     return orientations[category]
@@ -3578,11 +3584,11 @@ def package_section_orientation(category: str, package: PackageInfo) -> str:
 
 def related_links(package: PackageInfo, category: str, active_categories: tuple[str, ...]) -> str:
     reasons = {
-        "foundation": "when you need the package boundary and ownership story",
-        "architecture": "when the question becomes structural or execution-oriented",
-        "interfaces": "when the question becomes caller-facing or contract-facing",
-        "operations": "when the question becomes procedural, environmental, or release-oriented",
-        "quality": "when the question becomes proof, risk, or review sufficiency",
+        "foundation": "when you need the package boundary and ownership story first",
+        "architecture": "when the question becomes structural, modular, or execution-oriented",
+        "interfaces": "when the question becomes caller-facing, schema-facing, or contract-facing",
+        "operations": "when the question becomes procedural, environmental, diagnostic, or release-oriented",
+        "quality": "when the question becomes proof, risk, trust, or review sufficiency",
     }
     section_links = []
     for other in active_categories:

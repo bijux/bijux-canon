@@ -9,9 +9,9 @@ last_reviewed: 2026-04-04
 
 # Quality
 
-Use the quality section to understand how `bijux-canon-agent` earns trust: which tests matter, which risks remain visible, and what done should mean after a real change.
+Use the quality section to understand how `bijux-canon-agent` earns trust: which tests matter most, which risks remain visible, and what done should mean after a real change.
 
-These pages explain the proof story for `bijux-canon-agent`. They should make it clear why the package is trustworthy today, what still needs explicit skepticism, and which review questions protect against shallow acceptance.
+These pages explain the proof story for `bijux-canon-agent`. They should make it clear why the package is trustworthy today, what still needs explicit skepticism, and which review questions protect against shallow acceptance disguised as progress.
 
 Read the quality pages for `bijux-canon-agent` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
 
@@ -66,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story
-- [Architecture](../architecture/index.md) when the question becomes structural or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, or release-oriented
+- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
+- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
+- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
+- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
 
 ## Concrete Anchors
 
