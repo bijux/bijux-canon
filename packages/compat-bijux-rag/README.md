@@ -18,11 +18,11 @@
 [![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
-[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-runtime/)
-[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-agent/)
-[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-ingest/)
-[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-reason/)
-[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-index/)
+[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
+[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
+[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
+[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
+[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 
 `bijux-rag` is the continuation of the published `bijux-rag` distribution on
 PyPI. Each release keeps the legacy distribution, import, and command surfaces
@@ -58,7 +58,7 @@ available while installing `bijux-canon-ingest` at the same version.
 Use `bijux-canon-ingest` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest>
-- package docs: <https://bijux.io/bijux-canon-ingest/>
+- package docs: <https://bijux.io/bijux-canon/bijux-canon-ingest/>
 - migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md>
 

@@ -27,5 +27,5 @@ When updating callers, move to:
 
 - distribution: `bijux-canon-agent`
 - Python import: `bijux_canon_agent`
-- docs entrypoint: `https://bijux.io/bijux-canon-agent/`
+- docs entrypoint: `https://bijux.io/bijux-canon/bijux-canon-agent/`
 - migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`

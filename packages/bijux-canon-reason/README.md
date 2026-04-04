@@ -18,11 +18,11 @@
 [![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
-[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-runtime/)
-[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-agent/)
-[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-ingest/)
-[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-reason/)
-[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-index/)
+[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
+[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
+[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
+[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
+[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 
 `bijux-canon-reason` is the package that turns available evidence into planned
 reasoning steps, structured claims, and verification outcomes. It is where
@@ -65,7 +65,7 @@ you are outside this package's boundary.
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon-reason/)
+- [Package guide](https://bijux.io/bijux-canon/bijux-canon-reason/)
 - [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/docs/ARCHITECTURE.md)
 - [Contracts](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/docs/CONTRACTS.md)
 - [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)

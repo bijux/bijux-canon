@@ -27,5 +27,5 @@ When updating callers, move to:
 
 - distribution: `bijux-canon-ingest`
 - Python import: `bijux_canon_ingest`
-- docs entrypoint: `https://bijux.io/bijux-canon-ingest/`
+- docs entrypoint: `https://bijux.io/bijux-canon/bijux-canon-ingest/`
 - migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`

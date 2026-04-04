@@ -18,11 +18,11 @@
 [![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
-[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-runtime/)
-[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-agent/)
-[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-ingest/)
-[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-reason/)
-[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-index/)
+[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
+[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
+[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
+[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
+[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 
 `bijux-canon-ingest` is the package that turns raw documents into deterministic
 ingest artifacts and retrieval-ready structures. It is where cleaning,
@@ -66,7 +66,7 @@ This package should help a maintainer answer practical questions such as:
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon-ingest/)
+- [Package guide](https://bijux.io/bijux-canon/bijux-canon-ingest/)
 - [Project overview](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/docs/project_overview.md)
 - [Layout and ownership map](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/docs/LAYOUT.md)
 - [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/docs/ARCHITECTURE.md)

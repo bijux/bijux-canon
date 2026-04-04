@@ -55,15 +55,15 @@ flowchart LR
 
 ## The Five Core Packages
 
-- [`bijux-canon-ingest`](bijux-canon-ingest/foundation/index.md) is where raw
+- [`bijux-canon-ingest`](bijux-canon-ingest/index.md) is where raw
   material becomes deterministic, reviewable input.
-- [`bijux-canon-index`](bijux-canon-index/foundation/index.md) is where
+- [`bijux-canon-index`](bijux-canon-index/index.md) is where
   retrieval becomes explicit and provenance-aware.
-- [`bijux-canon-reason`](bijux-canon-reason/foundation/index.md) is where
+- [`bijux-canon-reason`](bijux-canon-reason/index.md) is where
   evidence becomes claims, checks, and inspectable reasoning traces.
-- [`bijux-canon-agent`](bijux-canon-agent/foundation/index.md) is where
+- [`bijux-canon-agent`](bijux-canon-agent/index.md) is where
   role-based work is coordinated into coherent runs.
-- [`bijux-canon-runtime`](bijux-canon-runtime/foundation/index.md) is where the
+- [`bijux-canon-runtime`](bijux-canon-runtime/index.md) is where the
   system decides whether a run is acceptable, replayable, and worth keeping.
 
 ## Two Supporting Sections

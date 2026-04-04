@@ -31,6 +31,7 @@ nav:
       - Release and Versioning: bijux-canon/release-and-versioning.md
       - Documentation System: bijux-canon/documentation-system.md
   - bijux-canon-ingest:
+      - Overview: bijux-canon-ingest/index.md
       - Foundation:
           - Foundation: bijux-canon-ingest/foundation/index.md
           - Package Overview: bijux-canon-ingest/foundation/package-overview.md
@@ -87,6 +88,7 @@ nav:
           - Known Limitations: bijux-canon-ingest/quality/known-limitations.md
           - Risk Register: bijux-canon-ingest/quality/risk-register.md
   - bijux-canon-index:
+      - Overview: bijux-canon-index/index.md
       - Foundation:
           - Foundation: bijux-canon-index/foundation/index.md
           - Package Overview: bijux-canon-index/foundation/package-overview.md
@@ -143,6 +145,7 @@ nav:
           - Known Limitations: bijux-canon-index/quality/known-limitations.md
           - Risk Register: bijux-canon-index/quality/risk-register.md
   - bijux-canon-reason:
+      - Overview: bijux-canon-reason/index.md
       - Foundation:
           - Foundation: bijux-canon-reason/foundation/index.md
           - Package Overview: bijux-canon-reason/foundation/package-overview.md
@@ -199,6 +202,7 @@ nav:
           - Known Limitations: bijux-canon-reason/quality/known-limitations.md
           - Risk Register: bijux-canon-reason/quality/risk-register.md
   - bijux-canon-agent:
+      - Overview: bijux-canon-agent/index.md
       - Foundation:
           - Foundation: bijux-canon-agent/foundation/index.md
           - Package Overview: bijux-canon-agent/foundation/package-overview.md
@@ -255,6 +259,7 @@ nav:
           - Known Limitations: bijux-canon-agent/quality/known-limitations.md
           - Risk Register: bijux-canon-agent/quality/risk-register.md
   - bijux-canon-runtime:
+      - Overview: bijux-canon-runtime/index.md
       - Foundation:
           - Foundation: bijux-canon-runtime/foundation/index.md
           - Package Overview: bijux-canon-runtime/foundation/package-overview.md

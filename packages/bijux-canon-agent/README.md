@@ -18,11 +18,11 @@
 [![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
-[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-runtime/)
-[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-agent/)
-[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-ingest/)
-[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-reason/)
-[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-index/)
+[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
+[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
+[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
+[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
+[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 
 `bijux-canon-agent` is the package that turns a declared agent workflow into a
 deterministic, inspectable execution. It is where role implementations,
@@ -66,7 +66,7 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon-agent/)
+- [Package guide](https://bijux.io/bijux-canon/bijux-canon-agent/)
 - [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/ARCHITECTURE.md)
 - [Boundaries](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/BOUNDARIES.md)
 - [Contracts](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/CONTRACTS.md)

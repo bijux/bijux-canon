@@ -27,5 +27,5 @@ When updating callers, move to:
 
 - distribution: `bijux-canon-index`
 - Python import: `bijux_canon_index`
-- docs entrypoint: `https://bijux.io/bijux-canon-index/`
+- docs entrypoint: `https://bijux.io/bijux-canon/bijux-canon-index/`
 - migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`
