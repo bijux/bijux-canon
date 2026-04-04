@@ -14,12 +14,14 @@ CHANGELOG_URL_PREFIX = "https://github.com/bijux/bijux-canon/blob/main/"
 PUBLIC_RELEASE_VERSION = "0.3.0"
 REQUIRED_PUBLIC_URLS = {
     "Homepage",
+    "Website",
     "Repository",
     "Documentation",
     "Issues",
     "Changelog",
     "Security",
 }
+BIJUX_SITE_URL = "https://bijux.io/"
 COMPATIBILITY_PACKAGES = {
     "compat-agentic-flows": {
         "distribution": "agentic-flows",
@@ -145,6 +147,51 @@ def test_public_release_packages_share_required_project_urls() -> None:
     assert not missing, "public package URLs are incomplete:\n" + "\n".join(missing)
 
 
+def test_public_release_packages_prioritize_bijux_site_urls() -> None:
+    workspace = _workspace_metadata()
+    public_packages = set(workspace["public_release_packages"])
+
+    failures: list[str] = []
+    for package_name in sorted(public_packages):
+        project = _project_table(_package_path(package_name) / "pyproject.toml")
+        urls = project.get("urls", {})
+        for key in ("Homepage", "Website", "Documentation"):
+            value = str(urls.get(key, ""))
+            if not value.startswith(BIJUX_SITE_URL):
+                failures.append(f"{package_name}: {key} should point to bijux.io")
+    assert not failures, "public package URLs should prioritize bijux.io:\n" + "\n".join(failures)
+
+
+def test_public_release_packages_have_authors_maintainers_and_keywords() -> None:
+    workspace = _workspace_metadata()
+    public_packages = set(workspace["public_release_packages"])
+
+    failures: list[str] = []
+    for package_name in sorted(public_packages):
+        project = _project_table(_package_path(package_name) / "pyproject.toml")
+        authors = project.get("authors", [])
+        maintainers = project.get("maintainers", [])
+        keywords = project.get("keywords", [])
+        description = str(project.get("description", ""))
+
+        if not authors:
+            failures.append(f"{package_name}: missing authors")
+        if not maintainers:
+            failures.append(f"{package_name}: missing maintainers")
+        if not description or "bijux" not in description.lower():
+            failures.append(f"{package_name}: description should mention bijux")
+        if len(keywords) < 4:
+            failures.append(f"{package_name}: add more searchable keywords")
+        if not any("bijux" in str(keyword).lower() for keyword in keywords):
+            failures.append(f"{package_name}: keywords should include bijux")
+        for group_name, group in (("authors", authors), ("maintainers", maintainers)):
+            for entry in group:
+                email = str(entry.get("email", ""))
+                if not email.endswith("@bijux.io"):
+                    failures.append(f"{package_name}: {group_name} should use @bijux.io emails")
+    assert not failures, "public package people/keyword metadata failed:\n" + "\n".join(failures)
+
+
 def test_public_release_package_readmes_link_changelog_and_entrypoint() -> None:
     workspace = _workspace_metadata()
     public_packages = set(workspace["public_release_packages"])
@@ -179,10 +226,12 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
         description = str(project.get("description", ""))
         if project.get("name") != distribution:
             failures.append(f"{package_name}: project.name should stay {distribution!r}")
-        if f"published {distribution} distribution" not in description:
-            failures.append(f"{package_name}: description should mention published {distribution}")
+        if f"{distribution} PyPI package" not in description:
+            failures.append(f"{package_name}: description should mention the legacy PyPI package")
         if canonical not in description:
             failures.append(f"{package_name}: description should mention canonical {canonical}")
+        if "Preserves legacy installs and imports" not in description:
+            failures.append(f"{package_name}: description should explain legacy compatibility")
         if "continuation of the published" not in readme or f"`{distribution}`" not in readme:
             failures.append(f"{package_name}: README should state the PyPI continuation")
         if f"`{canonical}==<same version>`" not in readme:
