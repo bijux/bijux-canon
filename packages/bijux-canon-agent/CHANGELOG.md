@@ -14,6 +14,8 @@ tagged release.
   repository guidance.
 - The published wheel now ships the `py.typed` marker that matches the typed
   package classifier.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so release expectations stay attached to the package.
 
 ## 0.3.0 - 2026-04-04
 

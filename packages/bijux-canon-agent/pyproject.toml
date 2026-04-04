@@ -180,6 +180,22 @@ include = ["src/bijux_canon_agent/py.typed"]
 [tool.hatch.build.targets.wheel.package-data]
 "bijux_canon_agent" = ["py.typed"]
 
+[tool.hatch.build.targets.sdist]
+include = [
+    "README.md",
+    "CHANGELOG.md",
+    "docs/maintainer/pypi.md",
+    "src/bijux_canon_agent/**",
+]
+
+[tool.hatch.build]
+include = [
+    "README.md",
+    "CHANGELOG.md",
+    "docs/maintainer/pypi.md",
+    "src/bijux_canon_agent/**",
+]
+
 [tool.mypy-core]
 config-file = "../../configs/mypy.ini"
 
