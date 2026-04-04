@@ -22,6 +22,11 @@ from .execution_flow import (
     record_completion,
     record_stage_success,
 )
+from .run_context import (
+    apply_stage_output_to_context,
+    stage_skip_warning,
+    validate_stage_runner_context,
+)
 from .stage_execution import execute_stage
 
 
@@ -124,8 +129,9 @@ class StageRunnerAgent(BaseAgent):
         result = initialize_stage_runner_result()
 
         # Validate context
-        if "file_path" not in context:
-            error_msg = "Input context must provide 'file_path' for stage execution"
+        validation_error = validate_stage_runner_context(context)
+        if validation_error is not None:
+            error_msg = validation_error
             self.logger.error(
                 error_msg, extra={"context": {"stage": "input_validation"}}
             )
@@ -152,9 +158,8 @@ class StageRunnerAgent(BaseAgent):
             )
 
             # Check stage condition
-            condition = stage.get("condition", lambda _: True)
-            if not condition(current_context):
-                warning_msg = f"Stage '{stage_name}' skipped due to unmet condition"
+            warning_msg = stage_skip_warning(stage, current_context)
+            if warning_msg is not None:
                 self.logger.warning(
                     warning_msg, extra={"context": {"stage": stage_name}}
                 )
@@ -204,8 +209,11 @@ class StageRunnerAgent(BaseAgent):
                     continue
 
                 # Update context with stage output
-                output_key = stage.get("output_key", stage_name)
-                current_context[output_key] = stage_output
+                apply_stage_output_to_context(
+                    current_context,
+                    stage=stage,
+                    stage_output=stage_output,
+                )
 
             except Exception as e:
                 error_msg = f"Stage '{stage_name}' execution failed: {e!s}"
