@@ -134,6 +134,12 @@ Keep it aligned with the current module layout.
 - a weak boundary explanation raises architectural and quality ambiguity immediately
 - interface and operations pages inherit confusion when foundational ownership is unclear
 
+## Evidence Checklist
+
+- read the owned module roots under `packages/bijux-canon-agent/src/bijux_canon_agent` with the boundary statement in mind
+- inspect `packages/bijux-canon-agent/tests` for proof that the boundary is enforced instead of merely described
+- check whether adjacent package docs now tell a conflicting ownership story
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-agent` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

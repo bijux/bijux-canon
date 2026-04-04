@@ -127,6 +127,12 @@ Update it when the durable risk profile changes, not for routine day-to-day chur
 - foundation, architecture, interface, and operations claims all become weaker if proof expectations drift
 - review discipline here determines whether neighboring sections remain explanatory or merely aspirational
 
+## Evidence Checklist
+
+- read `packages/bijux-canon-reason/tests` with the page's proof claims in hand
+- verify package metadata and release notes in `packages/bijux-canon-reason` do not contradict the review standard
+- check whether known limitations, risks, and completion language all moved together in the current change
+
 ## Core Claim
 
 The quality claim of `bijux-canon-reason` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

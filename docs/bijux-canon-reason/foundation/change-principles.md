@@ -126,6 +126,12 @@ Update these principles only when the package operating model truly changes.
 - a weak boundary explanation raises architectural and quality ambiguity immediately
 - interface and operations pages inherit confusion when foundational ownership is unclear
 
+## Evidence Checklist
+
+- read the owned module roots under `packages/bijux-canon-reason/src/bijux_canon_reason` with the boundary statement in mind
+- inspect `packages/bijux-canon-reason/tests` for proof that the boundary is enforced instead of merely described
+- check whether adjacent package docs now tell a conflicting ownership story
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-reason` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

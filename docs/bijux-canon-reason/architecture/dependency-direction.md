@@ -165,3 +165,9 @@ Keep it aligned with current imports and directory responsibilities.
 - changes here alter how interface, operations, and quality pages for `bijux-canon-reason` should be read
 - structural drift often becomes visible in caller-facing seams before it is obvious in prose
 - quality expectations need to move when the architecture adds new execution or dependency pressure
+
+## Evidence Checklist
+
+- open the listed structural modules in `packages/bijux-canon-reason/src/bijux_canon_reason` and trace whether they still match the page narrative
+- inspect `packages/bijux-canon-reason/tests` for regressions that reveal changed execution or dependency structure
+- compare the documented hotspots with the actual changed files in the review

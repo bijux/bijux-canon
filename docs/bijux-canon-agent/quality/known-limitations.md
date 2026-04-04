@@ -126,6 +126,12 @@ Keep it aligned with the limitations that remain intentionally true today.
 - foundation, architecture, interface, and operations claims all become weaker if proof expectations drift
 - review discipline here determines whether neighboring sections remain explanatory or merely aspirational
 
+## Evidence Checklist
+
+- read `packages/bijux-canon-agent/tests` with the page's proof claims in hand
+- verify package metadata and release notes in `packages/bijux-canon-agent` do not contradict the review standard
+- check whether known limitations, risks, and completion language all moved together in the current change
+
 ## Core Claim
 
 The quality claim of `bijux-canon-agent` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

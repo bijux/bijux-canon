@@ -126,6 +126,12 @@ Keep it aligned with the package entrypoints and diagnostic outputs.
 - interface expectations often surface again as operational preconditions or diagnostics
 - quality pages must evolve when the operational path changes what counts as sufficient validation
 
+## Evidence Checklist
+
+- verify `packages/bijux-canon-runtime/pyproject.toml` and `packages/bijux-canon-runtime/README.md` still match the operational story
+- inspect `packages/bijux-canon-runtime/tests` for the workflow or environment proof the page implies
+- compare the documented operating path with the actual steps needed in local or CI use
+
 ## Core Claim
 
 The operational claim of `bijux-canon-runtime` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

@@ -1183,6 +1183,37 @@ def package_cross_implications(package: PackageInfo, category: str) -> tuple[str
     return implication_map[category]
 
 
+def package_evidence_checklist(package: PackageInfo, category: str) -> tuple[str, ...]:
+    checklist_map = {
+        "foundation": (
+            f"read the owned module roots under `{package.package_dir}/src/{package.import_name}` with the boundary statement in mind",
+            f"inspect `{package.package_dir}/tests` for proof that the boundary is enforced instead of merely described",
+            "check whether adjacent package docs now tell a conflicting ownership story",
+        ),
+        "architecture": (
+            f"open the listed structural modules in `{package.package_dir}/src/{package.import_name}` and trace whether they still match the page narrative",
+            f"inspect `{package.package_dir}/tests` for regressions that reveal changed execution or dependency structure",
+            "compare the documented hotspots with the actual changed files in the review",
+        ),
+        "interfaces": (
+            f"inspect the implemented interface modules under `{package.package_dir}/src/{package.import_name}`",
+            *(f"review `{item}` as tracked contract evidence" for item in package.api_specs[:1]),
+            f"run through `{package.package_dir}/tests` or equivalent proofs that protect the surface",
+        ),
+        "operations": (
+            f"verify `{package.package_dir}/pyproject.toml` and `{package.package_dir}/README.md` still match the operational story",
+            f"inspect `{package.package_dir}/tests` for the workflow or environment proof the page implies",
+            "compare the documented operating path with the actual steps needed in local or CI use",
+        ),
+        "quality": (
+            f"read `{package.package_dir}/tests` with the page's proof claims in hand",
+            f"verify package metadata and release notes in `{package.package_dir}` do not contradict the review standard",
+            "check whether known limitations, risks, and completion language all moved together in the current change",
+        ),
+    }
+    return tuple(checklist_map[category])
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1397,6 +1428,17 @@ def add_cross_implications(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "Source Of Truth Order", block)
 
 
+def add_evidence_checklist(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Evidence Checklist",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Reviewer Lens", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1514,6 +1556,14 @@ def render_home(
             "when this page drifts, every handbook branch becomes harder to discover correctly",
             "root routing mistakes amplify the cost of weak package or maintainer pages because readers reach them later",
             "the value of the whole docs system depends on this page remaining a fast orientation surface",
+        ),
+    )
+    body = add_evidence_checklist(
+        body,
+        (
+            "check `mkdocs.yml` against the rendered root navigation",
+            "inspect `scripts/render_docs_catalog.py` if the page routing no longer reflects the intended handbook structure",
+            "sample at least one target handbook branch to confirm the route this page recommends is still the right one",
         ),
     )
     body = add_question_section(
@@ -1973,6 +2023,14 @@ def render_root_page(
             "maintainer pages become harder to interpret if repository policy is not clear first",
         ),
     )
+    body = add_evidence_checklist(
+        body,
+        (
+            "inspect the named root files, workflows, or schema directories directly",
+            "check at least one owning package doc to confirm the repository page is not absorbing local detail",
+            "verify that the page's policy language still has a checked-in enforcement or review mechanism behind it",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2370,6 +2428,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "root governance pages become less actionable when maintainer intent is implicit",
         ),
     )
+    body = add_evidence_checklist(
+        body,
+        (
+            "inspect the named helper modules under `packages/bijux-canon-dev/src/bijux_canon_dev`",
+            "check the corresponding maintainer tests before trusting the page's operational claims",
+            "confirm which product packages are affected so maintainer scope stays explicit",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2761,6 +2827,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "legacy naming pressure can distort product package expectations if it is not kept explicitly separate",
         ),
     )
+    body = add_evidence_checklist(
+        body,
+        (
+            "inspect the relevant `packages/compat-*` metadata and README files",
+            "check the canonical target package docs named by this page",
+            "confirm there is still a real migration consumer before accepting preservation as necessary",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2958,6 +3032,7 @@ def render_package_page(
     body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
     body = add_failure_signals(body, package_failure_signals(package, category, title))
     body = add_cross_implications(body, package_cross_implications(package, category))
+    body = add_evidence_checklist(body, package_evidence_checklist(package, category))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))

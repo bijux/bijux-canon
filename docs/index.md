@@ -184,6 +184,12 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 - root routing mistakes amplify the cost of weak package or maintainer pages because readers reach them later
 - the value of the whole docs system depends on this page remaining a fast orientation surface
 
+## Evidence Checklist
+
+- check `mkdocs.yml` against the rendered root navigation
+- inspect `scripts/render_docs_catalog.py` if the page routing no longer reflects the intended handbook structure
+- sample at least one target handbook branch to confirm the route this page recommends is still the right one
+
 ## Core Claim
 
 The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.

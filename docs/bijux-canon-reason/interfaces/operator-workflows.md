@@ -127,6 +127,12 @@ Keep it aligned with the existing commands, endpoints, and outputs.
 - operations and quality pages become stale quickly if contract surfaces move silently
 - architectural seams need review whenever a new public surface appears for convenience
 
+## Evidence Checklist
+
+- inspect the implemented interface modules under `packages/bijux-canon-reason/src/bijux_canon_reason`
+- review `apis/bijux-canon-reason/v1/schema.yaml` as tracked contract evidence
+- run through `packages/bijux-canon-reason/tests` or equivalent proofs that protect the surface
+
 ## Core Claim
 
 The interface claim of `bijux-canon-reason` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

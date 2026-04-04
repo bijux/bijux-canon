@@ -152,6 +152,12 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 - operations and quality pages become stale quickly if contract surfaces move silently
 - architectural seams need review whenever a new public surface appears for convenience
 
+## Evidence Checklist
+
+- inspect the implemented interface modules under `packages/bijux-canon-ingest/src/bijux_canon_ingest`
+- review `apis/bijux-canon-ingest/v1/schema.yaml` as tracked contract evidence
+- run through `packages/bijux-canon-ingest/tests` or equivalent proofs that protect the surface
+
 ## Core Claim
 
 The interface claim of `bijux-canon-ingest` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

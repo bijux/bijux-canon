@@ -128,6 +128,12 @@ Keep it aligned with the current maintenance strategy for legacy packages.
 - retirement planning becomes harder because repository and package owners lack one shared migration story
 - legacy naming pressure can distort product package expectations if it is not kept explicitly separate
 
+## Evidence Checklist
+
+- inspect the relevant `packages/compat-*` metadata and README files
+- check the canonical target package docs named by this page
+- confirm there is still a real migration consumer before accepting preservation as necessary
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

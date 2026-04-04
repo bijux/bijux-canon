@@ -129,6 +129,12 @@ Keep this page aligned with real maintainer behavior, not aspirational tooling t
 - release and validation pressure becomes harder to reason about across the monorepo
 - root governance pages become less actionable when maintainer intent is implicit
 
+## Evidence Checklist
+
+- inspect the named helper modules under `packages/bijux-canon-dev/src/bijux_canon_dev`
+- check the corresponding maintainer tests before trusting the page's operational claims
+- confirm which product packages are affected so maintainer scope stays explicit
+
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

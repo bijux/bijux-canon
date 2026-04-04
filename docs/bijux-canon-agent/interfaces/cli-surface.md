@@ -126,6 +126,12 @@ Keep it aligned with the declared scripts and the interface modules that impleme
 - operations and quality pages become stale quickly if contract surfaces move silently
 - architectural seams need review whenever a new public surface appears for convenience
 
+## Evidence Checklist
+
+- inspect the implemented interface modules under `packages/bijux-canon-agent/src/bijux_canon_agent`
+- review `apis/bijux-canon-agent/v1/schema.yaml` as tracked contract evidence
+- run through `packages/bijux-canon-agent/tests` or equivalent proofs that protect the surface
+
 ## Core Claim
 
 The interface claim of `bijux-canon-agent` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

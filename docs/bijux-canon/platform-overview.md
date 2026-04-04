@@ -138,6 +138,12 @@ Keep this page aligned with the real package set and the root-level automation t
 - schema, release, and automation review all become more fragmented when root guidance drifts
 - maintainer pages become harder to interpret if repository policy is not clear first
 
+## Evidence Checklist
+
+- inspect the named root files, workflows, or schema directories directly
+- check at least one owning package doc to confirm the repository page is not absorbing local detail
+- verify that the page's policy language still has a checked-in enforcement or review mechanism behind it
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

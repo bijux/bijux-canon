@@ -136,6 +136,12 @@ Keep it aligned with the actual artifact shapes and serialized outputs.
 - structural drift often becomes visible in caller-facing seams before it is obvious in prose
 - quality expectations need to move when the architecture adds new execution or dependency pressure
 
+## Evidence Checklist
+
+- open the listed structural modules in `packages/bijux-canon-agent/src/bijux_canon_agent` and trace whether they still match the page narrative
+- inspect `packages/bijux-canon-agent/tests` for regressions that reveal changed execution or dependency structure
+- compare the documented hotspots with the actual changed files in the review
+
 ## Core Claim
 
 The architectural claim of `bijux-canon-agent` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.
