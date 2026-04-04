@@ -2,8 +2,6 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from dataclasses import replace
-import json
 from pathlib import Path
 import threading
 import time
@@ -39,12 +37,7 @@ from bijux_canon_index.core.identity.fingerprints import (
     vectors_fingerprint,
 )
 from bijux_canon_index.core.identity.ids import fingerprint
-from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
-from bijux_canon_index.core.runtime.vector_execution import (
-    RandomnessProfile,
-    derive_execution_id,
-    execution_signature,
-)
+from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import (
     Chunk,
     Document,
@@ -76,6 +69,11 @@ from bijux_canon_index.application.orchestration.ingest_embeddings import (
 from bijux_canon_index.application.orchestration.ingest_persistence import (
     invalidate_ann_artifact_if_needed,
     persist_ingest_documents,
+)
+from bijux_canon_index.application.orchestration.materialization import (
+    attach_ann_index,
+    build_materialized_artifact,
+    materialization_response,
 )
 from bijux_canon_index.application.orchestration.runtime_bootstrap import (
     bootstrap_runtime,
@@ -345,59 +343,15 @@ class Orchestrator:
             raise ValidationError(
                 message="ANN materialize requires non_deterministic execution_contract"
             )
-        artifact = ExecutionArtifact(
+        artifact = build_materialized_artifact(
             artifact_id=self.default_artifact_id,
+            request=req,
             corpus_fingerprint=self._latest_corpus_fingerprint
             or corpus_fingerprint(()),
             vector_fingerprint=self._latest_vector_fingerprint
             or vectors_fingerprint(()),
-            metric="l2",
-            scoring_version="v1",
-            schema_version="v1",
-            execution_contract=req.execution_contract,
             build_params=self._artifact_build_params(),
-            index_state="unbuilt"
-            if req.execution_contract is ExecutionContract.NON_DETERMINISTIC
-            else "ready",
-        )
-        plan = ExecutionPlan(
-            algorithm="exact_vector_execution",
-            contract=req.execution_contract,
-            k=0,
-            scoring_fn=artifact.metric,
-            randomness_sources=(),
-            reproducibility_bounds="bit-identical",
-        )
-        execution_id = derive_execution_id(
-            request=ExecutionRequest(
-                request_id="materialize",
-                text=None,
-                vector=None,
-                top_k=0,
-                execution_contract=req.execution_contract,
-                execution_intent=ExecutionIntent.EXACT_VALIDATION,
-                execution_mode=(
-                    ExecutionMode.STRICT
-                    if req.execution_contract is ExecutionContract.DETERMINISTIC
-                    else ExecutionMode.BOUNDED
-                ),
-                execution_budget=(
-                    ExecutionBudget()
-                    if req.execution_contract is ExecutionContract.NON_DETERMINISTIC
-                    else None
-                ),
-            ),
-            backend_id=getattr(self.backend, "name", "unknown"),
-            algorithm="exact_vector_execution",
-            plan=plan,
-        )
-        artifact = replace(
-            artifact,
-            execution_plan=plan,
-            execution_signature=execution_signature(
-                plan, artifact.corpus_fingerprint, artifact.vector_fingerprint, None
-            ),
-            execution_id=execution_id,
+            backend_name=getattr(self.backend, "name", "unknown"),
         )
         if index_mode == "ann":
             ann_runner = getattr(self.backend, "ann", None)
@@ -405,36 +359,16 @@ class Orchestrator:
                 raise NDExecutionUnavailableError(
                     message="ANN runner required to build ANN index"
                 )
-            vectors = list(self.stores.vectors.list_vectors())
-            index_info = ann_runner.build_index(
-                artifact.artifact_id, vectors, artifact.metric, None
+            artifact = attach_ann_index(
+                artifact=artifact,
+                ann_runner=ann_runner,
+                vectors=list(self.stores.vectors.list_vectors()),
             )
-            if index_info:
-                index_hash = index_info.get("index_hash")
-                extra: tuple[tuple[str, str], ...] = (
-                    ("ann_index_info", json.dumps(index_info, sort_keys=True)),
-                )
-                if index_hash:
-                    extra = extra + (("ann_index_hash", str(index_hash)),)
-                artifact = replace(
-                    artifact,
-                    build_params=artifact.build_params + extra,
-                    index_state="ready",
-                )
         with self._tx() as tx:
             self.authz.check(tx, action="put_artifact", resource="artifact")
             self.stores.ledger.put_artifact(tx, artifact)
         log_event("artifact_write", artifact_id=artifact.artifact_id)
-        return {
-            "artifact_id": artifact.artifact_id,
-            "execution_contract": artifact.execution_contract.value,
-            "execution_contract_status": (
-                "stable"
-                if artifact.execution_contract is ExecutionContract.DETERMINISTIC
-                else "experimental"
-            ),
-            "replayable": artifact.replayable,
-        }
+        return materialization_response(artifact)
 
     def execute(self, req: ExecutionRequestPayload) -> dict[str, Any]:
         (
