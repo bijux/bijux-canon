@@ -5,11 +5,21 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-rar"
 dynamic = ["version", "dependencies"]
-description = "Legacy continuation package for the published bijux-rar distribution. Installs bijux-canon-reason at the same version."
+description = "Legacy continuation of the bijux-rar PyPI package. Preserves legacy installs and imports while installing bijux-canon-reason at the same version."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+keywords = [
+  "bijux",
+  "compatibility",
+  "migration",
+  "legacy-name",
+  "reasoning",
+  "verification",
+  "provenance",
+]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "License :: OSI Approved :: Apache Software License",
@@ -26,12 +36,14 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason"
+Homepage = "https://bijux.io/"
+Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-reason/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
+Funding = "https://github.com/sponsors/bijux"
 
 [tool.hatch.version]
 source = "vcs"

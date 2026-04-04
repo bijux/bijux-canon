@@ -5,11 +5,21 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-rag"
 dynamic = ["version", "dependencies"]
-description = "Legacy continuation package for the published bijux-rag distribution. Installs bijux-canon-ingest at the same version."
+description = "Legacy continuation of the bijux-rag PyPI package. Preserves legacy installs and imports while installing bijux-canon-ingest at the same version."
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+keywords = [
+  "bijux",
+  "compatibility",
+  "migration",
+  "legacy-name",
+  "rag",
+  "retrieval",
+  "ingest",
+]
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
@@ -21,12 +31,14 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest"
+Homepage = "https://bijux.io/"
+Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-ingest/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
+Funding = "https://github.com/sponsors/bijux"
 
 [project.scripts]
 bijux-rag = "bijux_canon_ingest.interfaces.cli.entrypoint:main"

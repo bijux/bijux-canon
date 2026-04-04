@@ -5,12 +5,13 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-agent"
 dynamic = ["version", "dependencies"]
-description = "Legacy continuation package for the published bijux-agent distribution. Installs bijux-canon-agent at the same version."
+description = "Legacy continuation of the bijux-agent PyPI package. Preserves legacy installs and imports while installing bijux-canon-agent at the same version."
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 readme = "README.md"
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
-keywords = ["pipeline", "multi-agent", "file-processing", "summarization", "AI", "LLM"]
+keywords = ["bijux", "compatibility", "migration", "legacy-name", "agent", "workflow", "llm"]
 classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -27,12 +28,14 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent"
+Homepage = "https://bijux.io/"
+Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-agent/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-agent/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
+Funding = "https://github.com/sponsors/bijux"
 
 [project.scripts]
 bijux-agent = "bijux_canon_agent.interfaces.cli.entrypoint:cli"
