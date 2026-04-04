@@ -13,13 +13,20 @@ from bijux_canon_ingest.interfaces.cli.entrypoint import main
 
 
 def _append_flag(
-    argv: list[str], *, flag: str, value: str | Path | None, repeatable: bool = False
+    argv: list[str],
+    *,
+    flag: str,
+    value: str | Path | list[str] | None,
+    repeatable: bool = False,
 ) -> None:
     if value is None:
         return
     if repeatable:
-        for item in value if isinstance(value, list) else [value]:
-            argv.extend((flag, str(item)))
+        if isinstance(value, list):
+            for item in value:
+                argv.extend((flag, str(item)))
+            return
+        argv.extend((flag, str(value)))
         return
     argv.extend((flag, str(value)))
 
