@@ -56,10 +56,7 @@ class WorkflowOrchestrator:
     """Simple deterministic orchestrator that executes workflow graph nodes in order."""
 
     DEFAULT_TRACE_PATH = (
-        Path("artifacts")
-        / "bijux-canon-agent"
-        / "workflow-graph"
-        / "run_trace.json"
+        Path("artifacts") / "bijux-canon-agent" / "workflow-graph" / "run_trace.json"
     )
 
     def __init__(

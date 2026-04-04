@@ -30,7 +30,9 @@ def build_summarizer_result(
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "duration_sec": round(duration, 2),
             "input_tokens": len(text.split()),
-            "output_tokens": len(" ".join(_summary_text_parts(structured_summary)).split()),
+            "output_tokens": len(
+                " ".join(_summary_text_parts(structured_summary)).split()
+            ),
             "chunks_processed": (len(text) + chunk_size - 1) // chunk_size,
         },
     }

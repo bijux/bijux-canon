@@ -23,6 +23,7 @@ ASGIApp = Callable[
     Awaitable[None],
 ]
 
+
 def create_app() -> ASGIApp:
     """Create the v1 ASGI application."""
 

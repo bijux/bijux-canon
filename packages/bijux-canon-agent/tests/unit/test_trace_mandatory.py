@@ -6,13 +6,16 @@ from pathlib import Path
 import pytest
 from tests.utils.trace_helpers import default_model_metadata
 
-from bijux_canon_agent.constants import CONTRACT_VERSION
-from bijux_canon_agent.contracts.agent_contract import AgentInputSchema, AgentOutputSchema
 from bijux_canon_agent.application.workflow_graph.orchestrator import (
     WorkflowNode,
     WorkflowOrchestrator,
 )
 from bijux_canon_agent.application.workflow_graph.policy import FailurePolicy
+from bijux_canon_agent.constants import CONTRACT_VERSION
+from bijux_canon_agent.contracts.agent_contract import (
+    AgentInputSchema,
+    AgentOutputSchema,
+)
 
 
 def _drop_trace_entry(record_fn: Callable, target_node: str) -> Callable:

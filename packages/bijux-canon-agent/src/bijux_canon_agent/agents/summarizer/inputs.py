@@ -27,9 +27,7 @@ def extract_keywords(
 ) -> list[str]:
     """Extract task- and corpus-aware keywords for summarization."""
     task_keywords = [
-        word
-        for word in task_goal.lower().split()
-        if len(word) >= min_keyword_length
+        word for word in task_goal.lower().split() if len(word) >= min_keyword_length
     ]
     words = re.findall(r"\b\w+\b", text.lower())
     words = [

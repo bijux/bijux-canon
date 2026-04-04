@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import sys
 
+from bijux_canon_agent.config.env import load_environment, validate_keys
 from bijux_canon_agent.interfaces.cli.helpers import (
     handle_replay,
     load_config,
@@ -21,7 +22,6 @@ from bijux_canon_agent.interfaces.cli.runtime_setup import (
     create_logger_manager,
     resolve_input_files,
 )
-from bijux_canon_agent.config.env import load_environment, validate_keys
 from bijux_canon_agent.pipeline.canonical import AuditableDocPipeline
 
 
@@ -94,7 +94,11 @@ async def main() -> None:
     except ValueError as exc:
         logger.error(str(exc))
         sys.exit(2)
-    logger.info("Processing single file input" if input_path.is_file() else "Processing directory input")
+    logger.info(
+        "Processing single file input"
+        if input_path.is_file()
+        else "Processing directory input"
+    )
 
     try:
         result = await process_files(

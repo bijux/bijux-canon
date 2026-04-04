@@ -154,7 +154,9 @@ class LoggerTelemetry:
         try:
             task = asyncio.create_task(self.export_async(metric_data))
             self._metric_tasks.append(task)
-            self._metric_tasks = [task_ref for task_ref in self._metric_tasks if not task_ref.done()]
+            self._metric_tasks = [
+                task_ref for task_ref in self._metric_tasks if not task_ref.done()
+            ]
         except RuntimeError:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)

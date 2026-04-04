@@ -6,7 +6,8 @@ import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 import hashlib
-from typing import Any, Protocol, TypeAlias, cast
+from pathlib import Path
+from typing import Any, Protocol, TypeAlias
 
 from bijux_canon_agent.pipeline.execution.io import PipelineIOMixin
 from bijux_canon_agent.pipeline.execution.iteration_support import (

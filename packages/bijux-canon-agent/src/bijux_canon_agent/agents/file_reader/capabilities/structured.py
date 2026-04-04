@@ -100,15 +100,20 @@ class StructuredExtractor:
                         _require_dependency(pd, "pandas")
                         df = await loop.run_in_executor(
                             None,
-                            lambda: pd.read_csv(
-                                file_path, sep=sep, encoding=encoding, nrows=1000
+                            lambda sep=sep, encoding=encoding: pd.read_csv(
+                                file_path,
+                                sep=sep,
+                                encoding=encoding,
+                                nrows=1000,
                             ),
                         )
                         if len(df.columns) > 1:
                             full_df = await loop.run_in_executor(
                                 None,
-                                lambda: pd.read_csv(
-                                    file_path, sep=sep, encoding=encoding
+                                lambda sep=sep, encoding=encoding: pd.read_csv(
+                                    file_path,
+                                    sep=sep,
+                                    encoding=encoding,
                                 ),
                             )
                             return {

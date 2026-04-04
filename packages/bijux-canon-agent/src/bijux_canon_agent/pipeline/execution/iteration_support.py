@@ -37,7 +37,9 @@ async def execute_iteration_state(
         )
         shard_results.append(shard_result)
 
-        audit_trail = cast(list[dict[str, Any]], preparation.pipeline_result["audit_trail"])
+        audit_trail = cast(
+            list[dict[str, Any]], preparation.pipeline_result["audit_trail"]
+        )
         revision_history = cast(
             list[dict[str, Any]], preparation.pipeline_result["revision_history"]
         )
@@ -194,9 +196,7 @@ async def finalize_execution_result(owner, convergence) -> dict[str, Any]:
             tags={"stage": "cache_store"},
         )
 
-    owner._persist_pipeline_result(
-        convergence.pipeline_result, convergence.context_id
-    )
+    owner._persist_pipeline_result(convergence.pipeline_result, convergence.context_id)
     return convergence.pipeline_result
 
 

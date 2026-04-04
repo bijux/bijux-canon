@@ -21,7 +21,9 @@ class PipelineControllerCore:
 
     phase: PipelineLifecycle = PipelineLifecycle.INIT
     context: dict[str, Any] = field(default_factory=dict)
-    history: list[PipelineLifecycle] = field(default_factory=lambda: [PipelineLifecycle.INIT])
+    history: list[PipelineLifecycle] = field(
+        default_factory=lambda: [PipelineLifecycle.INIT]
+    )
     final_decision: DecisionOutcome | None = None
     final_confidence: float | None = None
     final_epistemic_verdict: EpistemicVerdict = EpistemicVerdict.CERTAIN
@@ -32,7 +34,10 @@ class PipelineControllerCore:
             return
         if target == PipelineLifecycle.EXECUTE and self.phase != PipelineLifecycle.PLAN:
             raise RuntimeError("Transitioning to EXECUTE must follow PLAN")
-        if target == PipelineLifecycle.DONE and self.phase != PipelineLifecycle.FINALIZE:
+        if (
+            target == PipelineLifecycle.DONE
+            and self.phase != PipelineLifecycle.FINALIZE
+        ):
             raise RuntimeError("Transitioning to DONE must follow FINALIZE")
         allowed = self._allowed_transitions()
         if target not in allowed:

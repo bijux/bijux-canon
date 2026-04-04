@@ -6,7 +6,10 @@ from collections.abc import Sequence
 from datetime import datetime
 
 from bijux_canon_agent.enums import AgentType
-from bijux_canon_agent.pipeline.control.lifecycle import LIFECYCLE_DETAILS, PipelineLifecycle
+from bijux_canon_agent.pipeline.control.lifecycle import (
+    LIFECYCLE_DETAILS,
+    PipelineLifecycle,
+)
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.semantics import (
     DEFAULT_PIPELINE_SEMANTICS,

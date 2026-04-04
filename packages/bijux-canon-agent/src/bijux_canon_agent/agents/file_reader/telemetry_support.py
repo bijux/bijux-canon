@@ -174,7 +174,9 @@ def _populate_text_enrichments(
         enrich["entropy"] = entropy
         enrich["text_complexity"] = text_complexity
 
-        logger_manager.log_metric("text_length_chars", n_chars, MetricType.GAUGE, tags=tags)
+        logger_manager.log_metric(
+            "text_length_chars", n_chars, MetricType.GAUGE, tags=tags
+        )
         logger_manager.log_metric("text_lines", n_lines, MetricType.GAUGE, tags=tags)
         logger_manager.log_metric("text_words", n_words, MetricType.GAUGE, tags=tags)
         logger_manager.log_metric(
@@ -358,7 +360,9 @@ def _text_entropy(text: str) -> float:
         return 0.0
     counts = Counter(text)
     total = len(text)
-    return round(-sum((count / total) * math.log2(count / total) for count in counts.values()), 4)
+    return round(
+        -sum((count / total) * math.log2(count / total) for count in counts.values()), 4
+    )
 
 
 def _text_complexity(text: str) -> float:

@@ -133,7 +133,9 @@ def generate_dry_run_trace(
                 convergence_hash=header.convergence_hash,
                 model_metadata=model_metadata,
             ),
-            run_fingerprint=fingerprint if phase == PipelineLifecycle.FINALIZE else None,
+            run_fingerprint=fingerprint
+            if phase == PipelineLifecycle.FINALIZE
+            else None,
         )
         if phase == PipelineLifecycle.FINALIZE:
             entry.decision_artifact = DecisionArtifact(

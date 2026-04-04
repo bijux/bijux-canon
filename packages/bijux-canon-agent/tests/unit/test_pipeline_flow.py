@@ -15,9 +15,13 @@ from tests.utils.trace_helpers import (
 )
 
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
+from bijux_canon_agent.core.hashing import prompt_hash
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
 from bijux_canon_agent.pipeline.control.controller import PipelineController
-from bijux_canon_agent.pipeline.control.lifecycle import PIPELINE_LIFECYCLE, PipelineLifecycle
+from bijux_canon_agent.pipeline.control.lifecycle import (
+    PIPELINE_LIFECYCLE,
+    PipelineLifecycle,
+)
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceConfig,
@@ -46,7 +50,6 @@ from bijux_canon_agent.traces import (
     TraceEntry,
     TraceRecorder,
 )
-from bijux_canon_agent.core.hashing import prompt_hash
 
 STANDARD_TRANSITIONS = [
     (PipelineLifecycle.PLAN, AgentType.PLANNER),
@@ -162,8 +165,12 @@ def _build_standard_entries(
             agent_type,
             phase,
             run_id=run_id,
-            run_fingerprint=fingerprint if phase == PipelineLifecycle.FINALIZE else None,
-            convergence_hash="trace-hash" if phase == PipelineLifecycle.FINALIZE else None,
+            run_fingerprint=fingerprint
+            if phase == PipelineLifecycle.FINALIZE
+            else None,
+            convergence_hash="trace-hash"
+            if phase == PipelineLifecycle.FINALIZE
+            else None,
         )
         for phase, agent_type in STANDARD_TRANSITIONS
     ]
@@ -774,7 +781,10 @@ def test_trace_completeness_requires_each_phase() -> None:
             PipelineLifecycle.INIT: {PipelineLifecycle.PLAN},
             PipelineLifecycle.PLAN: {PipelineLifecycle.EXECUTE},
             PipelineLifecycle.EXECUTE: {PipelineLifecycle.JUDGE},
-            PipelineLifecycle.JUDGE: {PipelineLifecycle.VERIFY, PipelineLifecycle.FINALIZE},
+            PipelineLifecycle.JUDGE: {
+                PipelineLifecycle.VERIFY,
+                PipelineLifecycle.FINALIZE,
+            },
             PipelineLifecycle.VERIFY: {PipelineLifecycle.FINALIZE},
             PipelineLifecycle.FINALIZE: {PipelineLifecycle.DONE},
         },

@@ -57,7 +57,9 @@ def resolve_input_files(input_path: Path) -> list[Path]:
                 "Input directory is empty; add documents (e.g. .txt, .md) and retry."
             )
         return files
-    raise ValueError(f"Invalid input path: {input_path} (neither a file nor a directory)")
+    raise ValueError(
+        f"Invalid input path: {input_path} (neither a file nor a directory)"
+    )
 
 
 __all__ = ["create_bootstrap_logger", "create_logger_manager", "resolve_input_files"]

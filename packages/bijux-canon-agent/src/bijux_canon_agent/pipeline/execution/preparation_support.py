@@ -82,7 +82,9 @@ async def prepare_execution_state(
         return cached_cls(cached_result)
 
     if not context or "task_goal" not in context:
-        error_msg = "Input context must provide 'task_goal' to define the task objective"
+        error_msg = (
+            "Input context must provide 'task_goal' to define the task objective"
+        )
         owner.logger.error(
             error_msg,
             extra={"context": {"stage": "input_validation"}},
@@ -105,9 +107,7 @@ async def prepare_execution_state(
     task_goal = context["task_goal"].lower()
 
     required_stages = (
-        owner._stages
-        if owner._stages
-        else determine_execution_plan(owner, task_goal)
+        owner._stages if owner._stages else determine_execution_plan(owner, task_goal)
     )
     owner.logger.info(
         "Determined required stages for task",

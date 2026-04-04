@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_agent.application.workflow_graph.policy import FailurePolicy, RetryPolicy
+from bijux_canon_agent.application.workflow_graph.policy import (
+    FailurePolicy,
+    RetryPolicy,
+)
 from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceMonitor,
     default_convergence_config,
@@ -61,6 +64,4 @@ def test_failure_policy_load_default_matches_repo_config() -> None:
         / "config"
         / "execution_policy.yaml"
     )
-    assert FailurePolicy.load_default() == FailurePolicy.load(
-        policy_path
-    )
+    assert FailurePolicy.load_default() == FailurePolicy.load(policy_path)
