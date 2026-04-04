@@ -1539,6 +1539,8 @@ def add_what_good_looks_like(body: str, bullets: tuple[str, ...]) -> str:
         [
             "## What Good Looks Like",
             "",
+            "Use these points as the fast check for whether the page is doing real explanatory work.",
+            "",
             bullet_lines(bullets),
         ]
     )
@@ -1549,6 +1551,8 @@ def add_failure_signals(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
             "## Failure Signals",
+            "",
+            "These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.",
             "",
             bullet_lines(bullets),
         ]
@@ -1572,6 +1576,8 @@ def add_evidence_checklist(body: str, bullets: tuple[str, ...]) -> str:
         [
             "## Evidence Checklist",
             "",
+            "Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.",
+            "",
             bullet_lines(bullets),
         ]
     )
@@ -1582,6 +1588,8 @@ def add_antipatterns(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
             "## Anti-Patterns",
+            "",
+            "These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.",
             "",
             bullet_lines(bullets),
         ]
@@ -1594,6 +1602,8 @@ def add_escalate_when(body: str, bullets: tuple[str, ...]) -> str:
         [
             "## Escalate When",
             "",
+            "These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.",
+            "",
             bullet_lines(bullets),
         ]
     )
@@ -1605,6 +1615,8 @@ def add_tradeoffs(body: str, bullets: tuple[str, ...]) -> str:
         [
             "## Tradeoffs To Hold",
             "",
+            "A strong page names the tensions it is managing instead of pretending every desirable goal improves together.",
+            "",
             bullet_lines(bullets),
         ]
     )
@@ -1615,6 +1627,8 @@ def add_approval_questions(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
             "## Approval Questions",
+            "",
+            "A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.",
             "",
             bullet_lines(bullets),
         ]

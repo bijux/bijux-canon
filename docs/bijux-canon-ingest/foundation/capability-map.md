@@ -124,17 +124,23 @@ Keep it aligned with the real package modules and generated outputs.
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - `Capability Map` leaves a reviewer able to explain `bijux-canon-ingest` in one boundary sentence without hand-waving
 - the owned and out-of-scope areas read as complementary rather than contradictory
 - neighboring packages become easier to place because this package is clearly bounded
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - `Capability Map` has to explain the same ownership claim with repeated exceptions
 - the out-of-scope list starts looking like shadow ownership instead of a real boundary
 - review conversations keep falling back to package adjacency rather than package intent
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer clean ownership over local convenience, even when nearby code looks easier to reuse
 - prefer an explicit boundary gap over a shadow responsibility that no package clearly owns
@@ -148,11 +154,15 @@ Keep it aligned with the real package modules and generated outputs.
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does `Capability Map` still let a reviewer state `bijux-canon-ingest` ownership in one clear sentence
 - does the change preserve package boundaries without creating shadow scope in a neighbor
 - is there concrete code and test evidence behind the boundary claim, or only persuasive prose
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - read the owned module roots under `packages/bijux-canon-ingest/src/bijux_canon_ingest` with the boundary statement in mind
 - inspect `packages/bijux-canon-ingest/tests` for proof that the boundary is enforced instead of merely described
@@ -160,11 +170,15 @@ Keep it aligned with the real package modules and generated outputs.
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - using package adjacency as a substitute for package ownership
 - letting boundary exceptions accumulate until they become the real rule
 - writing boundary prose that cannot be checked against code or tests
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - the page can no longer explain ownership without repeated cross-package caveats
 - a change proposal would shift authority between packages rather than stay local

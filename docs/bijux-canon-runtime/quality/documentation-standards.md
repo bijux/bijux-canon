@@ -114,17 +114,23 @@ Update it only when the shared documentation system itself changes.
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - `Documentation Standards` leaves a reviewer able to say why the package should be trusted after a change
 - tests, limitations, and risk language reinforce one another instead of competing
 - the completion bar is demanding enough to prevent shallow acceptance
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - `Documentation Standards` says the package is protected but cannot show which proof closes which risk
 - reviewers disagree on whether the work is done because the standard is too implicit
 - limitations remain unchanged even when package behavior has obviously shifted
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer broader proof over narrower green checks when the package contract is larger than one code path
 - prefer visible limitations over a cleaner story that hides risk
@@ -138,11 +144,15 @@ Update it only when the shared documentation system itself changes.
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does `Documentation Standards` show enough proof to trust `bijux-canon-runtime` after change
 - have limitations and known risks moved with the code rather than staying stale
 - does the acceptance bar protect the package contract rather than only one local behavior
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - read `packages/bijux-canon-runtime/tests` with the page's proof claims in hand
 - verify package metadata and release notes in `packages/bijux-canon-runtime` do not contradict the review standard
@@ -150,11 +160,15 @@ Update it only when the shared documentation system itself changes.
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - equating one local pass with full contract confidence
 - keeping old risk prose after the code and tests have materially changed
 - treating definition-of-done language as ceremonial rather than operational
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - the proof story can no longer be updated without revisiting adjacent sections
 - a local validation gap reveals a larger boundary or architecture issue

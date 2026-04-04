@@ -174,17 +174,23 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - the correct next handbook path becomes obvious within a few seconds
 - the root page reduces orientation cost instead of adding another layer of ambiguity
 - the documentation system feels intentionally divided rather than accidentally scattered
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - the root page starts sounding like a summary of everything instead of a route to somewhere specific
 - readers still need trial-and-error to find the right handbook branch
 - the distinction between repository, package, maintainer, and compatibility docs becomes blurry again
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer routing clarity over turning the root page into a compressed summary of every section
 - prefer a small amount of duplication in navigation language over forcing readers to infer where a question belongs
@@ -198,11 +204,15 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does the page still route most readers to one clearly better next section
 - would a new reviewer understand the difference between repository, product, maintainer, and compatibility docs from this page alone
 - is the navigation claim backed by the current rendered handbook structure rather than by intention only
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - check `mkdocs.yml` against the rendered root navigation
 - inspect `scripts/render_docs_catalog.py` if the page routing no longer reflects the intended handbook structure
@@ -210,11 +220,15 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - turning the root page into a second copy of the whole handbook
 - assuming navigation clarity emerges automatically from file count or section count
 - treating handbook routing as cosmetic instead of as part of review efficiency
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - the root page no longer routes readers to one clearly better next section
 - major documentation branches overlap so much that readers cannot tell where a question belongs

@@ -127,17 +127,23 @@ Update this page only when package ownership changes, not for ordinary internal 
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - `Package Map` keeps repository guidance above package-local detail instead of competing with it
 - the reader can tell which root assets matter to the topic before opening code
 - cross-package reasoning becomes simpler because the repository frame is explicit
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - `Package Map` begins absorbing details that should live in package-local docs
 - the page stops naming concrete root assets that support its claims
 - reviewers cannot tell whether the page is describing policy, process, or one local implementation
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer repository-wide clarity over squeezing package-specific nuance into root pages
 - prefer durable repository rules over explanations that only fit the current implementation snapshot
@@ -151,11 +157,15 @@ Update this page only when package ownership changes, not for ordinary internal 
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does the page stay genuinely repository-wide instead of absorbing package-local detail
 - can a reviewer tie the page's claims back to concrete root assets, workflows, or schemas
 - would a package owner still agree that the root page is clarifying shared policy rather than redefining local ownership
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - inspect the named root files, workflows, or schema directories directly
 - check at least one owning package doc to confirm the repository page is not absorbing local detail
@@ -163,11 +173,15 @@ Update this page only when package ownership changes, not for ordinary internal 
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - using repository pages to hide unresolved package-boundary decisions
 - documenting root policy without naming the actual checked-in assets that support it
 - letting one successful workflow example stand in for repository-wide truth
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - a supposedly root decision is really moving package ownership around
 - the page cannot stay accurate without changing multiple package handbooks too

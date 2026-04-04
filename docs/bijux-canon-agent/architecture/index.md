@@ -137,17 +137,23 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - `Architecture` lets a reviewer trace structure without guessing where the real pathway lives
 - the documented module relationships make refactors easier to reason about before code is changed
 - the page shortens code reading by pointing at the right structural hotspots first
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - `Architecture` points to modules that no longer carry the behavior the page claims they do
 - dependency direction has to be explained with caveats instead of a clean structural story
 - the path from interface to domain to proof no longer feels traceable in one pass
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer clean dependency direction over short-term coupling that makes one change easier today
 - prefer an execution path that can be explained quickly over indirection that only looks flexible
@@ -161,11 +167,15 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does `Architecture` still describe a structure that a reviewer can trace without caveats
 - is dependency direction cleaner or at least no less legible after the change
 - can the claimed execution path still be matched to concrete modules, seams, and proof assets
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - open the listed structural modules in `packages/bijux-canon-agent/src/bijux_canon_agent` and trace whether they still match the page narrative
 - inspect `packages/bijux-canon-agent/tests` for regressions that reveal changed execution or dependency structure
@@ -173,11 +183,15 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - explaining structure with diagrams that no longer match the modules listed
 - treating temporary implementation shortcuts as if they were enduring architectural seams
 - allowing dependency direction to drift because the code still happens to run
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - the documented structure no longer matches the changed execution path
 - a local refactor introduces a dependency direction question that affects other sections

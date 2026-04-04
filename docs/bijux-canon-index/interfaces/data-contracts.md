@@ -121,17 +121,23 @@ Keep it aligned with tracked schemas, stable models, and durable artifacts.
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - `Data Contracts` leaves a caller knowing which surfaces are explicit enough to trust
 - the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately
 - compatibility review becomes a visible step rather than an afterthought
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - `Data Contracts` names surfaces that cannot be matched to real code, schemas, or artifacts
 - callers have to infer stability from examples instead of from explicit contract evidence
 - compatibility review starts after change has already landed instead of before
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer a smaller explicit contract over a wider surface whose stability has to be guessed
 - prefer paying compatibility-review cost up front over discovering caller breakage after release
@@ -145,11 +151,15 @@ Keep it aligned with tracked schemas, stable models, and durable artifacts.
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does `Data Contracts` name only caller-facing surfaces that have explicit contract evidence
 - would a downstream consumer understand the compatibility expectations before depending on the surface
 - are code, schemas, artifacts, examples, and tests still telling the same contract story
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - inspect the implemented interface modules under `packages/bijux-canon-index/src/bijux_canon_index`
 - review `apis/bijux-canon-index/v1/schema.yaml` as tracked contract evidence
@@ -157,11 +167,15 @@ Keep it aligned with tracked schemas, stable models, and durable artifacts.
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - treating convenience surfaces as if they were deliberate contracts
 - changing schemas or artifacts without a caller-facing compatibility discussion
 - using examples to imply stability that code and tests do not actually promise
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - a supposedly local change alters a caller-visible schema, artifact, import, or command contract
 - compatibility risk extends beyond one implementation file

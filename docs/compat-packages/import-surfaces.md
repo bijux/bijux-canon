@@ -117,17 +117,23 @@ Keep it aligned with the `src/` roots inside the compatibility packages.
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - `Import Surfaces` makes the legacy-to-canonical path obvious
 - migration pressure is clearer than nostalgia for old package names
 - retirement can be discussed from evidence rather than from vague discomfort
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - `Import Surfaces` spends more time defending legacy names than clarifying migration
 - the canonical target is harder to find than the old name
 - retirement conversations keep stalling because the remaining need is not described concretely
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer a clear migration path over preserving every historical detail equally
 - prefer honest legacy labeling over making old surfaces look more current than they are
@@ -141,11 +147,15 @@ Keep it aligned with the `src/` roots inside the compatibility packages.
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does the page make the canonical replacement clearer than the legacy name itself
 - is there still real evidence for preservation or is the section only reflecting habit
 - would a reader leave knowing whether to migrate, preserve temporarily, or retire the legacy surface
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - inspect the relevant `packages/compat-*` metadata and README files
 - check the canonical target package docs named by this page
@@ -153,11 +163,15 @@ Keep it aligned with the `src/` roots inside the compatibility packages.
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - treating compatibility shims like long-term product expansion points
 - preserving legacy names because they are familiar rather than because they are needed
 - letting migration guidance become less visible than the legacy label itself
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - a legacy surface is still present but no one can name a real dependent consumer
 - migration guidance now conflicts with the canonical package story

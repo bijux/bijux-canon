@@ -121,17 +121,23 @@ Keep it aligned with the package's actual performance-sensitive paths and valida
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - `Performance and Scaling` leaves a maintainer able to repeat the relevant package workflow from checked-in assets
 - the operational path is explicit enough that incident pressure does not force guesswork
 - release and setup expectations stay aligned with the package metadata and tests
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - `Performance and Scaling` only works if the maintainer already knows unstated steps
 - package metadata, runtime behavior, and operational docs start telling different stories
 - incident handling requires reverse-engineering workflow from code instead of following checked-in guidance
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer repeatable checked-in workflows over locally optimized shortcuts
 - prefer diagnosability over hiding operational seams that matter during incidents
@@ -145,11 +151,15 @@ Keep it aligned with the package's actual performance-sensitive paths and valida
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does `Performance and Scaling` leave a maintainer able to repeat the workflow from checked-in assets
 - are install, diagnostics, and release statements still aligned with package metadata and tests
 - would this workflow still hold up under time pressure without hidden operator memory
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - verify `packages/bijux-canon-agent/pyproject.toml` and `packages/bijux-canon-agent/README.md` still match the operational story
 - inspect `packages/bijux-canon-agent/tests` for the workflow or environment proof the page implies
@@ -157,11 +167,15 @@ Keep it aligned with the package's actual performance-sensitive paths and valida
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - relying on tribal memory for steps that should live in checked-in assets
 - documenting the happy path while leaving diagnostics and failure handling implicit
 - letting release or setup guidance drift away from package metadata
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - the operational path changes enough to affect CI, releases, or another package's expectations
 - the documented workflow depends on environment assumptions that are no longer stable

@@ -115,17 +115,23 @@ Keep it aligned with the actual checks we can execute and verify.
 
 ## What Good Looks Like
 
+Use these points as the fast check for whether the page is doing real explanatory work.
+
 - `Security Gates` makes maintainer-only behavior explicit enough that it does not surprise contributors
 - the page distinguishes repository-health work from runtime product behavior cleanly
 - automation intent stays understandable without digging through CI and helpers first
 
 ## Failure Signals
 
+These are the quickest signs that the page is drifting from honest explanation into noise or stale certainty.
+
 - `Security Gates` starts reading like product documentation instead of maintainer guidance
 - contributors can only discover maintainer behavior by reading scripts or CI output directly
 - the page stops making package impact explicit when automation changes
 
 ## Tradeoffs To Hold
+
+A strong page names the tensions it is managing instead of pretending every desirable goal improves together.
 
 - prefer repository-health clarity over convenience that only helps one maintainer's local workflow
 - prefer checked-in automation expectations over undocumented operator heroics
@@ -139,11 +145,15 @@ Keep it aligned with the actual checks we can execute and verify.
 
 ## Approval Questions
 
+A reviewer should be able to answer these clearly before trusting the page or the change it is helping to explain.
+
 - does the page still describe maintainer scope rather than end-user runtime behavior
 - can contributors inspect the named automation, tests, or helpers that support the page
 - is the product-package impact explicit enough that maintainers are not making contract changes by accident
 
 ## Evidence Checklist
+
+Check these assets before trusting the prose. They are the concrete places where the page either holds up or falls apart.
 
 - inspect the named helper modules under `packages/bijux-canon-dev/src/bijux_canon_dev`
 - check the corresponding maintainer tests before trusting the page's operational claims
@@ -151,11 +161,15 @@ Keep it aligned with the actual checks we can execute and verify.
 
 ## Anti-Patterns
 
+These patterns make documentation feel fuller while quietly making it less clear, less honest, or less durable.
+
 - describing maintainer automation as if it were part of the end-user runtime
 - letting CI behavior become the only place where maintainer intent is visible
 - changing repository-health tools without updating the maintainer story they imply
 
 ## Escalate When
+
+These conditions mean the problem is larger than a local wording fix and needs a wider review conversation.
 
 - a maintainer-only change starts affecting product package contracts directly
 - the page can no longer describe scope without referencing multiple package ownership changes
