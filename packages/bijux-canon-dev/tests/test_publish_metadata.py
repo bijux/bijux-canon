@@ -22,11 +22,21 @@ REQUIRED_PUBLIC_URLS = {
     "Security",
 }
 BIJUX_SITE_URL = "https://bijux.io/"
+BIJUX_CANON_DOCS_URL = "https://bijux.io/bijux-canon/"
 PACKAGE_MAP_URL = "https://bijux.io/bijux-canon/package-map/"
 COMPATIBILITY_GUIDE_URL = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
 LEGACY_NAME_MAP_URL = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
 README_BADGE_MARKER = "https://img.shields.io"
 EXPECTED_BADGE_COUNT = 19
+EXPECTED_PYPI_GUIDE_BADGE_COUNT = 17
+FORBIDDEN_STANDALONE_DOC_URLS = (
+    "https://bijux.io/bijux-canon-runtime/",
+    "https://bijux.io/bijux-canon-agent/",
+    "https://bijux.io/bijux-canon-ingest/",
+    "https://bijux.io/bijux-canon-reason/",
+    "https://bijux.io/bijux-canon-index/",
+    "https://bijux.io/bijux-canon-dev/",
+)
 COMPATIBILITY_PACKAGES = {
     "compat-agentic-flows": {
         "distribution": "agentic-flows",
@@ -100,6 +110,10 @@ def _workspace_metadata() -> dict[str, object]:
 def _package_path(package_name: str) -> Path:
     workspace = _workspace_metadata()
     return REPO_ROOT / workspace["package_dirs"][package_name]
+
+
+def _shared_docs_url(package_name: str) -> str:
+    return f"{BIJUX_CANON_DOCS_URL}{package_name}/"
 
 
 def test_all_packages_have_package_local_changelogs() -> None:
@@ -192,6 +206,25 @@ def test_public_release_packages_prioritize_bijux_site_urls() -> None:
             if not value.startswith(BIJUX_SITE_URL):
                 failures.append(f"{package_name}: {key} should point to bijux.io")
     assert not failures, "public package URLs should prioritize bijux.io:\n" + "\n".join(failures)
+
+
+def test_public_release_packages_use_shared_handbook_paths_for_docs() -> None:
+    workspace = _workspace_metadata()
+    public_packages = set(workspace["public_release_packages"])
+
+    failures: list[str] = []
+    for package_name in sorted(public_packages):
+        urls = _project_table(_package_path(package_name) / "pyproject.toml").get("urls", {})
+        if package_name in CANONICAL_PACKAGES:
+            expected_docs_url = _shared_docs_url(package_name)
+        else:
+            expected_docs_url = _shared_docs_url(COMPATIBILITY_PACKAGES[package_name]["canonical"])
+
+        for key in ("Homepage", "Documentation"):
+            if urls.get(key) != expected_docs_url:
+                failures.append(f"{package_name}: {key} should point to {expected_docs_url}")
+
+    assert not failures, "public package docs URLs failed:\n" + "\n".join(failures)
 
 
 def test_public_release_packages_publish_family_navigation_urls() -> None:
@@ -365,3 +398,49 @@ def test_public_release_packages_ship_package_local_publication_guides() -> None
             failures.append(f"{package_name}: pyproject should ship docs/maintainer/pypi.md")
 
     assert not failures, "public package publication guides failed:\n" + "\n".join(failures)
+
+
+def test_public_release_package_publication_guides_publish_family_badges() -> None:
+    workspace = _workspace_metadata()
+    public_packages = set(workspace["public_release_packages"])
+
+    failures: list[str] = []
+    for package_name in sorted(public_packages):
+        guide = (_package_path(package_name) / "docs" / "maintainer" / "pypi.md").read_text(
+            encoding="utf-8"
+        )
+        if guide.count(README_BADGE_MARKER) < EXPECTED_PYPI_GUIDE_BADGE_COUNT:
+            failures.append(
+                f"{package_name}: expected at least {EXPECTED_PYPI_GUIDE_BADGE_COUNT} badges in pypi.md"
+            )
+        if "https://pypi.org/project/bijux-canon-runtime/" not in guide:
+            failures.append(f"{package_name}: pypi.md should advertise the canonical package family")
+        if "https://pypi.org/project/bijux-vex/" not in guide:
+            failures.append(f"{package_name}: pypi.md should advertise the compatibility package family")
+        for ci_slug in ("runtime", "agent", "ingest", "reason", "index"):
+            ci_url = f"https://github.com/bijux/bijux-canon/actions/workflows/ci-bijux-canon-{ci_slug}.yml"
+            if ci_url not in guide:
+                failures.append(f"{package_name}: pypi.md should advertise {ci_slug} CI coverage")
+        if _shared_docs_url("bijux-canon-runtime") not in guide:
+            failures.append(f"{package_name}: pypi.md should link shared handbook package docs")
+
+    assert not failures, "public package publication guide badges failed:\n" + "\n".join(failures)
+
+
+def test_repository_docs_links_avoid_standalone_package_sites() -> None:
+    failures: list[str] = []
+    excluded_roots = {".git", ".tox", ".venv", "__pycache__", "artifacts", "node_modules"}
+
+    for path in REPO_ROOT.rglob("*"):
+        if not path.is_file():
+            continue
+        if path.suffix not in {".md", ".toml"}:
+            continue
+        if any(part in excluded_roots for part in path.parts):
+            continue
+        text = path.read_text(encoding="utf-8")
+        for forbidden_url in FORBIDDEN_STANDALONE_DOC_URLS:
+            if forbidden_url in text:
+                failures.append(f"{path.relative_to(REPO_ROOT)}: contains {forbidden_url}")
+
+    assert not failures, "repository docs URLs failed:\n" + "\n".join(failures)
