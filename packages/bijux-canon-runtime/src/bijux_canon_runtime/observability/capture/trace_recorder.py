@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from typing import SupportsIndex
 
 from bijux_canon_runtime.core.authority import AuthorityToken
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
@@ -14,11 +15,11 @@ from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 class AppendOnlyList(list[ExecutionEvent]):
     """Behavioral contract for AppendOnlyList."""
 
-    def __setitem__(self, *_args, **_kwargs) -> None:
+    def __setitem__(self, *args: object, **kwargs: object) -> None:
         """Internal helper; not part of the public API."""
         raise TypeError("execution events are append-only")
 
-    def __delitem__(self, *_args, **_kwargs) -> None:
+    def __delitem__(self, *args: object, **kwargs: object) -> None:
         """Internal helper; not part of the public API."""
         raise TypeError("execution events are append-only")
 
@@ -30,11 +31,11 @@ class AppendOnlyList(list[ExecutionEvent]):
         """Execute extend and enforce its contract."""
         raise TypeError("execution events are append-only")
 
-    def insert(self, _index: int, _value: ExecutionEvent) -> None:
+    def insert(self, _index: SupportsIndex, _value: ExecutionEvent) -> None:
         """Execute insert and enforce its contract."""
         raise TypeError("execution events are append-only")
 
-    def pop(self, _index: int = -1) -> ExecutionEvent:
+    def pop(self, _index: SupportsIndex = -1) -> ExecutionEvent:
         """Execute pop and enforce its contract."""
         raise TypeError("execution events are append-only")
 
@@ -46,7 +47,7 @@ class AppendOnlyList(list[ExecutionEvent]):
         """Execute reverse and enforce its contract."""
         raise TypeError("execution events are append-only")
 
-    def sort(self, *_args, **_kwargs) -> None:
+    def sort(self, *args: object, **kwargs: object) -> None:
         """Execute sort and enforce its contract."""
         raise TypeError("execution events are append-only")
 

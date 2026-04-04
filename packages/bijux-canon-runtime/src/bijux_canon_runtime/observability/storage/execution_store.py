@@ -104,7 +104,7 @@ class DuckDBExecutionStore:
     def __init__(self, path: Path) -> None:
         """Internal helper; not part of the public API."""
         self._lock_path = path.with_suffix(f"{path.suffix}.lock")
-        self._lock_fd = _acquire_lock(self._lock_path)
+        self._lock_fd: int | None = _acquire_lock(self._lock_path)
         self._connection = duckdb.connect(str(path))
         self._migrate()
 
@@ -112,10 +112,11 @@ class DuckDBExecutionStore:
         """Internal helper; not part of the public API."""
         with suppress(Exception):
             self._connection.close()
-        if getattr(self, "_lock_fd", None) is None:
+        lock_fd = getattr(self, "_lock_fd", None)
+        if lock_fd is None:
             return
         with suppress(Exception):
-            os.close(self._lock_fd)
+            os.close(lock_fd)
         with suppress(Exception):
             self._lock_path.unlink()
         self._lock_fd = None

@@ -11,12 +11,15 @@ from typing import Any
 
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.execution.replay_verdict import (
     ReplayVerdict,
     ReplayVerdictDetails,
 )
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.observability.analysis.trace_diff import (
     non_determinism_report,
@@ -316,7 +319,7 @@ def _first_divergent_step(plan: ExecutionSteps, diffs: dict[str, object]) -> int
 
 
 def _missing_step_end(
-    events: Iterable[ExecutionEvent], steps: Iterable[object]
+    events: Iterable[ExecutionEvent], steps: Iterable[ResolvedStep]
 ) -> set[int]:
     """Internal helper; not part of the public API."""
     expected_steps = {step.step_index for step in steps}
@@ -412,7 +415,7 @@ def _partition_diffs(
     return blocking, acceptable
 
 
-def _dataset_payload(dataset) -> dict[str, object]:
+def _dataset_payload(dataset: DatasetDescriptor) -> dict[str, object]:
     """Internal helper; not part of the public API."""
     return {
         "dataset_id": dataset.dataset_id,
@@ -420,10 +423,11 @@ def _dataset_payload(dataset) -> dict[str, object]:
         "dataset_version": dataset.dataset_version,
         "dataset_hash": dataset.dataset_hash,
         "dataset_state": dataset.dataset_state,
+        "storage_uri": dataset.storage_uri,
     }
 
 
-def _envelope_payload(envelope) -> dict[str, object]:
+def _envelope_payload(envelope: ReplayEnvelope) -> dict[str, object]:
     """Internal helper; not part of the public API."""
     return {
         "min_claim_overlap": envelope.min_claim_overlap,
