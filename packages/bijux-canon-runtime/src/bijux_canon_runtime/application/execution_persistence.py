@@ -25,7 +25,10 @@ from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.ontology.ids import ClaimID, RunID, TenantID
 
 if TYPE_CHECKING:
-    from bijux_canon_runtime.application.execute_flow import ExecutionConfig, FlowRunResult
+    from bijux_canon_runtime.application.execute_flow import (
+        ExecutionConfig,
+        FlowRunResult,
+    )
 
 
 @dataclass(frozen=True)

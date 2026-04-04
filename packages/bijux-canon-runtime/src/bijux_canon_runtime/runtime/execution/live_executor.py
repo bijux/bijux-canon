@@ -27,7 +27,9 @@ from bijux_canon_runtime.model.verification.verification import VerificationPoli
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
-from bijux_canon_runtime.model.verification.verification_result import VerificationResult
+from bijux_canon_runtime.model.verification.verification_result import (
+    VerificationResult,
+)
 from bijux_canon_runtime.ontology import (
     CausalityTag,
     VerificationPhase,
@@ -38,8 +40,12 @@ from bijux_canon_runtime.ontology.public import EventType
 
 if TYPE_CHECKING:
     from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
-    from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
-    from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
+    from bijux_canon_runtime.runtime.execution.reasoning_executor import (
+        ReasoningExecutor,
+    )
+    from bijux_canon_runtime.runtime.execution.retrieval_executor import (
+        RetrievalExecutor,
+    )
     from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 
 

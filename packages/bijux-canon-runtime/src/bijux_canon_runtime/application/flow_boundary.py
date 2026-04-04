@@ -32,6 +32,7 @@ def enforce_flow_boundary(
     if config_validation is not None:
         config_validation()
 
+
 def _assert_step_order(plan: ExecutionSteps) -> None:
     """Internal helper; not part of the public API."""
     for index, step in enumerate(plan.steps):

@@ -33,7 +33,9 @@ from bijux_canon_runtime.model.verification.verification import VerificationPoli
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
-from bijux_canon_runtime.model.verification.verification_result import VerificationResult
+from bijux_canon_runtime.model.verification.verification_result import (
+    VerificationResult,
+)
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,

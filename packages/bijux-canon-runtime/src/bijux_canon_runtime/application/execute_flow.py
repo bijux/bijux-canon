@@ -10,9 +10,15 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 import os
 
-from bijux_canon_runtime.core.authority import authority_token, enforce_runtime_semantics
+from bijux_canon_runtime.core.authority import (
+    authority_token,
+    enforce_runtime_semantics,
+)
 from bijux_canon_runtime.core.errors import ConfigurationError
-from bijux_canon_runtime.runtime.artifact_store import ArtifactStore, InMemoryArtifactStore
+from bijux_canon_runtime.runtime.artifact_store import (
+    ArtifactStore,
+    InMemoryArtifactStore,
+)
 from bijux_canon_runtime.runtime.budget import BudgetState, ExecutionBudget
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 from bijux_canon_runtime.runtime.execution.dry_run_executor import DryRunExecutor
@@ -61,7 +67,9 @@ from bijux_canon_runtime.model.verification.verification import VerificationPoli
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
-from bijux_canon_runtime.model.verification.verification_result import VerificationResult
+from bijux_canon_runtime.model.verification.verification_result import (
+    VerificationResult,
+)
 from bijux_canon_runtime.ontology import CausalityTag, DeterminismLevel, EventType
 from bijux_canon_runtime.ontology.ids import FlowID, RunID
 

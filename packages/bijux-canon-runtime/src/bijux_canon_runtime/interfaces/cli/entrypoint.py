@@ -24,6 +24,7 @@ from bijux_canon_runtime.interfaces.cli.store_commands import (
     inspect_run,
     validate_db,
 )
+
 _load_manifest = load_manifest
 _load_policy = load_policy
 _inspect_run = inspect_run
@@ -52,9 +53,7 @@ def main() -> None:
     if args.command == "replay":
         _replay_run(args, json_output=args.json)
         return
-    if (
-        args.command == "diff" and args.diff_command == "run"
-    ):
+    if args.command == "diff" and args.diff_command == "run":
         _diff_runs(args, json_output=args.json)
         return
     if args.command == "explain" and args.explain_command == "failure":

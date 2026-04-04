@@ -14,7 +14,9 @@ from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
-from bijux_canon_runtime.model.verification.verification_result import VerificationResult
+from bijux_canon_runtime.model.verification.verification_result import (
+    VerificationResult,
+)
 
 
 @dataclass(frozen=True)
