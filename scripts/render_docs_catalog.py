@@ -3766,7 +3766,16 @@ def write_mkdocs(
 def validate_rendered_docs() -> None:
     required_headings = (
         "## Page Maps",
+        "## Core Claim",
+        "## Why It Matters",
+        "## If It Drifts",
+        "## Representative Scenario",
+        "## Source Of Truth Order",
+        "## Common Misreadings",
+        "## Concrete Anchors",
         "## Use This Page When",
+        "## Next Checks",
+        "## Update This Page When",
         "## What This Page Answers",
         "## Reviewer Lens",
         "## Honesty Boundary",
@@ -3781,6 +3790,11 @@ def validate_rendered_docs() -> None:
         for heading in required_headings:
             if heading not in text:
                 failures.append(f"{path}: missing heading {heading}")
+        if text.count("- ") < 18:
+            failures.append(f"{path}: too few bullet points for current handbook depth standard")
+        word_count = len(text.split())
+        if word_count < 260:
+            failures.append(f"{path}: too few words for current handbook depth standard ({word_count})")
     if failures:
         joined = "\n".join(failures[:50])
         raise RuntimeError(f"Rendered docs validation failed:\n{joined}")
