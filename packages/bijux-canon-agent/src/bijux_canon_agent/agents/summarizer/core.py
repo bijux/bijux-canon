@@ -19,11 +19,8 @@ from .reporting import (
     build_summarizer_schema,
     get_summarizer_telemetry,
 )
-from .rules import (
-    abstractive,
-    extractive,
-    postprocessing,
-)
+from .rules import postprocessing
+from .strategy_execution import run_summary_strategy
 from .types import (
     SummarizerErrorResult,
     SummarizerResult,
@@ -475,44 +472,13 @@ class SummarizerAgent(BaseAgent):
         Returns:
             Tuple of (summary text, method used).
         """
-        method = f"{self.strategy}_{self.backend}"
-
-        # Parse sections for section-aware summarization
-        sections = extractive.parse_sections(self, text, keywords)
-        self.logger.debug(
-            f"Parsed {len(sections)} sections",
-            extra={"context": {"sections": [s["heading"] for s in sections]}},
+        return await run_summary_strategy(
+            self,
+            text=text,
+            prompt_prefix=prompt_prefix,
+            task_goal=task_goal,
+            keywords=keywords,
         )
-
-        # Summarize based on strategy
-        if self.strategy == self.STRATEGY_EXTRACTIVE:
-            summary = extractive.generate_extractive_summary(self, sections, keywords)
-        elif self.strategy == self.STRATEGY_ABSTRACTIVE:
-            summary = await abstractive.generate_abstractive_summary(
-                self, sections, prompt_prefix, task_goal, keywords
-            )
-        else:  # Hybrid
-            extractive_summary = extractive.generate_extractive_summary(
-                self, sections, keywords
-            )
-            abstractive_summary = await abstractive.generate_abstractive_summary(
-                self, sections, prompt_prefix, task_goal, keywords
-            )
-            summary = postprocessing.combine_summaries(
-                self, extractive_summary, abstractive_summary
-            )
-
-        self.logger.debug(
-            "Summarization strategy applied",
-            extra={
-                "context": {
-                    "strategy": self.strategy,
-                    "method": method,
-                    "summary_length": len(summary),
-                }
-            },
-        )
-        return summary, method
 
     def _revise_payload(
         self, feedback: dict[str, Any], context: dict[str, Any]
