@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 from pathlib import Path
 from typing import Any, cast
@@ -22,29 +21,14 @@ from bijux_canon_ingest.application.pipeline_definitions.configured import (
 from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.interfaces.cli.pipeline_config import load_pipeline_config
+from bijux_canon_ingest.interfaces.cli.pipeline_parser import build_pipeline_parser
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 
 
 def run_pipeline_commands(argv: list[str]) -> int:
     """Run the pipeline-oriented CLI mode."""
 
-    parser = argparse.ArgumentParser(prog="bijux-canon-ingest")
-    parser.add_argument("input_csv", type=Path)
-    parser.add_argument("--config", type=Path, required=True)
-    parser.add_argument(
-        "--set",
-        dest="overrides",
-        action="append",
-        default=[],
-        help="Override a.b.c=value",
-    )
-    parser.add_argument(
-        "--out",
-        type=Path,
-        default=None,
-        help="Optional output JSONL path for chunks",
-    )
-    args = parser.parse_args(argv)
+    args = build_pipeline_parser().parse_args(argv)
 
     config = _apply_overrides(
         config=load_pipeline_config(args.config),
