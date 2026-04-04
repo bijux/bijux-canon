@@ -40,6 +40,7 @@ class StoredIndex:
     fingerprint: str
     schema_version: int = 1
 
+
 def build_stored_index(
     *,
     docs: Iterable[object],

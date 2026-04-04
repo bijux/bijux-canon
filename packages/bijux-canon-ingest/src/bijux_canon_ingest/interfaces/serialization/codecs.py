@@ -228,6 +228,7 @@ def from_json_safe(s: str, dec: Decoder[T]) -> Validation[T, DecodeErr]:
     except Exception as exc:
         return VFailure((DecodeErr(msg=str(exc)),))
 
+
 __all__ = [
     "Envelope",
     "Encoder",

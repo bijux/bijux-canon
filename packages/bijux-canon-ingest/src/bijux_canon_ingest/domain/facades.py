@@ -38,7 +38,9 @@ def deterministic_embedder_port(
     """Return a deterministic port that delays embedding work behind ``IOPlan``."""
 
     if embed_one is None:
-        from bijux_canon_ingest.processing.stages import embed_chunk as default_embed_one
+        from bijux_canon_ingest.processing.stages import (
+            embed_chunk as default_embed_one,
+        )
 
         embed_one = default_embed_one
     embed = embed_one

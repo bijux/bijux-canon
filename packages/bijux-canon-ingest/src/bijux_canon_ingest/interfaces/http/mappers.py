@@ -49,7 +49,9 @@ def chunk_response_from_result(chunks: list[Chunk]) -> ChunkResponse:
     )
 
 
-def index_build_response(index_id: str, *, fingerprint: str, schema_version: int) -> IndexBuildResponse:
+def index_build_response(
+    index_id: str, *, fingerprint: str, schema_version: int
+) -> IndexBuildResponse:
     return IndexBuildResponse(
         index_id=index_id,
         fingerprint=fingerprint,

@@ -34,4 +34,6 @@ def test_chunk_state_from_dict_rejects_non_numeric_embeddings() -> None:
     except ValueError as exc:
         assert "embedding must be a JSON array of numbers" in str(exc)
     else:  # pragma: no cover - defensive test shape
-        raise AssertionError("chunk_state_from_dict should reject non-numeric embeddings")
+        raise AssertionError(
+            "chunk_state_from_dict should reject non-numeric embeddings"
+        )

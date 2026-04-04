@@ -76,4 +76,9 @@ def write_output(*, payload: str, out_path: Path | None) -> int:
     return 0
 
 
-__all__ = ["YamlModule", "render_answer_output", "render_retrieve_output", "write_output"]
+__all__ = [
+    "YamlModule",
+    "render_answer_output",
+    "render_retrieve_output",
+    "write_output",
+]

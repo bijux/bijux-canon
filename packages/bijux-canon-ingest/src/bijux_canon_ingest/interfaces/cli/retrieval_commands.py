@@ -177,4 +177,6 @@ def _run_eval(args: argparse.Namespace) -> int:
             return 1
     print(json.dumps({"metrics": metrics, "status": "OK"}, ensure_ascii=False))
     return 0
+
+
 __all__ = ["run_retrieval_commands"]
