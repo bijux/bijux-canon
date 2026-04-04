@@ -15,6 +15,8 @@ tagged release, including legacy distribution naming where applicable.
 - Package-local PyPI publication guidance is now checked in and shipped with
   the source distribution so index release expectations stay attached to the
   package.
+- Source distributions now include the full `src/bijux_canon_index` tree
+  instead of publishing only the typed marker file.
 - OpenAPI freeze artifacts and release-gate expectations were refreshed to
   match the current FastAPI-generated validation schema and 422 response
   wording.

@@ -162,7 +162,7 @@ include = [
   "README.md",
   "CHANGELOG.md",
   "docs/maintainer/pypi.md",
-  "src/bijux_canon_index/py.typed",
+  "src/bijux_canon_index/**",
 ]
 
 [tool.hatch.build]
@@ -170,7 +170,7 @@ include = [
   "README.md",
   "CHANGELOG.md",
   "docs/maintainer/pypi.md",
-  "src/bijux_canon_index/py.typed",
+  "src/bijux_canon_index/**",
 ]
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
