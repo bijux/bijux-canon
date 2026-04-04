@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 Compatibility in `bijux-canon-agent` should be explicit: stable commands, tracked schemas,
 durable artifacts, and release notes that explain intentional breakage.
 
+This page should leave readers with a realistic sense of the compatibility bar.
+It is more valuable to be clear about what triggers review than to sound
+generously stable while leaving the real boundary ambiguous.
+
 Read the interfaces pages for `bijux-canon-agent` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
 
 ## Page Maps

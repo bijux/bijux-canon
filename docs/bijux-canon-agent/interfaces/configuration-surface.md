@@ -9,7 +9,12 @@ last_reviewed: 2026-04-04
 
 # Configuration Surface
 
-Configuration belongs at the package boundary, not scattered through unrelated modules.
+Configuration belongs at the package boundary, not scattered through unrelated
+modules.
+
+When configuration is documented well, maintainers can tell which behavior is
+meant to vary without editing code. When it is documented poorly, package
+behavior starts to feel magical or fragile.
 
 Read the interfaces pages for `bijux-canon-agent` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
 

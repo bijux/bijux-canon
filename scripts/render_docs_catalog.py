@@ -3959,7 +3959,13 @@ Keep it aligned with the package structure and known review concerns.
         "interfaces": {
             "cli-surface": f"""# {title}
 
-The CLI surface is the operator-facing command layer for `{package.title}`.
+The CLI surface is the operator-facing command layer for `{package.title}`. It
+should tell a reader which commands are deliberate entrypoints and which ones
+are just local implementation detail.
+
+Command surfaces tend to become contracts early, because people script them,
+share them in tickets, and paste them into automation. This page should make
+that contract status visible instead of accidental.
 
 ## Command Facts
 
@@ -3976,7 +3982,12 @@ Keep it aligned with the declared scripts and the interface modules that impleme
 """,
             "api-surface": f"""# {title}
 
-HTTP-facing behavior should be discoverable from tracked schema files and the owning API modules.
+HTTP-facing behavior should be discoverable from tracked schema files and the
+owning API modules.
+
+The goal of this page is clarity before code-reading. A reviewer should be able
+to see which API assets matter, where they live, and why a caller would treat
+them as stable enough to depend on.
 
 ## API Artifacts
 
@@ -3996,7 +4007,12 @@ Keep it aligned with the actual API modules and schema files.
 """,
             "configuration-surface": f"""# {title}
 
-Configuration belongs at the package boundary, not scattered through unrelated modules.
+Configuration belongs at the package boundary, not scattered through unrelated
+modules.
+
+When configuration is documented well, maintainers can tell which behavior is
+meant to vary without editing code. When it is documented poorly, package
+behavior starts to feel magical or fragile.
 
 ## Configuration Anchors
 
@@ -4019,6 +4035,10 @@ Keep it aligned with real configuration loaders, defaults, and operator-facing o
 Data contracts in `{package.title}` include schemas, structured models, and any stable
 payload shape that neighboring systems are expected to understand.
 
+This page keeps data shape changes reviewable. If a record or payload matters to
+another package, another process, or a replay path, it deserves to be described
+as a contract rather than left implicit in implementation details.
+
 ## Contract Anchors
 
 {bullet_lines(package.api_specs)}
@@ -4040,6 +4060,10 @@ Keep it aligned with tracked schemas, stable models, and durable artifacts.
 Produced artifacts are part of the package contract whenever another package, operator,
 or replay workflow depends on them.
 
+That means artifacts are not just outputs. They are promises about names,
+layout, or semantics that downstream readers may already rely on. This page
+should make those promises visible.
+
 ## Current Artifacts
 
 {bullet_lines(package.artifacts)}
@@ -4054,7 +4078,11 @@ Keep it aligned with the package outputs that are actually produced and consumed
 """,
             "entrypoints-and-examples": f"""# {title}
 
-The fastest way to understand the package interfaces is to pair entrypoints with concrete examples.
+The fastest way to understand the package interfaces is to pair entrypoints
+with concrete examples.
+
+Examples are doing real work here. They let an impatient reader test whether the
+package story is credible without reconstructing usage from source alone.
 
 ## Entrypoints
 
@@ -4076,6 +4104,10 @@ Keep it aligned with the checked-in examples, fixtures, and executable tests.
 
 Operator workflows should start from documented package entrypoints and end in reviewable outputs.
 
+This page connects interface prose to real use. A reader should leave with a
+picture of how commands, APIs, inputs, and outputs hang together in a workflow
+an operator can actually repeat.
+
 ## Workflow Anchors
 
 - entry surfaces: {", ".join(package.interfaces)}
@@ -4095,6 +4127,10 @@ Keep it aligned with the existing commands, endpoints, and outputs.
 The public Python surface of `{package.title}` starts at the package import root and any
 intentionally exported modules beneath it.
 
+This page keeps import visibility honest. Not every importable symbol is public,
+and not every public symbol should be left implicit. Readers should be able to
+tell what the package is prepared to support as a Python-facing boundary.
+
 ## Import Anchor
 
 - import root: `{package.import_name}`
@@ -4112,6 +4148,10 @@ Keep it aligned with the actual package source tree and documented import paths.
 
 Compatibility in `{package.title}` should be explicit: stable commands, tracked schemas,
 durable artifacts, and release notes that explain intentional breakage.
+
+This page should leave readers with a realistic sense of the compatibility bar.
+It is more valuable to be clear about what triggers review than to sound
+generously stable while leaving the real boundary ambiguous.
 
 ## Compatibility Anchors
 

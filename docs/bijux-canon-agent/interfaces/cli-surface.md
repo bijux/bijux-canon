@@ -9,7 +9,13 @@ last_reviewed: 2026-04-04
 
 # CLI Surface
 
-The CLI surface is the operator-facing command layer for `bijux-canon-agent`.
+The CLI surface is the operator-facing command layer for `bijux-canon-agent`. It
+should tell a reader which commands are deliberate entrypoints and which ones
+are just local implementation detail.
+
+Command surfaces tend to become contracts early, because people script them,
+share them in tickets, and paste them into automation. This page should make
+that contract status visible instead of accidental.
 
 Read the interfaces pages for `bijux-canon-agent` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
 

@@ -9,7 +9,12 @@ last_reviewed: 2026-04-04
 
 # API Surface
 
-HTTP-facing behavior should be discoverable from tracked schema files and the owning API modules.
+HTTP-facing behavior should be discoverable from tracked schema files and the
+owning API modules.
+
+The goal of this page is clarity before code-reading. A reviewer should be able
+to see which API assets matter, where they live, and why a caller would treat
+them as stable enough to depend on.
 
 Read the interfaces pages for `bijux-canon-index` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
 

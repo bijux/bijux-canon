@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 The public Python surface of `bijux-canon-reason` starts at the package import root and any
 intentionally exported modules beneath it.
 
+This page keeps import visibility honest. Not every importable symbol is public,
+and not every public symbol should be left implicit. Readers should be able to
+tell what the package is prepared to support as a Python-facing boundary.
+
 Read the interfaces pages for `bijux-canon-reason` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
 
 ## Page Maps

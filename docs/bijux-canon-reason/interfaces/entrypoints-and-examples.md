@@ -9,7 +9,11 @@ last_reviewed: 2026-04-04
 
 # Entrypoints and Examples
 
-The fastest way to understand the package interfaces is to pair entrypoints with concrete examples.
+The fastest way to understand the package interfaces is to pair entrypoints
+with concrete examples.
+
+Examples are doing real work here. They let an impatient reader test whether the
+package story is credible without reconstructing usage from source alone.
 
 Read the interfaces pages for `bijux-canon-reason` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
 
