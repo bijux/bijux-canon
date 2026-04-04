@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from bijux_canon_reason.core.fingerprints import stable_id
 from bijux_canon_reason.core.types import EvidenceRef, JsonValue, ToolCall
 from bijux_canon_reason.execution.evidence_records import write_evidence_record
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import ExecutionRuntime
 
 
 @dataclass(frozen=True)
@@ -27,7 +27,7 @@ def dispatch_tool_requests(
     *,
     node_id: str,
     tool_requests: list[object],
-    runtime: Runtime,
+    runtime: ExecutionRuntime,
     push_event: Callable[[dict[str, object]], None],
 ) -> ToolDispatchResult:
     retrieval_provenance: dict[str, JsonValue] = {}
@@ -96,7 +96,7 @@ def _coerce_provenance(raw: object) -> dict[str, JsonValue]:
 
 def _extract_retrieved_evidence(
     *,
-    runtime: Runtime,
+    runtime: ExecutionRuntime,
     node_id: str,
     raw: object,
     push_event: Callable[[dict[str, object]], None],

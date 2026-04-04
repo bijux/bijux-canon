@@ -15,7 +15,7 @@ from bijux_canon_reason.core.types import (
     TraceEvent,
     TraceEventKind,
 )
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import ExecutionRuntime
 from bijux_canon_reason.execution.step_execution import (
     ExecutionState,
     build_step_output,
@@ -81,7 +81,7 @@ def execute_plan(
     *,
     spec: ProblemSpec | None = None,
     plan: Plan,
-    runtime: Runtime,
+    runtime: ExecutionRuntime,
     policy: ExecutionPolicy | None = None,
 ) -> ExecutionResult:
     policy = policy or ExecutionPolicy(fail_fast=True)

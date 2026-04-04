@@ -5,15 +5,37 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Protocol
 
-from bijux_canon_reason.core.types import RuntimeDescriptor, ToolDescriptor, ToolResult
+from bijux_canon_reason.core.types import (
+    RuntimeDescriptor,
+    ToolCall,
+    ToolDescriptor,
+    ToolResult,
+)
 from bijux_canon_reason.execution.tool_runtime import (
     BM25Retriever,
     FakeTool,
     FrozenToolRegistry,
     ToolRegistry,
 )
+
+
+class ToolExecutor(Protocol):
+    def describe(self) -> list[ToolDescriptor]: ...
+
+    def invoke(self, call: ToolCall, *, seed: int) -> ToolResult: ...
+
+
+class ExecutionRuntime(Protocol):
+    seed: int
+    tools: ToolExecutor
+    runtime_kind: str
+    mode: Literal["live", "frozen"]
+    artifacts_dir: Path | None
+
+    @property
+    def descriptor(self) -> RuntimeDescriptor: ...
 
 
 @dataclass(frozen=True)

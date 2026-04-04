@@ -7,7 +7,7 @@ from pathlib import Path
 
 from bijux_canon_reason.core.fingerprints import stable_id
 from bijux_canon_reason.core.types import EvidenceRef, JsonValue
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import ExecutionRuntime
 
 
 def coerce_reasoner_value(value: object) -> JsonValue:
@@ -19,7 +19,7 @@ def coerce_reasoner_value(value: object) -> JsonValue:
 
 
 def write_evidence_record(
-    runtime: Runtime,
+    runtime: ExecutionRuntime,
     *,
     uri: str,
     content: bytes,

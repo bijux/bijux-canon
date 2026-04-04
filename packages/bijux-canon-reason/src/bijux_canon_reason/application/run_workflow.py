@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from bijux_canon_reason.core.types import (
     Plan,
@@ -14,7 +13,7 @@ from bijux_canon_reason.core.types import (
     VerificationReport,
 )
 from bijux_canon_reason.execution.executor import ExecutionPolicy, execute_plan
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import ExecutionRuntime, Runtime
 from bijux_canon_reason.planning.planner import plan_problem
 from bijux_canon_reason.verification.verifier import verify_trace
 from bijux_canon_reason.core.system_contract import assert_system_contract
@@ -35,16 +34,12 @@ def run_app(
     preset: str,
     seed: int,
     artifacts_dir: Path | None = None,
-    runtime: Any | None = None,
+    runtime: ExecutionRuntime | None = None,
 ) -> RunWorkflowResult:
     assert_system_contract()
     spec_with_id = spec if spec.id else spec.with_content_id()
     plan = plan_problem(spec=spec_with_id, preset=preset)
-    rt: Any = (
-        runtime
-        if runtime is not None
-        else Runtime.fake(seed=seed, artifacts_dir=artifacts_dir)
-    )
+    rt = _resolve_runtime(seed=seed, artifacts_dir=artifacts_dir, runtime=runtime)
     execution = execute_plan(
         spec=spec_with_id, plan=plan, runtime=rt, policy=ExecutionPolicy(fail_fast=True)
     )
@@ -57,3 +52,14 @@ def run_app(
         verify_report=verify_report,
         runtime_descriptor=rt.descriptor,
     )
+
+
+def _resolve_runtime(
+    *,
+    seed: int,
+    artifacts_dir: Path | None,
+    runtime: ExecutionRuntime | None,
+) -> ExecutionRuntime:
+    if runtime is not None:
+        return runtime
+    return Runtime.fake(seed=seed, artifacts_dir=artifacts_dir)
