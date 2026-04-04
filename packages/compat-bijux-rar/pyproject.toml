@@ -72,4 +72,4 @@ include = ["src/bijux_rar/py.typed"]
 "bijux_rar" = ["py.typed"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_rar/**"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/bijux_rar/**"]
