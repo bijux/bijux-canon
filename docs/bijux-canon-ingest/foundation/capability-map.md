@@ -63,6 +63,12 @@ flowchart TD
 - chunk collections and retrieval-ready records
 - diagnostic output produced during ingest workflows
 
+## What This Page Answers
+
+- what bijux-canon-ingest is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page helps a reader quickly map package claims to code areas.

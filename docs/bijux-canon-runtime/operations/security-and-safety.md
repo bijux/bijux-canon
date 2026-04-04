@@ -58,6 +58,12 @@ flowchart TD
 
 Any change that broadens package authority should update docs, tests, and release notes together.
 
+## What This Page Answers
+
+- how bijux-canon-runtime is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page keeps security review grounded in concrete package seams.

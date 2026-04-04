@@ -55,6 +55,12 @@ flowchart TD
 - typer
 - fastapi
 
+## What This Page Answers
+
+- what proves the bijux-canon-index contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page explains why dependency review matters for the package.

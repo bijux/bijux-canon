@@ -61,6 +61,12 @@ flowchart TD
 - [bijux-canon-dev](../bijux-canon-dev/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
 - [compatibility packages](../compat-packages/index.md) for legacy distribution and import preservation
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page keeps the package relationships visible from one place before a reader dives into package-local detail.

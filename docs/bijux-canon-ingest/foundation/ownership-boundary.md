@@ -62,6 +62,12 @@ flowchart TD
 - feeds prepared material toward bijux-canon-index and bijux-canon-reason
 - stays under runtime governance instead of defining replay authority itself
 
+## What This Page Answers
+
+- what bijux-canon-ingest is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page ties package ownership to concrete directories instead of abstract slogans.

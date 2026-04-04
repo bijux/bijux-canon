@@ -54,6 +54,12 @@ flowchart TD
 - public metadata: `packages/bijux-canon-ingest/pyproject.toml`
 - release notes: `packages/bijux-canon-ingest/CHANGELOG.md` when present
 
+## What This Page Answers
+
+- how bijux-canon-ingest is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page reminds maintainers that packages are publishable units, not just folders in one repo.

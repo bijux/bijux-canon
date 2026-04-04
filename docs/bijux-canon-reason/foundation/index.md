@@ -67,6 +67,12 @@ flowchart TD
 - [Operations](../operations/index.md)
 - [Quality](../quality/index.md)
 
+## What This Page Answers
+
+- what bijux-canon-reason is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page explains how to use the foundation section for `bijux-canon-reason` without repeating the detail that belongs on the topic pages beneath it.

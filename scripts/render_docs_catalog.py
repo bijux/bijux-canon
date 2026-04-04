@@ -622,6 +622,52 @@ def add_page_route_map(
     return insert_after_intro(body, block)
 
 
+def add_question_section(body: str, questions: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## What This Page Answers",
+            "",
+            bullet_lines(questions),
+        ]
+    )
+    return insert_before_heading(body, "Purpose", block)
+
+
+def package_page_questions(
+    package: PackageInfo,
+    category: str,
+    title: str,
+) -> tuple[str, ...]:
+    question_map = {
+        "foundation": (
+            f"what {package.title} is expected to own",
+            "what remains outside the package boundary",
+            "which neighboring seams a reviewer should compare next",
+        ),
+        "architecture": (
+            f"how {package.title} is structured internally",
+            "which modules control the main execution path",
+            "where architectural drift would become visible first",
+        ),
+        "interfaces": (
+            f"which public or operator-facing surfaces {package.title} exposes",
+            "which artifacts and schemas act like contracts",
+            "what compatibility pressure this surface creates",
+        ),
+        "operations": (
+            f"how {package.title} is installed, run, diagnosed, and released",
+            "which files or tests matter during package operation",
+            "where an operator should look when behavior changes",
+        ),
+        "quality": (
+            f"what proves the {package.title} contract today",
+            "which risks or limits still need explicit review",
+            "what a reviewer should verify before accepting change",
+        ),
+    }
+    return question_map[category]
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -699,6 +745,14 @@ def render_home(
             ("Repository", ("shared rules", "workspace scope")),
             ("Packages", ("five product handbooks", "stable package spine")),
             ("Maintenance", ("dev handbook", "compatibility handbook")),
+        ),
+    )
+    body = add_question_section(
+        body,
+        (
+            "which handbook to open first for a given repository question",
+            "how the repository, package, maintainer, and compatibility docs relate",
+            "what the current documentation system is expected to cover",
         ),
     )
     return "\n".join(
@@ -1022,6 +1076,14 @@ def render_root_page(
             ("Review outputs", ("clear decisions", "stable docs")),
         ),
     )
+    body = add_question_section(
+        body,
+        (
+            "which repository-level decision this page clarifies",
+            "which shared assets or workflows a reviewer should inspect",
+            "how the repository boundary differs from package-local ownership",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "guide"),
@@ -1282,6 +1344,14 @@ def render_dev_page(slug: str, title: str) -> str:
             ("Operational outcome", ("release clarity", "package consistency")),
         ),
     )
+    body = add_question_section(
+        body,
+        (
+            "which repository maintenance concern this page explains",
+            "which maintainer modules or tests support that concern",
+            "what a reviewer should confirm before changing repository automation",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "guide"),
@@ -1536,6 +1606,14 @@ def render_compat_page(slug: str, title: str) -> str:
             ("Decision pressure", ("migration", "retirement")),
         ),
     )
+    body = add_question_section(
+        body,
+        (
+            "which legacy surface is still preserved",
+            "when new work should move to the canonical package instead",
+            "what evidence would justify retiring a compatibility package",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "guide"),
@@ -1630,6 +1708,7 @@ def render_package_page(
             ),
         ),
     )
+    body = add_question_section(body, package_page_questions(package, category, title))
     return "\n".join(
         [
             front_matter(title, package.owner, "index" if slug == "index" else "guide"),

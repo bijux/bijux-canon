@@ -58,6 +58,12 @@ flowchart TD
 - HTTP boundaries under src/bijux_canon_ingest/interfaces
 - configuration modules under src/bijux_canon_ingest/config
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-ingest exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page ties API behavior to tracked code and schema assets.

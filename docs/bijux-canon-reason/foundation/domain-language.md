@@ -56,6 +56,12 @@ flowchart TD
 - owning package directory: `packages/bijux-canon-reason`
 - key outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 
+## What This Page Answers
+
+- what bijux-canon-reason is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page records the naming anchors that should stay stable in docs, code, and review discussions.

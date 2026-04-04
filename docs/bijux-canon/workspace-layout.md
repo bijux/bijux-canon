@@ -65,6 +65,12 @@ flowchart TD
 A concern should live at the root only when it serves more than one package or
 when it is about the workspace itself.
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page provides the shortest file-system map for the repository.

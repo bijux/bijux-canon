@@ -60,6 +60,12 @@ flowchart TD
 - version file: `packages/bijux-canon-ingest/src/bijux_canon_ingest/_version.py`
 - tag pattern is configured in `packages/bijux-canon-ingest/pyproject.toml`
 
+## What This Page Answers
+
+- how bijux-canon-ingest is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page ties package-local release mechanics to the wider repository release model.

@@ -55,6 +55,12 @@ flowchart TD
 - code ownership: src/bijux_canon_agent/agents, src/bijux_canon_agent/pipeline, src/bijux_canon_agent/application
 - durable outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 
+## What This Page Answers
+
+- what bijux-canon-agent is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page keeps the package lifecycle readable before a reader dives into implementation detail.

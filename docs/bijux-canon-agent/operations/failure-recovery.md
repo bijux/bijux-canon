@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 - tests to run: tests/unit for local behavior and utility coverage, tests/integration and tests/e2e for end-to-end workflow behavior
 
+## What This Page Answers
+
+- how bijux-canon-agent is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page gives maintainers a durable frame for triaging package failures.

@@ -61,6 +61,12 @@ flowchart TD
 - ingest and index domain ownership
 - repository tooling and release support
 
+## What This Page Answers
+
+- what bijux-canon-runtime is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page gives the shortest honest description of what the package is for.

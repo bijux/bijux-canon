@@ -55,6 +55,12 @@ flowchart TD
 - drift between docs, code, and tests
 - compatibility changes that are not made explicit
 
+## What This Page Answers
+
+- what proves the bijux-canon-runtime contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page keeps long-lived package risks visible to maintainers.

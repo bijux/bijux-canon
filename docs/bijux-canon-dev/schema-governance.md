@@ -55,6 +55,12 @@ flowchart TD
 - tests such as `tests/test_openapi_drift.py`
 - root `apis/` directories that store reviewed schema artifacts
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page explains why schema drift detection belongs in the maintainer package.

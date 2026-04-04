@@ -60,6 +60,12 @@ flowchart TD
 - separate product docs, maintainer docs, and legacy-compat docs
 - update docs in the same change series that changes the underlying behavior
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page records the handbook system itself so the structure stays intentional instead of growing ad hoc again.

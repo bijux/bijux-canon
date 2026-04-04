@@ -63,6 +63,12 @@ flowchart TD
 A prose promise is incomplete until either package tests or repository tooling
 can detect its drift.
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page explains the relationship between package truth and repository truth.

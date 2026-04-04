@@ -54,6 +54,12 @@ flowchart TD
 - import root: `bijux_canon_ingest`
 - package source root: `packages/bijux-canon-ingest/src/bijux_canon_ingest`
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-ingest exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page keeps the import-facing contract visible when refactoring package internals.

@@ -55,6 +55,12 @@ flowchart TD
 - tests/invariants for package promises that should not drift
 - tests/api for HTTP-facing validation
 
+## What This Page Answers
+
+- what proves the bijux-canon-agent contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page explains the broad testing shape of the package.

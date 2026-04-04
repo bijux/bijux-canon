@@ -61,6 +61,12 @@ flowchart TD
 - tests/invariants for long-lived repository promises
 - tests/eval for corpus-backed behavior checks
 
+## What This Page Answers
+
+- what proves the bijux-canon-ingest contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page records how to choose meaningful validation for package work.

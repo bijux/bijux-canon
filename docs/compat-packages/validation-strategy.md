@@ -55,6 +55,12 @@ flowchart TD
 - packaging metadata correctness
 - links and references to the canonical package docs
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page explains what counts as sufficient validation for the compatibility layer.

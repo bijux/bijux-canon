@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_index/api` for HTTP application surfaces
 - `src/bijux_canon_index/contracts` for stable contract definitions
 
+## What This Page Answers
+
+- how bijux-canon-index is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page makes common package workflows easier to repeat consistently.

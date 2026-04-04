@@ -66,6 +66,12 @@ flowchart TD
 - a place where repository glue silently overrides package ownership
 - a documentation mirror that drifts away from the checked-in code
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page gives the shortest description of what the repository is and why it is organized as a monorepo rather than a single distribution.

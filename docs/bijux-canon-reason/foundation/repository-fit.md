@@ -60,6 +60,12 @@ flowchart TD
 - `packages/bijux-canon-reason/src/bijux_canon_reason`
 - `packages/bijux-canon-reason/tests`
 
+## What This Page Answers
+
+- what bijux-canon-reason is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page explains how the package fits into the repository without restating repository-wide rules.

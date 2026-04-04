@@ -66,6 +66,12 @@ flowchart TD
 - `apis/bijux-canon-reason/v1`
 - `apis/bijux-canon-runtime/v1`
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page explains why schemas are first-class repository assets rather than incidental package outputs.

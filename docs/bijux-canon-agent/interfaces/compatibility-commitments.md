@@ -59,6 +59,12 @@ flowchart TD
 
 Breaking changes must be visible in code, docs, and validation together.
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-agent exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page describes what should trigger compatibility review for the package.

@@ -54,6 +54,12 @@ flowchart TD
 - durable outputs: normalized document trees, chunk collections and retrieval-ready records, diagnostic output produced during ingest workflows
 - validation backstops: tests/unit for module-level behavior across processing, retrieval, and interfaces, tests/e2e for package boundary coverage
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-ingest exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page connects package interfaces to the workflows an operator actually performs.

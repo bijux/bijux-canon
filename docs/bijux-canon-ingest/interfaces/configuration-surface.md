@@ -58,6 +58,12 @@ flowchart TD
 
 Configuration changes should update the operator docs, schema docs, and tests that protect the same behavior.
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-ingest exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page explains where configuration enters the package and how it should be reviewed.

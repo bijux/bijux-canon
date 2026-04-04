@@ -55,6 +55,12 @@ flowchart TD
 - switch imports to the canonical package docs and source roots
 - keep compatibility packages only where an external environment still depends on them
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page tells maintainers how to move away from legacy names without ambiguity.

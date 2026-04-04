@@ -61,6 +61,12 @@ flowchart TD
 - runtime-wide replay policy and execution governance
 - repository maintenance automation
 
+## What This Page Answers
+
+- what bijux-canon-index is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page gives the shortest honest description of what the package is for.

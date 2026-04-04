@@ -58,6 +58,12 @@ flowchart TD
 
 - `src/bijux_canon_agent/traces` for trace-facing models and persistence helpers
 
+## What This Page Answers
+
+- how bijux-canon-agent is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page points readers toward the package's observable output and diagnostic support.

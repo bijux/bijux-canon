@@ -55,6 +55,12 @@ flowchart TD
 - migration guidance has been in place long enough to be credible
 - removal will not silently strand existing automation
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page explains the threshold for removing a compatibility package.

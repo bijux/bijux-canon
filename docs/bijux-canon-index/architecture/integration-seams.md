@@ -60,6 +60,12 @@ flowchart TD
 - consumes prepared inputs from ingest-oriented flows
 - is governed by bijux-canon-runtime for final replay acceptance
 
+## What This Page Answers
+
+- how bijux-canon-index is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page explains where to look when integration behavior changes.

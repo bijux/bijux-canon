@@ -57,6 +57,12 @@ flowchart TD
 - `bijux_rar`
 - `bijux_vex`
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page explains which Python import names remain preserved.

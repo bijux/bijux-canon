@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_ingest/interfaces` for CLI and HTTP boundaries
 - `src/bijux_canon_ingest/safeguards` for protective rules for ingest behavior
 
+## What This Page Answers
+
+- how bijux-canon-ingest is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page makes common package workflows easier to repeat consistently.

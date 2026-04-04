@@ -55,6 +55,12 @@ flowchart TD
 - package tests that confirm expected security tooling behavior
 - CI integration through root workflows
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page marks the boundary between maintenance security tooling and product runtime security behavior.

@@ -54,6 +54,12 @@ flowchart TD
 - do interface or artifact changes have matching docs and tests
 - are filenames, commit messages, and symbols still clear enough to age well
 
+## What This Page Answers
+
+- what proves the bijux-canon-runtime contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page records a compact review lens for package changes.

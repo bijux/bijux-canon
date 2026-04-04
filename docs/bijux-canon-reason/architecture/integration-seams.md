@@ -60,6 +60,12 @@ flowchart TD
 - consumes evidence prepared by ingest and retrieval provided by index
 - relies on runtime when a run must be accepted, stored, or replayed under policy
 
+## What This Page Answers
+
+- how bijux-canon-reason is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page explains where to look when integration behavior changes.

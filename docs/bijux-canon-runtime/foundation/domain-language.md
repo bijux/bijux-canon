@@ -56,6 +56,12 @@ flowchart TD
 - owning package directory: `packages/bijux-canon-runtime`
 - key outputs: execution store records, replay decision artifacts, non-determinism policy evaluations
 
+## What This Page Answers
+
+- what bijux-canon-runtime is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page records the naming anchors that should stay stable in docs, code, and review discussions.

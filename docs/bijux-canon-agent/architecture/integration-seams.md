@@ -60,6 +60,12 @@ flowchart TD
 - coordinates work that may call ingest, reason, and runtime components
 - leans on runtime for governed execution and replay acceptance
 
+## What This Page Answers
+
+- how bijux-canon-agent is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page explains where to look when integration behavior changes.

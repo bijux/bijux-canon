@@ -61,6 +61,12 @@ flowchart TD
 - ingest and index domain ownership
 - repository tooling and release automation
 
+## What This Page Answers
+
+- what bijux-canon-agent is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page keeps future work from leaking into the wrong package.

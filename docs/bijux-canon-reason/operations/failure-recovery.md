@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 - tests to run: tests/unit for planning, reasoning, execution, verification, and interfaces, tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
 
+## What This Page Answers
+
+- how bijux-canon-reason is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page gives maintainers a durable frame for triaging package failures.

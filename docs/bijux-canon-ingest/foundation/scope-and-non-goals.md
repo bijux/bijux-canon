@@ -61,6 +61,12 @@ flowchart TD
 - cross-package vector execution semantics
 - repository maintenance automation
 
+## What This Page Answers
+
+- what bijux-canon-ingest is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page keeps future work from leaking into the wrong package.

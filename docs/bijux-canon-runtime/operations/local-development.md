@@ -56,6 +56,12 @@ flowchart TD
 - tests/regression and tests/smoke for replay and storage protection
 - tests/golden for durable example fixtures
 
+## What This Page Answers
+
+- how bijux-canon-runtime is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page records the package-local development posture.

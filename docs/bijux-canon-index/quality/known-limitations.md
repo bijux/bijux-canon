@@ -54,6 +54,12 @@ flowchart TD
 - runtime-wide replay policy and execution governance
 - repository maintenance automation
 
+## What This Page Answers
+
+- what proves the bijux-canon-index contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page keeps limitation language attached to the package boundary instead of scattered through issue comments.

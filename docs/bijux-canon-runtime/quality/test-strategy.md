@@ -55,6 +55,12 @@ flowchart TD
 - tests/regression and tests/smoke for replay and storage protection
 - tests/golden for durable example fixtures
 
+## What This Page Answers
+
+- what proves the bijux-canon-runtime contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page explains the broad testing shape of the package.

@@ -71,6 +71,12 @@ flowchart TD
 - `src/bijux_canon_dev/api` for OpenAPI and schema drift tooling
 - `src/bijux_canon_dev/packages` for package-specific repository helpers
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page explains how to use the maintainer handbook without confusing it with user-facing product docs.

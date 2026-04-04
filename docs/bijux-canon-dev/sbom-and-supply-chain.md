@@ -55,6 +55,12 @@ flowchart TD
 - `tests/test_sbom_requirements_writer.py`
 - shared dependency metadata in package `pyproject.toml` files
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page explains the home for supply-chain oriented repository tooling.

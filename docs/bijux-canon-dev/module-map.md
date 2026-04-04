@@ -53,6 +53,12 @@ flowchart TD
     focus3 --> focus3_2
 ```
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page is the shortest code-navigation aid for `bijux-canon-dev`.

@@ -57,6 +57,12 @@ flowchart TD
 - OpenAPI and schema drift tooling
 - package-specific maintenance helpers invoked by root automation
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page gives the shortest honest description of why the package exists.

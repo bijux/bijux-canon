@@ -56,6 +56,12 @@ flowchart TD
 - owning package directory: `packages/bijux-canon-agent`
 - key outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 
+## What This Page Answers
+
+- what bijux-canon-agent is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page records the naming anchors that should stay stable in docs, code, and review discussions.

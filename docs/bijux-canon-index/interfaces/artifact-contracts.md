@@ -55,6 +55,12 @@ flowchart TD
 - provenance and replay comparison reports
 - backend-specific metadata and audit output
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-index exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page marks which outputs need stable review when behavior changes.

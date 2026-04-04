@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_runtime/interfaces` for CLI surfaces and manifest loading
 - `src/bijux_canon_runtime/api` for HTTP application surfaces
 
+## What This Page Answers
+
+- how bijux-canon-runtime is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page makes common package workflows easier to repeat consistently.

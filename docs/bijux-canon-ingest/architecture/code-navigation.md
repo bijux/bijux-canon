@@ -70,6 +70,12 @@ flowchart TD
 - tests/invariants for long-lived repository promises
 - tests/eval for corpus-backed behavior checks
 
+## What This Page Answers
+
+- how bijux-canon-ingest is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page shortens the path from an issue report to the relevant code.

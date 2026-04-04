@@ -63,6 +63,12 @@ flowchart TD
 Commit messages should communicate long-lived intent clearly enough that a
 maintainer can understand them years later without opening the diff first.
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page connects the root commit conventions to the package release mechanism.

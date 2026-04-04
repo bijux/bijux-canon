@@ -64,6 +64,12 @@ flowchart TD
 - `src/bijux_canon_index/api` for HTTP application surfaces
 - `src/bijux_canon_index/contracts` for stable contract definitions
 
+## What This Page Answers
+
+- how bijux-canon-index is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page marks the package's state and artifact boundary.

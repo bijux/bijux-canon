@@ -61,6 +61,12 @@ flowchart TD
 - tests/invariants for package promises that should not drift
 - tests/api for HTTP-facing validation
 
+## What This Page Answers
+
+- how bijux-canon-agent is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page records the posture for performance work in `bijux-canon-agent`.

@@ -53,6 +53,12 @@ flowchart TD
 - canonical command: `bijux-canon-agent`
 - interface modules: CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py, operator configuration under src/bijux_canon_agent/config, HTTP-adjacent modules under src/bijux_canon_agent/api
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-agent exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page points maintainers toward the command entrypoints and their owning code.

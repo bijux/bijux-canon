@@ -55,6 +55,12 @@ flowchart TD
 - chunk collections and retrieval-ready records
 - diagnostic output produced during ingest workflows
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-ingest exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page marks which outputs need stable review when behavior changes.

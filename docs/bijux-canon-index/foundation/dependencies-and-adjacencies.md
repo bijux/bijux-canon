@@ -59,6 +59,12 @@ flowchart TD
 - consumes prepared inputs from ingest-oriented flows
 - is governed by bijux-canon-runtime for final replay acceptance
 
+## What This Page Answers
+
+- what bijux-canon-index is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page explains which surrounding tools and packages `bijux-canon-index` depends on to do its job.

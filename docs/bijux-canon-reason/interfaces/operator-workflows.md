@@ -54,6 +54,12 @@ flowchart TD
 - durable outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 - validation backstops: tests/unit for planning, reasoning, execution, verification, and interfaces, tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-reason exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page connects package interfaces to the workflows an operator actually performs.

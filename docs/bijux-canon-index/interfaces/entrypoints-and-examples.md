@@ -59,6 +59,12 @@ flowchart TD
 - tests/e2e and tests/scenarios as executable usage guides
 - apis/bijux-canon-index/v1/openapi.v1.json for HTTP contract shape
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-index exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page records where maintainers can find real invocation examples instead of inventing them from scratch.

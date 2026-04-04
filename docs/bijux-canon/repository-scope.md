@@ -64,6 +64,12 @@ flowchart TD
 - hidden root logic that bypasses package APIs
 - undocumented exceptions to the published package boundaries
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page keeps the repository from becoming a vague catch-all layer above the packages.

@@ -54,6 +54,12 @@ flowchart TD
 - import root: `bijux_canon_reason`
 - package source root: `packages/bijux-canon-reason/src/bijux_canon_reason`
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-reason exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page keeps the import-facing contract visible when refactoring package internals.

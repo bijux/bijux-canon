@@ -61,6 +61,12 @@ flowchart TD
 - tests/conformance and tests/compat_v01 for compatibility behavior
 - tests/stress and tests/scenarios for operational pressure checks
 
+## What This Page Answers
+
+- what proves the bijux-canon-index contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page records the kinds of promises that should not drift casually.

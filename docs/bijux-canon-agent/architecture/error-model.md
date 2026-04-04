@@ -62,6 +62,12 @@ flowchart TD
 - tests/invariants for package promises that should not drift
 - tests/api for HTTP-facing validation
 
+## What This Page Answers
+
+- how bijux-canon-agent is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page records how to reason about failures in architecture review.

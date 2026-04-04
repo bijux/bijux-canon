@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: normalized document trees, chunk collections and retrieval-ready records, diagnostic output produced during ingest workflows
 - tests to run: tests/unit for module-level behavior across processing, retrieval, and interfaces, tests/e2e for package boundary coverage
 
+## What This Page Answers
+
+- how bijux-canon-ingest is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page gives maintainers a durable frame for triaging package failures.

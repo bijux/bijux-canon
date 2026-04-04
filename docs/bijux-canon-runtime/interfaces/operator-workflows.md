@@ -54,6 +54,12 @@ flowchart TD
 - durable outputs: execution store records, replay decision artifacts, non-determinism policy evaluations
 - validation backstops: tests/unit for api, contracts, core, interfaces, model, and runtime, tests/e2e for governed flow behavior
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-runtime exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page connects package interfaces to the workflows an operator actually performs.

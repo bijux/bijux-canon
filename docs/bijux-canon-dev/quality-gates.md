@@ -55,6 +55,12 @@ flowchart TD
 - package-specific checks under `packages/`
 - root test coverage through `packages/bijux-canon-dev/tests`
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page explains how the package participates in repository-wide correctness and consistency.

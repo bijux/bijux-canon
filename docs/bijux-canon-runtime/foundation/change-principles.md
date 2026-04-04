@@ -54,6 +54,12 @@ flowchart TD
 - update docs and tests in the same change series that changes package behavior
 - keep names stable and descriptive enough to survive years of maintenance
 
+## What This Page Answers
+
+- what bijux-canon-runtime is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page records the package-specific contribution posture.

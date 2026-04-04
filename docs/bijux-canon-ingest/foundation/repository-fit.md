@@ -60,6 +60,12 @@ flowchart TD
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest`
 - `packages/bijux-canon-ingest/tests`
 
+## What This Page Answers
+
+- what bijux-canon-ingest is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page explains how the package fits into the repository without restating repository-wide rules.

@@ -60,6 +60,12 @@ flowchart TD
 - governs the other canonical packages instead of replacing their local ownership
 - is the final authority for run acceptance, replay evaluation, and stored evidence
 
+## What This Page Answers
+
+- how bijux-canon-runtime is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page explains where to look when integration behavior changes.

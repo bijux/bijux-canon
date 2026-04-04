@@ -67,6 +67,12 @@ flowchart TD
 - [Interfaces](../interfaces/index.md)
 - [Quality](../quality/index.md)
 
+## What This Page Answers
+
+- how bijux-canon-ingest is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page explains how to use the operations section for `bijux-canon-ingest` without repeating the detail that belongs on the topic pages beneath it.

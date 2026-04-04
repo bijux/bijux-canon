@@ -64,6 +64,12 @@ flowchart TD
 - coordinates work that may call ingest, reason, and runtime components
 - leans on runtime for governed execution and replay acceptance
 
+## What This Page Answers
+
+- what bijux-canon-agent is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page explains which surrounding tools and packages `bijux-canon-agent` depends on to do its job.

@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_reason/traces` for trace replay and diff support
 - `src/bijux_canon_reason/interfaces` for CLI and serialization boundaries
 
+## What This Page Answers
+
+- how bijux-canon-reason is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page makes common package workflows easier to repeat consistently.

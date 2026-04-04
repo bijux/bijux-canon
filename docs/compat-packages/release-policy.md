@@ -56,6 +56,12 @@ flowchart TD
 - avoid feature growth inside the compatibility packages
 - document canonical targets in every compatibility package README
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page keeps compatibility releases from drifting into independent product work.

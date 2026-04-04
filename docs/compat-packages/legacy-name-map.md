@@ -52,6 +52,12 @@ flowchart TD
     focus3 --> focus3_2
 ```
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page provides the exact mapping between retired public names and current canonical names.

@@ -54,6 +54,12 @@ flowchart TD
 - durable outputs: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 - validation backstops: tests/unit for API, application, contracts, domain, infra, and tooling, tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-index exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page connects package interfaces to the workflows an operator actually performs.

@@ -59,6 +59,12 @@ flowchart TD
 - examples/ for minimal flows, replay violations, and datasets
 - apis/bijux-canon-runtime/v1/schema.hash for schema integrity checks
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-runtime exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page records where maintainers can find real invocation examples instead of inventing them from scratch.

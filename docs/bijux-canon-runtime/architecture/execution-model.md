@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_runtime/model, src/bijux_canon_runtime/runtime, src/bijux_canon_runtime/application
 - outputs: execution store records, replay decision artifacts, non-determinism policy evaluations
 
+## What This Page Answers
+
+- how bijux-canon-runtime is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page summarizes the package execution model before readers inspect individual modules.

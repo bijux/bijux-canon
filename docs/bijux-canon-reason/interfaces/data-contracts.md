@@ -60,6 +60,12 @@ flowchart TD
 - claim and verification outcomes
 - evaluation suite artifacts
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-reason exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page explains which structured shapes deserve compatibility review.

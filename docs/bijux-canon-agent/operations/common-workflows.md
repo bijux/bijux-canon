@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_agent/interfaces` for CLI boundaries and operator helpers
 - `src/bijux_canon_agent/traces` for trace-facing models and persistence helpers
 
+## What This Page Answers
+
+- how bijux-canon-agent is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page makes common package workflows easier to repeat consistently.

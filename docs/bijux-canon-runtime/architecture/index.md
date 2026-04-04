@@ -67,6 +67,12 @@ flowchart TD
 - [Operations](../operations/index.md)
 - [Quality](../quality/index.md)
 
+## What This Page Answers
+
+- how bijux-canon-runtime is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page explains how to use the architecture section for `bijux-canon-runtime` without repeating the detail that belongs on the topic pages beneath it.

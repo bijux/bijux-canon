@@ -70,6 +70,12 @@ flowchart TD
 - tests/regression and tests/smoke for replay and storage protection
 - tests/golden for durable example fixtures
 
+## What This Page Answers
+
+- how bijux-canon-runtime is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page shortens the path from an issue report to the relevant code.

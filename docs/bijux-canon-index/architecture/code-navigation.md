@@ -70,6 +70,12 @@ flowchart TD
 - tests/conformance and tests/compat_v01 for compatibility behavior
 - tests/stress and tests/scenarios for operational pressure checks
 
+## What This Page Answers
+
+- how bijux-canon-index is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page shortens the path from an issue report to the relevant code.

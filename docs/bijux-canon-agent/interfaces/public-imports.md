@@ -54,6 +54,12 @@ flowchart TD
 - import root: `bijux_canon_agent`
 - package source root: `packages/bijux-canon-agent/src/bijux_canon_agent`
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-agent exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page keeps the import-facing contract visible when refactoring package internals.

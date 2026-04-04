@@ -66,6 +66,12 @@ flowchart TD
 - structlog
 - pluggy
 
+## What This Page Answers
+
+- how bijux-canon-agent is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page tells maintainers where setup truth actually lives for the package.

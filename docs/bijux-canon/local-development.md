@@ -63,6 +63,12 @@ flowchart TD
 - `tox.ini` for root validation environments
 - `Makefile` and `makes/` for common workflows
 
+## What This Page Answers
+
+- which repository-level decision this page clarifies
+- which shared assets or workflows a reviewer should inspect
+- how the repository boundary differs from package-local ownership
+
 ## Purpose
 
 This page records the preferred development posture for the workspace without repeating package-specific setup details.

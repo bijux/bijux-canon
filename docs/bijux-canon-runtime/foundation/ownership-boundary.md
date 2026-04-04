@@ -62,6 +62,12 @@ flowchart TD
 - governs the other canonical packages instead of replacing their local ownership
 - is the final authority for run acceptance, replay evaluation, and stored evidence
 
+## What This Page Answers
+
+- what bijux-canon-runtime is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page ties package ownership to concrete directories instead of abstract slogans.

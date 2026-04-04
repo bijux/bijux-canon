@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: execution store records, replay decision artifacts, non-determinism policy evaluations
 - tests to run: tests/unit for api, contracts, core, interfaces, model, and runtime, tests/e2e for governed flow behavior
 
+## What This Page Answers
+
+- how bijux-canon-runtime is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page gives maintainers a durable frame for triaging package failures.

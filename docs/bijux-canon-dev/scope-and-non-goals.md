@@ -60,6 +60,12 @@ flowchart TD
 - product-domain models that belong to canonical packages
 - legacy-name compatibility shims
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page prevents maintenance code from becoming an unbounded dumping ground.

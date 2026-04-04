@@ -61,6 +61,12 @@ flowchart TD
 - tests/perf for retrieval benchmark coverage
 - tests/docs for documentation-linked safeguards
 
+## What This Page Answers
+
+- how bijux-canon-reason is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page records the posture for performance work in `bijux-canon-reason`.

@@ -59,6 +59,12 @@ flowchart TD
 - `src/bijux_canon_ingest/processing` for deterministic document transforms
 - `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
 
+## What This Page Answers
+
+- how bijux-canon-ingest is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page points readers toward the package's observable output and diagnostic support.

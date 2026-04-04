@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_agent/agents, src/bijux_canon_agent/pipeline, src/bijux_canon_agent/application
 - outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 
+## What This Page Answers
+
+- how bijux-canon-agent is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page summarizes the package execution model before readers inspect individual modules.

@@ -64,6 +64,12 @@ flowchart TD
 - uvicorn
 - PyYAML
 
+## What This Page Answers
+
+- how bijux-canon-ingest is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page tells maintainers where setup truth actually lives for the package.

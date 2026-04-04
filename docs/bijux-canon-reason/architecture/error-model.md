@@ -62,6 +62,12 @@ flowchart TD
 - tests/perf for retrieval benchmark coverage
 - tests/docs for documentation-linked safeguards
 
+## What This Page Answers
+
+- how bijux-canon-reason is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page records how to reason about failures in architecture review.

@@ -60,6 +60,12 @@ flowchart TD
 - `packages/bijux-canon-runtime/src/bijux_canon_runtime`
 - `packages/bijux-canon-runtime/tests`
 
+## What This Page Answers
+
+- what bijux-canon-runtime is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page explains how the package fits into the repository without restating repository-wide rules.

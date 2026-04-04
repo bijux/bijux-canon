@@ -63,6 +63,12 @@ flowchart TD
 - claim and verification outcomes
 - evaluation suite artifacts
 
+## What This Page Answers
+
+- what bijux-canon-reason is expected to own
+- what remains outside the package boundary
+- which neighboring seams a reviewer should compare next
+
 ## Purpose
 
 This page helps a reader quickly map package claims to code areas.

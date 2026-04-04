@@ -60,6 +60,12 @@ flowchart TD
 - feeds prepared material toward bijux-canon-index and bijux-canon-reason
 - stays under runtime governance instead of defining replay authority itself
 
+## What This Page Answers
+
+- how bijux-canon-ingest is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page explains where to look when integration behavior changes.

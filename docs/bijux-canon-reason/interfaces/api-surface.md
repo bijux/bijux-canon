@@ -59,6 +59,12 @@ flowchart TD
 - HTTP app in src/bijux_canon_reason/api/v1
 - schema files in apis/bijux-canon-reason/v1
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-reason exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page ties API behavior to tracked code and schema assets.

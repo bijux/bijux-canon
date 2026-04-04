@@ -54,6 +54,12 @@ flowchart TD
 - durable outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 - validation backstops: tests/unit for local behavior and utility coverage, tests/integration and tests/e2e for end-to-end workflow behavior
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-agent exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page connects package interfaces to the workflows an operator actually performs.

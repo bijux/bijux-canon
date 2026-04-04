@@ -55,6 +55,12 @@ flowchart TD
 - legacy Python import names
 - legacy command names where they still exist
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page gives the shortest honest description of why the compatibility packages remain.

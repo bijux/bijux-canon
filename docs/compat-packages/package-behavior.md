@@ -56,6 +56,12 @@ flowchart TD
 - avoid becoming an independent product surface
 - defer real behavior to the canonical package
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page describes the intended minimalism of the compatibility layer.

@@ -59,6 +59,12 @@ flowchart TD
 - tooling/evaluation_suites for controlled reasoning suites
 - tests/e2e as executable operator examples
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-reason exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page records where maintainers can find real invocation examples instead of inventing them from scratch.

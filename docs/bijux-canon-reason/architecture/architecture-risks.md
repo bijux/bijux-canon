@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_reason/traces` for trace replay and diff support
 - `src/bijux_canon_reason/interfaces` for CLI and serialization boundaries
 
+## What This Page Answers
+
+- how bijux-canon-reason is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page keeps architectural review focused on durable package risks instead of transient churn.

@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_reason/planning, src/bijux_canon_reason/reasoning, src/bijux_canon_reason/execution
 - outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 
+## What This Page Answers
+
+- how bijux-canon-reason is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page summarizes the package execution model before readers inspect individual modules.

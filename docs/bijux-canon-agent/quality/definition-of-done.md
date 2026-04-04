@@ -55,6 +55,12 @@ flowchart TD
 - public surfaces and artifacts remain explainable
 - release-facing impact is visible when compatibility changes
 
+## What This Page Answers
+
+- what proves the bijux-canon-agent contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page records the package's completion threshold.

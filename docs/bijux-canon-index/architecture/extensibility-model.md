@@ -61,6 +61,12 @@ flowchart TD
 
 Add extension points where the package already expects variation, and document them next to the owning boundary.
 
+## What This Page Answers
+
+- how bijux-canon-index is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page helps maintainers extend the package without smearing responsibilities together.

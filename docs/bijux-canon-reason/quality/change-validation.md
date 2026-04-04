@@ -61,6 +61,12 @@ flowchart TD
 - tests/perf for retrieval benchmark coverage
 - tests/docs for documentation-linked safeguards
 
+## What This Page Answers
+
+- what proves the bijux-canon-reason contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page records how to choose meaningful validation for package work.

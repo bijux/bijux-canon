@@ -54,6 +54,12 @@ flowchart TD
 - prefer stable filenames that describe durable intent
 - keep docs grounded in real code paths, interfaces, and artifacts
 
+## What This Page Answers
+
+- what proves the bijux-canon-index contract today
+- which risks or limits still need explicit review
+- what a reviewer should verify before accepting change
+
 ## Purpose
 
 This page keeps package docs from drifting back into ad hoc structure.

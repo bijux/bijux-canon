@@ -55,6 +55,12 @@ flowchart TD
 - package metadata checks in tests
 - root commit conventions configured through commitizen
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page records the maintenance package role in release preparation.

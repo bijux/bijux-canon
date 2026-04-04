@@ -67,6 +67,12 @@ flowchart TD
 - [Operations](../operations/index.md)
 - [Quality](../quality/index.md)
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-runtime exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page explains how to use the interfaces section for `bijux-canon-runtime` without repeating the detail that belongs on the topic pages beneath it.

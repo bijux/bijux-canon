@@ -53,6 +53,12 @@ flowchart TD
 - canonical command: `no package-level console script is declared`
 - interface modules: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/bijux-canon-index/v1
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-index exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page points maintainers toward the command entrypoints and their owning code.

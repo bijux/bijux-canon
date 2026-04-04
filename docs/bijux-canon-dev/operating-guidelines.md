@@ -55,6 +55,12 @@ flowchart TD
 - keep repository automation explicit about which packages it touches
 - document maintainer-only behavior in this section rather than in user-facing package pages
 
+## What This Page Answers
+
+- which repository maintenance concern this page explains
+- which maintainer modules or tests support that concern
+- what a reviewer should confirm before changing repository automation
+
 ## Purpose
 
 This page records the expected maintenance posture for the package.

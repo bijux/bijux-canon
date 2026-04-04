@@ -53,6 +53,12 @@ flowchart TD
 - canonical command: `bijux-canon-reason`
 - interface modules: CLI app in src/bijux_canon_reason/interfaces/cli, HTTP app in src/bijux_canon_reason/api/v1, schema files in apis/bijux-canon-reason/v1
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-reason exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page points maintainers toward the command entrypoints and their owning code.

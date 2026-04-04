@@ -53,6 +53,12 @@ flowchart TD
 - canonical command: `bijux-canon-runtime`
 - interface modules: CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py, HTTP app in src/bijux_canon_runtime/api/v1, schema files in apis/bijux-canon-runtime/v1
 
+## What This Page Answers
+
+- which public or operator-facing surfaces bijux-canon-runtime exposes
+- which artifacts and schemas act like contracts
+- what compatibility pressure this surface creates
+
 ## Purpose
 
 This page points maintainers toward the command entrypoints and their owning code.

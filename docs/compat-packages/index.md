@@ -70,6 +70,12 @@ flowchart TD
 - `bijux-rar` maps to `bijux-canon-reason`
 - `bijux-vex` maps to `bijux-canon-index`
 
+## What This Page Answers
+
+- which legacy surface is still preserved
+- when new work should move to the canonical package instead
+- what evidence would justify retiring a compatibility package
+
 ## Purpose
 
 This page explains the role of the compatibility handbooks without encouraging new work to start there.

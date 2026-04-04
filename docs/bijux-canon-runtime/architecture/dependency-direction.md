@@ -64,6 +64,12 @@ flowchart TD
 - `src/bijux_canon_runtime/interfaces` for CLI surfaces and manifest loading
 - `src/bijux_canon_runtime/api` for HTTP application surfaces
 
+## What This Page Answers
+
+- how bijux-canon-runtime is structured internally
+- which modules control the main execution path
+- where architectural drift would become visible first
+
 ## Purpose
 
 This page makes dependency direction explicit enough to review during refactors.

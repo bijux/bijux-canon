@@ -59,6 +59,12 @@ flowchart TD
 - `src/bijux_canon_runtime/model` for durable runtime models
 - `src/bijux_canon_runtime/runtime` for execution engines and lifecycle logic
 
+## What This Page Answers
+
+- how bijux-canon-runtime is installed, run, diagnosed, and released
+- which files or tests matter during package operation
+- where an operator should look when behavior changes
+
 ## Purpose
 
 This page points readers toward the package's observable output and diagnostic support.
