@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 The package should keep dependency direction readable: domain intent near the center,
 interfaces and infrastructure at the edges.
 
+This is not only an aesthetic preference. Clear dependency direction keeps
+refactors cheaper because reviewers can still tell which layers are allowed to
+know about which other layers.
+
 Read the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 
 ## Page Maps

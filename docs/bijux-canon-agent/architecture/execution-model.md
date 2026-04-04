@@ -10,7 +10,12 @@ last_reviewed: 2026-04-04
 # Execution Model
 
 `bijux-canon-agent` executes work by receiving inputs at its interfaces, coordinating policy
-and workflows in application code, and delegating specific responsibilities to owned modules.
+and workflows in application code, and delegating specific responsibilities to
+owned modules.
+
+This page should give a reader one clean story about how work moves through the
+package. The goal is not to describe every branch, but to make the main path
+recognizable before someone opens the implementation.
 
 Read the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 

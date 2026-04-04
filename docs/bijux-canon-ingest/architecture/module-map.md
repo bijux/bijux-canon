@@ -9,7 +9,12 @@ last_reviewed: 2026-04-04
 
 # Module Map
 
-The architecture of `bijux-canon-ingest` is easiest to understand from the major module groups.
+The architecture of `bijux-canon-ingest` becomes readable when its major module
+groups are treated as responsibilities instead of as folders. This page should
+help a reviewer move from a question about behavior to the part of the package
+most likely to answer it.
+
+When this page is useful, code reading becomes targeted rather than exploratory.
 
 Read the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 

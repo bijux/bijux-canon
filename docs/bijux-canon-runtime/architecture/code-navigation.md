@@ -11,6 +11,9 @@ last_reviewed: 2026-04-04
 
 When you need to understand a change in `bijux-canon-runtime`, use this reading order:
 
+This page is intentionally practical. Its purpose is to shorten the path from a
+question in review to the files that actually explain the answer.
+
 Read the architecture pages for `bijux-canon-runtime` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 
 ## Page Maps

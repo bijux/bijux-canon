@@ -11,6 +11,10 @@ last_reviewed: 2026-04-04
 
 Extension work should use the package seams that already exist instead of bypassing ownership.
 
+This page is about where variation is welcomed and where it would be a design
+smell. A package becomes easier to extend when contributors can see which seams
+are meant to flex and which ones are carrying the core identity of the package.
+
 Read the architecture pages for `bijux-canon-runtime` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 
 ## Page Maps

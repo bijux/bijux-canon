@@ -3729,7 +3729,12 @@ Update these principles only when the package operating model truly changes.
         "architecture": {
             "module-map": f"""# {title}
 
-The architecture of `{package.title}` is easiest to understand from the major module groups.
+The architecture of `{package.title}` becomes readable when its major module
+groups are treated as responsibilities instead of as folders. This page should
+help a reviewer move from a question about behavior to the part of the package
+most likely to answer it.
+
+When this page is useful, code reading becomes targeted rather than exploratory.
 
 ## Major Modules
 
@@ -3747,6 +3752,10 @@ Keep it aligned with the actual source directories under `{package.package_dir}`
 
 The package should keep dependency direction readable: domain intent near the center,
 interfaces and infrastructure at the edges.
+
+This is not only an aesthetic preference. Clear dependency direction keeps
+refactors cheaper because reviewers can still tell which layers are allowed to
+know about which other layers.
 
 ## Directional Reading Order
 
@@ -3769,7 +3778,12 @@ Keep it aligned with current imports and directory responsibilities.
             "execution-model": f"""# {title}
 
 `{package.title}` executes work by receiving inputs at its interfaces, coordinating policy
-and workflows in application code, and delegating specific responsibilities to owned modules.
+and workflows in application code, and delegating specific responsibilities to
+owned modules.
+
+This page should give a reader one clean story about how work moves through the
+package. The goal is not to describe every branch, but to make the main path
+recognizable before someone opens the implementation.
 
 ## Execution Anchors
 
@@ -3789,6 +3803,10 @@ Keep it aligned with the actual workflow code and entrypoints.
 
 State in `{package.title}` should be explicit enough that a maintainer can say what is
 transient, what is serialized, and what neighboring packages must not assume.
+
+That clarity matters because state tends to spread silently when it is not named.
+Once readers stop knowing which outputs are durable and which values are local,
+interface and operations pages quickly become less trustworthy.
 
 ## Durable Surfaces
 
@@ -3811,6 +3829,10 @@ Keep it aligned with the actual artifact shapes and serialized outputs.
 Integration seams are the points where `{package.title}` meets configuration, APIs,
 operators, or neighboring packages.
 
+This page exists so integration changes do not feel mysterious. A reviewer should
+be able to say which seams are intentional, which ones carry compatibility risk,
+and where the package expects outside systems to meet it.
+
 ## Integration Surfaces
 
 {bullet_lines(package.interfaces)}
@@ -3831,6 +3853,10 @@ Keep it aligned with real boundary modules and schema files.
 
 The package error model should make it clear which failures are local validation issues,
 which are dependency failures, and which are contract violations.
+
+Good error explanations reduce two kinds of waste at once: operator confusion in
+the moment and architectural confusion during later review. The package should
+fail in ways that still preserve the boundary story.
 
 ## Review Anchors
 
@@ -3854,6 +3880,10 @@ Keep it aligned with the actual error-handling behavior and tests.
 
 Extension work should use the package seams that already exist instead of bypassing ownership.
 
+This page is about where variation is welcomed and where it would be a design
+smell. A package becomes easier to extend when contributors can see which seams
+are meant to flex and which ones are carrying the core identity of the package.
+
 ## Likely Extension Areas
 
 {path_lines(package.modules)}
@@ -3873,6 +3903,9 @@ Keep it aligned with the package seams that actually support extension today.
             "code-navigation": f"""# {title}
 
 When you need to understand a change in `{package.title}`, use this reading order:
+
+This page is intentionally practical. Its purpose is to shorten the path from a
+question in review to the files that actually explain the answer.
 
 ## Reading Order
 
@@ -3899,6 +3932,10 @@ Keep it aligned with the real source tree and current test layout.
             "architecture-risks": f"""# {title}
 
 Architectural risk appears when the package boundary becomes hard to explain or hard to test.
+
+This page should keep risk language concrete. The right risks are the ones that
+would make the package harder to reason about even if the current implementation
+still appears to work.
 
 ## Risk Signals
 

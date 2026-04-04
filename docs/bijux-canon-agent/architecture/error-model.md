@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 The package error model should make it clear which failures are local validation issues,
 which are dependency failures, and which are contract violations.
 
+Good error explanations reduce two kinds of waste at once: operator confusion in
+the moment and architectural confusion during later review. The package should
+fail in ways that still preserve the boundary story.
+
 Read the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 
 ## Page Maps

@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 State in `bijux-canon-ingest` should be explicit enough that a maintainer can say what is
 transient, what is serialized, and what neighboring packages must not assume.
 
+That clarity matters because state tends to spread silently when it is not named.
+Once readers stop knowing which outputs are durable and which values are local,
+interface and operations pages quickly become less trustworthy.
+
 Read the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 
 ## Page Maps

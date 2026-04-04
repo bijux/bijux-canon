@@ -12,6 +12,10 @@ last_reviewed: 2026-04-04
 Integration seams are the points where `bijux-canon-agent` meets configuration, APIs,
 operators, or neighboring packages.
 
+This page exists so integration changes do not feel mysterious. A reviewer should
+be able to say which seams are intentional, which ones carry compatibility risk,
+and where the package expects outside systems to meet it.
+
 Read the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 
 ## Page Maps
