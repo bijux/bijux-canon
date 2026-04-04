@@ -10,25 +10,12 @@ from pathlib import Path
 from typing import Any
 
 from bijux_canon_ingest.interfaces.cli.entrypoint import main
-
-
-def _append_flag(
-    argv: list[str],
-    *,
-    flag: str,
-    value: str | Path | list[str] | None,
-    repeatable: bool = False,
-) -> None:
-    if value is None:
-        return
-    if repeatable:
-        if isinstance(value, list):
-            for item in value:
-                argv.extend((flag, str(item)))
-            return
-        argv.extend((flag, str(value)))
-        return
-    argv.extend((flag, str(value)))
+from bijux_canon_ingest.interfaces.cli.typer_argv import (
+    build_ask_argv,
+    build_eval_argv,
+    build_pipeline_argv,
+    build_retrieve_argv,
+)
 
 
 def build_app() -> Any:
@@ -45,10 +32,14 @@ def build_app() -> Any:
         set_values: list[str] | None = None,
         out: Path | None = None,
     ) -> int:
-        argv = [str(input_csv), "--config", str(config)]
-        _append_flag(argv, flag="--set", value=set_values, repeatable=True)
-        _append_flag(argv, flag="--out", value=out)
-        return main(argv)
+        return main(
+            build_pipeline_argv(
+                input_csv=input_csv,
+                config=config,
+                set_values=set_values,
+                out=out,
+            )
+        )
 
     @app.command("index-build")
     def index_build(
@@ -93,20 +84,16 @@ def build_app() -> Any:
         format: str = "json",
         out: Path | None = None,
     ) -> int:
-        argv = [
-            "retrieve",
-            "--index",
-            str(index),
-            "--query",
-            query,
-            "--top-k",
-            str(top_k),
-            "--format",
-            format,
-        ]
-        _append_flag(argv, flag="--filter", value=filters, repeatable=True)
-        _append_flag(argv, flag="--out", value=out)
-        return main(argv)
+        return main(
+            build_retrieve_argv(
+                index=index,
+                query=query,
+                top_k=top_k,
+                filters=filters,
+                output_format=format,
+                out=out,
+            )
+        )
 
     @app.command()
     def ask(
@@ -118,22 +105,17 @@ def build_app() -> Any:
         format: str = "json",
         out: Path | None = None,
     ) -> int:
-        argv = [
-            "ask",
-            "--index",
-            str(index),
-            "--query",
-            query,
-            "--top-k",
-            str(top_k),
-            "--format",
-            format,
-        ]
-        if not rerank:
-            argv.append("--no-rerank")
-        _append_flag(argv, flag="--filter", value=filters, repeatable=True)
-        _append_flag(argv, flag="--out", value=out)
-        return main(argv)
+        return main(
+            build_ask_argv(
+                index=index,
+                query=query,
+                top_k=top_k,
+                rerank=rerank,
+                filters=filters,
+                output_format=format,
+                out=out,
+            )
+        )
 
     @app.command("eval")
     def evaluate(
@@ -143,19 +125,15 @@ def build_app() -> Any:
         top_k: int = 5,
         out: Path | None = None,
     ) -> int:
-        argv = [
-            "eval",
-            "--index",
-            str(index),
-            "--suite",
-            str(suite),
-            "--backend",
-            backend,
-            "--top-k",
-            str(top_k),
-        ]
-        _append_flag(argv, flag="--out", value=out)
-        return main(argv)
+        return main(
+            build_eval_argv(
+                index=index,
+                suite=suite,
+                backend=backend,
+                top_k=top_k,
+                out=out,
+            )
+        )
 
     return app
 

@@ -5,15 +5,10 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from fastapi import APIRouter, FastAPI, HTTPException
-from fastapi.openapi.utils import get_openapi
 
 from bijux_canon_ingest.application.service import (
-    IndexBackend,
     IngestService,
-    StoredIndex,
 )
 from bijux_canon_ingest.processing.stages import (
     ChunkAndEmbedConfig,
@@ -36,20 +31,12 @@ from bijux_canon_ingest.interfaces.http.models import (
     RetrieveRequest,
     RetrieveResponse,
 )
+from bijux_canon_ingest.interfaces.http.runtime import (
+    InMemoryIndexStore,
+    build_openapi_factory,
+    index_backend_from_name,
+)
 from bijux_canon_ingest.result.types import Err
-
-
-# Helpers
-
-
-def _backend_from_str(s: str) -> IndexBackend:
-    # Schema enforces allowed values; keep mapping tight and explicit.
-    if s == "bm25":
-        return IndexBackend.BM25
-    return IndexBackend.NUMPY_COSINE
-
-
-# App factory
 
 
 def create_app() -> FastAPI:
@@ -59,7 +46,7 @@ def create_app() -> FastAPI:
     router = APIRouter(prefix="/v1")
 
     rag_app = IngestService()
-    index_store: dict[str, StoredIndex] = {}
+    index_store = InMemoryIndexStore()
 
     @router.get("/healthz")
     async def healthz() -> dict[str, bool]:
@@ -90,7 +77,7 @@ def create_app() -> FastAPI:
         docs = raw_docs_from_http_docs(req.docs)
         res = rag_app.build_index(
             docs=docs,
-            backend=_backend_from_str(req.backend),
+            backend=index_backend_from_name(req.backend),
             chunk_size=req.chunk_size,
             overlap=req.overlap,
         )
@@ -98,8 +85,7 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=400, detail=res.error)
 
         idx = res.value
-        index_id = f"idx_{idx.fingerprint}"
-        index_store[index_id] = idx
+        index_id = index_store.put(idx)
 
         return index_build_response(
             index_id,
@@ -140,26 +126,7 @@ def create_app() -> FastAPI:
         return ask_response_from_payload(res.value)
 
     app.include_router(router)
-
-    def _custom_openapi() -> dict[str, Any]:
-        existing_schema = app.openapi_schema
-        if isinstance(existing_schema, dict):
-            return existing_schema
-        app.openapi_schema = get_openapi(
-            title=app.title,
-            version="0.1.0",
-            routes=app.routes,
-            openapi_version="3.1.0",
-            description=app.description,
-        )
-        generated_schema = app.openapi_schema
-        if not isinstance(
-            generated_schema, dict
-        ):  # pragma: no cover - FastAPI contract
-            raise RuntimeError("FastAPI returned a non-dict OpenAPI schema")
-        return generated_schema
-
-    setattr(app, "openapi", _custom_openapi)
+    setattr(app, "openapi", build_openapi_factory(app))
     return app
 
 
