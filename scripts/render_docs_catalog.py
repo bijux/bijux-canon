@@ -2668,70 +2668,6 @@ def render_dev_page(slug: str, title: str) -> str:
         body,
         f"Use `{title}` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.",
     )
-    body = add_what_good_looks_like(
-        body,
-        (
-            f"`{title}` makes maintainer-only behavior explicit enough that it does not surprise contributors",
-            "the page distinguishes repository-health work from runtime product behavior cleanly",
-            "automation intent stays understandable without digging through CI and helpers first",
-        ),
-    )
-    body = add_failure_signals(
-        body,
-        (
-            f"`{title}` starts reading like product documentation instead of maintainer guidance",
-            "contributors can only discover maintainer behavior by reading scripts or CI output directly",
-            "the page stops making package impact explicit when automation changes",
-        ),
-    )
-    body = add_cross_implications(
-        body,
-        (
-            "maintainer ambiguity leaks quickly into product package docs and repository workflows",
-            "release and validation pressure becomes harder to reason about across the monorepo",
-            "root governance pages become less actionable when maintainer intent is implicit",
-        ),
-    )
-    body = add_tradeoffs(
-        body,
-        (
-            "prefer repository-health clarity over convenience that only helps one maintainer's local workflow",
-            "prefer checked-in automation expectations over undocumented operator heroics",
-            "prefer explicit maintainer scope over letting dev pages quietly absorb product-contract decisions",
-        ),
-    )
-    body = add_approval_questions(
-        body,
-        (
-            "does the page still describe maintainer scope rather than end-user runtime behavior",
-            "can contributors inspect the named automation, tests, or helpers that support the page",
-            "is the product-package impact explicit enough that maintainers are not making contract changes by accident",
-        ),
-    )
-    body = add_evidence_checklist(
-        body,
-        (
-            "inspect the named helper modules under `packages/bijux-canon-dev/src/bijux_canon_dev`",
-            "check the corresponding maintainer tests before trusting the page's operational claims",
-            "confirm which product packages are affected so maintainer scope stays explicit",
-        ),
-    )
-    body = add_antipatterns(
-        body,
-        (
-            "describing maintainer automation as if it were part of the end-user runtime",
-            "letting CI behavior become the only place where maintainer intent is visible",
-            "changing repository-health tools without updating the maintainer story they imply",
-        ),
-    )
-    body = add_escalate_when(
-        body,
-        (
-            "a maintainer-only change starts affecting product package contracts directly",
-            "the page can no longer describe scope without referencing multiple package ownership changes",
-            "repository-health automation now requires a wider root policy decision",
-        ),
-    )
     body = add_question_section(
         body,
         (
@@ -2748,42 +2684,6 @@ def render_dev_page(slug: str, title: str) -> str:
             "confirm that repository automation still names its package impact explicitly",
         ),
     )
-    body = add_core_claim(
-        body,
-        "Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.",
-    )
-    body = add_why_it_matters(
-        body,
-        "Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely. If the tooling is powerful but unexplained, contributors start treating the repository like a trap.",
-    )
-    body = add_if_it_drifts(
-        body,
-        (
-            "maintainer-only behavior becomes harder to discover before it surprises a contributor",
-            "repository automation changes without a stable explanation of its intent",
-            "product docs get polluted with infrastructure concerns that belong elsewhere",
-        ),
-    )
-    body = add_representative_scenario(
-        body,
-        "A CI or release helper changes behavior and a contributor needs to know whether the effect is repository maintenance only or whether it changes a product package contract. This section should make that distinction fast.",
-    )
-    body = add_source_of_truth(
-        body,
-        (
-            "`packages/bijux-canon-dev/src/bijux_canon_dev` for implemented maintainer helpers",
-            "`packages/bijux-canon-dev/tests` for executable proof of maintainer behavior",
-            "this section for the maintained explanation of maintainer intent",
-        ),
-    )
-    body = add_common_misreadings(
-        body,
-        (
-            "that maintainer automation belongs in product package docs",
-            "that CI behavior is self-explanatory without maintainer documentation",
-            "that repository-health tools are part of the public runtime product surface",
-        ),
-    )
     body = add_next_checks(
         body,
         (
@@ -2792,35 +2692,10 @@ def render_dev_page(slug: str, title: str) -> str:
             "return to repository handbook pages when the maintainer issue turns out to be root policy instead",
         ),
     )
-    body = add_update_triggers(
-        body,
-        (
-            "maintainer helpers, tests, or CI integrations change materially",
-            "repository-health work moves across package boundaries",
-            "the section stops matching the actual maintainer-only operating model",
-        ),
-    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.",
     )
-    if slug == "index":
-        body = add_section_contract(
-            body,
-            (
-                "explain repository maintenance behavior without turning it into product documentation",
-                "tie maintainer claims to helper modules, tests, and workflows",
-                "keep automation boundaries explicit enough to review safely",
-            ),
-        )
-        body = add_reading_advice(
-            body,
-            (
-                "start here when the change affects CI, release support, schema drift, or repository health checks",
-                "return to product package docs when the issue is user-facing behavior",
-                "use this section to separate maintainer intent from runtime intent",
-            ),
-        )
     body = add_anchor_section(
         body,
         (
