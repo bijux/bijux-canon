@@ -14,6 +14,7 @@ $RECYCLE.BIN/
 
 # Python
 __pycache__/
+src/bijux_canon_ingest/_build_version.py
 *.py[cod]
 *.pyo
 *.pyd

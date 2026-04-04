@@ -118,7 +118,7 @@ raw-options = { git_describe_command = "git describe --dirty --tags --long --mat
 fallback-version = "0.3.0"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/bijux_canon_ingest/_version.py"
+version-file = "src/bijux_canon_ingest/_build_version.py"
 
 [tool.interrogate]
 fail-under = 0
