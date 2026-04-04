@@ -4,6 +4,16 @@ import argparse
 from pathlib import Path
 
 
+def _rewrite_watch_path(path_text: str, *, source_root: Path) -> str:
+    stripped = path_text.strip()
+    if not stripped:
+        return path_text
+    candidate = Path(stripped)
+    if candidate.is_absolute() or "://" in stripped:
+        return path_text
+    return str((source_root / candidate).resolve())
+
+
 def _rewrite_config(
     *,
     source_config: Path,
@@ -19,9 +29,26 @@ def _rewrite_config(
     wrote_site_dir = False
     wrote_site_url = False
     wrote_inherit = False
+    in_watch_block = False
+    source_root = source_config.resolve().parent
 
     for line in lines:
-        if line.startswith("INHERIT:") and inherit_config is not None:
+        stripped = line.strip()
+
+        if in_watch_block:
+            if line.startswith("  - "):
+                watch_path = line.removeprefix("  - ")
+                rewritten.append(f"  - {_rewrite_watch_path(watch_path, source_root=source_root)}")
+                continue
+            if stripped and not line.startswith(" "):
+                in_watch_block = False
+            elif not stripped:
+                in_watch_block = False
+
+        if line.startswith("watch:"):
+            rewritten.append(line)
+            in_watch_block = True
+        elif line.startswith("INHERIT:") and inherit_config is not None:
             rewritten.append(f"INHERIT: {inherit_config.resolve()}")
             wrote_inherit = True
         elif line.startswith("docs_dir:") and docs_dir is not None:
@@ -45,6 +72,7 @@ def _rewrite_config(
     if site_url is not None and not wrote_site_url:
         rewritten.append(f"site_url: {site_url}")
 
+    output_config.parent.mkdir(parents=True, exist_ok=True)
     output_config.write_text("\n".join(rewritten) + "\n", encoding="utf-8")
 
 
