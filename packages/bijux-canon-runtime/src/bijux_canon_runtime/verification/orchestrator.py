@@ -18,6 +18,7 @@ from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.model.verification.verification_rule import VerificationRule
 from bijux_canon_runtime.model.verification.verification_arbitration import (
     VerificationArbitration,
 )
@@ -117,7 +118,7 @@ class SignatureVerificationEngine:
             reason="signature_ok",
             randomness=VerificationRandomness.DETERMINISTIC,
             violations=(),
-            checked_artifact_ids=(reasoning.bundle_id,),
+            checked_artifact_ids=(ArtifactID(str(reasoning.bundle_id)),),
             phase=VerificationPhase.POST_EXECUTION,
             rules_applied=(),
             decision="PASS",
@@ -142,7 +143,9 @@ class ContradictionVerificationEngine:
         if violations:
             status = "FAIL"
             reason = ReasonCode.CONTRADICTION_DETECTED.value
-        bundle_ids = tuple(bundle.bundle_id for bundle in reasoning_bundles)
+        bundle_ids = tuple(
+            ArtifactID(str(bundle.bundle_id)) for bundle in reasoning_bundles
+        )
         return VerificationResult(
             spec_version="v1",
             engine_id=self.engine_id,
@@ -304,7 +307,7 @@ def _arbitration_decision(
         return _unanimous_decision(statuses)
     if rule == ArbitrationRule.QUORUM:
         return _quorum_decision(statuses, quorum_threshold)
-    return "PASS"
+    raise ValueError(f"unsupported arbitration rule: {rule}")
 
 
 def _strict_first_failure_decision(statuses: list[str]) -> str:
@@ -347,7 +350,9 @@ def _target_artifact_ids(
     return tuple(target_ids)
 
 
-def _max_rule_randomness(rules: tuple[object, ...]) -> VerificationRandomness:
+def _max_rule_randomness(
+    rules: tuple[VerificationRule, ...],
+) -> VerificationRandomness:
     """Internal helper; not part of the public API."""
     if not rules:
         return VerificationRandomness.DETERMINISTIC

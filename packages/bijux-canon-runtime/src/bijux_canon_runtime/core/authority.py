@@ -12,6 +12,7 @@ from typing import Literal, Protocol
 from bijux_canon_runtime.core.errors import SemanticViolationError
 from bijux_canon_runtime.core.verification_rules import default_rule_registry
 from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.reasoning_claim import ReasoningClaim
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
@@ -25,7 +26,7 @@ from bijux_canon_runtime.ontology import (
     VerificationPhase,
     VerificationRandomness,
 )
-from bijux_canon_runtime.ontology.ids import RuleID
+from bijux_canon_runtime.ontology.ids import ArtifactID, ContentHash, EvidenceID, RuleID
 from bijux_canon_runtime.ontology.public import EventType
 
 SEMANTICS_VERSION = "v1"
@@ -48,6 +49,10 @@ class _Trace(Protocol):
 
     finalized: bool
     events: Sequence[_Event]
+
+    def finalize(self) -> None:
+        """Freeze the trace in place."""
+        ...
 
 
 class _RunResult(Protocol):
@@ -83,7 +88,7 @@ def enforce_runtime_semantics(result: _RunResult, *, mode: Mode) -> None:
         _require_verification_once_per_step(result)
 
 
-def finalize_trace(trace) -> None:
+def finalize_trace(trace: _Trace) -> None:
     """Finalize trace; misuse breaks immutability guarantees."""
     if object.__getattribute__(trace, "finalized"):
         raise SemanticViolationError("execution trace already finalized")
@@ -111,7 +116,7 @@ def evaluate_verification(
         reason=reason,
         randomness=VerificationRandomness.DETERMINISTIC,
         violations=tuple(violations),
-        checked_artifact_ids=(reasoning.bundle_id,),
+        checked_artifact_ids=(ArtifactID(str(reasoning.bundle_id)),),
         phase=VerificationPhase.POST_EXECUTION,
         rules_applied=tuple(rule.rule_id for rule in policy.rules),
         decision=status,
@@ -193,7 +198,7 @@ def _verification_decision(
 
 def _claim_integrity_violations(
     reasoning: ReasoningBundle,
-    evidence_map: dict[object, RetrievedEvidence],
+    evidence_map: dict[EvidenceID, RetrievedEvidence],
 ) -> tuple[RuleID, ...]:
     """Internal helper; not part of the public API."""
     violations: list[RuleID] = []
@@ -210,8 +215,8 @@ def _claim_integrity_violations(
 
 
 def _claim_support_violations(
-    claim,
-    evidence_map: dict[object, RetrievedEvidence],
+    claim: ReasoningClaim,
+    evidence_map: dict[EvidenceID, RetrievedEvidence],
 ) -> tuple[RuleID, ...]:
     """Internal helper; not part of the public API."""
     violations: list[RuleID] = []
@@ -228,8 +233,8 @@ def _claim_support_violations(
 
 
 def _claim_artifact_hash_violations(
-    claim,
-    artifact_hashes: set[object],
+    claim: ReasoningClaim,
+    artifact_hashes: set[ContentHash],
 ) -> tuple[RuleID, ...]:
     """Internal helper; not part of the public API."""
     if not artifact_hashes:
