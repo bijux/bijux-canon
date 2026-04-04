@@ -10,13 +10,17 @@ audit trails, and telemetry.
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
-import hashlib
 import time
 from typing import Any, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
+from .run_context import (
+    apply_pre_hook,
+    build_validation_run_context,
+    cache_schema,
+)
 from .rules import (
     reporting,
     rule_execution,
@@ -125,21 +129,19 @@ class ValidatorAgent(BaseAgent):
         Returns:
             Dictionary containing validation results.
         """
-        context_id = context.get(
-            "context_id", str(hashlib.sha256(str(context).encode()).hexdigest())
-        )
-        with self.logger.context(agent="ValidatorAgent", context_id=context_id):
+        run_context = build_validation_run_context(context, self.schema)
+        with self.logger.context(
+            agent="ValidatorAgent",
+            context_id=run_context.context_id,
+        ):
             self.logger.info(
                 "Starting validation operation",
-                extra={"context": {"stage": "init", "context_id": context_id}},
+                extra={
+                    "context": {"stage": "init", "context_id": run_context.context_id}
+                },
             )
 
-        # Extract data to validate
-        data: Any = (
-            context.get("data")
-            if isinstance(context, dict) and "data" in context
-            else context
-        )
+        data = run_context.data
 
         start_time = time.perf_counter()
         errors: list[str] = []
@@ -149,60 +151,28 @@ class ValidatorAgent(BaseAgent):
         }
 
         # Pre-hook
-        if self.pre_hook:
-            try:
-                data = self.pre_hook(data)
-                self.logger.debug(
-                    "Pre-hook applied successfully",
-                    extra={"context": {"stage": "pre_hook"}},
-                )
-                self.logger_manager.log_metric(
-                    "pre_hook_success",
-                    1,
-                    MetricType.COUNTER,
-                    tags={"stage": "pre_hook"},
-                )
-            except Exception as e:
-                error_msg = f"Pre-hook failed: {e!s}"
-                self.logger.error(
-                    error_msg, extra={"context": {"stage": "pre_hook", "error": str(e)}}
-                )
-                self.logger_manager.log_metric(
-                    "pre_hook_errors", 1, MetricType.COUNTER, tags={"stage": "pre_hook"}
-                )
-                return await reporting.error_result(
-                    self, error_msg, context, "pre_hook"
-                )
+        data, pre_hook_error = apply_pre_hook(
+            data,
+            pre_hook=self.pre_hook,
+            logger=self.logger,
+            logger_manager=self.logger_manager,
+        )
+        if pre_hook_error is not None:
+            return await reporting.error_result(
+                self,
+                pre_hook_error,
+                context,
+                "pre_hook",
+            )
 
         # Cache schema hash for optimization
-        schema_hash = hashlib.sha256(str(self.schema).encode()).hexdigest()
-        if schema_hash not in self._schema_cache:
-            self._schema_cache[schema_hash] = self.schema
-            self.logger.debug(
-                "Schema cached",
-                extra={
-                    "context": {"stage": "schema_cache", "schema_hash": schema_hash}
-                },
-            )
-            self.logger_manager.log_metric(
-                "schema_cache_miss",
-                1,
-                MetricType.COUNTER,
-                tags={"stage": "schema_cache"},
-            )
-        else:
-            self.logger.debug(
-                "Schema cache hit",
-                extra={
-                    "context": {"stage": "schema_cache", "schema_hash": schema_hash}
-                },
-            )
-            self.logger_manager.log_metric(
-                "schema_cache_hit",
-                1,
-                MetricType.COUNTER,
-                tags={"stage": "schema_cache"},
-            )
+        cache_schema(
+            schema_hash=run_context.schema_hash,
+            schema=self.schema,
+            schema_cache=self._schema_cache,
+            logger=self.logger,
+            logger_manager=self.logger_manager,
+        )
 
         # Core validation
         validation_errors, validation_audit = schema_walker.validate_recursive(
@@ -299,7 +269,7 @@ class ValidatorAgent(BaseAgent):
             {
                 "status": status,
                 "duration_sec": result["duration_sec"],
-                "context_id": context_id,
+                "context_id": run_context.context_id,
             },
         )
 
