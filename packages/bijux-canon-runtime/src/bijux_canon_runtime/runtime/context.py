@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from bijux_canon_runtime.application.non_determinism_lifecycle import (
+from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
     NonDeterminismLifecycle,
 )
 from bijux_canon_runtime.core.authority import AuthorityToken

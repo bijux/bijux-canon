@@ -21,9 +21,6 @@ from bijux_canon_runtime.application.flow_execution_models import (
     PreparedFlow,
     _ExecutionStrategy,
 )
-from bijux_canon_runtime.application.non_determinism_lifecycle import (
-    NonDeterminismLifecycle,
-)
 from bijux_canon_runtime.core.authority import authority_token
 from bijux_canon_runtime.core.errors import ConfigurationError
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
@@ -45,6 +42,9 @@ from bijux_canon_runtime.runtime.artifact_store import (
 )
 from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
+    NonDeterminismLifecycle,
+)
 from bijux_canon_runtime.runtime.execution.dry_run_executor import DryRunExecutor
 from bijux_canon_runtime.runtime.execution.live_executor import LiveExecutor
 from bijux_canon_runtime.runtime.execution.observer_executor import ObserverExecutor
