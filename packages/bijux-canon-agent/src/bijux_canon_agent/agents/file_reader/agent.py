@@ -21,12 +21,14 @@ from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 from .capabilities.universal_file_reader_core import UniversalFileReader
 from .reporting import (
     build_coverage_report,
-    build_file_agent_audit,
     build_file_reader_error_payload,
     build_self_report_schema,
 )
+from .result_assembly import (
+    apply_extra_analyzers,
+    finalize_read_result,
+)
 from .telemetry_support import (
-    build_auto_enrichments,
     emit_cache_key_metric,
     flush_agent_logs,
     get_agent_telemetry,
@@ -192,13 +194,25 @@ class FileReaderAgent(BaseAgent):
                 self._store_cache(cache_key, read_result)
                 return read_result
 
-            self._apply_extra_analyzers(read_result)
-            read_result.update(self._auto_enrichments(read_result))
-            read_result = self._apply_post_hook(context, read_result)
-            read_result["file_agent_audit"] = self._build_audit_record(
+            apply_extra_analyzers(
+                read_result,
+                self.extra_analyzers,
+                logger=self.logger,
+                logger_manager=self.logger_manager,
+            )
+            read_result = finalize_read_result(
+                read_result,
+                context=context,
+                post_hook=self.post_hook,
                 file_path=file_path,
                 context_id=context_id,
                 file_suffix=file_suffix,
+                agent_version=str(self.version),
+                agent_id=str(self.id),
+                cache_enabled=self.cache_enabled,
+                async_io=self.async_io,
+                logger=self.logger,
+                logger_manager=self.logger_manager,
             )
             self._store_cache(cache_key, read_result)
             await self._log_completion(file_path, file_suffix, read_result)
@@ -377,105 +391,6 @@ class FileReaderAgent(BaseAgent):
             },
         )
 
-    def _apply_extra_analyzers(self, read_result: dict[str, Any]) -> None:
-        """Apply configured analyzer enrichments to the read result in place."""
-        enrichments: dict[str, Any] = {}
-        for analyzer in self.extra_analyzers:
-            try:
-                analyzer_result = analyzer(read_result)
-                enrichments.update(analyzer_result)
-                self.logger.debug(
-                    f"Applied analyzer: {analyzer.__name__}",
-                    extra={
-                        "context": {
-                            "stage": "analyzer",
-                            "analyzer_keys": list(analyzer_result.keys()),
-                        }
-                    },
-                )
-                self.logger_manager.log_metric(
-                    "analyzer_success",
-                    1,
-                    MetricType.COUNTER,
-                    tags={"stage": "analyzer", "analyzer": analyzer.__name__},
-                )
-            except Exception as exc:
-                self.logger.warning(
-                    f"Analyzer {analyzer.__name__} failed: {exc!s}",
-                    extra={"context": {"stage": "analyzer", "error": str(exc)}},
-                )
-                self.logger_manager.log_metric(
-                    "analyzer_errors",
-                    1,
-                    MetricType.COUNTER,
-                    tags={"stage": "analyzer", "analyzer": analyzer.__name__},
-                )
-        if enrichments:
-            read_result["enrichments"] = enrichments
-            self.logger.debug(
-                "Enrichments applied",
-                extra={
-                    "context": {
-                        "stage": "enrichments",
-                        "enrichment_keys": list(enrichments.keys()),
-                    }
-                },
-            )
-
-    def _apply_post_hook(
-        self,
-        context: dict[str, Any],
-        read_result: dict[str, Any],
-    ) -> dict[str, Any]:
-        """Apply the optional post-hook to the read result."""
-        if not self.post_hook:
-            return read_result
-        try:
-            updated_result = self.post_hook(context, read_result)
-            self.logger.debug(
-                "Post-hook applied successfully",
-                extra={"context": {"stage": "post_hook"}},
-            )
-            self.logger_manager.log_metric(
-                "post_hook_success",
-                1,
-                MetricType.COUNTER,
-                tags={"stage": "post_hook"},
-            )
-            return updated_result
-        except Exception as exc:
-            self.logger.warning(
-                f"Post-hook failed: {exc!s}",
-                extra={"context": {"stage": "post_hook", "error": str(exc)}},
-            )
-            self.logger_manager.log_metric(
-                "post_hook_errors",
-                1,
-                MetricType.COUNTER,
-                tags={"stage": "post_hook"},
-            )
-            return read_result
-
-    def _build_audit_record(
-        self,
-        *,
-        file_path: str,
-        context_id: str,
-        file_suffix: str,
-    ) -> dict[str, Any]:
-        """Build the audit record attached to successful file-read results."""
-        return {
-            **build_file_agent_audit(
-                str(file_path),
-                agent_version=self.version,
-                agent_id=self.id,
-                cache_enabled=self.cache_enabled,
-                async_io=self.async_io,
-                context_id=context_id,
-                file_type=file_suffix,
-            )
-        }
-
     def _store_cache(self, cache_key: str, read_result: dict[str, Any]) -> None:
         """Persist the current read result in cache when caching is enabled."""
         if self._cache is None:
@@ -579,22 +494,6 @@ class FileReaderAgent(BaseAgent):
             return 0.5 * (2 ** (attempt - 1))  # Exponential: 0.5s, 1s, 2s, ...
         else:  # Linear
             return 0.5 * attempt  # Linear: 0.5s, 1s, 1.5s, ...
-
-    def _auto_enrichments(self, result: dict[str, Any]) -> dict[str, Any]:
-        """Generate automatic enrichments with advanced telemetry.
-
-        Args:
-            result: The file read result to enrich.
-
-        Returns:
-            Dictionary of enrichments.
-        """
-        return build_auto_enrichments(
-            result,
-            logger=self.logger,
-            logger_manager=self.logger_manager,
-            agent_name="FileReaderAgent",
-        )
 
     def _generate_cache_key(self, context: dict[str, Any]) -> str:
         """Generate a cache key based on context.
