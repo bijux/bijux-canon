@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 import os
 
 from bijux_canon_runtime.core.authority import (
@@ -71,7 +71,7 @@ from bijux_canon_runtime.model.verification.verification_result import (
     VerificationResult,
 )
 from bijux_canon_runtime.ontology import CausalityTag, DeterminismLevel, EventType
-from bijux_canon_runtime.ontology.ids import FlowID, RunID
+from bijux_canon_runtime.ontology.ids import ClaimID, FlowID, RunID
 
 
 @dataclass(frozen=True)
@@ -134,6 +134,23 @@ class PreparedFlow:
     run_id: RunID
 
 
+@dataclass
+class ExecutionStartState:
+    """Execution bootstrap state; not part of the public API."""
+
+    run_id: RunID | None
+    resume_from_step_index: int = -1
+    starting_event_index: int = 0
+    starting_evidence_index: int = 0
+    starting_tool_invocation_index: int = 0
+    starting_entropy_index: int = 0
+    initial_claim_ids: tuple[ClaimID, ...] = ()
+    initial_artifacts: list[Artifact] = field(default_factory=list)
+    initial_evidence: list[RetrievedEvidence] = field(default_factory=list)
+    initial_tool_invocations: list[ToolInvocation] = field(default_factory=list)
+    trace_recorder: TraceRecorder = field(default_factory=TraceRecorder)
+
+
 class FlowPreparation:
     """Prepare flow execution and build execution context."""
 
@@ -150,132 +167,212 @@ class FlowPreparation:
 
     def run(self) -> PreparedFlow:
         """Execute preparation and enforce its contract."""
-        execution_config = self._config
+        execution_config = self._effective_config()
         manifest = self._manifest
         resolved_flow = self._resolved_flow
-        strict_env = os.environ.get("BIJUX_CANON_RUNTIME_STRICT")
-        if strict_env is None:
-            strict_env = os.environ.get("AGENTIC_FLOWS_STRICT")
-        if strict_env == "1":
-            if execution_config.mode in {RunMode.DRY_RUN, RunMode.UNSAFE}:
-                raise ValueError(
-                    "BIJUX_CANON_RUNTIME_STRICT forbids best-effort execution"
-                )
-            execution_config = replace(execution_config, strict_determinism=True)
         if (manifest is None) == (resolved_flow is None):
             raise ValueError("Provide exactly one of manifest or resolved_flow")
         if execution_config.determinism_level is None:
             raise ConfigurationError("determinism_level must be explicit")
         if resolved_flow is None:
             resolved_flow = ExecutionPlanner().resolve(manifest)
-
         if execution_config.mode == RunMode.PLAN:
-            context = ExecutionContext(
-                authority=authority_token(),
-                seed=None,
-                environment_fingerprint=resolved_flow.plan.environment_fingerprint,
-                parent_flow_id=execution_config.parent_flow_id,
-                child_flow_ids=execution_config.child_flow_ids or (),
-                tenant_id=resolved_flow.manifest.tenant_id,
-                artifact_store=InMemoryArtifactStore(),
-                trace_recorder=TraceRecorder(),
-                mode=execution_config.mode,
-                verification_policy=execution_config.verification_policy,
-                observers=execution_config.observers or (),
-                budget=BudgetState(execution_config.budget),
-                entropy=NonDeterminismLifecycle(
-                    budget=resolved_flow.manifest.entropy_budget,
-                    intents=resolved_flow.manifest.nondeterminism_intent,
-                    allowed_variance_class=resolved_flow.manifest.allowed_variance_class,
-                ),
-                execution_store=None,
-                run_id=None,
-                resume_from_step_index=-1,
-                starting_event_index=0,
-                starting_evidence_index=0,
-                starting_tool_invocation_index=0,
-                starting_entropy_index=0,
-                initial_claim_ids=(),
-                initial_artifacts=[],
-                initial_evidence=[],
-                initial_tool_invocations=[],
-                _step_evidence={},
-                _step_artifacts={},
-                observed_run=execution_config.observed_run,
-                strict_determinism=execution_config.strict_determinism,
-            )
-            return PreparedFlow(
+            return self._prepare_plan_flow(
                 resolved_flow=resolved_flow,
-                config=execution_config,
-                context=context,
-                strategy=LiveExecutor(),
-                run_id=RunID("plan"),
+                execution_config=execution_config,
             )
+        execution_config = self._validated_execution_config(
+            resolved_flow=resolved_flow,
+            execution_config=execution_config,
+        )
+        strategy = self._strategy_for_mode(execution_config.mode)
+        lifecycle = self._make_entropy_lifecycle(resolved_flow)
+        start_state = self._load_start_state(
+            resolved_flow=resolved_flow,
+            execution_config=execution_config,
+            lifecycle=lifecycle,
+        )
+        start_state = self._ensure_run_registered(
+            resolved_flow=resolved_flow,
+            execution_config=execution_config,
+            start_state=start_state,
+        )
+        start_state.starting_event_index = self._record_unsafe_config_warning(
+            resolved_flow=resolved_flow,
+            execution_config=execution_config,
+            start_state=start_state,
+        )
+        context = self._build_execution_context(
+            resolved_flow=resolved_flow,
+            execution_config=execution_config,
+            lifecycle=lifecycle,
+            start_state=start_state,
+        )
+        return PreparedFlow(
+            resolved_flow=resolved_flow,
+            config=execution_config,
+            context=context,
+            strategy=strategy,
+            run_id=start_state.run_id,
+        )
+
+    def _effective_config(self) -> ExecutionConfig:
+        """Internal helper; not part of the public API."""
+        execution_config = self._config
+        strict_env = os.environ.get("BIJUX_CANON_RUNTIME_STRICT")
+        if strict_env is None:
+            strict_env = os.environ.get("AGENTIC_FLOWS_STRICT")
+        if strict_env != "1":
+            return execution_config
+        if execution_config.mode in {RunMode.DRY_RUN, RunMode.UNSAFE}:
+            raise ValueError("BIJUX_CANON_RUNTIME_STRICT forbids best-effort execution")
+        return replace(execution_config, strict_determinism=True)
+
+    def _prepare_plan_flow(
+        self,
+        *,
+        resolved_flow: ExecutionPlan,
+        execution_config: ExecutionConfig,
+    ) -> PreparedFlow:
+        """Internal helper; not part of the public API."""
+        start_state = ExecutionStartState(run_id=None)
+        context = self._build_execution_context(
+            resolved_flow=resolved_flow,
+            execution_config=execution_config,
+            lifecycle=self._make_entropy_lifecycle(resolved_flow),
+            start_state=start_state,
+            seed=None,
+            artifact_store=InMemoryArtifactStore(),
+            execution_store=None,
+        )
+        return PreparedFlow(
+            resolved_flow=resolved_flow,
+            config=execution_config,
+            context=context,
+            strategy=LiveExecutor(),
+            run_id=RunID("plan"),
+        )
+
+    def _validated_execution_config(
+        self,
+        *,
+        resolved_flow: ExecutionPlan,
+        execution_config: ExecutionConfig,
+    ) -> ExecutionConfig:
+        """Internal helper; not part of the public API."""
         if execution_config.execution_store is None:
             raise ValueError("execution_store is required before execution")
-
         if (
             execution_config.mode in {RunMode.LIVE, RunMode.OBSERVE, RunMode.UNSAFE}
             and execution_config.verification_policy is None
         ):
             raise ValueError("verification_policy is required before execution")
-        if execution_config.mode in {RunMode.LIVE, RunMode.OBSERVE, RunMode.UNSAFE}:
-            execution_config = ensure_non_determinism_policy(
-                resolved_flow, execution_config
-            )
-            validate_non_determinism_policy(resolved_flow, execution_config)
+        if execution_config.mode not in {RunMode.LIVE, RunMode.OBSERVE, RunMode.UNSAFE}:
+            return execution_config
+        execution_config = ensure_non_determinism_policy(
+            resolved_flow, execution_config
+        )
+        validate_non_determinism_policy(resolved_flow, execution_config)
+        return execution_config
 
-        strategy = LiveExecutor()
-        if execution_config.mode == RunMode.DRY_RUN:
-            strategy = DryRunExecutor()
-        if execution_config.mode == RunMode.OBSERVE:
-            strategy = ObserverExecutor()
+    def _strategy_for_mode(self, mode: RunMode) -> object:
+        """Internal helper; not part of the public API."""
+        if mode == RunMode.DRY_RUN:
+            return DryRunExecutor()
+        if mode == RunMode.OBSERVE:
+            return ObserverExecutor()
+        return LiveExecutor()
 
-        store = execution_config.artifact_store or InMemoryArtifactStore()
-        run_id = execution_config.resume_run_id
-        resume_from_step_index = -1
-        starting_event_index = 0
-        starting_evidence_index = 0
-        starting_tool_invocation_index = 0
-        starting_entropy_index = 0
-        initial_claim_ids = ()
-        initial_artifacts: list[Artifact] = []
-        initial_evidence: list[RetrievedEvidence] = []
-        initial_tool_invocations: list[ToolInvocation] = []
-        trace_recorder = TraceRecorder()
-        lifecycle = NonDeterminismLifecycle(
+    @staticmethod
+    def _make_entropy_lifecycle(
+        resolved_flow: ExecutionPlan,
+    ) -> NonDeterminismLifecycle:
+        """Internal helper; not part of the public API."""
+        return NonDeterminismLifecycle(
             budget=resolved_flow.manifest.entropy_budget,
             intents=resolved_flow.manifest.nondeterminism_intent,
             allowed_variance_class=resolved_flow.manifest.allowed_variance_class,
         )
-        if run_id is not None:
-            read_store = resolve_read_store(execution_config)
-            resume_state = load_resume_state(
-                read_store, run_id=run_id, tenant_id=resolved_flow.manifest.tenant_id
-            )
-            resume_from_step_index = resume_state.resume_from_step_index
-            starting_event_index = resume_state.starting_event_index
-            starting_evidence_index = resume_state.starting_evidence_index
-            starting_tool_invocation_index = resume_state.starting_tool_invocation_index
-            starting_entropy_index = resume_state.starting_entropy_index
-            initial_claim_ids = resume_state.claim_ids
-            initial_artifacts = list(resume_state.artifacts)
-            initial_evidence = list(resume_state.evidence)
-            initial_tool_invocations = list(resume_state.tool_invocations)
-            trace_recorder = TraceRecorder(resume_state.events)
-            lifecycle.seed(resume_state.entropy_usage)
-        if run_id is None:
-            execution_config.execution_store.register_dataset(
-                resolved_flow.plan.dataset
-            )
-            run_id = execution_config.execution_store.begin_run(
-                plan=resolved_flow.plan, mode=execution_config.mode
-            )
-            execution_config.execution_store.save_steps(
-                run_id=run_id,
-                tenant_id=resolved_flow.plan.tenant_id,
-                plan=resolved_flow.plan,
-            )
+
+    def _load_start_state(
+        self,
+        *,
+        resolved_flow: ExecutionPlan,
+        execution_config: ExecutionConfig,
+        lifecycle: NonDeterminismLifecycle,
+    ) -> ExecutionStartState:
+        """Internal helper; not part of the public API."""
+        start_state = ExecutionStartState(run_id=execution_config.resume_run_id)
+        if start_state.run_id is None:
+            return start_state
+        read_store = resolve_read_store(execution_config)
+        resume_state = load_resume_state(
+            read_store,
+            run_id=start_state.run_id,
+            tenant_id=resolved_flow.manifest.tenant_id,
+        )
+        self._apply_resume_state(
+            start_state=start_state,
+            resume_state=resume_state,
+            lifecycle=lifecycle,
+        )
+        return start_state
+
+    @staticmethod
+    def _apply_resume_state(
+        *,
+        start_state: ExecutionStartState,
+        resume_state: ResumeState,
+        lifecycle: NonDeterminismLifecycle,
+    ) -> None:
+        """Internal helper; not part of the public API."""
+        start_state.resume_from_step_index = resume_state.resume_from_step_index
+        start_state.starting_event_index = resume_state.starting_event_index
+        start_state.starting_evidence_index = resume_state.starting_evidence_index
+        start_state.starting_tool_invocation_index = (
+            resume_state.starting_tool_invocation_index
+        )
+        start_state.starting_entropy_index = resume_state.starting_entropy_index
+        start_state.initial_claim_ids = resume_state.claim_ids
+        start_state.initial_artifacts = list(resume_state.artifacts)
+        start_state.initial_evidence = list(resume_state.evidence)
+        start_state.initial_tool_invocations = list(resume_state.tool_invocations)
+        start_state.trace_recorder = TraceRecorder(resume_state.events)
+        lifecycle.seed(resume_state.entropy_usage)
+
+    @staticmethod
+    def _ensure_run_registered(
+        *,
+        resolved_flow: ExecutionPlan,
+        execution_config: ExecutionConfig,
+        start_state: ExecutionStartState,
+    ) -> ExecutionStartState:
+        """Internal helper; not part of the public API."""
+        if start_state.run_id is not None:
+            return start_state
+        execution_store = execution_config.execution_store
+        if execution_store is None:
+            raise ValueError("execution_store is required before execution")
+        execution_store.register_dataset(resolved_flow.plan.dataset)
+        start_state.run_id = execution_store.begin_run(
+            plan=resolved_flow.plan,
+            mode=execution_config.mode,
+        )
+        execution_store.save_steps(
+            run_id=start_state.run_id,
+            tenant_id=resolved_flow.plan.tenant_id,
+            plan=resolved_flow.plan,
+        )
+        return start_state
+
+    def _record_unsafe_config_warning(
+        self,
+        *,
+        resolved_flow: ExecutionPlan,
+        execution_config: ExecutionConfig,
+        start_state: ExecutionStartState,
+    ) -> int:
+        """Internal helper; not part of the public API."""
         relaxed_determinism = execution_config.determinism_level in {
             DeterminismLevel.BOUNDED,
             DeterminismLevel.PROBABILISTIC,
@@ -285,71 +382,88 @@ class FlowPreparation:
             execution_config.verification_policy is not None
             and execution_config.verification_policy.failure_mode != "halt"
         )
-        if relaxed_determinism or permissive_verification:
-            payload = {
-                "warning": "unsafe_config",
-                "determinism_level": execution_config.determinism_level.value,
-                "verification_failure_mode": (
-                    execution_config.verification_policy.failure_mode
-                    if execution_config.verification_policy is not None
-                    else None
-                ),
-            }
-            warning_event = ExecutionEvent(
-                spec_version="v1",
-                event_index=starting_event_index,
-                step_index=0,
-                event_type=EventType.SEMANTIC_VIOLATION,
-                causality_tag=CausalityTag.ENVIRONMENT,
-                timestamp_utc=utc_now_deterministic(starting_event_index),
-                payload=payload,
-                payload_hash=fingerprint_inputs(payload),
+        if not relaxed_determinism and not permissive_verification:
+            return start_state.starting_event_index
+        payload = {
+            "warning": "unsafe_config",
+            "determinism_level": execution_config.determinism_level.value,
+            "verification_failure_mode": (
+                execution_config.verification_policy.failure_mode
+                if execution_config.verification_policy is not None
+                else None
+            ),
+        }
+        warning_event = ExecutionEvent(
+            spec_version="v1",
+            event_index=start_state.starting_event_index,
+            step_index=0,
+            event_type=EventType.SEMANTIC_VIOLATION,
+            causality_tag=CausalityTag.ENVIRONMENT,
+            timestamp_utc=utc_now_deterministic(start_state.starting_event_index),
+            payload=payload,
+            payload_hash=fingerprint_inputs(payload),
+        )
+        start_state.trace_recorder.record(warning_event, authority_token())
+        execution_store = execution_config.execution_store
+        if execution_store is not None and start_state.run_id is not None:
+            execution_store.save_events(
+                run_id=start_state.run_id,
+                tenant_id=resolved_flow.plan.tenant_id,
+                events=(warning_event,),
             )
-            trace_recorder.record(warning_event, authority_token())
-            if execution_config.execution_store is not None and run_id is not None:
-                execution_config.execution_store.save_events(
-                    run_id=run_id,
-                    tenant_id=resolved_flow.plan.tenant_id,
-                    events=(warning_event,),
-                )
-            starting_event_index += 1
-        seed = derive_seed_token(resolved_flow.plan)
-        context = ExecutionContext(
+        return start_state.starting_event_index + 1
+
+    def _build_execution_context(
+        self,
+        *,
+        resolved_flow: ExecutionPlan,
+        execution_config: ExecutionConfig,
+        lifecycle: NonDeterminismLifecycle,
+        start_state: ExecutionStartState,
+        seed: str | None = None,
+        artifact_store: ArtifactStore | None = None,
+        execution_store: ExecutionWriteStoreProtocol | None = None,
+    ) -> ExecutionContext:
+        """Internal helper; not part of the public API."""
+        resolved_execution_store = execution_store
+        if resolved_execution_store is None and execution_config.mode != RunMode.PLAN:
+            resolved_execution_store = execution_config.execution_store
+        resolved_seed = (
+            seed if seed is not None else derive_seed_token(resolved_flow.plan)
+        )
+        if execution_config.mode == RunMode.PLAN:
+            resolved_seed = None
+        return ExecutionContext(
             authority=authority_token(),
-            seed=seed,
+            seed=resolved_seed,
             environment_fingerprint=resolved_flow.plan.environment_fingerprint,
             parent_flow_id=execution_config.parent_flow_id,
             child_flow_ids=execution_config.child_flow_ids or (),
             tenant_id=resolved_flow.manifest.tenant_id,
-            artifact_store=store,
-            trace_recorder=trace_recorder,
+            artifact_store=artifact_store
+            or execution_config.artifact_store
+            or InMemoryArtifactStore(),
+            trace_recorder=start_state.trace_recorder,
             mode=execution_config.mode,
             verification_policy=execution_config.verification_policy,
             observers=execution_config.observers or (),
             budget=BudgetState(execution_config.budget),
             entropy=lifecycle,
-            execution_store=execution_config.execution_store,
-            run_id=run_id,
-            resume_from_step_index=resume_from_step_index,
-            starting_event_index=starting_event_index,
-            starting_evidence_index=starting_evidence_index,
-            starting_tool_invocation_index=starting_tool_invocation_index,
-            starting_entropy_index=starting_entropy_index,
-            initial_claim_ids=initial_claim_ids,
-            initial_artifacts=initial_artifacts,
-            initial_evidence=initial_evidence,
-            initial_tool_invocations=initial_tool_invocations,
+            execution_store=resolved_execution_store,
+            run_id=start_state.run_id,
+            resume_from_step_index=start_state.resume_from_step_index,
+            starting_event_index=start_state.starting_event_index,
+            starting_evidence_index=start_state.starting_evidence_index,
+            starting_tool_invocation_index=start_state.starting_tool_invocation_index,
+            starting_entropy_index=start_state.starting_entropy_index,
+            initial_claim_ids=start_state.initial_claim_ids,
+            initial_artifacts=start_state.initial_artifacts,
+            initial_evidence=start_state.initial_evidence,
+            initial_tool_invocations=start_state.initial_tool_invocations,
             _step_evidence={},
             _step_artifacts={},
             observed_run=execution_config.observed_run,
             strict_determinism=execution_config.strict_determinism,
-        )
-        return PreparedFlow(
-            resolved_flow=resolved_flow,
-            config=execution_config,
-            context=context,
-            strategy=strategy,
-            run_id=run_id,
         )
 
 
