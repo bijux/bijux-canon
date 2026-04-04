@@ -37,3 +37,4 @@ you are outside this package's boundary.
 - [Architecture](docs/ARCHITECTURE.md)
 - [Contracts](docs/CONTRACTS.md)
 - [Tests](docs/TESTS.md)
+- [Changelog](CHANGELOG.md)

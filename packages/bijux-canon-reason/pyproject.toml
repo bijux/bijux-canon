@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 keywords = [
   "reasoning",
   "determinism",
@@ -27,8 +28,10 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries",
   "Topic :: Security",
+  "Typing :: Typed",
 ]
 
 dependencies = [
@@ -111,6 +114,8 @@ Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-reason/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md"
+Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
+Funding = "https://github.com/sponsors/bijux"
 
 [tool.hatch.version]
 source = "vcs"
@@ -123,6 +128,17 @@ version-file = "src/bijux_canon_reason/_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_reason"]
+include = ["src/bijux_canon_reason/py.typed"]
+
+[tool.hatch.build.targets.wheel.package-data]
+"bijux_canon_reason" = ["py.typed"]
+
+[tool.hatch.build]
+include = [
+  "CHANGELOG.md",
+  "README.md",
+  "src/bijux_canon_reason/**",
+]
 
 [project.scripts]
 bijux-canon-reason = "bijux_canon_reason.interfaces.cli:app"
