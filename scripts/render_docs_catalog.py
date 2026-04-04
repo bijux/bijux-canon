@@ -534,12 +534,20 @@ def path_lines(items: tuple[tuple[str, str], ...]) -> str:
     return "\n".join(f"- `{path}` for {meaning}" for path, meaning in items)
 
 
+def first_items(items: tuple[str, ...], count: int = 3) -> tuple[str, ...]:
+    return items[:count]
+
+
 def link(label: str, target: str) -> str:
     return f"[{label}]({target})"
 
 
 def mermaid_block(source: str) -> str:
     return "\n".join(["```mermaid", source.rstrip(), "```"])
+
+
+def mermaid_text(text: str) -> str:
+    return " ".join(text.replace("`", "").replace('"', "'").split())
 
 
 def insert_after_intro(body: str, block: str) -> str:
@@ -565,40 +573,136 @@ def render_route_diagram(
     scope_title: str,
     section_title: str,
     page_title: str,
+    questions: tuple[str, ...],
     destination_titles: tuple[str, ...],
+    next_checks: tuple[str, ...],
 ) -> str:
-    destination_nodes = []
-    destination_edges = []
-    for index, title in enumerate(destination_titles, start=1):
-        node_name = f"dest{index}"
-        destination_nodes.append(f'    {node_name}["{title}"]')
-        destination_edges.append(f"    page --> {node_name}")
-    return mermaid_block(
-        "\n".join(
-            [
-                "flowchart LR",
-                f'    scope["{scope_title}"] --> section["{section_title}"]',
-                f'    section --> page["{page_title}"]',
-                *destination_nodes,
-                *destination_edges,
-            ]
-        )
+    lines = [
+        "flowchart LR",
+        f'    context["{mermaid_text(scope_title)} / {mermaid_text(section_title)}"]',
+        f'    page["{mermaid_text(page_title)}"]',
+        '    follow["Follow the narrowest next route"]',
+        "    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;",
+        "    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;",
+        "    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;",
+        "    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;",
+        '    subgraph pressure["Start Here When You Need To Know"]',
+        "        direction TB",
+    ]
+    for index, question in enumerate(questions, start=1):
+        lines.append(f'        q{index}["{mermaid_text(question)}"]')
+    lines.extend(
+        [
+            "    end",
+            '    subgraph outcomes["This Page Should Clarify"]',
+            "        direction TB",
+        ]
     )
+    for index, title in enumerate(destination_titles, start=1):
+        lines.append(f'        dest{index}["{mermaid_text(title)}"]')
+    lines.extend(
+        [
+            "    end",
+            '    subgraph next_steps["Move Next To The Strongest Follow-up"]',
+            "        direction TB",
+        ]
+    )
+    for index, check in enumerate(next_checks, start=1):
+        lines.append(f'        next{index}["{mermaid_text(check)}"]')
+    lines.extend(
+        [
+            "    end",
+            "    context --> page",
+        ]
+    )
+    for index in range(1, len(questions) + 1):
+        lines.append(f"    q{index} --> page")
+    for index in range(1, len(destination_titles) + 1):
+        lines.append(f"    page --> dest{index}")
+    lines.append("    page --> follow")
+    for index in range(1, len(next_checks) + 1):
+        lines.append(f"    follow --> next{index}")
+    lines.extend(
+        [
+            "    class context context;",
+            "    class page page;",
+        ]
+    )
+    if questions:
+        lines.append(
+            "    class "
+            + ",".join(f"q{index}" for index in range(1, len(questions) + 1))
+            + " route;"
+        )
+    if destination_titles:
+        lines.append(
+            "    class "
+            + ",".join(f"dest{index}" for index in range(1, len(destination_titles) + 1))
+            + " route;"
+        )
+    if next_checks:
+        lines.append(
+            "    class "
+            + ",".join(f"next{index}" for index in range(1, len(next_checks) + 1))
+            + " next;"
+        )
+    return mermaid_block(
+        "\n".join(lines)
+    )
+
+
+def diagram_focus_role(section_title: str, index: int) -> tuple[str, str]:
+    title = section_title.lower()
+    if any(token in title for token in ("not ", "does not", "out of scope", "risk", "pressure", "limit", "anti-")):
+        return ("constraint", "-.keeps the page honest.->")
+    if any(token in title for token in ("proof", "anchor", "evidence", "surface", "workflow", "read in code", "next", "outcome")):
+        return ("ground", "-->")
+    if index == 2:
+        return ("constraint", "-.sharpens the decision.->")
+    if index == 3:
+        return ("ground", "-->")
+    return ("driver", "-->")
+
+
+def page_map_promise(page_title: str, destination_titles: tuple[str, ...]) -> str:
+    if destination_titles:
+        return f"{page_title}<br/>clarifies: {' | '.join(mermaid_text(title) for title in destination_titles[:3])}"
+    return f"{page_title}<br/>should reduce ambiguity, not restate the tree"
 
 
 def render_focus_diagram(
     page_title: str,
     focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
+    destination_titles: tuple[str, ...],
 ) -> str:
-    lines = ["flowchart TD", f'    page["{page_title}"]']
+    lines = [
+        "flowchart TB",
+        f'    promise["{page_map_promise(mermaid_text(page_title), destination_titles)}"]',
+        "    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;",
+        "    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;",
+        "    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;",
+        "    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;",
+    ]
     for index, (section_title, detail_titles) in enumerate(focus_sections, start=1):
         section_node = f"focus{index}"
-        lines.append(f'    {section_node}["{section_title}"]')
-        lines.append(f"    page --> {section_node}")
+        role_name, edge = diagram_focus_role(section_title, index)
+        lines.append(f'    {section_node}["{mermaid_text(section_title)}"]')
+        lines.append(f"    {section_node} {edge} promise")
+        if role_name == "ground":
+            lines.append(f"    promise --> {section_node}")
         for detail_index, detail_title in enumerate(detail_titles, start=1):
             detail_node = f"{section_node}_{detail_index}"
-            lines.append(f'    {detail_node}["{detail_title}"]')
-            lines.append(f"    {section_node} --> {detail_node}")
+            lines.append(f'    {detail_node}["{mermaid_text(detail_title)}"]')
+            connector = f"{section_node} --> {detail_node}" if role_name == "ground" else f"{detail_node} --> {section_node}"
+            lines.append(f"    {connector}")
+        lines.append(f"    class {section_node} {role_name};")
+        if detail_titles:
+            lines.append(
+                "    class "
+                + ",".join(f"{section_node}_{detail_index}" for detail_index in range(1, len(detail_titles) + 1))
+                + f" {role_name};"
+            )
+    lines.append("    class promise promise;")
     return mermaid_block("\n".join(lines))
 
 
@@ -607,16 +711,25 @@ def add_page_route_map(
     scope_title: str,
     section_title: str,
     page_title: str,
+    questions: tuple[str, ...],
     destination_titles: tuple[str, ...],
     focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
+    next_checks: tuple[str, ...],
 ) -> str:
     block = "\n".join(
         [
             "## Page Maps",
             "",
-            render_route_diagram(scope_title, section_title, page_title, destination_titles),
+            render_route_diagram(
+                scope_title,
+                section_title,
+                page_title,
+                questions,
+                destination_titles,
+                next_checks,
+            ),
             "",
-            render_focus_diagram(page_title, focus_sections),
+            render_focus_diagram(page_title, focus_sections, destination_titles),
         ]
     )
     return insert_after_intro(body, block)
@@ -1639,9 +1752,9 @@ def add_approval_questions(body: str, bullets: tuple[str, ...]) -> str:
 
 def home_map_focus_sections() -> tuple[tuple[str, tuple[str, ...]], ...]:
     return (
-        ("System idea", ("why the split exists", "how the packages fit together")),
-        ("Reading paths", ("repository handbook", "one product handbook")),
-        ("Special cases", ("maintainer work", "legacy-name migration")),
+        ("System idea", ("why the split exists", "where each package takes authority", "why the split protects clarity")),
+        ("Reading paths", ("repository handbook", "one product handbook", "the fastest credible next section")),
+        ("Special cases", ("maintainer work", "legacy-name migration", "questions that do not belong on the landing page")),
     )
 
 
@@ -1650,81 +1763,81 @@ def root_page_map(slug: str, title: str) -> tuple[tuple[str, ...], tuple[tuple[s
         "index": (
             ("see the whole system", "find the right root page", "move to package docs"),
             (
-                ("Repository role", ("coordination layer", "shared rules only")),
-                ("Package family", ("five canonical packages", "one accountable flow")),
-                ("Reader outcome", ("choose the right handbook", "avoid boundary confusion")),
+                ("Repository role", ("coordination layer", "shared rules only", "no shadow owner above packages")),
+                ("Package family", ("five canonical packages", "one accountable flow", "clear ownership instead of overlap")),
+                ("Reader outcome", ("choose the right handbook", "avoid boundary confusion", "start from the right proof surface")),
             ),
         ),
         "platform-overview": (
             ("see system flow", "understand package split", "place each package"),
             (
-                ("Flow order", ("ingest", "index")),
-                ("Reasoning layer", ("reason", "agent")),
-                ("Governance layer", ("runtime", "repository coordination")),
+                ("Flow order", ("ingest", "index", "reason")),
+                ("Orchestration layer", ("agent", "role-local behavior", "trace-backed runs")),
+                ("Governance layer", ("runtime", "replay authority", "repository coordination")),
             ),
         ),
         "repository-scope": (
             ("see root authority", "see root limits", "send work back down"),
             (
-                ("Root owns", ("shared workflows", "shared schemas")),
-                ("Root does not own", ("package-local behavior", "shadow implementation")),
-                ("Review test", ("cross-package concern", "one-package concern")),
+                ("Root owns", ("shared workflows", "shared schemas", "workspace governance")),
+                ("Root does not own", ("package-local behavior", "shadow implementation", "hidden override paths")),
+                ("Review test", ("cross-package concern", "one-package concern", "does this belong back in a package?")),
             ),
         ),
         "workspace-layout": (
             ("see directory intent", "place work quickly", "separate root from package"),
             (
-                ("Product roots", ("packages/", "apis/")),
-                ("Repository roots", ("docs/", "Makefile and makes/")),
-                ("Review outcome", ("place the concern", "avoid root sprawl")),
+                ("Product roots", ("packages/", "apis/", "publishable package seams")),
+                ("Repository roots", ("docs/", "Makefile and makes/", "shared workspace automation")),
+                ("Review outcome", ("place the concern", "avoid root sprawl", "keep ownership visible in the tree")),
             ),
         ),
         "package-map": (
             ("see package sequence", "compare package roles", "spot non-product sections"),
             (
-                ("Product flow", ("ingest to runtime", "distinct responsibilities")),
-                ("Support layers", ("bijux-canon-dev", "compatibility packages")),
-                ("Reader outcome", ("choose the owning package", "avoid overlap")),
+                ("Product flow", ("ingest to runtime", "distinct responsibilities", "one accountable chain")),
+                ("Support layers", ("bijux-canon-dev", "compatibility packages", "non-product work that still needs documentation")),
+                ("Reader outcome", ("choose the owning package", "avoid overlap", "see where authority changes hands")),
             ),
         ),
         "api-and-schema-governance": (
             ("see schema assets", "see drift pressure", "review contract changes"),
             (
-                ("Tracked assets", ("apis/", "schema hashes and OpenAPI")),
-                ("Owning checks", ("drift tooling", "package tests")),
-                ("Reader outcome", ("see contract movement", "avoid schema folklore")),
+                ("Tracked assets", ("apis/", "schema hashes", "OpenAPI and pinned artifacts")),
+                ("Owning checks", ("drift tooling", "package tests", "repository validation paths")),
+                ("Reader outcome", ("see contract movement", "avoid schema folklore", "tie prose back to tracked contract files")),
             ),
         ),
         "local-development": (
             ("see local posture", "see cross-package trigger", "connect work to proof"),
             (
-                ("Local work", ("owning package directory", "package tests and docs")),
-                ("Root help", ("cross-package automation", "workspace commands")),
-                ("Reader outcome", ("change locally first", "escalate only when needed")),
+                ("Local work", ("owning package directory", "package tests and docs", "package-local proof first")),
+                ("Root help", ("cross-package automation", "workspace commands", "shared safety rails")),
+                ("Reader outcome", ("change locally first", "escalate only when needed", "use root only for real cross-package pressure")),
             ),
         ),
         "testing-and-validation": (
             ("see proof layers", "separate package from repository", "trace trust backstops"),
             (
-                ("Package proof", ("unit to invariants", "package-local contracts")),
-                ("Repository proof", ("schema drift", "CI workflows")),
-                ("Reader outcome", ("trust locally first", "then trust the full fit")),
+                ("Package proof", ("unit to invariants", "package-local contracts", "behavior defended where it lives")),
+                ("Repository proof", ("schema drift", "CI workflows", "workspace-level regression backstops")),
+                ("Reader outcome", ("trust locally first", "then trust the full fit", "see where proof should start and where it should escalate")),
             ),
         ),
         "release-and-versioning": (
             ("see release mechanics", "see package-version link", "understand commit history role"),
             (
-                ("Repository rules", ("commitizen", "tag conventions")),
-                ("Package mechanics", ("_version.py", "package metadata")),
-                ("Reader outcome", ("understand version movement", "read durable intent")),
+                ("Repository rules", ("commitizen", "tag conventions", "durable commit intent")),
+                ("Package mechanics", ("_version.py", "package metadata", "release artifacts move with code")),
+                ("Reader outcome", ("understand version movement", "read durable intent", "see what changed at package versus workspace level")),
             ),
         ),
         "documentation-system": (
             ("see handbook layout", "see honesty rule", "understand reader promise"),
             (
-                ("Structure", ("root index", "section indexes and topic pages")),
-                ("References", ("bijux-pollenomics", "bijux-masterclass")),
-                ("Reader outcome", ("self-sufficient docs", "less meeting debt")),
+                ("Structure", ("root index", "section indexes", "topic pages that carry proof")),
+                ("References", ("bijux-pollenomics", "bijux-masterclass", "shared Bijux docs language")),
+                ("Reader outcome", ("self-sufficient docs", "less meeting debt", "diagrams and prose that actually orient readers")),
             ),
         ),
     }
@@ -1831,8 +1944,18 @@ def render_home(
         "bijux-canon",
         "Root Site",
         "Bijux Canon",
+        (
+            "which handbook to open first for a repository question",
+            "how repository, package, maintainer, and compatibility docs fit together",
+            "what this docs system is expected to cover without a meeting",
+        ),
         tuple(f"{name} section" for name in sections),
         home_map_focus_sections(),
+        (
+            "open the repository handbook when the question spans packages or shared governance",
+            "open a product package handbook when the question is about owned behavior, interfaces, operations, or proof",
+            "open the maintainer or compatibility handbooks only when the question is explicitly about those concerns",
+        ),
     )
     body = add_working_interpretation(
         body,
@@ -2291,13 +2414,25 @@ def render_root_page(
     }
     body = clean_block(bodies[slug])
     destinations, focus_sections = root_page_map(slug, title)
+    root_questions = (
+        "which repository-level decision this page clarifies",
+        "which shared assets or workflows a reviewer should inspect",
+        "how the repository boundary differs from package-local ownership",
+    )
+    root_next_checks = (
+        "move to the owning package docs when the question stops being repository-wide",
+        "check root files, schemas, or workflows named here before trusting prose alone",
+        "use maintainer docs next if the root issue is really about automation or drift tooling",
+    )
     body = add_page_route_map(
         body,
         "bijux-canon",
         "Repository Handbook",
         title,
+        root_questions,
         destinations,
         focus_sections,
+        root_next_checks,
     )
     body = add_working_interpretation(
         body,
@@ -2345,11 +2480,7 @@ def render_root_page(
     )
     body = add_next_checks(
         body,
-        (
-            "move to the owning package docs when the question stops being repository-wide",
-            "check root files, schemas, or workflows named here before trusting prose alone",
-            "use maintainer docs next if the root issue is really about automation or drift tooling",
-        ),
+        root_next_checks,
     )
     return "\n".join(
         [
@@ -2640,17 +2771,29 @@ def render_dev_page(slug: str, title: str) -> str:
         ),
     }
     body = clean_block(bodies[slug])
+    dev_questions = (
+        "which repository maintenance concern this page explains",
+        "which maintainer modules or tests support that concern",
+        "what a reviewer should confirm before changing repository automation",
+    )
+    dev_next_checks = (
+        "move to product package docs if the question is user-facing behavior rather than repository health",
+        "open the relevant helper module or test after using this page to orient yourself",
+        "return to repository handbook pages when the maintainer issue turns out to be root policy instead",
+    )
     body = add_page_route_map(
         body,
         "bijux-canon",
         "Maintainer Handbook",
         title,
+        dev_questions,
         ("explain automation", "see repository-health scope", "review package impact"),
         (
-            ("Maintainer role", ("quality gates", "security gates")),
-            ("Repository health", ("schema integrity", "supply-chain visibility")),
-            ("Operational outcome", ("release clarity", "package consistency")),
+            ("Maintainer role", ("quality gates", "security gates", "release support")),
+            ("Repository health", ("schema integrity", "supply-chain visibility", "package-aware automation")),
+            ("Operational outcome", ("release clarity", "package consistency", "less CI archaeology")),
         ),
+        dev_next_checks,
     )
     body = add_working_interpretation(
         body,
@@ -2670,11 +2813,7 @@ def render_dev_page(slug: str, title: str) -> str:
     )
     body = add_question_section(
         body,
-        (
-            "which repository maintenance concern this page explains",
-            "which maintainer modules or tests support that concern",
-            "what a reviewer should confirm before changing repository automation",
-        ),
+        dev_questions,
     )
     body = add_reviewer_lens_section(
         body,
@@ -2686,11 +2825,7 @@ def render_dev_page(slug: str, title: str) -> str:
     )
     body = add_next_checks(
         body,
-        (
-            "move to product package docs if the question is user-facing behavior rather than repository health",
-            "open the relevant helper module or test after using this page to orient yourself",
-            "return to repository handbook pages when the maintainer issue turns out to be root policy instead",
-        ),
+        dev_next_checks,
     )
     body = add_honesty_boundary(
         body,
@@ -2980,17 +3115,29 @@ def render_compat_page(slug: str, title: str) -> str:
         ),
     }
     body = clean_block(bodies[slug])
+    compat_questions = (
+        "which legacy surface is still preserved",
+        "when new work should move to the canonical package instead",
+        "what evidence would justify retiring a compatibility package",
+    )
+    compat_next_checks = (
+        "move to the canonical package docs once the current target package is known",
+        "inspect compatibility package metadata if the question is about what remains preserved",
+        "use this section again only when evaluating migration progress or retirement readiness",
+    )
     body = add_page_route_map(
         body,
         "bijux-canon",
         "Compatibility Handbook",
         title,
+        compat_questions,
         ("map old names", "choose migration", "judge retirement"),
         (
-            ("Legacy surface", ("distribution names", "import names")),
-            ("Canonical target", ("current packages", "new work")),
-            ("Decision pressure", ("migration pressure", "retirement readiness")),
+            ("Legacy surface", ("distribution names", "import names", "command names")),
+            ("Canonical target", ("current packages", "new work", "current handbook surfaces")),
+            ("Decision pressure", ("migration pressure", "retirement readiness", "do not normalize the old name")),
         ),
+        compat_next_checks,
     )
     body = add_working_interpretation(
         body,
@@ -3010,11 +3157,7 @@ def render_compat_page(slug: str, title: str) -> str:
     )
     body = add_question_section(
         body,
-        (
-            "which legacy surface is still preserved",
-            "when new work should move to the canonical package instead",
-            "what evidence would justify retiring a compatibility package",
-        ),
+        compat_questions,
     )
     body = add_reviewer_lens_section(
         body,
@@ -3026,11 +3169,7 @@ def render_compat_page(slug: str, title: str) -> str:
     )
     body = add_next_checks(
         body,
-        (
-            "move to the canonical package docs once the current target package is known",
-            "inspect compatibility package metadata if the question is about what remains preserved",
-            "use this section again only when evaluating migration progress or retirement readiness",
-        ),
+        compat_next_checks,
     )
     body = add_honesty_boundary(
         body,
@@ -3145,29 +3284,29 @@ def package_map_focus_sections(
 ) -> tuple[tuple[str, tuple[str, ...]], ...]:
     focus_map = {
         "foundation": (
-            ("Owned here", (package.owns[0], package.owns[1] if len(package.owns) > 1 else package.owns[0])),
-            ("Not owned here", (package.not_owns[0], package.not_owns[1] if len(package.not_owns) > 1 else package.not_owns[0])),
-            ("Proof anchors", (package.package_dir, f"{package.package_dir}/tests")),
+            ("Owned here", first_items(package.owns)),
+            ("Not owned here", first_items(package.not_owns)),
+            ("Proof anchors", (package.package_dir, f"{package.package_dir}/src/{package.import_name}", f"{package.package_dir}/tests")),
         ),
         "architecture": (
-            ("Module groups", (package.modules[0][1], package.modules[1][1] if len(package.modules) > 1 else package.modules[0][1])),
-            ("Read in code", (package.modules[0][0], package.modules[1][0] if len(package.modules) > 1 else package.modules[0][0])),
-            ("Design pressure", (title, package.tests[0])),
+            ("Module groups", tuple(meaning for _, meaning in package.modules[:3])),
+            ("Read in code", tuple(path for path, _ in package.modules[:3])),
+            ("Design pressure", first_items(package.tests)),
         ),
         "interfaces": (
-            ("Caller surfaces", (package.interfaces[0], package.interfaces[1] if len(package.interfaces) > 1 else package.interfaces[0])),
-            ("Contract evidence", (package.api_specs[0] if package.api_specs else package.release_notes[0], package.artifacts[0])),
-            ("Review pressure", (title, package.tests[0])),
+            ("Caller surfaces", first_items(package.interfaces)),
+            ("Contract evidence", first_items(package.api_specs + package.artifacts)),
+            ("Review pressure", first_items(package.tests)),
         ),
         "operations": (
-            ("Workflow anchors", (package.package_dir + "/pyproject.toml", package.interfaces[0])),
-            ("Operational evidence", (package.tests[0], package.artifacts[0])),
-            ("Release pressure", (package.release_notes[0], title)),
+            ("Workflow anchors", (package.package_dir + "/pyproject.toml", *first_items(package.interfaces, 2))),
+            ("Operational evidence", first_items(package.tests + package.artifacts)),
+            ("Release pressure", first_items(package.release_notes + package.examples)),
         ),
         "quality": (
-            ("Proof surfaces", (package.tests[0], package.tests[1] if len(package.tests) > 1 else package.tests[0])),
-            ("Risk anchors", (package.release_notes[0], package.artifacts[0])),
-            ("Review bar", (title, "package trust after change")),
+            ("Proof surfaces", first_items(package.tests)),
+            ("Risk anchors", first_items(package.release_notes + package.artifacts)),
+            ("Review bar", ("package trust after change", "proof before confidence", "done means defended behavior")),
         ),
     }
     return focus_map[category]
@@ -3214,23 +3353,27 @@ def render_package_page(
     else:
         body = render_package_topic(package, category, slug, title, package_root)
     body = clean_block(body)
+    page_questions = package_page_questions(package, category, title)
+    page_next_checks = package_next_checks(package, category)
     body = add_page_route_map(
         body,
         package.title,
         category.title(),
         title,
+        page_questions,
         package_map_destinations(category),
         package_map_focus_sections(package, category, title),
+        page_next_checks,
     )
     body = add_working_interpretation(body, package_working_interpretation(package, category))
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_decision_rule(body, package_decision_rule(package, category, title))
     if category in {"foundation", "architecture", "interfaces", "operations", "quality"}:
-        body = add_question_section(body, package_page_questions(package, category, title))
+        body = add_question_section(body, page_questions)
         body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
         body = add_honesty_boundary(body, package_honesty_boundary(package, category))
         body = add_anchor_section(body, package_anchor_bullets(package, category))
-        body = add_next_checks(body, package_next_checks(package, category))
+        body = add_next_checks(body, page_next_checks)
     else:
         body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
         body = add_failure_signals(body, package_failure_signals(package, category, title))
@@ -3247,9 +3390,9 @@ def render_package_page(
         body = add_source_of_truth(body, package_source_of_truth(package, category))
         body = add_common_misreadings(body, package_common_misreadings(package, category))
         body = add_anchor_section(body, package_anchor_bullets(package, category))
-        body = add_next_checks(body, package_next_checks(package, category))
+        body = add_next_checks(body, page_next_checks)
         body = add_update_triggers(body, package_update_triggers(package, category))
-        body = add_question_section(body, package_page_questions(package, category, title))
+        body = add_question_section(body, page_questions)
         body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
         body = add_honesty_boundary(body, package_honesty_boundary(package, category))
         if slug == "index":

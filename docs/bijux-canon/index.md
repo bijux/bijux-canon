@@ -38,37 +38,88 @@ These repository pages should explain the cross-package frame that no single pac
 
 ```mermaid
 flowchart LR
-    scope["bijux-canon"] --> section["Repository Handbook"]
-    section --> page["Repository Handbook"]
-    dest1["see the whole system"]
-    dest2["find the right root page"]
-    dest3["move to package docs"]
+    context["bijux-canon / Repository Handbook"]
+    page["Repository Handbook"]
+    follow["Follow the narrowest next route"]
+    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
+    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
+    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
+    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    subgraph pressure["Start Here When You Need To Know"]
+        direction TB
+        q1["which repository-level decision this page clarifies"]
+        q2["which shared assets or workflows a reviewer should inspect"]
+        q3["how the repository boundary differs from package-local ownership"]
+    end
+    subgraph outcomes["This Page Should Clarify"]
+        direction TB
+        dest1["see the whole system"]
+        dest2["find the right root page"]
+        dest3["move to package docs"]
+    end
+    subgraph next_steps["Move Next To The Strongest Follow-up"]
+        direction TB
+        next1["move to the owning package docs when the question stops being repository-wide"]
+        next2["check root files, schemas, or workflows named here before trusting prose alone"]
+        next3["use maintainer docs next if the root issue is really about automation or drift tooling"]
+    end
+    context --> page
+    q1 --> page
+    q2 --> page
+    q3 --> page
     page --> dest1
     page --> dest2
     page --> dest3
+    page --> follow
+    follow --> next1
+    follow --> next2
+    follow --> next3
+    class context context;
+    class page page;
+    class q1,q2,q3 route;
+    class dest1,dest2,dest3 route;
+    class next1,next2,next3 next;
 ```
 
 ```mermaid
-flowchart TD
-    page["Repository Handbook"]
+flowchart TB
+    promise["Repository Handbook<br/>clarifies: see the whole system | find the right root page | move to package docs"]
+    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     focus1["Repository role"]
-    page --> focus1
+    focus1 --> promise
     focus1_1["coordination layer"]
-    focus1 --> focus1_1
+    focus1_1 --> focus1
     focus1_2["shared rules only"]
-    focus1 --> focus1_2
+    focus1_2 --> focus1
+    focus1_3["no shadow owner above packages"]
+    focus1_3 --> focus1
+    class focus1 driver;
+    class focus1_1,focus1_2,focus1_3 driver;
     focus2["Package family"]
-    page --> focus2
+    focus2 -.sharpens the decision.-> promise
     focus2_1["five canonical packages"]
-    focus2 --> focus2_1
+    focus2_1 --> focus2
     focus2_2["one accountable flow"]
-    focus2 --> focus2_2
+    focus2_2 --> focus2
+    focus2_3["clear ownership instead of overlap"]
+    focus2_3 --> focus2
+    class focus2 constraint;
+    class focus2_1,focus2_2,focus2_3 constraint;
     focus3["Reader outcome"]
-    page --> focus3
+    focus3 --> promise
+    promise --> focus3
     focus3_1["choose the right handbook"]
     focus3 --> focus3_1
     focus3_2["avoid boundary confusion"]
     focus3 --> focus3_2
+    focus3_3["start from the right proof surface"]
+    focus3 --> focus3_3
+    class focus3 ground;
+    class focus3_1,focus3_2,focus3_3 ground;
+    class promise promise;
 ```
 
 ## Pages in This Section

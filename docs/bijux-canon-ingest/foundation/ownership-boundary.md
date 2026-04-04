@@ -22,37 +22,88 @@ Treat the foundation pages for `bijux-canon-ingest` as the package's durable sel
 
 ```mermaid
 flowchart LR
-    scope["bijux-canon-ingest"] --> section["Foundation"]
-    section --> page["Ownership Boundary"]
-    dest1["own the right work"]
-    dest2["name the boundary"]
-    dest3["compare neighbors"]
+    context["bijux-canon-ingest / Foundation"]
+    page["Ownership Boundary"]
+    follow["Follow the narrowest next route"]
+    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
+    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
+    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
+    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    subgraph pressure["Start Here When You Need To Know"]
+        direction TB
+        q1["what problem bijux-canon-ingest is supposed to own on purpose"]
+        q2["where the package boundary stops, even when nearby code looks tempting"]
+        q3["which neighboring package seams deserve comparison before the boundary is changed"]
+    end
+    subgraph outcomes["This Page Should Clarify"]
+        direction TB
+        dest1["own the right work"]
+        dest2["name the boundary"]
+        dest3["compare neighbors"]
+    end
+    subgraph next_steps["Move Next To The Strongest Follow-up"]
+        direction TB
+        next1["move to architecture when the question becomes structural rather than boundary-oriented"]
+        next2["move to interfaces when the question becomes contract-facing"]
+        next3["move to quality when the question becomes proof or review sufficiency"]
+    end
+    context --> page
+    q1 --> page
+    q2 --> page
+    q3 --> page
     page --> dest1
     page --> dest2
     page --> dest3
+    page --> follow
+    follow --> next1
+    follow --> next2
+    follow --> next3
+    class context context;
+    class page page;
+    class q1,q2,q3 route;
+    class dest1,dest2,dest3 route;
+    class next1,next2,next3 next;
 ```
 
 ```mermaid
-flowchart TD
-    page["Ownership Boundary"]
+flowchart TB
+    promise["Ownership Boundary<br/>clarifies: own the right work | name the boundary | compare neighbors"]
+    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     focus1["Owned here"]
-    page --> focus1
+    focus1 --> promise
     focus1_1["document cleaning, normalization, and chunking"]
-    focus1 --> focus1_1
+    focus1_1 --> focus1
     focus1_2["ingest-local retrieval and indexing assembly"]
-    focus1 --> focus1_2
+    focus1_2 --> focus1
+    focus1_3["package-local CLI and HTTP boundaries"]
+    focus1_3 --> focus1
+    class focus1 driver;
+    class focus1_1,focus1_2,focus1_3 driver;
     focus2["Not owned here"]
-    page --> focus2
+    focus2 -.keeps the page honest.-> promise
     focus2_1["runtime-wide replay authority and persistence"]
-    focus2 --> focus2_1
+    focus2_1 --> focus2
     focus2_2["cross-package vector execution semantics"]
-    focus2 --> focus2_2
+    focus2_2 --> focus2
+    focus2_3["repository maintenance automation"]
+    focus2_3 --> focus2
+    class focus2 constraint;
+    class focus2_1,focus2_2,focus2_3 constraint;
     focus3["Proof anchors"]
-    page --> focus3
+    focus3 --> promise
+    promise --> focus3
     focus3_1["packages/bijux-canon-ingest"]
     focus3 --> focus3_1
-    focus3_2["packages/bijux-canon-ingest/tests"]
+    focus3_2["packages/bijux-canon-ingest/src/bijux_canon_ingest"]
     focus3 --> focus3_2
+    focus3_3["packages/bijux-canon-ingest/tests"]
+    focus3 --> focus3_3
+    class focus3 ground;
+    class focus3_1,focus3_2,focus3_3 ground;
+    class promise promise;
 ```
 
 ## Owned Code Areas

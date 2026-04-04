@@ -27,37 +27,90 @@ These repository pages should explain the cross-package frame that no single pac
 
 ```mermaid
 flowchart LR
-    scope["bijux-canon"] --> section["Repository Handbook"]
-    section --> page["Testing and Validation"]
-    dest1["see proof layers"]
-    dest2["separate package from repository"]
-    dest3["trace trust backstops"]
+    context["bijux-canon / Repository Handbook"]
+    page["Testing and Validation"]
+    follow["Follow the narrowest next route"]
+    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
+    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
+    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
+    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    subgraph pressure["Start Here When You Need To Know"]
+        direction TB
+        q1["which repository-level decision this page clarifies"]
+        q2["which shared assets or workflows a reviewer should inspect"]
+        q3["how the repository boundary differs from package-local ownership"]
+    end
+    subgraph outcomes["This Page Should Clarify"]
+        direction TB
+        dest1["see proof layers"]
+        dest2["separate package from repository"]
+        dest3["trace trust backstops"]
+    end
+    subgraph next_steps["Move Next To The Strongest Follow-up"]
+        direction TB
+        next1["move to the owning package docs when the question stops being repository-wide"]
+        next2["check root files, schemas, or workflows named here before trusting prose alone"]
+        next3["use maintainer docs next if the root issue is really about automation or drift tooling"]
+    end
+    context --> page
+    q1 --> page
+    q2 --> page
+    q3 --> page
     page --> dest1
     page --> dest2
     page --> dest3
+    page --> follow
+    follow --> next1
+    follow --> next2
+    follow --> next3
+    class context context;
+    class page page;
+    class q1,q2,q3 route;
+    class dest1,dest2,dest3 route;
+    class next1,next2,next3 next;
 ```
 
 ```mermaid
-flowchart TD
-    page["Testing and Validation"]
+flowchart TB
+    promise["Testing and Validation<br/>clarifies: see proof layers | separate package from repository | trace trust backstops"]
+    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     focus1["Package proof"]
-    page --> focus1
+    focus1 --> promise
+    promise --> focus1
     focus1_1["unit to invariants"]
     focus1 --> focus1_1
     focus1_2["package-local contracts"]
     focus1 --> focus1_2
+    focus1_3["behavior defended where it lives"]
+    focus1 --> focus1_3
+    class focus1 ground;
+    class focus1_1,focus1_2,focus1_3 ground;
     focus2["Repository proof"]
-    page --> focus2
+    focus2 --> promise
+    promise --> focus2
     focus2_1["schema drift"]
     focus2 --> focus2_1
     focus2_2["CI workflows"]
     focus2 --> focus2_2
+    focus2_3["workspace-level regression backstops"]
+    focus2 --> focus2_3
+    class focus2 ground;
+    class focus2_1,focus2_2,focus2_3 ground;
     focus3["Reader outcome"]
-    page --> focus3
+    focus3 --> promise
+    promise --> focus3
     focus3_1["trust locally first"]
     focus3 --> focus3_1
     focus3_2["then trust the full fit"]
     focus3 --> focus3_2
+    focus3_3["see where proof should start and where it should escalate"]
+    focus3 --> focus3_3
+    class focus3 ground;
+    class focus3_1,focus3_2,focus3_3 ground;
+    class promise promise;
 ```
 
 ## Validation Layers
