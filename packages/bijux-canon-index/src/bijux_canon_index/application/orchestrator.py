@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-import threading
 from typing import Any, cast
 
 from bijux_canon_index.application.orchestration.capabilities_report import (
     build_capabilities_response,
+)
+from bijux_canon_index.application.orchestration.idempotency_cache import (
+    IdempotencyCache,
 )
 from bijux_canon_index.application.orchestration.nd_guard import NDExecutionGuard
 from bijux_canon_index.application.orchestration.execution_runtime import (
@@ -114,8 +116,7 @@ class Orchestrator:
         self._latest_corpus_fingerprint: str | None = None
         self._latest_vector_fingerprint: str | None = None
         self._run_store = RunStore()
-        self._idempotency_lock = threading.Lock()
-        self._idempotency_cache: dict[str, dict[str, Any]] = {}
+        self._idempotency_cache = IdempotencyCache()
         self._nd_guard = NDExecutionGuard(
             rate_limit=runtime.nd_rate_limit,
             rate_window_seconds=runtime.nd_rate_window_seconds,
@@ -256,11 +257,9 @@ class Orchestrator:
             raise BudgetExceededError(
                 message="ingest exceeds max_vectors_per_ingest limit"
             )
-        if req.idempotency_key:
-            with self._idempotency_lock:
-                cached = self._idempotency_cache.get(req.idempotency_key)
-                if cached is not None:
-                    return dict(cached)
+        cached = self._idempotency_cache.load(req.idempotency_key)
+        if cached is not None:
+            return cached
         correlation_id = resolve_correlation_id(req.correlation_id)
         log_event(
             "ingest_start", correlation_id=correlation_id, count=len(req.documents)
@@ -291,9 +290,7 @@ class Orchestrator:
             artifact_id=self.default_artifact_id,
         )
         result = {"ingested": len(req.documents), "correlation_id": correlation_id}
-        if req.idempotency_key:
-            with self._idempotency_lock:
-                self._idempotency_cache[req.idempotency_key] = dict(result)
+        self._idempotency_cache.store(req.idempotency_key, result)
         return result
 
     def materialize(self, req: ExecutionArtifactRequest) -> dict[str, Any]:
