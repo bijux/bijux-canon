@@ -58,11 +58,7 @@ all-parallel: clean install
 	@$(MAKE) build sbom
 	@echo "✔ All targets completed (parallel mode)"
 
+include $(ROOT_MAKE_DIR)/package-core-help.mk
+
 ##@ Core
-clean: ## Remove virtualenv, caches, build, and artifacts
-clean-soft: ## Remove build artifacts but keep .venv
-install: ## Install project in editable mode into .venv
-bootstrap: ## Setup environment
-all: ## Run full pipeline (clean → sbom)
 all-parallel: ## Run pipeline with parallelized lint, quality, security, and api
-help: ## Show this help

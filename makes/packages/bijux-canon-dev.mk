@@ -32,10 +32,4 @@ include $(ROOT_MAKE_DIR)/publish.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
-##@ Core
-clean: ## Remove virtualenv plus caches and artifacts
-clean-soft: ## Remove build artifacts but keep .venv
-install: ## Install project in editable mode into .venv
-bootstrap: ## Setup environment
-all: ## Run clean → install → test → lint
-help: ## Show this help
+include $(ROOT_MAKE_DIR)/package-core-help.mk

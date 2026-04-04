@@ -86,11 +86,7 @@ line_limit:
 	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/agent/check_line_limit.py"
 .PHONY: line_limit
 
+include $(ROOT_MAKE_DIR)/package-core-help.mk
+
 ##@ Core
-clean: ## Remove virtualenv, caches, build, and artifacts
-clean-soft: ## Remove build artifacts but keep .venv
-install: ## Install project in editable mode into .venv
-bootstrap: ## Setup environment
-all: ## Run full pipeline (clean → sbom)
 all-parallel: ## Run pipeline with parallelized lint, quality, security, and api
-help: ## Show this help

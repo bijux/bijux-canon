@@ -78,10 +78,4 @@ release: clean install fmt lint test quality security sbom
 build: release
 	@echo "[OK] build target completed (alias for make release)"
 
-##@ Core
-clean: ## Remove virtualenv, caches, build, and artifacts
-clean-soft: ## Remove build artifacts but keep .venv
-install: ## Install project in editable mode into .venv
-bootstrap: ## Setup environment
-all: ## Run full pipeline
-help: ## Show this help
+include $(ROOT_MAKE_DIR)/package-core-help.mk
