@@ -123,6 +123,7 @@ bijux-canon-runtime = "bijux_canon_runtime.interfaces.cli.entrypoint:main"
 include = [
   "README.md",
   "CHANGELOG.md",
+  "docs/maintainer/pypi.md",
   "src/bijux_canon_runtime/py.typed",
 ]
 
@@ -141,6 +142,14 @@ zip-safe = false
 
 [tool.hatch.build.targets.wheel.shared-data]
 "../../apis/bijux-canon-runtime/v1/schema.hash" = "bijux_canon_runtime.schema.hash"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "README.md",
+  "CHANGELOG.md",
+  "docs/maintainer/pypi.md",
+  "src/bijux_canon_runtime/**",
+]
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/markdown"

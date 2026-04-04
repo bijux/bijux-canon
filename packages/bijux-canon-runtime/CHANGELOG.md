@@ -15,6 +15,8 @@ tagged release, including legacy distribution naming where applicable.
 - The package README now uses PyPI-safe badge and link targets, and it points
   legacy `agentic-flows` users to the canonical migration path and retired
   repository guidance.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so runtime release expectations stay durable.
 <!-- unreleased end -->  
 
 <a id="v0-3-0"></a>  
