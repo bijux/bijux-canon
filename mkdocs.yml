@@ -292,6 +292,28 @@ nav:
           - Operator Workflows: bijux-canon-runtime/interfaces/operator-workflows.md
           - Public Imports: bijux-canon-runtime/interfaces/public-imports.md
           - Compatibility Commitments: bijux-canon-runtime/interfaces/compatibility-commitments.md
+      - Operations:
+          - Operations: bijux-canon-runtime/operations/index.md
+          - Installation and Setup: bijux-canon-runtime/operations/installation-and-setup.md
+          - Local Development: bijux-canon-runtime/operations/local-development.md
+          - Common Workflows: bijux-canon-runtime/operations/common-workflows.md
+          - Observability and Diagnostics: bijux-canon-runtime/operations/observability-and-diagnostics.md
+          - Performance and Scaling: bijux-canon-runtime/operations/performance-and-scaling.md
+          - Failure Recovery: bijux-canon-runtime/operations/failure-recovery.md
+          - Release and Versioning: bijux-canon-runtime/operations/release-and-versioning.md
+          - Security and Safety: bijux-canon-runtime/operations/security-and-safety.md
+          - Deployment Boundaries: bijux-canon-runtime/operations/deployment-boundaries.md
+      - Quality:
+          - Quality: bijux-canon-runtime/quality/index.md
+          - Test Strategy: bijux-canon-runtime/quality/test-strategy.md
+          - Invariants: bijux-canon-runtime/quality/invariants.md
+          - Review Checklist: bijux-canon-runtime/quality/review-checklist.md
+          - Documentation Standards: bijux-canon-runtime/quality/documentation-standards.md
+          - Definition of Done: bijux-canon-runtime/quality/definition-of-done.md
+          - Dependency Governance: bijux-canon-runtime/quality/dependency-governance.md
+          - Change Validation: bijux-canon-runtime/quality/change-validation.md
+          - Known Limitations: bijux-canon-runtime/quality/known-limitations.md
+          - Risk Register: bijux-canon-runtime/quality/risk-register.md
 
 plugins:
   - search

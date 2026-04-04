@@ -27,6 +27,8 @@ bijux-canon-runtime exists to own governed execution and replay authority with a
 
 - [Architecture](../architecture/index.md)
 - [Interfaces](../interfaces/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 

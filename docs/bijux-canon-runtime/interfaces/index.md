@@ -27,6 +27,8 @@ bijux-canon-runtime interface pages describe the command, API, configuration, im
 
 - [Foundation](../foundation/index.md)
 - [Architecture](../architecture/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 
