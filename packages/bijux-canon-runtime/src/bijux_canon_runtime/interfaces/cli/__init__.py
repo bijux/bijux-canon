@@ -5,9 +5,23 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.interfaces.cli import entrypoint as _entrypoint_module
-from bijux_canon_runtime.interfaces.cli.entrypoint import main
+from collections.abc import Callable
+from typing import Protocol, cast
 
-setattr(main, "_explain_failure", _entrypoint_module._explain_failure)
+from bijux_canon_runtime.interfaces.cli import entrypoint as _entrypoint_module
+
+
+class _MainEntrypoint(Protocol):
+    """CLI main entrypoint contract used by tests."""
+
+    _explain_failure: Callable[..., None]
+
+    def __call__(self) -> None:
+        """Invoke the runtime CLI entrypoint."""
+        ...
+
+
+main = cast(_MainEntrypoint, _entrypoint_module.main)
+main._explain_failure = _entrypoint_module._explain_failure
 
 __all__ = ["main"]
