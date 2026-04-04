@@ -75,4 +75,4 @@ include = ["src/agentic_flows/py.typed"]
 "agentic_flows" = ["py.typed"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/agentic_flows/**"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/agentic_flows/**"]
