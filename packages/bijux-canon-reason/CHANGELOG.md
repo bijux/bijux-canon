@@ -20,11 +20,15 @@ tagged release.
 - Runtime and API code were decomposed into smaller units for step execution,
   tool dispatch, provenance handling, evaluation summaries, replay
   orchestration, and invariant validation.
+- Package entrypoints and storage helpers were simplified so reasoning flows are
+  easier to follow and internal dependencies are less tangled.
 
 ### Fixed
 
 - Fail-fast execution policy handling and root package gates were repaired after
   the refactor series.
+- Fixture, benchmark-hygiene, and package-entrypoint regressions were cleaned up
+  during the package reorganization.
 
 ## v0.1.0 — Initial public release
 

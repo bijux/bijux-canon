@@ -13,6 +13,8 @@ tagged release, including legacy distribution naming where applicable.
   architecture, and test strategy in clearer maintainers-first language.
 - Package layout and docs integrity checks were added to keep source structure
   and package guides aligned.
+- Stable optional Typer command wiring and package version publication were
+  added to the package-facing boundaries.
 
 ### Changed
 
@@ -23,11 +25,16 @@ tagged release, including legacy distribution naming where applicable.
   `integrations/` ownership.
 - CLI, HTTP, retrieval, and document I/O paths were split into smaller modules
   so deterministic ingest behavior is easier to follow and maintain.
+- Domain and adapter boundaries were tightened around embedder selection,
+  serialization envelopes, stored-index access, observability payloads, and
+  shell-backed document I/O.
 
 ### Fixed
 
 - Root package checks, package-local typing configuration, and fallback version
   behavior were aligned for the current `0.3.0` line.
+- CLI boundary wiring, HTTP request mapping, UTC clock adapter behavior, and
+  source-tree cache hygiene were tightened during the refactor series.
 
 ## [0.1.0] – 2025-12-26
 

@@ -22,11 +22,16 @@ tagged release, including legacy distribution naming where applicable.
 - API routes, request schemas, and orchestration helpers were decomposed into
   narrower modules for query, mutation, read, capability, and artifact
   workflows.
+- Backend and orchestration support code was separated into smaller helpers for
+  embedding preparation, ingest persistence, capability reporting, execution
+  tracking, non-deterministic guard state, and artifact materialization.
 
 ### Fixed
 
 - CLI help and freeze-spec coverage were restored after the package
   reorganization.
+- Runtime state and generated artifacts were moved under the artifacts root so
+  package trees stay cleaner during checks.
 
 ## 0.2.0 – 2026-02-03
 

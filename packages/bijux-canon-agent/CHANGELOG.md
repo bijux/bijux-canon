@@ -13,24 +13,26 @@ tagged release.
 
 ### Added
 
-- Package-local documentation now explains scope, architecture, boundaries,
-  contracts, and test strategy in maintainer-facing language.
+- Package-local maintainer docs now cover scope, architecture, boundaries,
+  contracts, source-of-truth locations, and test strategy.
 
 ### Changed
 
 - The package was realigned under the canonical `bijux-canon-agent` identity,
-  with module names, package surfaces, and docs updated to match durable
-  ownership.
-- CLI and HTTP boundaries were reorganized under explicit `interfaces/` and
-  versioned `api/` packages.
-- Pipeline internals were split into smaller modules for validation, critique,
-  summarization, file reading, lifecycle control, convergence, and trace
-  handling.
+  including package names, public surfaces, and package-local docs.
+- Boundary code was reorganized under explicit `interfaces/` and versioned
+  `api/` packages, while orchestration moved under `application/`.
+- Pipeline internals were decomposed into smaller modules for validation,
+  critique, summarization, file reading, lifecycle control, convergence, LLM
+  runtime support, and trace handling.
+- Core support code was clarified around `contracts/`, `core/`, `llm/`, and
+  `traces/` so ownership is easier to follow and maintain.
 
 ### Fixed
 
-- Root package quality gates were restored after the refactor series, including
-  compatibility exports needed by CLI helpers.
+- CLI helper compatibility exports were restored after the module split work.
+- Root package quality gates and documentation snapshot checks were repaired
+  after the refactor series.
 
 ## v0.1.0 (first public release)
 

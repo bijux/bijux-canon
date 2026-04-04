@@ -14,6 +14,8 @@ tagged release, including legacy distribution naming where applicable.
 * Package-local documentation now explains execution authority, replay
   semantics, operator boundaries, API contract testing, and example datasets in
   clearer human-facing language.
+* Runtime now has focused package tests for command mapping, execution
+  persistence, canonical package-version lookup, and identifier exports.
 
 ### Changed
 * The package was realigned under the canonical `bijux-canon-runtime` identity,
@@ -26,12 +28,17 @@ tagged release, including legacy distribution naming where applicable.
   plumbing were consolidated into clearer runtime-facing modules.
 * Planner behavior now uses normalized dependency ordering and canonical package
   version discovery for runtime metadata.
+* Flow preparation, execution recording, replay analysis, tool-event recording,
+  verification arbitration, and persistence support were split into smaller
+  modules so runtime behavior is easier to reason about and maintain.
 
 ### Fixed
 * Duplicate dependency declarations are now rejected during planning.
 * Runtime metadata and tests now align with canonical package names and the
   `bijux-cli` `0.3.3` line.
 * Root package quality gates were repaired after the refactor series.
+* Replay and storage typing, readiness responses, and verification-policy
+  override handling were tightened during the runtime refactor series.
 <!-- unreleased end -->  
 
 ---  
