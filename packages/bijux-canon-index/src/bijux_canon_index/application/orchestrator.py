@@ -64,18 +64,14 @@ from bijux_canon_index.domain.non_determinism.execution_model import (
 )
 from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.domain.provenance.replay import replay
-from bijux_canon_index.infra.embeddings.cache import (
-    build_cache,
-    cache_key,
-    embedding_config_hash,
-    metadata_as_dict,
-)
-from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.infra.logging import log_event
 from bijux_canon_index.infra.metrics import METRICS, timed
 from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.application.orchestration.capabilities_report import (
     build_capabilities_response,
+)
+from bijux_canon_index.application.orchestration.ingest_embeddings import (
+    prepare_ingest_vectors,
 )
 from bijux_canon_index.application.orchestration.runtime_bootstrap import (
     bootstrap_runtime,
@@ -297,114 +293,10 @@ class Orchestrator:
         log_event(
             "ingest_start", correlation_id=correlation_id, count=len(req.documents)
         )
-        vectors_input = list(req.vectors or [])
-        vectors: list[list[float]] = []
-        embedding_meta_by_index: dict[int, dict[str, str | None]] = {}
-        embedding_model: str | None = None
-        if vectors_input:
-            vectors = vectors_input
-        else:
-            embed_provider = None
-            embed_model = None
-            cache_spec = None
-            if self.config.embeddings is not None:
-                embed_provider = self.config.embeddings.provider
-                embed_model = self.config.embeddings.model
-                if self.config.embeddings.cache is not None:
-                    cache_spec = (
-                        self.config.embeddings.cache.uri
-                        or self.config.embeddings.cache.backend
-                    )
-            embed_provider = embed_provider or req.embed_provider
-            embed_model = embed_model or req.embed_model
-            cache_spec = cache_spec or req.cache_embeddings
-            if not embed_model:
-                raise ValidationError(
-                    message="embed_model required when vectors are omitted"
-                )
-            embedding_model = embed_model
-            try:
-                provider = EMBEDDING_PROVIDERS.resolve(embed_provider)
-            except ValueError as exc:
-                raise ValidationError(message=str(exc)) from exc
-            options: dict[str, str] = {"normalize": "false"}
-            config_hash = embedding_config_hash(
-                provider.name,
-                embed_model,
-                options,
-                provider_version=provider.provider_version,
-            )
-            try:
-                cache = build_cache(cache_spec)
-            except ValueError as exc:
-                raise ValidationError(message=str(exc)) from exc
-            pending_texts: list[str] = []
-            pending_idx: list[int] = []
-            vectors = [[0.0] for _ in req.documents]
-            if cache is not None:
-                for idx, doc_text in enumerate(req.documents):
-                    key = cache_key(embed_model, doc_text, config_hash)
-                    entry = cache.get(key)
-                    if entry:
-                        expected = {
-                            "embedding_provider": provider.name,
-                            "embedding_provider_version": provider.provider_version,
-                            "embedding_normalization": options.get("normalize"),
-                        }
-                        if any(
-                            entry.metadata.get(k) != ("" if v is None else str(v))
-                            for k, v in expected.items()
-                        ):
-                            entry = None
-                    if entry:
-                        vectors[idx] = list(entry.vector)
-                        embedding_meta_by_index[idx] = entry.metadata
-                    else:
-                        pending_texts.append(doc_text)
-                        pending_idx.append(idx)
-            else:
-                pending_texts = list(req.documents)
-                pending_idx = list(range(len(req.documents)))
-            if pending_texts:
-                batch = provider.embed(pending_texts, embed_model, options=options)
-                if len(batch.vectors) != len(pending_idx):
-                    raise ValidationError(
-                        message="embedding provider returned mismatched vector count"
-                    )
-                if not batch.metadata.embedding_determinism:
-                    raise ValidationError(
-                        message="embedding provider did not declare determinism"
-                    )
-                for idx, embed_vec in zip(pending_idx, batch.vectors, strict=False):
-                    vectors[idx] = list(embed_vec)
-                    meta_dict = metadata_as_dict(
-                        {
-                            "embedding_provider": batch.metadata.provider,
-                            "embedding_provider_version": batch.metadata.provider_version,
-                            "embedding_model_version": batch.metadata.model_version,
-                            "embedding_determinism": batch.metadata.embedding_determinism,
-                            "embedding_seed": batch.metadata.embedding_seed,
-                            "embedding_device": batch.metadata.embedding_device,
-                            "embedding_dtype": batch.metadata.embedding_dtype,
-                            "embedding_normalization": batch.metadata.embedding_normalization,
-                        }
-                    )
-                    embedding_meta_by_index[idx] = meta_dict
-                    if cache is not None:
-                        key = cache_key(
-                            batch.metadata.model,
-                            req.documents[idx],
-                            batch.metadata.config_hash,
-                        )
-                        from bijux_canon_index.infra.embeddings.cache import EmbeddingCacheEntry
-
-                        cache.set(
-                            key,
-                            entry=EmbeddingCacheEntry(
-                                vector=tuple(embed_vec),
-                                metadata=meta_dict,
-                            ),
-                        )
+        prepared_vectors = prepare_ingest_vectors(req, self.config)
+        vectors = prepared_vectors.vectors
+        embedding_meta_by_index = prepared_vectors.embedding_meta_by_index
+        embedding_model = prepared_vectors.embedding_model
         with timed("ingest_latency_ms") as elapsed, self._tx() as tx:
             for idx, doc_text in enumerate(req.documents):
                 doc_id = self.id_policy.document_id(doc_text)
