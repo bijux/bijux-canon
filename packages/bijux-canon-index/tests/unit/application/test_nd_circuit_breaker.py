@@ -63,8 +63,8 @@ def test_nd_circuit_breaker_refuses_after_failures():
     backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
     engine = VectorExecutionEngine(backend=backend)
     engine.backend = backend  # type: ignore[assignment]
-    engine._nd_circuit_max_failures = 1  # type: ignore[attr-defined]
-    engine._nd_circuit_cooldown_s = 60  # type: ignore[attr-defined]
+    engine._nd_guard.max_failures = 1  # type: ignore[attr-defined]
+    engine._nd_guard.cooldown_seconds = 60  # type: ignore[attr-defined]
 
     req = ExecutionRequestPayload(
         request_text=None,

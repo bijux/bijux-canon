@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 import threading
-import time
 from typing import Any, cast
 
 from bijux_canon_index.application.orchestration.capabilities_report import (
     build_capabilities_response,
 )
+from bijux_canon_index.application.orchestration.nd_guard import NDExecutionGuard
 from bijux_canon_index.application.orchestration.execution_runtime import (
     build_execution_request,
     build_randomness_profile,
@@ -51,7 +51,6 @@ from bijux_canon_index.core.config import ExecutionConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
     AuthzDeniedError,
-    BackendUnavailableError,
     BudgetExceededError,
     InvariantError,
     NDExecutionUnavailableError,
@@ -117,14 +116,12 @@ class Orchestrator:
         self._run_store = RunStore()
         self._idempotency_lock = threading.Lock()
         self._idempotency_cache: dict[str, dict[str, Any]] = {}
-        self._nd_rate_limit = runtime.nd_rate_limit
-        self._nd_rate_window_seconds = runtime.nd_rate_window_seconds
-        self._nd_rate_window_start = time.time()
-        self._nd_rate_count = 0
-        self._nd_circuit_failures = 0
-        self._nd_circuit_max_failures = runtime.nd_circuit_max_failures
-        self._nd_circuit_cooldown_s = runtime.nd_circuit_cooldown_s
-        self._nd_circuit_open_until = 0.0
+        self._nd_guard = NDExecutionGuard(
+            rate_limit=runtime.nd_rate_limit,
+            rate_window_seconds=runtime.nd_rate_window_seconds,
+            max_failures=runtime.nd_circuit_max_failures,
+            cooldown_seconds=runtime.nd_circuit_cooldown_s,
+        )
 
     def _tx(self) -> Tx:
         return cast(Tx, self.backend.tx_factory())
@@ -179,20 +176,7 @@ class Orchestrator:
     def _enforce_nd_circuit(self, req: ExecutionRequestPayload) -> None:
         if req.execution_contract is not ExecutionContract.NON_DETERMINISTIC:
             return
-        now = time.time()
-        if now < self._nd_circuit_open_until:
-            raise BackendUnavailableError(
-                message="ND backend temporarily unavailable (circuit open)"
-            )
-        if self._nd_rate_limit > 0:
-            if now - self._nd_rate_window_start > self._nd_rate_window_seconds:
-                self._nd_rate_window_start = now
-                self._nd_rate_count = 0
-            self._nd_rate_count += 1
-            if self._nd_rate_count > self._nd_rate_limit:
-                raise BudgetExceededError(
-                    message="ND rate limit exceeded for this node"
-                )
+        self._nd_guard.enforce()
 
     def _build_randomness_profile(
         self, req: ExecutionRequestPayload
@@ -244,12 +228,6 @@ class Orchestrator:
             )
             if default_runner == "reference":
                 nd_notes.append("hnswlib not installed; using reference ANN runner")
-        nd_health = {
-            "status": "open" if time.time() < self._nd_circuit_open_until else "closed",
-            "failures": self._nd_circuit_failures,
-            "open_until": self._nd_circuit_open_until,
-            "cooldown_s": self._nd_circuit_cooldown_s,
-        }
         if caps is not None:
             supports_ann = bool(
                 caps.supports_ann if caps.supports_ann is not None else caps.ann_support
@@ -259,7 +237,7 @@ class Orchestrator:
             caps=caps,
             supports_ann=supports_ann,
             default_runner=default_runner,
-            nd_health=nd_health,
+            nd_health=self._nd_guard.health_report(),
             nd_notes=tuple(nd_notes),
         )
 
@@ -433,7 +411,7 @@ class Orchestrator:
                     message="Execution exceeded max_execution_time_ms limit"
                 )
             if req.execution_contract is ExecutionContract.NON_DETERMINISTIC:
-                self._nd_circuit_failures = 0
+                self._nd_guard.record_success()
             return self._finalize_execution(
                 artifact,
                 execution_result,
@@ -443,16 +421,7 @@ class Orchestrator:
             )
         except Exception as exc:
             if req.execution_contract is ExecutionContract.NON_DETERMINISTIC:
-                self._nd_circuit_failures += 1
-                if self._nd_circuit_failures >= self._nd_circuit_max_failures:
-                    self._nd_circuit_open_until = (
-                        time.time() + self._nd_circuit_cooldown_s
-                    )
-                    log_event(
-                        "nd_circuit_open",
-                        failures=self._nd_circuit_failures,
-                        cooldown_s=self._nd_circuit_cooldown_s,
-                    )
+                self._nd_guard.record_failure()
             details = refusal_payload(exc) if is_refusal(exc) else None
             self._run_store.mark_failed(run_id, str(exc), details=details)
             raise
