@@ -326,6 +326,7 @@ nav:
       - Compatibility Overview: compat-packages/compatibility-overview.md
       - Legacy Name Map: compat-packages/legacy-name-map.md
       - Migration Guidance: compat-packages/migration-guidance.md
+      - Repository Consolidation: compat-packages/repository-consolidation.md
       - Package Behavior: compat-packages/package-behavior.md
       - Import Surfaces: compat-packages/import-surfaces.md
       - Command Surfaces: compat-packages/command-surfaces.md

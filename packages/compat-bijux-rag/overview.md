@@ -5,8 +5,8 @@ ingest package name. Each release continues the published `bijux-rag`
 distribution and installs `bijux-canon-ingest` at the same version.
 
 The canonical package family now lives in `bijux-canon`, and the standalone
-`bijux-rag` repository is scheduled for retirement in favor of
-`https://github.com/bijux/bijux-canon`.
+`https://github.com/bijux/bijux-rag` repository is scheduled for retirement
+in favor of `https://github.com/bijux/bijux-canon`.
 
 ## What it does
 

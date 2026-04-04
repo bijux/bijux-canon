@@ -58,6 +58,7 @@ flowchart RL
 - [Compatibility Overview](compatibility-overview.md)
 - [Legacy Name Map](legacy-name-map.md)
 - [Migration Guidance](migration-guidance.md)
+- [Repository Consolidation](repository-consolidation.md)
 - [Package Behavior](package-behavior.md)
 - [Import Surfaces](import-surfaces.md)
 - [Command Surfaces](command-surfaces.md)
@@ -72,6 +73,14 @@ flowchart RL
 - `bijux-rag` maps to `bijux-canon-ingest`
 - `bijux-rar` maps to `bijux-canon-reason`
 - `bijux-vex` maps to `bijux-canon-index`
+
+## Retired Standalone Repositories
+
+- `https://github.com/bijux/agentic-flows`
+- `https://github.com/bijux/bijux-agent`
+- `https://github.com/bijux/bijux-rag`
+- `https://github.com/bijux/bijux-rar`
+- `https://github.com/bijux/bijux-vex`
 
 ## Concrete Anchors
 

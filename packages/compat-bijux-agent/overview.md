@@ -5,8 +5,8 @@ agent package name. Each release continues the published `bijux-agent`
 distribution and installs `bijux-canon-agent` at the same version.
 
 The canonical package family now lives in `bijux-canon`, and the standalone
-`bijux-agent` repository is scheduled for retirement in favor of
-`https://github.com/bijux/bijux-canon`.
+`https://github.com/bijux/bijux-agent` repository is scheduled for retirement
+in favor of `https://github.com/bijux/bijux-canon`.
 
 ## What it does
 

@@ -5,8 +5,8 @@ runtime name. Each release continues the published `agentic-flows`
 distribution and installs `bijux-canon-runtime` at the same version.
 
 The canonical package family now lives in `bijux-canon`, and the standalone
-`agentic-flows` repository is scheduled for retirement in favor of
-`https://github.com/bijux/bijux-canon`.
+`https://github.com/bijux/agentic-flows` repository is scheduled for
+retirement in favor of `https://github.com/bijux/bijux-canon`.
 
 ## What it does
 
