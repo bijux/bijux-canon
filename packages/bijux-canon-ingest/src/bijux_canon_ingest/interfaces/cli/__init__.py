@@ -5,10 +5,11 @@
 
 from __future__ import annotations
 
-from importlib import import_module
 from typing import Any
 
-_LAZY_EXPORTS = {
+from bijux_canon_ingest._lazy_exports import LazyExport, resolve_lazy_export
+
+_LAZY_EXPORTS: dict[str, LazyExport] = {
     "FSReader": (".document_io", "FSReader"),
     "boundary_app_config": (".pipeline_runner", "boundary_app_config"),
     "main": (".entrypoint", "main"),
@@ -32,11 +33,11 @@ __all__ = [
 
 
 def __getattr__(name: str) -> Any:
-    module_name, attr_name = _LAZY_EXPORTS.get(name, (None, None))
-    if module_name is None:
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-    value = getattr(import_module(module_name, __name__), attr_name)
+    value = resolve_lazy_export(
+        module_name=__name__,
+        name=name,
+        exports=_LAZY_EXPORTS,
+    )
     globals()[name] = value
     return value
 

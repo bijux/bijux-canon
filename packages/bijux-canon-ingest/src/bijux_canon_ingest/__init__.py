@@ -11,8 +11,9 @@ does not eagerly pull interface and orchestration code into every consumer.
 
 from __future__ import annotations
 
-from importlib import import_module
 from typing import Any
+
+from ._lazy_exports import LazyExport, resolve_lazy_export
 
 try:
     from typing import assert_never
@@ -226,7 +227,7 @@ from .tree import (
     scan_tree,
 )
 
-_LAZY_EXPORTS = {
+_LAZY_EXPORTS: dict[str, LazyExport] = {
     "AppConfig": (".config.app", "AppConfig"),
     "DocsReader": (".config.ingest", "DocsReader"),
     "FSReader": (".interfaces.cli.document_io", "FSReader"),
@@ -497,11 +498,11 @@ __all__ = [
 
 
 def __getattr__(name: str) -> Any:
-    module_name, attr_name = _LAZY_EXPORTS.get(name, (None, None))
-    if module_name is None:
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-    value = getattr(import_module(module_name, __name__), attr_name)
+    value = resolve_lazy_export(
+        module_name=__name__,
+        name=name,
+        exports=_LAZY_EXPORTS,
+    )
     globals()[name] = value
     return value
 
