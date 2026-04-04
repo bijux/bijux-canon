@@ -3,14 +3,20 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-import time
 from typing import Any, cast
 
 from bijux_canon_agent.agents.critique import CritiqueAgent
 from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
-from bijux_canon_agent.pipeline.results.summary import merge_summary_outputs
+from bijux_canon_agent.pipeline.results.shard_merging import (
+    apply_merge_errors,
+    collect_stage_outputs,
+    extend_stages_processed,
+    initialize_merged_final_status,
+    merge_stage_outputs,
+    propagate_shard_status,
+    update_critique_status,
+)
 from bijux_canon_agent.pipeline.results.types import (
-    FinalStatus,
     MergedShardResult,
     ShardResult,
 )
@@ -44,86 +50,36 @@ class PipelineResultsMixin:
             }
 
         merged_stages: dict[str, dict[str, Any]] = {}
-        merged_final_status: FinalStatus = {
-            "success": True,
-            "stages_processed": [],
-            "iterations": 0,
-            "termination_reason": ExecutionTerminationReason.COMPLETED,
-            "converged": False,
-            "convergence_reason": None,
-            "convergence_iterations": 0,
-        }
+        merged_final_status = initialize_merged_final_status()
         errors: list[str] = []
 
         for stage in required_stages:
             stage_key = stage["name"]
-            stage_outputs_with_index: list[tuple[int, dict[str, Any]]] = []
-            for shard_idx, shard_result in enumerate(shard_results):
-                stage_output = shard_result["stages"].get(stage_key, {})
-                if "error" in stage_output:
-                    errors.append(
-                        f"Shard failed in stage {stage_key}: {stage_output['error']}"
-                    )
-                    continue
-                stage_outputs_with_index.append((shard_idx, stage_output))
+            stage_outputs, stage_errors = collect_stage_outputs(
+                stage_key, shard_results
+            )
+            errors.extend(stage_errors)
 
-            if not stage_outputs_with_index:
+            if not stage_outputs:
                 if errors:
                     merged_stages[stage_key] = {"error": "; ".join(errors)}
-                merged_final_status["success"] = False
-                merged_final_status["error"] = "; ".join(errors)
-                merged_final_status["termination_reason"] = (
-                    ExecutionTerminationReason.FAILURE
-                )
+                apply_merge_errors(merged_final_status, errors)
                 continue
 
-            stage_outputs = [
-                output
-                for _, output in sorted(
-                    stage_outputs_with_index, key=lambda pair: pair[0]
-                )
-            ]
-
-            if stage_key == "file_extraction":
-                merged_text = "\n\n".join(
-                    output.get("text", "") for output in stage_outputs
-                )
-                merged_stages[stage_key] = {
-                    "text": merged_text,
-                    "input_length": sum(
-                        output.get("input_length", 0) for output in stage_outputs
-                    ),
-                    "audit": {
-                        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                        "shards_merged": len(stage_outputs),
-                    },
-                }
-            elif stage_key == "summarization":
-                merged_stages[stage_key] = merge_summary_outputs(stage_outputs)
-            else:
-                merged_stages[stage_key] = stage_outputs[-1]
-                audit_info = {
-                    "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                    "shards_merged": len(stage_outputs),
-                }
-                merged_stages[stage_key]["audit"] = audit_info
-
-            merged_final_status["stages_processed"].extend(
-                [f"{stage_key}_shard_{i}" for i in range(len(shard_results))]
+            merged_stages[stage_key] = merge_stage_outputs(stage_key, stage_outputs)
+            extend_stages_processed(
+                merged_final_status,
+                stage_key=stage_key,
+                shard_count=len(shard_results),
             )
 
         critique_result = cast(Mapping[str, Any], merged_stages.get("critique", {}))
-        critique_status = str(critique_result.get("critique_status", "unknown"))
-        critique_score = float(critique_result.get("score", 0.0))
-        merged_final_status["success"] = (
-            critique_status != "needs_revision"
-            and critique_score >= self.quality_threshold
-            and not errors
-        )
-        merged_final_status["score"] = critique_score
-        merged_final_status["critique_status"] = critique_status
-        merged_final_status["iterations"] = max(
-            shard["final_status"]["iterations"] for shard in shard_results
+        update_critique_status(
+            merged_final_status,
+            critique_result,
+            quality_threshold=self.quality_threshold,
+            has_errors=bool(errors),
+            shard_results=shard_results,
         )
 
         self.logger.info(
@@ -137,30 +93,7 @@ class PipelineResultsMixin:
             },
         )
 
-        # Propagate execution metadata from shards when non-complete reasons are present
-        for shard in shard_results:
-            shard_status = shard["final_status"]
-            reason = shard_status.get(
-                "termination_reason", ExecutionTerminationReason.COMPLETED
-            )
-            if (
-                reason != ExecutionTerminationReason.COMPLETED
-                and merged_final_status["termination_reason"]
-                == ExecutionTerminationReason.COMPLETED
-            ):
-                merged_final_status["termination_reason"] = reason
-            if shard_status.get("converged"):
-                merged_final_status["converged"] = True
-                if not merged_final_status.get("convergence_reason"):
-                    merged_final_status["convergence_reason"] = shard_status.get(
-                        "convergence_reason"
-                    )
-            merged_final_status["convergence_iterations"] = max(
-                merged_final_status.get("convergence_iterations", 0),
-                shard_status.get("convergence_iterations", 0),
-            )
-            if shard_status.get("error") and not merged_final_status.get("error"):
-                merged_final_status["error"] = shard_status["error"]
+        propagate_shard_status(merged_final_status, shard_results)
 
         return {"stages": merged_stages, "final_status": merged_final_status}
 
