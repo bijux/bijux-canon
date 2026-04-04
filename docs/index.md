@@ -52,6 +52,8 @@ flowchart LR
 - Open [compat-packages](compat-packages/index.md) only when a legacy name is
   part of the problem. They exist to help migration, not to compete with the
   canonical package family.
+- Open one legacy package handbook under `compat-packages/` when the exact PyPI
+  distribution name is part of the migration question.
 
 ## The Five Core Packages
 

@@ -55,6 +55,11 @@ flowchart RL
 
 ## Pages in This Section
 
+- [agentic-flows](agentic-flows/index.md)
+- [bijux-agent](bijux-agent/index.md)
+- [bijux-rag](bijux-rag/index.md)
+- [bijux-rar](bijux-rar/index.md)
+- [bijux-vex](bijux-vex/index.md)
 - [Compatibility Overview](compatibility-overview.md)
 - [Legacy Name Map](legacy-name-map.md)
 - [Migration Guidance](migration-guidance.md)
@@ -68,11 +73,11 @@ flowchart RL
 
 ## Legacy Name Map
 
-- `agentic-flows` maps to `bijux-canon-runtime`
-- `bijux-agent` maps to `bijux-canon-agent`
-- `bijux-rag` maps to `bijux-canon-ingest`
-- `bijux-rar` maps to `bijux-canon-reason`
-- `bijux-vex` maps to `bijux-canon-index`
+- [`agentic-flows`](agentic-flows/index.md) maps to `bijux-canon-runtime`
+- [`bijux-agent`](bijux-agent/index.md) maps to `bijux-canon-agent`
+- [`bijux-rag`](bijux-rag/index.md) maps to `bijux-canon-ingest`
+- [`bijux-rar`](bijux-rar/index.md) maps to `bijux-canon-reason`
+- [`bijux-vex`](bijux-vex/index.md) maps to `bijux-canon-index`
 
 ## Retired Standalone Repositories
 

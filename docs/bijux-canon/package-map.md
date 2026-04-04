@@ -54,5 +54,15 @@ flowchart LR
 - [compatibility packages](../compat-packages/index.md) for legacy
   distribution and import preservation
 
+## Compatibility Package Entry Points
+
+| Legacy package | Canonical package | Legacy handbook |
+| --- | --- | --- |
+| `agentic-flows` | `bijux-canon-runtime` | [agentic-flows](../compat-packages/agentic-flows/index.md) |
+| `bijux-agent` | `bijux-canon-agent` | [bijux-agent](../compat-packages/bijux-agent/index.md) |
+| `bijux-rag` | `bijux-canon-ingest` | [bijux-rag](../compat-packages/bijux-rag/index.md) |
+| `bijux-rar` | `bijux-canon-reason` | [bijux-rar](../compat-packages/bijux-rar/index.md) |
+| `bijux-vex` | `bijux-canon-index` | [bijux-vex](../compat-packages/bijux-vex/index.md) |
+
 If you are still not sure where a change belongs after reading this page, the
 right next step is usually one package foundation section, not more root prose.
