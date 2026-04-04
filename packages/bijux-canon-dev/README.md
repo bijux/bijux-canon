@@ -1,20 +1,41 @@
 # bijux-canon-dev
 
-`bijux-canon-dev` is the repository tooling package for `bijux-canon`.
+`bijux-canon-dev` is the maintenance package for the monorepo itself. It holds
+the Python helpers behind root quality gates, security checks, SBOM generation,
+release support, OpenAPI drift checks, and package-specific repository
+automation.
 
-It owns:
-- shared quality and security helpers
-- shared SBOM and release helpers
-- shared OpenAPI drift tooling
-- package-specific maintenance helpers used by root automation
+This package is for maintainers, CI, and root `make` targets. It is not part of
+the end-user product surface. When a script or helper exists to keep the
+repository healthy rather than to run the product, it should usually live here.
 
-It does not own product runtime behavior.
+## What this package owns
 
-Start here:
-- local package docs: [docs/index.md](docs/index.md)
-- package-local scope: [docs/SCOPE.md](docs/SCOPE.md)
-- package-local architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- shared quality and security helpers used across packages
+- release, versioning, and SBOM helpers
+- OpenAPI and schema drift tooling
+- package-specific repository maintenance helpers invoked by root automation
 
-Source layout:
-- [src/bijux_canon_dev](src/bijux_canon_dev)
-- [tests](tests)
+## What this package does not own
+
+- runtime or product behavior that end users depend on directly
+- domain models that belong to agent, ingest, index, reason, or runtime packages
+- compatibility shims whose only job is to preserve legacy package names
+
+## Source map
+
+- [`src/bijux_canon_dev/quality`](src/bijux_canon_dev/quality) for repo quality checks
+- [`src/bijux_canon_dev/security`](src/bijux_canon_dev/security) for security gates
+- [`src/bijux_canon_dev/sbom`](src/bijux_canon_dev/sbom) for bill-of-materials generation
+- [`src/bijux_canon_dev/release`](src/bijux_canon_dev/release) for release support
+- [`src/bijux_canon_dev/api`](src/bijux_canon_dev/api) for OpenAPI and schema tooling
+- [`src/bijux_canon_dev/packages`](src/bijux_canon_dev/packages) for package-specific maintenance helpers
+- [`tests`](tests) for executable protection of repo tooling behavior
+
+## Read this next
+
+- [Package guide](docs/index.md)
+- [Scope](docs/SCOPE.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Contracts](docs/CONTRACTS.md)
+- [Tests](docs/TESTS.md)

@@ -1,8 +1,20 @@
-# TESTS
+# Tests
 
-`bijux-canon-dev` tests should stay focused and cheap:
-- module import coverage
-- helper behavior with small fixture inputs
-- package-maintenance adapters used by tests and root gates
+Tests in `bijux-canon-dev` should stay fast, focused, and honest about what the
+package owns.
 
-Expensive end-to-end behavior belongs in the package that consumes the helper, not here.
+## What to test here
+
+- direct helper behavior with small, controlled fixtures
+- importability and stable entrypoints used by automation
+- package-maintenance adapters that root gates depend on
+
+## What not to over-test here
+
+- product workflows that belong to another package
+- expensive end-to-end scenarios that are already covered where the helper is consumed
+
+The best test split is usually:
+
+- verify the helper here
+- verify the repository workflow at the root or in the consuming package

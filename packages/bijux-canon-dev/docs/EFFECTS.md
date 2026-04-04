@@ -1,9 +1,17 @@
-# EFFECTS
+# Effects
 
-`bijux-canon-dev` performs repository-maintenance effects:
-- reads package metadata, schemas, and docs
-- spawns subprocesses such as `git`, `deptry`, and `pip`
-- writes generated requirement files and OpenAPI snapshots
-- inspects repository state for policy checks
+Effects are the whole point of this package, which means they need to be
+described plainly.
 
-It should remain explicit about filesystem and subprocess effects because those are its core job.
+## Main side effects
+
+- reading package metadata, schemas, docs, and repository configuration
+- spawning subprocesses such as `git`, `deptry`, `pip`, and related tooling
+- writing generated artifacts like requirements exports or OpenAPI snapshots
+- inspecting repository state and failing checks when policy is violated
+
+## Guardrails
+
+- subprocess usage should be explicit and reviewable
+- generated files should be deliberate, stable, and easy to regenerate
+- repository checks should explain failures in language maintainers can act on

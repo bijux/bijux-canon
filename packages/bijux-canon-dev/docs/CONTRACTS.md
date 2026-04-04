@@ -1,11 +1,22 @@
-# CONTRACTS
+# Contracts
 
-Stable contracts in `bijux-canon-dev` are module entrypoints used by repository automation:
-- `bijux_canon_dev.quality.deptry_scan`
-- `bijux_canon_dev.security.pip_audit_gate`
-- `bijux_canon_dev.sbom.requirements_writer`
-- `bijux_canon_dev.release.version_resolver`
-- `bijux_canon_dev.api.openapi_drift`
+`bijux-canon-dev` does not expose an end-user application API, but it still has
+real contracts inside the repository.
+
+## Stable repository-facing contracts
+
+- module entrypoints used by root `make` targets
+- helpers called directly by CI or packaging workflows
+- package-maintenance helpers that tests and automation import by name
+
+Examples include:
+
+- `bijux_canon_dev.quality.*`
+- `bijux_canon_dev.security.*`
+- `bijux_canon_dev.sbom.*`
+- `bijux_canon_dev.release.*`
+- `bijux_canon_dev.api.*`
 - selected `bijux_canon_dev.packages.*` helpers
 
-These contracts are internal to the monorepo but should still change intentionally because `make`, CI, and tests depend on them.
+If changing a helper would require changing root automation or CI at the same
+time, treat it as a contract change and make that change intentionally.

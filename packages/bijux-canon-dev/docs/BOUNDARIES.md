@@ -1,13 +1,21 @@
-# BOUNDARIES
+# Boundaries
 
-`bijux-canon-dev` owns repository automation that should not live inside product packages.
+`bijux-canon-dev` is the maintenance boundary, not the product boundary.
 
-It does own:
-- shared quality, security, SBOM, release, and OpenAPI helpers
-- package-specific maintenance checks used by root automation
-- tooling invoked by `make`, CI, and packaging flows
+## This package owns
 
-It does not own:
-- end-user product behavior
-- long-lived domain models from runtime, agent, ingest, index, or reason
-- application-specific workflows
+- helpers that root `make` targets and CI depend on
+- repository checks that apply across multiple packages
+- package-specific maintenance support that is still driven from the repository root
+
+## Product packages own
+
+- runtime and domain behavior
+- end-user CLI and API semantics
+- package-local workflows that are meaningful even without the rest of the monorepo
+
+## Boundary discipline
+
+- do not park product logic here just because it is shared by tests
+- do not duplicate repository logic across product packages
+- do not let CI YAML become the only place where important policy lives

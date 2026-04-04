@@ -1,8 +1,9 @@
-# PUBLIC_API
+# Public API
 
-`bijux-canon-dev` does not publish an end-user console script.
+This package has no end-user console contract, but it does have a repository API.
 
-Its public monorepo-facing API is Python-module based:
+## Repository-facing API
+
 - `bijux_canon_dev.api.*`
 - `bijux_canon_dev.quality.*`
 - `bijux_canon_dev.security.*`
@@ -10,4 +11,10 @@ Its public monorepo-facing API is Python-module based:
 - `bijux_canon_dev.release.*`
 - `bijux_canon_dev.packages.*`
 
-If root `make` targets, CI, or tests import a module directly, treat it as public inside this repository.
+If a root target, CI workflow, or cross-package test imports a module directly,
+that module should be treated as public within this repository.
+
+## Maintenance rule
+
+Prefer small, named entrypoints over deep imports into implementation details.
+That keeps the automation surface legible and easier to refactor safely.
