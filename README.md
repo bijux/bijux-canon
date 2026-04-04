@@ -1,11 +1,10 @@
 # bijux-canon
 
-Unified repository for Bijux Canon packages and applications.
+Unified repository for the Bijux Canon package family.
 
-Python distributions live under `packages/`, while shared repository assets stay
-at the root. This keeps each package independently publishable, preserves the
-standard per-package `src/` layout, and avoids the ambiguity of a single
-repo-wide `src/` tree.
+Python distributions live under `packages/`, while the repository root keeps
+only the assets that genuinely need to sit above one package: shared schemas,
+workspace automation, contributor rules, and the root handbook.
 
 Projects:
 
@@ -17,14 +16,15 @@ Projects:
 
 Shared repository assets:
 
+- `apis/` for shared schema sources and pinned artifacts
 - `configs/` for root-managed tooling configuration
-- `Makefile` for root package orchestration
-- `makes/` for root-managed build and quality targets
-- `LICENSE` for the repository-wide Apache 2.0 license
-- `mkdocs.yml` for the repository handbook
+- `docs/` for the hand-authored repository handbook
+- `Makefile` and `makes/` for workspace automation
 - `packages/` for publishable Python distributions
 - `pyproject.toml` for repository tooling metadata
 - `tox.ini` for root validation environments
 
+Repository-owned developer tooling, including docs-side utilities that do not
+belong at the root, lives in `packages/bijux-canon-dev`.
+
 History preservation details are documented in `docs/repository-history.md`.
-Repository handbook pages live under `docs/`.
