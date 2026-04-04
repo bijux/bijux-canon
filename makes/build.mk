@@ -7,6 +7,12 @@ BUILD_CLEAN_PYCACHE       ?= 0
 BUILD_TEMP_CLEAN_PATHS    ?= $(BUILD_CLEAN_PATHS)
 BUILD_TEMP_CLEAN_PYCACHE  ?= 0
 BUILD_RELEASE_DRY_RUN_CMD ?=
+BUILD_PRE_TARGETS        ?=
+BUILD_POST_TARGETS       ?=
+BUILD_COMMAND            ?= $(BUILD_PYTHON) -m build --wheel --sdist --outdir "$(BUILD_DIR_ABS)" .
+BUILD_SDIST_COMMAND      ?= $(BUILD_PYTHON) -m build --sdist --outdir "$(BUILD_DIR_ABS)" .
+BUILD_WHEEL_COMMAND      ?= $(BUILD_PYTHON) -m build --wheel --outdir "$(BUILD_DIR_ABS)" .
+BUILD_SUCCESS_MESSAGE    ?= ✔ Build artifacts ready in '$(BUILD_DIR_ABS)'
 BUILD_SELF_MAKE          ?= $(SELF_MAKE)
 
 BUILD_DIR_ABS             := $(abspath $(BUILD_DIR))
@@ -22,17 +28,25 @@ build-tools: | $(VENV)
 
 build: build-tools
 	@if [ "$(BUILD_REQUIRE_PYPROJECT)" = "1" ] && [ ! -f "$(PYPROJECT_ABS)" ]; then echo "✘ pyproject.toml not found"; exit 1; fi
+	@for target in $(BUILD_PRE_TARGETS); do \
+	  echo "→ Running $$target"; \
+	  $(BUILD_SELF_MAKE) "$$target"; \
+	done
 	@echo "→ Preparing Python package artifacts..."
 	@mkdir -p "$(BUILD_DIR_ABS)"
 	@echo "→ Building wheel + sdist → $(BUILD_DIR_ABS)"
-	@$(BUILD_PYTHON) -m build --wheel --sdist --outdir "$(BUILD_DIR_ABS)" .
+	@$(BUILD_COMMAND)
 	@if [ "$(BUILD_CHECK_DISTS)" = "1" ]; then \
 	  echo "→ Validating distributions with twine"; \
 	  $(TWINE) check "$(BUILD_DIR_ABS)"/*.whl "$(BUILD_DIR_ABS)"/*.tar.gz 2>&1 | tee "$(BUILD_DIR_ABS)/twine-check.log"; \
 	else \
 	  echo "→ Skipping twine check (BUILD_CHECK_DISTS=$(BUILD_CHECK_DISTS))"; \
 	fi
-	@echo "✔ Build artifacts ready in '$(BUILD_DIR_ABS)'"
+	@for target in $(BUILD_POST_TARGETS); do \
+	  echo "→ Running $$target"; \
+	  $(BUILD_SELF_MAKE) "$$target"; \
+	done
+	@echo "$(BUILD_SUCCESS_MESSAGE)"
 	@ls -l "$(BUILD_DIR_ABS)" || true
 	@$(BUILD_SELF_MAKE) build-clean-temp
 
@@ -40,14 +54,14 @@ build-sdist: build-tools
 	@if [ "$(BUILD_REQUIRE_PYPROJECT)" = "1" ] && [ ! -f "$(PYPROJECT_ABS)" ]; then echo "✘ pyproject.toml not found"; exit 1; fi
 	@mkdir -p "$(BUILD_DIR_ABS)"
 	@echo "→ Building sdist → $(BUILD_DIR_ABS)"
-	@$(BUILD_PYTHON) -m build --sdist --outdir "$(BUILD_DIR_ABS)" .
+	@$(BUILD_SDIST_COMMAND)
 	@$(BUILD_SELF_MAKE) build-clean-temp
 
 build-wheel: build-tools
 	@if [ "$(BUILD_REQUIRE_PYPROJECT)" = "1" ] && [ ! -f "$(PYPROJECT_ABS)" ]; then echo "✘ pyproject.toml not found"; exit 1; fi
 	@mkdir -p "$(BUILD_DIR_ABS)"
 	@echo "→ Building wheel → $(BUILD_DIR_ABS)"
-	@$(BUILD_PYTHON) -m build --wheel --outdir "$(BUILD_DIR_ABS)" .
+	@$(BUILD_WHEEL_COMMAND)
 	@$(BUILD_SELF_MAKE) build-clean-temp
 
 build-check:
@@ -92,8 +106,8 @@ release-dry: build
 build-tools:     ## Ensure the local venv has build tooling (pip, build, twine)
 build-clean:     ## Remove generated build artifacts and package-specific cleanup paths
 build-clean-temp: ## Remove temporary build files created during packaging
-build:           ## Build wheel and sdist into $(PROJECT_ARTIFACTS_DIR)/build
-build-sdist:     ## Build an sdist into $(PROJECT_ARTIFACTS_DIR)/build
-build-wheel:     ## Build a wheel into $(PROJECT_ARTIFACTS_DIR)/build
-build-check:     ## Run twine check on $(PROJECT_ARTIFACTS_DIR)/build/*
+build:           ## Build wheel and sdist into $(BUILD_DIR)
+build-sdist:     ## Build an sdist into $(BUILD_DIR)
+build-wheel:     ## Build a wheel into $(BUILD_DIR)
+build-check:     ## Run twine check on artifacts in $(BUILD_DIR)
 release-dry:     ## Run package-defined release verification after building artifacts
