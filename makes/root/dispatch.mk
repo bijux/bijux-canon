@@ -74,3 +74,13 @@ $(1):
 endef
 
 $(foreach target,$(ROOT_PACKAGE_TARGETS),$(eval $(call define_root_package_target,$(target))))
+
+##@ Orchestration
+test: ## Run primary package tests package by package
+lint: ## Run repository lint checks package by package with the shared check environment
+quality: ## Run repository quality checks package by package with the shared check environment
+security: ## Run repository security checks package by package with the shared check environment
+api: ## Run primary package API checks package by package
+build: ## Build primary package artifacts package by package
+sbom: ## Generate primary package SBOMs package by package
+clean: ## Clean package artifacts across the repository

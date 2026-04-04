@@ -17,3 +17,6 @@ ROOT_FORBIDDEN_ARTIFACTS ?= \
 
 clean-root-artifacts:
 	@rm -rf $(ROOT_FORBIDDEN_ARTIFACTS) || true
+
+##@ Repository
+clean-root-artifacts: ## Remove stray root-level caches outside artifacts
