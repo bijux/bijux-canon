@@ -14,7 +14,13 @@ from bijux_canon_runtime.ontology import (
 
 def validate(plan: ExecutionPlan) -> None:
     """Validate execution plan; misuse breaks planning guarantees."""
-    manifest_agents = set(plan.manifest.agents)
+    _validate_manifest_parity(plan)
+    agent_to_index = _validate_step_coverage(plan)
+    _validate_step_contracts(plan, agent_to_index)
+
+
+def _validate_manifest_parity(plan: ExecutionPlan) -> None:
+    """Internal helper; not part of the public API."""
     if plan.plan.dataset != plan.manifest.dataset:
         raise ValueError("execution plan dataset must match manifest")
     if plan.plan.tenant_id != plan.manifest.tenant_id:
@@ -33,15 +39,25 @@ def validate(plan: ExecutionPlan) -> None:
         raise ValueError("execution plan allowed_variance_class must match manifest")
     if plan.plan.nondeterminism_intent != plan.manifest.nondeterminism_intent:
         raise ValueError("execution plan nondeterminism_intent must match manifest")
+
+
+def _validate_step_coverage(plan: ExecutionPlan) -> dict[object, int]:
+    """Internal helper; not part of the public API."""
+    manifest_agents = set(plan.manifest.agents)
     steps = plan.plan.steps
     step_agents = [step.agent_id for step in steps]
     if len(set(step_agents)) != len(step_agents):
         raise ValueError("resolved steps must be unique per agent")
     if set(step_agents) != manifest_agents:
         raise ValueError("resolved steps must cover all agents exactly once")
+    return {step.agent_id: step.step_index for step in steps}
 
-    agent_to_index = {step.agent_id: step.step_index for step in steps}
-    for step in steps:
+
+def _validate_step_contracts(
+    plan: ExecutionPlan, agent_to_index: dict[object, int]
+) -> None:
+    """Internal helper; not part of the public API."""
+    for step in plan.plan.steps:
         if step.step_type is not StepType.AGENT:
             raise ValueError("executor only supports StepType.AGENT steps")
         if not isinstance(step.determinism_level, DeterminismLevel):
