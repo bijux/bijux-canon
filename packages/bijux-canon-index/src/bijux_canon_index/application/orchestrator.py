@@ -8,6 +8,9 @@ from typing import Any, cast
 from bijux_canon_index.application.orchestration.capabilities_report import (
     build_capabilities_response,
 )
+from bijux_canon_index.application.orchestration.execution_tracking import (
+    build_execution_tracking_context,
+)
 from bijux_canon_index.application.orchestration.idempotency_cache import (
     IdempotencyCache,
 )
@@ -60,12 +63,7 @@ from bijux_canon_index.core.errors import (
     ValidationError,
 )
 from bijux_canon_index.core.errors.refusal import is_refusal, refusal_payload
-from bijux_canon_index.core.identity.fingerprints import (
-    corpus_fingerprint,
-    determinism_fingerprint,
-    vectors_fingerprint,
-)
-from bijux_canon_index.core.identity.ids import fingerprint
+from bijux_canon_index.core.identity.fingerprints import corpus_fingerprint, vectors_fingerprint
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import (
     ExecutionArtifact,
@@ -346,44 +344,20 @@ class Orchestrator:
             nd_model,
             request,
         ) = self._normalize_execute_request(req)
-        vector_store_meta = getattr(self.stores.vectors, "vector_store_metadata", None)
-        vector_store_index_params = None
-        vector_store_consistency = None
-        if isinstance(vector_store_meta, dict):
-            vector_store_index_params = vector_store_meta.get("index_params")
-            vector_store_consistency = vector_store_meta.get("consistency")
-        ann_index_info: dict[str, object] | None = None
-        ann_runner = getattr(self.backend, "ann", None)
-        if (
-            artifact.execution_contract is ExecutionContract.NON_DETERMINISTIC
-            and ann_runner is not None
-            and hasattr(ann_runner, "index_info")
-        ):
-            ann_index_info = ann_runner.index_info(artifact.artifact_id)
-        backend_fingerprint = fingerprint(
-            {
-                "backend": getattr(self.backend, "name", "unknown"),
-                "vector_store": {
-                    "backend": self.vector_store_resolution.descriptor.name,
-                    "version": self.vector_store_resolution.descriptor.version,
-                    "consistency": vector_store_consistency,
-                    "index_params": vector_store_index_params,
-                },
-            }
-        )
-        determinism_fp = determinism_fingerprint(
-            artifact.vector_fingerprint,
-            artifact.index_config_fingerprint,
-            artifact.execution_plan.algorithm if artifact.execution_plan else None,
+        tracking = build_execution_tracking_context(
+            artifact=artifact,
+            backend=self.backend,
+            stores=self.stores,
+            vector_store_resolution=self.vector_store_resolution,
         )
         run_metadata = self._build_run_metadata(
             req,
             artifact,
-            ann_index_info,
-            vector_store_consistency,
-            vector_store_index_params,
-            backend_fingerprint,
-            determinism_fp,
+            tracking.ann_index_info,
+            tracking.vector_store_consistency,
+            tracking.vector_store_index_params,
+            tracking.backend_fingerprint,
+            tracking.determinism_fingerprint,
             correlation_id,
         )
         self._run_store.start(run_id, run_metadata)
