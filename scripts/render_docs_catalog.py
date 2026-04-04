@@ -790,6 +790,33 @@ def package_anchor_bullets(package: PackageInfo, category: str) -> tuple[str, ..
     return tuple(anchor_map[category])
 
 
+def package_core_claim(package: PackageInfo, category: str) -> str:
+    claim_map = {
+        "foundation": (
+            f"The foundational claim of `{package.title}` is that its package boundary can be"
+            " explained in stable ownership terms instead of by implementation accident."
+        ),
+        "architecture": (
+            f"The architectural claim of `{package.title}` is that its structure is deliberate"
+            " enough for a reviewer to trace responsibilities, dependencies, and drift pressure"
+            " without reverse-engineering the entire codebase."
+        ),
+        "interfaces": (
+            f"The interface claim of `{package.title}` is that commands, APIs, imports, schemas,"
+            " and artifacts form a reviewable contract rather than an implied one."
+        ),
+        "operations": (
+            f"The operational claim of `{package.title}` is that install, run, diagnose, and"
+            " release paths can be repeated from explicit package assets instead of oral history."
+        ),
+        "quality": (
+            f"The quality claim of `{package.title}` is that tests, invariants, risks, and"
+            " completion criteria jointly prove whether the package is trustworthy after change."
+        ),
+    }
+    return claim_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -856,6 +883,17 @@ def add_anchor_section(body: str, bullets: tuple[str, ...]) -> str:
         ]
     )
     return insert_before_heading(body, "Use This Page When", block)
+
+
+def add_core_claim(body: str, text: str) -> str:
+    block = "\n".join(
+        [
+            "## Core Claim",
+            "",
+            text,
+        ]
+    )
+    return insert_before_heading(body, "Concrete Anchors", block)
 
 
 def render_home(
@@ -980,6 +1018,10 @@ def render_home(
             "move into a product package when you need ownership, interfaces, operations, or quality detail",
             "use the maintainer or compatibility sections only when the problem is explicitly about those concerns",
         ),
+    )
+    body = add_core_claim(
+        body,
+        "The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.",
     )
     body = add_anchor_section(
         body,
@@ -1334,6 +1376,10 @@ def render_root_page(
             "confirm that any repository rule described here is still enforceable in code or automation",
         ),
     )
+    body = add_core_claim(
+        body,
+        "Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.",
+    )
     body = add_honesty_boundary(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
@@ -1647,6 +1693,10 @@ def render_dev_page(slug: str, title: str) -> str:
             "confirm that repository automation still names its package impact explicitly",
         ),
     )
+    body = add_core_claim(
+        body,
+        "Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.",
+    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
@@ -1954,6 +2004,10 @@ def render_compat_page(slug: str, title: str) -> str:
             "confirm that compatibility language does not accidentally encourage new work to start here",
         ),
     )
+    body = add_core_claim(
+        body,
+        "Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.",
+    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
@@ -2078,6 +2132,7 @@ def render_package_page(
         ),
     )
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
+    body = add_core_claim(body, package_core_claim(package, category))
     body = add_anchor_section(body, package_anchor_bullets(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))

@@ -98,3 +98,7 @@ This page keeps architectural review focused on durable package risks instead of
 ## Stability
 
 Keep it aligned with the package structure and known review concerns.
+
+## Core Claim
+
+The architectural claim of `bijux-canon-index` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

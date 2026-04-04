@@ -147,3 +147,7 @@ This page routes readers into the canonical repository and package handbooks wit
 ## Stability
 
 This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/` and the packages that still ship from this repository.
+
+## Core Claim
+
+The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.

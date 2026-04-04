@@ -118,3 +118,7 @@ This page explains how to use the maintainer handbook without confusing it with 
 ## Stability
 
 Keep this page aligned with the actual maintainer modules that exist under `packages/bijux-canon-dev`.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

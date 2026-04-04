@@ -89,3 +89,7 @@ This page gives maintainers a durable frame for triaging package failures.
 ## Stability
 
 Keep it aligned with the package entrypoints and diagnostic outputs.
+
+## Core Claim
+
+The operational claim of `bijux-canon-ingest` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

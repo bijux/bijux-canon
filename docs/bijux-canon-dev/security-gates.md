@@ -90,3 +90,7 @@ This page marks the boundary between maintenance security tooling and product ru
 ## Stability
 
 Keep it aligned with the actual checks we can execute and verify.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

@@ -93,3 +93,7 @@ This page keeps security review grounded in concrete package seams.
 ## Stability
 
 Keep it aligned with the package interfaces and operational risk profile.
+
+## Core Claim
+
+The operational claim of `bijux-canon-reason` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

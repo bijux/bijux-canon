@@ -95,3 +95,7 @@ This page explains how the package fits into the repository without restating re
 ## Stability
 
 Keep it aligned with the package's checked-in directories and actual neighboring packages.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-runtime` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

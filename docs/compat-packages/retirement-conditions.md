@@ -90,3 +90,7 @@ This page explains the threshold for removing a compatibility package.
 ## Stability
 
 Update this page only when the retirement policy itself changes.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

@@ -94,3 +94,7 @@ This page points readers toward the package's observable output and diagnostic s
 ## Stability
 
 Keep it aligned with the package modules and artifacts that currently support diagnosis.
+
+## Core Claim
+
+The operational claim of `bijux-canon-runtime` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

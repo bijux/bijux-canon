@@ -90,3 +90,7 @@ This page records the package's completion threshold.
 ## Stability
 
 Keep it aligned with the package validation and release expectations.
+
+## Core Claim
+
+The quality claim of `bijux-canon-reason` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

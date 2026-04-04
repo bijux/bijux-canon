@@ -114,3 +114,7 @@ This page explains how to use the foundation section for `bijux-canon-ingest` wi
 ## Stability
 
 This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-ingest` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

@@ -90,3 +90,7 @@ This page explains the home for supply-chain oriented repository tooling.
 ## Stability
 
 Keep it aligned with the checked-in SBOM helpers and tests.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

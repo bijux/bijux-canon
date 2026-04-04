@@ -101,3 +101,7 @@ This page explains why schemas are first-class repository assets rather than inc
 ## Stability
 
 Keep this page aligned with the actual schema directories and the validation tooling that protects them.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

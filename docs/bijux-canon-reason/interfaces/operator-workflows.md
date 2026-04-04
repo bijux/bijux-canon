@@ -90,3 +90,7 @@ This page connects package interfaces to the workflows an operator actually perf
 ## Stability
 
 Keep it aligned with the existing commands, endpoints, and outputs.
+
+## Core Claim
+
+The interface claim of `bijux-canon-reason` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

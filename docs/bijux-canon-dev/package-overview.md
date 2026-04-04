@@ -92,3 +92,7 @@ This page gives the shortest honest description of why the package exists.
 ## Stability
 
 Keep this page aligned with real maintainer behavior, not aspirational tooling that does not yet exist.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

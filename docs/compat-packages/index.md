@@ -117,3 +117,7 @@ This page explains the role of the compatibility handbooks without encouraging n
 ## Stability
 
 Keep it aligned with the legacy packages that still ship from `packages/compat-*`.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

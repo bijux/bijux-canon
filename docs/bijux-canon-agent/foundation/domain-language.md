@@ -91,3 +91,7 @@ This page records the naming anchors that should stay stable in docs, code, and 
 ## Stability
 
 Keep it aligned with the package's real import names, directories, and artifact nouns.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-agent` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

@@ -96,3 +96,7 @@ This page explains which structured shapes deserve compatibility review.
 ## Stability
 
 Keep it aligned with tracked schemas, stable models, and durable artifacts.
+
+## Core Claim
+
+The interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

@@ -96,3 +96,7 @@ This page keeps the package relationships visible from one place before a reader
 ## Stability
 
 Update this page only when package ownership changes, not for ordinary internal refactors.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

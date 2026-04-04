@@ -95,3 +95,7 @@ This page prevents maintenance code from becoming an unbounded dumping ground.
 ## Stability
 
 Update this page only when ownership truly moves into or out of the maintenance package.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

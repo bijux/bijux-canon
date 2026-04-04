@@ -96,3 +96,7 @@ This page records how to choose meaningful validation for package work.
 ## Stability
 
 Keep it aligned with the package's current test layout and docs structure.
+
+## Core Claim
+
+The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

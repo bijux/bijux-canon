@@ -98,3 +98,7 @@ This page connects the root commit conventions to the package release mechanism.
 ## Stability
 
 Keep this page aligned with the release tooling that is actually configured in the repository.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

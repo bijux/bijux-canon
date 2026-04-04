@@ -54,6 +54,10 @@ flowchart TD
 - move into the owning application or domain module
 - finish in the tests that protect the behavior
 
+## Core Claim
+
+The architectural claim of `bijux-canon-index` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.
+
 ## Concrete Anchors
 
 - `src/bijux_canon_index/domain` for execution, provenance, and request semantics

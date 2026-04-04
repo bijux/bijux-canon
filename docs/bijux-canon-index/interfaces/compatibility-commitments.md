@@ -95,3 +95,7 @@ This page describes what should trigger compatibility review for the package.
 ## Stability
 
 Keep it aligned with the package's actual public surfaces and release process.
+
+## Core Claim
+
+The interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

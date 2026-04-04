@@ -96,3 +96,7 @@ This page records the posture for performance work in `bijux-canon-ingest`.
 ## Stability
 
 Keep it aligned with the package's actual performance-sensitive paths and validation surfaces.
+
+## Core Claim
+
+The operational claim of `bijux-canon-ingest` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

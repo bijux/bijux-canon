@@ -96,3 +96,7 @@ This page tells maintainers where setup truth actually lives for the package.
 ## Stability
 
 Keep it aligned with `pyproject.toml` and the checked-in package metadata.
+
+## Core Claim
+
+The operational claim of `bijux-canon-index` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

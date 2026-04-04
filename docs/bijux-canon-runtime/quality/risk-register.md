@@ -90,3 +90,7 @@ This page keeps long-lived package risks visible to maintainers.
 ## Stability
 
 Update it when the durable risk profile changes, not for routine day-to-day churn.
+
+## Core Claim
+
+The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

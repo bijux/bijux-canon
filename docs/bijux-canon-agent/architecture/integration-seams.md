@@ -95,3 +95,7 @@ This page explains where to look when integration behavior changes.
 ## Stability
 
 Keep it aligned with real boundary modules and schema files.
+
+## Core Claim
+
+The architectural claim of `bijux-canon-agent` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

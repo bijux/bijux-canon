@@ -91,3 +91,7 @@ This page marks which outputs need stable review when behavior changes.
 ## Stability
 
 Keep it aligned with the package outputs that are actually produced and consumed.
+
+## Core Claim
+
+The interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

@@ -90,3 +90,7 @@ This page records the maintenance package role in release preparation.
 ## Stability
 
 Keep it aligned with the real release support code and the actual versioning workflow.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

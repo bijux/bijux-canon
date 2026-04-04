@@ -114,3 +114,7 @@ This page explains how to use the quality section for `bijux-canon-agent` withou
 ## Stability
 
 This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+
+## Core Claim
+
+The quality claim of `bijux-canon-agent` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

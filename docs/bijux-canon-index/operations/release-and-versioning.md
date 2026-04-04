@@ -95,3 +95,7 @@ This page ties package-local release mechanics to the wider repository release m
 ## Stability
 
 Keep it aligned with the package metadata and current versioning configuration.
+
+## Core Claim
+
+The operational claim of `bijux-canon-index` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

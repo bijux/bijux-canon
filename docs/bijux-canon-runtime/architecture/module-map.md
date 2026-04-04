@@ -92,3 +92,7 @@ This page provides a shortest-path code map for the package.
 ## Stability
 
 Keep it aligned with the actual source directories under `packages/bijux-canon-runtime`.
+
+## Core Claim
+
+The architectural claim of `bijux-canon-runtime` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

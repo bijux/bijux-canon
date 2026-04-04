@@ -96,3 +96,7 @@ This page keeps future work from leaking into the wrong package.
 ## Stability
 
 Update it only when ownership truly moves into or out of `bijux-canon-index`.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-index` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

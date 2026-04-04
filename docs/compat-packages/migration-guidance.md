@@ -90,3 +90,7 @@ This page tells maintainers how to move away from legacy names without ambiguity
 ## Stability
 
 Keep it aligned with the canonical packages that compatibility packages currently point to.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

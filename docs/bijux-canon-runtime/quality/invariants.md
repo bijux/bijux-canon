@@ -96,3 +96,7 @@ This page records the kinds of promises that should not drift casually.
 ## Stability
 
 Keep it aligned with invariant-focused tests and documented package guarantees.
+
+## Core Claim
+
+The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

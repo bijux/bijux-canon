@@ -89,3 +89,7 @@ This page records a compact review lens for package changes.
 ## Stability
 
 Update it only when the package review posture genuinely changes.
+
+## Core Claim
+
+The quality claim of `bijux-canon-index` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

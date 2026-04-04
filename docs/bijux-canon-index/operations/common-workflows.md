@@ -98,3 +98,7 @@ This page makes common package workflows easier to repeat consistently.
 ## Stability
 
 Keep it aligned with the actual package structure and tests.
+
+## Core Claim
+
+The operational claim of `bijux-canon-index` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

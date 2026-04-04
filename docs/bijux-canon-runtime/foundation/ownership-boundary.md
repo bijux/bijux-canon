@@ -97,3 +97,7 @@ This page ties package ownership to concrete directories instead of abstract slo
 ## Stability
 
 Keep it aligned with the current module layout.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-runtime` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

@@ -89,3 +89,7 @@ This page records the package-specific contribution posture.
 ## Stability
 
 Update these principles only when the package operating model truly changes.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-agent` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

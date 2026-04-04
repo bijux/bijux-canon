@@ -97,3 +97,7 @@ This page records how to reason about failures in architecture review.
 ## Stability
 
 Keep it aligned with the actual error-handling behavior and tests.
+
+## Core Claim
+
+The architectural claim of `bijux-canon-reason` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

@@ -90,3 +90,7 @@ This page records the expected maintenance posture for the package.
 ## Stability
 
 Update these guidelines only when the repository operating model genuinely changes.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

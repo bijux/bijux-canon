@@ -98,3 +98,7 @@ This page explains the relationship between package truth and repository truth.
 ## Stability
 
 Keep it aligned with the current test layout and CI workflows instead of aspirational future checks.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

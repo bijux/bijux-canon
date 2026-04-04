@@ -114,3 +114,7 @@ This page explains how to use the architecture section for `bijux-canon-index` w
 ## Stability
 
 This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+
+## Core Claim
+
+The architectural claim of `bijux-canon-index` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

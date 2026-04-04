@@ -90,3 +90,7 @@ This page explains what counts as sufficient validation for the compatibility la
 ## Stability
 
 Keep it aligned with the actual compatibility package tests or maintenance checks.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

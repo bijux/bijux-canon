@@ -89,3 +89,7 @@ This page reminds maintainers that packages are publishable units, not just fold
 ## Stability
 
 Keep it aligned with the package's actual distributable surface.
+
+## Core Claim
+
+The operational claim of `bijux-canon-runtime` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

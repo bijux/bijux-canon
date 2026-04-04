@@ -115,3 +115,7 @@ This page explains how to use the interfaces section for `bijux-canon-runtime` w
 ## Stability
 
 This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+
+## Core Claim
+
+The interface claim of `bijux-canon-runtime` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

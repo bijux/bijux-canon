@@ -92,3 +92,7 @@ This page explains which Python import names remain preserved.
 ## Stability
 
 Keep it aligned with the `src/` roots inside the compatibility packages.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

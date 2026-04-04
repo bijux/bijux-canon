@@ -98,3 +98,7 @@ This page records the preferred development posture for the workspace without re
 ## Stability
 
 Keep this page aligned with the root automation files that actually exist.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

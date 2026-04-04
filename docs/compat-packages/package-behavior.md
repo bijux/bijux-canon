@@ -91,3 +91,7 @@ This page describes the intended minimalism of the compatibility layer.
 ## Stability
 
 Keep it aligned with the actual package contents in `packages/compat-*`.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

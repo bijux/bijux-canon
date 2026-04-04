@@ -90,3 +90,7 @@ This page keeps the import-facing contract visible when refactoring package inte
 ## Stability
 
 Keep it aligned with the actual package source tree and documented import paths.
+
+## Core Claim
+
+The interface claim of `bijux-canon-reason` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

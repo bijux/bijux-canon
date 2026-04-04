@@ -95,3 +95,7 @@ This page records where maintainers can find real invocation examples instead of
 ## Stability
 
 Keep it aligned with the checked-in examples, fixtures, and executable tests.
+
+## Core Claim
+
+The interface claim of `bijux-canon-reason` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

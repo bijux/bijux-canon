@@ -96,3 +96,7 @@ This page keeps future work from leaking into the wrong package.
 ## Stability
 
 Update it only when ownership truly moves into or out of `bijux-canon-reason`.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-reason` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

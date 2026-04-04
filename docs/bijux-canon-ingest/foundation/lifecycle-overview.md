@@ -90,3 +90,7 @@ This page keeps the package lifecycle readable before a reader dives into implem
 ## Stability
 
 Keep it aligned with the current entrypoints and produced outputs.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-ingest` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

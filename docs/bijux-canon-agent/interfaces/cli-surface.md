@@ -89,3 +89,7 @@ This page points maintainers toward the command entrypoints and their owning cod
 ## Stability
 
 Keep it aligned with the declared scripts and the interface modules that implement them.
+
+## Core Claim
+
+The interface claim of `bijux-canon-agent` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

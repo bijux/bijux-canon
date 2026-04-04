@@ -55,6 +55,10 @@ flowchart TD
 - application orchestration that composes domain behavior
 - interfaces, APIs, and adapters that sit at the boundary
 
+## Core Claim
+
+The architectural claim of `bijux-canon-ingest` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.
+
 ## Concrete Anchors
 
 - `src/bijux_canon_ingest/processing` for deterministic document transforms

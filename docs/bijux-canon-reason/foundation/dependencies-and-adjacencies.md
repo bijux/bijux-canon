@@ -94,3 +94,7 @@ This page explains which surrounding tools and packages `bijux-canon-reason` dep
 ## Stability
 
 Keep it aligned with `pyproject.toml` and the actual package seams.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-reason` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

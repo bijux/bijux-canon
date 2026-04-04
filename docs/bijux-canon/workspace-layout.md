@@ -100,3 +100,7 @@ This page provides the shortest file-system map for the repository.
 ## Stability
 
 Keep this page aligned with the real root directories and remove any mention of retired roots.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

@@ -94,3 +94,7 @@ This page explains where configuration enters the package and how it should be r
 ## Stability
 
 Keep it aligned with real configuration loaders, defaults, and operator-facing options.
+
+## Core Claim
+
+The interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

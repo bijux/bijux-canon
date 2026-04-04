@@ -98,3 +98,7 @@ This page helps a reader quickly map package claims to code areas.
 ## Stability
 
 Keep it aligned with the real package modules and generated outputs.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-index` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

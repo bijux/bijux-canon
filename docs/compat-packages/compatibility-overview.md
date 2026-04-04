@@ -90,3 +90,7 @@ This page gives the shortest honest description of why the compatibility package
 ## Stability
 
 Keep it aligned with the actual compatibility promises that are still checked in.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

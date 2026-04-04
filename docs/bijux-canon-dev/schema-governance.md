@@ -90,3 +90,7 @@ This page explains why schema drift detection belongs in the maintainer package.
 ## Stability
 
 Keep it aligned with the actual drift tooling and tracked schema files.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

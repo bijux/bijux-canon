@@ -90,3 +90,7 @@ This page explains the broad testing shape of the package.
 ## Stability
 
 Keep it aligned with the real test directories and the behaviors they protect.
+
+## Core Claim
+
+The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

@@ -101,3 +101,7 @@ This page gives the shortest description of what the repository is and why it is
 ## Stability
 
 Keep this page aligned with the real package set and the root-level automation that currently exists in the repository.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

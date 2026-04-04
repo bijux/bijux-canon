@@ -87,3 +87,7 @@ This page provides the exact mapping between retired public names and current ca
 ## Stability
 
 Update it only when a compatibility package is added or retired.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

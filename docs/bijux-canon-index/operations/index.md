@@ -114,3 +114,7 @@ This page explains how to use the operations section for `bijux-canon-index` wit
 ## Stability
 
 This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+
+## Core Claim
+
+The operational claim of `bijux-canon-index` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

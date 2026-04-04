@@ -89,3 +89,7 @@ This page keeps package docs from drifting back into ad hoc structure.
 ## Stability
 
 Update it only when the shared documentation system itself changes.
+
+## Core Claim
+
+The quality claim of `bijux-canon-agent` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

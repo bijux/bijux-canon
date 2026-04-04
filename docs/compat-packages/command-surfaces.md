@@ -89,3 +89,7 @@ This page records the intent behind legacy command preservation.
 ## Stability
 
 Keep it aligned with the command declarations in compatibility package metadata.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

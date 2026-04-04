@@ -88,3 +88,7 @@ This page is the shortest code-navigation aid for `bijux-canon-dev`.
 ## Stability
 
 Keep it aligned with actual package modules and remove retired directories promptly.
+
+## Core Claim
+
+Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

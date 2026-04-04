@@ -96,3 +96,7 @@ This page gives the shortest honest description of what the package is for.
 ## Stability
 
 Keep it aligned with the real package boundary described by the code and tests.
+
+## Core Claim
+
+The foundational claim of `bijux-canon-reason` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

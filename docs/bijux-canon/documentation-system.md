@@ -95,3 +95,7 @@ This page records the handbook system itself so the structure stays intentional 
 ## Stability
 
 Keep this page aligned with the actual docs tree and the layout rules enforced by this documentation catalog.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

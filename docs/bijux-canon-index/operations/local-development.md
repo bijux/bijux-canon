@@ -91,3 +91,7 @@ This page records the package-local development posture.
 ## Stability
 
 Keep it aligned with the actual test layout and maintenance workflow.
+
+## Core Claim
+
+The operational claim of `bijux-canon-index` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

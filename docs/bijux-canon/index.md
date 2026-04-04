@@ -123,3 +123,7 @@ This page explains how to use the repository handbook without duplicating the pa
 ## Stability
 
 This page is part of the canonical docs spine. Keep it aligned with the current repository layout and the actual package set declared in `pyproject.toml`.
+
+## Core Claim
+
+Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

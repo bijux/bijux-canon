@@ -95,3 +95,7 @@ This page explains why dependency review matters for the package.
 ## Stability
 
 Keep it aligned with `pyproject.toml` and the package's real dependency posture.
+
+## Core Claim
+
+The quality claim of `bijux-canon-agent` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

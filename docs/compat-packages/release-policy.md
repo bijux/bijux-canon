@@ -91,3 +91,7 @@ This page keeps compatibility releases from drifting into independent product wo
 ## Stability
 
 Keep it aligned with the current maintenance strategy for legacy packages.
+
+## Core Claim
+
+Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.
