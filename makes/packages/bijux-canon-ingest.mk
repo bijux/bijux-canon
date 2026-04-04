@@ -37,14 +37,7 @@ PACKAGE_INSTALL_TARGETS := \
   fmt-artifacts lint-artifacts interrogate-report
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
-include $(ROOT_MAKE_DIR)/test.mk
-include $(ROOT_MAKE_DIR)/lint.mk
-include $(ROOT_MAKE_DIR)/api.mk
-include $(ROOT_MAKE_DIR)/build.mk
-include $(ROOT_MAKE_DIR)/quality.mk
-include $(ROOT_MAKE_DIR)/security.mk
-include $(ROOT_MAKE_DIR)/sbom.mk
-include $(ROOT_MAKE_DIR)/publish.mk
+include $(ROOT_MAKE_DIR)/package-primary.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 

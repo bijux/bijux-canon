@@ -46,14 +46,7 @@ PACKAGE_CLEAN_PATHS := \
 PACKAGE_ALL_TARGETS := clean install fmt lint test quality api security sbom
 PACKAGE_ALL_MESSAGE := [OK] All targets completed
 
-# Modular Includes
-include $(ROOT_MAKE_DIR)/lint.mk
-include $(ROOT_MAKE_DIR)/test.mk
-include $(ROOT_MAKE_DIR)/api.mk
-include $(ROOT_MAKE_DIR)/security.mk
-include $(ROOT_MAKE_DIR)/sbom.mk
-include $(ROOT_MAKE_DIR)/quality.mk
-include $(ROOT_MAKE_DIR)/publish.mk
+include $(ROOT_MAKE_DIR)/package-primary.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
