@@ -10,6 +10,10 @@ from bijux_canon_agent.agents.file_reader.capabilities.dispatch import (
     ExtractionHandlers,
     FileExtractionDispatcher,
 )
+from bijux_canon_agent.agents.file_reader.capabilities.structure_preview import (
+    analyze_json_structure,
+    create_structure_preview,
+)
 from bijux_canon_agent.agents.file_reader.capabilities.structured import (
     HAS_PANDAS,
     StructuredExtractor,
@@ -154,3 +158,25 @@ def test_dispatcher_routes_custom_extractors(
     )
 
     assert plan.processing_method == "custom_custom_reader"
+
+
+def test_create_structure_preview_handles_markdown_text() -> None:
+    preview = create_structure_preview(
+        ".md",
+        {"text": "# Title\nbody"},
+        text_extensions={".md"},
+        image_extensions={".png"},
+        yaml_extensions={".yaml", ".yml"},
+        xml_extensions={".xml"},
+        docx_extensions={".docx"},
+    )
+
+    assert preview["format"] == "md"
+    assert preview["section_count"] == 1
+
+
+def test_analyze_json_structure_limits_depth() -> None:
+    structure = analyze_json_structure({"alpha": {"beta": {"gamma": 1}}}, max_depth=1)
+
+    assert structure["type"] == "object"
+    assert structure["sample_values"]["alpha"]["truncated"] is True

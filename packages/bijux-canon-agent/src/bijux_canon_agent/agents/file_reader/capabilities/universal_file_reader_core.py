@@ -29,6 +29,7 @@ from .binary import (
     IMAGE_EXTENSIONS as BINARY_IMAGE_EXTENSIONS,
 )
 from .dispatch import ExtractionHandlers, FileExtractionDispatcher
+from .structure_preview import create_structure_preview
 from .structured import (
     HAS_PANDAS,
     HAS_XML,
@@ -294,168 +295,6 @@ class UniversalFileReader:
                 "action_plan": ["Verify file integrity or register a custom extractor"],
             }
 
-    def _create_structure_preview(
-        self, extension: str, result: dict[str, Any]
-    ) -> dict[str, Any]:
-        """Create a structural preview of the file content.
-
-        Args:
-            extension: File extension.
-            result: Extraction result.
-
-        Returns:
-            Dictionary containing structural information.
-        """
-        ext = extension.lower()
-        preview: dict[str, Any] = {"format": ext.lstrip(".")}
-
-        if ext in self.TEXT_EXTENSIONS and "text" in result:
-            lines = result["text"].splitlines()
-            # Basic section detection (e.g., lines starting with # for markdown)
-            sections = [
-                {"title": line, "depth": line.count("#")}
-                for line in lines
-                if line.startswith("#")
-            ]
-            preview.update(
-                {
-                    "line_count": len(lines),
-                    "character_count": len(result["text"]),
-                    "sample_lines": lines[:5],
-                    "sections": sections[:10],
-                    "section_count": len(sections),
-                    "tables": [],
-                    "images": [],
-                }
-            )
-        elif ext == ".json" and "parsed" in result:
-            preview.update(
-                {
-                    "data_type": result.get("data_type", "unknown"),
-                    "structure": self._analyze_json_structure(result["parsed"]),
-                    "sections": [],
-                    "tables": [],
-                    "images": [],
-                }
-            )
-        elif ext == ".csv" and "columns" in result:
-            preview.update(
-                {
-                    "columns": result["columns"],
-                    "row_count": result.get("n_rows", 0),
-                    "column_count": result.get("n_columns", 0),
-                    "sections": [],
-                    "tables": [
-                        {
-                            "columns": result["columns"],
-                            "sample_rows": result.get("sample_data", []),
-                        }
-                    ],
-                    "images": [],
-                }
-            )
-        elif ext in self.YAML_EXTENSIONS and "parsed" in result:
-            preview.update(
-                {
-                    "data_type": result.get("data_type", "unknown"),
-                    "structure": self._analyze_json_structure(result["parsed"]),
-                    "sections": [],
-                    "tables": [],
-                    "images": [],
-                }
-            )
-        elif ext in self.XML_EXTENSIONS and "parsed" in result:
-            preview.update(
-                {
-                    "root_tag": result.get("root_tag"),
-                    "structure": self._analyze_json_structure(result["parsed"]),
-                    "sections": [],
-                    "tables": [],
-                    "images": [],
-                }
-            )
-        elif ext in self.DOCX_EXTENSIONS and "text" in result:
-            lines = result["text"].splitlines()
-            preview.update(
-                {
-                    "line_count": len(lines),
-                    "character_count": len(result["text"]),
-                    "sample_lines": lines[:5],
-                    "paragraph_count": result.get("paragraph_count", 0),
-                    "sections": [],
-                    "tables": [],
-                    "images": [],
-                }
-            )
-        elif ext == ".pdf":
-            preview.update(
-                {
-                    "page_count": result.get("page_count"),
-                    "ocr_used": result.get("ocr_used", False),
-                    "has_text": bool(result.get("text", "").strip()),
-                    "sections": [],
-                    "tables": [],
-                    "images": [],
-                }
-            )
-        elif ext in self.IMAGE_EXTENSIONS:
-            if "image_size" in result:
-                preview.update(
-                    {
-                        "image_size": result["image_size"],
-                        "image_mode": result.get("image_mode"),
-                        "has_text": bool(result.get("text", "").strip()),
-                        "sections": [],
-                        "tables": [],
-                        "images": [
-                            {
-                                "size": result["image_size"],
-                                "mode": result.get("image_mode"),
-                            }
-                        ],
-                    }
-                )
-
-        return preview
-
-    @staticmethod
-    def _analyze_json_structure(data: Any, max_depth: int = 3) -> dict[str, Any]:
-        """Analyze the structure of JSON data.
-
-        Args:
-            data: JSON data to analyze.
-            max_depth: Maximum depth to traverse.
-
-        Returns:
-            Dictionary describing the structure.
-        """
-        if max_depth <= 0:
-            return {"type": type(data).__name__, "truncated": True}
-
-        if isinstance(data, dict):
-            return {
-                "type": "object",
-                "keys": list(data.keys())[:10],  # Limit to first 10 keys
-                "key_count": len(data),
-                "sample_values": {
-                    key: UniversalFileReader._analyze_json_structure(
-                        value, max_depth - 1
-                    )
-                    for key, value in list(data.items())[:3]
-                },
-            }
-        elif isinstance(data, list):
-            return {
-                "type": "array",
-                "length": len(data),
-                "sample_items": [
-                    UniversalFileReader._analyze_json_structure(item, max_depth - 1)
-                    for item in data[:3]
-                ],
-            }
-        else:
-            return {"type": type(data).__name__, "value": str(data)[:100]}
-
     async def read_file(self, file_path: str | Path) -> dict[str, Any]:
         """Main method to process a file and extract its content asynchronously.
 
@@ -533,7 +372,15 @@ class UniversalFileReader:
                     "file_extension": extension,
                     "processing_method": extraction_plan.processing_method,
                 },
-                "structure_preview": self._create_structure_preview(extension, result),
+                "structure_preview": create_structure_preview(
+                    extension,
+                    result,
+                    text_extensions=self.TEXT_EXTENSIONS,
+                    image_extensions=self.IMAGE_EXTENSIONS,
+                    yaml_extensions=self.YAML_EXTENSIONS,
+                    xml_extensions=self.XML_EXTENSIONS,
+                    docx_extensions=self.DOCX_EXTENSIONS,
+                ),
                 "audit_trail": {
                     "file_path": str(file_path),
                     "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
