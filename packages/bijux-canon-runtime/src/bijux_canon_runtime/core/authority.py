@@ -41,16 +41,26 @@ Mode = Literal["plan", "dry-run", "live", "observe", "unsafe"]
 class _Event(Protocol):
     """Internal helper type; not part of the public API."""
 
-    event_type: EventType
+    @property
+    def event_type(self) -> EventType:
+        """Event type for semantic checks."""
+        ...
 
 
 class _Trace(Protocol):
     """Internal helper type; not part of the public API."""
 
-    finalized: bool
-    events: Sequence[_Event]
+    @property
+    def finalized(self) -> bool:
+        """Whether the trace has been finalized."""
+        ...
 
-    def finalize(self) -> None:
+    @property
+    def events(self) -> Sequence[_Event]:
+        """Recorded execution events."""
+        ...
+
+    def finalize(self) -> object:
         """Freeze the trace in place."""
         ...
 
@@ -58,10 +68,25 @@ class _Trace(Protocol):
 class _RunResult(Protocol):
     """Internal helper type; not part of the public API."""
 
-    trace: _Trace | None
-    verification_results: Sequence[object]
-    verification_arbitrations: Sequence[VerificationArbitration]
-    reasoning_bundles: Sequence[object]
+    @property
+    def trace(self) -> _Trace | None:
+        """Returned execution trace."""
+        ...
+
+    @property
+    def verification_results(self) -> Sequence[object]:
+        """Per-step verification results."""
+        ...
+
+    @property
+    def verification_arbitrations(self) -> Sequence[VerificationArbitration]:
+        """Verification arbitration decisions."""
+        ...
+
+    @property
+    def reasoning_bundles(self) -> Sequence[object]:
+        """Reasoning bundles produced during execution."""
+        ...
 
 
 @dataclass(frozen=True)

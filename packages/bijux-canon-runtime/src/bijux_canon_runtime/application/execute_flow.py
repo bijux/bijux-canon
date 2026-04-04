@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 import os
+from typing import Protocol
 
 from bijux_canon_runtime.application.execution_persistence import (
     ResumeState,
@@ -68,6 +69,7 @@ from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 from bijux_canon_runtime.runtime.execution.dry_run_executor import DryRunExecutor
 from bijux_canon_runtime.runtime.execution.live_executor import LiveExecutor
 from bijux_canon_runtime.runtime.execution.observer_executor import ObserverExecutor
+from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 
 @dataclass(frozen=True)
@@ -126,7 +128,7 @@ class PreparedFlow:
     resolved_flow: ExecutionPlan
     config: ExecutionConfig
     context: ExecutionContext
-    strategy: object
+    strategy: _ExecutionStrategy
     run_id: RunID
 
 
@@ -145,6 +147,16 @@ class ExecutionStartState:
     initial_evidence: list[RetrievedEvidence] = field(default_factory=list)
     initial_tool_invocations: list[ToolInvocation] = field(default_factory=list)
     trace_recorder: TraceRecorder = field(default_factory=TraceRecorder)
+
+
+class _ExecutionStrategy(Protocol):
+    """Execution strategy contract for prepared flows."""
+
+    def execute(
+        self, plan: ExecutionPlan, context: ExecutionContext
+    ) -> ExecutionOutcome:
+        """Execute a prepared plan within the given context."""
+        ...
 
 
 class FlowPreparation:
@@ -171,6 +183,8 @@ class FlowPreparation:
         if execution_config.determinism_level is None:
             raise ConfigurationError("determinism_level must be explicit")
         if resolved_flow is None:
+            if manifest is None:
+                raise ValueError("manifest is required when resolved_flow is absent")
             resolved_flow = ExecutionPlanner().resolve(manifest)
         if execution_config.mode == RunMode.PLAN:
             return self._prepare_plan_flow(
@@ -209,7 +223,7 @@ class FlowPreparation:
             config=execution_config,
             context=context,
             strategy=strategy,
-            run_id=start_state.run_id,
+            run_id=self._require_run_id(start_state),
         )
 
     def _effective_config(self) -> ExecutionConfig:
@@ -271,13 +285,20 @@ class FlowPreparation:
         validate_non_determinism_policy(resolved_flow, execution_config)
         return execution_config
 
-    def _strategy_for_mode(self, mode: RunMode) -> object:
+    def _strategy_for_mode(self, mode: RunMode) -> _ExecutionStrategy:
         """Internal helper; not part of the public API."""
         if mode == RunMode.DRY_RUN:
             return DryRunExecutor()
         if mode == RunMode.OBSERVE:
             return ObserverExecutor()
         return LiveExecutor()
+
+    @staticmethod
+    def _require_run_id(start_state: ExecutionStartState) -> RunID:
+        """Internal helper; not part of the public API."""
+        if start_state.run_id is None:
+            raise RuntimeError("run_id must be registered before execution")
+        return start_state.run_id
 
     @staticmethod
     def _make_entropy_lifecycle(
@@ -380,9 +401,12 @@ class FlowPreparation:
         )
         if not relaxed_determinism and not permissive_verification:
             return start_state.starting_event_index
-        payload = {
+        determinism_level = execution_config.determinism_level
+        if determinism_level is None:
+            raise ConfigurationError("determinism_level must be explicit")
+        payload: dict[str, object] = {
             "warning": "unsafe_config",
-            "determinism_level": execution_config.determinism_level.value,
+            "determinism_level": determinism_level.value,
             "verification_failure_mode": (
                 execution_config.verification_policy.failure_mode
                 if execution_config.verification_policy is not None
