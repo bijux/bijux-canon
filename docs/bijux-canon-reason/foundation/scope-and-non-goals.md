@@ -73,6 +73,12 @@ flowchart TD
 - what remains outside the package boundary
 - which neighboring seams a reviewer should compare next
 
+## Reviewer Lens
+
+- compare the stated package boundary with the owned modules and tests
+- check that out-of-scope work is not quietly reintroduced through adjacent packages
+- confirm that the package description still matches the real repository layout
+
 ## Purpose
 
 This page keeps future work from leaking into the wrong package.

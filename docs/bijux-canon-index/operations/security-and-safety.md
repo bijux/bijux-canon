@@ -70,6 +70,12 @@ Any change that broadens package authority should update docs, tests, and releas
 - which files or tests matter during package operation
 - where an operator should look when behavior changes
 
+## Reviewer Lens
+
+- verify that setup, workflow, and release references still match package metadata
+- check that operational docs point at current diagnostics and validation paths
+- confirm that release-facing claims match the package's actual versioning files
+
 ## Purpose
 
 This page keeps security review grounded in concrete package seams.

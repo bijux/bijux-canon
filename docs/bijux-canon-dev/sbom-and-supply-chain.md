@@ -67,6 +67,12 @@ flowchart TD
 - which maintainer modules or tests support that concern
 - what a reviewer should confirm before changing repository automation
 
+## Reviewer Lens
+
+- compare the described maintainer behavior with the actual helper modules and tests
+- check that maintainer-only guidance has not leaked into product-facing pages
+- confirm that repository automation still names its package impact explicitly
+
 ## Purpose
 
 This page explains the home for supply-chain oriented repository tooling.

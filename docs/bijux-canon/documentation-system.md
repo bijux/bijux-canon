@@ -72,6 +72,12 @@ flowchart TD
 - which shared assets or workflows a reviewer should inspect
 - how the repository boundary differs from package-local ownership
 
+## Reviewer Lens
+
+- compare the page claims with the real root files, workflows, or schema assets
+- check that repository guidance still stops where package ownership begins
+- confirm that any repository rule described here is still enforceable in code or automation
+
 ## Purpose
 
 This page records the handbook system itself so the structure stays intentional instead of growing ad hoc again.

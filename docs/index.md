@@ -112,6 +112,12 @@ flowchart TD
 - how the repository, package, maintainer, and compatibility docs relate
 - what the current documentation system is expected to cover
 
+## Reviewer Lens
+
+- check that every rendered handbook section still belongs in the root site
+- look for package or maintainer material that should have moved to a more specific section
+- confirm that the home page still routes readers to the fastest useful entrypoint
+
 ## Purpose
 
 This page routes readers into the canonical repository and package handbooks without mixing product ownership with maintenance-only or legacy-only concerns.

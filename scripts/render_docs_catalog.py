@@ -702,6 +702,40 @@ def package_page_reader_fit(
     return fit_map[category]
 
 
+def package_page_reviewer_lens(
+    package: PackageInfo,
+    category: str,
+) -> tuple[str, ...]:
+    lens_map = {
+        "foundation": (
+            "compare the stated package boundary with the owned modules and tests",
+            "check that out-of-scope work is not quietly reintroduced through adjacent packages",
+            "confirm that the package description still matches the real repository layout",
+        ),
+        "architecture": (
+            "trace the claimed execution path through the listed modules",
+            "look for dependency direction that now contradicts the documented seam",
+            "verify that architectural risks still match the current code structure",
+        ),
+        "interfaces": (
+            "compare commands, API files, imports, and artifacts against the documented surface",
+            "check whether schema or artifact changes need compatibility review",
+            "confirm that operator-facing examples still point at real entrypoints",
+        ),
+        "operations": (
+            "verify that setup, workflow, and release references still match package metadata",
+            "check that operational docs point at current diagnostics and validation paths",
+            "confirm that release-facing claims match the package's actual versioning files",
+        ),
+        "quality": (
+            "compare the documented proof strategy with the current test layout",
+            "look for limitations or risks that should have been updated by recent changes",
+            "verify that the page's definition of done still reflects real validation practice",
+        ),
+    }
+    return lens_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -712,6 +746,17 @@ def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     )
     if "## What This Page Answers" in body:
         return insert_before_heading(body, "What This Page Answers", block)
+    return insert_before_heading(body, "Purpose", block)
+
+
+def add_reviewer_lens_section(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Reviewer Lens",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
     return insert_before_heading(body, "Purpose", block)
 
 
@@ -808,6 +853,14 @@ def render_home(
             "which handbook to open first for a given repository question",
             "how the repository, package, maintainer, and compatibility docs relate",
             "what the current documentation system is expected to cover",
+        ),
+    )
+    body = add_reviewer_lens_section(
+        body,
+        (
+            "check that every rendered handbook section still belongs in the root site",
+            "look for package or maintainer material that should have moved to a more specific section",
+            "confirm that the home page still routes readers to the fastest useful entrypoint",
         ),
     )
     return "\n".join(
@@ -1147,6 +1200,14 @@ def render_root_page(
             "how the repository boundary differs from package-local ownership",
         ),
     )
+    body = add_reviewer_lens_section(
+        body,
+        (
+            "compare the page claims with the real root files, workflows, or schema assets",
+            "check that repository guidance still stops where package ownership begins",
+            "confirm that any repository rule described here is still enforceable in code or automation",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "guide"),
@@ -1423,6 +1484,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "what a reviewer should confirm before changing repository automation",
         ),
     )
+    body = add_reviewer_lens_section(
+        body,
+        (
+            "compare the described maintainer behavior with the actual helper modules and tests",
+            "check that maintainer-only guidance has not leaked into product-facing pages",
+            "confirm that repository automation still names its package impact explicitly",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "guide"),
@@ -1693,6 +1762,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "what evidence would justify retiring a compatibility package",
         ),
     )
+    body = add_reviewer_lens_section(
+        body,
+        (
+            "compare legacy names here with the compatibility package metadata and README targets",
+            "check that migration advice still points at current canonical docs",
+            "confirm that compatibility language does not accidentally encourage new work to start here",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "guide"),
@@ -1789,6 +1866,7 @@ def render_package_page(
     )
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
+    body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
     return "\n".join(
         [
             front_matter(title, package.owner, "index" if slug == "index" else "guide"),

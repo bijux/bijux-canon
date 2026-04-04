@@ -70,6 +70,12 @@ flowchart TD
 - which artifacts and schemas act like contracts
 - what compatibility pressure this surface creates
 
+## Reviewer Lens
+
+- compare commands, API files, imports, and artifacts against the documented surface
+- check whether schema or artifact changes need compatibility review
+- confirm that operator-facing examples still point at real entrypoints
+
 ## Purpose
 
 This page ties API behavior to tracked code and schema assets.

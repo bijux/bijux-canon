@@ -66,6 +66,12 @@ provides a meaningful route behind it.
 - when new work should move to the canonical package instead
 - what evidence would justify retiring a compatibility package
 
+## Reviewer Lens
+
+- compare legacy names here with the compatibility package metadata and README targets
+- check that migration advice still points at current canonical docs
+- confirm that compatibility language does not accidentally encourage new work to start here
+
 ## Purpose
 
 This page records the intent behind legacy command preservation.

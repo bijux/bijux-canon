@@ -71,6 +71,12 @@ flowchart TD
 - which files or tests matter during package operation
 - where an operator should look when behavior changes
 
+## Reviewer Lens
+
+- verify that setup, workflow, and release references still match package metadata
+- check that operational docs point at current diagnostics and validation paths
+- confirm that release-facing claims match the package's actual versioning files
+
 ## Purpose
 
 This page points readers toward the package's observable output and diagnostic support.

@@ -73,6 +73,12 @@ flowchart TD
 - which risks or limits still need explicit review
 - what a reviewer should verify before accepting change
 
+## Reviewer Lens
+
+- compare the documented proof strategy with the current test layout
+- look for limitations or risks that should have been updated by recent changes
+- verify that the page's definition of done still reflects real validation practice
+
 ## Purpose
 
 This page records how to choose meaningful validation for package work.

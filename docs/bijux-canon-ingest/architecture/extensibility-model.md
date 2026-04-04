@@ -73,6 +73,12 @@ Add extension points where the package already expects variation, and document t
 - which modules control the main execution path
 - where architectural drift would become visible first
 
+## Reviewer Lens
+
+- trace the claimed execution path through the listed modules
+- look for dependency direction that now contradicts the documented seam
+- verify that architectural risks still match the current code structure
+
 ## Purpose
 
 This page helps maintainers extend the package without smearing responsibilities together.
