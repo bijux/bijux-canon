@@ -20,6 +20,9 @@ releases when a tagged changelog existed.
 - The published docs URL for `bijux-rag` now has its own migration landing
   page inside the shared handbook instead of sending legacy readers directly to
   canonical ingest docs without context.
+- Release artifacts now ship the repository license and publish package-local
+  ignore rules instead of leaking repo-wide ignore policy into the source
+  distribution.
 
 ## 0.3.0 - 2026-04-04
 
