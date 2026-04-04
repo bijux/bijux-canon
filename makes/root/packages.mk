@@ -1,25 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-PRIMARY_PACKAGES := \
-	bijux-canon-dev \
-	bijux-canon-runtime \
-	bijux-canon-agent \
-	bijux-canon-ingest \
-	bijux-canon-reason \
-	bijux-canon-index
+ROOT_PACKAGE_PROFILE_DIR ?= $(ROOT_MAKEFILE_DIR)/packages
+ROOT_PACKAGE_PROFILE_FILES := $(wildcard $(ROOT_PACKAGE_PROFILE_DIR)/*.mk)
 
-COMPAT_PACKAGES := \
-	compat-agentic-flows \
-	compat-bijux-agent \
-	compat-bijux-rag \
-	compat-bijux-rar \
-	compat-bijux-vex
+PRIMARY_PACKAGES := $(sort $(basename $(notdir $(filter $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-%.mk,$(ROOT_PACKAGE_PROFILE_FILES)))))
+
+COMPAT_PACKAGES := $(sort $(basename $(notdir $(filter-out $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk,$(filter $(ROOT_PACKAGE_PROFILE_DIR)/compat-%.mk,$(ROOT_PACKAGE_PROFILE_FILES))))))
 
 ALL_PACKAGES := $(PRIMARY_PACKAGES) $(COMPAT_PACKAGES)
 CHECK_PACKAGES := $(ALL_PACKAGES)
 PACKAGE ?=
-PACKAGE_MAKE_DIR ?= $(CURDIR)/makes/packages
+PACKAGE_MAKE_DIR ?= $(ROOT_PACKAGE_PROFILE_DIR)
 PACKAGE_ALIASES := \
 	agentic-flows=bijux-canon-runtime \
 	bijux-agent=bijux-canon-agent \
