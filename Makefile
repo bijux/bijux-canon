@@ -23,6 +23,7 @@ export PYTHONPATH := $(CURDIR)/packages/bijux-canon-dev/src$(if $(PYTHONPATH),:$
 include $(CURDIR)/makes/root/dispatch.mk
 include $(CURDIR)/makes/root/toolchain.mk
 include $(CURDIR)/makes/root/cleanup.mk
+include $(CURDIR)/makes/root/docs.mk
 
 DEFAULT_GOAL := help
 .PHONY: \
@@ -54,106 +55,5 @@ list:
 
 list-all:
 	@printf "%s\n" $(ALL_PACKAGES)
-
-docs:
-	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
-	@rm -rf "$(ROOT_DOCS_BUILD_SITE_DIR)"
-	@rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"
-	@$(MAKE) root-check-env >/dev/null
-	@echo "==> root docs"
-	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" $(ROOT_DOCS_ENV) \
-	  "$(ROOT_CHECK_PYTHON)" -m mkdocs build --strict \
-	  --config-file "$(CURDIR)/mkdocs.yml" \
-	  --site-dir "$(ROOT_DOCS_BUILD_SITE_DIR)"
-	@test ! -e "$(CURDIR)/site"
-	@test ! -e "$(CURDIR)/.cache"
-	@echo "Docs built in $(ROOT_DOCS_BUILD_SITE_DIR)"
-
-docs-check:
-	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
-	@rm -rf "$(ROOT_DOCS_CHECK_SITE_DIR)"
-	@rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"
-	@$(MAKE) root-check-env >/dev/null
-	@echo "==> root docs check"
-	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" $(ROOT_DOCS_ENV) \
-	  "$(ROOT_CHECK_PYTHON)" -m mkdocs build --strict --quiet \
-	  --config-file "$(CURDIR)/mkdocs.yml" \
-	  --site-dir "$(ROOT_DOCS_CHECK_SITE_DIR)"
-	@test ! -e "$(CURDIR)/site"
-	@test ! -e "$(CURDIR)/.cache"
-	@echo "Docs check passed"
-
-docs-serve:
-	@set -eu; \
-	  mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"; \
-	  rm -rf "$(ROOT_DOCS_SERVE_SITE_DIR)"; \
-	  rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"; \
-	  $(MAKE) root-check-env >/dev/null; \
-	  addr="$(ROOT_DOCS_DEV_ADDR)"; \
-	  port="$${addr##*:}"; \
-	  if lsof_output="$$(lsof -nP -iTCP:$$port -sTCP:LISTEN 2>/dev/null)"; then \
-	    pid="$$(printf '%s\n' "$$lsof_output" | awk 'NR==2 {print $$2}')"; \
-	    command_line="$$(ps -p "$$pid" -o command= 2>/dev/null || true)"; \
-	    if printf '%s\n' "$$command_line" | grep -Fq -- "$(CURDIR)/artifacts/root/docs/mkdocs.serve.yml"; then \
-	      echo "==> root docs serve already running on http://$$addr (pid $$pid)"; \
-	      exit 0; \
-	    fi; \
-	    echo "Port $$addr is already in use by pid $$pid."; \
-	    if [ -n "$$command_line" ]; then \
-	      echo "$$command_line"; \
-	    fi; \
-	    echo "Stop that process or run 'make ROOT_DOCS_DEV_ADDR=127.0.0.1:<port> docs-serve'."; \
-	    exit 2; \
-	  fi; \
-	  script="$(ROOT_DOCS_ARTIFACTS_DIR)/render_root_docs_serve_config.py"; \
-	  printf '%s\n' \
-	    'from pathlib import Path' \
-	    'import os' \
-	    '' \
-	    'src = Path(os.environ["ROOT_DOCS_CFG"])' \
-	    'dst = Path(os.environ["ROOT_DOCS_SERVE_CFG"])' \
-	    'inherit_cfg = Path(os.environ["ROOT_DOCS_SHARED_CFG"]).resolve()' \
-	    'site_url = "http://" + os.environ["ROOT_DOCS_DEV_ADDR"] + "/"' \
-	    'docs_dir = Path(os.environ["ROOT_DOCS_SRC"]).resolve()' \
-	    'site_dir = Path(os.environ["ROOT_DOCS_SERVE_SITE_DIR"]).resolve()' \
-	    '' \
-	    'lines = src.read_text(encoding="utf-8").splitlines()' \
-	    'rewritten = []' \
-	    'wrote_inherit = False' \
-	    'wrote_site_url = False' \
-	    'wrote_docs_dir = False' \
-	    'wrote_site_dir = False' \
-	    'for line in lines:' \
-	    '    if line.startswith("INHERIT:"):' \
-	    '        rewritten.append(f"INHERIT: {inherit_cfg}")' \
-	    '        wrote_inherit = True' \
-	    '    elif line.startswith("site_url:"):' \
-	    '        rewritten.append(f"site_url: {site_url}")' \
-	    '        wrote_site_url = True' \
-	    '    elif line.startswith("docs_dir:"):' \
-	    '        rewritten.append(f"docs_dir: {docs_dir}")' \
-	    '        wrote_docs_dir = True' \
-	    '    elif line.startswith("site_dir:"):' \
-	    '        rewritten.append(f"site_dir: {site_dir}")' \
-	    '        wrote_site_dir = True' \
-	    '    else:' \
-	    '        rewritten.append(line)' \
-	    'if not wrote_inherit:' \
-	    '    rewritten.insert(0, f"INHERIT: {inherit_cfg}")' \
-	    'if not wrote_site_url:' \
-	    '    rewritten.append(f"site_url: {site_url}")' \
-	    'if not wrote_docs_dir:' \
-	    '    rewritten.append(f"docs_dir: {docs_dir}")' \
-	    'if not wrote_site_dir:' \
-	    '    rewritten.append(f"site_dir: {site_dir}")' \
-	    'dst.write_text("\n".join(rewritten) + "\n", encoding="utf-8")' \
-	    > "$$script"; \
-	  ROOT_DOCS_CFG="$(CURDIR)/mkdocs.yml" ROOT_DOCS_SHARED_CFG="$(CURDIR)/mkdocs.shared.yml" ROOT_DOCS_SERVE_CFG="$(ROOT_DOCS_SERVE_CFG)" ROOT_DOCS_DEV_ADDR="$(ROOT_DOCS_DEV_ADDR)" ROOT_DOCS_SRC="$(CURDIR)/docs" ROOT_DOCS_SERVE_SITE_DIR="$(ROOT_DOCS_SERVE_SITE_DIR)" \
-	    "$(ROOT_CHECK_PYTHON)" "$$script"; \
-	  echo "==> root docs serve on http://$(ROOT_DOCS_DEV_ADDR)"; \
-	  exec env XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" $(ROOT_DOCS_ENV) \
-	    "$(ROOT_CHECK_PYTHON)" -m mkdocs serve --strict \
-	    --config-file "$(ROOT_DOCS_SERVE_CFG)" \
-	    --dev-addr "$(ROOT_DOCS_DEV_ADDR)"
 
 all: test lint quality security docs api build sbom

@@ -1,17 +1,38 @@
 DOCS_PYTHON               ?= $(if $(wildcard $(VENV_PYTHON)),$(VENV_PYTHON),python3.11)
 DOCS_SITE_DIR             ?= $(PROJECT_ARTIFACTS_DIR)/docs/site
+DOCS_BUILD_SITE_DIR       ?= $(DOCS_SITE_DIR)
+DOCS_CHECK_SITE_DIR       ?= $(DOCS_SITE_DIR)
+DOCS_SERVE_SITE_DIR       ?= $(DOCS_SITE_DIR)
 DOCS_CACHE_DIR            ?= $(PROJECT_ARTIFACTS_DIR)/docs/.cache
 DOCS_SOURCE_DIR           ?= $(PROJECT_ARTIFACTS_DIR)/docs/source
 DOCS_EFFECTIVE_CONFIG     ?= $(PROJECT_ARTIFACTS_DIR)/docs/mkdocs.generated.yml
+DOCS_BUILD_CONFIG_FILE    ?= $(DOCS_EFFECTIVE_CONFIG)
+DOCS_CHECK_CONFIG_FILE    ?= $(DOCS_EFFECTIVE_CONFIG)
+DOCS_SERVE_CONFIG_FILE    ?= $(DOCS_EFFECTIVE_CONFIG)
 DOCS_PREPARE_SCRIPT       ?= $(PROJECT_ARTIFACTS_DIR)/docs/render_mkdocs_config.py
 DOCS_SHARED_ASSETS_DIR    ?= $(MONOREPO_ROOT)/docs/assets
 DOCS_DEV_ADDR             ?= 127.0.0.1:8001
 DOCS_SITE_URL             ?= http://127.0.0.1:8000/
+DOCS_BUILD_SITE_URL       ?= $(DOCS_SITE_URL)
+DOCS_CHECK_SITE_URL       ?= $(DOCS_SITE_URL)
+DOCS_SERVE_SITE_URL       ?= $(DOCS_SITE_URL)
 DOCS_BUILD_FLAGS          ?= --strict
 DOCS_DEPLOY_FLAGS         ?= --force
 DOCS_ENABLE_SOCIAL_CARDS  ?= false
 DOCS_EXTRA_CLEAN_PATHS    ?=
 DOCS_HYGIENE_FORBID_ROOT  ?= site .cache
+DOCS_BUILD_BOOTSTRAP_TARGETS ?=
+DOCS_CHECK_BOOTSTRAP_TARGETS ?=
+DOCS_SERVE_BOOTSTRAP_TARGETS ?=
+DOCS_BUILD_PREPARE_TARGETS ?= docs-prepare-source
+DOCS_CHECK_PREPARE_TARGETS ?= docs-prepare-source
+DOCS_SERVE_PREPARE_TARGETS ?= docs-prepare-source
+DOCS_BUILD_PRE_CLEAN_PATHS ?=
+DOCS_CHECK_PRE_CLEAN_PATHS ?=
+DOCS_SERVE_PRE_CLEAN_PATHS ?=
+DOCS_BUILD_ENV           ?=
+DOCS_CHECK_ENV           ?=
+DOCS_SERVE_ENV           ?=
 
 ifeq ($(shell uname -s),Darwin)
   DOCS_BREW_PREFIX   := $(shell command -v brew >/dev/null 2>&1 && brew --prefix)
@@ -30,31 +51,58 @@ endif
 
 .PHONY: docs docs-serve docs-deploy docs-check docs-clean docs-hygiene docs-prepare-source
 
-docs: docs-clean docs-prepare-source
+define run_docs_targets
+	@if [ -n "$(strip $(1))" ]; then \
+	  for target in $(1); do \
+	    echo "→ Running $$target"; \
+	    $(MAKE) "$$target"; \
+	  done; \
+	fi
+endef
+
+define clean_docs_paths
+	@if [ -n "$(strip $(1))" ]; then \
+	  rm -rf $(1); \
+	fi
+endef
+
+docs:
+	$(call run_docs_targets,$(DOCS_BUILD_BOOTSTRAP_TARGETS))
+	$(call clean_docs_paths,$(DOCS_BUILD_PRE_CLEAN_PATHS))
+	$(call run_docs_targets,$(DOCS_BUILD_PREPARE_TARGETS))
 	@echo "→ Building documentation"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
-	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" \
-	  "$(DOCS_PYTHON)" -m mkdocs build $(DOCS_BUILD_FLAGS) --config-file "$(DOCS_EFFECTIVE_CONFIG)" --site-dir "$(DOCS_SITE_DIR)"
+	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) $(DOCS_BUILD_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" SITE_URL="$(DOCS_BUILD_SITE_URL)" \
+	  "$(DOCS_PYTHON)" -m mkdocs build $(DOCS_BUILD_FLAGS) --config-file "$(DOCS_BUILD_CONFIG_FILE)" --site-dir "$(DOCS_BUILD_SITE_DIR)"
 	@$(MAKE) docs-hygiene
-	@echo "✔ Docs built → $(DOCS_SITE_DIR)"
+	@echo "✔ Docs built → $(DOCS_BUILD_SITE_DIR)"
 
-docs-serve: docs-prepare-source
+docs-serve:
+	$(call run_docs_targets,$(DOCS_SERVE_BOOTSTRAP_TARGETS))
+	$(call clean_docs_paths,$(DOCS_SERVE_PRE_CLEAN_PATHS))
+	$(call run_docs_targets,$(DOCS_SERVE_PREPARE_TARGETS))
 	@echo "→ Serving documentation on http://$(DOCS_DEV_ADDR)/"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
-	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) SITE_URL="$(DOCS_SITE_URL)" \
-	  "$(DOCS_PYTHON)" -m mkdocs serve --config-file "$(DOCS_EFFECTIVE_CONFIG)" --dev-addr "$(DOCS_DEV_ADDR)"
+	@exec env XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) $(DOCS_SERVE_ENV) SITE_URL="$(DOCS_SERVE_SITE_URL)" \
+	  "$(DOCS_PYTHON)" -m mkdocs serve --config-file "$(DOCS_SERVE_CONFIG_FILE)" --dev-addr "$(DOCS_DEV_ADDR)"
 
-docs-deploy: docs-clean docs-prepare-source
+docs-deploy:
+	$(call run_docs_targets,$(DOCS_BUILD_BOOTSTRAP_TARGETS))
+	$(call clean_docs_paths,$(DOCS_BUILD_PRE_CLEAN_PATHS))
+	$(call run_docs_targets,$(DOCS_BUILD_PREPARE_TARGETS))
 	@echo "→ Deploying documentation"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
-	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" SITE_URL="$(DOCS_SITE_URL)" \
-	  "$(DOCS_PYTHON)" -m mkdocs gh-deploy $(DOCS_BUILD_FLAGS) $(DOCS_DEPLOY_FLAGS) --config-file "$(DOCS_EFFECTIVE_CONFIG)" --site-dir "$(DOCS_SITE_DIR)"
+	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) $(DOCS_BUILD_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" SITE_URL="$(DOCS_BUILD_SITE_URL)" \
+	  "$(DOCS_PYTHON)" -m mkdocs gh-deploy $(DOCS_BUILD_FLAGS) $(DOCS_DEPLOY_FLAGS) --config-file "$(DOCS_BUILD_CONFIG_FILE)" --site-dir "$(DOCS_BUILD_SITE_DIR)"
 
-docs-check: docs-prepare-source
+docs-check:
+	$(call run_docs_targets,$(DOCS_CHECK_BOOTSTRAP_TARGETS))
+	$(call clean_docs_paths,$(DOCS_CHECK_PRE_CLEAN_PATHS))
+	$(call run_docs_targets,$(DOCS_CHECK_PREPARE_TARGETS))
 	@echo "→ Checking documentation build integrity"
 	@mkdir -p "$(DOCS_CACHE_DIR)"
-	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" \
-	  "$(DOCS_PYTHON)" -m mkdocs build $(DOCS_BUILD_FLAGS) --quiet --config-file "$(DOCS_EFFECTIVE_CONFIG)" --site-dir "$(DOCS_SITE_DIR)"
+	@XDG_CACHE_HOME="$(DOCS_CACHE_DIR)" $(DOCS_ENV) $(DOCS_CHECK_ENV) ENABLE_SOCIAL_CARDS="$(DOCS_ENABLE_SOCIAL_CARDS)" SITE_URL="$(DOCS_CHECK_SITE_URL)" \
+	  "$(DOCS_PYTHON)" -m mkdocs build $(DOCS_BUILD_FLAGS) --quiet --config-file "$(DOCS_CHECK_CONFIG_FILE)" --site-dir "$(DOCS_CHECK_SITE_DIR)"
 	@$(MAKE) docs-hygiene
 	@echo "✔ Docs check passed"
 
@@ -94,7 +142,16 @@ docs-prepare-source:
 
 docs-clean:
 	@echo "→ Cleaning documentation artifacts"
-	@rm -rf "$(DOCS_SITE_DIR)" "$(DOCS_CACHE_DIR)" "$(DOCS_SOURCE_DIR)" "$(DOCS_EFFECTIVE_CONFIG)" "$(DOCS_PREPARE_SCRIPT)" $(DOCS_EXTRA_CLEAN_PATHS)
+	@rm -rf \
+	  "$(DOCS_SITE_DIR)" \
+	  "$(DOCS_BUILD_SITE_DIR)" \
+	  "$(DOCS_CHECK_SITE_DIR)" \
+	  "$(DOCS_SERVE_SITE_DIR)" \
+	  "$(DOCS_CACHE_DIR)" \
+	  "$(DOCS_SOURCE_DIR)" \
+	  "$(DOCS_EFFECTIVE_CONFIG)" \
+	  "$(DOCS_PREPARE_SCRIPT)" \
+	  $(DOCS_EXTRA_CLEAN_PATHS)
 
 docs-hygiene:
 	@set -e; \
