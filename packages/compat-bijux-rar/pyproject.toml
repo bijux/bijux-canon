@@ -22,6 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Libraries",
   "Topic :: Security",
+  "Typing :: Typed",
 ]
 
 [project.urls]
@@ -29,7 +30,8 @@ Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-reason/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
-Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md"
+Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md"
+Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 
 [tool.hatch.version]
 source = "vcs"
@@ -42,6 +44,10 @@ canonical-name = "bijux-canon-reason"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_rar"]
+include = ["src/bijux_rar/py.typed"]
+
+[tool.hatch.build.targets.wheel.package-data]
+"bijux_rar" = ["py.typed"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py", "src/bijux_rar/**"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_rar/**"]

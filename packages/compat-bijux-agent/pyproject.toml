@@ -22,7 +22,8 @@ classifiers = [
     "Intended Audience :: Developers",
     "Development Status :: 4 - Beta",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Text Processing :: General"
+    "Topic :: Text Processing :: General",
+    "Typing :: Typed",
 ]
 
 [project.urls]
@@ -30,7 +31,8 @@ Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-agent/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
-Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/maintainer/CHANGELOG.md"
+Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-agent/CHANGELOG.md"
+Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 
 [project.scripts]
 bijux-agent = "bijux_canon_agent.interfaces.cli.entrypoint:cli"
@@ -46,6 +48,10 @@ canonical-name = "bijux-canon-agent"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_agent"]
+include = ["src/bijux_agent/py.typed"]
+
+[tool.hatch.build.targets.wheel.package-data]
+"bijux_agent" = ["py.typed"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py", "src/bijux_agent/**"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_agent/**"]

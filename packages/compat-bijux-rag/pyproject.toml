@@ -24,8 +24,9 @@ classifiers = [
 Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-ingest/"
-BugTracker = "https://github.com/bijux/bijux-canon/issues"
-Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md"
+Issues = "https://github.com/bijux/bijux-canon/issues"
+Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md"
+Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 
 [project.scripts]
 bijux-rag = "bijux_canon_ingest.interfaces.cli.entrypoint:main"
@@ -41,6 +42,10 @@ canonical-name = "bijux-canon-ingest"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_rag"]
+include = ["src/bijux_rag/py.typed"]
+
+[tool.hatch.build.targets.wheel.package-data]
+"bijux_rag" = ["py.typed"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "overview.md", "hatch_build.py", "src/bijux_rag/**"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_rag/**"]
