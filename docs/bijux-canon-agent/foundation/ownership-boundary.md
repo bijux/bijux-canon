@@ -1,0 +1,34 @@
+---
+title: Ownership Boundary
+audience: mixed
+type: guide
+status: canonical
+owner: bijux-canon-agent-docs
+last_reviewed: 2026-04-04
+---
+
+# Ownership Boundary
+
+Ownership in `bijux-canon-agent` is easiest to read from the source tree plus the tests that protect it.
+
+## Owned Code Areas
+
+- `src/bijux_canon_agent/agents` for role-local behavior
+- `src/bijux_canon_agent/pipeline` for execution flow orchestration
+- `src/bijux_canon_agent/application` for workflow policy and graph logic
+- `src/bijux_canon_agent/llm` for LLM runtime integration support
+- `src/bijux_canon_agent/interfaces` for CLI boundaries and operator helpers
+- `src/bijux_canon_agent/traces` for trace-facing models and persistence helpers
+
+## Adjacent Systems
+
+- coordinates work that may call ingest, reason, and runtime components
+- leans on runtime for governed execution and replay acceptance
+
+## Purpose
+
+This page ties package ownership to concrete directories instead of abstract slogans.
+
+## Stability
+
+Keep it aligned with the current module layout.

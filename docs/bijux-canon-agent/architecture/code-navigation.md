@@ -1,0 +1,42 @@
+---
+title: Code Navigation
+audience: mixed
+type: guide
+status: canonical
+owner: bijux-canon-agent-docs
+last_reviewed: 2026-04-04
+---
+
+# Code Navigation
+
+When you need to understand a change in `bijux-canon-agent`, use this reading order:
+
+## Reading Order
+
+- start at the relevant interface or API module
+- move into the owning application or domain module
+- finish in the tests that protect the behavior
+
+## Concrete Anchors
+
+- `src/bijux_canon_agent/agents` for role-local behavior
+- `src/bijux_canon_agent/pipeline` for execution flow orchestration
+- `src/bijux_canon_agent/application` for workflow policy and graph logic
+- `src/bijux_canon_agent/llm` for LLM runtime integration support
+- `src/bijux_canon_agent/interfaces` for CLI boundaries and operator helpers
+- `src/bijux_canon_agent/traces` for trace-facing models and persistence helpers
+
+## Test Anchors
+
+- tests/unit for local behavior and utility coverage
+- tests/integration and tests/e2e for end-to-end workflow behavior
+- tests/invariants for package promises that should not drift
+- tests/api for HTTP-facing validation
+
+## Purpose
+
+This page shortens the path from an issue report to the relevant code.
+
+## Stability
+
+Keep it aligned with the real source tree and current test layout.
