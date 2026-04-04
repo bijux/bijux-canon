@@ -9,7 +9,7 @@ import argparse
 import importlib
 import json
 from pathlib import Path
-from typing import Any, Protocol, cast
+from typing import Any, cast
 
 from bijux_canon_ingest.application.indexing import (
     IndexBuildConfig,
@@ -20,18 +20,14 @@ from bijux_canon_ingest.application.querying import parse_filters
 from bijux_canon_ingest.application.querying import retrieve as rag_retrieve
 from bijux_canon_ingest.core.types import RagEnv, RawDoc
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
+from bijux_canon_ingest.interfaces.cli.retrieval_output import (
+    YamlModule,
+    render_answer_output,
+    render_retrieve_output,
+    write_output,
+)
 from bijux_canon_ingest.interfaces.cli.retrieval_parser import build_retrieval_parser
 from bijux_canon_ingest.result import Err
-
-
-class _YamlModule(Protocol):
-    def safe_dump(
-        self,
-        data: object,
-        *,
-        sort_keys: bool = ...,
-        allow_unicode: bool = ...,
-    ) -> str: ...
 
 
 def run_retrieval_commands(argv: list[str]) -> int:
@@ -102,22 +98,9 @@ def _run_retrieve(args: argparse.Namespace) -> int:
         top_k=args.top_k,
         filters=filters,
     )
-    payload = {
-        "candidates": [
-            {
-                "doc_id": candidate.chunk.doc_id,
-                "chunk_id": candidate.chunk.chunk_id,
-                "text": candidate.chunk.text,
-                "start": candidate.chunk.start,
-                "end": candidate.chunk.end,
-                "metadata": dict(candidate.chunk.metadata),
-                "score": float(candidate.score),
-            }
-            for candidate in candidates
-        ]
-    }
-    return _write_output(
-        payload=json.dumps(payload, ensure_ascii=False), out_path=args.out
+    return write_output(
+        payload=render_retrieve_output(candidates),
+        out_path=args.out,
     )
 
 
@@ -130,27 +113,19 @@ def _run_ask(args: argparse.Namespace) -> int:
         filters=filters,
         rerank=not args.no_rerank,
     )
-    payload: dict[str, object] = {
-        "text": answer.text,
-        "citations": [
-            {
-                "doc_id": citation.doc_id,
-                "chunk_id": citation.chunk_id,
-                "start": citation.start,
-                "end": citation.end,
-            }
-            for citation in answer.citations
-        ],
-    }
     if args.format == "yaml":
         try:
-            yaml_module = cast(_YamlModule, importlib.import_module("yaml"))
+            yaml_module = cast(YamlModule, importlib.import_module("yaml"))
         except ModuleNotFoundError as exc:
             raise SystemExit("YAML output requires PyYAML") from exc
-        output = yaml_module.safe_dump(payload, sort_keys=False, allow_unicode=True)
+        output = render_answer_output(
+            answer,
+            output_format="yaml",
+            yaml_module=yaml_module,
+        )
     else:
-        output = json.dumps(payload, ensure_ascii=False)
-    return _write_output(payload=output, out_path=args.out)
+        output = render_answer_output(answer, output_format="json")
+    return write_output(payload=output, out_path=args.out)
 
 
 def _run_eval(args: argparse.Namespace) -> int:
@@ -202,17 +177,4 @@ def _run_eval(args: argparse.Namespace) -> int:
             return 1
     print(json.dumps({"metrics": metrics, "status": "OK"}, ensure_ascii=False))
     return 0
-
-
-def _write_output(*, payload: str, out_path: Path | None) -> int:
-    if out_path is None:
-        print(payload)
-        return 0
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(
-        payload + ("" if payload.endswith("\n") else "\n"), encoding="utf-8"
-    )
-    return 0
-
-
 __all__ = ["run_retrieval_commands"]
