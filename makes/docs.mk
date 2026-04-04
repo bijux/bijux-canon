@@ -28,6 +28,8 @@ DOCS_SERVE_BOOTSTRAP_TARGETS ?=
 DOCS_BUILD_PREPARE_TARGETS ?= docs-prepare-source
 DOCS_CHECK_PREPARE_TARGETS ?= docs-prepare-source
 DOCS_SERVE_PREPARE_TARGETS ?= docs-prepare-source
+DOCS_BUILD_GUARD_TARGETS ?=
+DOCS_CHECK_GUARD_TARGETS ?=
 DOCS_SERVE_GUARD_TARGETS ?=
 DOCS_BUILD_PRE_CLEAN_PATHS ?=
 DOCS_CHECK_PRE_CLEAN_PATHS ?=
@@ -77,6 +79,7 @@ endef
 
 docs:
 	$(call run_docs_targets,$(DOCS_BUILD_BOOTSTRAP_TARGETS))
+	$(call run_docs_targets,$(DOCS_BUILD_GUARD_TARGETS))
 	$(call clean_docs_paths,$(DOCS_BUILD_PRE_CLEAN_PATHS))
 	$(call run_docs_targets,$(DOCS_BUILD_PREPARE_TARGETS))
 	@echo "→ Building documentation"
@@ -99,22 +102,12 @@ docs-serve:
 	  exit 0; \
 	fi; \
 	trap 'rm -f "$$status_file"; rm -rf "$$lock_dir"' EXIT INT TERM; \
-	rm -f "$$status_file"; \
-	addr="$(DOCS_DEV_ADDR)"; \
-	port="$${addr##*:}"; \
-	if lsof_output="$$(lsof -nP -iTCP:$$port -sTCP:LISTEN 2>/dev/null)"; then \
-	  pid="$$(printf '%s\n' "$$lsof_output" | awk 'NR==2 {print $$2}')"; \
-	  command_line="$$(ps -p "$$pid" -o command= 2>/dev/null || true)"; \
-	  if [ -n "$(DOCS_SERVE_REUSE_MATCH)" ] && printf '%s\n' "$$command_line" | grep -Fq -- "$(DOCS_SERVE_REUSE_MATCH)"; then \
-	    echo "→ Documentation already serving on http://$$addr (pid $$pid)"; \
+	rm -f "$$status_file"
+	@if [ -n "$(strip $(DOCS_SERVE_GUARD_TARGETS))" ]; then \
+	  $(MAKE) $(DOCS_SERVE_GUARD_TARGETS); \
+	  if [ "$$(cat "$(DOCS_SERVE_STATUS_FILE)" 2>/dev/null || true)" = "reuse" ]; then \
 	    exit 0; \
 	  fi; \
-	  echo "Port $$addr is already in use by pid $$pid."; \
-	  if [ -n "$$command_line" ]; then \
-	    echo "$$command_line"; \
-	  fi; \
-	  echo "Stop that process or set DOCS_DEV_ADDR to a free port."; \
-	  exit 2; \
 	fi; \
 	$(MAKE) docs-serve-run
 
@@ -137,6 +130,7 @@ docs-deploy:
 
 docs-check:
 	$(call run_docs_targets,$(DOCS_CHECK_BOOTSTRAP_TARGETS))
+	$(call run_docs_targets,$(DOCS_CHECK_GUARD_TARGETS))
 	$(call clean_docs_paths,$(DOCS_CHECK_PRE_CLEAN_PATHS))
 	$(call run_docs_targets,$(DOCS_CHECK_PREPARE_TARGETS))
 	@echo "→ Checking documentation build integrity"
@@ -202,6 +196,8 @@ docs-hygiene:
 
 docs-assert-serve-port:
 	@set -eu; \
+	status_file="$(DOCS_SERVE_STATUS_FILE)"; \
+	rm -f "$$status_file"; \
 	addr="$(DOCS_DEV_ADDR)"; \
 	port="$${addr##*:}"; \
 	if lsof_output="$$(lsof -nP -iTCP:$$port -sTCP:LISTEN 2>/dev/null)"; then \
@@ -209,6 +205,7 @@ docs-assert-serve-port:
 	  command_line="$$(ps -p "$$pid" -o command= 2>/dev/null || true)"; \
 	  if [ -n "$(DOCS_SERVE_REUSE_MATCH)" ] && printf '%s\n' "$$command_line" | grep -Fq -- "$(DOCS_SERVE_REUSE_MATCH)"; then \
 	    echo "→ Documentation already serving on http://$$addr (pid $$pid)"; \
+	    echo reuse > "$$status_file"; \
 	    exit 0; \
 	  fi; \
 	  echo "Port $$addr is already in use by pid $$pid."; \
