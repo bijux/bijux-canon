@@ -7,11 +7,12 @@ from __future__ import annotations
 
 from collections.abc import Callable
 import time
-from typing import Any, ClassVar, TypeAlias, cast
+from typing import Any, ClassVar, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager
 
+from .advanced_checks import CritiqueCheckState, run_advanced_checks
 from .reporting import (
     build_critique_coverage_report,
     build_critique_error_payload,
@@ -102,13 +103,6 @@ class CritiqueAgent(BaseAgent):
         Criteria.CODE_SYNTAX: "Correct syntax errors in code blocks.",
         Criteria.RELEVANCE: "Ensure the summary addresses all required topics.",
     }
-
-    AdvancedCheckState: TypeAlias = tuple[
-        float,
-        list[CriterionResult],
-        list[str],
-        list[str],
-    ]
 
     def __init__(
         self,
@@ -355,8 +349,9 @@ class CritiqueAgent(BaseAgent):
         source_text: str,
     ) -> dict[str, Any]:
         """Perform the critique evaluation with enhanced checks."""
-        score, per_critique, warnings, issues = await self._evaluate_criteria(
-            text, context
+        state = await self._evaluate_criteria(
+            text,
+            context,
         )
 
         if not text.strip():
@@ -373,24 +368,27 @@ class CritiqueAgent(BaseAgent):
                 [],
                 [],
             )
-        score, per_critique, warnings, issues = await self._run_advanced_checks(
-            text,
-            context,
-            score,
-            per_critique,
-            warnings,
-            issues,
+        state = await self._run_advanced_checks(
+            text=text,
+            context=context,
+            state=state,
         )
 
-        score = round(max(0.0, min(1.0, score)), 3)
-        status = "ok" if not issues else "needs_revision"
-        return await self._final_report(status, score, per_critique, warnings, issues)
+        state.score = round(max(0.0, min(1.0, state.score)), 3)
+        status = "ok" if not state.issues else "needs_revision"
+        return await self._final_report(
+            status,
+            state.score,
+            state.per_critique,
+            state.warnings,
+            state.issues,
+        )
 
     async def _evaluate_criteria(
         self,
         text: str,
         context: dict[str, Any],
-    ) -> AdvancedCheckState:
+    ) -> CritiqueCheckState:
         """Evaluate the configured rule-backed critique criteria."""
         per_critique: list[CriterionResult] = []
         warnings: list[str] = []
@@ -414,144 +412,31 @@ class CritiqueAgent(BaseAgent):
                 )
                 score -= self.penalties.get(crit, 0.1)
                 issues.append(f"Criterion {crit} failed: {exc!s}")
-        return score, per_critique, warnings, issues
+        return CritiqueCheckState(score, per_critique, warnings, issues)
 
     async def _run_advanced_checks(
         self,
+        *,
         text: str,
         context: dict[str, Any],
-        score: float,
-        per_critique: list[CriterionResult],
-        warnings: list[str],
-        issues: list[str],
-    ) -> tuple[float, list[CriterionResult], list[str], list[str]]:
-        """Run LLM-augmented and custom checks with improved handling."""
-        score, per_critique, warnings, issues = await self._run_llm_checks(
-            text,
-            context,
-            score,
-            per_critique,
-            warnings,
-            issues,
+        state: CritiqueCheckState,
+    ) -> CritiqueCheckState:
+        """Run LLM-backed and custom critique checks."""
+        return await run_advanced_checks(
+            state=state,
+            text=text,
+            context=context,
+            criteria=self.criteria,
+            penalties=self.penalties,
+            suggestion_map=self.suggestion_map,
+            severity_map=self.severity_map,
+            llm_critique_fn=self.llm_critique_fn,
+            custom_checks=self.custom_checks,
+            max_retries=self.max_retries,
+            logger=self.logger,
+            no_hallucination_name=self.Criteria.NO_HALLUCINATION,
+            no_unsupported_name=self.Criteria.NO_UNSUPPORTED,
         )
-        return await self._run_custom_checks(
-            text,
-            context,
-            score,
-            per_critique,
-            warnings,
-            issues,
-        )
-
-    async def _run_llm_checks(
-        self,
-        text: str,
-        context: dict[str, Any],
-        score: float,
-        per_critique: list[CriterionResult],
-        warnings: list[str],
-        issues: list[str],
-    ) -> AdvancedCheckState:
-        """Run retrying LLM-backed critique checks."""
-        if not self.llm_critique_fn:
-            return score, per_critique, warnings, issues
-        for crit in [self.Criteria.NO_HALLUCINATION, self.Criteria.NO_UNSUPPORTED]:
-            if crit not in self.criteria:
-                continue
-            llm_result = await self._run_llm_check_with_retries(text, context, crit)
-            if llm_result is None:
-                warnings.append(f"LLM critique for '{crit}' failed after retries")
-                continue
-            if llm_result.get("result") == "FAIL":
-                score -= self.penalties.get(crit, 0.3)
-                llm_issues = list(llm_result.get("issues", []))
-                per_critique.append(
-                    CriterionResult(
-                        name=crit,
-                        result="FAIL",
-                        issues=llm_issues,
-                        suggestion=self.suggestion_map[crit],
-                        severity=self.severity_map[crit],
-                        confidence=llm_result.get("confidence", 1.0),
-                    )
-                )
-                issues.extend(llm_issues)
-            confidence = float(llm_result.get("confidence", 1.0))
-            if confidence < 0.7:
-                warnings.append(f"Low confidence for LLM check '{crit}': {confidence}")
-        return score, per_critique, warnings, issues
-
-    async def _run_llm_check_with_retries(
-        self,
-        text: str,
-        context: dict[str, Any],
-        criterion: str,
-    ) -> dict[str, Any] | None:
-        """Run a single LLM-backed critique check with retries."""
-        if not self.llm_critique_fn:
-            return None
-        for attempt in range(self.max_retries + 1):
-            try:
-                return await self.llm_critique_fn(
-                    text,
-                    {**context, "check": criterion},
-                )
-            except Exception as exc:
-                self.logger.error(
-                    f"LLM critique for '{criterion}' attempt "
-                    f"{attempt + 1}/{self.max_retries + 1} failed: {exc!s}",
-                    extra={"context": {"stage": "llm_critique"}},
-                )
-        return None
-
-    async def _run_custom_checks(
-        self,
-        text: str,
-        context: dict[str, Any],
-        score: float,
-        per_critique: list[CriterionResult],
-        warnings: list[str],
-        issues: list[str],
-    ) -> AdvancedCheckState:
-        """Run custom critique checks with retries."""
-        if not self.custom_checks:
-            return score, per_critique, warnings, issues
-        custom_issues = await self._run_custom_checks_with_retries(text, context)
-        if custom_issues is None:
-            warnings.append("Custom checks failed after retries")
-            return score, per_critique, warnings, issues
-        if custom_issues:
-            issues.extend(custom_issues)
-            per_critique.append(
-                CriterionResult(
-                    name="custom",
-                    result="FAIL",
-                    issues=custom_issues,
-                    suggestion="Resolve user-defined issues.",
-                    severity=CritiqueSeverity.MAJOR.value,
-                )
-            )
-            score -= 0.2
-        return score, per_critique, warnings, issues
-
-    async def _run_custom_checks_with_retries(
-        self,
-        text: str,
-        context: dict[str, Any],
-    ) -> list[str] | None:
-        """Run custom checks until success or retry exhaustion."""
-        if not self.custom_checks:
-            return []
-        for attempt in range(self.max_retries + 1):
-            try:
-                return list(await self.custom_checks(text, context) or [])
-            except Exception as exc:
-                self.logger.error(
-                    f"Custom checks attempt {attempt + 1}/{self.max_retries + 1} "
-                    f"failed: {exc!s}",
-                    extra={"context": {"stage": "custom_checks"}},
-                )
-        return None
 
     def _format_critique_output(
         self,
