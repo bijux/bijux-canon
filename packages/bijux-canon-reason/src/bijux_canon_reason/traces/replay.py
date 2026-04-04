@@ -2,6 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from dataclasses import dataclass
 import hashlib
 from pathlib import Path
 from typing import cast
@@ -13,6 +14,8 @@ from bijux_canon_reason.core.types import (
     ProblemSpec,
     ReplayResult,
     RuntimeDescriptor,
+    ToolResult,
+    Trace,
     TraceEventKind,
 )
 from bijux_canon_reason.execution.replay_runtime import RecordedCall
@@ -27,125 +30,208 @@ from bijux_canon_reason.traces.checksum import compute_invariant_checksum
 from bijux_canon_reason.traces.diff import diff_traces
 
 
+@dataclass(frozen=True)
+class ReplayPaths:
+    trace_path: Path
+    run_dir: Path
+    spec_path: Path
+    meta_path: Path
+    plan_path: Path
+    provenance_path: Path
+    corpus_path: Path
+    index_path: Path
+    replay_dir: Path
+    replay_trace_path: Path
+
+
+@dataclass(frozen=True)
+class ReplayInputs:
+    paths: ReplayPaths
+    preset: str
+    seed: int
+    spec: ProblemSpec
+    plan: Plan
+    trace: Trace
+    runtime_kind: str
+    runtime_mode: str
+    runtime_descriptor: RuntimeDescriptor | None
+
+
 def replay_from_artifacts(trace_path: Path) -> tuple[ReplayResult, Path]:
-    run_dir = trace_path.parent
-    spec_path = run_dir / "spec.json"
-    meta_path = run_dir / "run_meta.json"
-    plan_path = run_dir / "plan.json"
-    prov_path = run_dir / "provenance" / "retrieval_provenance.json"
-    corpus_path = run_dir / "provenance" / "corpus.jsonl"
-    index_path = run_dir / "provenance" / "index" / "bm25_index.json"
-    replay_dir = run_dir / "replay"
-    replay_trace_path = replay_dir / "trace.jsonl"
-    replay_dir.mkdir(parents=True, exist_ok=True)
-
-    if not spec_path.exists():
-        raise FileNotFoundError(f"Missing spec.json next to trace: {spec_path}")
-    if not meta_path.exists():
-        raise FileNotFoundError(f"Missing run_meta.json next to trace: {meta_path}")
-    if not plan_path.exists():
-        raise FileNotFoundError(f"Missing plan.json next to trace: {plan_path}")
-    have_prov = prov_path.exists() and corpus_path.exists() and index_path.exists()
-
-    meta = read_json_file(meta_path)
-    preset = meta.get("preset", "default")
-    seed = int(meta.get("seed", 0))
-
-    spec_raw = read_json_file(spec_path)
-    spec_obj = ProblemSpec.model_validate(spec_raw)
-    plan_raw = read_json_file(plan_path)
-    plan_obj = Plan.model_validate(plan_raw)
-    original_trace = read_trace_jsonl(trace_path)
-    trace_prov = original_trace.metadata.get("retrieval_provenance")
-    if have_prov or isinstance(trace_prov, dict):
-        if not isinstance(trace_prov, dict):
-            raise ValueError("Trace missing retrieval_provenance metadata")
-        if not have_prov:
-            raise FileNotFoundError("Missing retrieval provenance artifacts for replay")
-        disk_prov = read_json_file(prov_path)
-        # Verify hashes match pinned artifacts.
-        corpus_bytes = corpus_path.read_bytes()
-        index_bytes = index_path.read_bytes()
-        corpus_sha = hashlib.sha256(corpus_bytes).hexdigest()
-        index_sha = hashlib.sha256(index_bytes).hexdigest()
-        for key, expected in [
-            ("corpus_sha256", corpus_sha),
-            ("index_sha256", index_sha),
-        ]:
-            recorded = trace_prov.get(key)
-            if recorded != expected:
-                raise ValueError(
-                    f"Provenance mismatch for {key}: {recorded} != {expected}"
-                )
-        # Config equality check (exact dict match).
-        if trace_prov != disk_prov:
-            raise ValueError("retrieval_provenance mismatch between trace and disk")
-    else:
-        # No retrieval provenance: treat as non-retrieval run.
-        trace_prov = None
-
-    runtime_info = meta.get("runtime", {})
-    runtime_kind = runtime_info.get("kind", "FakeRuntime")
-    runtime_mode = runtime_info.get("mode", "live")
-    runtime_descriptor_raw = meta.get("runtime_descriptor")
-    descriptor_override = (
-        None
-        if runtime_descriptor_raw is None
-        else RuntimeDescriptor.model_validate(runtime_descriptor_raw)
-    )
+    inputs = _load_replay_inputs(trace_path)
+    trace = inputs.trace
 
     # Check invariant checksum before replay to ensure artifacts are intact.
-    recorded_checksum = meta.get("invariant_checksum") or (
-        original_trace.metadata.get("invariant_checksum")
-        if isinstance(original_trace.metadata, dict)
-        else None
+    recorded_checksum = _recorded_checksum(
+        meta_path=inputs.paths.meta_path,
+        trace=trace,
     )
-    if recorded_checksum is None:
-        raise ValueError("Missing invariant checksum in metadata")
     original_checksum = compute_invariant_checksum(
-        plan=plan_obj,
-        trace=original_trace,
-        runtime_descriptor=descriptor_override,
+        plan=inputs.plan,
+        trace=trace,
+        runtime_descriptor=inputs.runtime_descriptor,
     )
     if recorded_checksum != original_checksum:
         raise ValueError("INV-DET-001: Invariant checksum mismatch for original trace")
 
-    # Extract recordings from original trace
-    recordings: dict[str, RecordedCall] = {}
-    for ev in original_trace.events:
-        if ev.kind == TraceEventKind.tool_returned and ev.result:
-            recordings[ev.result.call_id] = RecordedCall(
-                call_id=ev.result.call_id, result=ev.result
-            )
     replay_runtime = Runtime.frozen(
-        seed=seed,
-        recorded_results={k: v.result for k, v in recordings.items()},
-        artifacts_dir=replay_dir,
-        descriptors=descriptor_override.tools if descriptor_override else None,
-        mode=runtime_mode,
-        runtime_kind=runtime_kind,
+        seed=inputs.seed,
+        recorded_results=_collect_recorded_results(trace),
+        artifacts_dir=inputs.paths.replay_dir,
+        descriptors=(
+            inputs.runtime_descriptor.tools if inputs.runtime_descriptor else None
+        ),
+        mode=inputs.runtime_mode,
+        runtime_kind=inputs.runtime_kind,
     )
     replay_result = run_app(
-        spec=spec_obj, preset=preset, seed=seed, runtime=replay_runtime
+        spec=inputs.spec,
+        preset=inputs.preset,
+        seed=inputs.seed,
+        runtime=replay_runtime,
     )
-    replayed = replay_result.trace.model_copy(
-        update={"metadata": original_trace.metadata}
-    ).with_content_id()
+    replayed = replay_result.trace.model_copy(update={"metadata": trace.metadata})
+    replayed = replayed.with_content_id()
     replay_checksum = compute_invariant_checksum(
-        plan=plan_obj,
+        plan=inputs.plan,
         trace=replayed,
-        runtime_descriptor=descriptor_override,
+        runtime_descriptor=inputs.runtime_descriptor,
     )
     if recorded_checksum != replay_checksum:
         raise ValueError(
             "INV-DET-001: Invariant checksum mismatch after replay; artifacts differ from original"
         )
-    write_trace_jsonl(replayed, replay_trace_path)
-    diff = diff_traces(original_trace, replayed)
+    write_trace_jsonl(replayed, inputs.paths.replay_trace_path)
+    diff = diff_traces(trace, replayed)
 
     result = ReplayResult(
-        original_trace_fingerprint=fingerprint_trace_file(trace_path),
-        replayed_trace_fingerprint=fingerprint_trace_file(replay_trace_path),
+        original_trace_fingerprint=fingerprint_trace_file(inputs.paths.trace_path),
+        replayed_trace_fingerprint=fingerprint_trace_file(
+            inputs.paths.replay_trace_path
+        ),
         diff_summary=cast(dict[str, JsonValue], diff),
     )
-    return result, replay_trace_path
+    return result, inputs.paths.replay_trace_path
+
+
+def _load_replay_inputs(trace_path: Path) -> ReplayInputs:
+    paths = _build_replay_paths(trace_path)
+    _require_replay_artifacts(paths)
+
+    meta = read_json_file(paths.meta_path)
+    trace = read_trace_jsonl(paths.trace_path)
+    _validate_retrieval_provenance(paths=paths, trace=trace)
+    runtime_kind, runtime_mode, runtime_descriptor = _read_runtime_metadata(meta)
+    return ReplayInputs(
+        paths=paths,
+        preset=str(meta.get("preset", "default")),
+        seed=int(meta.get("seed", 0)),
+        spec=ProblemSpec.model_validate(read_json_file(paths.spec_path)),
+        plan=Plan.model_validate(read_json_file(paths.plan_path)),
+        trace=trace,
+        runtime_kind=runtime_kind,
+        runtime_mode=runtime_mode,
+        runtime_descriptor=runtime_descriptor,
+    )
+
+
+def _build_replay_paths(trace_path: Path) -> ReplayPaths:
+    run_dir = trace_path.parent
+    replay_dir = run_dir / "replay"
+    replay_dir.mkdir(parents=True, exist_ok=True)
+    return ReplayPaths(
+        trace_path=trace_path,
+        run_dir=run_dir,
+        spec_path=run_dir / "spec.json",
+        meta_path=run_dir / "run_meta.json",
+        plan_path=run_dir / "plan.json",
+        provenance_path=run_dir / "provenance" / "retrieval_provenance.json",
+        corpus_path=run_dir / "provenance" / "corpus.jsonl",
+        index_path=run_dir / "provenance" / "index" / "bm25_index.json",
+        replay_dir=replay_dir,
+        replay_trace_path=replay_dir / "trace.jsonl",
+    )
+
+
+def _require_replay_artifacts(paths: ReplayPaths) -> None:
+    required_paths = (
+        ("spec.json", paths.spec_path),
+        ("run_meta.json", paths.meta_path),
+        ("plan.json", paths.plan_path),
+    )
+    for artifact_name, artifact_path in required_paths:
+        if not artifact_path.exists():
+            raise FileNotFoundError(
+                f"Missing {artifact_name} next to trace: {artifact_path}"
+            )
+
+
+def _validate_retrieval_provenance(*, paths: ReplayPaths, trace: Trace) -> None:
+    trace_provenance = (
+        trace.metadata.get("retrieval_provenance")
+        if isinstance(trace.metadata, dict)
+        else None
+    )
+    have_artifacts = all(
+        artifact.exists()
+        for artifact in (paths.provenance_path, paths.corpus_path, paths.index_path)
+    )
+    if not have_artifacts and not isinstance(trace_provenance, dict):
+        return
+    if not isinstance(trace_provenance, dict):
+        raise ValueError("Trace missing retrieval_provenance metadata")
+    if not have_artifacts:
+        raise FileNotFoundError("Missing retrieval provenance artifacts for replay")
+
+    pinned_hashes = {
+        "corpus_sha256": hashlib.sha256(paths.corpus_path.read_bytes()).hexdigest(),
+        "index_sha256": hashlib.sha256(paths.index_path.read_bytes()).hexdigest(),
+    }
+    for key, expected in pinned_hashes.items():
+        recorded = trace_provenance.get(key)
+        if recorded != expected:
+            raise ValueError(f"Provenance mismatch for {key}: {recorded} != {expected}")
+
+    disk_provenance = read_json_file(paths.provenance_path)
+    if trace_provenance != disk_provenance:
+        raise ValueError("retrieval_provenance mismatch between trace and disk")
+
+
+def _read_runtime_metadata(
+    meta: dict[str, object],
+) -> tuple[str, str, RuntimeDescriptor | None]:
+    runtime_info = meta.get("runtime", {})
+    runtime = runtime_info if isinstance(runtime_info, dict) else {}
+    descriptor_raw = meta.get("runtime_descriptor")
+    descriptor = (
+        None
+        if descriptor_raw is None
+        else RuntimeDescriptor.model_validate(descriptor_raw)
+    )
+    return (
+        str(runtime.get("kind", "FakeRuntime")),
+        str(runtime.get("mode", "live")),
+        descriptor,
+    )
+
+
+def _recorded_checksum(*, meta_path: Path, trace: Trace) -> str:
+    meta = read_json_file(meta_path)
+    recorded = meta.get("invariant_checksum") or (
+        trace.metadata.get("invariant_checksum")
+        if isinstance(trace.metadata, dict)
+        else None
+    )
+    if not isinstance(recorded, str) or not recorded:
+        raise ValueError("Missing invariant checksum in metadata")
+    return recorded
+
+
+def _collect_recorded_results(trace: Trace) -> dict[str, ToolResult]:
+    recorded_results: dict[str, ToolResult] = {}
+    for event in trace.events:
+        if event.kind != TraceEventKind.tool_returned or not event.result:
+            continue
+        recording = RecordedCall(call_id=event.result.call_id, result=event.result)
+        recorded_results[recording.call_id] = recording.result
+    return recorded_results
