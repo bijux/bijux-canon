@@ -41,10 +41,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/bijux-canon/bijux-canon-agent/"
+Homepage = "https://bijux.io/bijux-canon/compat-packages/bijux-agent/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
-Documentation = "https://bijux.io/bijux-canon/bijux-canon-agent/"
+Documentation = "https://bijux.io/bijux-canon/compat-packages/bijux-agent/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-agent/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
