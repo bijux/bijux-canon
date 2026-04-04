@@ -50,102 +50,43 @@ whole system.
 
 Treat the root page as the shortest honest explanation of the whole documentation system. A reader should be able to skim it, understand the package split, and know which handbook branch to open next without needing a meeting first.
 
-## Page Maps
+## Visual Summary
 
 ```mermaid
-flowchart LR
-    context["bijux-canon / Root Site"]
-    page["Bijux Canon"]
-    follow["Follow the narrowest next route"]
-    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
-    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
-    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
-    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    subgraph pressure["Start Here When You Need To Know"]
-        direction TB
-        q1["which handbook to open first for a repository question"]
-        q2["how repository, package, maintainer, and compatibility docs fit together"]
-        q3["what this docs system is expected to cover without a meeting"]
-    end
-    subgraph outcomes["This Page Should Clarify"]
-        direction TB
-        dest1["bijux-canon section"]
-        dest2["bijux-canon-ingest section"]
-        dest3["bijux-canon-index section"]
-        dest4["bijux-canon-reason section"]
-        dest5["bijux-canon-agent section"]
-        dest6["bijux-canon-runtime section"]
-        dest7["bijux-canon-dev section"]
-        dest8["compatibility packages section"]
-    end
-    subgraph next_steps["Move Next To The Strongest Follow-up"]
-        direction TB
-        next1["open the repository handbook when the question spans packages or shared governance"]
-        next2["open a product package handbook when the question is about owned behavior, interfaces, operations, or proof"]
-        next3["open the maintainer or compatibility handbooks only when the question is explicitly about those concerns"]
-    end
-    context --> page
-    q1 --> page
-    q2 --> page
-    q3 --> page
-    page --> dest1
-    page --> dest2
-    page --> dest3
-    page --> dest4
-    page --> dest5
-    page --> dest6
-    page --> dest7
-    page --> dest8
-    page --> follow
-    follow --> next1
-    follow --> next2
-    follow --> next3
-    class context context;
+flowchart RL
+    page["Bijux Canon<br/>clarifies: bijux-canon section | bijux-canon-ingest section | bijux-canon-index section"]
+    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    detail1["questions that do not belong on the landing page"]
+    detail1 --> page
+    detail2["why the split exists"]
+    detail2 -.gives the reader orientation.-> page
+    detail3["where each package takes authority"]
+    detail3 --> page
+    detail4["why the split protects clarity"]
+    detail4 -.gives the reader orientation.-> page
+    detail5["repository handbook"]
+    detail5 --> page
+    detail6["one product handbook"]
+    detail6 -.gives the reader orientation.-> page
+    detail7["the fastest credible next section"]
+    detail7 --> page
+    detail8["maintainer work"]
+    detail8 -.gives the reader orientation.-> page
+    detail9["legacy-name migration"]
+    detail9 --> page
+    next1["maintainer docs"]
+    page --> next1
+    next2["repository handbook"]
+    page --> next2
+    next3["interfaces next"]
+    page --> next3
     class page page;
-    class q1,q2,q3 route;
-    class dest1,dest2,dest3,dest4,dest5,dest6,dest7,dest8 route;
-    class next1,next2,next3 next;
-```
-
-```mermaid
-flowchart TB
-    promise["Bijux Canon<br/>clarifies: bijux-canon section | bijux-canon-ingest section | bijux-canon-index section"]
-    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    focus1["System idea"]
-    focus1 --> promise
-    focus1_1["why the split exists"]
-    focus1_1 --> focus1
-    focus1_2["where each package takes authority"]
-    focus1_2 --> focus1
-    focus1_3["why the split protects clarity"]
-    focus1_3 --> focus1
-    class focus1 driver;
-    class focus1_1,focus1_2,focus1_3 driver;
-    focus2["Reading paths"]
-    focus2 -.sharpens the decision.-> promise
-    focus2_1["repository handbook"]
-    focus2_1 --> focus2
-    focus2_2["one product handbook"]
-    focus2_2 --> focus2
-    focus2_3["the fastest credible next section"]
-    focus2_3 --> focus2
-    class focus2 constraint;
-    class focus2_1,focus2_2,focus2_3 constraint;
-    focus3["Special cases"]
-    focus3 --> promise
-    promise --> focus3
-    focus3_1["maintainer work"]
-    focus3 --> focus3_1
-    focus3_2["legacy-name migration"]
-    focus3 --> focus3_2
-    focus3_3["questions that do not belong on the landing page"]
-    focus3 --> focus3_3
-    class focus3 ground;
-    class focus3_1,focus3_2,focus3_3 ground;
-    class promise promise;
+    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
+    class next1,next2,next3 action;
 ```
 
 ## Start Here

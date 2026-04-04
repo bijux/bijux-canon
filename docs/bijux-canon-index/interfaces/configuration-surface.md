@@ -18,93 +18,38 @@ behavior starts to feel magical or fragile.
 
 Treat the interfaces pages for `bijux-canon-index` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
-## Page Maps
+## Visual Summary
 
 ```mermaid
-flowchart LR
-    context["bijux-canon-index / Interfaces"]
-    page["Configuration Surface"]
-    follow["Follow the narrowest next route"]
-    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
-    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
-    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
-    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    subgraph pressure["Start Here When You Need To Know"]
-        direction TB
-        q1["which public or operator-facing surfaces bijux-canon-index is really asking readers to trust"]
-        q2["which schemas, artifacts, imports, or commands behave like contracts"]
-        q3["what compatibility pressure a change to this surface would create"]
-    end
-    subgraph outcomes["This Page Should Clarify"]
-        direction TB
-        dest1["identify contracts"]
-        dest2["see caller impact"]
-        dest3["review compatibility"]
-    end
-    subgraph next_steps["Move Next To The Strongest Follow-up"]
-        direction TB
-        next1["move to operations when the caller-facing question becomes procedural or environmental"]
-        next2["move to quality when compatibility or evidence of protection becomes the real issue"]
-        next3["move back to architecture when a public-surface question reveals a deeper structural drift"]
-    end
-    context --> page
-    q1 --> page
-    q2 --> page
-    q3 --> page
-    page --> dest1
-    page --> dest2
-    page --> dest3
-    page --> follow
-    follow --> next1
-    follow --> next2
-    follow --> next3
-    class context context;
+flowchart RL
+    page["Configuration Surface<br/>clarifies: identify contracts | see caller impact | review compatibility"]
+    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    surface1["OpenAPI schema files under apis/bijux-canon-index/v1"]
+    surface1 --> page
+    surface2["CLI modules under src/bijux_canon_index/interfaces/cli"]
+    surface2 --> page
+    surface3["HTTP app under src/bijux_canon_index/api"]
+    surface3 --> page
+    proof1["vector execution result collections"]
+    page --> proof1
+    proof2["apis/bijux-canon-index/v1/schema.yaml"]
+    page --> proof2
+    proof3["apis/bijux-canon-index/v1/openapi.v1.json"]
+    page --> proof3
+    review1["tests/unit for API, application, contracts, domain, infra, and tooling"]
+    review1 -.raises compatibility pressure on.-> page
+    review2["tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates"]
+    review2 -.raises compatibility pressure on.-> page
+    review3["tests/conformance and tests/compat_v01 for compatibility behavior"]
+    review3 -.raises compatibility pressure on.-> page
     class page page;
-    class q1,q2,q3 route;
-    class dest1,dest2,dest3 route;
-    class next1,next2,next3 next;
-```
-
-```mermaid
-flowchart TB
-    promise["Configuration Surface<br/>clarifies: identify contracts | see caller impact | review compatibility"]
-    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    focus1["Caller surfaces"]
-    focus1 --> promise
-    promise --> focus1
-    focus1_1["CLI modules under src/bijux_canon_index/interfaces/cli"]
-    focus1 --> focus1_1
-    focus1_2["HTTP app under src/bijux_canon_index/api"]
-    focus1 --> focus1_2
-    focus1_3["OpenAPI schema files under apis/bijux-canon-index/v1"]
-    focus1 --> focus1_3
-    class focus1 ground;
-    class focus1_1,focus1_2,focus1_3 ground;
-    focus2["Contract evidence"]
-    focus2 --> promise
-    promise --> focus2
-    focus2_1["apis/bijux-canon-index/v1/schema.yaml"]
-    focus2 --> focus2_1
-    focus2_2["apis/bijux-canon-index/v1/openapi.v1.json"]
-    focus2 --> focus2_2
-    focus2_3["vector execution result collections"]
-    focus2 --> focus2_3
-    class focus2 ground;
-    class focus2_1,focus2_2,focus2_3 ground;
-    focus3["Review pressure"]
-    focus3 -.keeps the page honest.-> promise
-    focus3_1["tests/unit for API, application, contracts, domain, infra, and tooling"]
-    focus3_1 --> focus3
-    focus3_2["tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates"]
-    focus3_2 --> focus3
-    focus3_3["tests/conformance and tests/compat_v01 for compatibility behavior"]
-    focus3_3 --> focus3
-    class focus3 constraint;
-    class focus3_1,focus3_2,focus3_3 constraint;
-    class promise promise;
+    class surface1,surface2,surface3 positive;
+    class proof1,proof2,proof3 anchor;
+    class review1,review2,review3 caution;
 ```
 
 ## Configuration Anchors

@@ -20,92 +20,43 @@ package boundaries.
 
 These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
 
-## Page Maps
+## Visual Summary
 
 ```mermaid
 flowchart LR
-    context["bijux-canon / Repository Handbook"]
-    page["Repository Scope"]
-    follow["Follow the narrowest next route"]
-    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
-    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
-    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
-    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    subgraph pressure["Start Here When You Need To Know"]
-        direction TB
-        q1["which repository-level decision this page clarifies"]
-        q2["which shared assets or workflows a reviewer should inspect"]
-        q3["how the repository boundary differs from package-local ownership"]
-    end
-    subgraph outcomes["This Page Should Clarify"]
-        direction TB
-        dest1["see root authority"]
-        dest2["see root limits"]
-        dest3["send work back down"]
-    end
-    subgraph next_steps["Move Next To The Strongest Follow-up"]
-        direction TB
-        next1["move to the owning package docs when the question stops being repository-wide"]
-        next2["check root files, schemas, or workflows named here before trusting prose alone"]
-        next3["use maintainer docs next if the root issue is really about automation or drift tooling"]
-    end
-    context --> page
-    q1 --> page
-    q2 --> page
-    q3 --> page
-    page --> dest1
-    page --> dest2
-    page --> dest3
-    page --> follow
-    follow --> next1
-    follow --> next2
-    follow --> next3
-    class context context;
+    page["Repository Scope<br/>clarifies: see root authority | see root limits | send work back down"]
+    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    detail1["shared schemas"]
+    detail1 --> page
+    detail2["workspace governance"]
+    detail2 -.gives the reader orientation.-> page
+    detail3["package-local behavior"]
+    detail3 --> page
+    detail4["shadow implementation"]
+    detail4 -.gives the reader orientation.-> page
+    detail5["hidden override paths"]
+    detail5 --> page
+    detail6["cross-package concern"]
+    detail6 -.gives the reader orientation.-> page
+    detail7["one-package concern"]
+    detail7 --> page
+    detail8["does this belong back in a package?"]
+    detail8 -.gives the reader orientation.-> page
+    detail9["shared workflows"]
+    detail9 --> page
+    next1["maintainer docs"]
+    page --> next1
+    next2["owning package docs"]
+    page --> next2
+    next3["schemas"]
+    page --> next3
     class page page;
-    class q1,q2,q3 route;
-    class dest1,dest2,dest3 route;
-    class next1,next2,next3 next;
-```
-
-```mermaid
-flowchart TB
-    promise["Repository Scope<br/>clarifies: see root authority | see root limits | send work back down"]
-    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    focus1["Root owns"]
-    focus1 --> promise
-    focus1_1["shared workflows"]
-    focus1_1 --> focus1
-    focus1_2["shared schemas"]
-    focus1_2 --> focus1
-    focus1_3["workspace governance"]
-    focus1_3 --> focus1
-    class focus1 driver;
-    class focus1_1,focus1_2,focus1_3 driver;
-    focus2["Root does not own"]
-    focus2 -.keeps the page honest.-> promise
-    focus2_1["package-local behavior"]
-    focus2_1 --> focus2
-    focus2_2["shadow implementation"]
-    focus2_2 --> focus2
-    focus2_3["hidden override paths"]
-    focus2_3 --> focus2
-    class focus2 constraint;
-    class focus2_1,focus2_2,focus2_3 constraint;
-    focus3["Review test"]
-    focus3 --> promise
-    promise --> focus3
-    focus3_1["cross-package concern"]
-    focus3 --> focus3_1
-    focus3_2["one-package concern"]
-    focus3 --> focus3_2
-    focus3_3["does this belong back in a package?"]
-    focus3 --> focus3_3
-    class focus3 ground;
-    class focus3_1,focus3_2,focus3_3 ground;
-    class promise promise;
+    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
+    class next1,next2,next3 action;
 ```
 
 ## In Scope

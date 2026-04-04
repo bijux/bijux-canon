@@ -16,92 +16,38 @@ question in review to the files that actually explain the answer.
 
 Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
 
-## Page Maps
-
-```mermaid
-flowchart LR
-    context["bijux-canon-ingest / Architecture"]
-    page["Code Navigation"]
-    follow["Follow the narrowest next route"]
-    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
-    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
-    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
-    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    subgraph pressure["Start Here When You Need To Know"]
-        direction TB
-        q1["how bijux-canon-ingest is organized internally in terms a reviewer can follow"]
-        q2["which modules carry the main execution and dependency story"]
-        q3["where structural drift would show up before it becomes expensive"]
-    end
-    subgraph outcomes["This Page Should Clarify"]
-        direction TB
-        dest1["trace execution"]
-        dest2["spot dependency pressure"]
-        dest3["judge structural drift"]
-    end
-    subgraph next_steps["Move Next To The Strongest Follow-up"]
-        direction TB
-        next1["move to interfaces when the review reaches a public or operator-facing seam"]
-        next2["move to operations when the concern becomes repeatable runtime behavior"]
-        next3["move to quality when you need proof that the documented structure is still protected"]
-    end
-    context --> page
-    q1 --> page
-    q2 --> page
-    q3 --> page
-    page --> dest1
-    page --> dest2
-    page --> dest3
-    page --> follow
-    follow --> next1
-    follow --> next2
-    follow --> next3
-    class context context;
-    class page page;
-    class q1,q2,q3 route;
-    class dest1,dest2,dest3 route;
-    class next1,next2,next3 next;
-```
+## Visual Summary
 
 ```mermaid
 flowchart TB
-    promise["Code Navigation<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
-    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    focus1["Module groups"]
-    focus1 --> promise
-    focus1_1["deterministic document transforms"]
-    focus1_1 --> focus1
-    focus1_2["retrieval-oriented models and assembly"]
-    focus1_2 --> focus1
-    focus1_3["package workflows"]
-    focus1_3 --> focus1
-    class focus1 driver;
-    class focus1_1,focus1_2,focus1_3 driver;
-    focus2["Read in code"]
-    focus2 --> promise
-    promise --> focus2
-    focus2_1["src/bijux_canon_ingest/processing"]
-    focus2 --> focus2_1
-    focus2_2["src/bijux_canon_ingest/retrieval"]
-    focus2 --> focus2_2
-    focus2_3["src/bijux_canon_ingest/application"]
-    focus2 --> focus2_3
-    class focus2 ground;
-    class focus2_1,focus2_2,focus2_3 ground;
-    focus3["Design pressure"]
-    focus3 -.keeps the page honest.-> promise
-    focus3_1["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
-    focus3_1 --> focus3
-    focus3_2["tests/e2e for package boundary coverage"]
-    focus3_2 --> focus3
-    focus3_3["tests/invariants for long-lived repository promises"]
-    focus3_3 --> focus3
-    class focus3 constraint;
-    class focus3_1,focus3_2,focus3_3 constraint;
-    class promise promise;
+    page["Code Navigation<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
+    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    module1["deterministic document transforms"]
+    module1 --> page
+    module2["retrieval-oriented models and assembly"]
+    module2 --> page
+    module3["package workflows"]
+    module3 --> page
+    code1["src/bijux_canon_ingest/retrieval"]
+    page --> code1
+    code2["src/bijux_canon_ingest/application"]
+    page --> code2
+    code3["src/bijux_canon_ingest/processing"]
+    page --> code3
+    pressure1["tests/invariants for long-lived repository promises"]
+    pressure1 -.tests whether this structure still holds.-> page
+    pressure2["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
+    pressure2 -.tests whether this structure still holds.-> page
+    pressure3["tests/e2e for package boundary coverage"]
+    pressure3 -.tests whether this structure still holds.-> page
+    class page page;
+    class module1,module2,module3 positive;
+    class code1,code2,code3 anchor;
+    class pressure1,pressure2,pressure3 caution;
 ```
 
 ## Reading Order

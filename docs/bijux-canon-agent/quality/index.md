@@ -15,93 +15,38 @@ These pages explain the proof story for `bijux-canon-agent`. They should make tr
 
 Treat the quality pages for `bijux-canon-agent` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
-## Page Maps
-
-```mermaid
-flowchart LR
-    context["bijux-canon-agent / Quality"]
-    page["Quality"]
-    follow["Follow the narrowest next route"]
-    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
-    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
-    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
-    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    subgraph pressure["Start Here When You Need To Know"]
-        direction TB
-        q1["what currently proves the bijux-canon-agent contract instead of merely describing it"]
-        q2["which risks, limits, and assumptions still need explicit skepticism"]
-        q3["what a reviewer should be able to say before accepting a change as done"]
-    end
-    subgraph outcomes["This Page Should Clarify"]
-        direction TB
-        dest1["see proof"]
-        dest2["see limitations"]
-        dest3["judge done-ness"]
-    end
-    subgraph next_steps["Move Next To The Strongest Follow-up"]
-        direction TB
-        next1["move to foundation when the risk appears to be boundary confusion rather than missing tests"]
-        next2["move to architecture when the proof gap points to structural drift"]
-        next3["move to interfaces or operations when the proof question is really about a contract or workflow"]
-    end
-    context --> page
-    q1 --> page
-    q2 --> page
-    q3 --> page
-    page --> dest1
-    page --> dest2
-    page --> dest3
-    page --> follow
-    follow --> next1
-    follow --> next2
-    follow --> next3
-    class context context;
-    class page page;
-    class q1,q2,q3 route;
-    class dest1,dest2,dest3 route;
-    class next1,next2,next3 next;
-```
+## Visual Summary
 
 ```mermaid
 flowchart TB
-    promise["Quality<br/>clarifies: see proof | see limitations | judge done-ness"]
-    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    focus1["Proof surfaces"]
-    focus1 --> promise
-    promise --> focus1
-    focus1_1["tests/unit for local behavior and utility coverage"]
-    focus1 --> focus1_1
-    focus1_2["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    focus1 --> focus1_2
-    focus1_3["tests/invariants for package promises that should not drift"]
-    focus1 --> focus1_3
-    class focus1 ground;
-    class focus1_1,focus1_2,focus1_3 ground;
-    focus2["Risk anchors"]
-    focus2 -.keeps the page honest.-> promise
-    focus2_1["README.md"]
-    focus2_1 --> focus2
-    focus2_2["CHANGELOG.md"]
-    focus2_2 --> focus2
-    focus2_3["pyproject.toml"]
-    focus2_3 --> focus2
-    class focus2 constraint;
-    class focus2_1,focus2_2,focus2_3 constraint;
-    focus3["Review bar"]
-    focus3 --> promise
-    promise --> focus3
-    focus3_1["package trust after change"]
-    focus3 --> focus3_1
-    focus3_2["proof before confidence"]
-    focus3 --> focus3_2
-    focus3_3["done means defended behavior"]
-    focus3 --> focus3_3
-    class focus3 ground;
-    class focus3_1,focus3_2,focus3_3 ground;
-    class promise promise;
+    page["Quality<br/>clarifies: see proof | see limitations | judge done-ness"]
+    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    proof1["tests/unit for local behavior and utility coverage"]
+    proof1 --> page
+    proof2["tests/integration and tests/e2e for end-to-end workflow behavior"]
+    proof2 --> page
+    proof3["tests/invariants for package promises that should not drift"]
+    proof3 --> page
+    risk1["CHANGELOG.md"]
+    risk1 -.keeps trust honest.-> page
+    risk2["pyproject.toml"]
+    risk2 -.keeps trust honest.-> page
+    risk3["README.md"]
+    risk3 -.keeps trust honest.-> page
+    bar1["proof before confidence"]
+    page --> bar1
+    bar2["done means defended behavior"]
+    page --> bar2
+    bar3["package trust after change"]
+    page --> bar3
+    class page page;
+    class proof1,proof2,proof3 positive;
+    class risk1,risk2,risk3 caution;
+    class bar1,bar2,bar3 action;
 ```
 
 ## Pages in This Section

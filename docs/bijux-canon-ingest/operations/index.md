@@ -15,93 +15,38 @@ These pages are the checked-in operating memory for `bijux-canon-ingest`. They s
 
 Treat the operations pages for `bijux-canon-ingest` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
-## Page Maps
-
-```mermaid
-flowchart LR
-    context["bijux-canon-ingest / Operations"]
-    page["Operations"]
-    follow["Follow the narrowest next route"]
-    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
-    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
-    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
-    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    subgraph pressure["Start Here When You Need To Know"]
-        direction TB
-        q1["how bijux-canon-ingest is installed, run, diagnosed, and released in practice"]
-        q2["which checked-in files and tests anchor the operational story"]
-        q3["where a maintainer should look first when the package behaves differently"]
-    end
-    subgraph outcomes["This Page Should Clarify"]
-        direction TB
-        dest1["repeat workflows"]
-        dest2["find diagnostics"]
-        dest3["release safely"]
-    end
-    subgraph next_steps["Move Next To The Strongest Follow-up"]
-        direction TB
-        next1["move to interfaces when the operational path depends on a specific surface contract"]
-        next2["move to quality when the question becomes whether the workflow is sufficiently proven"]
-        next3["move back to architecture when operational complexity suggests a structural problem"]
-    end
-    context --> page
-    q1 --> page
-    q2 --> page
-    q3 --> page
-    page --> dest1
-    page --> dest2
-    page --> dest3
-    page --> follow
-    follow --> next1
-    follow --> next2
-    follow --> next3
-    class context context;
-    class page page;
-    class q1,q2,q3 route;
-    class dest1,dest2,dest3 route;
-    class next1,next2,next3 next;
-```
+## Visual Summary
 
 ```mermaid
 flowchart TB
-    promise["Operations<br/>clarifies: repeat workflows | find diagnostics | release safely"]
-    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    focus1["Workflow anchors"]
-    focus1 --> promise
-    promise --> focus1
-    focus1_1["packages/bijux-canon-ingest/pyproject.toml"]
-    focus1 --> focus1_1
-    focus1_2["CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py"]
-    focus1 --> focus1_2
-    focus1_3["HTTP boundaries under src/bijux_canon_ingest/interfaces"]
-    focus1 --> focus1_3
-    class focus1 ground;
-    class focus1_1,focus1_2,focus1_3 ground;
-    focus2["Operational evidence"]
-    focus2 --> promise
-    promise --> focus2
-    focus2_1["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
-    focus2 --> focus2_1
-    focus2_2["tests/e2e for package boundary coverage"]
-    focus2 --> focus2_2
-    focus2_3["tests/invariants for long-lived repository promises"]
-    focus2 --> focus2_3
-    class focus2 ground;
-    class focus2_1,focus2_2,focus2_3 ground;
-    focus3["Release pressure"]
-    focus3 -.keeps the page honest.-> promise
-    focus3_1["README.md"]
-    focus3_1 --> focus3
-    focus3_2["CHANGELOG.md"]
-    focus3_2 --> focus3
-    focus3_3["pyproject.toml"]
-    focus3_3 --> focus3
-    class focus3 constraint;
-    class focus3_1,focus3_2,focus3_3 constraint;
-    class promise promise;
+    page["Operations<br/>clarifies: repeat workflows | find diagnostics | release safely"]
+    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    step1["packages/bijux-canon-ingest/pyproject.toml"]
+    step1 --> page
+    step2["CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py"]
+    step2 --> page
+    step3["HTTP boundaries under src/bijux_canon_ingest/interfaces"]
+    step3 --> page
+    run1["tests/e2e for package boundary coverage"]
+    page --> run1
+    run2["tests/invariants for long-lived repository promises"]
+    page --> run2
+    run3["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
+    page --> run3
+    release1["CHANGELOG.md"]
+    run1 --> release1
+    release2["pyproject.toml"]
+    run2 --> release2
+    release3["README.md"]
+    run3 --> release3
+    class page page;
+    class step1,step2,step3 positive;
+    class run1,run2,run3 anchor;
+    class release1,release2,release3 action;
 ```
 
 ## Pages in This Section

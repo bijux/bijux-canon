@@ -17,92 +17,38 @@ vague anxiety, and it should not disappear on untested optimism.
 
 These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
-## Page Maps
-
-```mermaid
-flowchart LR
-    context["bijux-canon / Compatibility Handbook"]
-    page["Retirement Conditions"]
-    follow["Follow the narrowest next route"]
-    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
-    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
-    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
-    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    subgraph pressure["Start Here When You Need To Know"]
-        direction TB
-        q1["which legacy surface is still preserved"]
-        q2["when new work should move to the canonical package instead"]
-        q3["what evidence would justify retiring a compatibility package"]
-    end
-    subgraph outcomes["This Page Should Clarify"]
-        direction TB
-        dest1["map old names"]
-        dest2["choose migration"]
-        dest3["judge retirement"]
-    end
-    subgraph next_steps["Move Next To The Strongest Follow-up"]
-        direction TB
-        next1["move to the canonical package docs once the current target package is known"]
-        next2["inspect compatibility package metadata if the question is about what remains preserved"]
-        next3["use this section again only when evaluating migration progress or retirement readiness"]
-    end
-    context --> page
-    q1 --> page
-    q2 --> page
-    q3 --> page
-    page --> dest1
-    page --> dest2
-    page --> dest3
-    page --> follow
-    follow --> next1
-    follow --> next2
-    follow --> next3
-    class context context;
-    class page page;
-    class q1,q2,q3 route;
-    class dest1,dest2,dest3 route;
-    class next1,next2,next3 next;
-```
+## Visual Summary
 
 ```mermaid
 flowchart TB
-    promise["Retirement Conditions<br/>clarifies: map old names | choose migration | judge retirement"]
-    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    focus1["Legacy surface"]
-    focus1 --> promise
-    promise --> focus1
-    focus1_1["distribution names"]
-    focus1 --> focus1_1
-    focus1_2["import names"]
-    focus1 --> focus1_2
-    focus1_3["command names"]
-    focus1 --> focus1_3
-    class focus1 ground;
-    class focus1_1,focus1_2,focus1_3 ground;
-    focus2["Canonical target"]
-    focus2 -.sharpens the decision.-> promise
-    focus2_1["current packages"]
-    focus2_1 --> focus2
-    focus2_2["new work"]
-    focus2_2 --> focus2
-    focus2_3["current handbook surfaces"]
-    focus2_3 --> focus2
-    class focus2 constraint;
-    class focus2_1,focus2_2,focus2_3 constraint;
-    focus3["Decision pressure"]
-    focus3 -.keeps the page honest.-> promise
-    focus3_1["migration pressure"]
-    focus3_1 --> focus3
-    focus3_2["retirement readiness"]
-    focus3_2 --> focus3
-    focus3_3["do not normalize the old name"]
-    focus3_3 --> focus3
-    class focus3 constraint;
-    class focus3_1,focus3_2,focus3_3 constraint;
-    class promise promise;
+    page["Retirement Conditions<br/>clarifies: map old names | choose migration | judge retirement"]
+    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    legacy1["distribution names"]
+    legacy1 --> page
+    legacy2["import names"]
+    legacy2 --> page
+    legacy3["command names"]
+    legacy3 --> page
+    canon1["new work"]
+    page --> canon1
+    canon2["current handbook surfaces"]
+    page --> canon2
+    canon3["current packages"]
+    page --> canon3
+    pressure1["migration pressure"]
+    pressure1 -.should shorten the life of.-> page
+    pressure2["retirement readiness"]
+    pressure2 -.should shorten the life of.-> page
+    pressure3["do not normalize the old name"]
+    pressure3 -.should shorten the life of.-> page
+    class page page;
+    class legacy1,legacy2,legacy3 caution;
+    class canon1,canon2,canon3 positive;
+    class pressure1,pressure2,pressure3 action;
 ```
 
 ## Retirement Signals

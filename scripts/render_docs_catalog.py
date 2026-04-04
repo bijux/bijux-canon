@@ -550,6 +550,52 @@ def mermaid_text(text: str) -> str:
     return " ".join(text.replace("`", "").replace('"', "'").split())
 
 
+def stable_seed(*parts: str) -> int:
+    text = "|".join(parts)
+    return sum((index + 1) * ord(char) for index, char in enumerate(text))
+
+
+def rotate_items(items: tuple[str, ...], seed: int) -> tuple[str, ...]:
+    if not items:
+        return items
+    offset = seed % len(items)
+    return items[offset:] + items[:offset]
+
+
+def flatten_focus_details(
+    focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
+) -> tuple[str, ...]:
+    details: list[str] = []
+    for _, detail_titles in focus_sections:
+        details.extend(detail_titles)
+    return tuple(details)
+
+
+def compact_step_label(text: str) -> str:
+    lowered = text.lower()
+    keyword_map = (
+        ("repository handbook", "repository handbook"),
+        ("maintainer", "maintainer docs"),
+        ("compatibility", "compatibility docs"),
+        ("architecture", "architecture next"),
+        ("interfaces", "interfaces next"),
+        ("operations", "operations next"),
+        ("quality", "quality next"),
+        ("canonical package", "canonical package"),
+        ("package docs", "owning package docs"),
+        ("helper module", "helper module"),
+        ("metadata", "metadata"),
+        ("tests", "tests"),
+        ("schemas", "schemas"),
+        ("workflows", "workflows"),
+    )
+    for needle, label in keyword_map:
+        if needle in lowered:
+            return label
+    clipped = mermaid_text(text).split()
+    return " ".join(clipped[:5])
+
+
 def insert_after_intro(body: str, block: str) -> str:
     lines = body.splitlines()
     split_index = len(lines)
@@ -576,79 +622,84 @@ def render_route_diagram(
     questions: tuple[str, ...],
     destination_titles: tuple[str, ...],
     next_checks: tuple[str, ...],
+    focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
 ) -> str:
+    seed = stable_seed(scope_title, section_title, page_title)
+    orientation = ("LR", "TB", "RL", "BT")[seed % 4]
+    question_titles = rotate_items(tuple(mermaid_text(title) for title in questions), seed)
+    outcome_titles = rotate_items(tuple(mermaid_text(title) for title in destination_titles), seed // 2)
+    next_titles = rotate_items(tuple(mermaid_text(text) for text in next_checks), seed // 3)
+    context_label = mermaid_text(f"{scope_title} / {section_title} / {page_title}")
     lines = [
-        "flowchart LR",
-        f'    context["{mermaid_text(scope_title)} / {mermaid_text(section_title)}"]',
-        f'    page["{mermaid_text(page_title)}"]',
-        '    follow["Follow the narrowest next route"]',
-        "    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;",
+        f"flowchart {orientation}",
+        f'    page["{context_label}"]',
         "    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;",
-        "    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;",
+        "    classDef question fill:#dcfce7,stroke:#16a34a,color:#14532d;",
+        "    classDef outcome fill:#ecfeff,stroke:#0891b2,color:#164e63;",
         "    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;",
-        '    subgraph pressure["Start Here When You Need To Know"]',
-        "        direction TB",
     ]
-    for index, question in enumerate(questions, start=1):
-        lines.append(f'        q{index}["{mermaid_text(question)}"]')
+    variant = seed % 3
+    for index, title in enumerate(question_titles, start=1):
+        lines.append(f'    q{index}["{title}"]')
+    for index, title in enumerate(outcome_titles, start=1):
+        lines.append(f'    out{index}["{title}"]')
+    for index, title in enumerate(next_titles, start=1):
+        lines.append(f'    next{index}["{title}"]')
+    if variant == 0:
+        for index in range(1, len(question_titles) + 1):
+            lines.append(f"    q{index} --> page")
+        for index in range(1, len(outcome_titles) + 1):
+            lines.append(f"    page --> out{index}")
+        for index in range(1, len(next_titles) + 1):
+            anchor = f"out{((index - 1) % len(outcome_titles)) + 1}" if outcome_titles else "page"
+            lines.append(f"    {anchor} --> next{index}")
+    elif variant == 1:
+        for index in range(1, len(question_titles) + 1):
+            anchor = "page" if index == 1 else f"q{index-1}"
+            lines.append(f"    {anchor} --> q{index}")
+        if question_titles:
+            lines.append(f"    q{len(question_titles)} --> page")
+        for index in range(1, len(outcome_titles) + 1):
+            anchor = "page" if index == 1 else f"out{index-1}"
+            lines.append(f"    {anchor} --> out{index}")
+        for index in range(1, len(next_titles) + 1):
+            anchor = f"out{len(outcome_titles)}" if outcome_titles else "page"
+            lines.append(f"    {anchor} --> next{index}")
+    else:
+        for index in range(1, len(question_titles) + 1):
+            anchor = f"next{((index - 1) % len(next_titles)) + 1}" if next_titles else "page"
+            lines.append(f"    q{index} --> page")
+            if next_titles:
+                lines.append(f"    {anchor} -.keeps the page actionable.-> page")
+        for index in range(1, len(outcome_titles) + 1):
+            lines.append(f"    page --> out{index}")
+        for index in range(1, len(next_titles) + 1):
+            anchor = f"out{((index - 1) % len(outcome_titles)) + 1}" if outcome_titles else "page"
+            lines.append(f"    {anchor} --> next{index}")
     lines.extend(
         [
-            "    end",
-            '    subgraph outcomes["This Page Should Clarify"]',
-            "        direction TB",
-        ]
-    )
-    for index, title in enumerate(destination_titles, start=1):
-        lines.append(f'        dest{index}["{mermaid_text(title)}"]')
-    lines.extend(
-        [
-            "    end",
-            '    subgraph next_steps["Move Next To The Strongest Follow-up"]',
-            "        direction TB",
-        ]
-    )
-    for index, check in enumerate(next_checks, start=1):
-        lines.append(f'        next{index}["{mermaid_text(check)}"]')
-    lines.extend(
-        [
-            "    end",
-            "    context --> page",
-        ]
-    )
-    for index in range(1, len(questions) + 1):
-        lines.append(f"    q{index} --> page")
-    for index in range(1, len(destination_titles) + 1):
-        lines.append(f"    page --> dest{index}")
-    lines.append("    page --> follow")
-    for index in range(1, len(next_checks) + 1):
-        lines.append(f"    follow --> next{index}")
-    lines.extend(
-        [
-            "    class context context;",
             "    class page page;",
         ]
     )
-    if questions:
+    if question_titles:
         lines.append(
             "    class "
-            + ",".join(f"q{index}" for index in range(1, len(questions) + 1))
-            + " route;"
+            + ",".join(f"q{index}" for index in range(1, len(question_titles) + 1))
+            + " question;"
         )
-    if destination_titles:
+    if outcome_titles:
         lines.append(
             "    class "
-            + ",".join(f"dest{index}" for index in range(1, len(destination_titles) + 1))
-            + " route;"
+            + ",".join(f"out{index}" for index in range(1, len(outcome_titles) + 1))
+            + " outcome;"
         )
-    if next_checks:
+    if next_titles:
         lines.append(
             "    class "
-            + ",".join(f"next{index}" for index in range(1, len(next_checks) + 1))
+            + ",".join(f"next{index}" for index in range(1, len(next_titles) + 1))
             + " next;"
         )
-    return mermaid_block(
-        "\n".join(lines)
-    )
+    return mermaid_block("\n".join(lines))
 
 
 def diagram_focus_role(section_title: str, index: int) -> tuple[str, str]:
@@ -671,38 +722,201 @@ def page_map_promise(page_title: str, destination_titles: tuple[str, ...]) -> st
 
 
 def render_focus_diagram(
+    scope_title: str,
+    section_title: str,
     page_title: str,
     focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
     destination_titles: tuple[str, ...],
+    next_checks: tuple[str, ...],
 ) -> str:
+    seed = stable_seed(scope_title, section_title, page_title, *destination_titles)
+    focus_groups = {title: details for title, details in focus_sections}
+    family = section_title.lower()
     lines = [
-        "flowchart TB",
-        f'    promise["{page_map_promise(mermaid_text(page_title), destination_titles)}"]',
-        "    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;",
-        "    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;",
-        "    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;",
-        "    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;",
+        f"flowchart {('TB', 'LR', 'RL')[seed % 3]}",
+        f'    page["{page_map_promise(mermaid_text(page_title), destination_titles)}"]',
+        "    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;",
+        "    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;",
+        "    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;",
+        "    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;",
+        "    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;",
     ]
-    for index, (section_title, detail_titles) in enumerate(focus_sections, start=1):
-        section_node = f"focus{index}"
-        role_name, edge = diagram_focus_role(section_title, index)
-        lines.append(f'    {section_node}["{mermaid_text(section_title)}"]')
-        lines.append(f"    {section_node} {edge} promise")
-        if role_name == "ground":
-            lines.append(f"    promise --> {section_node}")
-        for detail_index, detail_title in enumerate(detail_titles, start=1):
-            detail_node = f"{section_node}_{detail_index}"
-            lines.append(f'    {detail_node}["{mermaid_text(detail_title)}"]')
-            connector = f"{section_node} --> {detail_node}" if role_name == "ground" else f"{detail_node} --> {section_node}"
-            lines.append(f"    {connector}")
-        lines.append(f"    class {section_node} {role_name};")
-        if detail_titles:
-            lines.append(
-                "    class "
-                + ",".join(f"{section_node}_{detail_index}" for detail_index in range(1, len(detail_titles) + 1))
-                + f" {role_name};"
-            )
-    lines.append("    class promise promise;")
+    if family == "foundation":
+        owned = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Owned here", ())), seed)
+        not_owned = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Not owned here", ())), seed // 2)
+        anchors = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Proof anchors", ())), seed // 3)
+        for index, title in enumerate(owned, start=1):
+            lines.append(f'    own{index}["{title}"]')
+            lines.append(f"    own{index} --> page")
+        for index, title in enumerate(not_owned, start=1):
+            lines.append(f'    limit{index}["{title}"]')
+            lines.append(f"    page -.keeps outside.-> limit{index}")
+        for index, title in enumerate(anchors, start=1):
+            lines.append(f'    anchor{index}["{title}"]')
+            lines.append(f"    page --> anchor{index}")
+        lines.append("    class page page;")
+        if owned:
+            lines.append("    class " + ",".join(f"own{index}" for index in range(1, len(owned) + 1)) + " positive;")
+        if not_owned:
+            lines.append("    class " + ",".join(f"limit{index}" for index in range(1, len(not_owned) + 1)) + " caution;")
+        if anchors:
+            lines.append("    class " + ",".join(f"anchor{index}" for index in range(1, len(anchors) + 1)) + " anchor;")
+        return mermaid_block("\n".join(lines))
+    if family == "architecture":
+        modules = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Module groups", ())), seed)
+        code_paths = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Read in code", ())), seed // 2)
+        pressure = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Design pressure", ())), seed // 3)
+        for index, title in enumerate(modules, start=1):
+            lines.append(f'    module{index}["{title}"]')
+            lines.append(f"    module{index} --> page")
+        for index, title in enumerate(code_paths, start=1):
+            lines.append(f'    code{index}["{title}"]')
+            lines.append(f"    page --> code{index}")
+        for index, title in enumerate(pressure, start=1):
+            lines.append(f'    pressure{index}["{title}"]')
+            lines.append(f"    pressure{index} -.tests whether this structure still holds.-> page")
+        lines.append("    class page page;")
+        if modules:
+            lines.append("    class " + ",".join(f"module{index}" for index in range(1, len(modules) + 1)) + " positive;")
+        if code_paths:
+            lines.append("    class " + ",".join(f"code{index}" for index in range(1, len(code_paths) + 1)) + " anchor;")
+        if pressure:
+            lines.append("    class " + ",".join(f"pressure{index}" for index in range(1, len(pressure) + 1)) + " caution;")
+        return mermaid_block("\n".join(lines))
+    if family == "interfaces":
+        surfaces = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Caller surfaces", ())), seed)
+        evidence = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Contract evidence", ())), seed // 2)
+        review_pressure = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Review pressure", ())), seed // 3)
+        for index, title in enumerate(surfaces, start=1):
+            lines.append(f'    surface{index}["{title}"]')
+            lines.append(f"    surface{index} --> page")
+        for index, title in enumerate(evidence, start=1):
+            lines.append(f'    proof{index}["{title}"]')
+            lines.append(f"    page --> proof{index}")
+        for index, title in enumerate(review_pressure, start=1):
+            lines.append(f'    review{index}["{title}"]')
+            lines.append(f"    review{index} -.raises compatibility pressure on.-> page")
+        lines.append("    class page page;")
+        if surfaces:
+            lines.append("    class " + ",".join(f"surface{index}" for index in range(1, len(surfaces) + 1)) + " positive;")
+        if evidence:
+            lines.append("    class " + ",".join(f"proof{index}" for index in range(1, len(evidence) + 1)) + " anchor;")
+        if review_pressure:
+            lines.append("    class " + ",".join(f"review{index}" for index in range(1, len(review_pressure) + 1)) + " caution;")
+        return mermaid_block("\n".join(lines))
+    if family == "operations":
+        workflow = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Workflow anchors", ())), seed)
+        evidence = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Operational evidence", ())), seed // 2)
+        release = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Release pressure", ())), seed // 3)
+        for index, title in enumerate(workflow, start=1):
+            lines.append(f'    step{index}["{title}"]')
+            lines.append(f"    step{index} --> page")
+        for index, title in enumerate(evidence, start=1):
+            lines.append(f'    run{index}["{title}"]')
+            lines.append(f"    page --> run{index}")
+        for index, title in enumerate(release, start=1):
+            lines.append(f'    release{index}["{title}"]')
+            lines.append(f"    run{((index - 1) % len(evidence)) + 1 if evidence else 'page'} --> release{index}")
+        lines.append("    class page page;")
+        if workflow:
+            lines.append("    class " + ",".join(f"step{index}" for index in range(1, len(workflow) + 1)) + " positive;")
+        if evidence:
+            lines.append("    class " + ",".join(f"run{index}" for index in range(1, len(evidence) + 1)) + " anchor;")
+        if release:
+            lines.append("    class " + ",".join(f"release{index}" for index in range(1, len(release) + 1)) + " action;")
+        return mermaid_block("\n".join(lines))
+    if family == "quality":
+        proof = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Proof surfaces", ())), seed)
+        risk = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Risk anchors", ())), seed // 2)
+        review_bar = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Review bar", ())), seed // 3)
+        for index, title in enumerate(proof, start=1):
+            lines.append(f'    proof{index}["{title}"]')
+            lines.append(f"    proof{index} --> page")
+        for index, title in enumerate(risk, start=1):
+            lines.append(f'    risk{index}["{title}"]')
+            lines.append(f"    risk{index} -.keeps trust honest.-> page")
+        for index, title in enumerate(review_bar, start=1):
+            lines.append(f'    bar{index}["{title}"]')
+            lines.append(f"    page --> bar{index}")
+        lines.append("    class page page;")
+        if proof:
+            lines.append("    class " + ",".join(f"proof{index}" for index in range(1, len(proof) + 1)) + " positive;")
+        if risk:
+            lines.append("    class " + ",".join(f"risk{index}" for index in range(1, len(risk) + 1)) + " caution;")
+        if review_bar:
+            lines.append("    class " + ",".join(f"bar{index}" for index in range(1, len(review_bar) + 1)) + " action;")
+        return mermaid_block("\n".join(lines))
+    if family == "compatibility handbook":
+        legacy = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Legacy surface", ())), seed)
+        canonical = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Canonical target", ())), seed // 2)
+        pressure = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Decision pressure", ())), seed // 3)
+        for index, title in enumerate(legacy, start=1):
+            lines.append(f'    legacy{index}["{title}"]')
+            lines.append(f"    legacy{index} --> page")
+        for index, title in enumerate(canonical, start=1):
+            lines.append(f'    canon{index}["{title}"]')
+            lines.append(f"    page --> canon{index}")
+        for index, title in enumerate(pressure, start=1):
+            lines.append(f'    pressure{index}["{title}"]')
+            lines.append(f"    pressure{index} -.should shorten the life of.-> page")
+        lines.append("    class page page;")
+        if legacy:
+            lines.append("    class " + ",".join(f"legacy{index}" for index in range(1, len(legacy) + 1)) + " caution;")
+        if canonical:
+            lines.append("    class " + ",".join(f"canon{index}" for index in range(1, len(canonical) + 1)) + " positive;")
+        if pressure:
+            lines.append("    class " + ",".join(f"pressure{index}" for index in range(1, len(pressure) + 1)) + " action;")
+        return mermaid_block("\n".join(lines))
+    if family == "maintainer handbook":
+        role = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Maintainer role", ())), seed)
+        health = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Repository health", ())), seed // 2)
+        outcome = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Operational outcome", ())), seed // 3)
+        for index, title in enumerate(role, start=1):
+            lines.append(f'    role{index}["{title}"]')
+            lines.append(f"    role{index} --> page")
+        for index, title in enumerate(health, start=1):
+            lines.append(f'    health{index}["{title}"]')
+            lines.append(f"    page --> health{index}")
+        for index, title in enumerate(outcome, start=1):
+            lines.append(f'    outcome{index}["{title}"]')
+            lines.append(f"    health{((index - 1) % len(health)) + 1 if health else 'page'} --> outcome{index}")
+        lines.append("    class page page;")
+        if role:
+            lines.append("    class " + ",".join(f"role{index}" for index in range(1, len(role) + 1)) + " positive;")
+        if health:
+            lines.append("    class " + ",".join(f"health{index}" for index in range(1, len(health) + 1)) + " anchor;")
+        if outcome:
+            lines.append("    class " + ",".join(f"outcome{index}" for index in range(1, len(outcome) + 1)) + " action;")
+        return mermaid_block("\n".join(lines))
+    if family in {"root site", "repository handbook"}:
+        focus_details = rotate_items(tuple(mermaid_text(item) for item in flatten_focus_details(focus_sections)), seed)
+        next_steps = rotate_items(tuple(compact_step_label(item) for item in next_checks), seed // 2)
+        for index, title in enumerate(focus_details, start=1):
+            lines.append(f'    detail{index}["{title}"]')
+            edge = "-->" if index % 2 else "-.gives the reader orientation.->"
+            lines.append(f"    detail{index} {edge} page")
+        for index, title in enumerate(next_steps, start=1):
+            lines.append(f'    next{index}["{mermaid_text(title)}"]')
+            lines.append(f"    page --> next{index}")
+        lines.append("    class page page;")
+        if focus_details:
+            lines.append("    class " + ",".join(f"detail{index}" for index in range(1, len(focus_details) + 1)) + " anchor;")
+        if next_steps:
+            lines.append("    class " + ",".join(f"next{index}" for index in range(1, len(next_steps) + 1)) + " action;")
+        return mermaid_block("\n".join(lines))
+    focus_details = rotate_items(tuple(mermaid_text(item) for item in flatten_focus_details(focus_sections)), seed)
+    next_titles = rotate_items(tuple(mermaid_text(item) for item in next_checks), seed // 2)
+    for index, title in enumerate(focus_details, start=1):
+        lines.append(f'    detail{index}["{title}"]')
+        lines.append(f"    detail{index} --> page")
+    for index, title in enumerate(next_titles, start=1):
+        lines.append(f'    next{index}["{title}"]')
+        lines.append(f"    page --> next{index}")
+    lines.append("    class page page;")
+    if focus_details:
+        lines.append("    class " + ",".join(f"detail{index}" for index in range(1, len(focus_details) + 1)) + " anchor;")
+    if next_titles:
+        lines.append("    class " + ",".join(f"next{index}" for index in range(1, len(next_titles) + 1)) + " action;")
     return mermaid_block("\n".join(lines))
 
 
@@ -718,18 +932,16 @@ def add_page_route_map(
 ) -> str:
     block = "\n".join(
         [
-            "## Page Maps",
+            "## Visual Summary",
             "",
-            render_route_diagram(
+            render_focus_diagram(
                 scope_title,
                 section_title,
                 page_title,
-                questions,
+                focus_sections,
                 destination_titles,
                 next_checks,
             ),
-            "",
-            render_focus_diagram(page_title, focus_sections, destination_titles),
         ]
     )
     return insert_after_intro(body, block)
@@ -4643,7 +4855,7 @@ def write_mkdocs(
 
 def validate_rendered_docs() -> None:
     required_headings = (
-        "## Page Maps",
+        "## Visual Summary",
         "## Use This Page When",
         "## Decision Rule",
         "## What This Page Answers",
@@ -4658,8 +4870,8 @@ def validate_rendered_docs() -> None:
     failures: list[str] = []
     for path in sorted(DOCS_ROOT.rglob("*.md")):
         text = path.read_text(encoding="utf-8")
-        if text.count("```mermaid") < 2:
-            failures.append(f"{path}: fewer than two Mermaid diagrams")
+        if text.count("```mermaid") < 1:
+            failures.append(f"{path}: missing Mermaid diagram")
         for heading in required_headings:
             if heading not in text:
                 failures.append(f"{path}: missing heading {heading}")

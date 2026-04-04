@@ -18,93 +18,38 @@ them as stable enough to depend on.
 
 Treat the interfaces pages for `bijux-canon-reason` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
-## Page Maps
-
-```mermaid
-flowchart LR
-    context["bijux-canon-reason / Interfaces"]
-    page["API Surface"]
-    follow["Follow the narrowest next route"]
-    classDef context fill:#eef2ff,stroke:#4f46e5,color:#1e2852;
-    classDef page fill:#e0e7ff,stroke:#3730a3,color:#1e2852,stroke-width:2px;
-    classDef route fill:#ecfeff,stroke:#0891b2,color:#164e63;
-    classDef next fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    subgraph pressure["Start Here When You Need To Know"]
-        direction TB
-        q1["which public or operator-facing surfaces bijux-canon-reason is really asking readers to trust"]
-        q2["which schemas, artifacts, imports, or commands behave like contracts"]
-        q3["what compatibility pressure a change to this surface would create"]
-    end
-    subgraph outcomes["This Page Should Clarify"]
-        direction TB
-        dest1["identify contracts"]
-        dest2["see caller impact"]
-        dest3["review compatibility"]
-    end
-    subgraph next_steps["Move Next To The Strongest Follow-up"]
-        direction TB
-        next1["move to operations when the caller-facing question becomes procedural or environmental"]
-        next2["move to quality when compatibility or evidence of protection becomes the real issue"]
-        next3["move back to architecture when a public-surface question reveals a deeper structural drift"]
-    end
-    context --> page
-    q1 --> page
-    q2 --> page
-    q3 --> page
-    page --> dest1
-    page --> dest2
-    page --> dest3
-    page --> follow
-    follow --> next1
-    follow --> next2
-    follow --> next3
-    class context context;
-    class page page;
-    class q1,q2,q3 route;
-    class dest1,dest2,dest3 route;
-    class next1,next2,next3 next;
-```
+## Visual Summary
 
 ```mermaid
 flowchart TB
-    promise["API Surface<br/>clarifies: identify contracts | see caller impact | review compatibility"]
-    classDef promise fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef driver fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef constraint fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef ground fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    focus1["Caller surfaces"]
-    focus1 --> promise
-    promise --> focus1
-    focus1_1["CLI app in src/bijux_canon_reason/interfaces/cli"]
-    focus1 --> focus1_1
-    focus1_2["HTTP app in src/bijux_canon_reason/api/v1"]
-    focus1 --> focus1_2
-    focus1_3["schema files in apis/bijux-canon-reason/v1"]
-    focus1 --> focus1_3
-    class focus1 ground;
-    class focus1_1,focus1_2,focus1_3 ground;
-    focus2["Contract evidence"]
-    focus2 --> promise
-    promise --> focus2
-    focus2_1["apis/bijux-canon-reason/v1/schema.yaml"]
-    focus2 --> focus2_1
-    focus2_2["apis/bijux-canon-reason/v1/pinned_openapi.json"]
-    focus2 --> focus2_2
-    focus2_3["reasoning traces and replay diffs"]
-    focus2 --> focus2_3
-    class focus2 ground;
-    class focus2_1,focus2_2,focus2_3 ground;
-    focus3["Review pressure"]
-    focus3 -.keeps the page honest.-> promise
-    focus3_1["tests/unit for planning, reasoning, execution, verification, and interfaces"]
-    focus3_1 --> focus3
-    focus3_2["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
-    focus3_2 --> focus3
-    focus3_3["tests/perf for retrieval benchmark coverage"]
-    focus3_3 --> focus3
-    class focus3 constraint;
-    class focus3_1,focus3_2,focus3_3 constraint;
-    class promise promise;
+    page["API Surface<br/>clarifies: identify contracts | see caller impact | review compatibility"]
+    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
+    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+    surface1["CLI app in src/bijux_canon_reason/interfaces/cli"]
+    surface1 --> page
+    surface2["HTTP app in src/bijux_canon_reason/api/v1"]
+    surface2 --> page
+    surface3["schema files in apis/bijux-canon-reason/v1"]
+    surface3 --> page
+    proof1["apis/bijux-canon-reason/v1/pinned_openapi.json"]
+    page --> proof1
+    proof2["reasoning traces and replay diffs"]
+    page --> proof2
+    proof3["apis/bijux-canon-reason/v1/schema.yaml"]
+    page --> proof3
+    review1["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
+    review1 -.raises compatibility pressure on.-> page
+    review2["tests/perf for retrieval benchmark coverage"]
+    review2 -.raises compatibility pressure on.-> page
+    review3["tests/unit for planning, reasoning, execution, verification, and interfaces"]
+    review3 -.raises compatibility pressure on.-> page
+    class page page;
+    class surface1,surface2,surface3 positive;
+    class proof1,proof2,proof3 anchor;
+    class review1,review2,review3 caution;
 ```
 
 ## API Artifacts
