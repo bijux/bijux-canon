@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG monoids and semigroups: associative aggregation with identities (end-of-Bijux RAG)."""
+"""Monoids and semigroups for associative aggregation with identities."""
 
 from __future__ import annotations
 

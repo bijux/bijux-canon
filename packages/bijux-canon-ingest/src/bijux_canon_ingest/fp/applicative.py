@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Backward-compatible name for Bijux RAG Validation.
+"""Compatibility alias for the validation module.
 
-The module-05 cores introduce Validation as an applicative; later cores refer to
-it as `fp.validation`. This module keeps the earlier import path working.
+`fp.validation` is the canonical import path. This module keeps the older
+`fp.applicative` entry point working for downstream callers.
 """
 
 from __future__ import annotations

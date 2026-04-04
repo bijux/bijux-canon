@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: State – explicit, threaded local state without mutation (effects)."""
+"""State helpers for explicit, threaded local state without mutation."""
 
 from __future__ import annotations
 

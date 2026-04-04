@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: Reader – explicit, injectable configuration dependency (effects).
+"""Reader helpers for explicit, injectable configuration dependencies.
 
 Reader encodes read-only environment access as a pure value:
 `Reader[C, T]` is a function `C -> T` with lawful `map` and `and_then`.

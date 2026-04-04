@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG error codes and thin ErrInfo re-exports (end-of-Bijux RAG)."""
+"""Error codes and thin ErrInfo re-exports for ingest pipelines."""
 
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: Container layering helpers (effects; no monad transformers)."""
+"""Container layering helpers without monad transformers."""
 
 from __future__ import annotations
 

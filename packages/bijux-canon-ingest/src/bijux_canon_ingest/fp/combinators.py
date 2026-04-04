@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Small, focused functional helpers for the end-of-Bijux RAG codebase.
+"""Small, focused functional helpers for ingest pipelines.
 
 This module intentionally stays minimal while supporting:
 - Left-to-right function composition
 - Lazy iterator combinators (map/filter/flatmap)
 - Observation-only taps and probes for debugging
-- Deterministic time injection helpers for streaming (Bijux RAG)
+- Deterministic time injection helpers for streaming
 
 Import via `bijux_canon_ingest.fp` (package) or `bijux_canon_ingest.fp.combinators` (module).
 """
@@ -191,7 +191,7 @@ def instrument_stage(
 
 
 class FakeTime:
-    """Deterministic, injected time source for testing time-aware streaming stages (Bijux RAG)."""
+    """Deterministic time source for testing time-aware streaming stages."""
 
     def __init__(self, start: float = 0.0) -> None:
         self._now = float(start)

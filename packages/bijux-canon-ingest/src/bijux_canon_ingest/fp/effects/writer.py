@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG–07: Writer – accumulate logs/metrics as pure data (effects).
+"""Writer helpers for accumulating logs and metrics as pure data.
 
-Bijux RAG generalises the Writer log entry type to support structured logs
-(e.g. `domain.logging.LogEntry`) while preserving the Bijux RAG API.
+The Writer log entry type supports structured records such as
+`domain.logging.LogEntry` while keeping the public API stable.
 """
 
 from __future__ import annotations

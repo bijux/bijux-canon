@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG Validation: applicative checks that accumulate all errors (end-of-Bijux RAG)."""
+"""Validation helpers for applicative checks that accumulate all errors."""
 
 from __future__ import annotations
 

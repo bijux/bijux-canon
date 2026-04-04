@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Streaming combinators for Result-valued pipelines (end-of-Bijux RAG)."""
+"""Streaming combinators for Result-valued pipelines."""
 
 from __future__ import annotations
 

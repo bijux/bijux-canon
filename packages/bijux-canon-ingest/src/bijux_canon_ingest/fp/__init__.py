@@ -1,16 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Functional programming utilities for the end-of-Bijux RAG codebase.
+"""Functional programming utilities for ingest pipelines.
 
 This package groups two related layers:
-- Bijux RAG–03: small iterator/pipeline combinators and instrumentation helpers.
-- Bijux RAG: type-driven utilities (ADTs, functors, applicatives, monoids, etc.).
-- Bijux RAG: monadic programming (Reader/State/Writer), layering helpers, and configurable pipelines.
+- Iterator and pipeline combinators with lightweight instrumentation helpers
+- Type-driven utilities such as ADTs, functors, applicatives, and monoids
+- Reader, State, and Writer helpers with composition and runtime toggles
 
-Bijux RAG–03 helpers are re-exported at the package root for convenience.
-Bijux RAG functionality is organized into submodules (e.g. `functor`,
-`validation`, `monoid`). Bijux RAG effect helpers live in `bijux_canon_ingest.fp.effects`.
+Common helpers are re-exported at the package root for convenience.
+Effect helpers live in `bijux_canon_ingest.fp.effects`.
 """
 
 from __future__ import annotations
@@ -70,7 +69,7 @@ __all__ = [
     "StageInstrumentation",
     "instrument_stage",
     "FakeTime",
-    # Bijux RAG: monads + layering + configurable pipelines
+    # Reader/State/Writer and configurable pipeline helpers
     "Reader",
     "ask",
     "asks",

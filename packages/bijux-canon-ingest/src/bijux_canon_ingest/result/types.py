@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Result/Option containers for pure, streaming-friendly error handling (end-of-Bijux RAG).
+"""Result and Option containers for pure, streaming-friendly error handling.
 
-Bijux RAG extends the ADTs with:
+This module extends the base ADTs with:
 - Canonical instance methods (`map`, `map_err`, `and_then`, `ap`) for lawful composition
 - Boundary-friendly helpers (`or_else`, `tap`)
 - A unified Option encoding (`Some[T] | NoneVal`) with a stable singleton `NONE`
@@ -326,7 +326,7 @@ def make_errinfo(
     return ErrInfo(code=code, msg=msg, stage=stage, path=path, cause=cause, ctx=ctx)
 
 
-# Bijux RAG legacy names (kept for boundary/shell style)
+# Compatibility aliases for boundary-oriented call sites
 def result_map(res: Result[T, E], fn: Callable[[T], U]) -> Result[U, E]:
     return map_result(fn, res)
 

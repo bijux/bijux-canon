@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Result/Option and Result-stream utilities (end-of-Bijux RAG).
+"""Result, Option, and Result-stream utilities.
 
 This package groups:
 - `types`: Result/Option containers + ErrInfo

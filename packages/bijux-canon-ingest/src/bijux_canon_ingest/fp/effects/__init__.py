@@ -1,18 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: effect-encoding utilities (end-of-Bijux RAG).
+"""Effect-encoding utilities for ingest pipelines.
 
-This subpackage groups the "small monads" and effect helpers introduced in
-Bijux RAG:
+This subpackage groups small-monad and effect helpers:
 - Reader: explicit, injectable configuration
 - State: explicit threaded state
 - Writer: pure log/metrics accumulation
 - Layering helpers (no monad transformers)
 - Runtime-configurable pipeline toggles
 
-Note: Bijux RAG introduces `IOPlan` and IOPlan-specific wrappers, but in this codebase they
-live under `bijux_canon_ingest.domain.effects` as domain-owned effect interfaces.
+`IOPlan` and related wrappers live under `bijux_canon_ingest.domain.effects`
+as domain-owned effect interfaces.
 """
 
 from __future__ import annotations

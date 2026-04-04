@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG core ADTs (products + tagged sums) and stable JSON helpers (end-of-Bijux RAG)."""
+"""Core ADTs and stable JSON helpers for ingest pipelines."""
 
 from __future__ import annotations
 

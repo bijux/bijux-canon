@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: runtime-configurable pipelines via higher-order combinators (effects)."""
+"""Runtime-configurable pipeline helpers built from higher-order combinators."""
 
 from __future__ import annotations
 

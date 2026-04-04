@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG functors: curried mapping over Option, Result, and sequences (end-of-Bijux RAG)."""
+"""Functor helpers for curried mapping over Option, Result, and sequences."""
 
 from __future__ import annotations
 
