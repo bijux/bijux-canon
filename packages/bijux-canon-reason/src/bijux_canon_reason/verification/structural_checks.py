@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from bijux_canon_reason.core.invariants import validate_plan, validate_trace
 from bijux_canon_reason.core.types import (
     ClaimType,
@@ -18,6 +20,16 @@ INV_SCH_001 = "INV-SCH-001"
 INV_LNK_001 = "INV-LNK-001"
 INV_ORD_001 = "INV-ORD-001"
 INV_TLK_001 = "INV-TLK-001"
+
+
+@dataclass(frozen=True)
+class _TraceStructure:
+    claim_ids: set[str]
+    evidence_ids: set[str]
+    tool_call_ids: set[str]
+    finished_step_outputs: set[str]
+    has_derived_claim: bool
+    has_insufficient_output: bool
 
 
 def check_core_invariants(
@@ -45,60 +57,39 @@ def check_claim_supports(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
     failures: list[VerificationFailure] = []
-    known_claims = {
-        event.claim.id
-        for event in ctx.trace.events
-        if event.kind == TraceEventKind.claim_emitted
-    }
-    known_evidence = {
-        event.evidence.id
-        for event in ctx.trace.events
-        if event.kind == TraceEventKind.evidence_registered
-    }
-    known_calls = {
-        event.result.call_id
-        for event in ctx.trace.events
-        if event.kind == TraceEventKind.tool_returned
-    }
+    trace_structure = _index_trace_structure(ctx)
 
     for event in ctx.trace.events:
         if event.kind != TraceEventKind.claim_emitted:
             continue
         for support in event.claim.supports:
-            if support.kind == SupportKind.claim and support.ref_id not in known_claims:
+            if (
+                support.kind == SupportKind.claim
+                and support.ref_id not in trace_structure.claim_ids
+            ):
                 failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
-                        message=(
-                            f"claim_justifications: unknown claim ref {support.ref_id}"
-                        ),
+                    _failure(
+                        message=f"claim_justifications: unknown claim ref {support.ref_id}",
                         invariant_id=INV_LNK_001,
                     )
                 )
             if (
                 support.kind == SupportKind.evidence
-                and support.ref_id not in known_evidence
+                and support.ref_id not in trace_structure.evidence_ids
             ):
                 failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
-                        message=(
-                            "claim_justifications: unknown evidence ref "
-                            f"{support.ref_id}"
-                        ),
+                    _failure(
+                        message=f"claim_justifications: unknown evidence ref {support.ref_id}",
                         invariant_id=INV_LNK_001,
                     )
                 )
             if (
                 support.kind == SupportKind.tool_call
-                and support.ref_id not in known_calls
+                and support.ref_id not in trace_structure.tool_call_ids
             ):
                 failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
-                        message=(
-                            f"claim_justifications: unknown tool ref {support.ref_id}"
-                        ),
+                    _failure(
+                        message=f"claim_justifications: unknown tool ref {support.ref_id}",
                         invariant_id=INV_LNK_001,
                     )
                 )
@@ -111,18 +102,11 @@ def check_claim_supports(
 def check_finalize_validated(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
-    finalize_present = any(
-        event.kind == TraceEventKind.step_finished and event.output.type == "finalize"
-        for event in ctx.trace.events
-    )
+    finalize_present = "finalize" in _index_trace_structure(ctx).finished_step_outputs
     if finalize_present:
         return VerificationCheck(name="finalize_present", passed=True), []
     return VerificationCheck(name="finalize_present", passed=False), [
-        VerificationFailure(
-            severity=VerificationSeverity.error,
-            message="Missing finalize output",
-            invariant_id=INV_ORD_001,
-        )
+        _failure(message="Missing finalize output", invariant_id=INV_ORD_001)
     ]
 
 
@@ -130,29 +114,16 @@ def check_insufficient_reasoning(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
     failures: list[VerificationFailure] = []
-    has_claim = any(
-        event.kind == TraceEventKind.claim_emitted
-        and getattr(event.claim, "claim_type", None) == ClaimType.derived
-        for event in ctx.trace.events
-    )
-    has_insuff = any(
-        event.kind == TraceEventKind.step_finished
-        and getattr(event.output, "type", "") == "insufficient_evidence"
-        for event in ctx.trace.events
-    )
+    trace_structure = _index_trace_structure(ctx)
+    has_claim = trace_structure.has_derived_claim
+    has_insuff = trace_structure.has_insufficient_output
     if not has_claim and not has_insuff:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="No derived claims and no insufficiency marker present",
-            )
+            _failure(message="No derived claims and no insufficiency marker present")
         )
     if has_claim and has_insuff:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="Both derived claims and insufficiency present (ambiguous)",
-            )
+            _failure(message="Both derived claims and insufficiency present (ambiguous)")
         )
     return VerificationCheck(
         name="insufficient_reasoning",
@@ -164,49 +135,86 @@ def check_required_steps(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
     required: set[StepKind] = {"understand", "gather", "derive", "verify", "finalize"}
-    seen: set[StepKind] = set()
-    for event in ctx.trace.events:
-        if event.kind != TraceEventKind.step_finished:
-            continue
-        out_type = event.output.type
-        if out_type == "insufficient_evidence":
-            seen.add("derive")
-        else:
-            seen.add(out_type)
+    trace_structure = _index_trace_structure(ctx)
+    seen: set[StepKind] = {
+        "derive" if output == "insufficient_evidence" else output
+        for output in trace_structure.finished_step_outputs
+    }
     missing = sorted(required - seen)
     if not missing:
         return VerificationCheck(name="required_steps", passed=True), []
     msg = f"Missing required step outputs: {missing}"
     return VerificationCheck(name="required_steps", passed=False, details=msg), [
-        VerificationFailure(
-            severity=VerificationSeverity.error,
-            message=msg,
-            invariant_id=INV_ORD_001,
-        )
+        _failure(message=msg, invariant_id=INV_ORD_001)
     ]
 
 
 def check_tool_linkage(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
-    calls: list[str] = []
-    results: set[str] = set()
-    for event in ctx.trace.events:
-        if event.kind == TraceEventKind.tool_called:
-            calls.append(event.call.id)
-        if event.kind == TraceEventKind.tool_returned:
-            results.add(event.result.call_id)
-    missing = sorted(set(calls) - results)
+    tool_call_ids = {
+        event.call.id
+        for event in ctx.trace.events
+        if event.kind == TraceEventKind.tool_called
+    }
+    tool_result_ids = {
+        event.result.call_id
+        for event in ctx.trace.events
+        if event.kind == TraceEventKind.tool_returned
+    }
+    missing = sorted(tool_call_ids - tool_result_ids)
     if not missing:
         return VerificationCheck(name="tool_linkage", passed=True), []
     msg = f"tool_linkage: Missing tool results for call ids: {missing}"
     return VerificationCheck(name="tool_linkage", passed=False, details=msg), [
-        VerificationFailure(
-            severity=VerificationSeverity.error,
-            message=msg,
-            invariant_id=INV_TLK_001,
-        )
+        _failure(message=msg, invariant_id=INV_TLK_001)
     ]
+
+
+def _index_trace_structure(ctx: VerificationContext) -> _TraceStructure:
+    claim_ids: set[str] = set()
+    evidence_ids: set[str] = set()
+    tool_call_ids: set[str] = set()
+    finished_step_outputs: set[str] = set()
+    has_derived_claim = False
+    has_insufficient_output = False
+
+    for event in ctx.trace.events:
+        if event.kind == TraceEventKind.claim_emitted:
+            claim_ids.add(event.claim.id)
+            has_derived_claim = has_derived_claim or (
+                getattr(event.claim, "claim_type", None) == ClaimType.derived
+            )
+        elif event.kind == TraceEventKind.evidence_registered:
+            evidence_ids.add(event.evidence.id)
+        elif event.kind == TraceEventKind.tool_returned:
+            tool_call_ids.add(event.result.call_id)
+        elif event.kind == TraceEventKind.step_finished:
+            finished_step_outputs.add(event.output.type)
+            has_insufficient_output = (
+                has_insufficient_output or event.output.type == "insufficient_evidence"
+            )
+
+    return _TraceStructure(
+        claim_ids=claim_ids,
+        evidence_ids=evidence_ids,
+        tool_call_ids=tool_call_ids,
+        finished_step_outputs=finished_step_outputs,
+        has_derived_claim=has_derived_claim,
+        has_insufficient_output=has_insufficient_output,
+    )
+
+
+def _failure(
+    *,
+    message: str,
+    invariant_id: str | None = None,
+) -> VerificationFailure:
+    return VerificationFailure(
+        severity=VerificationSeverity.error,
+        message=message,
+        invariant_id=invariant_id,
+    )
 
 
 __all__ = [
