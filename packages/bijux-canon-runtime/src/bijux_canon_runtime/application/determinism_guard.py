@@ -9,6 +9,12 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
+from bijux_canon_runtime.application.replay_event_analysis import (
+    failed_steps,
+    first_divergent_step,
+    human_intervention_events,
+    missing_step_end,
+)
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
@@ -19,8 +25,6 @@ from bijux_canon_runtime.model.execution.replay_verdict import (
     ReplayVerdict,
     ReplayVerdictDetails,
 )
-from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
-from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.observability.analysis.trace_diff import (
     non_determinism_report,
 )
@@ -33,7 +37,6 @@ from bijux_canon_runtime.observability.classification.fingerprint import (
 )
 from bijux_canon_runtime.ontology import DeterminismLevel
 from bijux_canon_runtime.ontology.public import (
-    EventType,
     ReplayAcceptability,
     ReplayMode,
 )
@@ -258,15 +261,15 @@ def replay_diff(
                     "observed": current,
                 }
 
-    missing_step_end = _missing_step_end(trace.events, plan.steps)
-    if missing_step_end:
-        diffs["missing_step_end"] = sorted(missing_step_end)
+    missing_steps = missing_step_end(trace.events, plan.steps)
+    if missing_steps:
+        diffs["missing_step_end"] = sorted(missing_steps)
 
-    failed_steps = _failed_steps(trace.events)
-    if failed_steps:
-        diffs["failed_steps"] = sorted(failed_steps)
+    failed_step_indexes = failed_steps(trace.events)
+    if failed_step_indexes:
+        diffs["failed_steps"] = sorted(failed_step_indexes)
 
-    human_events = _human_intervention_events(trace.events)
+    human_events = human_intervention_events(trace.events)
     if human_events:
         diffs["human_intervention_events"] = human_events
 
@@ -284,7 +287,7 @@ def replay_diff(
         primary = next(iter(diffs))
         diffs["summary"] = f"Replay rejected: {primary}"
         raise ReplayDiffError(
-            step_id=_first_divergent_step(plan, diffs),
+            step_id=first_divergent_step(plan, diffs),
             reason_code=primary,
             diffs=diffs,
         )
@@ -300,54 +303,6 @@ class ReplayDiffError(ValueError):
         self.step_id = step_id
         self.reason_code = reason_code
         self.diffs = diffs
-
-
-def _first_divergent_step(plan: ExecutionSteps, diffs: dict[str, object]) -> int:
-    """Internal helper; not part of the public API."""
-    candidates: list[int] = []
-    missing = diffs.get("missing_step_end")
-    if isinstance(missing, list):
-        candidates.extend(int(value) for value in missing)
-    failed = diffs.get("failed_steps")
-    if isinstance(failed, list):
-        candidates.extend(int(value) for value in failed)
-    if candidates:
-        return min(candidates)
-    if plan.steps:
-        return int(plan.steps[0].step_index)
-    return 0
-
-
-def _missing_step_end(
-    events: Iterable[ExecutionEvent], steps: Iterable[ResolvedStep]
-) -> set[int]:
-    """Internal helper; not part of the public API."""
-    expected_steps = {step.step_index for step in steps}
-    ended = {
-        event.step_index for event in events if event.event_type == EventType.STEP_END
-    }
-    failed = _failed_steps(events)
-    return expected_steps.difference(ended.union(failed))
-
-
-def _failed_steps(events: Iterable[ExecutionEvent]) -> set[int]:
-    """Internal helper; not part of the public API."""
-    failure_events = {
-        EventType.REASONING_FAILED,
-        EventType.RETRIEVAL_FAILED,
-        EventType.STEP_FAILED,
-        EventType.VERIFICATION_FAIL,
-    }
-    return {event.step_index for event in events if event.event_type in failure_events}
-
-
-def _human_intervention_events(events: Iterable[ExecutionEvent]) -> list[int]:
-    """Internal helper; not part of the public API."""
-    return [
-        event.event_index
-        for event in events
-        if event.event_type == EventType.HUMAN_INTERVENTION
-    ]
 
 
 def semantic_artifact_fingerprint(artifacts: Iterable[Artifact]) -> str:
