@@ -122,6 +122,12 @@ Keep it aligned with the package's real import names, directories, and artifact 
 - the out-of-scope list starts looking like shadow ownership instead of a real boundary
 - review conversations keep falling back to package adjacency rather than package intent
 
+## Tradeoffs To Hold
+
+- prefer clean ownership over local convenience, even when a nearby package looks easier to reuse
+- prefer an explicit boundary gap over a shadow responsibility that no package clearly owns
+- prefer keeping `bijux-canon-reason` intelligible as a bounded package over making it look universally useful
+
 ## Cross Implications
 
 - changes here influence how neighboring packages are allowed to stay narrow around `bijux-canon-reason`

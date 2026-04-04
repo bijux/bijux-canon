@@ -122,6 +122,12 @@ Keep it aligned with the package outputs that are actually produced and consumed
 - callers have to infer stability from examples instead of from explicit contract evidence
 - compatibility review starts after change has already landed instead of before
 
+## Tradeoffs To Hold
+
+- prefer a smaller explicit contract over a wider surface whose stability has to be guessed
+- prefer paying compatibility-review cost up front over discovering caller breakage after release
+- prefer contract evidence that is slightly heavier to maintain over allowing `bijux-canon-ingest` surfaces to drift silently
+
 ## Cross Implications
 
 - changes here shape what downstream packages and operators can safely assume about `bijux-canon-ingest`

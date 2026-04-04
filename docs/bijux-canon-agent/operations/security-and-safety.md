@@ -124,6 +124,12 @@ Keep it aligned with the package interfaces and operational risk profile.
 - package metadata, runtime behavior, and operational docs start telling different stories
 - incident handling requires reverse-engineering workflow from code instead of following checked-in guidance
 
+## Tradeoffs To Hold
+
+- prefer repeatable checked-in workflows over locally optimized shortcuts
+- prefer diagnosability over hiding operational seams that matter during incidents
+- prefer keeping `bijux-canon-agent` operational memory visible in metadata, docs, and tests over relying on maintainer recall
+
 ## Cross Implications
 
 - changes here affect how maintainers and CI interact with `bijux-canon-agent` across environments

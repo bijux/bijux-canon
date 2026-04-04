@@ -127,6 +127,12 @@ Keep it aligned with the package seams that actually support extension today.
 - dependency direction has to be explained with caveats instead of a clean structural story
 - the path from interface to domain to proof no longer feels traceable in one pass
 
+## Tradeoffs To Hold
+
+- prefer clean dependency direction over short-term coupling that makes one change easier today
+- prefer an execution path that can be explained quickly over indirection that only looks flexible
+- prefer structural legibility in `bijux-canon-runtime` over squeezing unrelated behavior into the same module seam
+
 ## Cross Implications
 
 - changes here alter how interface, operations, and quality pages for `bijux-canon-runtime` should be read

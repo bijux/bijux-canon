@@ -121,6 +121,12 @@ Keep it aligned with the checked-in SBOM helpers and tests.
 - contributors can only discover maintainer behavior by reading scripts or CI output directly
 - the page stops making package impact explicit when automation changes
 
+## Tradeoffs To Hold
+
+- prefer repository-health clarity over convenience that only helps one maintainer's local workflow
+- prefer checked-in automation expectations over undocumented operator heroics
+- prefer explicit maintainer scope over letting dev pages quietly absorb product-contract decisions
+
 ## Cross Implications
 
 - maintainer ambiguity leaks quickly into product package docs and repository workflows

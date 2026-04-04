@@ -120,6 +120,12 @@ Keep it aligned with the command declarations in compatibility package metadata.
 - the canonical target is harder to find than the old name
 - retirement conversations keep stalling because the remaining need is not described concretely
 
+## Tradeoffs To Hold
+
+- prefer a clear migration path over preserving every historical detail equally
+- prefer honest legacy labeling over making old surfaces look more current than they are
+- prefer repository-wide contract clarity over retaining compatibility language that now conflicts with canonical package docs
+
 ## Cross Implications
 
 - unclear compatibility pages slow adoption of the canonical package docs

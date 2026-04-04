@@ -178,6 +178,12 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 - readers still need trial-and-error to find the right handbook branch
 - the distinction between repository, package, maintainer, and compatibility docs becomes blurry again
 
+## Tradeoffs To Hold
+
+- prefer routing clarity over turning the root page into a compressed summary of every section
+- prefer a small amount of duplication in navigation language over forcing readers to infer where a question belongs
+- prefer stable handbook boundaries over a root index that changes shape every time one package adds material
+
 ## Cross Implications
 
 - when this page drifts, every handbook branch becomes harder to discover correctly

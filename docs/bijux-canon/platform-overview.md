@@ -132,6 +132,12 @@ Keep this page aligned with the real package set and the root-level automation t
 - the page stops naming concrete root assets that support its claims
 - reviewers cannot tell whether the page is describing policy, process, or one local implementation
 
+## Tradeoffs To Hold
+
+- prefer repository-wide clarity over squeezing package-specific nuance into root pages
+- prefer durable repository rules over explanations that only fit the current implementation snapshot
+- prefer explicit ownership boundaries between root, product, maintainer, and compatibility docs over a superficially shorter navigation tree
+
 ## Cross Implications
 
 - weak repository pages force package docs to carry root context they should not own

@@ -120,6 +120,12 @@ Keep it aligned with the limitations that remain intentionally true today.
 - reviewers disagree on whether the work is done because the standard is too implicit
 - limitations remain unchanged even when package behavior has obviously shifted
 
+## Tradeoffs To Hold
+
+- prefer broader proof over narrower green checks when the package contract is larger than one code path
+- prefer visible limitations over a cleaner story that hides risk
+- prefer a slightly slower approval path over granting `bijux-canon-reason` trust without enough evidence
+
 ## Cross Implications
 
 - changes here influence how all other `bijux-canon-reason` sections should be trusted after modification

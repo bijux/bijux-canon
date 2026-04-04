@@ -1276,6 +1276,37 @@ def package_escalate_when(package: PackageInfo, category: str) -> tuple[str, ...
     return escalate_map[category]
 
 
+def package_tradeoffs(package: PackageInfo, category: str) -> tuple[str, ...]:
+    tradeoff_map = {
+        "foundation": (
+            "prefer clean ownership over local convenience, even when a nearby package looks easier to reuse",
+            "prefer an explicit boundary gap over a shadow responsibility that no package clearly owns",
+            f"prefer keeping `{package.title}` intelligible as a bounded package over making it look universally useful",
+        ),
+        "architecture": (
+            "prefer clean dependency direction over short-term coupling that makes one change easier today",
+            "prefer an execution path that can be explained quickly over indirection that only looks flexible",
+            f"prefer structural legibility in `{package.title}` over squeezing unrelated behavior into the same module seam",
+        ),
+        "interfaces": (
+            "prefer a smaller explicit contract over a wider surface whose stability has to be guessed",
+            "prefer paying compatibility-review cost up front over discovering caller breakage after release",
+            f"prefer contract evidence that is slightly heavier to maintain over allowing `{package.title}` surfaces to drift silently",
+        ),
+        "operations": (
+            "prefer repeatable checked-in workflows over locally optimized shortcuts",
+            "prefer diagnosability over hiding operational seams that matter during incidents",
+            f"prefer keeping `{package.title}` operational memory visible in metadata, docs, and tests over relying on maintainer recall",
+        ),
+        "quality": (
+            "prefer broader proof over narrower green checks when the package contract is larger than one code path",
+            "prefer visible limitations over a cleaner story that hides risk",
+            f"prefer a slightly slower approval path over granting `{package.title}` trust without enough evidence",
+        ),
+    }
+    return tradeoff_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1523,6 +1554,17 @@ def add_escalate_when(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "Update This Page When", block)
 
 
+def add_tradeoffs(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Tradeoffs To Hold",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Cross Implications", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1640,6 +1682,14 @@ def render_home(
             "when this page drifts, every handbook branch becomes harder to discover correctly",
             "root routing mistakes amplify the cost of weak package or maintainer pages because readers reach them later",
             "the value of the whole docs system depends on this page remaining a fast orientation surface",
+        ),
+    )
+    body = add_tradeoffs(
+        body,
+        (
+            "prefer routing clarity over turning the root page into a compressed summary of every section",
+            "prefer a small amount of duplication in navigation language over forcing readers to infer where a question belongs",
+            "prefer stable handbook boundaries over a root index that changes shape every time one package adds material",
         ),
     )
     body = add_evidence_checklist(
@@ -2123,6 +2173,14 @@ def render_root_page(
             "maintainer pages become harder to interpret if repository policy is not clear first",
         ),
     )
+    body = add_tradeoffs(
+        body,
+        (
+            "prefer repository-wide clarity over squeezing package-specific nuance into root pages",
+            "prefer durable repository rules over explanations that only fit the current implementation snapshot",
+            "prefer explicit ownership boundaries between root, product, maintainer, and compatibility docs over a superficially shorter navigation tree",
+        ),
+    )
     body = add_evidence_checklist(
         body,
         (
@@ -2544,6 +2602,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "root governance pages become less actionable when maintainer intent is implicit",
         ),
     )
+    body = add_tradeoffs(
+        body,
+        (
+            "prefer repository-health clarity over convenience that only helps one maintainer's local workflow",
+            "prefer checked-in automation expectations over undocumented operator heroics",
+            "prefer explicit maintainer scope over letting dev pages quietly absorb product-contract decisions",
+        ),
+    )
     body = add_evidence_checklist(
         body,
         (
@@ -2959,6 +3025,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "legacy naming pressure can distort product package expectations if it is not kept explicitly separate",
         ),
     )
+    body = add_tradeoffs(
+        body,
+        (
+            "prefer a clear migration path over preserving every historical detail equally",
+            "prefer honest legacy labeling over making old surfaces look more current than they are",
+            "prefer repository-wide contract clarity over retaining compatibility language that now conflicts with canonical package docs",
+        ),
+    )
     body = add_evidence_checklist(
         body,
         (
@@ -3180,6 +3254,7 @@ def render_package_page(
     body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
     body = add_failure_signals(body, package_failure_signals(package, category, title))
     body = add_cross_implications(body, package_cross_implications(package, category))
+    body = add_tradeoffs(body, package_tradeoffs(package, category))
     body = add_evidence_checklist(body, package_evidence_checklist(package, category))
     body = add_antipatterns(body, package_antipatterns(package, category))
     body = add_escalate_when(body, package_escalate_when(package, category))
