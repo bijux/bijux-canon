@@ -1,13 +1,24 @@
 # bijux-rar
 
-`bijux-rar` is a compatibility package that installs `bijux-canon-reason`.
-It also preserves the legacy `bijux_rar` Python import surface.
+Use this package only when an existing installation still expects the legacy
+reasoning package name.
 
-Use the canonical package for new installs:
+## What it does
+
+- installs the canonical package `bijux-canon-reason`
+- preserves the legacy `bijux_rar` Python import surface
+- preserves the legacy `bijux-rar` command name
+
+## Preferred install for new environments
 
 ```bash
 pip install bijux-canon-reason
 ```
 
-The legacy command name `bijux-rar` remains available as an alias after installation.
-The legacy Python import `import bijux_rar` also remains available through this package.
+## Migration guidance
+
+When updating callers, move to:
+
+- distribution: `bijux-canon-reason`
+- Python import: `bijux_canon_reason`
+- docs entrypoint: `packages/bijux-canon-reason/docs/index.md`
