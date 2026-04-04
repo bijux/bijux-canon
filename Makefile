@@ -233,17 +233,22 @@ docs-serve:
 	    '' \
 	    'src = Path(os.environ["ROOT_DOCS_CFG"])' \
 	    'dst = Path(os.environ["ROOT_DOCS_SERVE_CFG"])' \
+	    'inherit_cfg = Path(os.environ["ROOT_DOCS_SHARED_CFG"]).resolve()' \
 	    'site_url = "http://" + os.environ["ROOT_DOCS_DEV_ADDR"] + "/"' \
 	    'docs_dir = Path(os.environ["ROOT_DOCS_SRC"]).resolve()' \
 	    'site_dir = Path(os.environ["ROOT_DOCS_SITE_DIR"]).resolve()' \
 	    '' \
 	    'lines = src.read_text(encoding="utf-8").splitlines()' \
 	    'rewritten = []' \
+	    'wrote_inherit = False' \
 	    'wrote_site_url = False' \
 	    'wrote_docs_dir = False' \
 	    'wrote_site_dir = False' \
 	    'for line in lines:' \
-	    '    if line.startswith("site_url:"):' \
+	    '    if line.startswith("INHERIT:"):' \
+	    '        rewritten.append(f"INHERIT: {inherit_cfg}")' \
+	    '        wrote_inherit = True' \
+	    '    elif line.startswith("site_url:"):' \
 	    '        rewritten.append(f"site_url: {site_url}")' \
 	    '        wrote_site_url = True' \
 	    '    elif line.startswith("docs_dir:"):' \
@@ -254,6 +259,8 @@ docs-serve:
 	    '        wrote_site_dir = True' \
 	    '    else:' \
 	    '        rewritten.append(line)' \
+	    'if not wrote_inherit:' \
+	    '    rewritten.insert(0, f"INHERIT: {inherit_cfg}")' \
 	    'if not wrote_site_url:' \
 	    '    rewritten.append(f"site_url: {site_url}")' \
 	    'if not wrote_docs_dir:' \
@@ -262,7 +269,7 @@ docs-serve:
 	    '    rewritten.append(f"site_dir: {site_dir}")' \
 	    'dst.write_text("\n".join(rewritten) + "\n", encoding="utf-8")' \
 	    > "$$script"; \
-	  ROOT_DOCS_CFG="$(CURDIR)/mkdocs.yml" ROOT_DOCS_SERVE_CFG="$(ROOT_DOCS_SERVE_CFG)" ROOT_DOCS_DEV_ADDR="$(ROOT_DOCS_DEV_ADDR)" ROOT_DOCS_SRC="$(CURDIR)/docs" ROOT_DOCS_SITE_DIR="$(ROOT_DOCS_SITE_DIR)" \
+	  ROOT_DOCS_CFG="$(CURDIR)/mkdocs.yml" ROOT_DOCS_SHARED_CFG="$(CURDIR)/mkdocs.shared.yml" ROOT_DOCS_SERVE_CFG="$(ROOT_DOCS_SERVE_CFG)" ROOT_DOCS_DEV_ADDR="$(ROOT_DOCS_DEV_ADDR)" ROOT_DOCS_SRC="$(CURDIR)/docs" ROOT_DOCS_SITE_DIR="$(ROOT_DOCS_SITE_DIR)" \
 	    "$(ROOT_CHECK_PYTHON)" "$$script"
 	@echo "==> root docs serve on http://$(ROOT_DOCS_DEV_ADDR)"
 	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" \
