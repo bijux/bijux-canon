@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Module definitions for core/__init__.py."""
+"""Public core exports for authority, failures, and stable identifiers."""
 
 from __future__ import annotations
 
@@ -21,23 +21,64 @@ from bijux_canon_runtime.core.errors import (
     SemanticViolationError,
     VerificationFailure,
 )
-from bijux_canon_runtime.core.ids import *  # noqa: F403
+from bijux_canon_runtime.core.ids import ActionID
+from bijux_canon_runtime.core.ids import AgentID
+from bijux_canon_runtime.core.ids import ArtifactID
+from bijux_canon_runtime.core.ids import BundleID
+from bijux_canon_runtime.core.ids import ClaimID
+from bijux_canon_runtime.core.ids import ContentHash
+from bijux_canon_runtime.core.ids import ContractID
+from bijux_canon_runtime.core.ids import DatasetID
+from bijux_canon_runtime.core.ids import EnvironmentFingerprint
+from bijux_canon_runtime.core.ids import EvidenceID
+from bijux_canon_runtime.core.ids import FlowID
+from bijux_canon_runtime.core.ids import GateID
+from bijux_canon_runtime.core.ids import InputsFingerprint
+from bijux_canon_runtime.core.ids import PlanHash
+from bijux_canon_runtime.core.ids import PolicyFingerprint
+from bijux_canon_runtime.core.ids import RequestID
+from bijux_canon_runtime.core.ids import ResolverID
+from bijux_canon_runtime.core.ids import RuleID
+from bijux_canon_runtime.core.ids import RunID
+from bijux_canon_runtime.core.ids import StepID
+from bijux_canon_runtime.core.ids import TenantID
+from bijux_canon_runtime.core.ids import ToolID
+from bijux_canon_runtime.core.ids import VersionID
 
 __all__ = [
+    "ActionID",
+    "AgentID",
+    "ArtifactID",
     "AuthorityToken",
+    "BundleID",
+    "ClaimID",
+    "ContentHash",
+    "ContractID",
+    "DatasetID",
+    "EnvironmentFingerprint",
+    "EvidenceID",
     "ExecutionFailure",
+    "FlowID",
+    "GateID",
+    "InputsFingerprint",
+    "PlanHash",
+    "PolicyFingerprint",
     "ReasoningFailure",
+    "RequestID",
+    "ResolverID",
     "ResolutionFailure",
+    "RuleID",
+    "RunID",
     "RetrievalFailure",
     "SEMANTICS_SOURCE",
     "SEMANTICS_VERSION",
     "SemanticViolationError",
+    "StepID",
+    "TenantID",
+    "ToolID",
     "VerificationFailure",
+    "VersionID",
     "authority_token",
     "enforce_runtime_semantics",
     "finalize_trace",
 ]
-_ID_EXPORTS = [
-    name for name in globals() if name.endswith("ID") or name.endswith("Fingerprint")
-]
-__all__ += _ID_EXPORTS
