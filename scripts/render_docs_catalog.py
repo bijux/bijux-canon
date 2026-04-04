@@ -4583,7 +4583,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "targets",
         nargs="*",
-        choices=TARGET_ORDER,
         help="Sections to render. Defaults to all sections.",
     )
     parser.add_argument(
@@ -4623,9 +4622,17 @@ def parse_category_overrides(values: list[str]) -> dict[str, tuple[str, ...]]:
     return overrides
 
 
+def parse_targets(values: list[str]) -> set[str]:
+    invalid = [value for value in values if value not in TARGET_ORDER]
+    if invalid:
+        choices = ", ".join(TARGET_ORDER)
+        raise ValueError(f"Invalid targets: {', '.join(invalid)}. Expected any of: {choices}.")
+    return set(values or TARGET_ORDER)
+
+
 def main() -> None:
     args = parse_args()
-    targets = set(args.targets or TARGET_ORDER)
+    targets = parse_targets(args.targets)
     product_categories = tuple(args.product_categories)
     category_overrides = parse_category_overrides(args.categories_for)
     categories_by_package = {
