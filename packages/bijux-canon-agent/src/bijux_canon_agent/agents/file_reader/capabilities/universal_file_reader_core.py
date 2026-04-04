@@ -40,6 +40,7 @@ from .structured import (
 from .structured import (
     YAML_EXTENSIONS as STRUCTURED_YAML_EXTENSIONS,
 )
+from .dispatch import ExtractionHandlers, FileExtractionDispatcher
 from .text import (
     DOCX_EXTENSIONS as TEXT_DOCX_EXTENSIONS,
 )
@@ -106,6 +107,14 @@ class UniversalFileReader:
             create_file_audit=self._create_file_audit,
             normalize_text=self._normalize_text,
             max_pdf_pages=self.max_pdf_pages,
+            ocr_enabled=self.ocr_enabled,
+        )
+        self._dispatcher = FileExtractionDispatcher(
+            text_extensions=self.TEXT_EXTENSIONS,
+            image_extensions=self.IMAGE_EXTENSIONS,
+            yaml_extensions=self.YAML_EXTENSIONS,
+            xml_extensions=self.XML_EXTENSIONS,
+            docx_extensions=self.DOCX_EXTENSIONS,
             ocr_enabled=self.ocr_enabled,
         )
 
@@ -496,34 +505,15 @@ class UniversalFileReader:
         start_time = time.time()
         extension = file_path.suffix.lower()
         file_type = extension.lstrip(".")
+        extraction_plan = self._dispatcher.plan_for(
+            file_path,
+            custom_extractors=self._custom_extractors,
+            handlers=self._build_extraction_handlers(),
+        )
 
         # Determine extraction method based on file extension
         try:
-            # Check for custom extractor
-            custom_extractor = self._custom_extractors.get(file_type)
-            if custom_extractor:
-                result = await custom_extractor(str(file_path))
-            elif extension == ".pdf":
-                result = await self._extract_pdf_content(file_path)
-            elif extension in self.TEXT_EXTENSIONS:
-                result = await self._extract_text_file(file_path)
-            elif extension == ".json":
-                result = await self._extract_json_file(file_path)
-            elif extension == ".csv":
-                result = await self._extract_csv_file(file_path)
-            elif extension in self.YAML_EXTENSIONS:
-                result = await self._extract_yaml_file(file_path)
-            elif extension in self.XML_EXTENSIONS:
-                result = await self._extract_xml_file(file_path)
-            elif extension in self.DOCX_EXTENSIONS:
-                result = await self._extract_docx_file(file_path)
-            elif extension in self.IMAGE_EXTENSIONS:
-                if self.ocr_enabled:
-                    result = await self._extract_image_with_ocr(file_path)
-                else:
-                    result = await self._handle_unknown_file(file_path)
-            else:
-                result = await self._handle_unknown_file(file_path)
+            result = await extraction_plan.extract(file_path)
         except Exception as e:
             result = {
                 "error": f"Unexpected error during processing: {e}",
@@ -541,9 +531,7 @@ class UniversalFileReader:
                 "processing_profile": {
                     "duration_seconds": round(processing_time, 3),
                     "file_extension": extension,
-                    "processing_method": self._get_processing_method(
-                        extension, custom_extractor
-                    ),
+                    "processing_method": extraction_plan.processing_method,
                 },
                 "structure_preview": self._create_structure_preview(extension, result),
                 "audit_trail": {
@@ -562,39 +550,19 @@ class UniversalFileReader:
 
         return result
 
-    def _get_processing_method(
-        self, extension: str, custom_extractor: Callable | None
-    ) -> str:
-        """Get the processing method used for a given file extension.
-
-        Args:
-            extension: File extension.
-            custom_extractor: Custom extractor function, if any.
-
-        Returns:
-            Name of the processing method.
-        """
-        if custom_extractor:
-            return f"custom_{custom_extractor.__name__}"
-
-        method_map = {
-            ".pdf": "pdf_extraction",
-            ".txt": "text_file",
-            ".md": "text_file",
-            ".rst": "text_file",
-            ".log": "text_file",
-            ".json": "json_parser",
-            ".csv": "csv_analyzer",
-            ".yaml": "yaml_parser",
-            ".yml": "yaml_parser",
-            ".xml": "xml_parser",
-            ".docx": "docx_parser",
-        }
-
-        if extension in self.IMAGE_EXTENSIONS:
-            return "ocr_extraction" if self.ocr_enabled else "binary_handler"
-
-        return method_map.get(extension, "unknown_file_handler")
+    def _build_extraction_handlers(self) -> ExtractionHandlers:
+        """Return the handler set used to route file extraction."""
+        return ExtractionHandlers(
+            pdf=self._extract_pdf_content,
+            text=self._extract_text_file,
+            json=self._extract_json_file,
+            csv=self._extract_csv_file,
+            yaml=self._extract_yaml_file,
+            xml=self._extract_xml_file,
+            docx=self._extract_docx_file,
+            image=self._extract_image_with_ocr,
+            unknown=self._handle_unknown_file,
+        )
 
     def register_custom_extractor(
         self, file_type: str, extractor: Callable[[str], Awaitable[dict[str, Any]]]

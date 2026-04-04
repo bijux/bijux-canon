@@ -6,6 +6,10 @@ from pathlib import Path
 import pytest
 
 from bijux_canon_agent.agents.file_reader.capabilities.binary import BinaryExtractor
+from bijux_canon_agent.agents.file_reader.capabilities.dispatch import (
+    ExtractionHandlers,
+    FileExtractionDispatcher,
+)
 from bijux_canon_agent.agents.file_reader.capabilities.structured import (
     HAS_PANDAS,
     StructuredExtractor,
@@ -63,3 +67,90 @@ async def test_binary_extractor_handles_missing_ocr(tmp_path: Path) -> None:
     )
     result = await extractor.extract_image_with_ocr(path)
     assert "file_info" in result
+
+
+async def _route_stub(path: str | Path) -> dict[str, str]:
+    return {"path": str(path)}
+
+
+@pytest.fixture
+def extraction_handlers() -> ExtractionHandlers:
+    return ExtractionHandlers(
+        pdf=_route_stub,
+        text=_route_stub,
+        json=_route_stub,
+        csv=_route_stub,
+        yaml=_route_stub,
+        xml=_route_stub,
+        docx=_route_stub,
+        image=_route_stub,
+        unknown=_route_stub,
+    )
+
+
+def test_dispatcher_routes_text_formats(
+    extraction_handlers: ExtractionHandlers,
+) -> None:
+    dispatcher = FileExtractionDispatcher(
+        text_extensions={".txt", ".md"},
+        image_extensions={".png"},
+        yaml_extensions={".yaml", ".yml"},
+        xml_extensions={".xml"},
+        docx_extensions={".docx"},
+        ocr_enabled=False,
+    )
+
+    plan = dispatcher.plan_for(
+        Path("notes.md"),
+        custom_extractors={},
+        handlers=extraction_handlers,
+    )
+
+    assert plan.processing_method == "text_file"
+    assert plan.extract is extraction_handlers.text
+
+
+def test_dispatcher_routes_images_without_ocr_to_unknown_handler(
+    extraction_handlers: ExtractionHandlers,
+) -> None:
+    dispatcher = FileExtractionDispatcher(
+        text_extensions={".txt"},
+        image_extensions={".png"},
+        yaml_extensions={".yaml", ".yml"},
+        xml_extensions={".xml"},
+        docx_extensions={".docx"},
+        ocr_enabled=False,
+    )
+
+    plan = dispatcher.plan_for(
+        Path("image.png"),
+        custom_extractors={},
+        handlers=extraction_handlers,
+    )
+
+    assert plan.processing_method == "binary_handler"
+    assert plan.extract is extraction_handlers.unknown
+
+
+def test_dispatcher_routes_custom_extractors(
+    extraction_handlers: ExtractionHandlers,
+) -> None:
+    dispatcher = FileExtractionDispatcher(
+        text_extensions={".txt"},
+        image_extensions={".png"},
+        yaml_extensions={".yaml", ".yml"},
+        xml_extensions={".xml"},
+        docx_extensions={".docx"},
+        ocr_enabled=True,
+    )
+
+    async def custom_reader(path: str) -> dict[str, str]:
+        return {"custom_path": path}
+
+    plan = dispatcher.plan_for(
+        Path("asset.custom"),
+        custom_extractors={"custom": custom_reader},
+        handlers=extraction_handlers,
+    )
+
+    assert plan.processing_method == "custom_custom_reader"
