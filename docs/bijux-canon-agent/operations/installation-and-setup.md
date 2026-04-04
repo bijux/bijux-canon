@@ -1,0 +1,38 @@
+---
+title: Installation and Setup
+audience: mixed
+type: guide
+status: canonical
+owner: bijux-canon-agent-docs
+last_reviewed: 2026-04-04
+---
+
+# Installation and Setup
+
+Installation for `bijux-canon-agent` should start from the package metadata and the specific
+optional dependencies that matter for the work being done.
+
+## Package Metadata Anchors
+
+- package root: `packages/bijux-canon-agent`
+- metadata file: `packages/bijux-canon-agent/pyproject.toml`
+- readme: `packages/bijux-canon-agent/README.md`
+
+## Dependency Themes
+
+- aiohttp
+- typer
+- click
+- pydantic
+- fastapi
+- openai
+- structlog
+- pluggy
+
+## Purpose
+
+This page tells maintainers where setup truth actually lives for the package.
+
+## Stability
+
+Keep it aligned with `pyproject.toml` and the checked-in package metadata.

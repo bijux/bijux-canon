@@ -27,6 +27,8 @@ bijux-canon-agent exists to own deterministic, auditable agent orchestration wit
 
 - [Architecture](../architecture/index.md)
 - [Interfaces](../interfaces/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 

@@ -236,6 +236,28 @@ nav:
           - Operator Workflows: bijux-canon-agent/interfaces/operator-workflows.md
           - Public Imports: bijux-canon-agent/interfaces/public-imports.md
           - Compatibility Commitments: bijux-canon-agent/interfaces/compatibility-commitments.md
+      - Operations:
+          - Operations: bijux-canon-agent/operations/index.md
+          - Installation and Setup: bijux-canon-agent/operations/installation-and-setup.md
+          - Local Development: bijux-canon-agent/operations/local-development.md
+          - Common Workflows: bijux-canon-agent/operations/common-workflows.md
+          - Observability and Diagnostics: bijux-canon-agent/operations/observability-and-diagnostics.md
+          - Performance and Scaling: bijux-canon-agent/operations/performance-and-scaling.md
+          - Failure Recovery: bijux-canon-agent/operations/failure-recovery.md
+          - Release and Versioning: bijux-canon-agent/operations/release-and-versioning.md
+          - Security and Safety: bijux-canon-agent/operations/security-and-safety.md
+          - Deployment Boundaries: bijux-canon-agent/operations/deployment-boundaries.md
+      - Quality:
+          - Quality: bijux-canon-agent/quality/index.md
+          - Test Strategy: bijux-canon-agent/quality/test-strategy.md
+          - Invariants: bijux-canon-agent/quality/invariants.md
+          - Review Checklist: bijux-canon-agent/quality/review-checklist.md
+          - Documentation Standards: bijux-canon-agent/quality/documentation-standards.md
+          - Definition of Done: bijux-canon-agent/quality/definition-of-done.md
+          - Dependency Governance: bijux-canon-agent/quality/dependency-governance.md
+          - Change Validation: bijux-canon-agent/quality/change-validation.md
+          - Known Limitations: bijux-canon-agent/quality/known-limitations.md
+          - Risk Register: bijux-canon-agent/quality/risk-register.md
 
 plugins:
   - search
