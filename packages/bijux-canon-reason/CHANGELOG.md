@@ -17,6 +17,8 @@ tagged release.
 - Package-local PyPI publication guidance is now checked in and shipped with
   the source distribution so reasoning release expectations stay attached to
   the package.
+- Release artifacts now ship the repository `LICENSE` file so downstream
+  consumers receive the license text with the published package.
 
 ## 0.3.0 - 2026-04-04
 

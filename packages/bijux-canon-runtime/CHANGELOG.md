@@ -17,6 +17,8 @@ tagged release, including legacy distribution naming where applicable.
   repository guidance.
 - Package-local PyPI publication guidance is now checked in and shipped with
   the source distribution so runtime release expectations stay durable.
+- Release artifacts now ship the repository `LICENSE` file so downstream
+  consumers receive the license text with the published package.
 <!-- unreleased end -->  
 
 <a id="v0-3-0"></a>  

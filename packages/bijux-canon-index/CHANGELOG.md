@@ -17,6 +17,8 @@ tagged release, including legacy distribution naming where applicable.
   package.
 - Source distributions now include the full `src/bijux_canon_index` tree
   instead of publishing only the typed marker file.
+- Release artifacts now ship the repository `LICENSE` file so downstream
+  consumers receive the license text with the published package.
 - OpenAPI freeze artifacts and release-gate expectations were refreshed to
   match the current FastAPI-generated validation schema and 422 response
   wording.

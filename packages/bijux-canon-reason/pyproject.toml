@@ -148,6 +148,7 @@ include = [
   "docs/maintainer/pypi.md",
   "src/bijux_canon_reason/**",
 ]
+force-include = { "../../LICENSE" = "LICENSE" }
 
 [tool.hatch.build.targets.sdist]
 include = [
