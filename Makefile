@@ -26,6 +26,8 @@ ROOT_CHECK_STAMP := $(ROOT_ARTIFACTS_DIR)/.check-tools.stamp
 ROOT_DOCS_ARTIFACTS_DIR := $(ROOT_ARTIFACTS_DIR)/docs
 ROOT_DOCS_SITE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/site
 ROOT_DOCS_CACHE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/cache
+ROOT_DOCS_SERVE_CFG := $(ROOT_DOCS_ARTIFACTS_DIR)/mkdocs.serve.yml
+ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
 ROOT_CHECK_BOOTSTRAP_PYTHON := $(shell command -v python3.11 || command -v python3)
 ROOT_CHECK_PACKAGES := \
 	bandit \
@@ -62,7 +64,7 @@ export PYTHONPATH := $(CURDIR)/packages/bijux-canon-dev/src$(if $(PYTHONPATH),:$
 
 DEFAULT_GOAL := help
 .PHONY: \
-	help list list-all lint quality security test docs api build sbom clean all \
+	help list list-all lint quality security test docs docs-check docs-serve api build sbom clean all \
 	clean-root-artifacts root-check-env
 
 define resolve_package
@@ -196,6 +198,7 @@ security:
 
 docs:
 	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
+	@rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"
 	@$(MAKE) root-check-env >/dev/null
 	@echo "==> root docs"
 	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" \
@@ -205,6 +208,67 @@ docs:
 	@test ! -e "$(CURDIR)/site"
 	@test ! -e "$(CURDIR)/.cache"
 	@echo "Docs built in $(ROOT_DOCS_SITE_DIR)"
+
+docs-check:
+	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
+	@rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"
+	@$(MAKE) root-check-env >/dev/null
+	@echo "==> root docs check"
+	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" \
+	  "$(ROOT_CHECK_PYTHON)" -m mkdocs build --strict --quiet \
+	  --config-file "$(CURDIR)/mkdocs.yml" \
+	  --site-dir "$(ROOT_DOCS_SITE_DIR)"
+	@test ! -e "$(CURDIR)/site"
+	@test ! -e "$(CURDIR)/.cache"
+	@echo "Docs check passed"
+
+docs-serve:
+	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
+	@rm -rf "$(CURDIR)/site" "$(CURDIR)/.cache"
+	@$(MAKE) root-check-env >/dev/null
+	@script="$(ROOT_DOCS_ARTIFACTS_DIR)/render_root_docs_serve_config.py"; \
+	  printf '%s\n' \
+	    'from pathlib import Path' \
+	    'import os' \
+	    '' \
+	    'src = Path(os.environ["ROOT_DOCS_CFG"])' \
+	    'dst = Path(os.environ["ROOT_DOCS_SERVE_CFG"])' \
+	    'site_url = "http://" + os.environ["ROOT_DOCS_DEV_ADDR"] + "/"' \
+	    'docs_dir = Path(os.environ["ROOT_DOCS_SRC"]).resolve()' \
+	    'site_dir = Path(os.environ["ROOT_DOCS_SITE_DIR"]).resolve()' \
+	    '' \
+	    'lines = src.read_text(encoding="utf-8").splitlines()' \
+	    'rewritten = []' \
+	    'wrote_site_url = False' \
+	    'wrote_docs_dir = False' \
+	    'wrote_site_dir = False' \
+	    'for line in lines:' \
+	    '    if line.startswith("site_url:"):' \
+	    '        rewritten.append(f"site_url: {site_url}")' \
+	    '        wrote_site_url = True' \
+	    '    elif line.startswith("docs_dir:"):' \
+	    '        rewritten.append(f"docs_dir: {docs_dir}")' \
+	    '        wrote_docs_dir = True' \
+	    '    elif line.startswith("site_dir:"):' \
+	    '        rewritten.append(f"site_dir: {site_dir}")' \
+	    '        wrote_site_dir = True' \
+	    '    else:' \
+	    '        rewritten.append(line)' \
+	    'if not wrote_site_url:' \
+	    '    rewritten.append(f"site_url: {site_url}")' \
+	    'if not wrote_docs_dir:' \
+	    '    rewritten.append(f"docs_dir: {docs_dir}")' \
+	    'if not wrote_site_dir:' \
+	    '    rewritten.append(f"site_dir: {site_dir}")' \
+	    'dst.write_text("\n".join(rewritten) + "\n", encoding="utf-8")' \
+	    > "$$script"; \
+	  ROOT_DOCS_CFG="$(CURDIR)/mkdocs.yml" ROOT_DOCS_SERVE_CFG="$(ROOT_DOCS_SERVE_CFG)" ROOT_DOCS_DEV_ADDR="$(ROOT_DOCS_DEV_ADDR)" ROOT_DOCS_SRC="$(CURDIR)/docs" ROOT_DOCS_SITE_DIR="$(ROOT_DOCS_SITE_DIR)" \
+	    "$(ROOT_CHECK_PYTHON)" "$$script"
+	@echo "==> root docs serve on http://$(ROOT_DOCS_DEV_ADDR)"
+	@XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" \
+	  "$(ROOT_CHECK_PYTHON)" -m mkdocs serve --strict \
+	  --config-file "$(ROOT_DOCS_SERVE_CFG)" \
+	  --dev-addr "$(ROOT_DOCS_DEV_ADDR)"
 
 api:
 	$(call assert_package)

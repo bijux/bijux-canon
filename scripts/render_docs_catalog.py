@@ -4490,6 +4490,7 @@ def write_mkdocs(
             "repo_url: https://github.com/bijux/bijux-canon",
             "",
             "docs_dir: docs",
+            "site_dir: artifacts/root/docs/site",
             "",
             "theme:",
             "  name: material",
