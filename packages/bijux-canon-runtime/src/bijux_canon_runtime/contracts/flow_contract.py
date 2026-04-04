@@ -26,6 +26,17 @@ from bijux_canon_runtime.ontology.public import (
 
 def validate(manifest: FlowManifest) -> None:
     """Validate flow manifest; misuse breaks flow validity."""
+    _validate_metadata(manifest)
+    _validate_entropy_budget(manifest)
+    _validate_nondeterminism_controls(manifest)
+    _validate_replay_envelope(manifest)
+    _validate_dataset(manifest)
+    agents = _validate_execution_identity(manifest)
+    _validate_dependencies(manifest.dependencies, agents)
+
+
+def _validate_metadata(manifest: FlowManifest) -> None:
+    """Internal helper; not part of the public API."""
     _require_enum("flow_state", manifest.flow_state, FlowState)
     _require_tuple_of_str("agents", manifest.agents)
     _require_tuple_of_str("dependencies", manifest.dependencies)
@@ -36,6 +47,10 @@ def validate(manifest: FlowManifest) -> None:
     _require_enum(
         "replay_acceptability", manifest.replay_acceptability, ReplayAcceptability
     )
+
+
+def _validate_entropy_budget(manifest: FlowManifest) -> None:
+    """Internal helper; not part of the public API."""
     if manifest.entropy_budget is None:
         raise ValueError("entropy_budget must be declared")
     if not isinstance(manifest.entropy_budget.allowed_sources, tuple):
@@ -83,6 +98,10 @@ def validate(manifest: FlowManifest) -> None:
             )
         if slice_budget.source not in manifest.entropy_budget.allowed_sources:
             raise ValueError("entropy_budget.per_source source must be allowed")
+
+
+def _validate_nondeterminism_controls(manifest: FlowManifest) -> None:
+    """Internal helper; not part of the public API."""
     if manifest.allowed_variance_class is not None:
         _require_enum(
             "allowed_variance_class",
@@ -107,10 +126,18 @@ def validate(manifest: FlowManifest) -> None:
         )
         if not intent.justification.strip():
             raise ValueError("nondeterminism_intent.justification must be non-empty")
+
+
+def _validate_replay_envelope(manifest: FlowManifest) -> None:
+    """Internal helper; not part of the public API."""
     if not 0.0 <= manifest.replay_envelope.min_claim_overlap <= 1.0:
         raise ValueError("replay_envelope.min_claim_overlap must be between 0 and 1")
     if manifest.replay_envelope.max_contradiction_delta < 0:
         raise ValueError("replay_envelope.max_contradiction_delta must be >= 0")
+
+
+def _validate_dataset(manifest: FlowManifest) -> None:
+    """Internal helper; not part of the public API."""
     if not manifest.dataset.dataset_id:
         raise ValueError("dataset.dataset_id must be declared")
     if not manifest.dataset.tenant_id:
@@ -126,6 +153,9 @@ def validate(manifest: FlowManifest) -> None:
     ):
         raise ValueError("deprecated datasets require allow_deprecated_datasets")
 
+
+def _validate_execution_identity(manifest: FlowManifest) -> list[str]:
+    """Internal helper; not part of the public API."""
     if not isinstance(manifest.flow_id, str) or not manifest.flow_id.strip():
         raise ValueError("flow_id must be a non-empty string")
     if not isinstance(manifest.tenant_id, str) or not manifest.tenant_id.strip():
@@ -139,11 +169,15 @@ def validate(manifest: FlowManifest) -> None:
         raise ValueError("agents must be unique")
     if not agents:
         raise ValueError("flow must declare at least one agent")
+    return agents
 
+
+def _validate_dependencies(dependencies: tuple[str, ...], agents: list[str]) -> None:
+    """Internal helper; not part of the public API."""
     forward: dict[str, set[str]] = defaultdict(set)
     indegree: dict[str, int] = dict.fromkeys(agents, 0)
 
-    for entry in manifest.dependencies:
+    for entry in dependencies:
         parts = [part.strip() for part in entry.split(":")]
         if len(parts) != 2 or not all(parts):
             raise ValueError("dependencies must use 'agent:dependency' format")
