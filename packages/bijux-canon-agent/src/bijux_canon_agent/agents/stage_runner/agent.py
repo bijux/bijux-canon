@@ -9,38 +9,18 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 import time
-from typing import Any, NotRequired, TypedDict, cast
+from typing import Any, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager, MetricType
-
-
-class StageRunnerAuditEntry(TypedDict, total=False):
-    """TypedDict for audit trail entries."""
-
-    stage_name: str
-    timestamp: str
-    duration_sec: float
-    error: str
-    stages_processed: list[str]
-
-
-class StageRunnerFinalStatus(TypedDict):
-    """TypedDict for the final status block."""
-
-    stages_processed: list[str]
-    iterations: int
-
-
-class StageRunnerResult(TypedDict):
-    """TypedDict describing the StageRunnerAgent run output."""
-
-    stages: dict[str, dict[str, Any]]
-    final_status: StageRunnerFinalStatus
-    audit_trail: list[StageRunnerAuditEntry]
-    warnings: list[str]
-    error: NotRequired[str]
-    action_plan: NotRequired[list[str]]
+from .execution_flow import (
+    StageRunnerResult,
+    add_stage_warning,
+    build_stage_inputs,
+    initialize_stage_runner_result,
+    record_completion,
+    record_stage_success,
+)
 
 
 class StageRunnerAgent(BaseAgent):
@@ -139,12 +119,7 @@ class StageRunnerAgent(BaseAgent):
 
         # Initialize result structure
         start_time = time.perf_counter()
-        result: StageRunnerResult = {
-            "stages": {},
-            "final_status": {"stages_processed": [], "iterations": 0},
-            "audit_trail": [],
-            "warnings": [],
-        }
+        result = initialize_stage_runner_result()
 
         # Validate context
         if "file_path" not in context:
@@ -181,15 +156,15 @@ class StageRunnerAgent(BaseAgent):
                 self.logger.warning(
                     warning_msg, extra={"context": {"stage": stage_name}}
                 )
-                result["warnings"].append(warning_msg)
+                add_stage_warning(result, warning_msg)
                 continue
 
             # Prepare inputs for the stage
-            inputs = {}
-            for dependency in stage.get("dependencies", []):
-                if dependency in result["stages"]:
-                    inputs.update(result["stages"][dependency])
-            inputs.update(current_context)
+            inputs = build_stage_inputs(
+                current_context,
+                result,
+                stage.get("dependencies", []),
+            )
 
             # Execute the stage
             try:
@@ -198,14 +173,11 @@ class StageRunnerAgent(BaseAgent):
                 stage_duration = time.perf_counter() - stage_start_time
 
                 # Update result with stage output
-                result["stages"][stage_name] = stage_output
-                result["final_status"]["stages_processed"].append(stage_name)
-                result["audit_trail"].append(
-                    {
-                        "stage_name": stage_name,
-                        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                        "duration_sec": round(stage_duration, 2),
-                    }
+                record_stage_success(
+                    result,
+                    stage_name=stage_name,
+                    stage_output=stage_output,
+                    stage_duration=stage_duration,
                 )
                 self.logger_manager.log_metric(
                     "stage_duration",
@@ -226,7 +198,7 @@ class StageRunnerAgent(BaseAgent):
                         MetricType.COUNTER,
                         tags={"stage": stage_name},
                     )
-                    result["warnings"].append(error_msg)
+                    add_stage_warning(result, error_msg)
                     continue
 
                 # Update context with stage output
@@ -241,18 +213,12 @@ class StageRunnerAgent(BaseAgent):
                 self.logger_manager.log_metric(
                     "stage_errors", 1, MetricType.COUNTER, tags={"stage": stage_name}
                 )
-                result["warnings"].append(error_msg)
+                add_stage_warning(result, error_msg)
                 continue
 
         # Finalize result
         duration = time.perf_counter() - start_time
-        result["audit_trail"].append(
-            {
-                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "duration_sec": round(duration, 2),
-                "stages_processed": result["final_status"]["stages_processed"],
-            }
-        )
+        record_completion(result, duration)
 
         self.logger.info(
             "Stage execution completed successfully",
