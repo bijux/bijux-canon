@@ -15,12 +15,17 @@ from bijux_canon_runtime.application.replay_event_analysis import (
     human_intervention_events,
     missing_step_end,
 )
+from bijux_canon_runtime.application.replay_support import (
+    dataset_payload,
+    envelope_payload,
+    partition_diffs,
+    semantic_artifact_fingerprint,
+    semantic_evidence_fingerprint,
+)
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.execution.replay_verdict import (
     ReplayVerdict,
     ReplayVerdictDetails,
@@ -32,7 +37,6 @@ from bijux_canon_runtime.observability.capture.environment import (
     compute_environment_fingerprint,
 )
 from bijux_canon_runtime.observability.classification.fingerprint import (
-    fingerprint_inputs,
     fingerprint_policy,
 )
 from bijux_canon_runtime.ontology import DeterminismLevel
@@ -116,7 +120,7 @@ def evaluate_policy_verdict(
                 "entropy_report": entropy_report,
             },
         )
-    blocking, acceptable = _partition_diffs(diffs, acceptability)
+    blocking, acceptable = partition_diffs(diffs, acceptability)
     details: dict[str, object] = {
         "blocking": blocking,
         "acceptable": acceptable,
@@ -220,8 +224,8 @@ def replay_diff(
         }
     if trace.replay_envelope != plan.replay_envelope:
         diffs["replay_envelope"] = {
-            "expected": _envelope_payload(plan.replay_envelope),
-            "observed": _envelope_payload(trace.replay_envelope),
+            "expected": envelope_payload(plan.replay_envelope),
+            "observed": envelope_payload(trace.replay_envelope),
         }
     if trace.environment_fingerprint != plan.environment_fingerprint:
         diffs["environment_fingerprint"] = {
@@ -230,8 +234,8 @@ def replay_diff(
         }
     if trace.dataset != plan.dataset:
         diffs["dataset"] = {
-            "expected": _dataset_payload(plan.dataset),
-            "observed": _dataset_payload(trace.dataset),
+            "expected": dataset_payload(plan.dataset),
+            "observed": dataset_payload(trace.dataset),
         }
     if trace.allow_deprecated_datasets != plan.allow_deprecated_datasets:
         diffs["allow_deprecated_datasets"] = {
@@ -303,91 +307,6 @@ class ReplayDiffError(ValueError):
         self.step_id = step_id
         self.reason_code = reason_code
         self.diffs = diffs
-
-
-def semantic_artifact_fingerprint(artifacts: Iterable[Artifact]) -> str:
-    """Fingerprint artifact; misuse breaks replay comparison."""
-    normalized = sorted(
-        artifacts,
-        key=lambda item: (
-            str(item.tenant_id),
-            str(item.artifact_id),
-            str(item.content_hash),
-        ),
-    )
-    return fingerprint_inputs(
-        [
-            {
-                "tenant_id": item.tenant_id,
-                "artifact_id": item.artifact_id,
-                "content_hash": item.content_hash,
-            }
-            for item in normalized
-        ]
-    )
-
-
-def semantic_evidence_fingerprint(evidence: Iterable[RetrievedEvidence]) -> str:
-    """Fingerprint evidence; misuse breaks replay comparison."""
-    normalized = sorted(
-        evidence, key=lambda item: (str(item.evidence_id), str(item.content_hash))
-    )
-    return fingerprint_inputs(
-        [
-            {
-                "evidence_id": item.evidence_id,
-                "content_hash": item.content_hash,
-                "determinism": item.determinism,
-            }
-            for item in normalized
-        ]
-    )
-
-
-def _partition_diffs(
-    diffs: dict[str, object], acceptability: ReplayAcceptability
-) -> tuple[dict[str, object], dict[str, object]]:
-    # ReplayAcceptability.EXACT_MATCH: triggers on any divergence; acceptable in production: yes.
-    # ReplayAcceptability.INVARIANT_PRESERVING: triggers when only invariant-safe deltas exist; acceptable in production: yes.
-    # ReplayAcceptability.STATISTICALLY_BOUNDED: triggers when bounded statistical drift is present; acceptable in production: depends on policy.
-    """Internal helper; not part of the public API."""
-    if not diffs:
-        return {}, {}
-    allowed: set[str] = set()
-    if acceptability in {
-        ReplayAcceptability.INVARIANT_PRESERVING,
-        ReplayAcceptability.STATISTICALLY_BOUNDED,
-    }:
-        allowed = {
-            "events",
-            "artifact_fingerprint",
-            "artifact_count",
-            "evidence_fingerprint",
-            "evidence_count",
-        }
-    blocking = {key: value for key, value in diffs.items() if key not in allowed}
-    acceptable = {key: value for key, value in diffs.items() if key in allowed}
-    return blocking, acceptable
-
-
-def _dataset_payload(dataset: DatasetDescriptor) -> dict[str, object]:
-    """Internal helper; not part of the public API."""
-    return {
-        "dataset_id": dataset.dataset_id,
-        "tenant_id": dataset.tenant_id,
-        "dataset_version": dataset.dataset_version,
-        "dataset_hash": dataset.dataset_hash,
-        "dataset_state": dataset.dataset_state,
-        "storage_uri": dataset.storage_uri,
-    }
-
-
-def _envelope_payload(envelope: ReplayEnvelope) -> dict[str, object]:
-    """Internal helper; not part of the public API."""
-    return {
-        "min_claim_overlap": envelope.min_claim_overlap,
-        "max_contradiction_delta": envelope.max_contradiction_delta,
-    }
 
 
 __all__ = [
