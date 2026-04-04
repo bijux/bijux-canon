@@ -3,10 +3,12 @@
 
 ROOT_PACKAGE_PROFILE_DIR ?= $(ROOT_MAKEFILE_DIR)/packages
 ROOT_PACKAGE_PROFILE_FILES := $(wildcard $(ROOT_PACKAGE_PROFILE_DIR)/*.mk)
+ROOT_DECLARED_PACKAGE_FILES := \
+	$(addprefix $(ROOT_PACKAGE_PROFILE_DIR)/,$(addsuffix .mk,$(PRIMARY_PACKAGES) $(COMPAT_PACKAGES)))
+ROOT_DISCOVERED_PRIMARY_PACKAGES := $(basename $(notdir $(filter $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-%.mk,$(ROOT_PACKAGE_PROFILE_FILES))))
+ROOT_DISCOVERED_COMPAT_PACKAGES := $(basename $(notdir $(filter-out $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk,$(filter $(ROOT_PACKAGE_PROFILE_DIR)/compat-%.mk,$(ROOT_PACKAGE_PROFILE_FILES)))))
 
-PRIMARY_PACKAGES := $(sort $(basename $(notdir $(filter $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-%.mk,$(ROOT_PACKAGE_PROFILE_FILES)))))
-
-COMPAT_PACKAGES := $(sort $(basename $(notdir $(filter-out $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk,$(filter $(ROOT_PACKAGE_PROFILE_DIR)/compat-%.mk,$(ROOT_PACKAGE_PROFILE_FILES))))))
+include $(ROOT_MAKEFILE_DIR)/root/package-manifest.mk
 
 ALL_PACKAGES := $(PRIMARY_PACKAGES) $(COMPAT_PACKAGES)
 CHECK_PACKAGES := $(ALL_PACKAGES)
@@ -19,6 +21,22 @@ PACKAGE_ALIASES := \
 	bijux-rar=bijux-canon-reason \
 	bijux-vex=bijux-canon-index
 VALID_PACKAGE_VALUES := $(ALL_PACKAGES) $(foreach mapping,$(PACKAGE_ALIASES),$(word 1,$(subst =, ,$(mapping))))
+
+ROOT_MISSING_PACKAGE_FILES := $(filter-out $(ROOT_PACKAGE_PROFILE_FILES),$(ROOT_DECLARED_PACKAGE_FILES))
+ROOT_UNDECLARED_PRIMARY_PACKAGES := $(filter-out $(PRIMARY_PACKAGES),$(ROOT_DISCOVERED_PRIMARY_PACKAGES))
+ROOT_UNDECLARED_COMPAT_PACKAGES := $(filter-out $(COMPAT_PACKAGES),$(ROOT_DISCOVERED_COMPAT_PACKAGES))
+
+ifneq ($(strip $(ROOT_MISSING_PACKAGE_FILES)),)
+$(error Package manifest references missing profiles: $(ROOT_MISSING_PACKAGE_FILES))
+endif
+
+ifneq ($(strip $(ROOT_UNDECLARED_PRIMARY_PACKAGES)),)
+$(error Undeclared primary package profiles found: $(ROOT_UNDECLARED_PRIMARY_PACKAGES))
+endif
+
+ifneq ($(strip $(ROOT_UNDECLARED_COMPAT_PACKAGES)),)
+$(error Undeclared compatibility package profiles found: $(ROOT_UNDECLARED_COMPAT_PACKAGES))
+endif
 
 define resolve_package
 $(strip \
