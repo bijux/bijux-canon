@@ -2,56 +2,39 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 import json
 from pathlib import Path
-from typing import Any
 
-from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.application.run_artifacts import (
     RunArtifacts,
     RunBuilder,
     RunInputs,
 )
+from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.verification.types import Severity
 
 
-class EvalResult(dict[str, object]):
-    """Lightweight eval result container for easier JSON use with attribute access."""
-
-    def __getattr__(self, item: str) -> Any:  # pragma: no cover - simple passthrough
-        if item in self:
-            return self[item]
-        raise AttributeError(item)
-
-    @property
-    def suite(self) -> str:
-        return str(self.get("suite", ""))
-
-    @property
-    def total(self) -> int:
-        val = self.get("total", 0)
-        return int(val) if isinstance(val, (int, float, str)) else 0
-
-    @property
-    def passed(self) -> int:
-        val = self.get("passed", 0)
-        return int(val) if isinstance(val, (int, float, str)) else 0
-
-    @property
-    def failed(self) -> int:
-        val = self.get("failed", 0)
-        return int(val) if isinstance(val, (int, float, str)) else 0
+@dataclass(frozen=True)
+class EvalResult:
+    suite: str
+    total: int
+    passed: int
+    failed: int
+    failures: list[dict[str, object]] = field(default_factory=list)
 
     def to_json(self) -> dict[str, object]:
-        return dict(self)
+        return {
+            "suite": self.suite,
+            "total": self.total,
+            "passed": self.passed,
+            "failed": self.failed,
+            "failures": list(self.failures),
+        }
 
 
 def _default_suite_root() -> Path:
-    """Locate bundled or caller-provided evaluation suites.
-
-    - caller override: CWD contains tooling/evaluation_suites or legacy benchmarks/suites
-    - package checkout: resolve by walking upward from this module
-    """
+    """Locate bundled or caller-provided evaluation suites."""
     cwd_candidates = (
         Path.cwd() / "tooling" / "evaluation_suites",
         Path.cwd() / "benchmarks" / "suites",
@@ -75,47 +58,50 @@ def _read_jsonl(path: Path) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     with path.open("r", encoding="utf-8") as f:
         for line in f:
-            s = line.strip()
-            if not s:
+            payload = line.strip()
+            if not payload:
                 continue
-            rows.append(json.loads(s))
+            rows.append(json.loads(payload))
     return rows
 
 
-def _case_metrics(arts: RunArtifacts) -> dict[str, Any]:
+def _case_metrics(arts: RunArtifacts) -> dict[str, object]:
     trace = arts.trace
-    vr = arts.verify_report
+    verify_report = arts.verify_report
 
-    evidence_count = sum(1 for ev in trace.events if ev.kind == "evidence_registered")
-    claims = [ev.claim for ev in trace.events if ev.kind == "claim_emitted"]
+    evidence_count = sum(
+        1 for event in trace.events if event.kind == "evidence_registered"
+    )
+    claims = [event.claim for event in trace.events if event.kind == "claim_emitted"]
     claims_with_support = [
-        c for c in claims if any(s.kind == "evidence" for s in c.supports)
+        claim
+        for claim in claims
+        if any(support.kind == "evidence" for support in claim.supports)
     ]
     alignment_rate = len(claims_with_support) / len(claims) if claims else 1.0
     faithfulness = (
-        sum(len(c.supports) for c in claims_with_support) / len(claims_with_support)
+        sum(len(claim.supports) for claim in claims_with_support)
+        / len(claims_with_support)
         if claims_with_support
         else 0.0
     )
-    insuff = any(
-        ev.output.type == "insufficient_evidence"
-        for ev in trace.events
-        if ev.kind == "step_finished"
+    insufficient = any(
+        event.output.type == "insufficient_evidence"
+        for event in trace.events
+        if event.kind == "step_finished"
     )
-    # Proxy retrieval metrics: success if any evidence retrieved.
     recall_at_k = 1.0 if evidence_count > 0 else 0.0
     mrr = 1.0 if evidence_count > 0 else 0.0
 
     taxonomy: dict[str, int] = {}
-    for chk in vr.checks:
-        if not chk.passed:
-            taxonomy[chk.name] = taxonomy.get(chk.name, 0) + 1
-    failure_messages = [f.message for f in vr.failures]
+    for check in verify_report.checks:
+        if not check.passed:
+            taxonomy[check.name] = taxonomy.get(check.name, 0) + 1
+
     severity_counts: dict[str, int] = {}
-    for f in vr.failures:
-        severity_counts[str(getattr(f, "severity", Severity.error))] = (
-            severity_counts.get(str(getattr(f, "severity", Severity.error)), 0) + 1
-        )
+    for failure in verify_report.failures:
+        severity = str(getattr(failure, "severity", Severity.error))
+        severity_counts[severity] = severity_counts.get(severity, 0) + 1
 
     return {
         "run_dir": str(arts.run_dir),
@@ -127,35 +113,40 @@ def _case_metrics(arts: RunArtifacts) -> dict[str, Any]:
         "faithfulness": faithfulness,
         "recall_at_k": recall_at_k,
         "mrr": mrr,
-        "insufficient": insuff,
-        "verification_failures": failure_messages,
+        "insufficient": insufficient,
+        "verification_failures": [
+            failure.message for failure in verify_report.failures
+        ],
         "failure_taxonomy": taxonomy,
         "severity_counts": severity_counts,
-        "verification_checks_failed": sum(1 for c in vr.checks if not c.passed),
-        "claims_failed": len([f for f in vr.failures if "claim" in f.message.lower()]),
+        "verification_checks_failed": sum(
+            1 for check in verify_report.checks if not check.passed
+        ),
+        "claims_failed": len(
+            [
+                failure
+                for failure in verify_report.failures
+                if "claim" in failure.message.lower()
+            ]
+        ),
     }
 
 
-def suite_summary(results: list[dict[str, Any]]) -> dict[str, Any]:
+def suite_summary(results: list[dict[str, object]]) -> dict[str, object]:
     """Aggregate metrics from individual eval case rows."""
     if not results:
         return {"count": 0, "insufficient_rate": 0.0, "failure_taxonomy": {}}
 
     count = len(results)
-    insuff = sum(1 for r in results if r.get("insufficient"))
-    taxonomy: dict[str, int] = {}
-    for r in results:
-        for name, val in r.get("failure_taxonomy", {}).items():
-            taxonomy[name] = taxonomy.get(name, 0) + int(val)
-
+    insufficient = sum(1 for row in results if row.get("insufficient"))
     return {
         "count": count,
-        "recall_at_k": sum(r.get("recall_at_k", 0.0) for r in results) / count,
-        "mrr": sum(r.get("mrr", 0.0) for r in results) / count,
-        "alignment_rate": sum(r.get("alignment_rate", 0.0) for r in results) / count,
-        "faithfulness": sum(r.get("faithfulness", 0.0) for r in results) / count,
-        "insufficient_rate": insuff / count,
-        "failure_taxonomy": taxonomy,
+        "recall_at_k": _average_metric(results, "recall_at_k"),
+        "mrr": _average_metric(results, "mrr"),
+        "alignment_rate": _average_metric(results, "alignment_rate"),
+        "faithfulness": _average_metric(results, "faithfulness"),
+        "insufficient_rate": insufficient / count,
+        "failure_taxonomy": _aggregate_taxonomy(results),
     }
 
 
@@ -167,12 +158,7 @@ def run_eval_suite(
     seed: int = 0,
     suite_root: Path | None = None,
 ) -> tuple[EvalResult, Path]:
-    """Run a pinned set of ProblemSpecs.
-
-    Contract:
-    - each case runs in its own run_dir
-    - a case passes iff verification yields zero failures
-    """
+    """Run a pinned set of ProblemSpecs."""
     root = suite_root or _default_suite_root()
     suite_dir = root / suite
     problems_path = suite_dir / "problems.jsonl"
@@ -184,29 +170,29 @@ def run_eval_suite(
 
     failures: list[dict[str, object]] = []
     passed = 0
-    metrics_rows: list[dict[str, Any]] = []
+    metrics_rows: list[dict[str, object]] = []
     for idx, raw in enumerate(cases):
         spec = ProblemSpec.model_validate(raw)
         inputs = RunInputs(spec=spec, preset=preset, seed=seed)
         case_root = artifacts_dir / "eval" / suite / f"case_{idx:03d}"
-        arts: RunArtifacts = builder.build(inputs=inputs, artifacts_root=case_root)
-        metrics_rows.append({"case": idx, **_case_metrics(arts)})
-        if arts.verify_report.failures:
+        artifacts = builder.build(inputs=inputs, artifacts_root=case_root)
+        metrics_rows.append({"case": idx, **_case_metrics(artifacts)})
+        if artifacts.verify_report.failures:
             failures.append(
                 {
                     "case": idx,
-                    "spec_id": arts.spec_path.name,
-                    "run_dir": str(arts.run_dir),
-                    "n_failures": len(arts.verify_report.failures),
+                    "spec_id": artifacts.spec_path.name,
+                    "run_dir": str(artifacts.run_dir),
+                    "n_failures": len(artifacts.verify_report.failures),
                     "failure_messages": [
-                        f.message for f in arts.verify_report.failures
+                        failure.message for failure in artifacts.verify_report.failures
                     ],
                 }
             )
-        else:
-            passed += 1
+            continue
+        passed += 1
 
-    res = EvalResult(
+    result = EvalResult(
         suite=suite,
         total=len(cases),
         passed=passed,
@@ -221,44 +207,15 @@ def run_eval_suite(
         for row in metrics_rows:
             fh.write(json.dumps(row, sort_keys=True) + "\n")
 
-    alignment_avg = (
-        sum(r["alignment_rate"] for r in metrics_rows) / len(metrics_rows)
-        if metrics_rows
-        else 0.0
-    )
-    faithfulness_avg = (
-        sum(r["faithfulness"] for r in metrics_rows) / len(metrics_rows)
-        if metrics_rows
-        else 0.0
-    )
-    recall_avg = (
-        sum(r["recall_at_k"] for r in metrics_rows) / len(metrics_rows)
-        if metrics_rows
-        else 0.0
-    )
-    mrr_avg = (
-        sum(r["mrr"] for r in metrics_rows) / len(metrics_rows) if metrics_rows else 0.0
-    )
-    insuff_rate = (
-        sum(1 for r in metrics_rows if r["insufficient"]) / len(metrics_rows)
-        if metrics_rows
-        else 0.0
-    )
-
-    taxonomy: dict[str, int] = {}
-    for r in metrics_rows:
-        for name, count in r["failure_taxonomy"].items():
-            taxonomy[name] = taxonomy.get(name, 0) + count
-
     summary_payload = {
-        **res.to_json(),
+        **result.to_json(),
         "metrics": {
-            "recall_at_k": recall_avg,
-            "mrr": mrr_avg,
-            "alignment_rate": alignment_avg,
-            "faithfulness": faithfulness_avg,
-            "insufficiency_rate": insuff_rate,
-            "failure_taxonomy": taxonomy,
+            "recall_at_k": _average_metric(metrics_rows, "recall_at_k"),
+            "mrr": _average_metric(metrics_rows, "mrr"),
+            "alignment_rate": _average_metric(metrics_rows, "alignment_rate"),
+            "faithfulness": _average_metric(metrics_rows, "faithfulness"),
+            "insufficiency_rate": _insufficiency_rate(metrics_rows),
+            "failure_taxonomy": _aggregate_taxonomy(metrics_rows),
         },
     }
 
@@ -267,4 +224,27 @@ def run_eval_suite(
         json.dumps(summary_payload, sort_keys=True, indent=2) + "\n",
         encoding="utf-8",
     )
-    return res, out_path
+    return result, out_path
+
+
+def _average_metric(rows: list[dict[str, object]], key: str) -> float:
+    if not rows:
+        return 0.0
+    return sum(float(row.get(key, 0.0)) for row in rows) / len(rows)
+
+
+def _aggregate_taxonomy(rows: list[dict[str, object]]) -> dict[str, int]:
+    taxonomy: dict[str, int] = {}
+    for row in rows:
+        raw_taxonomy = row.get("failure_taxonomy", {})
+        if not isinstance(raw_taxonomy, dict):
+            continue
+        for name, value in raw_taxonomy.items():
+            taxonomy[str(name)] = taxonomy.get(str(name), 0) + int(value)
+    return taxonomy
+
+
+def _insufficiency_rate(rows: list[dict[str, object]]) -> float:
+    if not rows:
+        return 0.0
+    return sum(1 for row in rows if row.get("insufficient")) / len(rows)
