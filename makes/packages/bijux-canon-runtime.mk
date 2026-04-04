@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 
 PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package-profile.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 
 PYTHON := python3.11
 
@@ -53,7 +53,7 @@ PACKAGE_DEFINE_CLEAN := 0
 PACKAGE_ALL_TARGETS := clean install test lint quality security sbom build api
 PACKAGE_HELP_WIDTH := 22
 
-include $(ROOT_MAKE_DIR)/package-primary.mk
+include $(ROOT_MAKE_DIR)/package/primary.mk
 
 -include .env
 export

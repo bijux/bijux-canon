@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package-profile.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 
 LINT_DIRS                      := src tests stubs
 RUFF_CONFIG                    := pyproject.toml
@@ -37,8 +37,8 @@ PACKAGE_INSTALL_TARGETS := \
   fmt-artifacts lint-artifacts interrogate-report
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
-include $(ROOT_MAKE_DIR)/package-primary.mk
+include $(ROOT_MAKE_DIR)/package/primary.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
-include $(ROOT_MAKE_DIR)/package-core-help.mk
+include $(ROOT_MAKE_DIR)/package/core-help.mk

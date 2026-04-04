@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 
 PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package-profile.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 
 LINT_DIRS            := src/bijux_canon_agent tests
 MYPY_CONFIG          := $(MONOREPO_ROOT)/configs/mypy.ini
@@ -59,7 +59,7 @@ PACKAGE_CLEAN_PATHS := \
   $(COMMON_CONFIG_CACHE_CLEAN_PATHS)
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
-include $(ROOT_MAKE_DIR)/package-primary.mk
+include $(ROOT_MAKE_DIR)/package/primary.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
@@ -78,7 +78,7 @@ line_limit:
 	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/agent/check_line_limit.py"
 .PHONY: line_limit
 
-include $(ROOT_MAKE_DIR)/package-core-help.mk
+include $(ROOT_MAKE_DIR)/package/core-help.mk
 
 ##@ Core
 all-parallel: ## Run pipeline with parallelized lint, quality, security, and api

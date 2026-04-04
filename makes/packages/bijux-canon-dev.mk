@@ -2,7 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 
 PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package-profile.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 
 LINT_DIRS         := src/bijux_canon_dev tests
 INTERROGATE_PATHS := src/bijux_canon_dev
@@ -22,8 +22,8 @@ PACKAGE_CLEAN_PATHS := \
   $(COMMON_ARTIFACT_CLEAN_PATHS)
 PACKAGE_ALL_TARGETS := clean install test lint quality security build sbom
 
-include $(ROOT_MAKE_DIR)/package-primary.mk
+include $(ROOT_MAKE_DIR)/package/primary.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
-include $(ROOT_MAKE_DIR)/package-core-help.mk
+include $(ROOT_MAKE_DIR)/package/core-help.mk

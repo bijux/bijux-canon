@@ -3,7 +3,7 @@
 # Testing policy: gates (lint/quality/security/typing) intentionally run on lowest supported Python (3.11); full matrix via tox.
 
 PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package-profile.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 
 PYTHON := python3.11
 
@@ -50,7 +50,7 @@ PACKAGE_CLEAN_PATHS := \
 PACKAGE_ALL_TARGETS := clean install fmt lint test quality api security sbom
 PACKAGE_ALL_MESSAGE := [OK] All targets completed
 
-include $(ROOT_MAKE_DIR)/package-primary.mk
+include $(ROOT_MAKE_DIR)/package/primary.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
@@ -73,4 +73,4 @@ release: build
 	@echo "[OK] build target completed (alias for make release)"
 .PHONY: build-release-metadata release
 
-include $(ROOT_MAKE_DIR)/package-core-help.mk
+include $(ROOT_MAKE_DIR)/package/core-help.mk
