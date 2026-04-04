@@ -81,10 +81,6 @@ all: $(PACKAGE_ALL_TARGETS)
 endif
 
 ifeq ($(PACKAGE_DEFINE_HELP),1)
-help:
-	@awk 'BEGIN{FS=":.*##"; OFS="";} \
-	  /^##@/ {gsub(/^##@ */,""); print "\n\033[1m" $$0 "\033[0m"; next} \
-	  /^[a-zA-Z0-9_.-]+:.*##/ {printf "  \033[36m%-$(PACKAGE_HELP_WIDTH)s\033[0m %s\n", $$1, $$2}' \
-	  $(MAKEFILE_LIST)
-.PHONY: help
+HELP_WIDTH := $(PACKAGE_HELP_WIDTH)
+include $(ROOT_MAKE_DIR)/help.mk
 endif
