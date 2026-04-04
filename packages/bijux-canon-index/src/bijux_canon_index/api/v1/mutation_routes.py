@@ -54,7 +54,7 @@ def register_mutation_routes(app: FastAPI) -> None:
                             }
                         }
                     }
-                }
+                },
             },
             400: {
                 "content": {
@@ -121,7 +121,7 @@ def register_mutation_routes(app: FastAPI) -> None:
                             }
                         }
                     }
-                }
+                },
             },
             400: {
                 "content": {
@@ -200,7 +200,7 @@ def register_mutation_routes(app: FastAPI) -> None:
                             }
                         }
                     }
-                }
+                },
             },
             400: {
                 "content": {

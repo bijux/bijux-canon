@@ -57,7 +57,7 @@ def register_read_routes(app: FastAPI) -> None:
                             }
                         }
                     }
-                }
+                },
             }
         },
     )  # type: ignore[untyped-decorator]
@@ -90,7 +90,7 @@ def register_read_routes(app: FastAPI) -> None:
                     "application/json": {
                         "examples": {"artifacts": {"value": {"artifacts": ["art-1"]}}}
                     }
-                }
+                },
             }
         },
     )  # type: ignore[untyped-decorator]
@@ -122,7 +122,7 @@ def register_read_routes(app: FastAPI) -> None:
                     "application/json": {
                         "examples": {"runs": {"value": {"runs": ["run-1"]}}}
                     }
-                }
+                },
             }
         },
     )  # type: ignore[untyped-decorator]

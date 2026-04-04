@@ -23,7 +23,9 @@ class ListRunsResponse(StrictModel):
 
 class CreateResponse(StrictModel):
     name: str = Field(description="Logical corpus name reserved by the API.")
-    status: str = Field(description="Lifecycle state returned after the create request.")
+    status: str = Field(
+        description="Lifecycle state returned after the create request."
+    )
 
 
 class IngestResponse(StrictModel):
@@ -76,7 +78,9 @@ class ExplainResponse(StrictModel):
     document_id: str = Field(description="Document that produced the requested result.")
     chunk_id: str = Field(description="Chunk that contributed the requested result.")
     vector_id: str = Field(description="Vector identifier for the explained result.")
-    artifact_id: str = Field(description="Execution artifact used to resolve the result.")
+    artifact_id: str = Field(
+        description="Execution artifact used to resolve the result."
+    )
     metric: str = Field(description="Similarity metric used by the artifact.")
     score: float = Field(description="Score assigned to the result.")
     correlation_id: str = Field(

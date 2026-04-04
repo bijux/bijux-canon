@@ -72,7 +72,7 @@ def register_query_routes(app: FastAPI) -> None:
                             }
                         }
                     }
-                }
+                },
             },
             422: {
                 "content": {
@@ -146,7 +146,7 @@ def register_query_routes(app: FastAPI) -> None:
                             }
                         }
                     }
-                }
+                },
             },
             400: {
                 "content": {
@@ -219,7 +219,7 @@ def register_query_routes(app: FastAPI) -> None:
                             }
                         }
                     }
-                }
+                },
             },
             400: {
                 "content": {
