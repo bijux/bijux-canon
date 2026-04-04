@@ -18,7 +18,10 @@ from bijux_canon_reason.core.types import (
 from bijux_canon_reason.retrieval.chunked_bm25 import (
     SCHEMA_VERSION as BM25_SCHEMA_VERSION,
 )
-from bijux_canon_reason.retrieval.chunked_bm25 import build_or_load_index
+from bijux_canon_reason.retrieval.chunked_bm25 import (
+    ChunkedBM25Index,
+    build_or_load_index,
+)
 from bijux_canon_reason.retrieval.chunking import Chunk
 from bijux_canon_reason.retrieval.corpus import CorpusDoc, load_corpus_jsonl
 
@@ -103,6 +106,15 @@ class FakeTool:
         return {"echo": arguments, "seed": seed}
 
 
+@dataclass(frozen=True)
+class _ProvenancePaths:
+    root: Path
+    corpus_path: Path
+    index_path: Path
+    chunks_path: Path
+    retrieval_path: Path
+
+
 @dataclass
 class BM25Retriever:
     """Deterministic local retriever over a JSONL corpus.
@@ -167,18 +179,15 @@ class BM25Retriever:
     def _pin_corpus(self) -> Path:
         if self.artifacts_dir is None:
             return self.corpus_path
-        pinned = self.artifacts_dir / "provenance" / "corpus.jsonl"
-        pinned.parent.mkdir(parents=True, exist_ok=True)
-        if not pinned.exists():
-            pinned.write_bytes(self.corpus_path.read_bytes())
-        return pinned
+        paths = _provenance_paths(self.artifacts_dir)
+        paths.root.mkdir(parents=True, exist_ok=True)
+        if not paths.corpus_path.exists():
+            paths.corpus_path.write_bytes(self.corpus_path.read_bytes())
+        return paths.corpus_path
 
     def _load_index(self) -> None:
         pinned_corpus = self._pin_corpus()
-        if self.artifacts_dir is not None:
-            index_path = self.artifacts_dir / "provenance" / "index" / "bm25_index.json"
-        else:
-            index_path = self.corpus_path.with_suffix(".bm25_index.json")
+        index_path = _index_path(self.artifacts_dir, self.corpus_path)
         idx, corpus_sha, idx_sha = build_or_load_index(
             corpus_path=pinned_corpus,
             index_path=None if self.lazy_index else index_path,
@@ -198,24 +207,30 @@ class BM25Retriever:
         raw_top_k = arguments.get("top_k", 3)
         top_k = int(raw_top_k) if isinstance(raw_top_k, (int, float, str)) else 3
 
+        index, docs = self._require_loaded_index()
+
+        ranked = index.top_k(
+            q, k=top_k, k1=self.k1, b=self.b, parallel=self.parallel_scoring
+        )
+        doc_meta = {d.doc_id: d for d in docs}
+        evidences = _build_retrieved_evidences(ranked=ranked, doc_meta=doc_meta)
+        provenance = self._build_retrieval_provenance(index)
+        self._persist_retrieval_provenance(provenance)
+        return {"evidences": cast(JsonValue, evidences), "provenance": provenance}
+
+    def _require_loaded_index(self) -> tuple[ChunkedBM25Index, tuple[CorpusDoc, ...]]:
         if self._index is None:
             self._load_index()
         if self._index is None or self._docs is None:
             raise RuntimeError("BM25Retriever not initialized")
+        return cast(ChunkedBM25Index, self._index), self._docs
 
-        ranked = self._index.top_k(
-            q, k=top_k, k1=self.k1, b=self.b, parallel=self.parallel_scoring
-        )
-        doc_meta = {d.doc_id: d for d in self._docs}
-        evidences = _build_retrieved_evidences(ranked=ranked, doc_meta=doc_meta)
-        provenance = self._build_retrieval_provenance()
-        self._persist_retrieval_provenance(provenance)
-        return {"evidences": cast(JsonValue, evidences), "provenance": provenance}
-
-    def _build_retrieval_provenance(self) -> dict[str, JsonValue]:
+    def _build_retrieval_provenance(
+        self, index: ChunkedBM25Index
+    ) -> dict[str, JsonValue]:
         provenance: dict[str, JsonValue] = {
             "schema_version": BM25_SCHEMA_VERSION,
-            "corpus_sha256": self._index.corpus_sha256,
+            "corpus_sha256": index.corpus_sha256,
             "chunk_chars": self.chunk_chars,
             "overlap_chars": self.overlap_chars,
             "k1": self.k1,
@@ -243,20 +258,17 @@ class BM25Retriever:
             provenance["corpus_path"] = str(self.corpus_path)
             return provenance
 
-        provenance_root = self.artifacts_dir / "provenance"
-        provenance["corpus_path"] = (
-            (provenance_root / "corpus.jsonl")
-            .relative_to(self.artifacts_dir)
-            .as_posix()
-        )
-        provenance["index_path"] = (
-            (provenance_root / "index" / "bm25_index.json")
-            .relative_to(self.artifacts_dir)
-            .as_posix()
-        )
+        paths = _provenance_paths(self.artifacts_dir)
+        provenance["corpus_path"] = paths.corpus_path.relative_to(
+            self.artifacts_dir
+        ).as_posix()
+        provenance["index_path"] = paths.index_path.relative_to(
+            self.artifacts_dir
+        ).as_posix()
         provenance["chunks_path"] = _write_chunk_manifest(
             artifacts_dir=self.artifacts_dir,
-            chunks=self._index.chunks,
+            chunks_path=paths.chunks_path,
+            chunks=index.chunks,
         )
         return provenance
 
@@ -264,11 +276,14 @@ class BM25Retriever:
         if self.artifacts_dir is None:
             return
 
-        prov_file = self.artifacts_dir / "provenance" / "retrieval_provenance.json"
-        if prov_file.exists():
+        paths = _provenance_paths(self.artifacts_dir)
+        if paths.retrieval_path.exists():
             return
-        prov_file.parent.mkdir(parents=True, exist_ok=True)
-        prov_file.write_text(canonical_dumps(provenance) + "\n", encoding="utf-8")
+        paths.root.mkdir(parents=True, exist_ok=True)
+        paths.retrieval_path.write_text(
+            canonical_dumps(provenance) + "\n",
+            encoding="utf-8",
+        )
 
 
 def _build_retrieved_evidences(
@@ -324,8 +339,29 @@ def _config_sha256(
     return hashlib.sha256(canonical_dumps(payload).encode("utf-8")).hexdigest()
 
 
-def _write_chunk_manifest(*, artifacts_dir: Path, chunks: tuple[Chunk, ...]) -> str:
-    chunks_path = artifacts_dir / "provenance" / "chunks.jsonl"
+def _provenance_paths(artifacts_dir: Path) -> _ProvenancePaths:
+    root = artifacts_dir / "provenance"
+    return _ProvenancePaths(
+        root=root,
+        corpus_path=root / "corpus.jsonl",
+        index_path=root / "index" / "bm25_index.json",
+        chunks_path=root / "chunks.jsonl",
+        retrieval_path=root / "retrieval_provenance.json",
+    )
+
+
+def _index_path(artifacts_dir: Path | None, corpus_path: Path) -> Path:
+    if artifacts_dir is None:
+        return corpus_path.with_suffix(".bm25_index.json")
+    return _provenance_paths(artifacts_dir).index_path
+
+
+def _write_chunk_manifest(
+    *,
+    artifacts_dir: Path,
+    chunks_path: Path,
+    chunks: tuple[Chunk, ...],
+) -> str:
     chunks_path.parent.mkdir(parents=True, exist_ok=True)
     if not chunks_path.exists():
         with chunks_path.open("w", encoding="utf-8", newline="") as fh:
