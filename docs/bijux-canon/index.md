@@ -1,5 +1,5 @@
 ---
-title: bijux-canon
+title: Repository Handbook
 audience: mixed
 type: index
 status: canonical
@@ -7,7 +7,7 @@ owner: bijux-canon-docs
 last_reviewed: 2026-04-04
 ---
 
-# bijux-canon
+# Repository Handbook
 
 The repository handbook explains the shared story above the package level:
 why this repository is split, which rules genuinely live at the root, and
@@ -39,7 +39,7 @@ These repository pages should explain the cross-package frame that no single pac
 ```mermaid
 flowchart LR
     scope["bijux-canon"] --> section["Repository Handbook"]
-    section --> page["bijux-canon"]
+    section --> page["Repository Handbook"]
     dest1["see the whole system"]
     dest2["find the right root page"]
     dest3["move to package docs"]
@@ -50,7 +50,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    page["bijux-canon"]
+    page["Repository Handbook"]
     focus1["Repository role"]
     page --> focus1
     focus1_1["coordination layer"]
@@ -105,7 +105,7 @@ flowchart TD
 
 ## Decision Rule
 
-Use `bijux-canon` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use `Repository Handbook` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
 
 ## What This Page Answers
 

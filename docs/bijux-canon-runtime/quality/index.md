@@ -9,11 +9,11 @@ last_reviewed: 2026-04-04
 
 # Quality
 
-Use the quality section to understand how `bijux-canon-runtime` earns trust: which tests matter most, which risks remain visible, and what done should mean after a real change.
+This section explains how `bijux-canon-runtime` earns trust: which proof surfaces matter, which risks stay visible, and what done should mean after a real change.
 
-These pages explain the proof story for `bijux-canon-runtime`. They should make it clear why the package is trustworthy today, what still needs explicit skepticism, and which review questions protect against shallow acceptance disguised as progress.
+These pages explain the proof story for `bijux-canon-runtime`. They should make trust, skepticism, and review pressure visible enough that passing checks do not get mistaken for sufficient evidence.
 
-Read the quality pages for `bijux-canon-runtime` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-runtime` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

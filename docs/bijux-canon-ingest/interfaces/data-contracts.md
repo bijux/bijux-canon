@@ -16,7 +16,7 @@ This page keeps data shape changes reviewable. If a record or payload matters to
 another package, another process, or a replay path, it deserves to be described
 as a contract rather than left implicit in implementation details.
 
-Read the interfaces pages for `bijux-canon-ingest` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
+Treat the interfaces pages for `bijux-canon-ingest` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Page Maps
 

@@ -16,7 +16,7 @@ This page exists so integration changes do not feel mysterious. A reviewer shoul
 be able to say which seams are intentional, which ones carry compatibility risk,
 and where the package expects outside systems to meet it.
 
-Read the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it, and they should make drift visible before it becomes surprising.
+Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
 
 ## Page Maps
 

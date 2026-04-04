@@ -17,7 +17,7 @@ The non-goals matter as much as the goals. A package becomes easier to trust
 when readers can see what it refuses to absorb just because the code happens to
 be nearby.
 
-Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
+Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Page Maps
 

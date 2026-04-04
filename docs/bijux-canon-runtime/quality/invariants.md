@@ -15,7 +15,7 @@ This page names the truths the package is trying hardest not to lose. If an
 invariant changes, that should feel more like a design event than a routine code
 edit.
 
-Read the quality pages for `bijux-canon-runtime` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-runtime` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

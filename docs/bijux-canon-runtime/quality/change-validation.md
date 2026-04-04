@@ -14,7 +14,7 @@ Validation after a change should target the package surfaces that were actually 
 This page is about choosing proof that matches the real risk. Strong validation
 is not just more testing; it is testing and review aimed at the seam that moved.
 
-Read the quality pages for `bijux-canon-runtime` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-runtime` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

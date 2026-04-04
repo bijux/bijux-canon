@@ -16,7 +16,7 @@ That clarity matters because state tends to spread silently when it is not named
 Once readers stop knowing which outputs are durable and which values are local,
 interface and operations pages quickly become less trustworthy.
 
-Read the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it, and they should make drift visible before it becomes surprising.
+Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
 
 ## Page Maps
 

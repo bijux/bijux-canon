@@ -15,7 +15,7 @@ with concrete examples.
 Examples are doing real work here. They let an impatient reader test whether the
 package story is credible without reconstructing usage from source alone.
 
-Read the interfaces pages for `bijux-canon-runtime` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
+Treat the interfaces pages for `bijux-canon-runtime` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Page Maps
 

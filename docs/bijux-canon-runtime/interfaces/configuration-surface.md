@@ -16,7 +16,7 @@ When configuration is documented well, maintainers can tell which behavior is
 meant to vary without editing code. When it is documented poorly, package
 behavior starts to feel magical or fragile.
 
-Read the interfaces pages for `bijux-canon-runtime` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
+Treat the interfaces pages for `bijux-canon-runtime` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Page Maps
 

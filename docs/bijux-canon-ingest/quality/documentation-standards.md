@@ -15,7 +15,7 @@ Consistency matters here because readers should not need to relearn how to read
 every package. The shared layout is part of the user experience, but honesty is
 more important than uniformity for its own sake.
 
-Read the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

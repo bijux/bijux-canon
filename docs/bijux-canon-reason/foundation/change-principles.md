@@ -17,7 +17,7 @@ These principles are not slogans. They are the filter for deciding whether a
 local improvement is worth the long-term cost it creates for the rest of the
 system.
 
-Read the foundation pages for `bijux-canon-reason` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
+Treat the foundation pages for `bijux-canon-reason` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Page Maps
 

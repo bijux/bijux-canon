@@ -9,11 +9,11 @@ last_reviewed: 2026-04-04
 
 # Foundation
 
-Start the bijux-canon-ingest handbook here when you need the package in one honest sentence: why it exists in the system, what it owns on purpose, and where its boundary stops.
+This section explains why `bijux-canon-ingest` exists, what it owns on purpose, and where its boundary stops.
 
-These pages establish the durable idea of `bijux-canon-ingest`. A reader should be able to skim this section and understand what job the package performs in the wider system, what neighboring packages should not assume about it, and which boundary claims are worth defending during review.
+Read this section first when you need the durable package story before code detail. A quick skim should make the role, the boundary, and the neighboring seams legible.
 
-Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
+Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Page Maps
 

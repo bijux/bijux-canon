@@ -15,7 +15,7 @@ This page protects credibility by keeping the current limits visible. Readers
 should be able to tell what the package does not promise without mining issue
 threads or learning the hard way in production.
 
-Read the quality pages for `bijux-canon-index` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-index` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

@@ -16,7 +16,7 @@ This page should keep long-lived risk language attached to the package instead
 of scattering it across reviews and memory. The goal is not alarmism; it is to
 help maintainers remember which failures would actually cost credibility.
 
-Read the quality pages for `bijux-canon-agent` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-agent` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

@@ -15,7 +15,7 @@ This page should help readers see the broad proof shape of the package rather
 than treating the test tree like a bag of unrelated checks. A good strategy page
 explains why these tests exist, not just where they live.
 
-Read the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

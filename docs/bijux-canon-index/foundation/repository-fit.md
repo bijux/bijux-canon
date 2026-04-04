@@ -17,7 +17,7 @@ together.
 This page is here to answer a simple but important question: why is this work a
 package at all, instead of just another folder inside a single giant project?
 
-Read the foundation pages for `bijux-canon-index` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
+Treat the foundation pages for `bijux-canon-index` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Page Maps
 

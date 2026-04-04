@@ -1,31 +1,20 @@
-site_name: bijux-canon
-site_url: https://github.com/bijux/bijux-canon
+INHERIT: mkdocs.shared.yml
+
+site_name: Bijux Canon
+site_description: Deterministic ingest, retrieval, reasoning, orchestration, and governed runtime documentation for the Bijux Canon package system.
+site_author: Bijan Mousavi <bijan@bijux.io>
+site_url: !ENV [SITE_URL, https://bijux.io/bijux-canon/]
 repo_name: bijux/bijux-canon
 repo_url: https://github.com/bijux/bijux-canon
+edit_uri: edit/main/docs/
 
 docs_dir: docs
 site_dir: artifacts/root/docs/site
 
-theme:
-  name: material
-  language: en
-  logo: assets/bijux_logo_hq.png
-  favicon: assets/bijux_icon.png
-  features:
-    - navigation.instant
-    - navigation.tabs
-    - navigation.sections
-    - navigation.indexes
-    - navigation.footer
-    - content.code.copy
-
-extra_css:
-  - assets/styles/extra.css
-
 nav:
   - Home: index.md
-  - bijux-canon:
-      - bijux-canon: bijux-canon/index.md
+  - Repository Handbook:
+      - Repository Handbook: bijux-canon/index.md
       - Platform Overview: bijux-canon/platform-overview.md
       - Repository Scope: bijux-canon/repository-scope.md
       - Workspace Layout: bijux-canon/workspace-layout.md
@@ -315,8 +304,8 @@ nav:
           - Change Validation: bijux-canon-runtime/quality/change-validation.md
           - Known Limitations: bijux-canon-runtime/quality/known-limitations.md
           - Risk Register: bijux-canon-runtime/quality/risk-register.md
-  - bijux-canon-dev:
-      - bijux-canon-dev: bijux-canon-dev/index.md
+  - Maintainer Handbook:
+      - Maintainer Handbook: bijux-canon-dev/index.md
       - Package Overview: bijux-canon-dev/package-overview.md
       - Scope and Non-Goals: bijux-canon-dev/scope-and-non-goals.md
       - Module Map: bijux-canon-dev/module-map.md
@@ -337,19 +326,3 @@ nav:
       - Release Policy: compat-packages/release-policy.md
       - Validation Strategy: compat-packages/validation-strategy.md
       - Retirement Conditions: compat-packages/retirement-conditions.md
-
-plugins:
-  - search
-
-markdown_extensions:
-  - admonition
-  - attr_list
-  - md_in_html
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - tables
-  - toc:
-      permalink: true

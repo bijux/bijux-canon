@@ -17,7 +17,7 @@ The value of this page is speed. A reader should be able to skim it and leave
 with one coherent story about how work moves through `bijux-canon-agent` from
 entrypoint to result.
 
-Read the foundation pages for `bijux-canon-agent` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
+Treat the foundation pages for `bijux-canon-agent` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Page Maps
 

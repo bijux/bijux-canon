@@ -7,7 +7,7 @@ owner: bijux-canon-docs
 last_reviewed: 2026-04-04
 ---
 
-# Docs Index
+# Bijux Canon
 
 `bijux-canon` is a deliberately split system for deterministic ingest,
 retrieval, reasoning, orchestration, and governed execution. The split
@@ -55,7 +55,7 @@ Treat the root page as the shortest honest explanation of the whole documentatio
 ```mermaid
 flowchart LR
     scope["bijux-canon"] --> section["Root Site"]
-    section --> page["Docs Index"]
+    section --> page["Bijux Canon"]
     dest1["bijux-canon section"]
     dest2["bijux-canon-ingest section"]
     dest3["bijux-canon-index section"]
@@ -76,7 +76,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    page["Docs Index"]
+    page["Bijux Canon"]
     focus1["System idea"]
     page --> focus1
     focus1_1["why the split exists"]

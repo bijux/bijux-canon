@@ -16,7 +16,7 @@ This page should keep dependency review from feeling bureaucratic. Dependencies
 matter because they reshape what the package relies on, what it exposes, and
 what downstream maintainers must now trust.
 
-Read the quality pages for `bijux-canon-reason` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-reason` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

@@ -16,7 +16,7 @@ most likely to answer it.
 
 When this page is useful, code reading becomes targeted rather than exploratory.
 
-Read the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it, and they should make drift visible before it becomes surprising.
+Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
 
 ## Page Maps
 

@@ -17,7 +17,7 @@ This page should help a reviewer see both kinds of dependency pressure: library
 dependencies that shape the implementation, and neighboring packages that shape
 the system boundary.
 
-Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
+Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Page Maps
 

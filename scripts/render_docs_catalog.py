@@ -429,7 +429,7 @@ PRODUCT_PACKAGES = {
 
 
 ROOT_PAGES = [
-    ("index", "bijux-canon"),
+    ("index", "Repository Handbook"),
     ("platform-overview", "Platform Overview"),
     ("repository-scope", "Repository Scope"),
     ("workspace-layout", "Workspace Layout"),
@@ -443,7 +443,7 @@ ROOT_PAGES = [
 
 
 DEV_PAGES = [
-    ("index", "bijux-canon-dev"),
+    ("index", "Maintainer Handbook"),
     ("package-overview", "Package Overview"),
     ("scope-and-non-goals", "Scope and Non-Goals"),
     ("module-map", "Module Map"),
@@ -1050,29 +1050,29 @@ def package_update_triggers(package: PackageInfo, category: str) -> tuple[str, .
 def package_working_interpretation(package: PackageInfo, category: str) -> str:
     interpretation_map = {
         "foundation": (
-            f"Read the {category} pages for `{package.title}` as the package's durable"
-            " self-description. They should let a reader understand the package without"
-            " needing to reconstruct its purpose from recent implementation history."
+            f"Treat the {category} pages for `{package.title}` as the package's durable"
+            " self-description. If the package still feels blurry after this section,"
+            " the boundary story is not clear enough yet."
         ),
         "architecture": (
-            f"Read the {category} pages for `{package.title}` as a reviewer-facing map"
-            " of structure and flow. They should shorten code reading, not try to replace"
-            " it, and they should make drift visible before it becomes surprising."
+            f"Treat the {category} pages for `{package.title}` as a reviewer-facing map"
+            " of structure and flow. They should shorten code reading, not try to"
+            " replace it."
         ),
         "interfaces": (
-            f"Read the {category} pages for `{package.title}` as the bridge between"
-            " implementation and caller expectation. They should tell a reader what the"
-            " package is prepared to stand behind before a downstream dependency forms."
+            f"Treat the {category} pages for `{package.title}` as the bridge between"
+            " implementation detail and caller expectation. They should show what the"
+            " package is prepared to defend before a dependency forms."
         ),
         "operations": (
-            f"Read the {category} pages for `{package.title}` as the package's explicit"
-            " operating memory. They should make common tasks repeatable without forcing"
-            " maintainers to relearn the workflow from code, CI logs, or oral history."
+            f"Treat the {category} pages for `{package.title}` as the package's"
+            " explicit operating memory. They should make common tasks repeatable"
+            " without relearning the workflow from logs or oral history."
         ),
         "quality": (
-            f"Read the {category} pages for `{package.title}` as the proof frame around"
-            " the package. They should explain how trust is earned, how risk stays"
-            " visible, and why a passing local check is not always enough."
+            f"Treat the {category} pages for `{package.title}` as the proof frame"
+            " around the package. They should show how trust is earned and where"
+            " skepticism still belongs."
         ),
     }
     return interpretation_map[category]
@@ -1768,7 +1768,7 @@ def render_home(
     )
     body = "\n".join(
         [
-            "# Docs Index",
+            "# Bijux Canon",
             "",
             "`bijux-canon` is a deliberately split system for deterministic ingest,",
             "retrieval, reasoning, orchestration, and governed execution. The split",
@@ -1830,7 +1830,7 @@ def render_home(
         body,
         "bijux-canon",
         "Root Site",
-        "Docs Index",
+        "Bijux Canon",
         tuple(f"{name} section" for name in sections),
         home_map_focus_sections(),
     )
@@ -1914,7 +1914,7 @@ def render_root_page(
     bodies = {
         "index": textwrap.dedent(
             f"""\
-            # bijux-canon
+            # Repository Handbook
 
             The repository handbook explains the shared story above the package level:
             why this repository is split, which rules genuinely live at the root, and
@@ -2376,7 +2376,7 @@ def render_dev_page(slug: str, title: str) -> str:
     bodies = {
         "index": textwrap.dedent(
             f"""\
-            # bijux-canon-dev
+            # Maintainer Handbook
 
             `bijux-canon-dev` is the maintainer package for repository health. It exists
             so schema drift checks, quality gates, supply-chain helpers, and release
@@ -3055,29 +3055,28 @@ def render_compat_page(slug: str, title: str) -> str:
 def package_section_summary(category: str, package: PackageInfo) -> str:
     summaries = {
         "foundation": (
-            f"Start the {package.title} handbook here when you need the package in one"
-            " honest sentence: why it exists in the system, what it owns on purpose,"
-            " and where its boundary stops."
+            f"This section explains why `{package.title}` exists, what it owns on"
+            " purpose, and where its boundary stops."
         ),
         "architecture": (
-            f"Use the architecture section to understand how `{package.import_name}` is"
-            " put together and why that structure exists before you judge a refactor,"
-            " dependency change, or new seam."
+            f"This section explains how `{package.import_name}` is organized so a"
+            " reviewer can follow structure, dependency direction, and execution flow"
+            " without guessing."
         ),
         "interfaces": (
-            f"Use the interfaces section to see what `{package.title}` is really asking"
-            " callers and operators to depend on, which surfaces are stable enough to"
-            " treat like contracts, and which ones are only implementation detail."
+            f"This section explains which commands, APIs, imports, schemas, and"
+            f" artifacts `{package.title}` is prepared to stand behind as real"
+            " surfaces."
         ),
         "operations": (
-            f"Use the operations section when you need to run, diagnose, release, or"
-            f" support `{package.title}` without reconstructing the workflow from source,"
-            " CI logs, or team memory."
+            f"This section explains how to install, run, diagnose, and release"
+            f" `{package.title}` from checked-in workflow guidance instead of team"
+            " memory."
         ),
         "quality": (
-            f"Use the quality section to understand how `{package.title}` earns trust:"
-            " which tests matter most, which risks remain visible, and what done should"
-            " mean after a real change."
+            f"This section explains how `{package.title}` earns trust: which proof"
+            " surfaces matter, which risks stay visible, and what done should mean"
+            " after a real change."
         ),
     }
     return summaries[category]
@@ -3086,33 +3085,29 @@ def package_section_summary(category: str, package: PackageInfo) -> str:
 def package_section_orientation(category: str, package: PackageInfo) -> str:
     orientations = {
         "foundation": (
-            f"These pages establish the durable idea of `{package.title}`. A reader should"
-            " be able to skim this section and understand what job the package performs in"
-            " the wider system, what neighboring packages should not assume about it, and"
-            " which boundary claims are worth defending during review."
+            f"Read this section first when you need the durable package story before"
+            " code detail. A quick skim should make the role, the boundary, and the"
+            " neighboring seams legible."
         ),
         "architecture": (
             f"These pages turn `{package.title}` from a directory tree into a readable"
-            " design. They should help a reviewer trace responsibilities, execution paths,"
-            " and pressure points quickly enough to keep structural conversations grounded"
-            " in the actual package instead of in vague diagrams."
+            " design map. Use them when a structural change needs to be grounded in"
+            " named modules and real execution paths."
         ),
         "interfaces": (
-            f"These pages explain the public face of `{package.title}`. They exist so a"
-            " caller can tell which commands, APIs, imports, schemas, and artifacts are"
-            " deliberate surfaces rather than incidental visibility, and so operators can"
-            " see what the package is truly prepared to stand behind."
+            f"These pages explain the public face of `{package.title}`. They help a"
+            " caller separate deliberate contracts from incidental visibility before a"
+            " dependency hardens around the wrong surface."
         ),
         "operations": (
-            f"These pages are the checked-in operating memory for `{package.title}`. They"
-            " should let a maintainer move from setup to diagnosis to release without"
-            " depending on private habits, CI archaeology, or half-remembered shell history."
+            f"These pages are the checked-in operating memory for `{package.title}`."
+            " They should let a maintainer move from setup to diagnosis to release"
+            " without relying on CI archaeology or private habits."
         ),
         "quality": (
-            f"These pages explain the proof story for `{package.title}`. They should make"
-            " it clear why the package is trustworthy today, what still needs explicit"
-            " skepticism, and which review questions protect against shallow acceptance"
-            " disguised as progress."
+            f"These pages explain the proof story for `{package.title}`. They should"
+            " make trust, skepticism, and review pressure visible enough that passing"
+            " checks do not get mistaken for sufficient evidence."
         ),
     }
     return orientations[category]
@@ -4436,7 +4431,7 @@ def nav_lines(
     if "platform" in targets:
         lines.extend(
             [
-                "  - bijux-canon:",
+                "  - Repository Handbook:",
                 *[
                     f"      - {title}: bijux-canon/{slug}.md"
                     for slug, title in ROOT_PAGES
@@ -4458,7 +4453,7 @@ def nav_lines(
     if "dev" in targets:
         lines.extend(
             [
-                "  - bijux-canon-dev:",
+                "  - Maintainer Handbook:",
                 *[
                     f"      - {title}: bijux-canon-dev/{slug}.md"
                     for slug, title in DEV_PAGES
@@ -4484,47 +4479,20 @@ def write_mkdocs(
 ) -> None:
     body = "\n".join(
         [
-            "site_name: bijux-canon",
-            "site_url: https://github.com/bijux/bijux-canon",
+            "INHERIT: mkdocs.shared.yml",
+            "",
+            "site_name: Bijux Canon",
+            "site_description: Deterministic ingest, retrieval, reasoning, orchestration, and governed runtime documentation for the Bijux Canon package system.",
+            "site_author: Bijan Mousavi <bijan@bijux.io>",
+            "site_url: !ENV [SITE_URL, https://bijux.io/bijux-canon/]",
             "repo_name: bijux/bijux-canon",
             "repo_url: https://github.com/bijux/bijux-canon",
+            "edit_uri: edit/main/docs/",
             "",
             "docs_dir: docs",
             "site_dir: artifacts/root/docs/site",
             "",
-            "theme:",
-            "  name: material",
-            "  language: en",
-            "  logo: assets/bijux_logo_hq.png",
-            "  favicon: assets/bijux_icon.png",
-            "  features:",
-            "    - navigation.instant",
-            "    - navigation.tabs",
-            "    - navigation.sections",
-            "    - navigation.indexes",
-            "    - navigation.footer",
-            "    - content.code.copy",
-            "",
-            "extra_css:",
-            "  - assets/styles/extra.css",
-            "",
             *nav_lines(targets, categories_by_package),
-            "",
-            "plugins:",
-            "  - search",
-            "",
-            "markdown_extensions:",
-            "  - admonition",
-            "  - attr_list",
-            "  - md_in_html",
-            "  - pymdownx.superfences:",
-            "      custom_fences:",
-            "        - name: mermaid",
-            "          class: mermaid",
-            "          format: !!python/name:pymdownx.superfences.fence_code_format",
-            "  - tables",
-            "  - toc:",
-            "      permalink: true",
         ]
     )
     (ROOT / "mkdocs.yml").write_text(body + "\n", encoding="utf-8")

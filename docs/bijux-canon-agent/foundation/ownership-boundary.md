@@ -16,7 +16,7 @@ the tests show whether that expectation is protected when the code changes.
 Use this page when a change proposal feels plausible in more than one package
 and someone needs a concrete reason to keep the work here or move it elsewhere.
 
-Read the foundation pages for `bijux-canon-agent` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
+Treat the foundation pages for `bijux-canon-agent` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Page Maps
 

@@ -15,7 +15,7 @@ is still unclear or unprotected.
 This page is where the package draws the line against false confidence. Done
 should mean that behavior, explanation, and proof all move together.
 
-Read the quality pages for `bijux-canon-reason` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
+Treat the quality pages for `bijux-canon-reason` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
 ## Page Maps
 

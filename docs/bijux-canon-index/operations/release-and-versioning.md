@@ -16,7 +16,7 @@ The release path is part of the product story because it determines how readers
 learn what changed and what stayed stable. This page should make package-local
 release mechanics understandable without separating them from repository rules.
 
-Read the operations pages for `bijux-canon-index` as the package's explicit operating memory. They should make common tasks repeatable without forcing maintainers to relearn the workflow from code, CI logs, or oral history.
+Treat the operations pages for `bijux-canon-index` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Page Maps
 

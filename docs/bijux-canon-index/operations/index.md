@@ -9,11 +9,11 @@ last_reviewed: 2026-04-04
 
 # Operations
 
-Use the operations section when you need to run, diagnose, release, or support `bijux-canon-index` without reconstructing the workflow from source, CI logs, or team memory.
+This section explains how to install, run, diagnose, and release `bijux-canon-index` from checked-in workflow guidance instead of team memory.
 
-These pages are the checked-in operating memory for `bijux-canon-index`. They should let a maintainer move from setup to diagnosis to release without depending on private habits, CI archaeology, or half-remembered shell history.
+These pages are the checked-in operating memory for `bijux-canon-index`. They should let a maintainer move from setup to diagnosis to release without relying on CI archaeology or private habits.
 
-Read the operations pages for `bijux-canon-index` as the package's explicit operating memory. They should make common tasks repeatable without forcing maintainers to relearn the workflow from code, CI logs, or oral history.
+Treat the operations pages for `bijux-canon-index` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Page Maps
 

@@ -14,7 +14,7 @@ Diagnostics should make it easier to explain what `bijux-canon-index` did, not m
 Good diagnostics shorten both incidents and reviews. They give maintainers a
 way to connect visible outputs back to the package behavior that produced them.
 
-Read the operations pages for `bijux-canon-index` as the package's explicit operating memory. They should make common tasks repeatable without forcing maintainers to relearn the workflow from code, CI logs, or oral history.
+Treat the operations pages for `bijux-canon-index` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Page Maps
 

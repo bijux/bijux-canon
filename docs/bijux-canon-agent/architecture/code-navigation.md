@@ -14,7 +14,7 @@ When you need to understand a change in `bijux-canon-agent`, use this reading or
 This page is intentionally practical. Its purpose is to shorten the path from a
 question in review to the files that actually explain the answer.
 
-Read the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it, and they should make drift visible before it becomes surprising.
+Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
 
 ## Page Maps
 

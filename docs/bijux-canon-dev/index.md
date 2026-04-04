@@ -1,5 +1,5 @@
 ---
-title: bijux-canon-dev
+title: Maintainer Handbook
 audience: mixed
 type: index
 status: canonical
@@ -7,7 +7,7 @@ owner: bijux-canon-dev-docs
 last_reviewed: 2026-04-04
 ---
 
-# bijux-canon-dev
+# Maintainer Handbook
 
 `bijux-canon-dev` is the maintainer package for repository health. It exists
 so schema drift checks, quality gates, supply-chain helpers, and release
@@ -24,7 +24,7 @@ These maintainer pages should read like explicit operational memory for reposito
 ```mermaid
 flowchart LR
     scope["bijux-canon"] --> section["Maintainer Handbook"]
-    section --> page["bijux-canon-dev"]
+    section --> page["Maintainer Handbook"]
     dest1["explain automation"]
     dest2["see repository-health scope"]
     dest3["review package impact"]
@@ -35,7 +35,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    page["bijux-canon-dev"]
+    page["Maintainer Handbook"]
     focus1["Maintainer role"]
     page --> focus1
     focus1_1["quality gates"]
@@ -91,7 +91,7 @@ flowchart TD
 
 ## Decision Rule
 
-Use `bijux-canon-dev` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use `Maintainer Handbook` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
 
 ## What This Page Answers
 

@@ -17,7 +17,7 @@ Command surfaces tend to become contracts early, because people script them,
 share them in tickets, and paste them into automation. This page should make
 that contract status visible instead of accidental.
 
-Read the interfaces pages for `bijux-canon-runtime` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
+Treat the interfaces pages for `bijux-canon-runtime` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Page Maps
 

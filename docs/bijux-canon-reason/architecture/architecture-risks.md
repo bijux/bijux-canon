@@ -15,7 +15,7 @@ This page should keep risk language concrete. The right risks are the ones that
 would make the package harder to reason about even if the current implementation
 still appears to work.
 
-Read the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it, and they should make drift visible before it becomes surprising.
+Treat the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
 
 ## Page Maps
 

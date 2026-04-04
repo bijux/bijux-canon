@@ -9,11 +9,11 @@ last_reviewed: 2026-04-04
 
 # Architecture
 
-Use the architecture section to understand how `bijux_canon_ingest` is put together and why that structure exists before you judge a refactor, dependency change, or new seam.
+This section explains how `bijux_canon_ingest` is organized so a reviewer can follow structure, dependency direction, and execution flow without guessing.
 
-These pages turn `bijux-canon-ingest` from a directory tree into a readable design. They should help a reviewer trace responsibilities, execution paths, and pressure points quickly enough to keep structural conversations grounded in the actual package instead of in vague diagrams.
+These pages turn `bijux-canon-ingest` from a directory tree into a readable design map. Use them when a structural change needs to be grounded in named modules and real execution paths.
 
-Read the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it, and they should make drift visible before it becomes surprising.
+Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
 
 ## Page Maps
 

@@ -9,11 +9,11 @@ last_reviewed: 2026-04-04
 
 # Interfaces
 
-Use the interfaces section to see what `bijux-canon-runtime` is really asking callers and operators to depend on, which surfaces are stable enough to treat like contracts, and which ones are only implementation detail.
+This section explains which commands, APIs, imports, schemas, and artifacts `bijux-canon-runtime` is prepared to stand behind as real surfaces.
 
-These pages explain the public face of `bijux-canon-runtime`. They exist so a caller can tell which commands, APIs, imports, schemas, and artifacts are deliberate surfaces rather than incidental visibility, and so operators can see what the package is truly prepared to stand behind.
+These pages explain the public face of `bijux-canon-runtime`. They help a caller separate deliberate contracts from incidental visibility before a dependency hardens around the wrong surface.
 
-Read the interfaces pages for `bijux-canon-runtime` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
+Treat the interfaces pages for `bijux-canon-runtime` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Page Maps
 

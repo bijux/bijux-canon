@@ -16,7 +16,7 @@ This page exists to keep setup honest. A maintainer should be able to tell which
 files actually define installation truth and which dependencies are merely
 present in the environment for unrelated reasons.
 
-Read the operations pages for `bijux-canon-ingest` as the package's explicit operating memory. They should make common tasks repeatable without forcing maintainers to relearn the workflow from code, CI logs, or oral history.
+Treat the operations pages for `bijux-canon-ingest` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Page Maps
 

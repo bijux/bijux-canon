@@ -15,7 +15,7 @@ This page should help a maintainer stabilize the situation before they try to
 improve it. The first question is not always how to fix the bug; it is how to
 locate the right evidence quickly.
 
-Read the operations pages for `bijux-canon-ingest` as the package's explicit operating memory. They should make common tasks repeatable without forcing maintainers to relearn the workflow from code, CI logs, or oral history.
+Treat the operations pages for `bijux-canon-ingest` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Page Maps
 

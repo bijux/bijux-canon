@@ -16,7 +16,7 @@ whether they are looking at local behavior or at something owned elsewhere.
 This page keeps the package vocabulary stable enough that docs, code, commit
 messages, and review conversations can describe the same idea without drift.
 
-Read the foundation pages for `bijux-canon-reason` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
+Treat the foundation pages for `bijux-canon-reason` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Page Maps
 

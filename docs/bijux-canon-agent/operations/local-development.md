@@ -16,7 +16,7 @@ The point is not to prescribe one favorite workflow. It is to keep local work
 close enough to the owning package that changes remain easy to explain and easy
 to validate before they spread outward.
 
-Read the operations pages for `bijux-canon-agent` as the package's explicit operating memory. They should make common tasks repeatable without forcing maintainers to relearn the workflow from code, CI logs, or oral history.
+Treat the operations pages for `bijux-canon-agent` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Page Maps
 

@@ -15,7 +15,7 @@ This page connects interface prose to real use. A reader should leave with a
 picture of how commands, APIs, inputs, and outputs hang together in a workflow
 an operator can actually repeat.
 
-Read the interfaces pages for `bijux-canon-agent` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
+Treat the interfaces pages for `bijux-canon-agent` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Page Maps
 
