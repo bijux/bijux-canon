@@ -159,3 +159,9 @@ Keep it aligned with the real source tree and current test layout.
 - `Code Navigation` lets a reviewer trace structure without guessing where the real pathway lives
 - the documented module relationships make refactors easier to reason about before code is changed
 - the page shortens code reading by pointing at the right structural hotspots first
+
+## Failure Signals
+
+- `Code Navigation` points to modules that no longer carry the behavior the page claims they do
+- dependency direction has to be explained with caveats instead of a clean structural story
+- the path from interface to domain to proof no longer feels traceable in one pass

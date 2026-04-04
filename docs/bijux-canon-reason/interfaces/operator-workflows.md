@@ -115,6 +115,12 @@ Keep it aligned with the existing commands, endpoints, and outputs.
 - the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately
 - compatibility review becomes a visible step rather than an afterthought
 
+## Failure Signals
+
+- `Operator Workflows` names surfaces that cannot be matched to real code, schemas, or artifacts
+- callers have to infer stability from examples instead of from explicit contract evidence
+- compatibility review starts after change has already landed instead of before
+
 ## Core Claim
 
 The interface claim of `bijux-canon-reason` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

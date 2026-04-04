@@ -115,6 +115,12 @@ Keep it aligned with the actual compatibility promises that are still checked in
 - migration pressure is clearer than nostalgia for old package names
 - retirement can be discussed from evidence rather than from vague discomfort
 
+## Failure Signals
+
+- `Compatibility Overview` spends more time defending legacy names than clarifying migration
+- the canonical target is harder to find than the old name
+- retirement conversations keep stalling because the remaining need is not described concretely
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

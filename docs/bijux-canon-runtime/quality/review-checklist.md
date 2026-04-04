@@ -114,6 +114,12 @@ Update it only when the package review posture genuinely changes.
 - tests, limitations, and risk language reinforce one another instead of competing
 - the completion bar is demanding enough to prevent shallow acceptance
 
+## Failure Signals
+
+- `Review Checklist` says the package is protected but cannot show which proof closes which risk
+- reviewers disagree on whether the work is done because the standard is too implicit
+- limitations remain unchanged even when package behavior has obviously shifted
+
 ## Core Claim
 
 The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

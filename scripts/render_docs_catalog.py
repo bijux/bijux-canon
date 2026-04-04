@@ -1121,6 +1121,37 @@ def package_what_good_looks_like(package: PackageInfo, category: str, title: str
     return good_map[category]
 
 
+def package_failure_signals(package: PackageInfo, category: str, title: str) -> tuple[str, ...]:
+    signal_map = {
+        "foundation": (
+            f"`{title}` has to explain the same ownership claim with repeated exceptions",
+            "the out-of-scope list starts looking like shadow ownership instead of a real boundary",
+            "review conversations keep falling back to package adjacency rather than package intent",
+        ),
+        "architecture": (
+            f"`{title}` points to modules that no longer carry the behavior the page claims they do",
+            "dependency direction has to be explained with caveats instead of a clean structural story",
+            "the path from interface to domain to proof no longer feels traceable in one pass",
+        ),
+        "interfaces": (
+            f"`{title}` names surfaces that cannot be matched to real code, schemas, or artifacts",
+            "callers have to infer stability from examples instead of from explicit contract evidence",
+            "compatibility review starts after change has already landed instead of before",
+        ),
+        "operations": (
+            f"`{title}` only works if the maintainer already knows unstated steps",
+            "package metadata, runtime behavior, and operational docs start telling different stories",
+            "incident handling requires reverse-engineering workflow from code instead of following checked-in guidance",
+        ),
+        "quality": (
+            f"`{title}` says the package is protected but cannot show which proof closes which risk",
+            "reviewers disagree on whether the work is done because the standard is too implicit",
+            "limitations remain unchanged even when package behavior has obviously shifted",
+        ),
+    }
+    return signal_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1313,6 +1344,17 @@ def add_what_good_looks_like(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "Core Claim", block)
 
 
+def add_failure_signals(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Failure Signals",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "If It Drifts", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1414,6 +1456,14 @@ def render_home(
             "the correct next handbook path becomes obvious within a few seconds",
             "the root page reduces orientation cost instead of adding another layer of ambiguity",
             "the documentation system feels intentionally divided rather than accidentally scattered",
+        ),
+    )
+    body = add_failure_signals(
+        body,
+        (
+            "the root page starts sounding like a summary of everything instead of a route to somewhere specific",
+            "readers still need trial-and-error to find the right handbook branch",
+            "the distinction between repository, package, maintainer, and compatibility docs becomes blurry again",
         ),
     )
     body = add_question_section(
@@ -1857,6 +1907,14 @@ def render_root_page(
             "cross-package reasoning becomes simpler because the repository frame is explicit",
         ),
     )
+    body = add_failure_signals(
+        body,
+        (
+            f"`{title}` begins absorbing details that should live in package-local docs",
+            "the page stops naming concrete root assets that support its claims",
+            "reviewers cannot tell whether the page is describing policy, process, or one local implementation",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2238,6 +2296,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "automation intent stays understandable without digging through CI and helpers first",
         ),
     )
+    body = add_failure_signals(
+        body,
+        (
+            f"`{title}` starts reading like product documentation instead of maintainer guidance",
+            "contributors can only discover maintainer behavior by reading scripts or CI output directly",
+            "the page stops making package impact explicit when automation changes",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2613,6 +2679,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "retirement can be discussed from evidence rather than from vague discomfort",
         ),
     )
+    body = add_failure_signals(
+        body,
+        (
+            f"`{title}` spends more time defending legacy names than clarifying migration",
+            "the canonical target is harder to find than the old name",
+            "retirement conversations keep stalling because the remaining need is not described concretely",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2808,6 +2882,7 @@ def render_package_page(
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_decision_rule(body, package_decision_rule(package, category, title))
     body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
+    body = add_failure_signals(body, package_failure_signals(package, category, title))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))

@@ -123,6 +123,12 @@ Keep it aligned with the package structure and known review concerns.
 - the documented module relationships make refactors easier to reason about before code is changed
 - the page shortens code reading by pointing at the right structural hotspots first
 
+## Failure Signals
+
+- `Architecture Risks` points to modules that no longer carry the behavior the page claims they do
+- dependency direction has to be explained with caveats instead of a clean structural story
+- the path from interface to domain to proof no longer feels traceable in one pass
+
 ## Core Claim
 
 The architectural claim of `bijux-canon-runtime` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

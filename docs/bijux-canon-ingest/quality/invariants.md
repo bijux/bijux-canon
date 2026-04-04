@@ -121,6 +121,12 @@ Keep it aligned with invariant-focused tests and documented package guarantees.
 - tests, limitations, and risk language reinforce one another instead of competing
 - the completion bar is demanding enough to prevent shallow acceptance
 
+## Failure Signals
+
+- `Invariants` says the package is protected but cannot show which proof closes which risk
+- reviewers disagree on whether the work is done because the standard is too implicit
+- limitations remain unchanged even when package behavior has obviously shifted
+
 ## Core Claim
 
 The quality claim of `bijux-canon-ingest` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

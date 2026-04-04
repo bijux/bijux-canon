@@ -115,6 +115,12 @@ Keep it aligned with the actual checks we can execute and verify.
 - the page distinguishes repository-health work from runtime product behavior cleanly
 - automation intent stays understandable without digging through CI and helpers first
 
+## Failure Signals
+
+- `Security Gates` starts reading like product documentation instead of maintainer guidance
+- contributors can only discover maintainer behavior by reading scripts or CI output directly
+- the page stops making package impact explicit when automation changes
+
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

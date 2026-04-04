@@ -121,6 +121,12 @@ Update it only when ownership truly moves into or out of `bijux-canon-agent`.
 - the owned and out-of-scope areas read as complementary rather than contradictory
 - neighboring packages become easier to place because this package is clearly bounded
 
+## Failure Signals
+
+- `Scope and Non-Goals` has to explain the same ownership claim with repeated exceptions
+- the out-of-scope list starts looking like shadow ownership instead of a real boundary
+- review conversations keep falling back to package adjacency rather than package intent
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-agent` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

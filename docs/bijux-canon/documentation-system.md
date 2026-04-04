@@ -120,6 +120,12 @@ Keep this page aligned with the actual docs tree and the layout rules enforced b
 - the reader can tell which root assets matter to the topic before opening code
 - cross-package reasoning becomes simpler because the repository frame is explicit
 
+## Failure Signals
+
+- `Documentation System` begins absorbing details that should live in package-local docs
+- the page stops naming concrete root assets that support its claims
+- reviewers cannot tell whether the page is describing policy, process, or one local implementation
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

@@ -119,6 +119,12 @@ Keep it aligned with the package modules and artifacts that currently support di
 - the operational path is explicit enough that incident pressure does not force guesswork
 - release and setup expectations stay aligned with the package metadata and tests
 
+## Failure Signals
+
+- `Observability and Diagnostics` only works if the maintainer already knows unstated steps
+- package metadata, runtime behavior, and operational docs start telling different stories
+- incident handling requires reverse-engineering workflow from code instead of following checked-in guidance
+
 ## Core Claim
 
 The operational claim of `bijux-canon-ingest` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

@@ -172,6 +172,12 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 - the root page reduces orientation cost instead of adding another layer of ambiguity
 - the documentation system feels intentionally divided rather than accidentally scattered
 
+## Failure Signals
+
+- the root page starts sounding like a summary of everything instead of a route to somewhere specific
+- readers still need trial-and-error to find the right handbook branch
+- the distinction between repository, package, maintainer, and compatibility docs becomes blurry again
+
 ## Core Claim
 
 The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.
