@@ -295,7 +295,7 @@ docs-serve:
 	  ROOT_DOCS_CFG="$(CURDIR)/mkdocs.yml" ROOT_DOCS_SHARED_CFG="$(CURDIR)/mkdocs.shared.yml" ROOT_DOCS_SERVE_CFG="$(ROOT_DOCS_SERVE_CFG)" ROOT_DOCS_DEV_ADDR="$(ROOT_DOCS_DEV_ADDR)" ROOT_DOCS_SRC="$(CURDIR)/docs" ROOT_DOCS_SERVE_SITE_DIR="$(ROOT_DOCS_SERVE_SITE_DIR)" \
 	    "$(ROOT_CHECK_PYTHON)" "$$script"; \
 	  echo "==> root docs serve on http://$(ROOT_DOCS_DEV_ADDR)"; \
-	  XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" $(ROOT_DOCS_ENV) \
+	  exec env XDG_CACHE_HOME="$(ROOT_DOCS_CACHE_DIR)" $(ROOT_DOCS_ENV) \
 	    "$(ROOT_CHECK_PYTHON)" -m mkdocs serve --strict \
 	    --config-file "$(ROOT_DOCS_SERVE_CFG)" \
 	    --dev-addr "$(ROOT_DOCS_DEV_ADDR)"
