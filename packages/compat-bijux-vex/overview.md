@@ -1,13 +1,24 @@
 # bijux-vex
 
-`bijux-vex` is a compatibility package that installs `bijux-canon-index`.
-It also preserves the legacy `bijux_vex` Python import surface.
+Use this package only when an existing installation still expects the legacy
+index package name.
 
-Use the canonical package for new installs:
+## What it does
+
+- installs the canonical package `bijux-canon-index`
+- preserves the legacy `bijux_vex` Python import surface
+- preserves the legacy `bijux-vex` command name
+
+## Preferred install for new environments
 
 ```bash
 pip install bijux-canon-index
 ```
 
-The legacy command name `bijux-vex` remains available as an alias after installation.
-The legacy Python import `import bijux_vex` also remains available through this package.
+## Migration guidance
+
+When updating callers, move to:
+
+- distribution: `bijux-canon-index`
+- Python import: `bijux_canon_index`
+- docs entrypoint: `packages/bijux-canon-index/docs/index.md`

@@ -1,20 +1,28 @@
 # bijux-vex
 
-`bijux-vex` is a compatibility package that preserves the legacy distribution,
-CLI, and Python import surface.
+`bijux-vex` is the compatibility package for the old index distribution name.
+Its purpose is to keep legacy installs and imports working while the canonical
+package name is `bijux-canon-index`.
 
-Canonical package:
+## Canonical package
+
 - `bijux-canon-index`
 
-Use this package only when an existing environment still depends on the legacy distribution name. New work should depend on `bijux-canon-index` directly.
+## What this compatibility package preserves
 
-Canonical package links:
+- the legacy distribution name `bijux-vex`
+- the legacy Python import surface `bijux_vex`
+- the legacy command name `bijux-vex`
+
+## What to do for new work
+
+Use `bijux-canon-index` directly:
+
 - package directory: [`../bijux-canon-index`](../bijux-canon-index)
 - package docs: [`../bijux-canon-index/docs/index.md`](../bijux-canon-index/docs/index.md)
 
-Compatibility package contents:
+## Package contents
+
 - [pyproject.toml](pyproject.toml)
 - [hatch_build.py](hatch_build.py)
 - [overview.md](overview.md)
-- `bijux_vex` Python module
-- `bijux-vex` console command
