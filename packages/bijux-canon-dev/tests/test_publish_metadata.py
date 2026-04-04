@@ -346,3 +346,22 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(f"{package_name}: legacy console script should be declared in project.scripts")
 
     assert not failures, "compatibility publication contract failed:\n" + "\n".join(failures)
+
+
+def test_public_release_packages_ship_package_local_publication_guides() -> None:
+    workspace = _workspace_metadata()
+    public_packages = set(workspace["public_release_packages"])
+
+    failures: list[str] = []
+    for package_name in sorted(public_packages):
+        package_root = _package_path(package_name)
+        guide_path = package_root / "docs" / "maintainer" / "pypi.md"
+        if not guide_path.exists():
+            failures.append(f"{package_name}: missing docs/maintainer/pypi.md")
+            continue
+
+        pyproject_text = (package_root / "pyproject.toml").read_text(encoding="utf-8")
+        if "docs/maintainer/pypi.md" not in pyproject_text:
+            failures.append(f"{package_name}: pyproject should ship docs/maintainer/pypi.md")
+
+    assert not failures, "public package publication guides failed:\n" + "\n".join(failures)
