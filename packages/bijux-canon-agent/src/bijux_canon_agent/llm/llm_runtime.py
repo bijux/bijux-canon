@@ -16,12 +16,12 @@ from typing import Any
 import aiohttp
 from aiohttp import ClientResponseError, ClientSession, ClientTimeout
 
+from bijux_canon_agent.core.hashing import prompt_hash
 from bijux_canon_agent.observability.logging import (
     LoggerConfig,
     LoggerManager,
     MetricType,
 )
-from bijux_canon_agent.core.hashing import prompt_hash
 
 
 @dataclass
@@ -90,11 +90,56 @@ class DeepSeekBackend(LLMBackend):
         Returns:
             An LLMResponse object containing the generated content and metadata.
         """
-        headers = {
+        try:
+            async with session.post(
+                self.endpoint,
+                json=self._request_payload(prompt, max_tokens),
+                headers=self._request_headers(),
+            ) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    return self._error_response(
+                        prompt=prompt,
+                        error=f"DeepSeek API request failed: {error_text}",
+                        status=response.status,
+                        action_plan=[
+                            "Verify API key",
+                            "Check endpoint URL",
+                            "Retry after delay",
+                        ],
+                    )
+                data = await response.json()
+                return LLMResponse(
+                    content=data["choices"][0]["message"]["content"].strip(),
+                    metadata=self._response_metadata(prompt=prompt, data=data),
+                )
+        except ClientResponseError as e:
+            return self._error_response(
+                prompt=prompt,
+                error=f"HTTP error: {e!s}",
+                status=e.status,
+                action_plan=[
+                    "Check network connectivity",
+                    "Retry with exponential backoff",
+                ],
+            )
+        except Exception as e:
+            return self._error_response(
+                prompt=prompt,
+                error=f"Unexpected error: {e!s}",
+                action_plan=["Review logs for details", "Retry the request"],
+            )
+
+    def _request_headers(self) -> dict[str, str]:
+        return {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
-        payload = {
+
+    def _request_payload(
+        self, prompt: str, max_tokens: int | None
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": "You are a helpful assistant."},
@@ -104,55 +149,36 @@ class DeepSeekBackend(LLMBackend):
         }
         if max_tokens:
             payload["max_tokens"] = max_tokens
+        return payload
 
-        try:
-            async with session.post(
-                self.endpoint, json=payload, headers=headers
-            ) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    return LLMResponse(
-                        content="",
-                        metadata={
-                            "status": response.status,
-                            "prompt_hash": prompt_hash(prompt),
-                        },
-                        error=f"DeepSeek API request failed: {error_text}",
-                        action_plan=[
-                            "Verify API key",
-                            "Check endpoint URL",
-                            "Retry after delay",
-                        ],
-                    )
-                data = await response.json()
-                content = data["choices"][0]["message"]["content"].strip()
-                metadata = {
-                    "model": self.model,
-                    "temperature": self.temperature,
-                    "usage": data.get("usage", {}),
-                }
-                metadata["prompt_hash"] = prompt_hash(prompt)
-                return LLMResponse(content=content, metadata=metadata)
-        except ClientResponseError as e:
-            return LLMResponse(
-                content="",
-                metadata={
-                    "status": e.status,
-                    "prompt_hash": prompt_hash(prompt),
-                },
-                error=f"HTTP error: {e!s}",
-                action_plan=[
-                    "Check network connectivity",
-                    "Retry with exponential backoff",
-                ],
-            )
-        except Exception as e:
-            return LLMResponse(
-                content="",
-                metadata={"prompt_hash": prompt_hash(prompt)},
-                error=f"Unexpected error: {e!s}",
-                action_plan=["Review logs for details", "Retry the request"],
-            )
+    def _response_metadata(
+        self, *, prompt: str, data: dict[str, Any]
+    ) -> dict[str, Any]:
+        metadata = {
+            "model": self.model,
+            "temperature": self.temperature,
+            "usage": data.get("usage", {}),
+        }
+        metadata["prompt_hash"] = prompt_hash(prompt)
+        return metadata
+
+    def _error_response(
+        self,
+        *,
+        prompt: str,
+        error: str,
+        action_plan: list[str],
+        status: int | None = None,
+    ) -> LLMResponse:
+        metadata: dict[str, Any] = {"prompt_hash": prompt_hash(prompt)}
+        if status is not None:
+            metadata["status"] = status
+        return LLMResponse(
+            content="",
+            metadata=metadata,
+            error=error,
+            action_plan=action_plan,
+        )
 
 
 class LLMUtils:
@@ -283,56 +309,16 @@ class LLMUtils:
 
         for attempt in range(1, self.max_retries + 1):
             try:
-                async with aiohttp.ClientSession(timeout=self.timeout) as session:
-                    start_time = time.time()
-                    response = await self.backend.generate(prompt, max_tokens, session)
-                    duration = time.time() - start_time
-
-                    self.logger_manager.log_metric(
-                        "llm_request_duration",
-                        duration,
-                        MetricType.HISTOGRAM,
-                        tags={"backend": self.backend_name, "attempt": str(attempt)},
+                response, duration = await self._execute_attempt(prompt, max_tokens)
+                if response.error:
+                    await self._handle_failed_attempt(
+                        attempt=attempt,
+                        duration=duration,
+                        error=response.error,
                     )
-                    self.logger_manager.log_metric(
-                        "llm_requests",
-                        1,
-                        MetricType.COUNTER,
-                        tags={"backend": self.backend_name, "status": "success"},
-                    )
-
-                    if response.error:
-                        self.logger.warning(
-                            f"LLM generation failed: {response.error}",
-                            extra={
-                                "context": {"attempt": attempt, "duration": duration}
-                            },
-                        )
-                        self.logger_manager.log_metric(
-                            "llm_request_errors",
-                            1,
-                            MetricType.COUNTER,
-                            tags={
-                                "backend": self.backend_name,
-                                "attempt": str(attempt),
-                            },
-                        )
-                        if attempt == self.max_retries:
-                            raise Exception(f"All retries failed: {response.error}")
-                        await asyncio.sleep(self.retry_delay * (2 ** (attempt - 1)))
-                        continue
-
-                    self.logger.info(
-                        "LLM generation completed",
-                        extra={
-                            "context": {
-                                "stage": "completion",
-                                "duration": duration,
-                                "response_length": len(response.content),
-                            }
-                        },
-                    )
-                    return response.content
+                    continue
+                self._record_success(duration=duration, response=response)
+                return response.content
 
             except Exception as e:
                 self.logger.error(
@@ -347,7 +333,7 @@ class LLMUtils:
                 )
                 if attempt == self.max_retries:
                     raise Exception(f"All retries failed: {e!s}") from e
-                await asyncio.sleep(self.retry_delay * (2 ** (attempt - 1)))
+                await asyncio.sleep(self._retry_backoff(attempt))
 
         raise Exception("Unexpected error: Retry loop exited without result")
 
@@ -428,3 +414,56 @@ class LLMUtils:
         self.logger_manager.log_metric(
             "log_flush", 1, MetricType.COUNTER, tags={"stage": "log_flush"}
         )
+
+    async def _execute_attempt(
+        self, prompt: str, max_tokens: int | None
+    ) -> tuple[LLMResponse, float]:
+        async with aiohttp.ClientSession(timeout=self.timeout) as session:
+            start_time = time.time()
+            response = await self.backend.generate(prompt, max_tokens, session)
+            duration = time.time() - start_time
+        self.logger_manager.log_metric(
+            "llm_request_duration",
+            duration,
+            MetricType.HISTOGRAM,
+            tags={"backend": self.backend_name},
+        )
+        return response, duration
+
+    async def _handle_failed_attempt(
+        self, *, attempt: int, duration: float, error: str
+    ) -> None:
+        self.logger.warning(
+            f"LLM generation failed: {error}",
+            extra={"context": {"attempt": attempt, "duration": duration}},
+        )
+        self.logger_manager.log_metric(
+            "llm_request_errors",
+            1,
+            MetricType.COUNTER,
+            tags={"backend": self.backend_name, "attempt": str(attempt)},
+        )
+        if attempt == self.max_retries:
+            raise Exception(f"All retries failed: {error}")
+        await asyncio.sleep(self._retry_backoff(attempt))
+
+    def _record_success(self, *, duration: float, response: LLMResponse) -> None:
+        self.logger_manager.log_metric(
+            "llm_requests",
+            1,
+            MetricType.COUNTER,
+            tags={"backend": self.backend_name, "status": "success"},
+        )
+        self.logger.info(
+            "LLM generation completed",
+            extra={
+                "context": {
+                    "stage": "completion",
+                    "duration": duration,
+                    "response_length": len(response.content),
+                }
+            },
+        )
+
+    def _retry_backoff(self, attempt: int) -> float:
+        return self.retry_delay * (2 ** (attempt - 1))
