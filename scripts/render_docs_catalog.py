@@ -640,29 +640,29 @@ def package_page_questions(
 ) -> tuple[str, ...]:
     question_map = {
         "foundation": (
-            f"what {package.title} is expected to own",
-            "what remains outside the package boundary",
-            "which neighboring seams a reviewer should compare next",
+            f"what problem `{package.title}` is supposed to own on purpose",
+            "where the package boundary stops, even when nearby code looks tempting",
+            "which neighboring package seams deserve comparison before the boundary is changed",
         ),
         "architecture": (
-            f"how {package.title} is structured internally",
-            "which modules control the main execution path",
-            "where architectural drift would become visible first",
+            f"how `{package.title}` is organized internally in terms a reviewer can follow",
+            "which modules carry the main execution and dependency story",
+            "where structural drift would show up before it becomes expensive",
         ),
         "interfaces": (
-            f"which public or operator-facing surfaces {package.title} exposes",
-            "which artifacts and schemas act like contracts",
-            "what compatibility pressure this surface creates",
+            f"which public or operator-facing surfaces `{package.title}` is really asking readers to trust",
+            "which schemas, artifacts, imports, or commands behave like contracts",
+            "what compatibility pressure a change to this surface would create",
         ),
         "operations": (
-            f"how {package.title} is installed, run, diagnosed, and released",
-            "which files or tests matter during package operation",
-            "where an operator should look when behavior changes",
+            f"how `{package.title}` is installed, run, diagnosed, and released in practice",
+            "which checked-in files and tests anchor the operational story",
+            "where a maintainer should look first when the package behaves differently",
         ),
         "quality": (
-            f"what proves the {package.title} contract today",
-            "which risks or limits still need explicit review",
-            "what a reviewer should verify before accepting change",
+            f"what currently proves the `{package.title}` contract instead of merely describing it",
+            "which risks, limits, and assumptions still need explicit skepticism",
+            "what a reviewer should be able to say before accepting a change as done",
         ),
     }
     return question_map[category]
@@ -674,29 +674,29 @@ def package_page_reader_fit(
 ) -> tuple[str, ...]:
     fit_map = {
         "foundation": (
-            "you need the package boundary before reading implementation detail",
-            "you are deciding whether work belongs in this package or a neighboring one",
-            "you need the shortest stable description of package intent",
+            "you need the package idea before the implementation detail",
+            "you are deciding whether work belongs here or in a neighboring package",
+            "you want the shortest honest explanation of what this package is for",
         ),
         "architecture": (
-            "you are tracing internal structure or execution flow",
-            "you need to understand where modules fit before refactoring",
-            "you are reviewing architectural drift instead of one local bug",
+            "you are tracing structure, execution flow, or dependency pressure",
+            "you need to understand how modules fit before refactoring",
+            "you are reviewing design drift rather than one isolated bug",
         ),
         "interfaces": (
-            "you need the public command, API, import, or artifact surface",
-            "you are checking whether a caller can rely on a given shape or entrypoint",
-            "you need the contract-facing side of the package before using it",
+            "you need the public command, API, import, schema, or artifact surface",
+            "you are checking whether a caller can safely rely on a given entrypoint or shape",
+            "you want the contract-facing side of the package before building on it",
         ),
         "operations": (
             "you are installing, running, diagnosing, or releasing the package",
-            "you need operational anchors rather than conceptual framing",
-            "you are responding to package behavior in a local or CI environment",
+            "you need repeatable operational anchors rather than architectural framing",
+            "you are responding to package behavior in local work, CI, or incident pressure",
         ),
         "quality": (
-            "you are reviewing tests, invariants, limitations, or risk",
-            "you need evidence that the documented contract is actually protected",
-            "you are deciding whether a change is done rather than merely implemented",
+            "you are reviewing tests, invariants, limitations, or ongoing risks",
+            "you need evidence that the documented contract is actually defended",
+            "you are deciding whether a change is truly done rather than merely implemented",
         ),
     }
     return fit_map[category]
@@ -708,29 +708,29 @@ def package_page_reviewer_lens(
 ) -> tuple[str, ...]:
     lens_map = {
         "foundation": (
-            "compare the stated package boundary with the owned modules and tests",
-            "check that out-of-scope work is not quietly reintroduced through adjacent packages",
-            "confirm that the package description still matches the real repository layout",
+            "compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it",
+            "check that out-of-scope behavior is not quietly re-entering through convenience paths",
+            "confirm that the package story still matches the real repository layout and neighboring package docs",
         ),
         "architecture": (
-            "trace the claimed execution path through the listed modules",
-            "look for dependency direction that now contradicts the documented seam",
-            "verify that architectural risks still match the current code structure",
+            "trace the described execution path through the named modules instead of trusting the diagram alone",
+            "look for dependency direction or layering that now contradicts the documented seam",
+            "verify that the structural risks named here still match the current code shape",
         ),
         "interfaces": (
-            "compare commands, API files, imports, and artifacts against the documented surface",
-            "check whether schema or artifact changes need compatibility review",
-            "confirm that operator-facing examples still point at real entrypoints",
+            "compare commands, schemas, imports, and artifacts against the documented surface one by one",
+            "check whether a seemingly local change actually needs compatibility review",
+            "confirm that examples still point to real entrypoints and not to stale habits",
         ),
         "operations": (
-            "verify that setup, workflow, and release references still match package metadata",
-            "check that operational docs point at current diagnostics and validation paths",
-            "confirm that release-facing claims match the package's actual versioning files",
+            "verify that setup, workflow, and release statements still match package metadata and current commands",
+            "check that operational guidance still points at real diagnostics and validation paths",
+            "confirm that maintainer advice still works under current local and CI expectations",
         ),
         "quality": (
-            "compare the documented proof strategy with the current test layout",
-            "look for limitations or risks that should have been updated by recent changes",
-            "verify that the page's definition of done still reflects real validation practice",
+            "compare the documented proof story with the actual test layout and release posture",
+            "look for limitations or risks that should have moved with recent behavior changes",
+            "verify that the claimed done-ness standard still reflects real validation practice",
         ),
     }
     return lens_map[category]
@@ -1037,28 +1037,28 @@ def package_working_interpretation(package: PackageInfo, category: str) -> str:
     interpretation_map = {
         "foundation": (
             f"Read the {category} pages for `{package.title}` as the package's durable"
-            " self-description: they should explain the package in terms that remain"
-            " intelligible even after ordinary refactors."
+            " self-description. They should let a reader understand the package without"
+            " needing to reconstruct its purpose from recent implementation history."
         ),
         "architecture": (
             f"Read the {category} pages for `{package.title}` as a reviewer-facing map"
-            " of structure and flow: they should be detailed enough to shorten code"
-            " reading without pretending to replace it."
+            " of structure and flow. They should shorten code reading, not try to replace"
+            " it, and they should make drift visible before it becomes surprising."
         ),
         "interfaces": (
             f"Read the {category} pages for `{package.title}` as the bridge between"
-            " implementation and caller expectations: they should make public surfaces"
-            " legible before a downstream dependency is formed."
+            " implementation and caller expectation. They should tell a reader what the"
+            " package is prepared to stand behind before a downstream dependency forms."
         ),
         "operations": (
             f"Read the {category} pages for `{package.title}` as the package's explicit"
-            " operating memory: they should make common tasks repeatable for a maintainer"
-            " who does not want to recover the workflow from scratch."
+            " operating memory. They should make common tasks repeatable without forcing"
+            " maintainers to relearn the workflow from code, CI logs, or oral history."
         ),
         "quality": (
             f"Read the {category} pages for `{package.title}` as the proof frame around"
-            " the package: they should explain how trust is earned, defended, and revised"
-            " after change."
+            " the package. They should explain how trust is earned, how risk stays"
+            " visible, and why a passing local check is not always enough."
         ),
     }
     return interpretation_map[category]
@@ -1067,24 +1067,24 @@ def package_working_interpretation(package: PackageInfo, category: str) -> str:
 def package_decision_rule(package: PackageInfo, category: str, title: str) -> str:
     rule_map = {
         "foundation": (
-            f"Use `{title}` to decide whether a change clarifies or blurs `{package.title}` as a bounded package. "
-            "If the work expands package authority without a cleaner ownership story, the default answer should be to stop and re-check the boundary before implementation continues."
+            f"Use `{title}` to decide whether a change makes `{package.title}` easier or harder to defend as a bounded package. "
+            "If the work expands package authority without making ownership clearer, stop and re-check the boundary before treating the change as a local improvement."
         ),
         "architecture": (
             f"Use `{title}` to decide whether a structural change makes `{package.title}` easier or harder to explain in terms of modules, dependency direction, and execution flow. "
-            "If the change only works because the architecture becomes less legible, the page should push the reviewer toward redesign rather than acceptance."
+            "If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance."
         ),
         "interfaces": (
-            f"Use `{title}` to decide whether a caller-facing surface is explicit enough to be depended on. "
-            "If the surface cannot be tied back to concrete code, schemas, artifacts, and tests, it should be treated as unstable until that evidence exists."
+            f"Use `{title}` to decide whether a caller-facing surface is explicit enough to depend on. "
+            "If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible."
         ),
         "operations": (
             f"Use `{title}` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. "
-            "If a step only works when tribal knowledge fills the gap, the page should drive the reviewer back toward clearer operational documentation or simpler behavior."
+            "If a step works only because someone already knows the trick, the workflow is not documented clearly enough yet."
         ),
         "quality": (
             f"Use `{title}` to decide whether `{package.title}` has actually earned trust after a change. "
-            "If the package passes one narrow check but leaves the wider contract, risk, or validation story unclear, the correct answer is that the work is not done yet."
+            "If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet."
         ),
     }
     return rule_map[category]

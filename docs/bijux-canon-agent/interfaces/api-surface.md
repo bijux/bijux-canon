@@ -16,7 +16,7 @@ The goal of this page is clarity before code-reading. A reviewer should be able
 to see which API assets matter, where they live, and why a caller would treat
 them as stable enough to depend on.
 
-Read the interfaces pages for `bijux-canon-agent` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+Read the interfaces pages for `bijux-canon-agent` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
 
 ## Page Maps
 
@@ -74,13 +74,13 @@ flowchart TD
 
 ## Use This Page When
 
-- you need the public command, API, import, or artifact surface
-- you are checking whether a caller can rely on a given shape or entrypoint
-- you need the contract-facing side of the package before using it
+- you need the public command, API, import, schema, or artifact surface
+- you are checking whether a caller can safely rely on a given entrypoint or shape
+- you want the contract-facing side of the package before building on it
 
 ## Decision Rule
 
-Use `API Surface` to decide whether a caller-facing surface is explicit enough to be depended on. If the surface cannot be tied back to concrete code, schemas, artifacts, and tests, it should be treated as unstable until that evidence exists.
+Use `API Surface` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
 
 ## Next Checks
 
@@ -96,15 +96,15 @@ Use `API Surface` to decide whether a caller-facing surface is explicit enough t
 
 ## What This Page Answers
 
-- which public or operator-facing surfaces bijux-canon-agent exposes
-- which artifacts and schemas act like contracts
-- what compatibility pressure this surface creates
+- which public or operator-facing surfaces `bijux-canon-agent` is really asking readers to trust
+- which schemas, artifacts, imports, or commands behave like contracts
+- what compatibility pressure a change to this surface would create
 
 ## Reviewer Lens
 
-- compare commands, API files, imports, and artifacts against the documented surface
-- check whether schema or artifact changes need compatibility review
-- confirm that operator-facing examples still point at real entrypoints
+- compare commands, schemas, imports, and artifacts against the documented surface one by one
+- check whether a seemingly local change actually needs compatibility review
+- confirm that examples still point to real entrypoints and not to stale habits
 
 ## Honesty Boundary
 

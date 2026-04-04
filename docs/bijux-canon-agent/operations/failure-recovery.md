@@ -15,7 +15,7 @@ This page should help a maintainer stabilize the situation before they try to
 improve it. The first question is not always how to fix the bug; it is how to
 locate the right evidence quickly.
 
-Read the operations pages for `bijux-canon-agent` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+Read the operations pages for `bijux-canon-agent` as the package's explicit operating memory. They should make common tasks repeatable without forcing maintainers to relearn the workflow from code, CI logs, or oral history.
 
 ## Page Maps
 
@@ -69,12 +69,12 @@ flowchart TD
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package
-- you need operational anchors rather than conceptual framing
-- you are responding to package behavior in a local or CI environment
+- you need repeatable operational anchors rather than architectural framing
+- you are responding to package behavior in local work, CI, or incident pressure
 
 ## Decision Rule
 
-Use `Failure Recovery` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. If a step only works when tribal knowledge fills the gap, the page should drive the reviewer back toward clearer operational documentation or simpler behavior.
+Use `Failure Recovery` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. If a step works only because someone already knows the trick, the workflow is not documented clearly enough yet.
 
 ## Next Checks
 
@@ -90,15 +90,15 @@ Use `Failure Recovery` to decide whether a maintainer can repeat the package wor
 
 ## What This Page Answers
 
-- how bijux-canon-agent is installed, run, diagnosed, and released
-- which files or tests matter during package operation
-- where an operator should look when behavior changes
+- how `bijux-canon-agent` is installed, run, diagnosed, and released in practice
+- which checked-in files and tests anchor the operational story
+- where a maintainer should look first when the package behaves differently
 
 ## Reviewer Lens
 
-- verify that setup, workflow, and release references still match package metadata
-- check that operational docs point at current diagnostics and validation paths
-- confirm that release-facing claims match the package's actual versioning files
+- verify that setup, workflow, and release statements still match package metadata and current commands
+- check that operational guidance still points at real diagnostics and validation paths
+- confirm that maintainer advice still works under current local and CI expectations
 
 ## Honesty Boundary
 

@@ -16,7 +16,7 @@ This page should keep dependency review from feeling bureaucratic. Dependencies
 matter because they reshape what the package relies on, what it exposes, and
 what downstream maintainers must now trust.
 
-Read the quality pages for `bijux-canon-index` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
+Read the quality pages for `bijux-canon-index` as the proof frame around the package. They should explain how trust is earned, how risk stays visible, and why a passing local check is not always enough.
 
 ## Page Maps
 
@@ -69,13 +69,13 @@ flowchart TD
 
 ## Use This Page When
 
-- you are reviewing tests, invariants, limitations, or risk
-- you need evidence that the documented contract is actually protected
-- you are deciding whether a change is done rather than merely implemented
+- you are reviewing tests, invariants, limitations, or ongoing risks
+- you need evidence that the documented contract is actually defended
+- you are deciding whether a change is truly done rather than merely implemented
 
 ## Decision Rule
 
-Use `Dependency Governance` to decide whether `bijux-canon-index` has actually earned trust after a change. If the package passes one narrow check but leaves the wider contract, risk, or validation story unclear, the correct answer is that the work is not done yet.
+Use `Dependency Governance` to decide whether `bijux-canon-index` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
 
 ## Next Checks
 
@@ -91,15 +91,15 @@ Use `Dependency Governance` to decide whether `bijux-canon-index` has actually e
 
 ## What This Page Answers
 
-- what proves the bijux-canon-index contract today
-- which risks or limits still need explicit review
-- what a reviewer should verify before accepting change
+- what currently proves the `bijux-canon-index` contract instead of merely describing it
+- which risks, limits, and assumptions still need explicit skepticism
+- what a reviewer should be able to say before accepting a change as done
 
 ## Reviewer Lens
 
-- compare the documented proof strategy with the current test layout
-- look for limitations or risks that should have been updated by recent changes
-- verify that the page's definition of done still reflects real validation practice
+- compare the documented proof story with the actual test layout and release posture
+- look for limitations or risks that should have moved with recent behavior changes
+- verify that the claimed done-ness standard still reflects real validation practice
 
 ## Honesty Boundary
 

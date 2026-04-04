@@ -17,7 +17,7 @@ together.
 This page is here to answer a simple but important question: why is this work a
 package at all, instead of just another folder inside a single giant project?
 
-Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
 
 ## Page Maps
 
@@ -75,13 +75,13 @@ flowchart TD
 
 ## Use This Page When
 
-- you need the package boundary before reading implementation detail
-- you are deciding whether work belongs in this package or a neighboring one
-- you need the shortest stable description of package intent
+- you need the package idea before the implementation detail
+- you are deciding whether work belongs here or in a neighboring package
+- you want the shortest honest explanation of what this package is for
 
 ## Decision Rule
 
-Use `Repository Fit` to decide whether a change clarifies or blurs `bijux-canon-ingest` as a bounded package. If the work expands package authority without a cleaner ownership story, the default answer should be to stop and re-check the boundary before implementation continues.
+Use `Repository Fit` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as a bounded package. If the work expands package authority without making ownership clearer, stop and re-check the boundary before treating the change as a local improvement.
 
 ## Next Checks
 
@@ -97,15 +97,15 @@ Use `Repository Fit` to decide whether a change clarifies or blurs `bijux-canon-
 
 ## What This Page Answers
 
-- what bijux-canon-ingest is expected to own
-- what remains outside the package boundary
-- which neighboring seams a reviewer should compare next
+- what problem `bijux-canon-ingest` is supposed to own on purpose
+- where the package boundary stops, even when nearby code looks tempting
+- which neighboring package seams deserve comparison before the boundary is changed
 
 ## Reviewer Lens
 
-- compare the stated package boundary with the owned modules and tests
-- check that out-of-scope work is not quietly reintroduced through adjacent packages
-- confirm that the package description still matches the real repository layout
+- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
+- check that out-of-scope behavior is not quietly re-entering through convenience paths
+- confirm that the package story still matches the real repository layout and neighboring package docs
 
 ## Honesty Boundary
 

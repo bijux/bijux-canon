@@ -16,7 +16,7 @@ Good error explanations reduce two kinds of waste at once: operator confusion in
 the moment and architectural confusion during later review. The package should
 fail in ways that still preserve the boundary story.
 
-Read the architecture pages for `bijux-canon-runtime` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
+Read the architecture pages for `bijux-canon-runtime` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it, and they should make drift visible before it becomes surprising.
 
 ## Page Maps
 
@@ -76,13 +76,13 @@ flowchart TD
 
 ## Use This Page When
 
-- you are tracing internal structure or execution flow
-- you need to understand where modules fit before refactoring
-- you are reviewing architectural drift instead of one local bug
+- you are tracing structure, execution flow, or dependency pressure
+- you need to understand how modules fit before refactoring
+- you are reviewing design drift rather than one isolated bug
 
 ## Decision Rule
 
-Use `Error Model` to decide whether a structural change makes `bijux-canon-runtime` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change only works because the architecture becomes less legible, the page should push the reviewer toward redesign rather than acceptance.
+Use `Error Model` to decide whether a structural change makes `bijux-canon-runtime` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
 
 ## Next Checks
 
@@ -98,15 +98,15 @@ Use `Error Model` to decide whether a structural change makes `bijux-canon-runti
 
 ## What This Page Answers
 
-- how bijux-canon-runtime is structured internally
-- which modules control the main execution path
-- where architectural drift would become visible first
+- how `bijux-canon-runtime` is organized internally in terms a reviewer can follow
+- which modules carry the main execution and dependency story
+- where structural drift would show up before it becomes expensive
 
 ## Reviewer Lens
 
-- trace the claimed execution path through the listed modules
-- look for dependency direction that now contradicts the documented seam
-- verify that architectural risks still match the current code structure
+- trace the described execution path through the named modules instead of trusting the diagram alone
+- look for dependency direction or layering that now contradicts the documented seam
+- verify that the structural risks named here still match the current code shape
 
 ## Honesty Boundary
 

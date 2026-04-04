@@ -13,7 +13,7 @@ Start the bijux-canon-runtime handbook here when you need the package in one hon
 
 These pages establish the durable idea of `bijux-canon-runtime`. A reader should be able to skim this section and understand why the package exists, what neighboring packages should not assume about it, and which claims are worth defending during review.
 
-Read the foundation pages for `bijux-canon-runtime` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+Read the foundation pages for `bijux-canon-runtime` as the package's durable self-description. They should let a reader understand the package without needing to reconstruct its purpose from recent implementation history.
 
 ## Page Maps
 
@@ -79,13 +79,13 @@ flowchart TD
 
 ## Use This Page When
 
-- you need the package boundary before reading implementation detail
-- you are deciding whether work belongs in this package or a neighboring one
-- you need the shortest stable description of package intent
+- you need the package idea before the implementation detail
+- you are deciding whether work belongs here or in a neighboring package
+- you want the shortest honest explanation of what this package is for
 
 ## Decision Rule
 
-Use `Foundation` to decide whether a change clarifies or blurs `bijux-canon-runtime` as a bounded package. If the work expands package authority without a cleaner ownership story, the default answer should be to stop and re-check the boundary before implementation continues.
+Use `Foundation` to decide whether a change makes `bijux-canon-runtime` easier or harder to defend as a bounded package. If the work expands package authority without making ownership clearer, stop and re-check the boundary before treating the change as a local improvement.
 
 ## Next Checks
 
@@ -101,15 +101,15 @@ Use `Foundation` to decide whether a change clarifies or blurs `bijux-canon-runt
 
 ## What This Page Answers
 
-- what bijux-canon-runtime is expected to own
-- what remains outside the package boundary
-- which neighboring seams a reviewer should compare next
+- what problem `bijux-canon-runtime` is supposed to own on purpose
+- where the package boundary stops, even when nearby code looks tempting
+- which neighboring package seams deserve comparison before the boundary is changed
 
 ## Reviewer Lens
 
-- compare the stated package boundary with the owned modules and tests
-- check that out-of-scope work is not quietly reintroduced through adjacent packages
-- confirm that the package description still matches the real repository layout
+- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
+- check that out-of-scope behavior is not quietly re-entering through convenience paths
+- confirm that the package story still matches the real repository layout and neighboring package docs
 
 ## Honesty Boundary
 

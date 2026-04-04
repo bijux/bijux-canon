@@ -16,7 +16,7 @@ When configuration is documented well, maintainers can tell which behavior is
 meant to vary without editing code. When it is documented poorly, package
 behavior starts to feel magical or fragile.
 
-Read the interfaces pages for `bijux-canon-ingest` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+Read the interfaces pages for `bijux-canon-ingest` as the bridge between implementation and caller expectation. They should tell a reader what the package is prepared to stand behind before a downstream dependency forms.
 
 ## Page Maps
 
@@ -74,13 +74,13 @@ Configuration changes should update the operator docs, schema docs, and tests th
 
 ## Use This Page When
 
-- you need the public command, API, import, or artifact surface
-- you are checking whether a caller can rely on a given shape or entrypoint
-- you need the contract-facing side of the package before using it
+- you need the public command, API, import, schema, or artifact surface
+- you are checking whether a caller can safely rely on a given entrypoint or shape
+- you want the contract-facing side of the package before building on it
 
 ## Decision Rule
 
-Use `Configuration Surface` to decide whether a caller-facing surface is explicit enough to be depended on. If the surface cannot be tied back to concrete code, schemas, artifacts, and tests, it should be treated as unstable until that evidence exists.
+Use `Configuration Surface` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
 
 ## Next Checks
 
@@ -96,15 +96,15 @@ Use `Configuration Surface` to decide whether a caller-facing surface is explici
 
 ## What This Page Answers
 
-- which public or operator-facing surfaces bijux-canon-ingest exposes
-- which artifacts and schemas act like contracts
-- what compatibility pressure this surface creates
+- which public or operator-facing surfaces `bijux-canon-ingest` is really asking readers to trust
+- which schemas, artifacts, imports, or commands behave like contracts
+- what compatibility pressure a change to this surface would create
 
 ## Reviewer Lens
 
-- compare commands, API files, imports, and artifacts against the documented surface
-- check whether schema or artifact changes need compatibility review
-- confirm that operator-facing examples still point at real entrypoints
+- compare commands, schemas, imports, and artifacts against the documented surface one by one
+- check whether a seemingly local change actually needs compatibility review
+- confirm that examples still point to real entrypoints and not to stale habits
 
 ## Honesty Boundary
 
