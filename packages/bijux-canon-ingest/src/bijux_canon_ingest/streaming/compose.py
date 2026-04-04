@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Composable iterator stages and demand fencing (Bijux RAG)."""
+"""Composable iterator stages and demand fencing."""
 
 from __future__ import annotations
 

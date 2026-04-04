@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Observation-only helpers for streams (Bijux RAG).
+"""Observation-only helpers for streams.
 
 These helpers are intentionally sync and side-effect oriented: they let you
 observe streams (logging/metrics/snapshots) without changing the yielded values.

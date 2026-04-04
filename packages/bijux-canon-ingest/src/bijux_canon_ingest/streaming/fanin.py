@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Fan-in helpers for multiple streaming sources (Bijux RAG)."""
+"""Fan-in helpers for multiple streaming sources."""
 
 from __future__ import annotations
 

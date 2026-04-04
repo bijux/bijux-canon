@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Sampling helpers for streams (Bijux RAG)."""
+"""Sampling helpers for streams."""
 
 from __future__ import annotations
 

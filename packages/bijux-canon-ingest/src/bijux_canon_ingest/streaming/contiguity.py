@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Guards for safe `itertools.groupby` usage (Bijux RAG)."""
+"""Guards for safe `itertools.groupby` usage."""
 
 from __future__ import annotations
 

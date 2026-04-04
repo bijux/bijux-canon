@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Fan-out helpers for splitting streams (Bijux RAG, end-of-Bijux RAG)."""
+"""Fan-out helpers for splitting streams."""
 
 from __future__ import annotations
 

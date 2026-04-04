@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Stack-safe, fully-lazy traversal of TreeDoc (end-of-Bijux RAG)."""
+"""Stack-safe, fully lazy traversal of `TreeDoc`."""
 
 from __future__ import annotations
 

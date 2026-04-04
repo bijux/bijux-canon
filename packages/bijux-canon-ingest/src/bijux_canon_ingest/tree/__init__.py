@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: tree-safe recursion tools (end-of-Bijux RAG).
+"""Tree-safe recursion tools.
 
 Public surface:
 - Stack-safe preorder traversal (`flatten`, `iter_flatten_buffered`)

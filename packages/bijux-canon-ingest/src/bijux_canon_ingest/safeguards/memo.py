@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Memoization and caching for pure functions (end-of-Bijux RAG)."""
+"""Memoization and caching helpers for pure functions."""
 
 from __future__ import annotations
 

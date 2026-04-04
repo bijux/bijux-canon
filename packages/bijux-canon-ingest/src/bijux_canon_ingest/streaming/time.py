@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Time-aware pacing stages (Bijux RAG, sync-only; end-of-Bijux RAG).
+"""Time-aware pacing stages for synchronous stream processing.
 
 These helpers accept injected `clock` and `sleeper` callables to make timing
-deterministic and testable. In Bijux RAG they are synchronous and may block
-when used with `time.sleep`. Async variants are intentionally deferred.
+deterministic and testable. These helpers may block when used with
+`time.sleep`. Async variants are intentionally deferred.
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Tree folds and scans as safe recursion (end-of-Bijux RAG)."""
+"""Tree folds and scans as safe recursion."""
 
 from __future__ import annotations
 

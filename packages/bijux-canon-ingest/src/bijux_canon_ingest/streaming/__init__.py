@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: generic, domain-agnostic streaming utilities.
+"""Generic, domain-agnostic streaming utilities.
 
-This package groups the Bijux RAG helpers by responsibility:
+This package groups streaming helpers by responsibility:
 - composition / fencing
 - fan-in / fan-out
 - observability / sampling
@@ -64,7 +64,7 @@ __all__ = [
     "make_sampler_bernoulli",
     "make_sampler_periodic",
     "make_sampler_stable",
-    # time-aware pacing (sync-only in Bijux RAG)
+    # time-aware pacing
     "make_throttle",
     "throttle",
     "make_rate_limit",

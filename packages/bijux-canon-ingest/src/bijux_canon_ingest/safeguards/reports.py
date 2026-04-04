@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Structured error reports from Result streams (end-of-Bijux RAG)."""
+"""Structured error reports from Result streams."""
 
 from __future__ import annotations
 

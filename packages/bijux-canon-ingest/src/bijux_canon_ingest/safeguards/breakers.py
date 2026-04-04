@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Short-circuiting and circuit breakers for Result streams (end-of-Bijux RAG)."""
+"""Short-circuiting and circuit breakers for Result streams."""
 
 from __future__ import annotations
 
