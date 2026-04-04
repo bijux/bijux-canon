@@ -55,6 +55,12 @@ flowchart TD
 - code ownership: src/bijux_canon_runtime/model, src/bijux_canon_runtime/runtime, src/bijux_canon_runtime/application
 - durable outputs: execution store records, replay decision artifacts, non-determinism policy evaluations
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-runtime is expected to own

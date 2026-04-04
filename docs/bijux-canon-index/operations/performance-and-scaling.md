@@ -61,6 +61,12 @@ flowchart TD
 - tests/conformance and tests/compat_v01 for compatibility behavior
 - tests/stress and tests/scenarios for operational pressure checks
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-index is installed, run, diagnosed, and released

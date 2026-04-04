@@ -61,6 +61,12 @@ flowchart TD
 - [bijux-canon-dev](../bijux-canon-dev/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
 - [compatibility packages](../compat-packages/index.md) for legacy distribution and import preservation
 
+## Use This Page When
+
+- you are dealing with repository-wide seams rather than one package alone
+- you need shared workflow, schema, or governance context before changing code
+- you want the monorepo view that sits above the package handbooks
+
 ## What This Page Answers
 
 - which repository-level decision this page clarifies

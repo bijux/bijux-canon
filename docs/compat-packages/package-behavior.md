@@ -56,6 +56,12 @@ flowchart TD
 - avoid becoming an independent product surface
 - defer real behavior to the canonical package
 
+## Use This Page When
+
+- you are tracing a legacy package name back to its canonical replacement
+- you need migration guidance rather than product implementation detail
+- you are deciding whether a compatibility surface still deserves to exist
+
 ## What This Page Answers
 
 - which legacy surface is still preserved

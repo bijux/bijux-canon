@@ -668,6 +668,53 @@ def package_page_questions(
     return question_map[category]
 
 
+def package_page_reader_fit(
+    package: PackageInfo,
+    category: str,
+) -> tuple[str, ...]:
+    fit_map = {
+        "foundation": (
+            "you need the package boundary before reading implementation detail",
+            "you are deciding whether work belongs in this package or a neighboring one",
+            "you need the shortest stable description of package intent",
+        ),
+        "architecture": (
+            "you are tracing internal structure or execution flow",
+            "you need to understand where modules fit before refactoring",
+            "you are reviewing architectural drift instead of one local bug",
+        ),
+        "interfaces": (
+            "you need the public command, API, import, or artifact surface",
+            "you are checking whether a caller can rely on a given shape or entrypoint",
+            "you need the contract-facing side of the package before using it",
+        ),
+        "operations": (
+            "you are installing, running, diagnosing, or releasing the package",
+            "you need operational anchors rather than conceptual framing",
+            "you are responding to package behavior in a local or CI environment",
+        ),
+        "quality": (
+            "you are reviewing tests, invariants, limitations, or risk",
+            "you need evidence that the documented contract is actually protected",
+            "you are deciding whether a change is done rather than merely implemented",
+        ),
+    }
+    return fit_map[category]
+
+
+def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Use This Page When",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    if "## What This Page Answers" in body:
+        return insert_before_heading(body, "What This Page Answers", block)
+    return insert_before_heading(body, "Purpose", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -745,6 +792,14 @@ def render_home(
             ("Repository", ("shared rules", "workspace scope")),
             ("Packages", ("five product handbooks", "stable package spine")),
             ("Maintenance", ("dev handbook", "compatibility handbook")),
+        ),
+    )
+    body = add_reader_fit_section(
+        body,
+        (
+            "you are orienting yourself before opening a repository, package, maintainer, or compatibility page",
+            "you need the fastest route to the correct handbook section",
+            "you are reviewing whether the current docs system covers the right surfaces",
         ),
     )
     body = add_question_section(
@@ -1076,6 +1131,14 @@ def render_root_page(
             ("Review outputs", ("clear decisions", "stable docs")),
         ),
     )
+    body = add_reader_fit_section(
+        body,
+        (
+            "you are dealing with repository-wide seams rather than one package alone",
+            "you need shared workflow, schema, or governance context before changing code",
+            "you want the monorepo view that sits above the package handbooks",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -1344,6 +1407,14 @@ def render_dev_page(slug: str, title: str) -> str:
             ("Operational outcome", ("release clarity", "package consistency")),
         ),
     )
+    body = add_reader_fit_section(
+        body,
+        (
+            "you are changing repository automation, validation, or release support",
+            "you need maintainer-only context that should not live in product package docs",
+            "you are reviewing CI, schema drift, or supply-chain behavior",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -1606,6 +1677,14 @@ def render_compat_page(slug: str, title: str) -> str:
             ("Decision pressure", ("migration", "retirement")),
         ),
     )
+    body = add_reader_fit_section(
+        body,
+        (
+            "you are tracing a legacy package name back to its canonical replacement",
+            "you need migration guidance rather than product implementation detail",
+            "you are deciding whether a compatibility surface still deserves to exist",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -1708,6 +1787,7 @@ def render_package_page(
             ),
         ),
     )
+    body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     return "\n".join(
         [

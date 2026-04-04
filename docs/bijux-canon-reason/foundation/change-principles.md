@@ -54,6 +54,12 @@ flowchart TD
 - update docs and tests in the same change series that changes package behavior
 - keep names stable and descriptive enough to survive years of maintenance
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-reason is expected to own

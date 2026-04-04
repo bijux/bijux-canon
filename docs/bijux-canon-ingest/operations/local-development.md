@@ -56,6 +56,12 @@ flowchart TD
 - tests/invariants for long-lived repository promises
 - tests/eval for corpus-backed behavior checks
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-ingest is installed, run, diagnosed, and released

@@ -54,6 +54,12 @@ flowchart TD
 A compatibility command should only exist when the canonical package still
 provides a meaningful route behind it.
 
+## Use This Page When
+
+- you are tracing a legacy package name back to its canonical replacement
+- you need migration guidance rather than product implementation detail
+- you are deciding whether a compatibility surface still deserves to exist
+
 ## What This Page Answers
 
 - which legacy surface is still preserved

@@ -53,6 +53,12 @@ flowchart TD
 - canonical command: `bijux-canon-ingest`
 - interface modules: CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py, HTTP boundaries under src/bijux_canon_ingest/interfaces, configuration modules under src/bijux_canon_ingest/config
 
+## Use This Page When
+
+- you need the public command, API, import, or artifact surface
+- you are checking whether a caller can rely on a given shape or entrypoint
+- you need the contract-facing side of the package before using it
+
 ## What This Page Answers
 
 - which public or operator-facing surfaces bijux-canon-ingest exposes

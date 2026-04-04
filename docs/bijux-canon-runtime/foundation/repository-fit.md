@@ -60,6 +60,12 @@ flowchart TD
 - `packages/bijux-canon-runtime/src/bijux_canon_runtime`
 - `packages/bijux-canon-runtime/tests`
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-runtime is expected to own

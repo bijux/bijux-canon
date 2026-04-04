@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 - tests to run: tests/unit for API, application, contracts, domain, infra, and tooling, tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-index is installed, run, diagnosed, and released

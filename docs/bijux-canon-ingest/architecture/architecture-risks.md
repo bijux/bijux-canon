@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_ingest/interfaces` for CLI and HTTP boundaries
 - `src/bijux_canon_ingest/safeguards` for protective rules for ingest behavior
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-ingest is structured internally

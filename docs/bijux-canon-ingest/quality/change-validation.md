@@ -61,6 +61,12 @@ flowchart TD
 - tests/invariants for long-lived repository promises
 - tests/eval for corpus-backed behavior checks
 
+## Use This Page When
+
+- you are reviewing tests, invariants, limitations, or risk
+- you need evidence that the documented contract is actually protected
+- you are deciding whether a change is done rather than merely implemented
+
 ## What This Page Answers
 
 - what proves the bijux-canon-ingest contract today

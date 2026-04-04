@@ -67,6 +67,12 @@ flowchart TD
 - [Operations](../operations/index.md)
 - [Quality](../quality/index.md)
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-runtime is expected to own

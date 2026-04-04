@@ -60,6 +60,12 @@ flowchart TD
 - `packages/bijux-canon-agent/src/bijux_canon_agent`
 - `packages/bijux-canon-agent/tests`
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-agent is expected to own

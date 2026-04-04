@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_agent/interfaces` for CLI boundaries and operator helpers
 - `src/bijux_canon_agent/traces` for trace-facing models and persistence helpers
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-agent is structured internally

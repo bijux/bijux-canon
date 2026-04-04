@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_runtime/model, src/bijux_canon_runtime/runtime, src/bijux_canon_runtime/application
 - outputs: execution store records, replay decision artifacts, non-determinism policy evaluations
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-runtime is structured internally

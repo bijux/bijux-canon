@@ -55,6 +55,12 @@ flowchart TD
 - tests/conformance and tests/compat_v01 for compatibility behavior
 - tests/stress and tests/scenarios for operational pressure checks
 
+## Use This Page When
+
+- you are reviewing tests, invariants, limitations, or risk
+- you need evidence that the documented contract is actually protected
+- you are deciding whether a change is done rather than merely implemented
+
 ## What This Page Answers
 
 - what proves the bijux-canon-index contract today

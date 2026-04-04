@@ -55,6 +55,12 @@ flowchart TD
 - workflow graph execution records
 - operator-visible result artifacts
 
+## Use This Page When
+
+- you need the public command, API, import, or artifact surface
+- you are checking whether a caller can rely on a given shape or entrypoint
+- you need the contract-facing side of the package before using it
+
 ## What This Page Answers
 
 - which public or operator-facing surfaces bijux-canon-agent exposes

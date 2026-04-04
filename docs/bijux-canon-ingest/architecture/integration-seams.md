@@ -60,6 +60,12 @@ flowchart TD
 - feeds prepared material toward bijux-canon-index and bijux-canon-reason
 - stays under runtime governance instead of defining replay authority itself
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-ingest is structured internally

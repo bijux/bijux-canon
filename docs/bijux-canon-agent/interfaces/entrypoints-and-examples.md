@@ -59,6 +59,12 @@ flowchart TD
 - tests/e2e and tests/fixtures as executable examples
 - config/execution_policy.yaml as a concrete policy surface
 
+## Use This Page When
+
+- you need the public command, API, import, or artifact surface
+- you are checking whether a caller can rely on a given shape or entrypoint
+- you need the contract-facing side of the package before using it
+
 ## What This Page Answers
 
 - which public or operator-facing surfaces bijux-canon-agent exposes

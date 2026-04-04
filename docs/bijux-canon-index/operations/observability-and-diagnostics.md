@@ -59,6 +59,12 @@ flowchart TD
 - `src/bijux_canon_index/domain` for execution, provenance, and request semantics
 - `src/bijux_canon_index/application` for workflow coordination
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-index is installed, run, diagnosed, and released

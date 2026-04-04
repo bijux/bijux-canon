@@ -56,6 +56,12 @@ flowchart TD
 - owning package directory: `packages/bijux-canon-ingest`
 - key outputs: normalized document trees, chunk collections and retrieval-ready records, diagnostic output produced during ingest workflows
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-ingest is expected to own

@@ -55,6 +55,12 @@ flowchart TD
 - code ownership: src/bijux_canon_reason/planning, src/bijux_canon_reason/reasoning, src/bijux_canon_reason/execution
 - durable outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-reason is expected to own

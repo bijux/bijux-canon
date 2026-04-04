@@ -54,6 +54,12 @@ flowchart TD
 - durable outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 - validation backstops: tests/unit for local behavior and utility coverage, tests/integration and tests/e2e for end-to-end workflow behavior
 
+## Use This Page When
+
+- you need the public command, API, import, or artifact surface
+- you are checking whether a caller can rely on a given shape or entrypoint
+- you need the contract-facing side of the package before using it
+
 ## What This Page Answers
 
 - which public or operator-facing surfaces bijux-canon-agent exposes

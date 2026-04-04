@@ -60,6 +60,12 @@ flowchart TD
 - separate product docs, maintainer docs, and legacy-compat docs
 - update docs in the same change series that changes the underlying behavior
 
+## Use This Page When
+
+- you are dealing with repository-wide seams rather than one package alone
+- you need shared workflow, schema, or governance context before changing code
+- you want the monorepo view that sits above the package handbooks
+
 ## What This Page Answers
 
 - which repository-level decision this page clarifies

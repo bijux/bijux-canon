@@ -62,6 +62,12 @@ flowchart TD
 - consumes evidence prepared by ingest and retrieval provided by index
 - relies on runtime when a run must be accepted, stored, or replayed under policy
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-reason is expected to own

@@ -54,6 +54,12 @@ flowchart TD
 - public metadata: `packages/bijux-canon-runtime/pyproject.toml`
 - release notes: `packages/bijux-canon-runtime/CHANGELOG.md` when present
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-runtime is installed, run, diagnosed, and released

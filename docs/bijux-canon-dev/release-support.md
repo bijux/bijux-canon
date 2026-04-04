@@ -55,6 +55,12 @@ flowchart TD
 - package metadata checks in tests
 - root commit conventions configured through commitizen
 
+## Use This Page When
+
+- you are changing repository automation, validation, or release support
+- you need maintainer-only context that should not live in product package docs
+- you are reviewing CI, schema drift, or supply-chain behavior
+
 ## What This Page Answers
 
 - which repository maintenance concern this page explains

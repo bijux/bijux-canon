@@ -62,6 +62,12 @@ flowchart TD
 - tests/invariants for package promises that should not drift
 - tests/api for HTTP-facing validation
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-agent is structured internally

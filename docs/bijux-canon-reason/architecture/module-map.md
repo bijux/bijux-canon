@@ -57,6 +57,12 @@ flowchart TD
 - `src/bijux_canon_reason/traces` for trace replay and diff support
 - `src/bijux_canon_reason/interfaces` for CLI and serialization boundaries
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-reason is structured internally

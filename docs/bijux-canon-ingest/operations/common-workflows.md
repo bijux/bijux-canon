@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_ingest/interfaces` for CLI and HTTP boundaries
 - `src/bijux_canon_ingest/safeguards` for protective rules for ingest behavior
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-ingest is installed, run, diagnosed, and released

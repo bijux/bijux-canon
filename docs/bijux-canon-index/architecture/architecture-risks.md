@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_index/api` for HTTP application surfaces
 - `src/bijux_canon_index/contracts` for stable contract definitions
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-index is structured internally

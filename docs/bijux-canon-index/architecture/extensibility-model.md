@@ -61,6 +61,12 @@ flowchart TD
 
 Add extension points where the package already expects variation, and document them next to the owning boundary.
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-index is structured internally

@@ -56,6 +56,12 @@ flowchart TD
 - tests/invariants for package promises that should not drift
 - tests/api for HTTP-facing validation
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-agent is installed, run, diagnosed, and released

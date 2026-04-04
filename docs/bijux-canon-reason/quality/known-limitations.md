@@ -54,6 +54,12 @@ flowchart TD
 - ingest and index engines
 - repository tooling and release automation
 
+## Use This Page When
+
+- you are reviewing tests, invariants, limitations, or risk
+- you need evidence that the documented contract is actually protected
+- you are deciding whether a change is done rather than merely implemented
+
 ## What This Page Answers
 
 - what proves the bijux-canon-reason contract today

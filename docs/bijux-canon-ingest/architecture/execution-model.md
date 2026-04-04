@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_ingest/processing, src/bijux_canon_ingest/retrieval, src/bijux_canon_ingest/application
 - outputs: normalized document trees, chunk collections and retrieval-ready records, diagnostic output produced during ingest workflows
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-ingest is structured internally

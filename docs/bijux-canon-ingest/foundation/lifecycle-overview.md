@@ -55,6 +55,12 @@ flowchart TD
 - code ownership: src/bijux_canon_ingest/processing, src/bijux_canon_ingest/retrieval, src/bijux_canon_ingest/application
 - durable outputs: normalized document trees, chunk collections and retrieval-ready records, diagnostic output produced during ingest workflows
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-ingest is expected to own

@@ -70,6 +70,12 @@ flowchart TD
 - tests/conformance and tests/compat_v01 for compatibility behavior
 - tests/stress and tests/scenarios for operational pressure checks
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-index is structured internally

@@ -58,6 +58,12 @@ flowchart TD
 
 - `src/bijux_canon_agent/traces` for trace-facing models and persistence helpers
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-agent is installed, run, diagnosed, and released

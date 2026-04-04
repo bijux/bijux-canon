@@ -62,6 +62,12 @@ flowchart TD
 - tests/perf for retrieval benchmark coverage
 - tests/docs for documentation-linked safeguards
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-reason is structured internally

@@ -55,6 +55,12 @@ flowchart TD
 - code ownership: src/bijux_canon_index/domain, src/bijux_canon_index/application, src/bijux_canon_index/infra
 - durable outputs: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-index is expected to own

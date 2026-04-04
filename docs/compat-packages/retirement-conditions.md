@@ -55,6 +55,12 @@ flowchart TD
 - migration guidance has been in place long enough to be credible
 - removal will not silently strand existing automation
 
+## Use This Page When
+
+- you are tracing a legacy package name back to its canonical replacement
+- you need migration guidance rather than product implementation detail
+- you are deciding whether a compatibility surface still deserves to exist
+
 ## What This Page Answers
 
 - which legacy surface is still preserved

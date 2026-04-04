@@ -60,6 +60,12 @@ flowchart TD
 - version file: `packages/bijux-canon-index/src/bijux_canon_index/_version.py`
 - tag pattern is configured in `packages/bijux-canon-index/pyproject.toml`
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-index is installed, run, diagnosed, and released

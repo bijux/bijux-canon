@@ -100,6 +100,12 @@ flowchart TD
 - use [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer automation and quality gates
 - use [compatibility packages](compat-packages/index.md) when tracing a legacy install name
 
+## Use This Page When
+
+- you are orienting yourself before opening a repository, package, maintainer, or compatibility page
+- you need the fastest route to the correct handbook section
+- you are reviewing whether the current docs system covers the right surfaces
+
 ## What This Page Answers
 
 - which handbook to open first for a given repository question

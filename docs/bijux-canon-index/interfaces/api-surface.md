@@ -59,6 +59,12 @@ flowchart TD
 - HTTP app under src/bijux_canon_index/api
 - OpenAPI schema files under apis/bijux-canon-index/v1
 
+## Use This Page When
+
+- you need the public command, API, import, or artifact surface
+- you are checking whether a caller can rely on a given shape or entrypoint
+- you need the contract-facing side of the package before using it
+
 ## What This Page Answers
 
 - which public or operator-facing surfaces bijux-canon-index exposes

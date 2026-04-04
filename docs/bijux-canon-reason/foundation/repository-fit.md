@@ -60,6 +60,12 @@ flowchart TD
 - `packages/bijux-canon-reason/src/bijux_canon_reason`
 - `packages/bijux-canon-reason/tests`
 
+## Use This Page When
+
+- you need the package boundary before reading implementation detail
+- you are deciding whether work belongs in this package or a neighboring one
+- you need the shortest stable description of package intent
+
 ## What This Page Answers
 
 - what bijux-canon-reason is expected to own

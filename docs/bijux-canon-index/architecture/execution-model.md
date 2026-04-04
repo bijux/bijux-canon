@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_index/domain, src/bijux_canon_index/application, src/bijux_canon_index/infra
 - outputs: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 
+## Use This Page When
+
+- you are tracing internal structure or execution flow
+- you need to understand where modules fit before refactoring
+- you are reviewing architectural drift instead of one local bug
+
 ## What This Page Answers
 
 - how bijux-canon-index is structured internally

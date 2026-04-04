@@ -61,6 +61,12 @@ flowchart TD
 - typer
 - fastapi
 
+## Use This Page When
+
+- you are installing, running, diagnosing, or releasing the package
+- you need operational anchors rather than conceptual framing
+- you are responding to package behavior in a local or CI environment
+
 ## What This Page Answers
 
 - how bijux-canon-index is installed, run, diagnosed, and released
