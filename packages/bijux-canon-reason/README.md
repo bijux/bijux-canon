@@ -1,5 +1,29 @@
 # bijux-canon-reason
 
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-reason/)
+[![Typing: typed](https://img.shields.io/badge/typing-typed%20(PEP%20561)-0A7BBB)](https://pypi.org/project/bijux-canon-reason/)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
+[![CI Status](https://github.com/bijux/bijux-canon/actions/workflows/ci-bijux-canon-reason.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/ci-bijux-canon-reason.yml)
+[![GitHub Repository](https://img.shields.io/badge/github-bijux%2Fbijux--canon-181717?logo=github)](https://github.com/bijux/bijux-canon)
+
+[![bijux-canon-runtime](https://img.shields.io/pypi/v/bijux-canon-runtime?label=runtime&logo=pypi)](https://pypi.org/project/bijux-canon-runtime/)
+[![bijux-canon-agent](https://img.shields.io/pypi/v/bijux-canon-agent?label=agent&logo=pypi)](https://pypi.org/project/bijux-canon-agent/)
+[![bijux-canon-ingest](https://img.shields.io/pypi/v/bijux-canon-ingest?label=ingest&logo=pypi)](https://pypi.org/project/bijux-canon-ingest/)
+[![bijux-canon-reason](https://img.shields.io/pypi/v/bijux-canon-reason?label=reason&logo=pypi)](https://pypi.org/project/bijux-canon-reason/)
+[![bijux-canon-index](https://img.shields.io/pypi/v/bijux-canon-index?label=index&logo=pypi)](https://pypi.org/project/bijux-canon-index/)
+
+[![agentic-flows](https://img.shields.io/pypi/v/agentic-flows?label=agentic--flows&logo=pypi)](https://pypi.org/project/agentic-flows/)
+[![bijux-agent](https://img.shields.io/pypi/v/bijux-agent?label=bijux--agent&logo=pypi)](https://pypi.org/project/bijux-agent/)
+[![bijux-rag](https://img.shields.io/pypi/v/bijux-rag?label=bijux--rag&logo=pypi)](https://pypi.org/project/bijux-rag/)
+[![bijux-rar](https://img.shields.io/pypi/v/bijux-rar?label=bijux--rar&logo=pypi)](https://pypi.org/project/bijux-rar/)
+[![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
+
+[![Runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-runtime/)
+[![Agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-agent/)
+[![Ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-ingest/)
+[![Reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-reason/)
+[![Index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon-index/)
+
 `bijux-canon-reason` is the package that turns available evidence into planned
 reasoning steps, structured claims, and verification outcomes. It is where
 reasoning behavior is made explicit enough to inspect, test, and defend.
@@ -8,6 +32,14 @@ If you need to understand how claims are formed, how reasoning steps are
 planned and executed, how evidence is used, or where verification lives, start
 here. If you need runtime governance, storage, or vector execution internals,
 you are outside this package's boundary.
+
+## Legacy continuity
+
+- compatibility package: [`bijux-rar`](https://pypi.org/project/bijux-rar/)
+- legacy import root: `bijux_rar`
+- legacy command: `bijux-rar`
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- retired repository target: <https://github.com/bijux/bijux-rar>
 
 ## What this package owns
 
@@ -24,20 +56,21 @@ you are outside this package's boundary.
 
 ## Source map
 
-- [`src/bijux_canon_reason/planning`](src/bijux_canon_reason/planning) for planning behavior
-- [`src/bijux_canon_reason/reasoning`](src/bijux_canon_reason/reasoning) for claim and reasoning semantics
-- [`src/bijux_canon_reason/execution`](src/bijux_canon_reason/execution) for step execution
-- [`src/bijux_canon_reason/verification`](src/bijux_canon_reason/verification) for checks and outcomes
-- [`src/bijux_canon_reason/interfaces`](src/bijux_canon_reason/interfaces) and [`src/bijux_canon_reason/api`](src/bijux_canon_reason/api) for boundaries
-- [`tests`](tests) for executable protection of the package contract
+- [`src/bijux_canon_reason/planning`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/planning) for planning behavior
+- [`src/bijux_canon_reason/reasoning`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/reasoning) for claim and reasoning semantics
+- [`src/bijux_canon_reason/execution`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/execution) for step execution
+- [`src/bijux_canon_reason/verification`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/verification) for checks and outcomes
+- [`src/bijux_canon_reason/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/interfaces) and [`src/bijux_canon_reason/api`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/api) for boundaries
+- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/tests) for executable protection of the package contract
 
 ## Read this next
 
-- [Package guide](docs/index.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Contracts](docs/CONTRACTS.md)
-- [Tests](docs/TESTS.md)
-- [Changelog](CHANGELOG.md)
+- [Package guide](https://bijux.io/bijux-canon-reason/)
+- [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/docs/ARCHITECTURE.md)
+- [Contracts](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/docs/CONTRACTS.md)
+- [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
+- [Tests](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/docs/TESTS.md)
+- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md)
 
 ## Primary entrypoint
 

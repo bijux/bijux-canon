@@ -5,9 +5,9 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-canon-reason"
 dynamic = ["version"]
-description = "Deterministic retrieval-augmented reasoning with structured claims, verification, and provenance from Bijux."
+description = "Deterministic reasoning, structured claims, verification, and provenance for the bijux-canon package family from Bijux."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
@@ -15,7 +15,10 @@ keywords = [
   "reasoning",
   "determinism",
   "bijux",
+  "bijux-canon",
+  "bijux.io",
   "provenance",
+  "verification",
   "retrieval-augmented-reasoning",
 ]
 classifiers = [
@@ -23,6 +26,7 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Intended Audience :: Developers",
   "Natural Language :: English",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
@@ -30,6 +34,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Security",
   "Typing :: Typed",
 ]
@@ -109,7 +114,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/"
+Homepage = "https://bijux.io/bijux-canon-reason/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-reason/"
@@ -117,6 +122,8 @@ Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
+PackageMap = "https://bijux.io/bijux-canon/package-map/"
+CompatibilityGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
 
 [tool.hatch.version]
 source = "vcs"

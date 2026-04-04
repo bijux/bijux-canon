@@ -10,7 +10,11 @@ releases when a tagged changelog existed.
 
 ## Unreleased
 
-- No package-local changes recorded yet.
+- PyPI metadata now points legacy `bijux-rar` readers at the canonical
+  `bijux-canon-reason` docs, migration guide, and Bijux-owned package family.
+- The package README and overview now document the retired standalone
+  repository, and the compatibility package now explicitly publishes the
+  `bijux-rar` console script it documents.
 
 ## 0.3.0 - 2026-04-04
 

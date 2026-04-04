@@ -5,14 +5,16 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-rar"
 dynamic = ["version", "dependencies"]
-description = "Legacy continuation of the bijux-rar PyPI package. Preserves legacy installs and imports while installing bijux-canon-reason at the same version."
+description = "Compatibility bridge for the legacy bijux-rar PyPI package. Preserves installs, imports, and the bijux-rar command while installing bijux-canon-reason from the bijux-canon family at the same version."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 keywords = [
   "bijux",
+  "bijux-canon",
+  "bijux.io",
   "compatibility",
   "migration",
   "legacy-name",
@@ -25,18 +27,21 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Intended Audience :: Developers",
   "Natural Language :: English",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Security",
   "Typing :: Typed",
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/"
+Homepage = "https://bijux.io/bijux-canon-reason/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-reason/"
@@ -44,6 +49,11 @@ Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
+MigrationGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+LegacyNameMap = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
+
+[project.scripts]
+bijux-rar = "bijux_canon_reason.interfaces.cli:app"
 
 [tool.hatch.version]
 source = "vcs"

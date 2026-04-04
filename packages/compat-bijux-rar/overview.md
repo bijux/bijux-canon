@@ -4,6 +4,10 @@ Use this package only when an existing installation still expects the legacy
 reasoning package name. Each release continues the published `bijux-rar`
 distribution and installs `bijux-canon-reason` at the same version.
 
+The canonical package family now lives in `bijux-canon`, and the standalone
+`bijux-rar` repository is scheduled for retirement in favor of
+`https://github.com/bijux/bijux-canon`.
+
 ## What it does
 
 - installs the canonical package `bijux-canon-reason`
@@ -23,4 +27,5 @@ When updating callers, move to:
 
 - distribution: `bijux-canon-reason`
 - Python import: `bijux_canon_reason`
-- docs entrypoint: `packages/bijux-canon-reason/docs/index.md`
+- docs entrypoint: `https://bijux.io/bijux-canon-reason/`
+- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`
