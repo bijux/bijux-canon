@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from bijux_canon_ingest.interfaces.cli.entrypoint import main
+from bijux_canon_ingest.interfaces.cli.typer_app import build_app
 from bijux_canon_ingest.interfaces.cli.pipeline_config import load_pipeline_config
 from bijux_canon_ingest.interfaces.cli.pipeline_runner import boundary_app_config
 from bijux_canon_ingest.result import Err, Ok
@@ -121,3 +122,102 @@ def test_entrypoint_routes_pipeline_commands(monkeypatch: pytest.MonkeyPatch) ->
     assert result == 3
     assert seen["pipeline"] == ["--input", "docs.csv", "--output", "chunks.jsonl"]
     assert "retrieval" not in seen
+
+
+class _FakeTyperApp:
+    def __init__(self, **_: object) -> None:
+        self.commands: dict[str, object] = {}
+
+    def command(self, name: str | None = None):
+        def register(func):
+            self.commands[name or func.__name__.replace("_", "-")] = func
+            return func
+
+        return register
+
+
+class _FakeTyperModule:
+    def Typer(self, **kwargs: object) -> _FakeTyperApp:
+        return _FakeTyperApp(**kwargs)
+
+
+def test_typer_app_pipeline_command_routes_to_entrypoint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    seen: dict[str, list[str]] = {}
+
+    def fake_main(argv: list[str]) -> int:
+        seen["argv"] = argv
+        return 17
+
+    monkeypatch.setattr(
+        "bijux_canon_ingest.interfaces.cli.typer_app.importlib.import_module",
+        lambda _: _FakeTyperModule(),
+    )
+    monkeypatch.setattr("bijux_canon_ingest.interfaces.cli.typer_app.main", fake_main)
+
+    app = build_app()
+    result = app.commands["pipeline"](
+        input_csv=Path("docs.csv"),
+        config=Path("pipeline.json"),
+        set_values=["chunk.params.chunk_size=256", "clean.params.lower=false"],
+        out=Path("chunks.jsonl"),
+    )
+
+    assert result == 17
+    assert seen["argv"] == [
+        "docs.csv",
+        "--config",
+        "pipeline.json",
+        "--set",
+        "chunk.params.chunk_size=256",
+        "--set",
+        "clean.params.lower=false",
+        "--out",
+        "chunks.jsonl",
+    ]
+
+
+def test_typer_app_ask_command_preserves_no_rerank_flag(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    seen: dict[str, list[str]] = {}
+
+    def fake_main(argv: list[str]) -> int:
+        seen["argv"] = argv
+        return 23
+
+    monkeypatch.setattr(
+        "bijux_canon_ingest.interfaces.cli.typer_app.importlib.import_module",
+        lambda _: _FakeTyperModule(),
+    )
+    monkeypatch.setattr("bijux_canon_ingest.interfaces.cli.typer_app.main", fake_main)
+
+    app = build_app()
+    result = app.commands["ask"](
+        index=Path("index.msgpack"),
+        query="powerhouse",
+        top_k=8,
+        rerank=False,
+        filters=["category=law"],
+        format="yaml",
+        out=Path("answer.yaml"),
+    )
+
+    assert result == 23
+    assert seen["argv"] == [
+        "ask",
+        "--index",
+        "index.msgpack",
+        "--query",
+        "powerhouse",
+        "--top-k",
+        "8",
+        "--format",
+        "yaml",
+        "--no-rerank",
+        "--filter",
+        "category=law",
+        "--out",
+        "answer.yaml",
+    ]
