@@ -16,21 +16,6 @@ from uuid import uuid4
 
 import duckdb
 
-from bijux_canon_runtime.runtime.context import RunMode
-from bijux_canon_runtime.observability.storage import schema_contracts
-from bijux_canon_runtime.observability.storage.execution_store_lock import (
-    acquire_execution_store_lock,
-)
-from bijux_canon_runtime.observability.storage.execution_store_schema import (
-    default_migrations_dir,
-    default_schema_contract_path,
-    default_schema_hash_path,
-    load_migration_statements,
-)
-from bijux_canon_runtime.observability.storage.execution_store_protocol import (
-    ExecutionReadStoreProtocol,
-    ExecutionWriteStoreProtocol,
-)
 from bijux_canon_runtime.contracts.dataset_contract import (
     validate_dataset_descriptor,
     validate_transition,
@@ -47,6 +32,20 @@ from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
+from bijux_canon_runtime.observability.storage import schema_contracts
+from bijux_canon_runtime.observability.storage.execution_store_lock import (
+    acquire_execution_store_lock,
+)
+from bijux_canon_runtime.observability.storage.execution_store_protocol import (
+    ExecutionReadStoreProtocol,
+    ExecutionWriteStoreProtocol,
+)
+from bijux_canon_runtime.observability.storage.execution_store_schema import (
+    default_migrations_dir,
+    default_schema_contract_path,
+    default_schema_hash_path,
+    load_migration_statements,
+)
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
@@ -81,6 +80,7 @@ from bijux_canon_runtime.ontology.public import (
     ReplayAcceptability,
     ReplayMode,
 )
+from bijux_canon_runtime.runtime.context import RunMode
 
 SCHEMA_VERSION = 3
 DEFAULT_MIGRATIONS_DIR = default_migrations_dir()

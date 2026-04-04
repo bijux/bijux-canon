@@ -5,13 +5,13 @@
 
 from __future__ import annotations
 
+from bijux_canon_runtime.api.v1.app import app
 from bijux_canon_runtime.api.v1.schemas import (
     FailureEnvelope,
     FlowRunRequest,
     FlowRunResponse,
     ReplayRequest,
 )
-from bijux_canon_runtime.api.v1.app import app
 
 __all__ = [
     "app",

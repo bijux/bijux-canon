@@ -9,14 +9,14 @@ from dataclasses import asdict
 import hashlib
 import json
 
-from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.runtime.execution.integration_loaders import (
-    load_reasoning_runner,
-)
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
+from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.execution.integration_loaders import (
+    load_reasoning_runner,
+)
 
 
 class ReasoningExecutor:

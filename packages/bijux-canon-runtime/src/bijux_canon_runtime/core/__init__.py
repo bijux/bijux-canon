@@ -37,6 +37,7 @@ __all__ = [
     "enforce_runtime_semantics",
     "finalize_trace",
 ]
-__all__ += [  # type: ignore[list-item]
+_ID_EXPORTS = [
     name for name in globals() if name.endswith("ID") or name.endswith("Fingerprint")
 ]
+__all__ += _ID_EXPORTS

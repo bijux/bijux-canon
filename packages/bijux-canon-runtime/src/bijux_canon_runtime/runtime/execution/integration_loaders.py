@@ -7,8 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 import importlib
-from types import ModuleType
-from typing import Any
+from typing import Any, cast
 
 
 def load_agent_runner() -> Callable[..., Any]:
@@ -65,7 +64,7 @@ def _load_callable(
         available_modules.append(module_name)
         exported = getattr(module, attribute, None)
         if callable(exported):
-            return exported
+            return cast(Callable[..., Any], exported)
     raise RuntimeError(
         _missing_callable_message(
             module_names=module_names,

@@ -8,17 +8,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
-from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
-from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
-from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
-from bijux_canon_runtime.observability.classification.fingerprint import (
-    fingerprint_inputs,
-)
-from bijux_canon_runtime.observability.classification.retrieval_fingerprint import (
-    fingerprint_retrieval,
-)
-from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 from bijux_canon_runtime.contracts.step_contract import validate_outputs
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
@@ -30,6 +19,12 @@ from bijux_canon_runtime.model.verification.verification_arbitration import (
 )
 from bijux_canon_runtime.model.verification.verification_result import (
     VerificationResult,
+)
+from bijux_canon_runtime.observability.classification.fingerprint import (
+    fingerprint_inputs,
+)
+from bijux_canon_runtime.observability.classification.retrieval_fingerprint import (
+    fingerprint_retrieval,
 )
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
@@ -46,6 +41,11 @@ from bijux_canon_runtime.ontology.ids import (
     ToolID,
 )
 from bijux_canon_runtime.ontology.public import EventType
+from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
+from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
+from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
+from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
+from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 
 
 @dataclass(frozen=True)

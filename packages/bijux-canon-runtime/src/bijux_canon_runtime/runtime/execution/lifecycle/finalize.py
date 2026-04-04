@@ -5,26 +5,30 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 from bijux_canon_runtime.core.authority import finalize_trace
 from bijux_canon_runtime.core.errors import ExecutionFailure
-from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.observability.analysis.flow_invariants import (
     validate_flow_invariants,
 )
 from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_policy,
 )
-from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.ontology.ids import PolicyFingerprint, ResolverID
+from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 
 def finalize_execution(
     *,
-    steps_plan,
+    steps_plan: ExecutionSteps,
     context: ExecutionContext,
-    state,
-    resolver_id_from_metadata,
+    state: Any,
+    resolver_id_from_metadata: Callable[[tuple[tuple[str, str], ...]], str],
 ) -> ExecutionOutcome:
     """Internal helper; not part of the public API."""
     if state.interrupted:

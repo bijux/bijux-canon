@@ -5,8 +5,9 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from typing import Any
+
+from bijux_canon_runtime.model.flows.manifest import FlowManifest
 
 __all__ = [
     "FlowManifest",

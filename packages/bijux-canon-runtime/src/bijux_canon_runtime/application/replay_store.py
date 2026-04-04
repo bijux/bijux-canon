@@ -5,10 +5,6 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
-from bijux_canon_runtime.observability.storage.execution_store_protocol import (
-    ExecutionReadStoreProtocol,
-)
 from bijux_canon_runtime.application.determinism_guard import validate_replay
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
@@ -16,6 +12,10 @@ from bijux_canon_runtime.application.execute_flow import (
     execute_flow,
 )
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
+from bijux_canon_runtime.observability.storage.execution_store_protocol import (
+    ExecutionReadStoreProtocol,
+)
 from bijux_canon_runtime.ontology.ids import RunID, TenantID
 
 
@@ -32,6 +32,8 @@ def replay_with_store(
     _ = store.load_dataset_descriptor(run_id, tenant_id=tenant_id)
     _ = store.load_replay_envelope(run_id, tenant_id=tenant_id)
     result = execute_flow(resolved_flow=resolved_flow, config=config)
+    if result.trace is None:
+        raise ValueError("replay execution did not produce a trace")
     diff = semantic_trace_diff(stored_trace, result.trace)
     _ = validate_replay(
         stored_trace,

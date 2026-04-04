@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from bijux_canon_runtime.core.authority import SEMANTICS_SOURCE, SEMANTICS_VERSION
 from bijux_canon_runtime.application.determinism_guard import validate_determinism
 from bijux_canon_runtime.application.execution_seed import derive_seed_token
+from bijux_canon_runtime.core.authority import SEMANTICS_SOURCE, SEMANTICS_VERSION
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 
 

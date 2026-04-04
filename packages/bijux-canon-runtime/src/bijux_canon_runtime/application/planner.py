@@ -8,12 +8,6 @@ from __future__ import annotations
 
 from importlib.metadata import PackageNotFoundError, version
 
-from bijux_canon_runtime.observability.capture.environment import (
-    compute_environment_fingerprint,
-)
-from bijux_canon_runtime.observability.classification.fingerprint import (
-    fingerprint_inputs,
-)
 from bijux_canon_runtime.contracts.execution_plan_contract import (
     validate as validate_execution_plan,
 )
@@ -25,6 +19,12 @@ from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
+from bijux_canon_runtime.observability.capture.environment import (
+    compute_environment_fingerprint,
+)
+from bijux_canon_runtime.observability.classification.fingerprint import (
+    fingerprint_inputs,
+)
 from bijux_canon_runtime.ontology import StepType
 from bijux_canon_runtime.ontology.ids import (
     AgentID,
@@ -136,9 +136,9 @@ class ExecutionPlanner:
     def _toposort_agents(self, manifest: FlowManifest) -> list[str]:
         """Deterministic topological sort using lexical tie-breaking for stability."""
         dependencies = self._parse_dependencies(manifest)
-        agents = set(manifest.agents)
-        indegree = dict.fromkeys(agents, 0)
-        forward = {agent: [] for agent in agents}
+        agents = {str(agent) for agent in manifest.agents}
+        indegree: dict[str, int] = dict.fromkeys(agents, 0)
+        forward: dict[str, list[str]] = {agent: [] for agent in agents}
 
         for agent, deps in dependencies.items():
             for dep in deps:
@@ -162,7 +162,7 @@ class ExecutionPlanner:
 
     def _parse_dependencies(self, manifest: FlowManifest) -> dict[str, list[str]]:
         """Internal helper; not part of the public API."""
-        agents = set(manifest.agents)
+        agents = {str(agent) for agent in manifest.agents}
         mapping: dict[str, list[str]] = {agent: [] for agent in agents}
         for entry in manifest.dependencies:
             parts = [part.strip() for part in entry.split(":")]

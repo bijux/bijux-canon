@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from fastapi import status
 from fastapi.responses import JSONResponse
 
@@ -71,7 +73,7 @@ def validate_runtime_headers(
 def _failure_response(
     *,
     status_code: int,
-    failure_class: str,
+    failure_class: Literal["structural", "semantic", "environmental", "authority"],
     violated_contract: str,
 ) -> JSONResponse:
     payload = FailureEnvelope(

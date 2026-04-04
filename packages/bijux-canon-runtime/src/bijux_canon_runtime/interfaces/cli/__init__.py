@@ -8,6 +8,6 @@ from __future__ import annotations
 from bijux_canon_runtime.interfaces.cli import entrypoint as _entrypoint_module
 from bijux_canon_runtime.interfaces.cli.entrypoint import main
 
-main._explain_failure = _entrypoint_module._explain_failure
+setattr(main, "_explain_failure", _entrypoint_module._explain_failure)
 
 __all__ = ["main"]

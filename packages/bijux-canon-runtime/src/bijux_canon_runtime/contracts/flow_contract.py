@@ -164,7 +164,7 @@ def _validate_execution_identity(manifest: FlowManifest) -> list[str]:
     if manifest.flow_state in {FlowState.DRAFT, FlowState.DEPRECATED}:
         raise ValueError("flow_state must allow execution")
 
-    agents = list(manifest.agents)
+    agents = [str(agent) for agent in manifest.agents]
     if len(set(agents)) != len(agents):
         raise ValueError("agents must be unique")
     if not agents:

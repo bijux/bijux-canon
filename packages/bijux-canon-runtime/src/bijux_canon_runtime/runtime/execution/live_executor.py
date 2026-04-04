@@ -10,14 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
-from bijux_canon_runtime.runtime.execution.lifecycle import (
-    execute_steps,
-    finalize_execution,
-    prepare_execution,
-    run_execution,
-)
-from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
@@ -36,6 +28,14 @@ from bijux_canon_runtime.ontology import (
 )
 from bijux_canon_runtime.ontology.ids import ContentHash, RuleID, ToolID
 from bijux_canon_runtime.ontology.public import EventType
+from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
+from bijux_canon_runtime.runtime.execution.lifecycle import (
+    execute_steps,
+    finalize_execution,
+    prepare_execution,
+    run_execution,
+)
+from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 if TYPE_CHECKING:
     from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor

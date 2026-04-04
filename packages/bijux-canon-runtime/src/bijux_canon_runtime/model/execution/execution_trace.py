@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
@@ -67,7 +68,7 @@ class ExecutionTrace:
         object.__setattr__(self, "finalized", True)
         return self
 
-    def __getattribute__(self, name: str):
+    def __getattribute__(self, name: str) -> Any:
         """Internal helper; not part of the public API."""
         if name in {
             "finalize",

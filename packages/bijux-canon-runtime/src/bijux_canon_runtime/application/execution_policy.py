@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from typing import TYPE_CHECKING
 
 from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
@@ -14,11 +15,14 @@ from bijux_canon_runtime.model.policy.non_determinism_policy import NonDetermini
 from bijux_canon_runtime.ontology import EntropyMagnitude
 from bijux_canon_runtime.ontology.public import NonDeterminismIntentSource
 
+if TYPE_CHECKING:
+    from bijux_canon_runtime.application.execute_flow import ExecutionConfig
+
 
 def ensure_non_determinism_policy(
     resolved_flow: ExecutionPlan,
-    config,
-):
+    config: ExecutionConfig,
+) -> ExecutionConfig:
     """Ensure a runtime execution config has an explicit non-determinism policy."""
     if config.non_determinism_policy is not None:
         return config
@@ -47,7 +51,7 @@ def ensure_non_determinism_policy(
 
 def validate_non_determinism_policy(
     resolved_flow: ExecutionPlan,
-    config,
+    config: ExecutionConfig,
 ) -> None:
     """Validate runtime entropy policy against the resolved manifest budget."""
     policy = config.non_determinism_policy

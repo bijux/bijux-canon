@@ -8,11 +8,6 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.runtime.execution.integration_loaders import (
-    load_retrieval_runner,
-    load_vector_contract_enforcer,
-)
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
@@ -30,6 +25,11 @@ from bijux_canon_runtime.ontology.ids import (
     TenantID,
 )
 from bijux_canon_runtime.ontology.public import EntropySource
+from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.execution.integration_loaders import (
+    load_retrieval_runner,
+    load_vector_contract_enforcer,
+)
 
 
 class RetrievalExecutor:

@@ -10,20 +10,17 @@ from __future__ import annotations
 
 from contextlib import suppress
 
+from bijux_canon_runtime.application.flow_boundary import enforce_flow_boundary
 from bijux_canon_runtime.core.authority import finalize_trace
-from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.runtime.execution.state_tracker import ExecutionStateTracker
-from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.observability.capture.time import utc_now_deterministic
 from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
     fingerprint_policy,
 )
-from bijux_canon_runtime.application.flow_boundary import enforce_flow_boundary
-from bijux_canon_runtime.model.artifact.artifact import Artifact
-from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
-from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
@@ -31,6 +28,9 @@ from bijux_canon_runtime.ontology import (
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, PolicyFingerprint, ResolverID
 from bijux_canon_runtime.ontology.public import EventType
+from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.execution.state_tracker import ExecutionStateTracker
+from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 
 def _causality_tag(event_type: EventType) -> CausalityTag:

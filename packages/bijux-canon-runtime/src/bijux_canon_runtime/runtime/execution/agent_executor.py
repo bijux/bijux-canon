@@ -11,19 +11,19 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.runtime.execution.integration_loaders import (
-    load_agent_runner,
-)
-from bijux_canon_runtime.runtime.execution.state_tracker import ExecutionStateTracker
-from bijux_canon_runtime.observability.classification.seed import deterministic_seed
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.observability.classification.seed import deterministic_seed
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, ContentHash
+from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.execution.integration_loaders import (
+    load_agent_runner,
+)
+from bijux_canon_runtime.runtime.execution.state_tracker import ExecutionStateTracker
 
 
 class AgentExecutor:
@@ -103,6 +103,8 @@ class AgentExecutor:
         context: ExecutionContext,
     ) -> Artifact:
         """Internal helper; not part of the public API."""
+        if self._state_tracker is None:
+            raise RuntimeError("state tracker is not configured")
         state_hash = self._state_tracker.advance(step)
         return context.artifact_store.create(
             spec_version="v1",

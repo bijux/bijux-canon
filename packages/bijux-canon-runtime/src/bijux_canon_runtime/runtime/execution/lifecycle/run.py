@@ -11,25 +11,6 @@ import os
 import signal
 
 from bijux_canon_runtime.core.errors import NonDeterminismViolationError
-from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.runtime.execution.event_causality import event_causality_tag
-from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
-from bijux_canon_runtime.runtime.execution.lifecycle.step_operations import (
-    StepCallbacks,
-    StepServices,
-    execute_agent_step,
-    execute_reasoning_step,
-    execute_retrieval_step,
-    record_flow_verification,
-    verify_step_outcome,
-)
-from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
-from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
-from bijux_canon_runtime.observability.capture.time import utc_now_deterministic
-from bijux_canon_runtime.observability.classification.fingerprint import (
-    fingerprint_inputs,
-)
-from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
@@ -42,12 +23,31 @@ from bijux_canon_runtime.model.verification.verification_arbitration import (
 from bijux_canon_runtime.model.verification.verification_result import (
     VerificationResult,
 )
+from bijux_canon_runtime.observability.capture.time import utc_now_deterministic
+from bijux_canon_runtime.observability.classification.fingerprint import (
+    fingerprint_inputs,
+)
 from bijux_canon_runtime.ontology.ids import (
     ClaimID,
     ContentHash,
     ToolID,
 )
 from bijux_canon_runtime.ontology.public import EventType
+from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
+from bijux_canon_runtime.runtime.execution.event_causality import event_causality_tag
+from bijux_canon_runtime.runtime.execution.lifecycle.step_operations import (
+    StepCallbacks,
+    StepServices,
+    execute_agent_step,
+    execute_reasoning_step,
+    execute_retrieval_step,
+    record_flow_verification,
+    verify_step_outcome,
+)
+from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
+from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
+from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 
 
 def run_execution(

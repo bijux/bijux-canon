@@ -7,6 +7,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 
 def entropy_drift(
     previous: dict[str, object],
@@ -17,15 +19,15 @@ def entropy_drift(
 ) -> dict[str, object]:
     """Compute entropy drift; misuse hides nondeterminism."""
     diffs: dict[str, object] = {}
-    prev_sources = set(previous.get("sources", []))
-    curr_sources = set(current.get("sources", []))
+    prev_sources = _source_set(previous.get("sources"))
+    curr_sources = _source_set(current.get("sources"))
     if not allow_new_sources and curr_sources != prev_sources:
         diffs["sources"] = {
             "expected": sorted(prev_sources),
             "observed": sorted(curr_sources),
         }
-    prev_count = int(previous.get("count", 0))
-    curr_count = int(current.get("count", 0))
+    prev_count = _coerce_count(previous.get("count"))
+    curr_count = _coerce_count(current.get("count"))
     if abs(curr_count - prev_count) > max_count_delta:
         diffs["count"] = {"expected": prev_count, "observed": curr_count}
     if previous.get("max_magnitude") != current.get("max_magnitude"):
@@ -49,3 +51,22 @@ def outcome_drift(
 
 
 __all__ = ["entropy_drift", "outcome_drift"]
+
+
+def _source_set(value: object) -> set[str]:
+    """Normalize a serialized source collection into a stable set."""
+    if not isinstance(value, Iterable) or isinstance(value, str | bytes):
+        return set()
+    return {str(item) for item in value}
+
+
+def _coerce_count(value: object) -> int:
+    """Normalize count payloads without raising on malformed values."""
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        try:
+            return int(value)
+        except ValueError:
+            return 0
+    return 0

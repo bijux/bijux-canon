@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable
 from dataclasses import asdict, replace
 import json
 from pathlib import Path
@@ -13,6 +14,7 @@ import sys
 
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
+    FlowRunResult,
     RunMode,
     execute_flow,
 )
@@ -42,7 +44,7 @@ def execute_manifest_command(args: argparse.Namespace) -> None:
 def execute_manifest_command_with_runner(
     args: argparse.Namespace,
     *,
-    execute_flow_fn,
+    execute_flow_fn: Callable[..., FlowRunResult],
 ) -> None:
     """Execute a manifest-backed runtime CLI command with an injected runner."""
     manifest = load_manifest(Path(args.manifest))
@@ -99,6 +101,8 @@ def replay_run(args: argparse.Namespace, *, json_output: bool) -> None:
         config=config,
     )
     if json_output:
+        if result.trace is None:
+            raise ValueError("replay result is missing a trace")
         payload = {
             "diff": normalize_for_json(diff, normalize_timestamps=True),
             "trace": normalize_for_json(

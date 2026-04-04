@@ -9,6 +9,15 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.replay_verdict import (
+    ReplayVerdict,
+    ReplayVerdictDetails,
+)
+from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.observability.analysis.trace_diff import (
     non_determinism_report,
 )
@@ -19,15 +28,6 @@ from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
     fingerprint_policy,
 )
-from bijux_canon_runtime.model.artifact.artifact import Artifact
-from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
-from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
-from bijux_canon_runtime.model.execution.replay_verdict import (
-    ReplayVerdict,
-    ReplayVerdictDetails,
-)
-from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.ontology import DeterminismLevel
 from bijux_canon_runtime.ontology.public import (
     EventType,

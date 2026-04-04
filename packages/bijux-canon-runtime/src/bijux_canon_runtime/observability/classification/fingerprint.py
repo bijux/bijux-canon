@@ -24,7 +24,7 @@ def _normalize(value: Any) -> Any:
     return value
 
 
-def fingerprint_inputs(data: dict) -> str:
+def fingerprint_inputs(data: object) -> str:
     """Execute fingerprint_inputs and enforce its contract."""
     normalized = _normalize(data)
     payload = json.dumps(
@@ -35,5 +35,9 @@ def fingerprint_inputs(data: dict) -> str:
 
 def fingerprint_policy(policy: object) -> str:
     """Execute fingerprint_policy and enforce its contract."""
-    payload = asdict(policy) if is_dataclass(policy) else {"policy": str(policy)}
+    payload = (
+        asdict(policy)
+        if is_dataclass(policy) and not isinstance(policy, type)
+        else {"policy": str(policy)}
+    )
     return fingerprint_inputs(payload)

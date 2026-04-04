@@ -45,8 +45,15 @@ class ArtifactScope(StrEnum):
 class EventType(StrEnum):
     """Execution event types; misuse breaks trace invariants."""
 
-    def _generate_next_value_(name, start, count, last_values):  # noqa: N805
+    @staticmethod
+    def _generate_next_value_(  # noqa: N805
+        name: str,
+        start: int,
+        count: int,
+        last_values: list[str],
+    ) -> str:
         """Internal helper; not part of the public API."""
+        del start, count, last_values
         return name
 
     STEP_START = auto()

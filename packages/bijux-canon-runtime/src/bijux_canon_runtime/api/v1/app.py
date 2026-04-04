@@ -11,6 +11,7 @@ MAY BE REMOVED.
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 import os
 from pathlib import Path
 from typing import Annotated
@@ -19,10 +20,10 @@ from fastapi import Body, FastAPI, Header, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.responses import Response
 from starlette.routing import Match
 
 from bijux_canon_runtime.api.v1.http_contracts import (
-    authority_failure_response,
     structural_failure_response,
     validate_runtime_headers,
 )
@@ -42,7 +43,10 @@ app = FastAPI(
 
 
 @app.middleware("http")
-async def method_guard(request: Request, call_next) -> JSONResponse:
+async def method_guard(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     """Reject disallowed HTTP methods and return a 405 with an Allow header."""
     scope = request.scope
     if scope.get("type") == "http":
@@ -52,8 +56,9 @@ async def method_guard(request: Request, call_next) -> JSONResponse:
             match, _ = route.matches(scope)
             if match in {Match.FULL, Match.PARTIAL}:
                 matched = True
-                if route.methods:
-                    allowed_methods.update(route.methods)
+                methods = getattr(route, "methods", None)
+                if isinstance(methods, set):
+                    allowed_methods.update(methods)
         if matched and request.method not in allowed_methods:
             allow_header = ", ".join(sorted(allowed_methods))
             return JSONResponse(
@@ -101,7 +106,7 @@ def health() -> dict[str, str]:
 
 @app.get("/ready")
 @app.get("/api/v1/ready")
-def ready() -> dict[str, str]:
+def ready() -> JSONResponse | dict[str, str]:
     """Provide a readiness signal without performing deep dependency checks."""
     db_path = os.environ.get("AGENTIC_FLOWS_DB_PATH")
     if not db_path:
@@ -110,7 +115,7 @@ def ready() -> dict[str, str]:
         DuckDBExecutionWriteStore(Path(db_path))
     except Exception:
         return JSONResponse(status_code=503, content={"ready": False})
-    return {"ready": True}
+    return {"ready": "true"}
 
 
 @app.post("/api/v1/flows/run")

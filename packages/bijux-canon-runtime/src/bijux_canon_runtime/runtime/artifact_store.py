@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import hashlib
+from typing import Literal, TypedDict
 
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.ontology import (
@@ -14,6 +15,14 @@ from bijux_canon_runtime.ontology import (
     ArtifactType,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, ContentHash, TenantID
+
+ArtifactProducer = Literal["agent", "retrieval", "reasoning"]
+
+
+class _HostileDecision(TypedDict):
+    drop: bool
+    corrupt: bool
+    delay: int
 
 
 class ArtifactStore(ABC):
@@ -27,7 +36,7 @@ class ArtifactStore(ABC):
         artifact_id: ArtifactID,
         tenant_id: TenantID,
         artifact_type: ArtifactType,
-        producer: str,
+        producer: ArtifactProducer,
         parent_artifacts: tuple[ArtifactID, ...],
         content_hash: ContentHash,
         scope: ArtifactScope,
@@ -60,7 +69,7 @@ class InMemoryArtifactStore(ArtifactStore):
         artifact_id: ArtifactID,
         tenant_id: TenantID,
         artifact_type: ArtifactType,
-        producer: str,
+        producer: ArtifactProducer,
         parent_artifacts: tuple[ArtifactID, ...],
         content_hash: ContentHash,
         scope: ArtifactScope,
@@ -121,7 +130,7 @@ class HostileArtifactStore(ArtifactStore):
         artifact_id: ArtifactID,
         tenant_id: TenantID,
         artifact_type: ArtifactType,
-        producer: str,
+        producer: ArtifactProducer,
         parent_artifacts: tuple[ArtifactID, ...],
         content_hash: ContentHash,
         scope: ArtifactScope,
@@ -190,7 +199,7 @@ class HostileArtifactStore(ArtifactStore):
                 self._items[key] = artifact
                 self._pending.pop(key, None)
 
-    def _decision(self, artifact_id: ArtifactID) -> dict[str, object]:
+    def _decision(self, artifact_id: ArtifactID) -> _HostileDecision:
         """Internal helper; not part of the public API."""
         payload = f"{self._seed}:{artifact_id}"
         digest = self._hash_payload(payload)

@@ -9,6 +9,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
@@ -16,13 +21,8 @@ from bijux_canon_runtime.observability.storage.execution_store import (
 from bijux_canon_runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
 )
-from bijux_canon_runtime.runtime.context import RunMode
-from bijux_canon_runtime.model.artifact.artifact import Artifact
-from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
-from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
-from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
-from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.ontology.ids import ClaimID, RunID, TenantID
+from bijux_canon_runtime.runtime.context import RunMode
 
 if TYPE_CHECKING:
     from bijux_canon_runtime.application.execute_flow import (
@@ -48,7 +48,7 @@ class ResumeState:
     claim_ids: tuple[ClaimID, ...]
 
 
-def persist_run(result: "FlowRunResult", config: "ExecutionConfig") -> "FlowRunResult":
+def persist_run(result: FlowRunResult, config: ExecutionConfig) -> FlowRunResult:
     """Persist runtime execution outputs and return a normalized result record."""
     from bijux_canon_runtime.application.execute_flow import FlowRunResult
 
@@ -101,7 +101,7 @@ def persist_run(result: "FlowRunResult", config: "ExecutionConfig") -> "FlowRunR
     )
 
 
-def resolve_read_store(config: "ExecutionConfig") -> ExecutionReadStoreProtocol:
+def resolve_read_store(config: ExecutionConfig) -> ExecutionReadStoreProtocol:
     """Resolve the read store used for resumed execution."""
     if config.execution_read_store is not None:
         return config.execution_read_store

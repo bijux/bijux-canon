@@ -6,9 +6,10 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from bijux_canon_runtime.application.flow_boundary import enforce_flow_boundary
 from bijux_canon_runtime.application.planner import ExecutionPlanner
-from typing import Any
 
 __all__ = [
     "ExecutionPlanner",

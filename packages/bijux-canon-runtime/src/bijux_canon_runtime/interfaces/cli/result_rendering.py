@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 import json
+from typing import Any
 
 from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summary
 from bijux_canon_runtime.observability.classification.determinism_classification import (
@@ -16,7 +17,7 @@ from bijux_canon_runtime.observability.classification.determinism_classification
 from bijux_canon_runtime.ontology.public import ReplayAcceptability
 
 
-def render_result(command: str, result, *, json_output: bool) -> None:
+def render_result(command: str, result: Any, *, json_output: bool) -> None:
     """Render a CLI command result."""
     if json_output:
         render_json_result(command, result)
@@ -24,7 +25,7 @@ def render_result(command: str, result, *, json_output: bool) -> None:
     render_human_result(command, result)
 
 
-def render_json_result(command: str, result) -> None:
+def render_json_result(command: str, result: Any) -> None:
     """Render a runtime result as stable JSON."""
     if command == "plan":
         payload = asdict(result.resolved_flow.plan)
@@ -117,7 +118,7 @@ def render_json_result(command: str, result) -> None:
     print(json.dumps({"flow_id": result.resolved_flow.manifest.flow_id}))
 
 
-def render_human_result(command: str, result) -> None:
+def render_human_result(command: str, result: Any) -> None:
     """Render a runtime result as human-readable text."""
     if command == "plan":
         plan = result.resolved_flow.plan
@@ -175,7 +176,7 @@ def replay_confidence(acceptability: ReplayAcceptability) -> str:
         return "invariant_preserving"
     if acceptability == ReplayAcceptability.STATISTICALLY_BOUNDED:
         return "statistically_bounded"
-    return "unknown"
+    raise AssertionError(f"unsupported replay acceptability: {acceptability!r}")
 
 
 __all__ = [

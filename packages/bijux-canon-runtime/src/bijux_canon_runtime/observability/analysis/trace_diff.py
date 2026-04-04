@@ -7,13 +7,16 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from typing import TypedDict
 
+from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.observability.classification.determinism_classification import (
     determinism_classes_for_trace,
     determinism_profile_for_trace,
 )
-from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
-from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.ontology import EntropyMagnitude
 from bijux_canon_runtime.ontology.public import ReplayAcceptability
 
@@ -22,6 +25,12 @@ _MAGNITUDE_ORDER = {
     EntropyMagnitude.MEDIUM: 1,
     EntropyMagnitude.HIGH: 2,
 }
+
+
+class _EntropySummary(TypedDict):
+    sources: list[str]
+    count: int
+    max_magnitude: str | None
 
 
 def semantic_trace_diff(
@@ -116,15 +125,11 @@ def _event_signature(
         ]
     if acceptability == ReplayAcceptability.INVARIANT_PRESERVING:
         return [(event.event_type, event.step_index) for event in trace.events]
-    if acceptability == ReplayAcceptability.STATISTICALLY_BOUNDED:
+    else:
         return sorted((event.event_type, event.step_index) for event in trace.events)
-    return [
-        (event.event_type, event.step_index, event.payload_hash)
-        for event in trace.events
-    ]
 
 
-def _dataset_payload(dataset) -> dict[str, object]:
+def _dataset_payload(dataset: DatasetDescriptor) -> dict[str, object]:
     """Internal helper; not part of the public API."""
     return {
         "dataset_id": dataset.dataset_id,
@@ -135,7 +140,7 @@ def _dataset_payload(dataset) -> dict[str, object]:
     }
 
 
-def _envelope_payload(envelope) -> dict[str, object]:
+def _envelope_payload(envelope: ReplayEnvelope) -> dict[str, object]:
     """Internal helper; not part of the public API."""
     return {
         "min_claim_overlap": envelope.min_claim_overlap,
@@ -205,7 +210,7 @@ def non_determinism_report(
     }
 
 
-def entropy_summary(usage: tuple[EntropyUsage, ...]) -> dict[str, object]:
+def entropy_summary(usage: tuple[EntropyUsage, ...]) -> _EntropySummary:
     """Summarize entropy usage; misuse hides budget drift."""
     sources = sorted({entry.source.value for entry in usage})
     max_magnitude = None

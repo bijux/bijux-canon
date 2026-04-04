@@ -9,6 +9,7 @@ import argparse
 from dataclasses import asdict
 import json
 from pathlib import Path
+from typing import cast
 
 from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
 from bijux_canon_runtime.observability.storage.execution_store import (
@@ -17,7 +18,7 @@ from bijux_canon_runtime.observability.storage.execution_store import (
 from bijux_canon_runtime.ontology.ids import RunID, TenantID
 
 
-def normalize_for_json(value, *, normalize_timestamps: bool = False):
+def normalize_for_json(value: object, *, normalize_timestamps: bool = False) -> object:
     """Normalize runtime values for deterministic CLI JSON output."""
     if isinstance(value, tuple):
         return [
@@ -30,18 +31,18 @@ def normalize_for_json(value, *, normalize_timestamps: bool = False):
             for item in value
         ]
         if normalize_timestamps and all(isinstance(item, str) for item in normalized):
-            return sorted(normalized)
+            return sorted(cast(list[str], normalized))
         return normalized
     if isinstance(value, dict):
-        normalized: dict[str, object] = {}
+        normalized_dict: dict[str, object] = {}
         for key, item in value.items():
             if normalize_timestamps and "timestamp" in key:
-                normalized[key] = "normalized"
+                normalized_dict[key] = "normalized"
             else:
-                normalized[key] = normalize_for_json(
+                normalized_dict[key] = normalize_for_json(
                     item, normalize_timestamps=normalize_timestamps
                 )
-        return normalized
+        return normalized_dict
     if hasattr(value, "value"):
         return value.value
     return value
