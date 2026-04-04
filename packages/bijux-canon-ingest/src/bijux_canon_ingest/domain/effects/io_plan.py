@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: IOPlan – deferred, composable IO as data (domain).
+"""IOPlan: deferred, composable IO as data.
 
 `IOPlan[A]` is a pure *description* of an effect that yields a `Result[A, ErrInfo]`
 when interpreted by the shell via `perform`.

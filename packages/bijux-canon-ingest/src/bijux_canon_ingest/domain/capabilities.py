@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: capability protocols – typed effect interfaces (mypy --strict)."""
+"""Capability protocols for typed effect interfaces."""
 
 from __future__ import annotations
 

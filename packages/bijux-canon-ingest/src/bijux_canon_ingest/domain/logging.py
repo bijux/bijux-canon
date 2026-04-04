@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: structured logging as pure data (LogEntry + Writer).
+"""Structured logging as pure data.
 
 This module defines the *domain-owned* structured log entry type (`LogEntry`) and
 small helpers that produce `Writer[..., LogEntry]` values.

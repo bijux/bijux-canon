@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: AsyncGen concurrency controls (end-of-Bijux RAG).
+"""AsyncGen concurrency controls.
 
 This module groups correlated "flow control" primitives:
 - bounded concurrency / backpressure (`async_gen_bounded_map`)

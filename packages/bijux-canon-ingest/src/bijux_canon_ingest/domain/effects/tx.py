@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: explicit Session/Tx data and transaction bracketing (domain)."""
+"""Explicit session and transaction data with transaction bracketing."""
 
 from __future__ import annotations
 

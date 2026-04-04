@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: AsyncGen – streaming async effect descriptions (end-of-Bijux RAG).
+"""AsyncGen: streaming async effect descriptions.
 
-This module groups the "core stream" primitives for Bijux RAG:
+This module groups the core stream primitives:
 - `AsyncGen[T]`: a replayable thunk returning an async iterator of `Result[T, ErrInfo]`
 - monadic composition (`async_gen_and_then`, `async_gen_map`, …)
 - safe resource usage (`async_gen_using`)

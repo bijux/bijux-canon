@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: AsyncPlan – deferred, replayable async effects as data (domain).
+"""AsyncPlan: deferred, replayable async effects as data.
 
 `AsyncPlan[A]` is a pure *description* of async work. Calling the thunk produces a
 fresh coroutine each time (replayability), and awaiting it yields a

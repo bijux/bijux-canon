@@ -1,13 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: reusable effect composition helpers (end-of-Bijux RAG).
+"""Reusable effect composition helpers for domain-owned effect descriptions.
 
-Bijux RAG note: this module is part of the Bijux RAG architecture layer
-(ports/adapters + effect descriptions). It is intentionally *not* the primary
-way Bijux RAG recommends building day-to-day pipelines; prefer stdlib-first
-iterator composition for new code unless you specifically need IOPlan-style
-effect descriptions.
+This module supports the explicit effect layer used by domain boundaries. Prefer
+stdlib-first iterator composition for straightforward data pipelines, and reach
+for these helpers when the workflow needs IOPlan-style descriptions.
 """
 
 from __future__ import annotations

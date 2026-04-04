@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: resilience for AsyncPlan – retry/timeout policies as pure data (domain)."""
+"""Retry and timeout policies for AsyncPlan values."""
 
 from __future__ import annotations
 

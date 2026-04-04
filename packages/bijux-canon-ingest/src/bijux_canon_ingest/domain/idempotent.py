@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Bijux RAG: idempotent effect design for safe retries/replays."""
+"""Idempotent effect design for safe retries and replays."""
 
 from __future__ import annotations
 

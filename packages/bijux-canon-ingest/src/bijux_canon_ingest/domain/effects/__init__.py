@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Domain-owned effect interfaces (end-of-Bijux RAG).
+"""Domain-owned effect interfaces.
 
 The architecture treats these effect descriptions as part of the domain layer:
 - `IOPlan`: deferred, composable IO as pure data
 - IOPlan-specific wrappers: retry (idempotent only) and transaction bracketing
- - `AsyncPlan`/`AsyncGen`: deferred async effects and lazy async streams as pure descriptions
+- `AsyncPlan`/`AsyncGen`: deferred async effects and lazy async streams as pure descriptions
 """
 
 from __future__ import annotations

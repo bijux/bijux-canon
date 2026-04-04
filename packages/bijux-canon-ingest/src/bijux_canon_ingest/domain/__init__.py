@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Pure, production-facing architecture primitives (end-of-Bijux RAG).
+"""Pure, production-facing architecture primitives.
 
-Bijux RAG introduces a production architecture around the existing pure core:
+This package adds a domain layer around the pure ingestion core:
 - Capability protocols (typed `Protocol`s)
 - Structured logs as pure data (`LogEntry` + Writer)
 - Idempotent effect design for safe retries/replays
