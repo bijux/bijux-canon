@@ -1,11 +1,13 @@
 # bijux-vex
 
 Use this package only when an existing installation still expects the legacy
-index package name.
+index package name. Each release continues the published `bijux-vex`
+distribution and installs `bijux-canon-index` at the same version.
 
 ## What it does
 
 - installs the canonical package `bijux-canon-index`
+- pins that canonical package to the same published version
 - preserves the legacy `bijux_vex` Python import surface
 - preserves the legacy `bijux-vex` command name
 

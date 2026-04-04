@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-rag"
 dynamic = ["version", "dependencies"]
-description = "Compatibility package for bijux-canon-ingest."
+description = "Legacy continuation package for the published bijux-rag distribution. Installs bijux-canon-ingest at the same version."
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }

@@ -1,12 +1,20 @@
 # bijux-agent
 
-`bijux-agent` is the compatibility package for the old agent distribution name.
-Its purpose is to keep legacy environments working while the canonical package
-name is `bijux-canon-agent`.
+`bijux-agent` is the continuation of the published `bijux-agent` distribution
+on PyPI. Each release keeps the legacy distribution, import, and command
+surfaces available while installing `bijux-canon-agent` at the same version.
+
+## Publication status
+
+- published continuation of the legacy `bijux-agent` distribution
+- each release depends on `bijux-canon-agent==<same version>`
+- intended for existing environments that still rely on the legacy name
 
 ## Canonical package
 
-- `bijux-canon-agent`
+- distribution: `bijux-canon-agent`
+- Python import: `bijux_canon_agent`
+- command: `bijux-canon-agent`
 
 ## What this compatibility package preserves
 
@@ -20,6 +28,7 @@ Use `bijux-canon-agent` directly:
 
 - package directory: [`../bijux-canon-agent`](../bijux-canon-agent)
 - package docs: [`../bijux-canon-agent/docs/index.md`](../bijux-canon-agent/docs/index.md)
+- changelog: [CHANGELOG.md](CHANGELOG.md)
 
 ## Package contents
 

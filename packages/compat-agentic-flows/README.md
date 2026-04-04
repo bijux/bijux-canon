@@ -1,15 +1,24 @@
 # agentic-flows
 
-`agentic-flows` is a compatibility package for the old runtime distribution
-name. Its job is to keep legacy installs and imports working while the canonical
-package name is `bijux-canon-runtime`.
+`agentic-flows` is the continuation of the published `agentic-flows`
+distribution on PyPI. Each release keeps the legacy distribution, import, and
+command surfaces available while installing `bijux-canon-runtime` at the same
+version.
 
 This package exists to reduce migration breakage, not to become the preferred
 entrypoint for new work.
 
+## Publication status
+
+- published continuation of the legacy `agentic-flows` distribution
+- each release depends on `bijux-canon-runtime==<same version>`
+- intended for existing environments that still rely on the legacy name
+
 ## Canonical package
 
-- `bijux-canon-runtime`
+- distribution: `bijux-canon-runtime`
+- Python import: `bijux_canon_runtime`
+- command: `bijux-canon-runtime`
 
 ## What this compatibility package preserves
 
@@ -23,6 +32,7 @@ Depend on `bijux-canon-runtime` directly and read the canonical docs there:
 
 - package directory: [`../bijux-canon-runtime`](../bijux-canon-runtime)
 - package docs: [`../bijux-canon-runtime/docs/index.md`](../bijux-canon-runtime/docs/index.md)
+- changelog: [CHANGELOG.md](CHANGELOG.md)
 
 ## Package contents
 

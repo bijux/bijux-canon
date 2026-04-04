@@ -1,12 +1,20 @@
 # bijux-rar
 
-`bijux-rar` is the compatibility package for the old reasoning distribution
-name. It exists so older environments can keep working while the canonical
-package name is `bijux-canon-reason`.
+`bijux-rar` is the continuation of the published `bijux-rar` distribution on
+PyPI. Each release keeps the legacy distribution, import, and command surfaces
+available while installing `bijux-canon-reason` at the same version.
+
+## Publication status
+
+- published continuation of the legacy `bijux-rar` distribution
+- each release depends on `bijux-canon-reason==<same version>`
+- intended for existing environments that still rely on the legacy name
 
 ## Canonical package
 
-- `bijux-canon-reason`
+- distribution: `bijux-canon-reason`
+- Python import: `bijux_canon_reason`
+- command: `bijux-canon-reason`
 
 ## What this compatibility package preserves
 
@@ -20,6 +28,7 @@ Use `bijux-canon-reason` directly:
 
 - package directory: [`../bijux-canon-reason`](../bijux-canon-reason)
 - package docs: [`../bijux-canon-reason/docs/index.md`](../bijux-canon-reason/docs/index.md)
+- changelog: [CHANGELOG.md](CHANGELOG.md)
 
 ## Package contents
 

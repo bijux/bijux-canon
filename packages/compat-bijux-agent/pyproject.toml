@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-agent"
 dynamic = ["version", "dependencies"]
-description = "Compatibility package for bijux-canon-agent."
+description = "Legacy continuation package for the published bijux-agent distribution. Installs bijux-canon-agent at the same version."
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 readme = "README.md"
 requires-python = ">=3.11,<4"
