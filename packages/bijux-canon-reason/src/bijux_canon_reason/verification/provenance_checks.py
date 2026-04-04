@@ -2,6 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from dataclasses import dataclass
 import hashlib
 import json
 from pathlib import Path
@@ -26,6 +27,18 @@ EVIDENCE_MARKER_RE = re.compile(
 )
 
 
+@dataclass(frozen=True)
+class _ChunkManifest:
+    spans: dict[str, tuple[int, int]]
+    hashes: dict[str, str]
+
+
+@dataclass(frozen=True)
+class _EvidenceArtifact:
+    bytes_: bytes
+    span: tuple[int, int]
+
+
 def check_derived_grounding(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
@@ -39,15 +52,10 @@ def check_derived_grounding(
         if getattr(claim, "claim_type", None) != ClaimType.derived:
             continue
 
-        evidence_supports = [
-            support
-            for support in claim.supports
-            if support.kind == SupportKind.evidence
-        ]
+        evidence_supports = _evidence_supports(claim.supports)
         if not evidence_supports:
             failures.append(
-                VerificationFailure(
-                    severity=VerificationSeverity.error,
+                _failure(
                     message=(
                         f"derived_claim_grounding: claim {claim.id} has no evidence supports"
                     ),
@@ -57,8 +65,7 @@ def check_derived_grounding(
             continue
         if len(evidence_supports) < min_supports:
             failures.append(
-                VerificationFailure(
-                    severity=VerificationSeverity.error,
+                _failure(
                     message=(
                         f"derived_claim_grounding: claim {claim.id} has "
                         f"{len(evidence_supports)} supports < required {min_supports}"
@@ -73,8 +80,7 @@ def check_derived_grounding(
             marker_key = (support.ref_id, start, end, support.snippet_sha256)
             if marker_key not in marker_map:
                 failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
+                    _failure(
                         message=(
                             "derived_claim_grounding: claim "
                             f"{claim.id} missing canonical citation marker "
@@ -92,8 +98,7 @@ def check_derived_grounding(
                 for support in evidence_supports
             ):
                 failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
+                    _failure(
                         message=(
                             f"derived_claim_grounding: marker for evidence {evidence_id} "
                             "has no matching support"
@@ -126,8 +131,7 @@ def check_evidence_hashes(
         abs_path = _resolve_under_root(ctx.artifacts_dir, reference.content_path)
         if abs_path is None:
             failures.append(
-                VerificationFailure(
-                    severity=VerificationSeverity.error,
+                _failure(
                     message=f"Evidence path escapes artifacts_dir: {reference.content_path}",
                     invariant_id=INV_EVD_001,
                 )
@@ -135,8 +139,7 @@ def check_evidence_hashes(
             continue
         if not abs_path.exists():
             failures.append(
-                VerificationFailure(
-                    severity=VerificationSeverity.error,
+                _failure(
                     message=f"Missing evidence file: {reference.content_path}",
                     invariant_id=INV_EVD_001,
                 )
@@ -144,8 +147,7 @@ def check_evidence_hashes(
             continue
         if _sha256_path(abs_path) != reference.sha256:
             failures.append(
-                VerificationFailure(
-                    severity=VerificationSeverity.error,
+                _failure(
                     message=f"Evidence {reference.id} sha256 mismatch",
                     invariant_id=INV_EVD_001,
                 )
@@ -168,28 +170,12 @@ def check_support_spans(
         ), []
 
     failures: list[VerificationFailure] = []
-    evidence_bytes: dict[str, bytes] = {}
-    evidence_spans: dict[str, tuple[int, int]] = {}
-    chunk_spans, chunk_hashes = _load_chunk_manifest(ctx.artifacts_dir)
-
-    for event in ctx.trace.events:
-        if event.kind != TraceEventKind.evidence_registered:
-            continue
-        abs_path = _resolve_under_root(ctx.artifacts_dir, event.evidence.content_path)
-        if abs_path is None or not abs_path.exists():
-            continue
-        evidence_bytes[event.evidence.id] = abs_path.read_bytes()
-        evidence_spans[event.evidence.id] = (
-            int(event.evidence.span[0]),
-            int(event.evidence.span[1]),
-        )
-        _validate_chunk_alignment(
-            event=event,
-            abs_path=abs_path,
-            chunk_spans=chunk_spans,
-            chunk_hashes=chunk_hashes,
-            failures=failures,
-        )
+    chunk_manifest = _load_chunk_manifest(ctx.artifacts_dir)
+    evidence_artifacts = _load_evidence_artifacts(
+        ctx=ctx,
+        chunk_manifest=chunk_manifest,
+        failures=failures,
+    )
 
     for event in ctx.trace.events:
         if event.kind != TraceEventKind.claim_emitted:
@@ -200,8 +186,7 @@ def check_support_spans(
             _validate_support_span(
                 claim_id=event.claim.id,
                 support=support,
-                evidence_bytes=evidence_bytes,
-                evidence_spans=evidence_spans,
+                evidence_artifacts=evidence_artifacts,
                 failures=failures,
             )
 
@@ -230,20 +215,14 @@ def check_reasoning_trace(
     )
     if not isinstance(reasoning_meta, dict):
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="reasoning_trace: missing reasoning metadata",
-            )
+            _failure(message="reasoning_trace: missing reasoning metadata")
         )
         return VerificationCheck(name="reasoning_trace", passed=False), failures
 
     expected_hash = reasoning_meta.get("reasoning_trace_sha256")
     if not isinstance(expected_hash, str) or len(expected_hash) != 64:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="reasoning_trace: missing result hash",
-            )
+            _failure(message="reasoning_trace: missing result hash")
         )
         return VerificationCheck(name="reasoning_trace", passed=False), failures
 
@@ -252,26 +231,17 @@ def check_reasoning_trace(
         return VerificationCheck(name="reasoning_trace", passed=False), failures
     if not claim_hashes:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="reasoning_trace: no derived claim hashes found",
-            )
+            _failure(message="reasoning_trace: no derived claim hashes found")
         )
         return VerificationCheck(name="reasoning_trace", passed=False), failures
     if len(claim_hashes) != 1:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="reasoning_trace: multiple result hashes present",
-            )
+            _failure(message="reasoning_trace: multiple result hashes present")
         )
         return VerificationCheck(name="reasoning_trace", passed=False), failures
     if next(iter(claim_hashes)) != expected_hash:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message="reasoning_trace: metadata hash mismatch",
-            )
+            _failure(message="reasoning_trace: metadata hash mismatch")
         )
     return VerificationCheck(
         name="reasoning_trace",
@@ -313,12 +283,12 @@ def _marker_map(statement: str) -> set[tuple[str, int, int, str]]:
 
 def _load_chunk_manifest(
     artifacts_dir: Path,
-) -> tuple[dict[str, tuple[int, int]], dict[str, str]]:
+) -> _ChunkManifest:
     chunk_spans: dict[str, tuple[int, int]] = {}
     chunk_hashes: dict[str, str] = {}
     chunks_file = artifacts_dir / "provenance" / "chunks.jsonl"
     if not chunks_file.exists():
-        return chunk_spans, chunk_hashes
+        return _ChunkManifest(spans=chunk_spans, hashes=chunk_hashes)
 
     for line in chunks_file.read_text(encoding="utf-8").splitlines():
         if not line.strip():
@@ -330,7 +300,7 @@ def _load_chunk_manifest(
         chunk_spans[chunk_id] = (int(obj["start_byte"]), int(obj["end_byte"]))
         if "chunk_sha256" in obj:
             chunk_hashes[chunk_id] = str(obj["chunk_sha256"])
-    return chunk_spans, chunk_hashes
+    return _ChunkManifest(spans=chunk_spans, hashes=chunk_hashes)
 
 
 def _derived_claim_hashes(
@@ -355,12 +325,36 @@ def _derived_claim_hashes(
             claim_hashes.add(result_hash)
             continue
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
-                message=f"reasoning_trace: claim {event.claim.id} missing result_sha256",
-            )
+            _failure(message=f"reasoning_trace: claim {event.claim.id} missing result_sha256")
         )
     return claim_hashes
+
+
+def _load_evidence_artifacts(
+    *,
+    ctx: VerificationContext,
+    chunk_manifest: _ChunkManifest,
+    failures: list[VerificationFailure],
+) -> dict[str, _EvidenceArtifact]:
+    artifacts: dict[str, _EvidenceArtifact] = {}
+    for event in ctx.trace.events:
+        if event.kind != TraceEventKind.evidence_registered:
+            continue
+        abs_path = _resolve_under_root(ctx.artifacts_dir, event.evidence.content_path)
+        if abs_path is None or not abs_path.exists():
+            continue
+        bytes_ = abs_path.read_bytes()
+        artifacts[event.evidence.id] = _EvidenceArtifact(
+            bytes_=bytes_,
+            span=(int(event.evidence.span[0]), int(event.evidence.span[1])),
+        )
+        _validate_chunk_alignment(
+            event=event,
+            abs_path=abs_path,
+            chunk_manifest=chunk_manifest,
+            failures=failures,
+        )
+    return artifacts
 
 
 def _resolve_under_root(root: Path, rel_posix_path: str) -> Path | None:
@@ -378,18 +372,16 @@ def _validate_chunk_alignment(
     *,
     event: object,
     abs_path: Path,
-    chunk_spans: dict[str, tuple[int, int]],
-    chunk_hashes: dict[str, str],
+    chunk_manifest: _ChunkManifest,
     failures: list[VerificationFailure],
 ) -> None:
     evidence = event.evidence
-    if evidence.chunk_id not in chunk_spans:
+    if evidence.chunk_id not in chunk_manifest.spans:
         return
-    chunk_span = chunk_spans[evidence.chunk_id]
+    chunk_span = chunk_manifest.spans[evidence.chunk_id]
     if tuple(evidence.span) != tuple(chunk_span):
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
+            _failure(
                 message=(
                     f"support_spans: evidence span {evidence.span} does not"
                     f" match chunk span {chunk_span} for chunk {evidence.chunk_id}"
@@ -398,13 +390,12 @@ def _validate_chunk_alignment(
             )
         )
         return
-    if evidence.chunk_id in chunk_hashes and (
+    if evidence.chunk_id in chunk_manifest.hashes and (
         hashlib.sha256(abs_path.read_bytes()).hexdigest()
-        != chunk_hashes[evidence.chunk_id]
+        != chunk_manifest.hashes[evidence.chunk_id]
     ):
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
+            _failure(
                 message=(
                     "support_spans: evidence hash mismatch vs chunk hash"
                     f" for {evidence.chunk_id}"
@@ -418,15 +409,13 @@ def _validate_support_span(
     *,
     claim_id: str,
     support: object,
-    evidence_bytes: dict[str, bytes],
-    evidence_spans: dict[str, tuple[int, int]],
+    evidence_artifacts: dict[str, _EvidenceArtifact],
     failures: list[VerificationFailure],
 ) -> None:
-    data = evidence_bytes.get(support.ref_id)
-    if data is None:
+    artifact = evidence_artifacts.get(support.ref_id)
+    if artifact is None:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
+            _failure(
                 message=(
                     f"support_spans: evidence {support.ref_id} bytes missing for"
                     f" claim {claim_id}"
@@ -436,10 +425,10 @@ def _validate_support_span(
         )
         return
     start, end = support.span
+    data = artifact.bytes_
     if start < 0 or end > len(data) or start >= end:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
+            _failure(
                 message=(
                     f"support_spans: invalid span {support.span} for evidence"
                     f" {support.ref_id} in claim {claim_id}"
@@ -448,26 +437,22 @@ def _validate_support_span(
             )
         )
         return
-    evidence_span = evidence_spans.get(support.ref_id)
-    if evidence_span is not None:
-        evidence_start, evidence_end = evidence_span
-        if start < evidence_start or end > evidence_end:
-            failures.append(
-                VerificationFailure(
-                    severity=VerificationSeverity.error,
-                    message=(
-                        f"support_spans: support span {support.span} not within "
-                        f"evidence span {evidence_span} for {support.ref_id}"
-                    ),
-                    invariant_id=INV_EVD_001,
-                )
+    evidence_start, evidence_end = artifact.span
+    if start < evidence_start or end > evidence_end:
+        failures.append(
+            _failure(
+                message=(
+                    f"support_spans: support span {support.span} not within "
+                    f"evidence span {artifact.span} for {support.ref_id}"
+                ),
+                invariant_id=INV_EVD_001,
             )
-            return
+        )
+        return
     snippet_hash = hashlib.sha256(data[start:end]).hexdigest()
     if snippet_hash != support.snippet_sha256:
         failures.append(
-            VerificationFailure(
-                severity=VerificationSeverity.error,
+            _failure(
                 message=(
                     f"support_spans: snippet hash mismatch for evidence"
                     f" {support.ref_id} in claim {claim_id}"
@@ -475,6 +460,22 @@ def _validate_support_span(
                 invariant_id=INV_EVD_001,
             )
         )
+
+
+def _evidence_supports(supports: list[object]) -> list[object]:
+    return [support for support in supports if support.kind == SupportKind.evidence]
+
+
+def _failure(
+    *,
+    message: str,
+    invariant_id: str | None = None,
+) -> VerificationFailure:
+    return VerificationFailure(
+        severity=VerificationSeverity.error,
+        message=message,
+        invariant_id=invariant_id,
+    )
 
 
 __all__ = [
