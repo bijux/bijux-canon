@@ -22,10 +22,10 @@ def runtime_dependency_versions() -> dict[str, str]:
     """Return canonical runtime dependency versions for environment snapshots."""
     return {
         "bijux-cli": distribution_version("bijux-cli"),
-        "bijux-canon-agent": distribution_version("bijux-canon-agent", "bijux-agent"),
-        "bijux-canon-ingest": distribution_version("bijux-canon-ingest", "bijux-rag"),
-        "bijux-canon-reason": distribution_version("bijux-canon-reason", "bijux-rar"),
-        "bijux-canon-index": distribution_version("bijux-canon-index", "bijux-vex"),
+        "bijux-canon-agent": distribution_version("bijux-canon-agent"),
+        "bijux-canon-ingest": distribution_version("bijux-canon-ingest"),
+        "bijux-canon-reason": distribution_version("bijux-canon-reason"),
+        "bijux-canon-index": distribution_version("bijux-canon-index"),
     }
 
 

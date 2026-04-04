@@ -38,7 +38,7 @@ from bijux_canon_runtime.ontology.ids import (
 )
 
 
-bijux_canon_agent_version = distribution_version("bijux-canon-agent", "bijux-agent")
+bijux_canon_agent_version = distribution_version("bijux-canon-agent")
 bijux_cli_version = distribution_version("bijux-cli")
 
 

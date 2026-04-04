@@ -43,7 +43,7 @@ classifiers = [
   "Topic :: Utilities",
 ]
 dependencies = [
-  "bijux-cli>=0.1.0,<0.2.0",
+  "bijux-cli>=0.3.3,<0.4.0",
   "bijux-canon-agent>=0.3.0,<0.4.0",
   "bijux-canon-ingest>=0.3.0,<0.4.0",
   "bijux-canon-reason>=0.3.0,<0.4.0",
