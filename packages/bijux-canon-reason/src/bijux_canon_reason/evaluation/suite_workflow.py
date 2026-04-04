@@ -33,6 +33,64 @@ class EvalResult:
         }
 
 
+@dataclass(frozen=True)
+class EvalCaseMetrics:
+    run_dir: str
+    spec_path: str
+    evidence_count: int
+    claims: int
+    claims_with_support: int
+    alignment_rate: float
+    faithfulness: float
+    recall_at_k: float
+    mrr: float
+    insufficient: bool
+    verification_failures: list[str]
+    failure_taxonomy: dict[str, int]
+    severity_counts: dict[str, int]
+    verification_checks_failed: int
+    claims_failed: int
+
+    def to_json(self) -> dict[str, object]:
+        return {
+            "run_dir": self.run_dir,
+            "spec_path": self.spec_path,
+            "evidence_count": self.evidence_count,
+            "claims": self.claims,
+            "claims_with_support": self.claims_with_support,
+            "alignment_rate": self.alignment_rate,
+            "faithfulness": self.faithfulness,
+            "recall_at_k": self.recall_at_k,
+            "mrr": self.mrr,
+            "insufficient": self.insufficient,
+            "verification_failures": list(self.verification_failures),
+            "failure_taxonomy": dict(self.failure_taxonomy),
+            "severity_counts": dict(self.severity_counts),
+            "verification_checks_failed": self.verification_checks_failed,
+            "claims_failed": self.claims_failed,
+        }
+
+
+@dataclass(frozen=True)
+class EvalSummaryMetrics:
+    recall_at_k: float
+    mrr: float
+    alignment_rate: float
+    faithfulness: float
+    insufficiency_rate: float
+    failure_taxonomy: dict[str, int]
+
+    def to_json(self) -> dict[str, object]:
+        return {
+            "recall_at_k": self.recall_at_k,
+            "mrr": self.mrr,
+            "alignment_rate": self.alignment_rate,
+            "faithfulness": self.faithfulness,
+            "insufficiency_rate": self.insufficiency_rate,
+            "failure_taxonomy": dict(self.failure_taxonomy),
+        }
+
+
 def _default_suite_root() -> Path:
     """Locate bundled or caller-provided evaluation suites."""
     cwd_candidates = (
@@ -65,7 +123,7 @@ def _read_jsonl(path: Path) -> list[dict[str, object]]:
     return rows
 
 
-def _case_metrics(arts: RunArtifacts) -> dict[str, object]:
+def _case_metrics(arts: RunArtifacts) -> EvalCaseMetrics:
     trace = arts.trace
     verify_report = arts.verify_report
 
@@ -103,33 +161,27 @@ def _case_metrics(arts: RunArtifacts) -> dict[str, object]:
         severity = str(getattr(failure, "severity", Severity.error))
         severity_counts[severity] = severity_counts.get(severity, 0) + 1
 
-    return {
-        "run_dir": str(arts.run_dir),
-        "spec_path": str(arts.spec_path),
-        "evidence_count": evidence_count,
-        "claims": len(claims),
-        "claims_with_support": len(claims_with_support),
-        "alignment_rate": alignment_rate,
-        "faithfulness": faithfulness,
-        "recall_at_k": recall_at_k,
-        "mrr": mrr,
-        "insufficient": insufficient,
-        "verification_failures": [
-            failure.message for failure in verify_report.failures
-        ],
-        "failure_taxonomy": taxonomy,
-        "severity_counts": severity_counts,
-        "verification_checks_failed": sum(
+    return EvalCaseMetrics(
+        run_dir=str(arts.run_dir),
+        spec_path=str(arts.spec_path),
+        evidence_count=evidence_count,
+        claims=len(claims),
+        claims_with_support=len(claims_with_support),
+        alignment_rate=alignment_rate,
+        faithfulness=faithfulness,
+        recall_at_k=recall_at_k,
+        mrr=mrr,
+        insufficient=insufficient,
+        verification_failures=[failure.message for failure in verify_report.failures],
+        failure_taxonomy=taxonomy,
+        severity_counts=severity_counts,
+        verification_checks_failed=sum(
             1 for check in verify_report.checks if not check.passed
         ),
-        "claims_failed": len(
-            [
-                failure
-                for failure in verify_report.failures
-                if "claim" in failure.message.lower()
-            ]
+        claims_failed=sum(
+            1 for failure in verify_report.failures if "claim" in failure.message.lower()
         ),
-    }
+    )
 
 
 def suite_summary(results: list[dict[str, object]]) -> dict[str, object]:
@@ -137,17 +189,8 @@ def suite_summary(results: list[dict[str, object]]) -> dict[str, object]:
     if not results:
         return {"count": 0, "insufficient_rate": 0.0, "failure_taxonomy": {}}
 
-    count = len(results)
-    insufficient = sum(1 for row in results if row.get("insufficient"))
-    return {
-        "count": count,
-        "recall_at_k": _average_metric(results, "recall_at_k"),
-        "mrr": _average_metric(results, "mrr"),
-        "alignment_rate": _average_metric(results, "alignment_rate"),
-        "faithfulness": _average_metric(results, "faithfulness"),
-        "insufficient_rate": insufficient / count,
-        "failure_taxonomy": _aggregate_taxonomy(results),
-    }
+    metrics = _summary_metrics(results)
+    return {"count": len(results), "insufficient_rate": metrics.insufficiency_rate, **metrics.to_json()}
 
 
 def run_eval_suite(
@@ -176,7 +219,7 @@ def run_eval_suite(
         inputs = RunInputs(spec=spec, preset=preset, seed=seed)
         case_root = artifacts_dir / "eval" / suite / f"case_{idx:03d}"
         artifacts = builder.build(inputs=inputs, artifacts_root=case_root)
-        metrics_rows.append({"case": idx, **_case_metrics(artifacts)})
+        metrics_rows.append({"case": idx, **_case_metrics(artifacts).to_json()})
         if artifacts.verify_report.failures:
             failures.append(
                 {
@@ -209,14 +252,7 @@ def run_eval_suite(
 
     summary_payload = {
         **result.to_json(),
-        "metrics": {
-            "recall_at_k": _average_metric(metrics_rows, "recall_at_k"),
-            "mrr": _average_metric(metrics_rows, "mrr"),
-            "alignment_rate": _average_metric(metrics_rows, "alignment_rate"),
-            "faithfulness": _average_metric(metrics_rows, "faithfulness"),
-            "insufficiency_rate": _insufficiency_rate(metrics_rows),
-            "failure_taxonomy": _aggregate_taxonomy(metrics_rows),
-        },
+        "metrics": _summary_metrics(metrics_rows).to_json(),
     }
 
     out_path = eval_dir / "summary.json"
@@ -248,3 +284,14 @@ def _insufficiency_rate(rows: list[dict[str, object]]) -> float:
     if not rows:
         return 0.0
     return sum(1 for row in rows if row.get("insufficient")) / len(rows)
+
+
+def _summary_metrics(rows: list[dict[str, object]]) -> EvalSummaryMetrics:
+    return EvalSummaryMetrics(
+        recall_at_k=_average_metric(rows, "recall_at_k"),
+        mrr=_average_metric(rows, "mrr"),
+        alignment_rate=_average_metric(rows, "alignment_rate"),
+        faithfulness=_average_metric(rows, "faithfulness"),
+        insufficiency_rate=_insufficiency_rate(rows),
+        failure_taxonomy=_aggregate_taxonomy(rows),
+    )
