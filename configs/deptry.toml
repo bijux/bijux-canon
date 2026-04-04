@@ -2,7 +2,7 @@
 pep621_dev_dependency_groups = ["dev"]
 ignore = ["DEP003"]
 extend_exclude = ["docs", "api", "artifacts"]
-package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-canon-agent" = "bijux_canon_agent", "bijux-canon-ingest" = "bijux_rag", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
+package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-canon-runtime" = "bijux_canon_runtime", "bijux-canon-agent" = "bijux_canon_agent", "bijux-canon-ingest" = "bijux_canon_ingest", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "bijux-canon-dev" = "bijux_canon_dev", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
 
 [tool.repo_deptry.packages."bijux-canon-runtime"]
 known_first_party = ["bijux_canon_runtime"]
@@ -14,9 +14,13 @@ extend_exclude = ["docs", "mkdocs", "tooling"]
 ignore = ["DEP001", "DEP002", "DEP003"]
 
 [tool.repo_deptry.packages."bijux-canon-ingest"]
-known_first_party = ["bijux_rag"]
+known_first_party = ["bijux_canon_ingest"]
 pep621_dev_dependency_groups = ["dev", "docs"]
-per_rule_ignores = { DEP001 = ["dask", "apache_beam"], DEP002 = ["fastapi", "uvicorn", "PyYAML", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "hypothesis", "schemathesis", "ruff", "mypy", "vulture", "deptry", "interrogate", "bandit", "pip-audit", "twine", "prance", "openapi-spec-validator", "types-PyYAML", "build", "mkdocs", "mkdocs-material", "pymdown-extensions", "mkdocs-git-revision-date-localized-plugin", "mkdocs-minify-plugin", "mkdocs-redirects", "mkdocs-include-markdown-plugin", "mkdocstrings", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-section-index", "mkdocs-click", "mkdocs-glightbox"], DEP003 = ["bijux_rag"] }
+per_rule_ignores = { DEP001 = ["dask", "apache_beam"], DEP002 = ["fastapi", "uvicorn", "PyYAML", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "hypothesis", "schemathesis", "ruff", "mypy", "vulture", "deptry", "interrogate", "bandit", "pip-audit", "twine", "prance", "openapi-spec-validator", "types-PyYAML", "build", "mkdocs", "mkdocs-material", "pymdown-extensions", "mkdocs-git-revision-date-localized-plugin", "mkdocs-minify-plugin", "mkdocs-redirects", "mkdocs-include-markdown-plugin", "mkdocstrings", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-section-index", "mkdocs-click", "mkdocs-glightbox"], DEP003 = ["bijux_canon_ingest"] }
+
+[tool.repo_deptry.packages."bijux-canon-dev"]
+known_first_party = ["bijux_canon_dev"]
+ignore = ["DEP002", "DEP003"]
 
 [tool.repo_deptry.packages."bijux-canon-reason"]
 known_first_party = ["bijux_canon_reason"]
