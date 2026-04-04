@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[5]
 DOCS_ROOT = ROOT / "docs"
 LAST_REVIEWED = "2026-04-04"
 
@@ -2218,7 +2218,7 @@ def render_home(
         (
             "`docs/index.md` as the root routing page",
             "`mkdocs.yml` as the published navigation source",
-            "`scripts/render_docs_catalog.py` as the generator that shapes the docs tree",
+            "`packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` as the developer-side catalog tool",
         ),
     )
     return "\n".join(
