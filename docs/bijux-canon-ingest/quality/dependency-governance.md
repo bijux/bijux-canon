@@ -97,3 +97,7 @@ Keep it aligned with `pyproject.toml` and the package's real dependency posture.
 ## Core Claim
 
 The quality claim of `bijux-canon-ingest` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.
+
+## Why It Matters
+
+If the quality pages for `bijux-canon-ingest` are weak, it becomes difficult to tell whether a change is actually safe or merely passes a narrow local test.

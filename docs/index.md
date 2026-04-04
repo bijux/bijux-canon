@@ -151,3 +151,7 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 ## Core Claim
 
 The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.
+
+## Why It Matters
+
+If this page is vague, readers enter the wrong handbook branch first and the cost of reviewing the repository rises immediately because context has to be rebuilt page by page.

@@ -93,3 +93,7 @@ Keep it aligned with the limitations that remain intentionally true today.
 ## Core Claim
 
 The quality claim of `bijux-canon-agent` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.
+
+## Why It Matters
+
+If the quality pages for `bijux-canon-agent` are weak, it becomes difficult to tell whether a change is actually safe or merely passes a narrow local test.

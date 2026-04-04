@@ -93,3 +93,7 @@ Update it only when the shared documentation system itself changes.
 ## Core Claim
 
 The quality claim of `bijux-canon-index` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.
+
+## Why It Matters
+
+If the quality pages for `bijux-canon-index` are weak, it becomes difficult to tell whether a change is actually safe or merely passes a narrow local test.

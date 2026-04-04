@@ -97,3 +97,7 @@ Keep it aligned with the package interfaces and operational risk profile.
 ## Core Claim
 
 The operational claim of `bijux-canon-reason` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.
+
+## Why It Matters
+
+If the operations pages for `bijux-canon-reason` are weak, maintainers end up relearning install, diagnose, and release behavior from trial and error instead of from checked-in package truth.

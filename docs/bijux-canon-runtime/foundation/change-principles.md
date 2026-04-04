@@ -93,3 +93,7 @@ Update these principles only when the package operating model truly changes.
 ## Core Claim
 
 The foundational claim of `bijux-canon-runtime` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.
+
+## Why It Matters
+
+If the foundation pages for `bijux-canon-runtime` are weak, reviewers stop knowing where the package boundary really is and adjacent packages begin absorbing behavior by convenience instead of design.

@@ -94,3 +94,7 @@ Keep it aligned with the actual compatibility package tests or maintenance check
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.
+
+## Why It Matters
+
+Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist, and that makes migration drift expensive.

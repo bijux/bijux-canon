@@ -92,3 +92,7 @@ Keep it aligned with actual package modules and remove retired directories promp
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.
+
+## Why It Matters
+
+Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely.

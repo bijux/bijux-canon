@@ -103,3 +103,7 @@ Keep it aligned with the actual artifact shapes and serialized outputs.
 ## Core Claim
 
 The architectural claim of `bijux-canon-runtime` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.
+
+## Why It Matters
+
+If the architecture pages for `bijux-canon-runtime` are weak, refactors become guesswork and dependency drift can hide until failures show up in tests or production-facing behavior.

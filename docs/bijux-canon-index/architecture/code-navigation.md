@@ -58,6 +58,10 @@ flowchart TD
 
 The architectural claim of `bijux-canon-index` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.
 
+## Why It Matters
+
+If the architecture pages for `bijux-canon-index` are weak, refactors become guesswork and dependency drift can hide until failures show up in tests or production-facing behavior.
+
 ## Concrete Anchors
 
 - `src/bijux_canon_index/domain` for execution, provenance, and request semantics

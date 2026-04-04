@@ -99,3 +99,7 @@ Keep it aligned with the package's actual public surfaces and release process.
 ## Core Claim
 
 The interface claim of `bijux-canon-agent` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.
+
+## Why It Matters
+
+If the interface pages for `bijux-canon-agent` are weak, callers cannot tell which commands, schemas, or artifacts are stable enough to depend on, and compatibility review arrives too late.

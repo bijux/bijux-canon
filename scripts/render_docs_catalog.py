@@ -817,6 +817,36 @@ def package_core_claim(package: PackageInfo, category: str) -> str:
     return claim_map[category]
 
 
+def package_why_it_matters(package: PackageInfo, category: str) -> str:
+    matter_map = {
+        "foundation": (
+            f"If the foundation pages for `{package.title}` are weak, reviewers stop knowing"
+            " where the package boundary really is and adjacent packages begin absorbing"
+            " behavior by convenience instead of design."
+        ),
+        "architecture": (
+            f"If the architecture pages for `{package.title}` are weak, refactors become"
+            " guesswork and dependency drift can hide until failures show up in tests or"
+            " production-facing behavior."
+        ),
+        "interfaces": (
+            f"If the interface pages for `{package.title}` are weak, callers cannot tell"
+            " which commands, schemas, or artifacts are stable enough to depend on, and"
+            " compatibility review arrives too late."
+        ),
+        "operations": (
+            f"If the operations pages for `{package.title}` are weak, maintainers end up"
+            " relearning install, diagnose, and release behavior from trial and error"
+            " instead of from checked-in package truth."
+        ),
+        "quality": (
+            f"If the quality pages for `{package.title}` are weak, it becomes difficult to"
+            " tell whether a change is actually safe or merely passes a narrow local test."
+        ),
+    }
+    return matter_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -889,6 +919,17 @@ def add_core_claim(body: str, text: str) -> str:
     block = "\n".join(
         [
             "## Core Claim",
+            "",
+            text,
+        ]
+    )
+    return insert_before_heading(body, "Concrete Anchors", block)
+
+
+def add_why_it_matters(body: str, text: str) -> str:
+    block = "\n".join(
+        [
+            "## Why It Matters",
             "",
             text,
         ]
@@ -1022,6 +1063,10 @@ def render_home(
     body = add_core_claim(
         body,
         "The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.",
+    )
+    body = add_why_it_matters(
+        body,
+        "If this page is vague, readers enter the wrong handbook branch first and the cost of reviewing the repository rises immediately because context has to be rebuilt page by page.",
     )
     body = add_anchor_section(
         body,
@@ -1380,6 +1425,10 @@ def render_root_page(
         body,
         "Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.",
     )
+    body = add_why_it_matters(
+        body,
+        "Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.",
+    )
     body = add_honesty_boundary(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
@@ -1697,6 +1746,10 @@ def render_dev_page(slug: str, title: str) -> str:
         body,
         "Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.",
     )
+    body = add_why_it_matters(
+        body,
+        "Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely.",
+    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
@@ -2008,6 +2061,10 @@ def render_compat_page(slug: str, title: str) -> str:
         body,
         "Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.",
     )
+    body = add_why_it_matters(
+        body,
+        "Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist, and that makes migration drift expensive.",
+    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
@@ -2133,6 +2190,7 @@ def render_package_page(
     )
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_core_claim(body, package_core_claim(package, category))
+    body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_anchor_section(body, package_anchor_bullets(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))

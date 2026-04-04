@@ -100,3 +100,7 @@ Update it only when ownership truly moves into or out of `bijux-canon-index`.
 ## Core Claim
 
 The foundational claim of `bijux-canon-index` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.
+
+## Why It Matters
+
+If the foundation pages for `bijux-canon-index` are weak, reviewers stop knowing where the package boundary really is and adjacent packages begin absorbing behavior by convenience instead of design.

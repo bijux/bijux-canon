@@ -118,3 +118,7 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 ## Core Claim
 
 The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.
+
+## Why It Matters
+
+If the quality pages for `bijux-canon-runtime` are weak, it becomes difficult to tell whether a change is actually safe or merely passes a narrow local test.

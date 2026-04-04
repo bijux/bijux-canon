@@ -99,3 +99,7 @@ Keep it aligned with the checked-in examples, fixtures, and executable tests.
 ## Core Claim
 
 The interface claim of `bijux-canon-runtime` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.
+
+## Why It Matters
+
+If the interface pages for `bijux-canon-runtime` are weak, callers cannot tell which commands, schemas, or artifacts are stable enough to depend on, and compatibility review arrives too late.

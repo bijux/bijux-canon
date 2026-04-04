@@ -127,3 +127,7 @@ This page is part of the canonical docs spine. Keep it aligned with the current 
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.
+
+## Why It Matters
+
+Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.
