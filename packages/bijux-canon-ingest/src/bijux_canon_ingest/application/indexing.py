@@ -16,15 +16,11 @@ from bijux_canon_ingest.core.types import (
     RawDoc,
 )
 from bijux_canon_ingest.processing.stages import clean_doc, iter_chunk_doc
-from bijux_canon_ingest.retrieval.embedders import (
-    HashEmbedder,
-    SentenceTransformersEmbedder,
-)
+from bijux_canon_ingest.retrieval.embedder_factory import build_embedder
 from bijux_canon_ingest.retrieval.indexes import (
     build_bm25_index,
     build_numpy_cosine_index,
 )
-from bijux_canon_ingest.retrieval.ports import Embedder
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,14 +44,6 @@ def _iter_chunks(
 ) -> Iterator[ChunkWithoutEmbedding]:
     for clean_doc_item in cleaned:
         yield from iter_chunk_doc(clean_doc_item, env)
-
-
-def _make_embedder(cfg: IndexBuildConfig) -> Embedder:
-    if cfg.embedder == "hash16":
-        return HashEmbedder()
-    if cfg.embedder == "sbert":
-        return SentenceTransformersEmbedder(model_name=cfg.sbert_model)
-    raise ValueError(f"unknown embedder backend: {cfg.embedder}")
 
 
 def ingest_docs_to_chunks(*, docs: Iterable[RawDoc], env: RagEnv) -> list[Chunk]:
@@ -90,7 +78,7 @@ def build_index_from_docs(
     if cfg.backend == "numpy-cosine":
         cosine_index = build_numpy_cosine_index(
             chunks=chunks,
-            embedder=_make_embedder(cfg),
+            embedder=build_embedder(cfg.embedder, sbert_model=cfg.sbert_model),
         )
         cosine_index.save(out_path)
         return cosine_index.fingerprint

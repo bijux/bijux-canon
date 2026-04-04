@@ -9,10 +9,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from bijux_canon_ingest.retrieval.answering import ExtractiveAnswerer
-from bijux_canon_ingest.retrieval.embedders import (
-    HashEmbedder,
-    SentenceTransformersEmbedder,
-)
+from bijux_canon_ingest.retrieval.embedder_factory import embedder_for_model
 from bijux_canon_ingest.retrieval.indexes import NumpyCosineIndex, load_index
 from bijux_canon_ingest.retrieval.ports import Answer, Candidate, Embedder
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
@@ -31,12 +28,7 @@ def retrieve(
     idx = load_index(str(index_path))
 
     if isinstance(idx, NumpyCosineIndex) and embedder is None:
-        if idx.spec.model.startswith("sbert:"):
-            embedder = SentenceTransformersEmbedder(
-                model_name=idx.spec.model.split(":", 1)[1]
-            )
-        else:
-            embedder = HashEmbedder()
+        embedder = embedder_for_model(idx.spec.model)
 
     return idx.retrieve(
         query=query, top_k=int(top_k), filters=filters, embedder=embedder

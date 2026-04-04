@@ -14,10 +14,7 @@ import msgpack
 
 from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc
 from bijux_canon_ingest.processing.stages import clean_doc, iter_chunk_doc
-from bijux_canon_ingest.retrieval.embedders import (
-    HashEmbedder,
-    SentenceTransformersEmbedder,
-)
+from bijux_canon_ingest.retrieval.embedder_factory import embedder_for_model
 from bijux_canon_ingest.retrieval.indexes import (
     BM25Index,
     NumpyCosineIndex,
@@ -131,7 +128,10 @@ def build_stored_index(
             )
         )
 
-    cosine_index = build_numpy_cosine_index(chunks=chunks, embedder=HashEmbedder())
+    cosine_index = build_numpy_cosine_index(
+        chunks=chunks,
+        embedder=embedder_for_model("hash16"),
+    )
     return Ok(
         StoredIndex(
             backend=IndexBackend.NUMPY_COSINE,
@@ -168,7 +168,7 @@ def retrieve_candidates(
     try:
         embedder = None
         if isinstance(index.index, NumpyCosineIndex):
-            embedder = _embedder_for_spec(index.index.spec.model)
+            embedder = embedder_for_model(index.index.spec.model)
         fetch_k = max(int(top_k) * 3, 20)
         candidates = index.index.retrieve(
             query=query,
@@ -199,7 +199,7 @@ def retrieve_blob_candidates(
         return Ok(bm25_index.retrieve(query=query, top_k=top_k, filters=filters))
     if backend == IndexBackend.NUMPY_COSINE:
         cosine_index = NumpyCosineIndex.load_bytes(blob)
-        embedder = _embedder_for_spec(cosine_index.spec.model)
+        embedder = embedder_for_model(cosine_index.spec.model)
         return Ok(
             cosine_index.retrieve(
                 query=query,
@@ -209,12 +209,6 @@ def retrieve_blob_candidates(
             )
         )
     return Err("unknown index backend")
-
-
-def _embedder_for_spec(model_name: str) -> HashEmbedder | SentenceTransformersEmbedder:
-    if isinstance(model_name, str) and model_name.startswith("sbert:"):
-        return SentenceTransformersEmbedder(model_name=model_name.split(":", 1)[1])
-    return HashEmbedder()
 
 
 def _wrap_loaded_index(index: BM25Index | NumpyCosineIndex) -> StoredIndex:
