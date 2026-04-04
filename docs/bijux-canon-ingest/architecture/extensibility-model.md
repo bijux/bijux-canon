@@ -61,6 +61,12 @@ flowchart TD
 
 Add extension points where the package already expects variation, and document them next to the owning boundary.
 
+## Concrete Anchors
+
+- `src/bijux_canon_ingest/processing` for deterministic document transforms
+- `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
+- `src/bijux_canon_ingest/application` for package workflows
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

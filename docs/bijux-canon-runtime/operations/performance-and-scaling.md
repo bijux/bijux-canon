@@ -61,6 +61,12 @@ flowchart TD
 - tests/regression and tests/smoke for replay and storage protection
 - tests/golden for durable example fixtures
 
+## Concrete Anchors
+
+- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
+- `packages/bijux-canon-runtime/README.md` for local package framing
+- `packages/bijux-canon-runtime/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

@@ -55,6 +55,12 @@ flowchart TD
 - package metadata checks in tests
 - root commit conventions configured through commitizen
 
+## Concrete Anchors
+
+- `packages/bijux-canon-dev/src/bijux_canon_dev` for maintainer helpers
+- `packages/bijux-canon-dev/tests` for executable maintenance proof
+- `apis/` and root workflows for repository-level integration points
+
 ## Use This Page When
 
 - you are changing repository automation, validation, or release support

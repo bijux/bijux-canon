@@ -54,6 +54,13 @@ flowchart TD
 - durable outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 - validation backstops: tests/unit for planning, reasoning, execution, verification, and interfaces, tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
 
+## Concrete Anchors
+
+- CLI app in src/bijux_canon_reason/interfaces/cli
+- HTTP app in src/bijux_canon_reason/api/v1
+- schema files in apis/bijux-canon-reason/v1
+- apis/bijux-canon-reason/v1/schema.yaml
+
 ## Use This Page When
 
 - you need the public command, API, import, or artifact surface

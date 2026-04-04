@@ -60,6 +60,12 @@ flowchart TD
 - coordinates work that may call ingest, reason, and runtime components
 - leans on runtime for governed execution and replay acceptance
 
+## Concrete Anchors
+
+- `src/bijux_canon_agent/agents` for role-local behavior
+- `src/bijux_canon_agent/pipeline` for execution flow orchestration
+- `src/bijux_canon_agent/application` for workflow policy and graph logic
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

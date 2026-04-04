@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_ingest/interfaces` for CLI and HTTP boundaries
 - `src/bijux_canon_ingest/safeguards` for protective rules for ingest behavior
 
+## Concrete Anchors
+
+- `packages/bijux-canon-ingest/pyproject.toml` for package metadata
+- `packages/bijux-canon-ingest/README.md` for local package framing
+- `packages/bijux-canon-ingest/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

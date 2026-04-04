@@ -54,6 +54,12 @@ flowchart TD
 - do interface or artifact changes have matching docs and tests
 - are filenames, commit messages, and symbols still clear enough to age well
 
+## Concrete Anchors
+
+- tests/unit for api, contracts, core, interfaces, model, and runtime
+- tests/e2e for governed flow behavior
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

@@ -54,6 +54,12 @@ flowchart TD
 - ingest and index domain ownership
 - repository tooling and release automation
 
+## Concrete Anchors
+
+- tests/unit for local behavior and utility coverage
+- tests/integration and tests/e2e for end-to-end workflow behavior
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

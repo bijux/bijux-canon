@@ -762,6 +762,34 @@ def package_honesty_boundary(package: PackageInfo, category: str) -> str:
     return honesty_map[category]
 
 
+def package_anchor_bullets(package: PackageInfo, category: str) -> tuple[str, ...]:
+    anchor_map = {
+        "foundation": (
+            f"`{package.package_dir}` as the package root",
+            f"`{package.package_dir}/src/{package.import_name}` as the import boundary",
+            f"`{package.package_dir}/tests` as the package proof surface",
+        ),
+        "architecture": tuple(
+            f"`{path}` for {meaning}" for path, meaning in package.modules[:3]
+        ),
+        "interfaces": (
+            *(f"{item}" for item in package.interfaces[:3]),
+            package.api_specs[0] if package.api_specs else package.release_notes[0],
+        ),
+        "operations": (
+            f"`{package.package_dir}/pyproject.toml` for package metadata",
+            f"`{package.package_dir}/README.md` for local package framing",
+            f"`{package.package_dir}/tests` for executable operational backstops",
+        ),
+        "quality": (
+            package.tests[0],
+            package.tests[1] if len(package.tests) > 1 else package.tests[0],
+            package.release_notes[0],
+        ),
+    }
+    return tuple(anchor_map[category])
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -817,6 +845,17 @@ def add_reading_advice(body: str, bullets: tuple[str, ...]) -> str:
         ]
     )
     return insert_before_heading(body, "Purpose", block)
+
+
+def add_anchor_section(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Concrete Anchors",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Use This Page When", block)
 
 
 def render_home(
@@ -940,6 +979,14 @@ def render_home(
             "start with the repository handbook when the question spans packages",
             "move into a product package when you need ownership, interfaces, operations, or quality detail",
             "use the maintainer or compatibility sections only when the problem is explicitly about those concerns",
+        ),
+    )
+    body = add_anchor_section(
+        body,
+        (
+            "`docs/index.md` as the root routing page",
+            "`mkdocs.yml` as the published navigation source",
+            "`scripts/render_docs_catalog.py` as the generator that shapes the docs tree",
         ),
     )
     return "\n".join(
@@ -1308,6 +1355,14 @@ def render_root_page(
                 "use this section as the repository-level frame before reviewing code or schemas",
             ),
         )
+    body = add_anchor_section(
+        body,
+        (
+            "`pyproject.toml` for workspace metadata and commit conventions",
+            "`Makefile` and `makes/` for root automation",
+            "`apis/` and `.github/workflows/` for schema and validation review",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "guide"),
@@ -1613,6 +1668,14 @@ def render_dev_page(slug: str, title: str) -> str:
                 "use this section to separate maintainer intent from runtime intent",
             ),
         )
+    body = add_anchor_section(
+        body,
+        (
+            "`packages/bijux-canon-dev/src/bijux_canon_dev` for maintainer helpers",
+            "`packages/bijux-canon-dev/tests` for executable maintenance proof",
+            "`apis/` and root workflows for repository-level integration points",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "guide"),
@@ -1912,6 +1975,14 @@ def render_compat_page(slug: str, title: str) -> str:
                 "use this section to evaluate whether a compatibility surface should remain",
             ),
         )
+    body = add_anchor_section(
+        body,
+        (
+            "`packages/compat-*` for the preserved legacy packages",
+            "the compatibility package `README.md` files for canonical targets",
+            "the matching canonical package docs for current behavior and new work",
+        ),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "guide"),
@@ -2007,6 +2078,7 @@ def render_package_page(
         ),
     )
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
+    body = add_anchor_section(body, package_anchor_bullets(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
     body = add_honesty_boundary(body, package_honesty_boundary(package, category))

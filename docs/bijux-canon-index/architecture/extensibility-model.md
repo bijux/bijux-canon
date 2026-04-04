@@ -61,6 +61,12 @@ flowchart TD
 
 Add extension points where the package already expects variation, and document them next to the owning boundary.
 
+## Concrete Anchors
+
+- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
+- `src/bijux_canon_index/application` for workflow coordination
+- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

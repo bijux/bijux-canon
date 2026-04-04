@@ -55,6 +55,12 @@ flowchart TD
 - public surfaces and artifacts remain explainable
 - release-facing impact is visible when compatibility changes
 
+## Concrete Anchors
+
+- tests/unit for API, application, contracts, domain, infra, and tooling
+- tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

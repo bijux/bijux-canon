@@ -55,6 +55,12 @@ flowchart TD
 - tests such as `tests/test_openapi_drift.py`
 - root `apis/` directories that store reviewed schema artifacts
 
+## Concrete Anchors
+
+- `packages/bijux-canon-dev/src/bijux_canon_dev` for maintainer helpers
+- `packages/bijux-canon-dev/tests` for executable maintenance proof
+- `apis/` and root workflows for repository-level integration points
+
 ## Use This Page When
 
 - you are changing repository automation, validation, or release support

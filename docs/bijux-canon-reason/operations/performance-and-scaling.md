@@ -61,6 +61,12 @@ flowchart TD
 - tests/perf for retrieval benchmark coverage
 - tests/docs for documentation-linked safeguards
 
+## Concrete Anchors
+
+- `packages/bijux-canon-reason/pyproject.toml` for package metadata
+- `packages/bijux-canon-reason/README.md` for local package framing
+- `packages/bijux-canon-reason/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

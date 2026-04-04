@@ -70,6 +70,12 @@ flowchart TD
 - tests/invariants for long-lived repository promises
 - tests/eval for corpus-backed behavior checks
 
+## Concrete Anchors
+
+- `src/bijux_canon_ingest/processing` for deterministic document transforms
+- `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
+- `src/bijux_canon_ingest/application` for package workflows
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

@@ -59,6 +59,13 @@ flowchart TD
 
 Breaking changes must be visible in code, docs, and validation together.
 
+## Concrete Anchors
+
+- CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py
+- HTTP boundaries under src/bijux_canon_ingest/interfaces
+- configuration modules under src/bijux_canon_ingest/config
+- apis/bijux-canon-ingest/v1/schema.yaml
+
 ## Use This Page When
 
 - you need the public command, API, import, or artifact surface

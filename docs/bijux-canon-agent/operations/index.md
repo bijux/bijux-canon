@@ -67,6 +67,12 @@ flowchart TD
 - [Interfaces](../interfaces/index.md)
 - [Quality](../quality/index.md)
 
+## Concrete Anchors
+
+- `packages/bijux-canon-agent/pyproject.toml` for package metadata
+- `packages/bijux-canon-agent/README.md` for local package framing
+- `packages/bijux-canon-agent/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

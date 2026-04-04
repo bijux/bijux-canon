@@ -56,6 +56,12 @@ flowchart TD
 - owning package directory: `packages/bijux-canon-reason`
 - key outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 
+## Concrete Anchors
+
+- `packages/bijux-canon-reason` as the package root
+- `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
+- `packages/bijux-canon-reason/tests` as the package proof surface
+
 ## Use This Page When
 
 - you need the package boundary before reading implementation detail

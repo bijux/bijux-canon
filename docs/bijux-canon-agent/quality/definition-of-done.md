@@ -55,6 +55,12 @@ flowchart TD
 - public surfaces and artifacts remain explainable
 - release-facing impact is visible when compatibility changes
 
+## Concrete Anchors
+
+- tests/unit for local behavior and utility coverage
+- tests/integration and tests/e2e for end-to-end workflow behavior
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

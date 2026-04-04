@@ -60,6 +60,12 @@ flowchart TD
 - consumes prepared inputs from ingest-oriented flows
 - is governed by bijux-canon-runtime for final replay acceptance
 
+## Concrete Anchors
+
+- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
+- `src/bijux_canon_index/application` for workflow coordination
+- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

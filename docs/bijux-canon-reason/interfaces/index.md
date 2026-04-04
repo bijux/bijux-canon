@@ -67,6 +67,13 @@ flowchart TD
 - [Operations](../operations/index.md)
 - [Quality](../quality/index.md)
 
+## Concrete Anchors
+
+- CLI app in src/bijux_canon_reason/interfaces/cli
+- HTTP app in src/bijux_canon_reason/api/v1
+- schema files in apis/bijux-canon-reason/v1
+- apis/bijux-canon-reason/v1/schema.yaml
+
 ## Use This Page When
 
 - you need the public command, API, import, or artifact surface

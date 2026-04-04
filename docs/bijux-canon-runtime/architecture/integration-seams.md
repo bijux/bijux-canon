@@ -60,6 +60,12 @@ flowchart TD
 - governs the other canonical packages instead of replacing their local ownership
 - is the final authority for run acceptance, replay evaluation, and stored evidence
 
+## Concrete Anchors
+
+- `src/bijux_canon_runtime/model` for durable runtime models
+- `src/bijux_canon_runtime/runtime` for execution engines and lifecycle logic
+- `src/bijux_canon_runtime/application` for orchestration and replay coordination
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

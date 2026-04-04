@@ -76,6 +76,12 @@ flowchart TD
 - [bijux-canon-agent](../bijux-canon-agent/foundation/index.md) for deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
 - [bijux-canon-runtime](../bijux-canon-runtime/foundation/index.md) for governed execution and replay authority with auditable non-determinism handling, persistence, and package-to-package coordination.
 
+## Concrete Anchors
+
+- `pyproject.toml` for workspace metadata and commit conventions
+- `Makefile` and `makes/` for root automation
+- `apis/` and `.github/workflows/` for schema and validation review
+
 ## Use This Page When
 
 - you are dealing with repository-wide seams rather than one package alone

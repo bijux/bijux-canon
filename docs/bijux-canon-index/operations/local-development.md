@@ -56,6 +56,12 @@ flowchart TD
 - tests/conformance and tests/compat_v01 for compatibility behavior
 - tests/stress and tests/scenarios for operational pressure checks
 
+## Concrete Anchors
+
+- `packages/bijux-canon-index/pyproject.toml` for package metadata
+- `packages/bijux-canon-index/README.md` for local package framing
+- `packages/bijux-canon-index/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

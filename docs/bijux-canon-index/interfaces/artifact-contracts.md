@@ -55,6 +55,13 @@ flowchart TD
 - provenance and replay comparison reports
 - backend-specific metadata and audit output
 
+## Concrete Anchors
+
+- CLI modules under src/bijux_canon_index/interfaces/cli
+- HTTP app under src/bijux_canon_index/api
+- OpenAPI schema files under apis/bijux-canon-index/v1
+- apis/bijux-canon-index/v1/schema.yaml
+
 ## Use This Page When
 
 - you need the public command, API, import, or artifact surface

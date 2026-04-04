@@ -54,6 +54,13 @@ flowchart TD
 - import root: `bijux_canon_agent`
 - package source root: `packages/bijux-canon-agent/src/bijux_canon_agent`
 
+## Concrete Anchors
+
+- CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py
+- operator configuration under src/bijux_canon_agent/config
+- HTTP-adjacent modules under src/bijux_canon_agent/api
+- apis/bijux-canon-agent/v1/schema.yaml
+
 ## Use This Page When
 
 - you need the public command, API, import, or artifact surface

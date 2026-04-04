@@ -61,6 +61,12 @@ flowchart TD
 - tests/invariants for long-lived repository promises
 - tests/eval for corpus-backed behavior checks
 
+## Concrete Anchors
+
+- `packages/bijux-canon-ingest/pyproject.toml` for package metadata
+- `packages/bijux-canon-ingest/README.md` for local package framing
+- `packages/bijux-canon-ingest/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

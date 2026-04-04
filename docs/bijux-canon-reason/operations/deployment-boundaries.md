@@ -54,6 +54,12 @@ flowchart TD
 - public metadata: `packages/bijux-canon-reason/pyproject.toml`
 - release notes: `packages/bijux-canon-reason/CHANGELOG.md` when present
 
+## Concrete Anchors
+
+- `packages/bijux-canon-reason/pyproject.toml` for package metadata
+- `packages/bijux-canon-reason/README.md` for local package framing
+- `packages/bijux-canon-reason/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

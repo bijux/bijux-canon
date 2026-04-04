@@ -54,6 +54,12 @@ flowchart TD
 - cross-package vector execution semantics
 - repository maintenance automation
 
+## Concrete Anchors
+
+- tests/unit for module-level behavior across processing, retrieval, and interfaces
+- tests/e2e for package boundary coverage
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

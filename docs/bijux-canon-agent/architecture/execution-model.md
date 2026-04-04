@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_agent/agents, src/bijux_canon_agent/pipeline, src/bijux_canon_agent/application
 - outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 
+## Concrete Anchors
+
+- `src/bijux_canon_agent/agents` for role-local behavior
+- `src/bijux_canon_agent/pipeline` for execution flow orchestration
+- `src/bijux_canon_agent/application` for workflow policy and graph logic
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

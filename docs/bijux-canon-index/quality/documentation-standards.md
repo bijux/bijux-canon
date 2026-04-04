@@ -54,6 +54,12 @@ flowchart TD
 - prefer stable filenames that describe durable intent
 - keep docs grounded in real code paths, interfaces, and artifacts
 
+## Concrete Anchors
+
+- tests/unit for API, application, contracts, domain, infra, and tooling
+- tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

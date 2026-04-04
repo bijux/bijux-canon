@@ -57,6 +57,12 @@ flowchart TD
 - `src/bijux_canon_runtime/interfaces` for CLI surfaces and manifest loading
 - `src/bijux_canon_runtime/api` for HTTP application surfaces
 
+## Concrete Anchors
+
+- `src/bijux_canon_runtime/model` for durable runtime models
+- `src/bijux_canon_runtime/runtime` for execution engines and lifecycle logic
+- `src/bijux_canon_runtime/application` for orchestration and replay coordination
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

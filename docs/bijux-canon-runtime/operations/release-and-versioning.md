@@ -60,6 +60,12 @@ flowchart TD
 - version file: `packages/bijux-canon-runtime/src/bijux_canon_runtime/_version.py`
 - tag pattern is configured in `packages/bijux-canon-runtime/pyproject.toml`
 
+## Concrete Anchors
+
+- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
+- `packages/bijux-canon-runtime/README.md` for local package framing
+- `packages/bijux-canon-runtime/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

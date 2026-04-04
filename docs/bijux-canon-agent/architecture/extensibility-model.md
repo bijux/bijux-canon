@@ -61,6 +61,12 @@ flowchart TD
 
 Add extension points where the package already expects variation, and document them next to the owning boundary.
 
+## Concrete Anchors
+
+- `src/bijux_canon_agent/agents` for role-local behavior
+- `src/bijux_canon_agent/pipeline` for execution flow orchestration
+- `src/bijux_canon_agent/application` for workflow policy and graph logic
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

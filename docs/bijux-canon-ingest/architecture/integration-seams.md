@@ -60,6 +60,12 @@ flowchart TD
 - feeds prepared material toward bijux-canon-index and bijux-canon-reason
 - stays under runtime governance instead of defining replay authority itself
 
+## Concrete Anchors
+
+- `src/bijux_canon_ingest/processing` for deterministic document transforms
+- `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
+- `src/bijux_canon_ingest/application` for package workflows
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

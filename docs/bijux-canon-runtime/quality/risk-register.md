@@ -55,6 +55,12 @@ flowchart TD
 - drift between docs, code, and tests
 - compatibility changes that are not made explicit
 
+## Concrete Anchors
+
+- tests/unit for api, contracts, core, interfaces, model, and runtime
+- tests/e2e for governed flow behavior
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_index/domain, src/bijux_canon_index/application, src/bijux_canon_index/infra
 - outputs: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 
+## Concrete Anchors
+
+- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
+- `src/bijux_canon_index/application` for workflow coordination
+- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

@@ -60,6 +60,12 @@ flowchart TD
 - separate product docs, maintainer docs, and legacy-compat docs
 - update docs in the same change series that changes the underlying behavior
 
+## Concrete Anchors
+
+- `pyproject.toml` for workspace metadata and commit conventions
+- `Makefile` and `makes/` for root automation
+- `apis/` and `.github/workflows/` for schema and validation review
+
 ## Use This Page When
 
 - you are dealing with repository-wide seams rather than one package alone

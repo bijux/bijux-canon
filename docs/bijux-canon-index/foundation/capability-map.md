@@ -63,6 +63,12 @@ flowchart TD
 - provenance and replay comparison reports
 - backend-specific metadata and audit output
 
+## Concrete Anchors
+
+- `packages/bijux-canon-index` as the package root
+- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
+- `packages/bijux-canon-index/tests` as the package proof surface
+
 ## Use This Page When
 
 - you need the package boundary before reading implementation detail

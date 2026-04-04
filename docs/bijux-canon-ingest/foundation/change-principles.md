@@ -54,6 +54,12 @@ flowchart TD
 - update docs and tests in the same change series that changes package behavior
 - keep names stable and descriptive enough to survive years of maintenance
 
+## Concrete Anchors
+
+- `packages/bijux-canon-ingest` as the package root
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
+- `packages/bijux-canon-ingest/tests` as the package proof surface
+
 ## Use This Page When
 
 - you need the package boundary before reading implementation detail

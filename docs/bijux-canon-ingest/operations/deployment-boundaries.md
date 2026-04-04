@@ -54,6 +54,12 @@ flowchart TD
 - public metadata: `packages/bijux-canon-ingest/pyproject.toml`
 - release notes: `packages/bijux-canon-ingest/CHANGELOG.md` when present
 
+## Concrete Anchors
+
+- `packages/bijux-canon-ingest/pyproject.toml` for package metadata
+- `packages/bijux-canon-ingest/README.md` for local package framing
+- `packages/bijux-canon-ingest/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

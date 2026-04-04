@@ -55,6 +55,12 @@ flowchart TD
 - legacy Python import names
 - legacy command names where they still exist
 
+## Concrete Anchors
+
+- `packages/compat-*` for the preserved legacy packages
+- the compatibility package `README.md` files for canonical targets
+- the matching canonical package docs for current behavior and new work
+
 ## Use This Page When
 
 - you are tracing a legacy package name back to its canonical replacement

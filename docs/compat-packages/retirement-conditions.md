@@ -55,6 +55,12 @@ flowchart TD
 - migration guidance has been in place long enough to be credible
 - removal will not silently strand existing automation
 
+## Concrete Anchors
+
+- `packages/compat-*` for the preserved legacy packages
+- the compatibility package `README.md` files for canonical targets
+- the matching canonical package docs for current behavior and new work
+
 ## Use This Page When
 
 - you are tracing a legacy package name back to its canonical replacement

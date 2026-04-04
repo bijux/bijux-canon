@@ -55,6 +55,12 @@ flowchart TD
 - tests/invariants for long-lived repository promises
 - tests/eval for corpus-backed behavior checks
 
+## Concrete Anchors
+
+- tests/unit for module-level behavior across processing, retrieval, and interfaces
+- tests/e2e for package boundary coverage
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

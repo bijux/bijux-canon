@@ -63,6 +63,12 @@ flowchart TD
 - `src/bijux_canon_runtime/interfaces` for CLI surfaces and manifest loading
 - `src/bijux_canon_runtime/api` for HTTP application surfaces
 
+## Concrete Anchors
+
+- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
+- `packages/bijux-canon-runtime/README.md` for local package framing
+- `packages/bijux-canon-runtime/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

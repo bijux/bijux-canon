@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: execution store records, replay decision artifacts, non-determinism policy evaluations
 - tests to run: tests/unit for api, contracts, core, interfaces, model, and runtime, tests/e2e for governed flow behavior
 
+## Concrete Anchors
+
+- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
+- `packages/bijux-canon-runtime/README.md` for local package framing
+- `packages/bijux-canon-runtime/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

@@ -100,6 +100,12 @@ flowchart TD
 - use [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer automation and quality gates
 - use [compatibility packages](compat-packages/index.md) when tracing a legacy install name
 
+## Concrete Anchors
+
+- `docs/index.md` as the root routing page
+- `mkdocs.yml` as the published navigation source
+- `scripts/render_docs_catalog.py` as the generator that shapes the docs tree
+
 ## Use This Page When
 
 - you are orienting yourself before opening a repository, package, maintainer, or compatibility page

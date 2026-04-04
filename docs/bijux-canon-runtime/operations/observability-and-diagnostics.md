@@ -59,6 +59,12 @@ flowchart TD
 - `src/bijux_canon_runtime/model` for durable runtime models
 - `src/bijux_canon_runtime/runtime` for execution engines and lifecycle logic
 
+## Concrete Anchors
+
+- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
+- `packages/bijux-canon-runtime/README.md` for local package framing
+- `packages/bijux-canon-runtime/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

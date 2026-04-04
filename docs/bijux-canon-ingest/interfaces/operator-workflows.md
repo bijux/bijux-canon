@@ -54,6 +54,13 @@ flowchart TD
 - durable outputs: normalized document trees, chunk collections and retrieval-ready records, diagnostic output produced during ingest workflows
 - validation backstops: tests/unit for module-level behavior across processing, retrieval, and interfaces, tests/e2e for package boundary coverage
 
+## Concrete Anchors
+
+- CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py
+- HTTP boundaries under src/bijux_canon_ingest/interfaces
+- configuration modules under src/bijux_canon_ingest/config
+- apis/bijux-canon-ingest/v1/schema.yaml
+
 ## Use This Page When
 
 - you need the public command, API, import, or artifact surface

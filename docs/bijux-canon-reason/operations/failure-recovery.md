@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 - tests to run: tests/unit for planning, reasoning, execution, verification, and interfaces, tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
 
+## Concrete Anchors
+
+- `packages/bijux-canon-reason/pyproject.toml` for package metadata
+- `packages/bijux-canon-reason/README.md` for local package framing
+- `packages/bijux-canon-reason/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

@@ -54,6 +54,12 @@ flowchart TD
 - ingest and index domain ownership
 - repository tooling and release support
 
+## Concrete Anchors
+
+- tests/unit for api, contracts, core, interfaces, model, and runtime
+- tests/e2e for governed flow behavior
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

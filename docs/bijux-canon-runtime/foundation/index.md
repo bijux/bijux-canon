@@ -67,6 +67,12 @@ flowchart TD
 - [Operations](../operations/index.md)
 - [Quality](../quality/index.md)
 
+## Concrete Anchors
+
+- `packages/bijux-canon-runtime` as the package root
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime` as the import boundary
+- `packages/bijux-canon-runtime/tests` as the package proof surface
+
 ## Use This Page When
 
 - you need the package boundary before reading implementation detail

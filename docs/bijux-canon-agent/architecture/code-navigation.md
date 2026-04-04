@@ -70,6 +70,12 @@ flowchart TD
 - tests/invariants for package promises that should not drift
 - tests/api for HTTP-facing validation
 
+## Concrete Anchors
+
+- `src/bijux_canon_agent/agents` for role-local behavior
+- `src/bijux_canon_agent/pipeline` for execution flow orchestration
+- `src/bijux_canon_agent/application` for workflow policy and graph logic
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

@@ -61,6 +61,12 @@ flowchart TD
 
 Add extension points where the package already expects variation, and document them next to the owning boundary.
 
+## Concrete Anchors
+
+- `src/bijux_canon_runtime/model` for durable runtime models
+- `src/bijux_canon_runtime/runtime` for execution engines and lifecycle logic
+- `src/bijux_canon_runtime/application` for orchestration and replay coordination
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

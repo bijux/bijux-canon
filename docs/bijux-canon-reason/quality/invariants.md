@@ -61,6 +61,12 @@ flowchart TD
 - tests/perf for retrieval benchmark coverage
 - tests/docs for documentation-linked safeguards
 
+## Concrete Anchors
+
+- tests/unit for planning, reasoning, execution, verification, and interfaces
+- tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

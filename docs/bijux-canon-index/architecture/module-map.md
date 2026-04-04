@@ -57,6 +57,12 @@ flowchart TD
 - `src/bijux_canon_index/api` for HTTP application surfaces
 - `src/bijux_canon_index/contracts` for stable contract definitions
 
+## Concrete Anchors
+
+- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
+- `src/bijux_canon_index/application` for workflow coordination
+- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

@@ -63,6 +63,12 @@ flowchart TD
 - workflow graph execution records
 - operator-visible result artifacts
 
+## Concrete Anchors
+
+- `packages/bijux-canon-agent` as the package root
+- `packages/bijux-canon-agent/src/bijux_canon_agent` as the import boundary
+- `packages/bijux-canon-agent/tests` as the package proof surface
+
 ## Use This Page When
 
 - you need the package boundary before reading implementation detail

@@ -59,6 +59,12 @@ flowchart TD
 - `src/bijux_canon_ingest/processing` for deterministic document transforms
 - `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
 
+## Concrete Anchors
+
+- `packages/bijux-canon-ingest/pyproject.toml` for package metadata
+- `packages/bijux-canon-ingest/README.md` for local package framing
+- `packages/bijux-canon-ingest/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

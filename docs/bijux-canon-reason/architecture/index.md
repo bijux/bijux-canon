@@ -67,6 +67,12 @@ flowchart TD
 - [Operations](../operations/index.md)
 - [Quality](../quality/index.md)
 
+## Concrete Anchors
+
+- `src/bijux_canon_reason/planning` for plan construction and intermediate representation
+- `src/bijux_canon_reason/reasoning` for claim and reasoning semantics
+- `src/bijux_canon_reason/execution` for step execution and tool dispatch
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

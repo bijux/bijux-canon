@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 - tests to run: tests/unit for local behavior and utility coverage, tests/integration and tests/e2e for end-to-end workflow behavior
 
+## Concrete Anchors
+
+- `packages/bijux-canon-agent/pyproject.toml` for package metadata
+- `packages/bijux-canon-agent/README.md` for local package framing
+- `packages/bijux-canon-agent/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

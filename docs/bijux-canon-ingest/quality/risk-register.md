@@ -55,6 +55,12 @@ flowchart TD
 - drift between docs, code, and tests
 - compatibility changes that are not made explicit
 
+## Concrete Anchors
+
+- tests/unit for module-level behavior across processing, retrieval, and interfaces
+- tests/e2e for package boundary coverage
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

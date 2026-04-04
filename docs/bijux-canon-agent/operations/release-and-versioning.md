@@ -60,6 +60,12 @@ flowchart TD
 - version file: `packages/bijux-canon-agent/src/bijux_canon_agent/_version.py`
 - tag pattern is configured in `packages/bijux-canon-agent/pyproject.toml`
 
+## Concrete Anchors
+
+- `packages/bijux-canon-agent/pyproject.toml` for package metadata
+- `packages/bijux-canon-agent/README.md` for local package framing
+- `packages/bijux-canon-agent/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

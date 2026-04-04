@@ -67,6 +67,12 @@ flowchart TD
 - [Interfaces](../interfaces/index.md)
 - [Operations](../operations/index.md)
 
+## Concrete Anchors
+
+- tests/unit for api, contracts, core, interfaces, model, and runtime
+- tests/e2e for governed flow behavior
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

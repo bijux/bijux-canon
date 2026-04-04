@@ -55,6 +55,12 @@ flowchart TD
 - workflow modules: src/bijux_canon_reason/planning, src/bijux_canon_reason/reasoning, src/bijux_canon_reason/execution
 - outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 
+## Concrete Anchors
+
+- `src/bijux_canon_reason/planning` for plan construction and intermediate representation
+- `src/bijux_canon_reason/reasoning` for claim and reasoning semantics
+- `src/bijux_canon_reason/execution` for step execution and tool dispatch
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

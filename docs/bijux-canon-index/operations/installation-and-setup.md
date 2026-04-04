@@ -61,6 +61,12 @@ flowchart TD
 - typer
 - fastapi
 
+## Concrete Anchors
+
+- `packages/bijux-canon-index/pyproject.toml` for package metadata
+- `packages/bijux-canon-index/README.md` for local package framing
+- `packages/bijux-canon-index/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

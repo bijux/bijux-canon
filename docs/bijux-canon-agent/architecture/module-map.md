@@ -57,6 +57,12 @@ flowchart TD
 - `src/bijux_canon_agent/interfaces` for CLI boundaries and operator helpers
 - `src/bijux_canon_agent/traces` for trace-facing models and persistence helpers
 
+## Concrete Anchors
+
+- `src/bijux_canon_agent/agents` for role-local behavior
+- `src/bijux_canon_agent/pipeline` for execution flow orchestration
+- `src/bijux_canon_agent/application` for workflow policy and graph logic
+
 ## Use This Page When
 
 - you are tracing internal structure or execution flow

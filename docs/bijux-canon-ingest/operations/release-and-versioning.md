@@ -60,6 +60,12 @@ flowchart TD
 - version file: `packages/bijux-canon-ingest/src/bijux_canon_ingest/_version.py`
 - tag pattern is configured in `packages/bijux-canon-ingest/pyproject.toml`
 
+## Concrete Anchors
+
+- `packages/bijux-canon-ingest/pyproject.toml` for package metadata
+- `packages/bijux-canon-ingest/README.md` for local package framing
+- `packages/bijux-canon-ingest/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

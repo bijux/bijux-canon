@@ -62,6 +62,12 @@ flowchart TD
 - governs the other canonical packages instead of replacing their local ownership
 - is the final authority for run acceptance, replay evaluation, and stored evidence
 
+## Concrete Anchors
+
+- `packages/bijux-canon-runtime` as the package root
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime` as the import boundary
+- `packages/bijux-canon-runtime/tests` as the package proof surface
+
 ## Use This Page When
 
 - you need the package boundary before reading implementation detail

@@ -67,6 +67,12 @@ flowchart TD
 - [Interfaces](../interfaces/index.md)
 - [Operations](../operations/index.md)
 
+## Concrete Anchors
+
+- tests/unit for module-level behavior across processing, retrieval, and interfaces
+- tests/e2e for package boundary coverage
+- README.md
+
 ## Use This Page When
 
 - you are reviewing tests, invariants, limitations, or risk

@@ -56,6 +56,12 @@ flowchart TD
 - avoid feature growth inside the compatibility packages
 - document canonical targets in every compatibility package README
 
+## Concrete Anchors
+
+- `packages/compat-*` for the preserved legacy packages
+- the compatibility package `README.md` files for canonical targets
+- the matching canonical package docs for current behavior and new work
+
 ## Use This Page When
 
 - you are tracing a legacy package name back to its canonical replacement

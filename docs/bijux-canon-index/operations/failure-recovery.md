@@ -54,6 +54,12 @@ flowchart TD
 - artifacts to inspect: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 - tests to run: tests/unit for API, application, contracts, domain, infra, and tooling, tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
 
+## Concrete Anchors
+
+- `packages/bijux-canon-index/pyproject.toml` for package metadata
+- `packages/bijux-canon-index/README.md` for local package framing
+- `packages/bijux-canon-index/tests` for executable operational backstops
+
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package

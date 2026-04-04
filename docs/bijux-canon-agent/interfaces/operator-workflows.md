@@ -54,6 +54,13 @@ flowchart TD
 - durable outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
 - validation backstops: tests/unit for local behavior and utility coverage, tests/integration and tests/e2e for end-to-end workflow behavior
 
+## Concrete Anchors
+
+- CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py
+- operator configuration under src/bijux_canon_agent/config
+- HTTP-adjacent modules under src/bijux_canon_agent/api
+- apis/bijux-canon-agent/v1/schema.yaml
+
 ## Use This Page When
 
 - you need the public command, API, import, or artifact surface

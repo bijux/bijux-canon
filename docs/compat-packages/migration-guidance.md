@@ -55,6 +55,12 @@ flowchart TD
 - switch imports to the canonical package docs and source roots
 - keep compatibility packages only where an external environment still depends on them
 
+## Concrete Anchors
+
+- `packages/compat-*` for the preserved legacy packages
+- the compatibility package `README.md` files for canonical targets
+- the matching canonical package docs for current behavior and new work
+
 ## Use This Page When
 
 - you are tracing a legacy package name back to its canonical replacement
