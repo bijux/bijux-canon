@@ -22,31 +22,63 @@ REQUIRED_PUBLIC_URLS = {
     "Security",
 }
 BIJUX_SITE_URL = "https://bijux.io/"
+PACKAGE_MAP_URL = "https://bijux.io/bijux-canon/package-map/"
+COMPATIBILITY_GUIDE_URL = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+LEGACY_NAME_MAP_URL = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
+README_BADGE_MARKER = "https://img.shields.io"
+EXPECTED_BADGE_COUNT = 19
 COMPATIBILITY_PACKAGES = {
     "compat-agentic-flows": {
         "distribution": "agentic-flows",
         "canonical": "bijux-canon-runtime",
         "script": "agentic-flows",
+        "retired_repo": "https://github.com/bijux/agentic-flows",
     },
     "compat-bijux-agent": {
         "distribution": "bijux-agent",
         "canonical": "bijux-canon-agent",
         "script": "bijux-agent",
+        "retired_repo": "https://github.com/bijux/bijux-agent",
     },
     "compat-bijux-rag": {
         "distribution": "bijux-rag",
         "canonical": "bijux-canon-ingest",
         "script": "bijux-rag",
+        "retired_repo": "https://github.com/bijux/bijux-rag",
     },
     "compat-bijux-rar": {
         "distribution": "bijux-rar",
         "canonical": "bijux-canon-reason",
         "script": "bijux-rar",
+        "retired_repo": "https://github.com/bijux/bijux-rar",
     },
     "compat-bijux-vex": {
         "distribution": "bijux-vex",
         "canonical": "bijux-canon-index",
         "script": "bijux-vex",
+        "retired_repo": "https://github.com/bijux/bijux-vex",
+    },
+}
+CANONICAL_PACKAGES = {
+    "bijux-canon-runtime": {
+        "compatibility_package": "agentic-flows",
+        "retired_repo": "https://github.com/bijux/agentic-flows",
+    },
+    "bijux-canon-agent": {
+        "compatibility_package": "bijux-agent",
+        "retired_repo": "https://github.com/bijux/bijux-agent",
+    },
+    "bijux-canon-ingest": {
+        "compatibility_package": "bijux-rag",
+        "retired_repo": "https://github.com/bijux/bijux-rag",
+    },
+    "bijux-canon-reason": {
+        "compatibility_package": "bijux-rar",
+        "retired_repo": "https://github.com/bijux/bijux-rar",
+    },
+    "bijux-canon-index": {
+        "compatibility_package": "bijux-vex",
+        "retired_repo": "https://github.com/bijux/bijux-vex",
     },
 }
 
@@ -162,6 +194,26 @@ def test_public_release_packages_prioritize_bijux_site_urls() -> None:
     assert not failures, "public package URLs should prioritize bijux.io:\n" + "\n".join(failures)
 
 
+def test_public_release_packages_publish_family_navigation_urls() -> None:
+    workspace = _workspace_metadata()
+    public_packages = set(workspace["public_release_packages"])
+
+    failures: list[str] = []
+    for package_name in sorted(public_packages):
+        urls = _project_table(_package_path(package_name) / "pyproject.toml").get("urls", {})
+        if package_name in CANONICAL_PACKAGES:
+            if urls.get("PackageMap") != PACKAGE_MAP_URL:
+                failures.append(f"{package_name}: PackageMap should point to the shared package map")
+            if urls.get("CompatibilityGuide") != COMPATIBILITY_GUIDE_URL:
+                failures.append(f"{package_name}: CompatibilityGuide should point to the shared migration guide")
+        else:
+            if urls.get("MigrationGuide") != COMPATIBILITY_GUIDE_URL:
+                failures.append(f"{package_name}: MigrationGuide should point to the shared migration guide")
+            if urls.get("LegacyNameMap") != LEGACY_NAME_MAP_URL:
+                failures.append(f"{package_name}: LegacyNameMap should point to the shared legacy name map")
+    assert not failures, "public package family navigation URLs failed:\n" + "\n".join(failures)
+
+
 def test_public_release_packages_have_authors_maintainers_and_keywords() -> None:
     workspace = _workspace_metadata()
     public_packages = set(workspace["public_release_packages"])
@@ -201,11 +253,45 @@ def test_public_release_package_readmes_link_changelog_and_entrypoint() -> None:
         readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
         if "## Read this next" not in readme:
             missing.append(f"{package_name}: missing 'Read this next' section")
-        if "CHANGELOG.md" not in readme:
-            missing.append(f"{package_name}: missing changelog link")
+        if CHANGELOG_URL_PREFIX + f"packages/{package_name}/CHANGELOG.md" not in readme:
+            missing.append(f"{package_name}: missing changelog URL")
         if "## Primary entrypoint" not in readme:
             missing.append(f"{package_name}: missing 'Primary entrypoint' section")
     assert not missing, "public package README contract failed:\n" + "\n".join(missing)
+
+
+def test_public_release_package_readmes_publish_badges_and_absolute_links() -> None:
+    workspace = _workspace_metadata()
+    public_packages = set(workspace["public_release_packages"])
+
+    failures: list[str] = []
+    for package_name in sorted(public_packages):
+        readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
+        if readme.count(README_BADGE_MARKER) < EXPECTED_BADGE_COUNT:
+            failures.append(f"{package_name}: expected at least {EXPECTED_BADGE_COUNT} badges")
+        if "https://pypi.org/project/bijux-canon-runtime/" not in readme:
+            failures.append(f"{package_name}: README should advertise the canonical package family")
+        if "https://bijux.io/bijux-canon/compat-packages/migration-guidance/" not in readme:
+            failures.append(f"{package_name}: README should link the shared migration guide")
+        if "](docs/" in readme or "](src/" in readme or "](tests)" in readme:
+            failures.append(f"{package_name}: README should avoid PyPI-broken relative links")
+    assert not failures, "public package README badge/link contract failed:\n" + "\n".join(failures)
+
+
+def test_canonical_package_readmes_publish_legacy_continuity() -> None:
+    failures: list[str] = []
+    for package_name, expectation in CANONICAL_PACKAGES.items():
+        readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
+        compatibility_package = expectation["compatibility_package"]
+        retired_repo = expectation["retired_repo"]
+
+        if "## Legacy continuity" not in readme:
+            failures.append(f"{package_name}: missing legacy continuity section")
+        if f"https://pypi.org/project/{compatibility_package}/" not in readme:
+            failures.append(f"{package_name}: missing compatibility package link")
+        if retired_repo not in readme:
+            failures.append(f"{package_name}: missing retired repository guidance")
+    assert not failures, "canonical package legacy continuity failed:\n" + "\n".join(failures)
 
 
 def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
@@ -222,6 +308,7 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
         distribution = expectation["distribution"]
         canonical = expectation["canonical"]
         script = expectation["script"]
+        retired_repo = expectation["retired_repo"]
 
         description = str(project.get("description", ""))
         if project.get("name") != distribution:
@@ -230,16 +317,22 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(f"{package_name}: description should mention the legacy PyPI package")
         if canonical not in description:
             failures.append(f"{package_name}: description should mention canonical {canonical}")
-        if "Preserves legacy installs and imports" not in description:
+        if "Preserves installs, imports" not in description:
             failures.append(f"{package_name}: description should explain legacy compatibility")
         if "continuation of the published" not in readme or f"`{distribution}`" not in readme:
             failures.append(f"{package_name}: README should state the PyPI continuation")
+        if "## Migration note" not in readme:
+            failures.append(f"{package_name}: README should include a migration note")
         if f"`{canonical}==<same version>`" not in readme:
             failures.append(f"{package_name}: README should document the same-version dependency")
         if f"console script: `{script}`" not in readme:
             failures.append(f"{package_name}: README should document the legacy console script")
+        if retired_repo not in readme:
+            failures.append(f"{package_name}: README should document the retired repository")
         if f"installs `{canonical}` at the same version" not in overview:
             failures.append(f"{package_name}: overview should explain the same-version install")
+        if retired_repo not in overview:
+            failures.append(f"{package_name}: overview should document the retired repository")
         tag_pattern = tool["hatch"]["version"]["tag-pattern"]
         if tag_pattern != f"^{canonical}/v(?P<version>.*)$":
             failures.append(f"{package_name}: unexpected tag-pattern {tag_pattern!r}")
@@ -248,5 +341,8 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(f"{package_name}: canonical-name should be {canonical!r}")
         if 'metadata["dependencies"] = [f"{canonical_name}=={version}"]' not in build_hook:
             failures.append(f"{package_name}: build hook must pin the canonical package to the same version")
+        scripts = project.get("scripts", {})
+        if script not in scripts:
+            failures.append(f"{package_name}: legacy console script should be declared in project.scripts")
 
     assert not failures, "compatibility publication contract failed:\n" + "\n".join(failures)
