@@ -1,0 +1,25 @@
+---
+title: CLI Surface
+audience: mixed
+type: guide
+status: canonical
+owner: bijux-canon-index-docs
+last_reviewed: 2026-04-04
+---
+
+# CLI Surface
+
+The CLI surface is the operator-facing command layer for `bijux-canon-index`.
+
+## Command Facts
+
+- canonical command: `no package-level console script is declared`
+- interface modules: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/bijux-canon-index/v1
+
+## Purpose
+
+This page points maintainers toward the command entrypoints and their owning code.
+
+## Stability
+
+Keep it aligned with the declared scripts and the interface modules that implement them.

@@ -27,12 +27,14 @@ package handbooks that all share the same five-category spine.</div>
 <div class="bijux-quicklinks">
 <a class="md-button md-button--primary" href="bijux-canon/">Open the repository handbook</a>
 <a class="md-button" href="bijux-canon-ingest/foundation/">bijux-canon-ingest</a>
+<a class="md-button" href="bijux-canon-index/foundation/">bijux-canon-index</a>
 </div>
 
 ## Documentation Scope
 
 - the bijux-canon section
 - the bijux-canon-ingest section
+- the bijux-canon-index section
 
 ## Reading Map
 

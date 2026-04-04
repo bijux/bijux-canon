@@ -1,0 +1,42 @@
+---
+title: Code Navigation
+audience: mixed
+type: guide
+status: canonical
+owner: bijux-canon-index-docs
+last_reviewed: 2026-04-04
+---
+
+# Code Navigation
+
+When you need to understand a change in `bijux-canon-index`, use this reading order:
+
+## Reading Order
+
+- start at the relevant interface or API module
+- move into the owning application or domain module
+- finish in the tests that protect the behavior
+
+## Concrete Anchors
+
+- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
+- `src/bijux_canon_index/application` for workflow coordination
+- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
+- `src/bijux_canon_index/interfaces` for CLI and operator-facing edges
+- `src/bijux_canon_index/api` for HTTP application surfaces
+- `src/bijux_canon_index/contracts` for stable contract definitions
+
+## Test Anchors
+
+- tests/unit for API, application, contracts, domain, infra, and tooling
+- tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
+- tests/conformance and tests/compat_v01 for compatibility behavior
+- tests/stress and tests/scenarios for operational pressure checks
+
+## Purpose
+
+This page shortens the path from an issue report to the relevant code.
+
+## Stability
+
+Keep it aligned with the real source tree and current test layout.

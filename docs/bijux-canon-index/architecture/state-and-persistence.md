@@ -1,0 +1,36 @@
+---
+title: State and Persistence
+audience: mixed
+type: guide
+status: canonical
+owner: bijux-canon-index-docs
+last_reviewed: 2026-04-04
+---
+
+# State and Persistence
+
+State in `bijux-canon-index` should be explicit enough that a maintainer can say what is
+transient, what is serialized, and what neighboring packages must not assume.
+
+## Durable Surfaces
+
+- vector execution result collections
+- provenance and replay comparison reports
+- backend-specific metadata and audit output
+
+## Code Areas to Inspect
+
+- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
+- `src/bijux_canon_index/application` for workflow coordination
+- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
+- `src/bijux_canon_index/interfaces` for CLI and operator-facing edges
+- `src/bijux_canon_index/api` for HTTP application surfaces
+- `src/bijux_canon_index/contracts` for stable contract definitions
+
+## Purpose
+
+This page marks the package's state and artifact boundary.
+
+## Stability
+
+Keep it aligned with the actual artifact shapes and serialized outputs.

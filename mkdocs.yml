@@ -90,6 +90,40 @@ nav:
           - Change Validation: bijux-canon-ingest/quality/change-validation.md
           - Known Limitations: bijux-canon-ingest/quality/known-limitations.md
           - Risk Register: bijux-canon-ingest/quality/risk-register.md
+  - bijux-canon-index:
+      - Foundation:
+          - Foundation: bijux-canon-index/foundation/index.md
+          - Package Overview: bijux-canon-index/foundation/package-overview.md
+          - Scope and Non-Goals: bijux-canon-index/foundation/scope-and-non-goals.md
+          - Ownership Boundary: bijux-canon-index/foundation/ownership-boundary.md
+          - Repository Fit: bijux-canon-index/foundation/repository-fit.md
+          - Capability Map: bijux-canon-index/foundation/capability-map.md
+          - Domain Language: bijux-canon-index/foundation/domain-language.md
+          - Lifecycle Overview: bijux-canon-index/foundation/lifecycle-overview.md
+          - Dependencies and Adjacencies: bijux-canon-index/foundation/dependencies-and-adjacencies.md
+          - Change Principles: bijux-canon-index/foundation/change-principles.md
+      - Architecture:
+          - Architecture: bijux-canon-index/architecture/index.md
+          - Module Map: bijux-canon-index/architecture/module-map.md
+          - Dependency Direction: bijux-canon-index/architecture/dependency-direction.md
+          - Execution Model: bijux-canon-index/architecture/execution-model.md
+          - State and Persistence: bijux-canon-index/architecture/state-and-persistence.md
+          - Integration Seams: bijux-canon-index/architecture/integration-seams.md
+          - Error Model: bijux-canon-index/architecture/error-model.md
+          - Extensibility Model: bijux-canon-index/architecture/extensibility-model.md
+          - Code Navigation: bijux-canon-index/architecture/code-navigation.md
+          - Architecture Risks: bijux-canon-index/architecture/architecture-risks.md
+      - Interfaces:
+          - Interfaces: bijux-canon-index/interfaces/index.md
+          - CLI Surface: bijux-canon-index/interfaces/cli-surface.md
+          - API Surface: bijux-canon-index/interfaces/api-surface.md
+          - Configuration Surface: bijux-canon-index/interfaces/configuration-surface.md
+          - Data Contracts: bijux-canon-index/interfaces/data-contracts.md
+          - Artifact Contracts: bijux-canon-index/interfaces/artifact-contracts.md
+          - Entrypoints and Examples: bijux-canon-index/interfaces/entrypoints-and-examples.md
+          - Operator Workflows: bijux-canon-index/interfaces/operator-workflows.md
+          - Public Imports: bijux-canon-index/interfaces/public-imports.md
+          - Compatibility Commitments: bijux-canon-index/interfaces/compatibility-commitments.md
 
 plugins:
   - search

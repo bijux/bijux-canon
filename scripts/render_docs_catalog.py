@@ -538,7 +538,10 @@ def link(label: str, target: str) -> str:
     return f"[{label}]({target})"
 
 
-def render_home(targets: set[str], product_categories: tuple[str, ...]) -> str:
+def render_home(
+    targets: set[str],
+    categories_by_package: dict[str, tuple[str, ...]],
+) -> str:
     sections = ["bijux-canon"]
     for target in TARGET_ORDER:
         if target in PRODUCT_PACKAGES and target in targets:
@@ -551,7 +554,7 @@ def render_home(targets: set[str], product_categories: tuple[str, ...]) -> str:
     if "platform" in targets:
         quicklinks.append('<a class="md-button md-button--primary" href="bijux-canon/">Open the repository handbook</a>')
     for target in ("ingest", "index", "reason", "agent", "runtime"):
-        if target in targets and "foundation" in product_categories:
+        if target in targets and "foundation" in categories_by_package.get(target, ()):
             quicklinks.append(
                 f'<a class="md-button" href="{PRODUCT_PACKAGES[target].slug}/foundation/">{PRODUCT_PACKAGES[target].title}</a>'
             )
@@ -609,12 +612,12 @@ def render_root_page(
     slug: str,
     title: str,
     targets: set[str],
-    product_categories: tuple[str, ...],
+    categories_by_package: dict[str, tuple[str, ...]],
 ) -> str:
     package_links = "\n".join(
         (
             f"- [{info.title}](../{info.slug}/foundation/index.md) for {info.description.lower()}"
-            if key in targets and "foundation" in product_categories
+            if key in targets and "foundation" in categories_by_package.get(key, ())
             else f"- `{info.title}` for {info.description.lower()}"
         )
         for key, info in PRODUCT_PACKAGES.items()
@@ -2381,13 +2384,16 @@ Update it when the durable risk profile changes, not for routine day-to-day chur
     return shared[category][slug]
 
 
-def write_platform_docs(targets: set[str], product_categories: tuple[str, ...]) -> None:
-    write_doc(DOCS_ROOT / "index.md", render_home(targets, product_categories))
+def write_platform_docs(
+    targets: set[str],
+    categories_by_package: dict[str, tuple[str, ...]],
+) -> None:
+    write_doc(DOCS_ROOT / "index.md", render_home(targets, categories_by_package))
     base = DOCS_ROOT / "bijux-canon"
     for slug, title in ROOT_PAGES:
         write_doc(
             base / f"{slug}.md",
-            render_root_page(slug, title, targets, product_categories),
+            render_root_page(slug, title, targets, categories_by_package),
         )
 
 
@@ -2414,7 +2420,10 @@ def write_compat_docs() -> None:
         write_doc(base / f"{slug}.md", render_compat_page(slug, title))
 
 
-def nav_lines(targets: set[str], product_categories: tuple[str, ...]) -> list[str]:
+def nav_lines(
+    targets: set[str],
+    categories_by_package: dict[str, tuple[str, ...]],
+) -> list[str]:
     lines = [
         "nav:",
         "  - Home: index.md",
@@ -2433,8 +2442,9 @@ def nav_lines(targets: set[str], product_categories: tuple[str, ...]) -> list[st
         if key not in targets:
             continue
         package = PRODUCT_PACKAGES[key]
+        package_categories = categories_by_package.get(key, ())
         lines.append(f"  - {package.title}:")
-        for category in product_categories:
+        for category in package_categories:
             lines.append(f"      - {category.title()}:")
             for slug, title in PACKAGE_CATEGORY_PAGES[category]:
                 lines.append(
@@ -2463,7 +2473,10 @@ def nav_lines(targets: set[str], product_categories: tuple[str, ...]) -> list[st
     return lines
 
 
-def write_mkdocs(targets: set[str], product_categories: tuple[str, ...]) -> None:
+def write_mkdocs(
+    targets: set[str],
+    categories_by_package: dict[str, tuple[str, ...]],
+) -> None:
     body = "\n".join(
         [
             "site_name: bijux-canon",
@@ -2489,7 +2502,7 @@ def write_mkdocs(targets: set[str], product_categories: tuple[str, ...]) -> None
             "extra_css:",
             "  - assets/styles/extra.css",
             "",
-            *nav_lines(targets, product_categories),
+            *nav_lines(targets, categories_by_package),
             "",
             "plugins:",
             "  - search",
@@ -2523,28 +2536,60 @@ def parse_args() -> argparse.Namespace:
         default=PACKAGE_CATEGORY_ORDER,
         help="Package categories to render for product packages.",
     )
+    parser.add_argument(
+        "--categories-for",
+        action="append",
+        default=[],
+        metavar="PACKAGE=CATEGORY1,CATEGORY2",
+        help="Override rendered categories for one product package.",
+    )
     return parser.parse_args()
+
+
+def parse_category_overrides(values: list[str]) -> dict[str, tuple[str, ...]]:
+    overrides: dict[str, tuple[str, ...]] = {}
+    for value in values:
+        if "=" not in value:
+            raise ValueError(
+                f"Invalid --categories-for value '{value}'. Expected PACKAGE=CAT1,CAT2."
+            )
+        package_key, raw_categories = value.split("=", 1)
+        if package_key not in PRODUCT_PACKAGES:
+            raise ValueError(f"Unknown product package '{package_key}'.")
+        categories = tuple(item.strip() for item in raw_categories.split(",") if item.strip())
+        invalid = [item for item in categories if item not in PACKAGE_CATEGORY_ORDER]
+        if invalid:
+            raise ValueError(
+                f"Invalid categories for {package_key}: {', '.join(invalid)}"
+            )
+        overrides[package_key] = categories
+    return overrides
 
 
 def main() -> None:
     args = parse_args()
     targets = set(args.targets or TARGET_ORDER)
     product_categories = tuple(args.product_categories)
+    category_overrides = parse_category_overrides(args.categories_for)
+    categories_by_package = {
+        key: category_overrides.get(key, product_categories)
+        for key in PRODUCT_PACKAGES
+    }
     clean_docs_root()
     if "platform" in targets:
-        write_platform_docs(targets, product_categories)
+        write_platform_docs(targets, categories_by_package)
     for key in ("ingest", "index", "reason", "agent", "runtime"):
         if key in targets:
-            write_package_docs(key, product_categories)
+            write_package_docs(key, categories_by_package[key])
     if "dev" in targets:
         write_dev_docs()
     if "compat" in targets:
         write_compat_docs()
     if not (DOCS_ROOT / "index.md").exists():
-        write_doc(DOCS_ROOT / "index.md", render_home(targets, product_categories))
+        write_doc(DOCS_ROOT / "index.md", render_home(targets, categories_by_package))
     else:
-        write_doc(DOCS_ROOT / "index.md", render_home(targets, product_categories))
-    write_mkdocs(targets, product_categories)
+        write_doc(DOCS_ROOT / "index.md", render_home(targets, categories_by_package))
+    write_mkdocs(targets, categories_by_package)
     count = len(list(DOCS_ROOT.rglob("*.md")))
     print(f"Rendered {count} Markdown files for targets: {', '.join(sorted(targets))}")
 
