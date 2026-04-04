@@ -63,7 +63,10 @@ from bijux_canon_index.core.errors import (
     ValidationError,
 )
 from bijux_canon_index.core.errors.refusal import is_refusal, refusal_payload
-from bijux_canon_index.core.identity.fingerprints import corpus_fingerprint, vectors_fingerprint
+from bijux_canon_index.core.identity.fingerprints import (
+    corpus_fingerprint,
+    vectors_fingerprint,
+)
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import (
     ExecutionArtifact,

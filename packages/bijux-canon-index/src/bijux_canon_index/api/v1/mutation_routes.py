@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from fastapi import FastAPI, Header, HTTPException, Response
 
-from bijux_canon_index.api.v1.runtime import REFUSAL_EXAMPLE, engine_from_payload, raise_http_error
+from bijux_canon_index.api.v1.runtime import (
+    REFUSAL_EXAMPLE,
+    engine_from_payload,
+    raise_http_error,
+)
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.errors import BijuxError
 from bijux_canon_index.interfaces.schemas.requests import (
