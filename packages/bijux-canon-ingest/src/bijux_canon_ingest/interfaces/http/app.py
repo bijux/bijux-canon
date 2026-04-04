@@ -26,6 +26,7 @@ from bijux_canon_ingest.interfaces.http.models import (
     AskResponse,
     ChunkRequest,
     ChunkResponse,
+    HealthResponse,
     IndexBuildRequest,
     IndexBuildResponse,
     RetrieveRequest,
@@ -42,17 +43,69 @@ from bijux_canon_ingest.result.types import Err
 def create_app() -> FastAPI:
     """Construct a FastAPI app with chunking and RAG endpoints."""
 
-    app = FastAPI(title="bijux-canon-ingest", openapi_version="3.1.0")
+    app = FastAPI(
+        title="bijux-canon-ingest API",
+        summary="Deterministic chunking, indexing, retrieval, and answer assembly.",
+        description=(
+            "The bijux-canon-ingest HTTP API exposes the v1 ingest boundary for "
+            "chunk generation, index construction, retrieval, and answer synthesis. "
+            "It keeps the ingestion lifecycle explicit so operators can trace what "
+            "was chunked, indexed, retrieved, and answered."
+        ),
+        version="v1",
+        openapi_version="3.1.0",
+        contact={"name": "Bijux", "url": "https://github.com/bijux/bijux-canon"},
+        license_info={
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        },
+        servers=[{"url": "/"}],
+        openapi_tags=[
+            {
+                "name": "Chunking",
+                "description": "Endpoints that split raw documents into chunk payloads.",
+            },
+            {
+                "name": "Indexing",
+                "description": "Endpoints that build and manage retrievable indexes.",
+            },
+            {
+                "name": "Retrieval",
+                "description": "Endpoints that retrieve evidence or synthesize answers.",
+            },
+            {
+                "name": "Health",
+                "description": "Operational health signals for the HTTP adapter.",
+            },
+        ],
+    )
     router = APIRouter(prefix="/v1")
 
     rag_app = IngestService()
     index_store = InMemoryIndexStore()
 
-    @router.get("/healthz")
+    @router.get(
+        "/healthz",
+        response_model=HealthResponse,
+        tags=["Health"],
+        summary="Report adapter health",
+        description="Return a lightweight liveness signal for the ingest HTTP adapter.",
+        operation_id="getIngestHealth",
+    )
     async def healthz() -> dict[str, bool]:
         return {"ok": True}
 
-    @router.post("/chunks", response_model=ChunkResponse)
+    @router.post(
+        "/chunks",
+        response_model=ChunkResponse,
+        tags=["Chunking"],
+        summary="Chunk documents",
+        description=(
+            "Split submitted documents into chunk payloads and optionally include "
+            "embeddings for each emitted chunk."
+        ),
+        operation_id="chunkDocuments",
+    )
     async def chunks(req: ChunkRequest) -> ChunkResponse:
         # Boundary validation ensures we do not 500 on invalid inputs.
         try:
@@ -72,7 +125,17 @@ def create_app() -> FastAPI:
 
         return chunk_response_from_result(res.value)
 
-    @router.post("/index/build", response_model=IndexBuildResponse)
+    @router.post(
+        "/index/build",
+        response_model=IndexBuildResponse,
+        tags=["Indexing"],
+        summary="Build an index",
+        description=(
+            "Chunk the submitted documents, build an index using the requested backend, "
+            "and return the stable identifier for later retrieval."
+        ),
+        operation_id="buildIndex",
+    )
     async def index_build(req: IndexBuildRequest) -> IndexBuildResponse:
         docs = raw_docs_from_http_docs(req.docs)
         res = rag_app.build_index(
@@ -93,7 +156,17 @@ def create_app() -> FastAPI:
             schema_version=idx.schema_version,
         )
 
-    @router.post("/retrieve", response_model=RetrieveResponse)
+    @router.post(
+        "/retrieve",
+        response_model=RetrieveResponse,
+        tags=["Retrieval"],
+        summary="Retrieve ranked candidates",
+        description=(
+            "Run retrieval against a built index and return the ranked candidate chunks "
+            "that satisfy the query and optional filters."
+        ),
+        operation_id="retrieveCandidates",
+    )
     async def retrieve(req: RetrieveRequest) -> RetrieveResponse:
         idx = index_store.get(req.index_id)
         if idx is None:
@@ -107,7 +180,17 @@ def create_app() -> FastAPI:
 
         return retrieve_response_from_candidates(res.value)
 
-    @router.post("/ask", response_model=AskResponse)
+    @router.post(
+        "/ask",
+        response_model=AskResponse,
+        tags=["Retrieval"],
+        summary="Answer a query from the index",
+        description=(
+            "Retrieve candidates from the selected index, optionally rerank them, and "
+            "return a synthesized answer with explicit citations."
+        ),
+        operation_id="answerQuery",
+    )
     async def ask(req: AskRequest) -> AskResponse:
         idx = index_store.get(req.index_id)
         if idx is None:

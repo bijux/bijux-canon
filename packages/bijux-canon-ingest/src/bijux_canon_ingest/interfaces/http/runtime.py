@@ -45,10 +45,15 @@ def build_openapi_factory(app: FastAPI) -> Any:
             return existing_schema
         app.openapi_schema = get_openapi(
             title=app.title,
-            version="0.1.0",
+            version=app.version,
             routes=app.routes,
             openapi_version="3.1.0",
+            summary=app.summary,
             description=app.description,
+            tags=app.openapi_tags,
+            servers=app.servers,
+            contact=app.contact,
+            license_info=app.license_info,
         )
         generated_schema = app.openapi_schema
         if not isinstance(
