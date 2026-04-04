@@ -54,7 +54,7 @@ class Ok(Generic[T, E]):
 
     def ap(self, arg: Result[U, E]) -> Result[V, E]:
         if isinstance(arg, Err):
-            return arg  # type: ignore[return-value]
+            return cast("Result[V, E]", arg)
         func = cast(Callable[[U], V], self.value)
         return Ok(func(arg.value))
 

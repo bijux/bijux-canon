@@ -41,6 +41,29 @@ def _freeze_metadata(m: Mapping[str, JSON]) -> tuple[tuple[str, JSON], ...]:
     return tuple(sorted(m.items()))
 
 
+def _require_json_mapping(value: JSON, *, field: str) -> Mapping[str, JSON]:
+    if not isinstance(value, Mapping):
+        raise ValueError(f"{field} must be a JSON object")
+    return value
+
+
+def _require_float_iterable(value: JSON, *, field: str) -> Iterable[float]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        raise ValueError(f"{field} must be a JSON array of numbers")
+    out: list[float] = []
+    for item in value:
+        if not isinstance(item, (int, float)):
+            raise ValueError(f"{field} must be a JSON array of numbers")
+        out.append(float(item))
+    return out
+
+
+def _require_int(value: JSON, *, field: str) -> int:
+    if not isinstance(value, int):
+        raise ValueError(f"{field} must be int")
+    return value
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Chunk:
     """Immutable, stable, JSON-roundtrippable chunk record."""
@@ -135,14 +158,14 @@ def chunk_state_from_dict(d: Mapping[str, JSON]) -> ChunkState:
     kind = d["kind"]
     if kind == "success":
         return success(
-            embedding=d["embedding"],  # type: ignore[arg-type]
-            metadata=dict(d["metadata"]),  # type: ignore[arg-type]
+            embedding=_require_float_iterable(d["embedding"], field="embedding"),
+            metadata=_require_json_mapping(d["metadata"], field="metadata"),
         )
     if kind == "failure":
         return failure(
             code=str(d["code"]),
             msg=str(d["msg"]),
-            attempt=int(d["attempt"]),  # type: ignore[arg-type]
+            attempt=_require_int(d["attempt"], field="attempt"),
         )
     raise ValueError(f"unknown kind {kind!r}")
 
