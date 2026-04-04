@@ -1365,7 +1365,7 @@ def render_root_page(
     )
     return "\n".join(
         [
-            front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "guide"),
+            front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "explanation"),
             body,
         ]
     )
@@ -1678,7 +1678,7 @@ def render_dev_page(slug: str, title: str) -> str:
     )
     return "\n".join(
         [
-            front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "guide"),
+            front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "explanation"),
             body,
         ]
     )
@@ -1985,7 +1985,7 @@ def render_compat_page(slug: str, title: str) -> str:
     )
     return "\n".join(
         [
-            front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "guide"),
+            front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "explanation"),
             body,
         ]
     )
@@ -2101,7 +2101,7 @@ def render_package_page(
         )
     return "\n".join(
         [
-            front_matter(title, package.owner, "index" if slug == "index" else "guide"),
+            front_matter(title, package.owner, "index" if slug == "index" else "explanation"),
             body,
         ]
     )

@@ -1,7 +1,7 @@
 ---
 title: Capability Map
 audience: mixed
-type: guide
+type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
 last_reviewed: 2026-04-04

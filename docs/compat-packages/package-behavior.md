@@ -1,7 +1,7 @@
 ---
 title: Package Behavior
 audience: mixed
-type: guide
+type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
 last_reviewed: 2026-04-04

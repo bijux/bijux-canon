@@ -1,7 +1,7 @@
 ---
 title: Operating Guidelines
 audience: mixed
-type: guide
+type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
 last_reviewed: 2026-04-04

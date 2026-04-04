@@ -1,7 +1,7 @@
 ---
 title: Artifact Contracts
 audience: mixed
-type: guide
+type: explanation
 status: canonical
 owner: bijux-canon-index-docs
 last_reviewed: 2026-04-04

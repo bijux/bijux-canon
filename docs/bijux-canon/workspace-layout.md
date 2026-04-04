@@ -1,7 +1,7 @@
 ---
 title: Workspace Layout
 audience: mixed
-type: guide
+type: explanation
 status: canonical
 owner: bijux-canon-docs
 last_reviewed: 2026-04-04

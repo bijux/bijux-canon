@@ -1,7 +1,7 @@
 ---
 title: Known Limitations
 audience: mixed
-type: guide
+type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
 last_reviewed: 2026-04-04

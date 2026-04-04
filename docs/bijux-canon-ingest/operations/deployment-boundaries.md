@@ -1,7 +1,7 @@
 ---
 title: Deployment Boundaries
 audience: mixed
-type: guide
+type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
 last_reviewed: 2026-04-04
