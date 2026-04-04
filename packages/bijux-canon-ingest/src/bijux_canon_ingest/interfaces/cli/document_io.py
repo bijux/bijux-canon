@@ -5,14 +5,16 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
-import json
 from pathlib import Path
 
 from bijux_canon_ingest.core.types import Chunk
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.interfaces.cli.document_pipeline import DocumentChunkShell
+from bijux_canon_ingest.interfaces.cli.document_pipeline_io import (
+    read_csv_docs,
+    write_chunk_jsonl,
+)
 from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig
 from bijux_canon_ingest.result import Err, Ok, Result
 
@@ -33,12 +35,8 @@ class DocumentChunkApi:
 
 def read_docs_csv(
     path: Path,
-) -> Iterable[tuple[str, str, str | None, str | None]]:
-    return DocumentChunkShell(
-        in_path=path,
-        out_path=Path("-"),
-        cfg=ChunkAndEmbedConfig(),
-    ).read_docs(path)
+) -> list[tuple[str, str, str | None, str | None]]:
+    return list(read_csv_docs(path))
 
 
 class CsvDocumentReader:
@@ -58,20 +56,7 @@ class CsvDocumentReader:
 
 def write_chunks_jsonl(path: str, chunks: list[Chunk]) -> Result[None, str]:
     try:
-        with Path(path).open("w", encoding="utf-8") as handle:
-            for chunk in chunks:
-                handle.write(
-                    json.dumps(
-                        {
-                            "doc_id": chunk.doc_id,
-                            "text": chunk.text,
-                            "start": chunk.start,
-                            "end": chunk.end,
-                        },
-                        ensure_ascii=False,
-                    )
-                )
-                handle.write("\n")
+        write_chunk_jsonl(Path(path), chunks)
         return Ok(None)
     except Exception as exc:  # pragma: no cover
         return Err(str(exc))
