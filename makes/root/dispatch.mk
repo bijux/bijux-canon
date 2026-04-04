@@ -1,27 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-ROOT_PACKAGE_TARGETS := test lint quality security api build sbom clean
-
-ROOT_TARGET_PACKAGES_test := $(PRIMARY_PACKAGES)
-ROOT_TARGET_PACKAGES_lint := $(CHECK_PACKAGES)
-ROOT_TARGET_PACKAGES_quality := $(CHECK_PACKAGES)
-ROOT_TARGET_PACKAGES_security := $(CHECK_PACKAGES)
-ROOT_TARGET_PACKAGES_api := $(PRIMARY_PACKAGES)
-ROOT_TARGET_PACKAGES_build := $(PRIMARY_PACKAGES)
-ROOT_TARGET_PACKAGES_sbom := $(PRIMARY_PACKAGES)
-ROOT_TARGET_PACKAGES_clean := $(ALL_PACKAGES)
-
-ROOT_TARGET_SHARED_ENV_test := 0
-ROOT_TARGET_SHARED_ENV_lint := 1
-ROOT_TARGET_SHARED_ENV_quality := 1
-ROOT_TARGET_SHARED_ENV_security := 1
-ROOT_TARGET_SHARED_ENV_api := 0
-ROOT_TARGET_SHARED_ENV_build := 0
-ROOT_TARGET_SHARED_ENV_sbom := 0
-ROOT_TARGET_SHARED_ENV_clean := 0
-
-ROOT_TARGET_POST_clean = @$(MAKE) clean-root-artifacts
+ROOT_SHARED_CHECK_OVERRIDES := \
+	VENV="$(ROOT_CHECK_VENV)" \
+	VENV_PYTHON="$(ROOT_CHECK_PYTHON)" \
+	PYTHON="$(ROOT_CHECK_PYTHON)" \
+	ACT="$(ROOT_CHECK_VENV)/bin"
 
 define run_root_package_target
 	@set -eu; \
@@ -48,10 +32,7 @@ define run_root_package_target
 	  echo "==> $$package: $(1)"; \
 	  if [ "$(3)" = "1" ]; then \
 	    if ! $(MAKE) -C "packages/$$package" -f "$$profile_path" \
-	      VENV="$(ROOT_CHECK_VENV)" \
-	      VENV_PYTHON="$(ROOT_CHECK_PYTHON)" \
-	      PYTHON="$(ROOT_CHECK_PYTHON)" \
-	      ACT="$(ROOT_CHECK_VENV)/bin" \
+	      $(ROOT_SHARED_CHECK_OVERRIDES) \
 	      $(1); then \
 	      failures="$$failures $$package"; \
 	    fi; \
