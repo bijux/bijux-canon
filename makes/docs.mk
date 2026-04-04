@@ -37,6 +37,7 @@ DOCS_CHECK_ENV           ?=
 DOCS_SERVE_ENV           ?=
 DOCS_SERVE_REUSE_MATCH   ?= $(DOCS_SERVE_CONFIG_FILE)
 DOCS_SERVE_STATUS_FILE   ?= $(DOCS_CACHE_DIR)/.serve-state
+DOCS_SERVE_LOCK_DIR      ?= $(DOCS_CACHE_DIR)/.serve-lock
 DOCS_RENDER_SERVE_CONFIG ?= 0
 DOCS_BASE_CONFIG_FILE    ?= $(MKDOCS_CFG)
 DOCS_SHARED_CONFIG_FILE  ?=
@@ -86,10 +87,19 @@ docs:
 	@echo "✔ Docs built → $(DOCS_BUILD_SITE_DIR)"
 
 docs-serve:
-	@mkdir -p "$(DOCS_CACHE_DIR)"
-	@status_file="$(DOCS_SERVE_STATUS_FILE)"; \
-	rm -f "$$status_file"; \
+	@mkdir -p "$(DOCS_CACHE_DIR)"; \
+	status_file="$(DOCS_SERVE_STATUS_FILE)"; \
+	lock_dir="$(DOCS_SERVE_LOCK_DIR)"; \
 	set -eu; \
+	acquire_lock() { \
+	  mkdir "$$lock_dir" 2>/dev/null; \
+	}; \
+	if ! acquire_lock; then \
+	  echo "→ Documentation serve is already starting or running"; \
+	  exit 0; \
+	fi; \
+	trap 'rm -f "$$status_file"; rm -rf "$$lock_dir"' EXIT INT TERM; \
+	rm -f "$$status_file"; \
 	addr="$(DOCS_DEV_ADDR)"; \
 	port="$${addr##*:}"; \
 	if lsof_output="$$(lsof -nP -iTCP:$$port -sTCP:LISTEN 2>/dev/null)"; then \
@@ -97,7 +107,6 @@ docs-serve:
 	  command_line="$$(ps -p "$$pid" -o command= 2>/dev/null || true)"; \
 	  if [ -n "$(DOCS_SERVE_REUSE_MATCH)" ] && printf '%s\n' "$$command_line" | grep -Fq -- "$(DOCS_SERVE_REUSE_MATCH)"; then \
 	    echo "→ Documentation already serving on http://$$addr (pid $$pid)"; \
-	    echo reuse > "$$status_file"; \
 	    exit 0; \
 	  fi; \
 	  echo "Port $$addr is already in use by pid $$pid."; \
@@ -107,12 +116,7 @@ docs-serve:
 	  echo "Stop that process or set DOCS_DEV_ADDR to a free port."; \
 	  exit 2; \
 	fi; \
-	echo proceed > "$$status_file"
-	@if [ "$$(cat "$(DOCS_SERVE_STATUS_FILE)" 2>/dev/null || true)" = "reuse" ]; then \
-	  exit 0; \
-	else \
-	  $(MAKE) docs-serve-run; \
-	fi
+	$(MAKE) docs-serve-run
 
 docs-serve-run:
 	$(call run_docs_targets,$(DOCS_SERVE_BOOTSTRAP_TARGETS))
