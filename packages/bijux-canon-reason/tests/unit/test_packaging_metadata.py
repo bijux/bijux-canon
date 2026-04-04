@@ -22,7 +22,7 @@ def test_packaging_metadata_hardened() -> None:
     urls = project.get("urls", {})
     for key in ("Documentation", "Repository", "Homepage"):
         assert key in urls and urls[key], f"missing URL for {key}"
-    assert urls.get("Documentation", "").startswith("https://bijux.github.io/")
+    assert urls.get("Documentation", "").startswith("https://bijux.io/")
     assert urls.get("Repository", "").startswith("https://github.com/")
 
     # Minimal dependency surface: core deps are limited.

@@ -28,7 +28,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent"
 Repository = "https://github.com/bijux/bijux-canon"
-Documentation = "https://bijux.github.io/bijux-canon-agent/"
+Documentation = "https://bijux.io/bijux-canon-agent/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/maintainer/CHANGELOG.md"
 

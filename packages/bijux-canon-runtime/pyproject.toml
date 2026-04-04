@@ -53,7 +53,7 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://bijux.github.io/bijux-canon-runtime/"
+Documentation = "https://bijux.io/bijux-canon-runtime/"
 Repository = "https://github.com/bijux/bijux-canon"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md"

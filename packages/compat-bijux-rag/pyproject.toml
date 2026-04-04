@@ -23,7 +23,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest"
 Repository = "https://github.com/bijux/bijux-canon"
-Documentation = "https://bijux.github.io/bijux-canon-ingest/"
+Documentation = "https://bijux.io/bijux-canon-ingest/"
 BugTracker = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md"
 

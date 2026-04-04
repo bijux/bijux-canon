@@ -108,7 +108,7 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason"
 Repository = "https://github.com/bijux/bijux-canon"
-Documentation = "https://bijux.github.io/bijux-canon-reason/"
+Documentation = "https://bijux.io/bijux-canon-reason/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md"
 
