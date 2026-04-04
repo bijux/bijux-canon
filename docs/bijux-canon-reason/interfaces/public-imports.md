@@ -1,0 +1,26 @@
+---
+title: Public Imports
+audience: mixed
+type: guide
+status: canonical
+owner: bijux-canon-reason-docs
+last_reviewed: 2026-04-04
+---
+
+# Public Imports
+
+The public Python surface of `bijux-canon-reason` starts at the package import root and any
+intentionally exported modules beneath it.
+
+## Import Anchor
+
+- import root: `bijux_canon_reason`
+- package source root: `packages/bijux-canon-reason/src/bijux_canon_reason`
+
+## Purpose
+
+This page keeps the import-facing contract visible when refactoring package internals.
+
+## Stability
+
+Keep it aligned with the actual package source tree and documented import paths.
