@@ -1,46 +1,48 @@
-# bijux-canon
+---
+title: bijux-canon Documentation
+audience: mixed
+type: index
+status: canonical
+owner: bijux-canon-docs
+last_reviewed: 2026-04-04
+---
 
-`bijux-canon` is a monorepo for independently publishable Python packages
-that share repository-wide tooling, governance, and automation.
+# Docs Index
 
-## Packages
+`bijux-canon` is the canonical documentation site for the monorepo, the five
+product packages, the repository maintenance package, and the legacy
+compatibility shims that still preserve older installation names.
 
-- `packages/bijux-canon-runtime`
-- `packages/bijux-canon-agent`
-- `packages/bijux-canon-ingest`
-- `packages/bijux-canon-reason`
-- `packages/bijux-canon-index`
+<div class="bijux-callout"><strong>Use this site as the current contract.</strong> 
+The sections beneath it are intentionally organized with one repository
+handbook, one maintainer handbook, one compatibility handbook, and five
+package handbooks that all share the same five-category spine.</div>
 
-## Shared Ownership Model
+<div class="bijux-panel-grid">
+  <div class="bijux-panel"><h3>Repository</h3><p>Explains the monorepo boundary, shared workflows, schemas, validation, and release intent.</p></div>
+  <div class="bijux-panel"><h3>Packages</h3><p>Each canonical package uses the same foundation, architecture, interfaces, operations, and quality layout.</p></div>
+  <div class="bijux-panel"><h3>Maintenance</h3><p>Separate sections cover the repository tooling package and the compatibility shims so their intent stays explicit.</p></div>
+</div>
 
-- package runtime code stays inside each package
-- repo-owned tool configuration lives in `configs/`
-- repo-owned automation lives in `makes/`
-- repository-wide contributor contracts live at the root
+<div class="bijux-quicklinks">
+<a class="md-button md-button--primary" href="bijux-canon/">Open the repository handbook</a>
+</div>
 
-## Common Entry Points
+## Documentation Scope
 
-Run a package target through the root Makefile:
+- the bijux-canon section
 
-```bash
-make test
-make lint PACKAGE=bijux-canon-ingest
-make docs PACKAGE=bijux-canon-index
-```
+## Reading Map
 
-List tox environments from the root:
+- start with [bijux-canon](bijux-canon/index.md) for repository-wide behavior
+- move into one product package when you need ownership details or operator guidance
+- maintainer automation pages are added when the dev section is rendered
+- compatibility guidance is added when the compat section is rendered
 
-```bash
-tox -av
-```
+## Purpose
 
-## Next Reads
+This page routes readers into the canonical repository and package handbooks without mixing product ownership with maintenance-only or legacy-only concerns.
 
-- [Usage](usage.md)
-- [Tests](tests.md)
-- [Tooling](tooling.md)
-- [Governance](governance.md)
-- [Docs Ownership](docs-ownership.md)
-- [Package Docs](packages/index.md)
-- [Repository History](repository-history.md)
-- [Project Tree](project-tree.md)
+## Stability
+
+This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/` and the packages that still ship from this repository.

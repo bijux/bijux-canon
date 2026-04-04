@@ -14,33 +14,34 @@ theme:
     - navigation.instant
     - navigation.tabs
     - navigation.sections
-    - content.code.copy
+    - navigation.indexes
     - navigation.footer
+    - content.code.copy
+
+extra_css:
+  - assets/styles/extra.css
 
 nav:
   - Home: index.md
-  - Usage: usage.md
-  - Tooling: tooling.md
-  - Tests: tests.md
-  - Governance: governance.md
-  - Repository History: repository-history.md
-  - Project Tree: project-tree.md
-  - Docs Ownership: docs-ownership.md
-  - Package Docs:
-      - Overview: packages/index.md
-      - bijux-canon-agent: packages/bijux-canon-agent/index.md
-      - bijux-canon-index: packages/bijux-canon-index/index.md
-      - bijux-canon-ingest: packages/bijux-canon-ingest/index.md
-      - bijux-canon-reason: packages/bijux-canon-reason/index.md
-      - bijux-canon-runtime: packages/bijux-canon-runtime/index.md
+  - bijux-canon:
+      - bijux-canon: bijux-canon/index.md
+      - Platform Overview: bijux-canon/platform-overview.md
+      - Repository Scope: bijux-canon/repository-scope.md
+      - Workspace Layout: bijux-canon/workspace-layout.md
+      - Package Map: bijux-canon/package-map.md
+      - API and Schema Governance: bijux-canon/api-and-schema-governance.md
+      - Local Development: bijux-canon/local-development.md
+      - Testing and Validation: bijux-canon/testing-and-validation.md
+      - Release and Versioning: bijux-canon/release-and-versioning.md
+      - Documentation System: bijux-canon/documentation-system.md
 
 plugins:
   - search
 
 markdown_extensions:
   - admonition
-  - codehilite
+  - attr_list
+  - md_in_html
+  - tables
   - toc:
       permalink: true
-  - tables
-  - def_list

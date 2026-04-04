@@ -1,0 +1,57 @@
+:root {
+  --bijux-ink: #10243f;
+  --bijux-accent: #aa3e11;
+  --bijux-accent-soft: #f3d7c9;
+  --bijux-surface: #fffdf8;
+  --bijux-panel: #f6efe5;
+  --bijux-border: #dec7b0;
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: var(--bijux-surface);
+}
+
+.md-typeset .bijux-callout {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem 1.1rem;
+  border-left: 0.25rem solid var(--bijux-accent);
+  background: linear-gradient(90deg, rgba(170, 62, 17, 0.12), rgba(170, 62, 17, 0.03));
+  border-radius: 0.4rem;
+}
+
+.md-typeset .bijux-panel-grid {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+@media (min-width: 900px) {
+  .md-typeset .bijux-panel-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.md-typeset .bijux-panel {
+  padding: 1rem 1.1rem;
+  background: var(--bijux-panel);
+  border: 1px solid var(--bijux-border);
+  border-radius: 0.5rem;
+}
+
+.md-typeset .bijux-panel h3 {
+  margin-top: 0;
+  color: var(--bijux-ink);
+}
+
+.md-typeset .bijux-quicklinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  color: var(--bijux-ink);
+}
