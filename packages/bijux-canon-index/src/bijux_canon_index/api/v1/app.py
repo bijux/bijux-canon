@@ -2,15 +2,15 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from typing import NoReturn, cast
+from typing import cast
 
 from fastapi import FastAPI, Header, HTTPException, Response
 
-from bijux_canon_index.interfaces.errors.reporting import record_failure
-from bijux_canon_index.interfaces.errors import (
-    is_refusal,
-    refusal_payload,
-    to_http_status,
+from bijux_canon_index.api.v1.runtime import (
+    REFUSAL_EXAMPLE,
+    engine_from_payload,
+    raise_http_error,
+    replay_inputs_from_request,
 )
 from bijux_canon_index.interfaces.schemas.reports import (
     BackendCapabilitiesReport,
@@ -22,73 +22,13 @@ from bijux_canon_index.interfaces.schemas.requests import (
     ExplainRequest,
     IngestRequest,
 )
-from bijux_canon_index.core.config import (
-    EmbeddingCacheConfig,
-    EmbeddingConfig,
-    ExecutionConfig,
-    VectorStoreConfig,
-)
 from bijux_canon_index.core.errors import BijuxError
-from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
-from bijux_canon_index.core.types import ExecutionBudget
 from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.application.engine import VectorExecutionEngine
 
 
 def build_app() -> FastAPI:
     app = FastAPI(title="bijux-canon-index execution API", version="v1")
-
-    refusal_example = {
-        "error": {
-            "reason": "determinism_violation",
-            "message": "[INV-000] Deterministic execution requires a deterministic vector store",
-            "remediation": "Use deterministic inputs or switch to non_deterministic contract with declared randomness.",
-        }
-    }
-
-    def _raise_http_error(
-        exc: BijuxError, correlation_id: str | None = None
-    ) -> NoReturn:
-        record_failure(exc)
-        detail: object
-        if is_refusal(exc):
-            detail = {"error": refusal_payload(exc)}
-        else:
-            detail = {"message": str(exc)}
-        headers = {"X-Correlation-Id": correlation_id} if correlation_id else None
-        raise HTTPException(
-            status_code=to_http_status(exc), detail=detail, headers=headers
-        ) from None
-
-    def _config_from_payload(
-        *,
-        vector_store: str | None = None,
-        vector_store_uri: str | None = None,
-        vector_store_options: dict[str, str] | None = None,
-        embed_provider: str | None = None,
-        embed_model: str | None = None,
-        cache_embeddings: str | None = None,
-    ) -> ExecutionConfig:
-        vs_cfg = None
-        if vector_store:
-            vs_cfg = VectorStoreConfig(
-                backend=vector_store,
-                uri=vector_store_uri,
-                options=vector_store_options,
-            )
-        embed_cfg = None
-        if embed_provider or embed_model or cache_embeddings:
-            cache_cfg = (
-                EmbeddingCacheConfig(backend=None, uri=cache_embeddings)
-                if cache_embeddings
-                else None
-            )
-            embed_cfg = EmbeddingConfig(
-                provider=embed_provider,
-                model=embed_model,
-                cache=cache_cfg,
-            )
-        return ExecutionConfig(vector_store=vs_cfg, embeddings=embed_cfg)
 
     @app.get(
         "/capabilities",
@@ -209,7 +149,7 @@ def build_app() -> FastAPI:
             400: {
                 "content": {
                     "application/json": {
-                        "examples": {"refusal": {"value": refusal_example}}
+                        "examples": {"refusal": {"value": REFUSAL_EXAMPLE}}
                     }
                 }
             },
@@ -225,7 +165,7 @@ def build_app() -> FastAPI:
                 response.headers["X-Correlation-Id"] = correlation_id
             return VectorExecutionEngine().create(req)
         except BijuxError as exc:
-            _raise_http_error(exc, correlation_id)
+            raise_http_error(exc, correlation_id)
         except Exception as exc:  # pragma: no cover - unexpected
             raise HTTPException(status_code=500, detail="internal error") from exc
 
@@ -260,7 +200,7 @@ def build_app() -> FastAPI:
             400: {
                 "content": {
                     "application/json": {
-                        "examples": {"refusal": {"value": refusal_example}}
+                        "examples": {"refusal": {"value": REFUSAL_EXAMPLE}}
                     }
                 }
             },
@@ -277,15 +217,13 @@ def build_app() -> FastAPI:
                 req = req.model_copy(update={"correlation_id": correlation_id})
             if idempotency_key and req.idempotency_key is None:
                 req = req.model_copy(update={"idempotency_key": idempotency_key})
-            engine = VectorExecutionEngine(
-                config=_config_from_payload(
-                    vector_store=req.vector_store,
-                    vector_store_uri=req.vector_store_uri,
-                    vector_store_options=req.vector_store_options,
-                    embed_provider=req.embed_provider,
-                    embed_model=req.embed_model,
-                    cache_embeddings=req.cache_embeddings,
-                )
+            engine = engine_from_payload(
+                vector_store=req.vector_store,
+                vector_store_uri=req.vector_store_uri,
+                vector_store_options=req.vector_store_options,
+                embed_provider=req.embed_provider,
+                embed_model=req.embed_model,
+                cache_embeddings=req.cache_embeddings,
             )
             result = engine.ingest(req)
             response.headers["X-Correlation-Id"] = str(
@@ -293,7 +231,7 @@ def build_app() -> FastAPI:
             )
             return result
         except BijuxError as exc:
-            _raise_http_error(exc, req.correlation_id or correlation_id)
+            raise_http_error(exc, req.correlation_id or correlation_id)
         except Exception as exc:  # pragma: no cover
             raise HTTPException(status_code=500, detail="internal error") from exc
 
@@ -332,7 +270,7 @@ def build_app() -> FastAPI:
             400: {
                 "content": {
                     "application/json": {
-                        "examples": {"refusal": {"value": refusal_example}}
+                        "examples": {"refusal": {"value": REFUSAL_EXAMPLE}}
                     }
                 }
             },
@@ -346,16 +284,14 @@ def build_app() -> FastAPI:
         try:
             if correlation_id:
                 response.headers["X-Correlation-Id"] = correlation_id
-            engine = VectorExecutionEngine(
-                config=_config_from_payload(
-                    vector_store=req.vector_store,
-                    vector_store_uri=req.vector_store_uri,
-                    vector_store_options=req.vector_store_options,
-                )
+            engine = engine_from_payload(
+                vector_store=req.vector_store,
+                vector_store_uri=req.vector_store_uri,
+                vector_store_options=req.vector_store_options,
             )
             return engine.materialize(req)
         except BijuxError as exc:
-            _raise_http_error(exc, correlation_id)
+            raise_http_error(exc, correlation_id)
         except Exception as exc:  # pragma: no cover
             raise HTTPException(status_code=500, detail="internal error") from exc
 
@@ -403,7 +339,7 @@ def build_app() -> FastAPI:
             422: {
                 "content": {
                     "application/json": {
-                        "examples": {"refusal": {"value": refusal_example}}
+                        "examples": {"refusal": {"value": REFUSAL_EXAMPLE}}
                     }
                 }
             },
@@ -417,18 +353,16 @@ def build_app() -> FastAPI:
         try:
             if correlation_id and req.correlation_id is None:
                 req = req.model_copy(update={"correlation_id": correlation_id})
-            engine = VectorExecutionEngine(
-                config=_config_from_payload(
-                    vector_store=req.vector_store,
-                    vector_store_uri=req.vector_store_uri,
-                    vector_store_options=req.vector_store_options,
-                )
+            engine = engine_from_payload(
+                vector_store=req.vector_store,
+                vector_store_uri=req.vector_store_uri,
+                vector_store_options=req.vector_store_options,
             )
             result = engine.execute(req)
             response.headers["X-Correlation-Id"] = result.get("correlation_id", "")
             return result
         except BijuxError as exc:
-            _raise_http_error(exc, req.correlation_id or correlation_id)
+            raise_http_error(exc, req.correlation_id or correlation_id)
         except Exception as exc:  # pragma: no cover
             raise HTTPException(status_code=500, detail="internal error") from exc
 
@@ -454,7 +388,7 @@ def build_app() -> FastAPI:
             400: {
                 "content": {
                     "application/json": {
-                        "examples": {"refusal": {"value": refusal_example}}
+                        "examples": {"refusal": {"value": REFUSAL_EXAMPLE}}
                     }
                 }
             },
@@ -471,7 +405,7 @@ def build_app() -> FastAPI:
                 response.headers["X-Correlation-Id"] = correlation_id
             return result
         except BijuxError as exc:
-            _raise_http_error(exc, correlation_id)
+            raise_http_error(exc, correlation_id)
         except Exception as exc:  # pragma: no cover
             raise HTTPException(status_code=500, detail="internal error") from exc
 
@@ -504,7 +438,7 @@ def build_app() -> FastAPI:
             400: {
                 "content": {
                     "application/json": {
-                        "examples": {"refusal": {"value": refusal_example}}
+                        "examples": {"refusal": {"value": REFUSAL_EXAMPLE}}
                     }
                 }
             },
@@ -515,25 +449,12 @@ def build_app() -> FastAPI:
         response: Response,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> dict[str, object]:
-        request_text = req.request_text or ""
         try:
             if correlation_id:
                 response.headers["X-Correlation-Id"] = correlation_id
-            randomness_profile = None
-            if req.randomness_profile is not None:
-                randomness_profile = RandomnessProfile(
-                    seed=req.randomness_profile.seed,
-                    sources=tuple(req.randomness_profile.sources or ()),
-                    bounded=req.randomness_profile.bounded,
-                    non_replayable=req.randomness_profile.non_replayable,
-                )
-            execution_budget = None
-            if req.execution_budget is not None:
-                execution_budget = ExecutionBudget(
-                    max_latency_ms=req.execution_budget.max_latency_ms,
-                    max_memory_mb=req.execution_budget.max_memory_mb,
-                    max_error=req.execution_budget.max_error,
-                )
+            request_text, randomness_profile, execution_budget = (
+                replay_inputs_from_request(req)
+            )
             return VectorExecutionEngine().replay(
                 request_text,
                 artifact_id=req.artifact_id,
@@ -541,7 +462,7 @@ def build_app() -> FastAPI:
                 execution_budget=execution_budget,
             )
         except BijuxError as exc:
-            _raise_http_error(exc, correlation_id)
+            raise_http_error(exc, correlation_id)
         except Exception as exc:  # pragma: no cover
             raise HTTPException(status_code=500, detail="internal error") from exc
 
