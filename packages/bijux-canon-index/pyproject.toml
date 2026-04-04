@@ -151,7 +151,7 @@ tag-pattern = "^bijux-canon-index/v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-canon-index/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/bijux_canon_index/_version.py"
+version-file = "src/bijux_canon_index/_build_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_index"]

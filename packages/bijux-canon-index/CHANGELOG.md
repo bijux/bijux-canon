@@ -19,6 +19,8 @@ tagged release, including legacy distribution naming where applicable.
   instead of publishing only the typed marker file.
 - Release artifacts now ship the repository `LICENSE` file so downstream
   consumers receive the license text with the published package.
+- Build-time version metadata now writes to a generated module so packaging
+  commands stop dirtying the tracked source tree.
 - OpenAPI freeze artifacts and release-gate expectations were refreshed to
   match the current FastAPI-generated validation schema and 422 response
   wording.

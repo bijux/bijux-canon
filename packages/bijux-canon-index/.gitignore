@@ -1,5 +1,6 @@
 # Bytecode and caches
 __pycache__/
+src/bijux_canon_index/_build_version.py
 *.py[cod]
 
 # Virtual envs and dependencies
