@@ -52,6 +52,12 @@ class WorkflowRunState:
         self.attempts[name] = self.attempts.get(name, 0) + 1
 
 
+@dataclass(frozen=True)
+class _NodeContext:
+    input_schema: AgentInputSchema
+    payload: dict[str, Any]
+
+
 class WorkflowOrchestrator:
     """Simple deterministic orchestrator that executes workflow graph nodes in order."""
 
@@ -79,22 +85,26 @@ class WorkflowOrchestrator:
         context_payload = dict(initial_input.payload)
 
         while pending:
-            executable = [
-                node for node in pending if self._dependencies_met(node, state)
-            ]
+            executable = self._executable_nodes(pending, state)
             if not executable:
                 break
             for node in executable:
                 pending.remove(node)
-                context = self._prepare_context(
+                node_context = self._prepare_context(
                     node, initial_input, state, context_payload
                 )
-                await self._execute(node, context, state)
+                await self._execute(node, node_context.input_schema, state)
+                context_payload = node_context.payload
                 if state.aborted:
                     pending.clear()
                     break
         self.trace_recorder.finish(status="aborted" if state.aborted else "completed")
         return state
+
+    def _executable_nodes(
+        self, pending: list[WorkflowNode], state: WorkflowRunState
+    ) -> list[WorkflowNode]:
+        return [node for node in pending if self._dependencies_met(node, state)]
 
     def _dependencies_met(self, node: WorkflowNode, state: WorkflowRunState) -> bool:
         return all(dep in state.completed for dep in node.dependencies)
@@ -105,20 +115,23 @@ class WorkflowOrchestrator:
         initial_input: AgentInputSchema,
         state: WorkflowRunState,
         payload: dict[str, Any],
-    ) -> AgentInputSchema:
+    ) -> _NodeContext:
         enriched_payload = dict(payload)
         for dep in node.dependencies:
             if dep in state.completed:
                 enriched_payload[f"{dep}_output"] = state.completed[dep].model_dump()
         reduced_payload = self._apply_scope_reduction(enriched_payload)
-        return AgentInputSchema(
-            task_goal=initial_input.task_goal,
+        return _NodeContext(
+            input_schema=AgentInputSchema(
+                task_goal=initial_input.task_goal,
+                payload=reduced_payload,
+                context_id=".".join([initial_input.context_id, node.name]),
+                metadata={
+                    **initial_input.metadata,
+                    "node": node.name,
+                },
+            ),
             payload=reduced_payload,
-            context_id=".".join([initial_input.context_id, node.name]),
-            metadata={
-                **initial_input.metadata,
-                "node": node.name,
-            },
         )
 
     def _apply_scope_reduction(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -141,61 +154,32 @@ class WorkflowOrchestrator:
             try:
                 output = await node.runner(context)
                 state.record_success(node.name, output)
-                metadata = (
-                    output.metadata if isinstance(output, AgentOutputSchema) else {}
+                self._record_trace_entry(
+                    node=node,
+                    context=context,
+                    trace_entry=self._success_trace_entry(
+                        node=node,
+                        context=context,
+                        output=output,
+                        start_time=start_time,
+                    ),
                 )
-                prompt_hash_value = metadata.get(
-                    "prompt_hash", context.metadata.get("prompt_hash", "")
-                )
-                trace_entry = TraceEntry(
-                    agent_id=node.name,
-                    node=node.name,
-                    status="success",
-                    start_time=start_time,
-                    end_time=datetime.now(UTC),
-                    input=context.model_dump(),
-                    output=output.model_dump(),
-                    scores=dict(output.scores),
-                    prompt_hash=prompt_hash_value,
-                    model_hash=context.metadata.get("model_hash", ""),
-                )
-                prev_len = len(self.trace_recorder.trace.entries)
-                self.trace_recorder.record_entry(trace_entry)
-                if len(self.trace_recorder.trace.entries) == prev_len:
-                    raise RuntimeError(f"Trace entry missing for {node.name}") from None
                 return
             except Exception as exc:  # pragma: no cover
-                if isinstance(exc, RuntimeError) and "Trace entry missing" in str(exc):
-                    raise
-                stop_reason = getattr(exc, "stop_reason", None)
-                error = AgentErrorSchema(
-                    code=getattr(exc, "code", "EXEC_ERROR"),
-                    message=str(exc),
-                    details=getattr(exc, "details", None),
-                    transient=getattr(exc, "transient", attempt < node.max_retries),
-                )
+                error = self._error_schema(exc=exc, attempt=attempt, node=node)
                 state.record_error(node.name, error)
-                trace_entry = TraceEntry(
-                    agent_id=node.name,
-                    node=node.name,
-                    status="failed",
-                    start_time=start_time,
-                    end_time=datetime.now(UTC),
-                    input=context.model_dump(),
-                    output=None,
-                    error=error.model_dump(),
-                    prompt_hash=context.metadata.get("prompt_hash", ""),
-                    model_hash=context.metadata.get("model_hash", ""),
-                    scores={},
-                    stop_reason=stop_reason,
+                self._record_trace_entry(
+                    node=node,
+                    context=context,
+                    trace_entry=self._failure_trace_entry(
+                        node=node,
+                        context=context,
+                        error=error,
+                        start_time=start_time,
+                        stop_reason=getattr(exc, "stop_reason", None),
+                    ),
                 )
-                prev_len = len(self.trace_recorder.trace.entries)
-                self.trace_recorder.record_entry(trace_entry)
-                if len(self.trace_recorder.trace.entries) == prev_len:
-                    raise RuntimeError(f"Trace entry missing for {node.name}") from exc
-                if error.code in self.policy.abort.critical_codes or (
-                    not error.transient and node.abort_on_failure
-                ):
+                if self._should_abort(node=node, error=error):
                     state.aborted = True
                     return
                 if attempt >= node.max_retries:
@@ -203,3 +187,80 @@ class WorkflowOrchestrator:
                 await asyncio.sleep(0)
         if not state.aborted and node.abort_on_failure:
             state.aborted = True
+
+    def _success_trace_entry(
+        self,
+        *,
+        node: WorkflowNode,
+        context: AgentInputSchema,
+        output: AgentOutputSchema,
+        start_time: datetime,
+    ) -> TraceEntry:
+        metadata = output.metadata if isinstance(output, AgentOutputSchema) else {}
+        prompt_hash_value = metadata.get(
+            "prompt_hash", context.metadata.get("prompt_hash", "")
+        )
+        return TraceEntry(
+            agent_id=node.name,
+            node=node.name,
+            status="success",
+            start_time=start_time,
+            end_time=datetime.now(UTC),
+            input=context.model_dump(),
+            output=output.model_dump(),
+            scores=dict(output.scores),
+            prompt_hash=prompt_hash_value,
+            model_hash=context.metadata.get("model_hash", ""),
+        )
+
+    def _failure_trace_entry(
+        self,
+        *,
+        node: WorkflowNode,
+        context: AgentInputSchema,
+        error: AgentErrorSchema,
+        start_time: datetime,
+        stop_reason: Any,
+    ) -> TraceEntry:
+        return TraceEntry(
+            agent_id=node.name,
+            node=node.name,
+            status="failed",
+            start_time=start_time,
+            end_time=datetime.now(UTC),
+            input=context.model_dump(),
+            output=None,
+            error=error.model_dump(),
+            prompt_hash=context.metadata.get("prompt_hash", ""),
+            model_hash=context.metadata.get("model_hash", ""),
+            scores={},
+            stop_reason=stop_reason,
+        )
+
+    def _record_trace_entry(
+        self,
+        *,
+        node: WorkflowNode,
+        context: AgentInputSchema,
+        trace_entry: TraceEntry,
+    ) -> None:
+        del context
+        prev_len = len(self.trace_recorder.trace.entries)
+        self.trace_recorder.record_entry(trace_entry)
+        if len(self.trace_recorder.trace.entries) == prev_len:
+            raise RuntimeError(f"Trace entry missing for {node.name}")
+
+    def _error_schema(
+        self, *, exc: Exception, attempt: int, node: WorkflowNode
+    ) -> AgentErrorSchema:
+        return AgentErrorSchema(
+            code=getattr(exc, "code", "EXEC_ERROR"),
+            message=str(exc),
+            details=getattr(exc, "details", None),
+            transient=getattr(exc, "transient", attempt < node.max_retries),
+        )
+
+    def _should_abort(self, *, node: WorkflowNode, error: AgentErrorSchema) -> bool:
+        return error.code in self.policy.abort.critical_codes or (
+            not error.transient and node.abort_on_failure
+        )
