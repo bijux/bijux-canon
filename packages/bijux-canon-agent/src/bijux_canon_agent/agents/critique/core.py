@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections.abc import Callable
 import hashlib
 import time
-from typing import Any, ClassVar, cast
+from typing import Any, ClassVar, TypeAlias, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager
@@ -102,6 +102,13 @@ class CritiqueAgent(BaseAgent):
         Criteria.CODE_SYNTAX: "Correct syntax errors in code blocks.",
         Criteria.RELEVANCE: "Ensure the summary addresses all required topics.",
     }
+
+    AdvancedCheckState: TypeAlias = tuple[
+        float,
+        list[CriterionResult],
+        list[str],
+        list[str],
+    ]
 
     def __init__(
         self,
@@ -220,20 +227,16 @@ class CritiqueAgent(BaseAgent):
         with self.logger.context(agent="CritiqueAgent", context_id=context_id):
             self.logger.info("Starting critique", extra={"context": {"stage": "init"}})
 
-            # Preprocess context
-            if self.pre_hook:
-                try:
-                    context = self.pre_hook(context)
-                except Exception as e:
-                    error_msg = f"Pre-hook failed: {e!s}"
+            prepared_context, pre_hook_error = self._apply_pre_hook(context)
+            if pre_hook_error is not None:
                 return await self.execution_kernel.error_result(
-                    error_msg,
+                    pre_hook_error,
                     context,
                     "pre_hook",
                     {"context": str(context)[:1000]},
                 )
+            context = prepared_context
 
-            # Extract text with improved handling for summaries
             text = self._extract_text(context)
             if text is None:
                 error_msg = (
@@ -247,75 +250,110 @@ class CritiqueAgent(BaseAgent):
                     {"context": str(context)[:1000]},
                 )
 
-            source_text = context.get("source_text", context.get("text", ""))
+            source_text = self._source_text(context)
             cache_key = hashlib.sha256(text.encode()).hexdigest()
-
-            # Check cache
-            if self._cache is not None and cache_key in self._cache:
-                self.logger.debug(
-                    "Returning cached critique result",
-                    extra={"context": {"cache_key": cache_key}},
-                )
-                return self._cache[cache_key]
-
-            # Perform critique with retry mechanism
+            cached_result = self._cached_result(cache_key)
+            if cached_result is not None:
+                return cached_result
             start_time = time.perf_counter()
-            result: dict[str, Any] | None = None
-            for attempt in range(self.max_retries + 1):
-                try:
-                    result = await self._perform_critique(text, context, source_text)
-                    break
-                except Exception as e:
-                    error_msg = (
-                        f"Critique attempt {attempt + 1}/{self.max_retries + 1} "
-                        f"failed: {e!s}"
-                    )
-                    self.logger.error(
-                        error_msg,
-                        extra={"context": {"stage": "perform_critique"}},
-                    )
-                    if attempt == self.max_retries:
-                        error_msg = (
-                            f"Critique failed after {self.max_retries + 1} "
-                            f"attempts: {e!s}"
-                        )
-                        return await self.execution_kernel.error_result(
-                            error_msg,
-                            context,
-                            "perform_critique",
-                            {"context": str(context)[:1000]},
-                        )
-
-            duration = time.perf_counter() - start_time
-
-            # Post-process result
-            if self.post_hook:
-                try:
-                    if result is None:
-                        raise RuntimeError("Critique process produced no result")
-                    result = cast(CritiqueResult, self.post_hook(context, result))
-                except Exception as e:
-                    error_msg = f"Post-hook failed: {e!s}"
-                    return await self.execution_kernel.error_result(
-                        error_msg,
-                        context,
-                        "post_hook",
-                        {"context": str(context)[:1000]},
-                    )
-
+            result = await self._perform_critique_with_retries(
+                text,
+                context,
+                source_text,
+            )
             if result is None:
-                raise RuntimeError("Critique process produced no result")
-
-            critique_result = cast(CritiqueResult, result)
+                return await self.execution_kernel.error_result(
+                    f"Critique failed after {self.max_retries + 1} attempts",
+                    context,
+                    "perform_critique",
+                    {"context": str(context)[:1000]},
+                )
+            duration = time.perf_counter() - start_time
+            critique_result = self._apply_post_hook(context, result)
+            if critique_result is None:
+                return await self.execution_kernel.error_result(
+                    "Post-hook failed",
+                    context,
+                    "post_hook",
+                    {"context": str(context)[:1000]},
+                )
             formatted_result = self._format_critique_output(
                 critique_result, text, source_text
             )
-
-            if self._cache is not None:
-                self._cache[cache_key] = formatted_result
-
+            self._store_cached_result(cache_key, formatted_result)
             self._log_critique_completion(critique_result, duration)
             return formatted_result
+
+    def _apply_pre_hook(
+        self, context: dict[str, Any]
+    ) -> tuple[dict[str, Any], str | None]:
+        """Apply the optional pre-hook and return the updated context."""
+        if not self.pre_hook:
+            return context, None
+        try:
+            return self.pre_hook(context), None
+        except Exception as exc:
+            return context, f"Pre-hook failed: {exc!s}"
+
+    @staticmethod
+    def _source_text(context: dict[str, Any]) -> str:
+        """Return the source text fallback chain for critique reporting."""
+        return str(context.get("source_text", context.get("text", "")))
+
+    def _cached_result(self, cache_key: str) -> dict[str, Any] | None:
+        """Return a cached critique result when available."""
+        if self._cache is None or cache_key not in self._cache:
+            return None
+        self.logger.debug(
+            "Returning cached critique result",
+            extra={"context": {"cache_key": cache_key}},
+        )
+        return self._cache[cache_key]
+
+    def _store_cached_result(
+        self, cache_key: str, formatted_result: dict[str, Any]
+    ) -> None:
+        """Store the formatted critique result in cache when enabled."""
+        if self._cache is not None:
+            self._cache[cache_key] = formatted_result
+
+    async def _perform_critique_with_retries(
+        self,
+        text: str,
+        context: dict[str, Any],
+        source_text: str,
+    ) -> CritiqueResult | None:
+        """Retry critique execution until success or retry exhaustion."""
+        for attempt in range(self.max_retries + 1):
+            try:
+                return await self._perform_critique(text, context, source_text)
+            except Exception as exc:
+                error_msg = (
+                    f"Critique attempt {attempt + 1}/{self.max_retries + 1} "
+                    f"failed: {exc!s}"
+                )
+                self.logger.error(
+                    error_msg,
+                    extra={"context": {"stage": "perform_critique"}},
+                )
+        return None
+
+    def _apply_post_hook(
+        self,
+        context: dict[str, Any],
+        result: CritiqueResult,
+    ) -> CritiqueResult | None:
+        """Apply the optional post-hook to the critique result."""
+        if not self.post_hook:
+            return result
+        try:
+            return cast(CritiqueResult, self.post_hook(context, result))
+        except Exception as exc:
+            self.logger.error(
+                f"Post-hook failed: {exc!s}",
+                extra={"context": {"stage": "post_hook"}},
+            )
+            return None
 
     @staticmethod
     def _extract_text(context: dict[str, Any]) -> str | None:
@@ -351,44 +389,24 @@ class CritiqueAgent(BaseAgent):
         source_text: str,
     ) -> dict[str, Any]:
         """Perform the critique evaluation with enhanced checks."""
-        per_critique, warnings, issues = [], [], []
-        score = 1.0
+        score, per_critique, warnings, issues = await self._evaluate_criteria(
+            text, context
+        )
 
-        # Early exit for empty text
         if not text.strip():
-            per_critique.append(
-                self._create_result(self.Criteria.NOT_EMPTY, False, ["Text is empty"])
-            )
             return await self._final_report(
                 "needs_revision",
                 0.0,
-                per_critique,
-                warnings,
-                issues,
+                [
+                    self._create_result(
+                        self.Criteria.NOT_EMPTY,
+                        False,
+                        ["Text is empty"],
+                    )
+                ],
+                [],
+                [],
             )
-
-        # Evaluate criteria
-        for crit in self.criteria:
-            check_fn = self.RULES.get(crit)
-            if not check_fn:
-                warnings.append(f"Criterion '{crit}' not implemented")
-                continue
-
-            try:
-                result = check_fn(self, text, context)
-                per_critique.append(result)
-                if result.result == "FAIL":
-                    score -= self.penalties.get(crit, 0.1)
-                    issues.extend(result.issues)
-            except Exception as e:
-                error_msg = f"Check failed: {e!s}"
-                per_critique.append(
-                    self._create_result(crit, False, [error_msg], severity="Critical")
-                )
-                score -= self.penalties.get(crit, 0.1)
-                issues.append(f"Criterion {crit} failed: {e!s}")
-
-        # LLM and custom checks
         score, per_critique, warnings, issues = await self._run_advanced_checks(
             text,
             context,
@@ -402,6 +420,36 @@ class CritiqueAgent(BaseAgent):
         status = "ok" if not issues else "needs_revision"
         return await self._final_report(status, score, per_critique, warnings, issues)
 
+    async def _evaluate_criteria(
+        self,
+        text: str,
+        context: dict[str, Any],
+    ) -> AdvancedCheckState:
+        """Evaluate the configured rule-backed critique criteria."""
+        per_critique: list[CriterionResult] = []
+        warnings: list[str] = []
+        issues: list[str] = []
+        score = 1.0
+        for crit in self.criteria:
+            check_fn = self.RULES.get(crit)
+            if not check_fn:
+                warnings.append(f"Criterion '{crit}' not implemented")
+                continue
+            try:
+                result = check_fn(self, text, context)
+                per_critique.append(result)
+                if result.result == "FAIL":
+                    score -= self.penalties.get(crit, 0.1)
+                    issues.extend(result.issues)
+            except Exception as exc:
+                error_msg = f"Check failed: {exc!s}"
+                per_critique.append(
+                    self._create_result(crit, False, [error_msg], severity="Critical")
+                )
+                score -= self.penalties.get(crit, 0.1)
+                issues.append(f"Criterion {crit} failed: {exc!s}")
+        return score, per_critique, warnings, issues
+
     async def _run_advanced_checks(
         self,
         text: str,
@@ -412,83 +460,132 @@ class CritiqueAgent(BaseAgent):
         issues: list[str],
     ) -> tuple[float, list[CriterionResult], list[str], list[str]]:
         """Run LLM-augmented and custom checks with improved handling."""
-        # LLM-augmented checks
-        if self.llm_critique_fn:
-            for crit in [self.Criteria.NO_HALLUCINATION, self.Criteria.NO_UNSUPPORTED]:
-                if crit in self.criteria:
-                    for attempt in range(self.max_retries + 1):
-                        try:
-                            llm_result = await self.llm_critique_fn(
-                                text,
-                                {**context, "check": crit},
-                            )
-                            if llm_result.get("result") == "FAIL":
-                                score -= self.penalties.get(crit, 0.3)
-                                per_critique.append(
-                                    CriterionResult(
-                                        name=crit,
-                                        result="FAIL",
-                                        issues=llm_result.get("issues", []),
-                                        suggestion=self.suggestion_map[crit],
-                                        severity=self.severity_map[crit],
-                                        confidence=llm_result.get("confidence", 1.0),
-                                    )
-                                )
-                                issues.extend(llm_result.get("issues", []))
-                            confidence = llm_result.get("confidence", 1.0)
-                            if confidence < 0.7:
-                                warnings.append(
-                                    f"Low confidence for LLM check '{crit}': "
-                                    f"{confidence}"
-                                )
-                            break
-                        except Exception as e:
-                            error_msg = (
-                                f"LLM critique for '{crit}' attempt "
-                                f"{attempt + 1}/{self.max_retries + 1} failed: {e!s}"
-                            )
-                            self.logger.error(
-                                error_msg,
-                                extra={"context": {"stage": "llm_critique"}},
-                            )
-                            if attempt == self.max_retries:
-                                error_msg = (
-                                    f"LLM critique for '{crit}' failed after retries: "
-                                    f"{e!s}"
-                                )
-                                warnings.append(error_msg)
+        score, per_critique, warnings, issues = await self._run_llm_checks(
+            text,
+            context,
+            score,
+            per_critique,
+            warnings,
+            issues,
+        )
+        return await self._run_custom_checks(
+            text,
+            context,
+            score,
+            per_critique,
+            warnings,
+            issues,
+        )
 
-        # Custom checks
-        if self.custom_checks:
-            for attempt in range(self.max_retries + 1):
-                try:
-                    custom_issues = await self.custom_checks(text, context) or []
-                    if custom_issues:
-                        issues.extend(custom_issues)
-                        per_critique.append(
-                            CriterionResult(
-                                name="custom",
-                                result="FAIL",
-                                issues=custom_issues,
-                                suggestion="Resolve user-defined issues.",
-                                severity=CritiqueSeverity.MAJOR.value,
-                            )
-                        )
-                        score -= 0.2
-                    break
-                except Exception as e:
-                    error_msg = (
-                        f"Custom checks attempt {attempt + 1}/"
-                        f"{self.max_retries + 1} failed: {e!s}"
+    async def _run_llm_checks(
+        self,
+        text: str,
+        context: dict[str, Any],
+        score: float,
+        per_critique: list[CriterionResult],
+        warnings: list[str],
+        issues: list[str],
+    ) -> AdvancedCheckState:
+        """Run retrying LLM-backed critique checks."""
+        if not self.llm_critique_fn:
+            return score, per_critique, warnings, issues
+        for crit in [self.Criteria.NO_HALLUCINATION, self.Criteria.NO_UNSUPPORTED]:
+            if crit not in self.criteria:
+                continue
+            llm_result = await self._run_llm_check_with_retries(text, context, crit)
+            if llm_result is None:
+                warnings.append(f"LLM critique for '{crit}' failed after retries")
+                continue
+            if llm_result.get("result") == "FAIL":
+                score -= self.penalties.get(crit, 0.3)
+                llm_issues = list(llm_result.get("issues", []))
+                per_critique.append(
+                    CriterionResult(
+                        name=crit,
+                        result="FAIL",
+                        issues=llm_issues,
+                        suggestion=self.suggestion_map[crit],
+                        severity=self.severity_map[crit],
+                        confidence=llm_result.get("confidence", 1.0),
                     )
-                    self.logger.error(
-                        error_msg,
-                        extra={"context": {"stage": "custom_checks"}},
-                    )
-                    if attempt == self.max_retries:
-                        warnings.append(f"Custom checks failed after retries: {e!s}")
-
+                )
+                issues.extend(llm_issues)
+            confidence = float(llm_result.get("confidence", 1.0))
+            if confidence < 0.7:
+                warnings.append(f"Low confidence for LLM check '{crit}': {confidence}")
         return score, per_critique, warnings, issues
+
+    async def _run_llm_check_with_retries(
+        self,
+        text: str,
+        context: dict[str, Any],
+        criterion: str,
+    ) -> dict[str, Any] | None:
+        """Run a single LLM-backed critique check with retries."""
+        if not self.llm_critique_fn:
+            return None
+        for attempt in range(self.max_retries + 1):
+            try:
+                return await self.llm_critique_fn(
+                    text,
+                    {**context, "check": criterion},
+                )
+            except Exception as exc:
+                self.logger.error(
+                    f"LLM critique for '{criterion}' attempt "
+                    f"{attempt + 1}/{self.max_retries + 1} failed: {exc!s}",
+                    extra={"context": {"stage": "llm_critique"}},
+                )
+        return None
+
+    async def _run_custom_checks(
+        self,
+        text: str,
+        context: dict[str, Any],
+        score: float,
+        per_critique: list[CriterionResult],
+        warnings: list[str],
+        issues: list[str],
+    ) -> AdvancedCheckState:
+        """Run custom critique checks with retries."""
+        if not self.custom_checks:
+            return score, per_critique, warnings, issues
+        custom_issues = await self._run_custom_checks_with_retries(text, context)
+        if custom_issues is None:
+            warnings.append("Custom checks failed after retries")
+            return score, per_critique, warnings, issues
+        if custom_issues:
+            issues.extend(custom_issues)
+            per_critique.append(
+                CriterionResult(
+                    name="custom",
+                    result="FAIL",
+                    issues=custom_issues,
+                    suggestion="Resolve user-defined issues.",
+                    severity=CritiqueSeverity.MAJOR.value,
+                )
+            )
+            score -= 0.2
+        return score, per_critique, warnings, issues
+
+    async def _run_custom_checks_with_retries(
+        self,
+        text: str,
+        context: dict[str, Any],
+    ) -> list[str] | None:
+        """Run custom checks until success or retry exhaustion."""
+        if not self.custom_checks:
+            return []
+        for attempt in range(self.max_retries + 1):
+            try:
+                return list(await self.custom_checks(text, context) or [])
+            except Exception as exc:
+                self.logger.error(
+                    f"Custom checks attempt {attempt + 1}/{self.max_retries + 1} "
+                    f"failed: {exc!s}",
+                    extra={"context": {"stage": "custom_checks"}},
+                )
+        return None
 
     def _format_critique_output(
         self,
