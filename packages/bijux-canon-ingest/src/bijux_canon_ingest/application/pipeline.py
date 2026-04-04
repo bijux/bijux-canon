@@ -12,7 +12,7 @@ This module contains the application entry points for:
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator
 from itertools import chain
 from typing import TypeVar
 
@@ -36,6 +36,10 @@ from bijux_canon_ingest.config.ingest import (
     IngestConfig,
     IngestDeps,
 )
+from bijux_canon_ingest.application.pipeline_observations import (
+    build_observations,
+    tap_items,
+)
 
 from bijux_canon_ingest.observability import Observations
 
@@ -44,15 +48,6 @@ T = TypeVar("T")
 
 def _identity_iter(items: Iterable[RawDoc]) -> Iterable[RawDoc]:
     return items
-
-
-def _tap(
-    items: Sequence[T], handler: Callable[[tuple[T, ...]], None] | None
-) -> Sequence[T]:
-    if handler is not None:
-        handler(tuple(items))
-    return items
-
 
 def iter_ingest_pipeline(
     docs: Iterable[RawDoc],
@@ -179,24 +174,21 @@ def run_ingest_pipeline_docs(
     sample_size = config.env.sample_size
 
     kept_docs = [d for d in docs_list if eval_pred(d, config.keep.keep_pred)]
-    _tap(kept_docs, deps.taps.docs if deps.taps else None)
+    tap_items(kept_docs, deps.taps.docs if deps.taps else None)
 
     cleaned = [deps.cleaner(d) for d in kept_docs]
-    _tap(cleaned, deps.taps.cleaned if deps.taps else None)
+    tap_items(cleaned, deps.taps.cleaned if deps.taps else None)
 
     chunks_pre_dedup = list(iter_chunks_from_cleaned(cleaned, config, deps.embedder))
-    _tap(chunks_pre_dedup, deps.taps.chunks if deps.taps else None)
+    tap_items(chunks_pre_dedup, deps.taps.chunks if deps.taps else None)
 
     chunks = structural_dedup_chunks(chunks_pre_dedup)
-    obs = Observations(
-        total_docs=len(docs_list),
-        kept_docs=len(kept_docs),
-        cleaned_docs=len(cleaned),
-        total_chunks=len(chunks),
-        sample_doc_ids=tuple(d.doc_id for d in kept_docs[:sample_size]),
-        sample_chunk_starts=tuple(c.start for c in chunks[:sample_size]),
-        extra=(),
-        warnings=(),
+    obs = build_observations(
+        docs=docs_list,
+        kept_docs=kept_docs,
+        cleaned_docs=cleaned,
+        chunks=chunks,
+        sample_size=sample_size,
     )
     return chunks, obs
 
