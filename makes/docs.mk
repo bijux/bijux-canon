@@ -9,7 +9,6 @@ DOCS_EFFECTIVE_CONFIG     ?= $(PROJECT_ARTIFACTS_DIR)/docs/mkdocs.generated.yml
 DOCS_BUILD_CONFIG_FILE    ?= $(DOCS_EFFECTIVE_CONFIG)
 DOCS_CHECK_CONFIG_FILE    ?= $(DOCS_EFFECTIVE_CONFIG)
 DOCS_SERVE_CONFIG_FILE    ?= $(DOCS_EFFECTIVE_CONFIG)
-DOCS_PREPARE_SCRIPT       ?= $(PROJECT_ARTIFACTS_DIR)/docs/render_mkdocs_config.py
 DOCS_SHARED_ASSETS_DIR    ?= $(MONOREPO_ROOT)/docs/assets
 DOCS_DEV_ADDR             ?= 127.0.0.1:8001
 DOCS_SITE_URL             ?= http://127.0.0.1:8000/
@@ -44,6 +43,7 @@ DOCS_RENDER_SERVE_CONFIG ?= 0
 DOCS_BASE_CONFIG_FILE    ?= $(MKDOCS_CFG)
 DOCS_SHARED_CONFIG_FILE  ?=
 DOCS_RENDERED_DOCS_DIR   ?= $(PROJECT_DIR)/docs
+DOCS_CONFIG_CLI          ?= -m bijux_canon_dev.docs.mkdocs_config
 
 ifeq ($(shell uname -s),Darwin)
   DOCS_BREW_PREFIX   := $(shell command -v brew >/dev/null 2>&1 && brew --prefix)
@@ -150,29 +150,10 @@ docs-prepare-source:
 	  mkdir -p "$(DOCS_SOURCE_DIR)/assets"; \
 	  rsync -a --delete "$(DOCS_SHARED_ASSETS_DIR)/" "$(DOCS_SOURCE_DIR)/assets/"; \
 	fi
-	@script="$(DOCS_PREPARE_SCRIPT)"; \
-	  printf '%s\n' \
-	    'from pathlib import Path' \
-	    'import os' \
-	    '' \
-	    'config_path = Path(os.environ["MKDOCS_CFG"])' \
-	    'effective_path = Path(os.environ["DOCS_EFFECTIVE_CONFIG"])' \
-	    'docs_source_dir = Path(os.environ["DOCS_SOURCE_DIR"]).resolve()' \
-	    '' \
-	    'lines = config_path.read_text(encoding="utf-8").splitlines()' \
-	    'rewritten = []' \
-	    'docs_dir_written = False' \
-	    'for line in lines:' \
-	    '    if line.startswith("docs_dir:"):' \
-	    '        rewritten.append(f"docs_dir: {docs_source_dir}")' \
-	    '        docs_dir_written = True' \
-	    '    else:' \
-	    '        rewritten.append(line)' \
-	    'if not docs_dir_written:' \
-	    '    rewritten.append(f"docs_dir: {docs_source_dir}")' \
-	    'effective_path.write_text("\n".join(rewritten) + "\n", encoding="utf-8")' \
-	    > "$$script"; \
-	  DOCS_SOURCE_DIR="$(DOCS_SOURCE_DIR)" MKDOCS_CFG="$(MKDOCS_CFG)" DOCS_EFFECTIVE_CONFIG="$(DOCS_EFFECTIVE_CONFIG)" "$(DOCS_PYTHON)" "$$script"
+	@"$(DOCS_PYTHON)" $(DOCS_CONFIG_CLI) prepare-source \
+	  --source-config "$(MKDOCS_CFG)" \
+	  --output-config "$(DOCS_EFFECTIVE_CONFIG)" \
+	  --docs-source-dir "$(DOCS_SOURCE_DIR)"
 
 docs-clean:
 	@echo "→ Cleaning documentation artifacts"
@@ -184,7 +165,6 @@ docs-clean:
 	  "$(DOCS_CACHE_DIR)" \
 	  "$(DOCS_SOURCE_DIR)" \
 	  "$(DOCS_EFFECTIVE_CONFIG)" \
-	  "$(DOCS_PREPARE_SCRIPT)" \
 	  $(DOCS_EXTRA_CLEAN_PATHS)
 
 docs-hygiene:
@@ -222,57 +202,13 @@ docs-render-serve-config:
 	  exit 0; \
 	fi
 	@mkdir -p "$(dir $(DOCS_SERVE_CONFIG_FILE))"
-	@script="$(DOCS_CACHE_DIR)/render_docs_serve_config.py"; \
-	  mkdir -p "$(DOCS_CACHE_DIR)"; \
-	  printf '%s\n' \
-	    'from pathlib import Path' \
-	    'import os' \
-	    '' \
-	    'src = Path(os.environ["DOCS_BASE_CONFIG_FILE"])' \
-	    'dst = Path(os.environ["DOCS_SERVE_CONFIG_FILE"])' \
-	    'inherit_cfg = os.environ.get("DOCS_SHARED_CONFIG_FILE", "").strip()' \
-	    'site_url = os.environ["DOCS_SERVE_SITE_URL"]' \
-	    'docs_dir = Path(os.environ["DOCS_RENDERED_DOCS_DIR"]).resolve()' \
-	    'site_dir = Path(os.environ["DOCS_SERVE_SITE_DIR"]).resolve()' \
-	    '' \
-	    'lines = src.read_text(encoding="utf-8").splitlines()' \
-	    'rewritten = []' \
-	    'wrote_inherit = False' \
-	    'wrote_site_url = False' \
-	    'wrote_docs_dir = False' \
-	    'wrote_site_dir = False' \
-	    'for line in lines:' \
-	    '    if line.startswith("INHERIT:") and inherit_cfg:' \
-	    '        rewritten.append(f"INHERIT: {Path(inherit_cfg).resolve()}")' \
-	    '        wrote_inherit = True' \
-	    '    elif line.startswith("site_url:"):' \
-	    '        rewritten.append(f"site_url: {site_url}")' \
-	    '        wrote_site_url = True' \
-	    '    elif line.startswith("docs_dir:"):' \
-	    '        rewritten.append(f"docs_dir: {docs_dir}")' \
-	    '        wrote_docs_dir = True' \
-	    '    elif line.startswith("site_dir:"):' \
-	    '        rewritten.append(f"site_dir: {site_dir}")' \
-	    '        wrote_site_dir = True' \
-	    '    else:' \
-	    '        rewritten.append(line)' \
-	    'if inherit_cfg and not wrote_inherit:' \
-	    '    rewritten.insert(0, f"INHERIT: {Path(inherit_cfg).resolve()}")' \
-	    'if not wrote_site_url:' \
-	    '    rewritten.append(f"site_url: {site_url}")' \
-	    'if not wrote_docs_dir:' \
-	    '    rewritten.append(f"docs_dir: {docs_dir}")' \
-	    'if not wrote_site_dir:' \
-	    '    rewritten.append(f"site_dir: {site_dir}")' \
-	    'dst.write_text("\n".join(rewritten) + "\n", encoding="utf-8")' \
-	    > "$$script"; \
-	  DOCS_BASE_CONFIG_FILE="$(DOCS_BASE_CONFIG_FILE)" \
-	  DOCS_SHARED_CONFIG_FILE="$(DOCS_SHARED_CONFIG_FILE)" \
-	  DOCS_SERVE_CONFIG_FILE="$(DOCS_SERVE_CONFIG_FILE)" \
-	  DOCS_SERVE_SITE_URL="$(DOCS_SERVE_SITE_URL)" \
-	  DOCS_RENDERED_DOCS_DIR="$(DOCS_RENDERED_DOCS_DIR)" \
-	  DOCS_SERVE_SITE_DIR="$(DOCS_SERVE_SITE_DIR)" \
-	  "$(DOCS_PYTHON)" "$$script"
+	@"$(DOCS_PYTHON)" $(DOCS_CONFIG_CLI) render-serve-config \
+	  --source-config "$(DOCS_BASE_CONFIG_FILE)" \
+	  --output-config "$(DOCS_SERVE_CONFIG_FILE)" \
+	  --docs-dir "$(DOCS_RENDERED_DOCS_DIR)" \
+	  --site-dir "$(DOCS_SERVE_SITE_DIR)" \
+	  --site-url "$(DOCS_SERVE_SITE_URL)" \
+	  $(if $(strip $(DOCS_SHARED_CONFIG_FILE)),--inherit-config "$(DOCS_SHARED_CONFIG_FILE)")
 
 ##@ Docs
 docs:         ## Build MkDocs site with strict settings under $(PROJECT_ARTIFACTS_DIR)/docs/site
