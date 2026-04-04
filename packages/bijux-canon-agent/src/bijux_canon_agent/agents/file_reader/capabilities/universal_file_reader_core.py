@@ -29,7 +29,7 @@ from .binary import (
     IMAGE_EXTENSIONS as BINARY_IMAGE_EXTENSIONS,
 )
 from .dispatch import ExtractionHandlers, FileExtractionDispatcher
-from .structure_preview import create_structure_preview
+from .processing_support import enrich_read_result, validate_read_target
 from .structured import (
     HAS_PANDAS,
     HAS_XML,
@@ -305,40 +305,13 @@ class UniversalFileReader:
             Dictionary containing extraction results, metadata, and audit information.
         """
         file_path = Path(file_path)
-
-        # Validate file exists
-        if not file_path.exists():
-            return {
-                "error": f"File not found: {file_path}",
-                "action_plan": ["Verify the file path and ensure the file exists"],
-            }
-
-        if not file_path.is_file():
-            return {
-                "error": f"Path is not a file: {file_path}",
-                "action_plan": ["Provide a path to a file, not a directory"],
-            }
-
-        # Check file size
-        try:
-            file_size = file_path.stat().st_size
-            if file_size > self.max_file_bytes:
-                file_info = await self._create_file_audit(file_path)
-                return {
-                    "error": (
-                        f"File too large: {file_size} bytes "
-                        f"(limit: {self.max_file_bytes})"
-                    ),
-                    "file_info": file_info,
-                    "action_plan": [
-                        "Reduce file size or increase max_file_bytes limit"
-                    ],
-                }
-        except Exception as e:
-            return {
-                "error": f"Could not access file: {e}",
-                "action_plan": ["Verify file permissions and accessibility"],
-            }
+        validation_error = await validate_read_target(
+            file_path,
+            max_file_bytes=self.max_file_bytes,
+            create_file_audit=self._create_file_audit,
+        )
+        if validation_error is not None:
+            return validation_error
 
         # Start processing
         start_time = time.time()
@@ -365,36 +338,23 @@ class UniversalFileReader:
         # Add metadata
         processing_time = time.time() - start_time
 
-        result.update(
-            {
-                "processing_profile": {
-                    "duration_seconds": round(processing_time, 3),
-                    "file_extension": extension,
-                    "processing_method": extraction_plan.processing_method,
-                },
-                "structure_preview": create_structure_preview(
-                    extension,
-                    result,
-                    text_extensions=self.TEXT_EXTENSIONS,
-                    image_extensions=self.IMAGE_EXTENSIONS,
-                    yaml_extensions=self.YAML_EXTENSIONS,
-                    xml_extensions=self.XML_EXTENSIONS,
-                    docx_extensions=self.DOCX_EXTENSIONS,
-                ),
-                "audit_trail": {
-                    "file_path": str(file_path),
-                    "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                    "format": file_type,
-                    "agent_config": {
-                        "max_pdf_pages": self.max_pdf_pages,
-                        "max_file_bytes": self.max_file_bytes,
-                        "chunk_size": self.chunk_size,
-                        "ocr_enabled": self.ocr_enabled,
-                    },
-                },
-            }
+        enrich_read_result(
+            result,
+            file_path=file_path,
+            extension=extension,
+            file_type=file_type,
+            processing_method=extraction_plan.processing_method,
+            processing_time=processing_time,
+            max_pdf_pages=self.max_pdf_pages,
+            max_file_bytes=self.max_file_bytes,
+            chunk_size=self.chunk_size,
+            ocr_enabled=self.ocr_enabled,
+            text_extensions=self.TEXT_EXTENSIONS,
+            image_extensions=self.IMAGE_EXTENSIONS,
+            yaml_extensions=self.YAML_EXTENSIONS,
+            xml_extensions=self.XML_EXTENSIONS,
+            docx_extensions=self.DOCX_EXTENSIONS,
         )
-
         return result
 
     def _build_extraction_handlers(self) -> ExtractionHandlers:
