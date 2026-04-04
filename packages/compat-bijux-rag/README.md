@@ -1,20 +1,28 @@
 # bijux-rag
 
-`bijux-rag` is a compatibility package that preserves the legacy distribution,
-CLI, and Python import surface.
+`bijux-rag` is the compatibility package for the old ingest distribution name.
+Its job is to keep legacy installs and imports working while the canonical
+package name is `bijux-canon-ingest`.
 
-Canonical package:
+## Canonical package
+
 - `bijux-canon-ingest`
 
-Use this package only when an existing environment still depends on the legacy distribution name. New work should depend on `bijux-canon-ingest` directly.
+## What this compatibility package preserves
 
-Canonical package links:
+- the legacy distribution name `bijux-rag`
+- the legacy Python import surface `bijux_rag`
+- the legacy command name `bijux-rag`
+
+## What to do for new work
+
+Use `bijux-canon-ingest` directly:
+
 - package directory: [`../bijux-canon-ingest`](../bijux-canon-ingest)
 - package docs: [`../bijux-canon-ingest/docs/index.md`](../bijux-canon-ingest/docs/index.md)
 
-Compatibility package contents:
+## Package contents
+
 - [pyproject.toml](pyproject.toml)
 - [hatch_build.py](hatch_build.py)
 - [overview.md](overview.md)
-- `bijux_rag` Python module
-- `bijux-rag` console command
