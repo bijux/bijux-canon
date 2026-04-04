@@ -40,6 +40,9 @@ sequenceDiagram
 - root commit rules live in `pyproject.toml`
 - package versions are written to package-local `_version.py` files by Hatch VCS
 - release support helpers live in `bijux-canon-dev`
+- every publishable package keeps its own `CHANGELOG.md`
+- the root `CHANGELOG.md` only records repository-wide changes that span more
+  than one package or alter shared release machinery
 
 ## Versioning Rule
 
@@ -48,3 +51,14 @@ maintainer can understand them years later without opening the diff first.
 
 Two years later, a maintainer should be able to understand why something was
 released without first diff-mining the whole repository.
+
+## Changelog Rule
+
+Package release notes belong with the package that ships them. When a release
+changes `bijux-canon-agent`, `bijux-canon-index`, `bijux-canon-ingest`,
+`bijux-canon-reason`, `bijux-canon-runtime`, or any compatibility package, the
+owning package changelog is the release record that should explain the shipped
+story.
+
+Use the root changelog only when the release changes shared repository
+structure, shared policy, shared automation, or shared documentation systems.

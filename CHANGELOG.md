@@ -12,14 +12,24 @@ whole workspace.
 
 ## Unreleased
 
+- No repository-level changes recorded yet.
+
+## 0.3.0 - 2026-04-04
+
 ### Added
 
-- Root governance and contributor contract documents for the monorepo.
+- Repository handbooks now cover workspace layout, package mapping, API schema
+  governance, release/versioning rules, and documentation-system ownership in
+  one maintainers-first navigation surface.
+- Compatibility-package handbook pages now explain preserved legacy names,
+  migration guidance, validation expectations, and retirement criteria.
 
 ### Changed
 
-- Clarified the repository-level scope of the changelog and how it relates to
-  package release history.
+- Release guidance now states that every publishable package owns its own
+  `CHANGELOG.md`, while this root file only records repository-wide work.
+- Repository docs now describe commit messages as durable release history, so
+  future maintainers can understand intent without diff-mining old changes.
 
 ## Changelog Scope
 
