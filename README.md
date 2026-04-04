@@ -1,68 +1,122 @@
 # bijux-canon
 
-`bijux-canon` is the monorepo for the Bijux Canon package family. It keeps the
-runtime, agent, ingest, reasoning, indexing, compatibility, and repository
-tooling layers in one governed workspace so shared contracts can evolve
-together instead of drifting across separate repositories.
+`bijux-canon` is a contract-first Python package family for governed ingest,
+retrieval, reasoning, agent execution, and runtime replay.
 
-## What Lives Here
+It exists for teams that need more than "it worked once on my machine." The
+goal is not just to run AI and retrieval workflows, but to run them with clear
+boundaries, stable contracts, checked-in schemas, replayable behavior, and a
+repository layout that stays understandable as the system grows.
 
-The repository owns two kinds of things:
+## Why `bijux-canon` Exists
 
-- publishable Python distributions under `packages/`
-- repository-level assets that must stay above any single package
+Many AI and RAG stacks are easy to start and hard to trust. They often mix
+ingest, indexing, reasoning, orchestration, and runtime policy in one blurred
+layer. That makes systems harder to review, migrate, test, replay, and operate.
 
-The root is intentionally small. If something belongs to one package, it stays
-with that package. If something governs the whole workspace, it lives here.
+`bijux-canon` fills that gap by treating these concerns as separate but aligned
+layers:
+
+- `ingest` prepares and shapes information
+- `index` executes retrieval contracts
+- `reason` manages reasoning-side state and run artifacts
+- `agent` orchestrates deterministic agent workflows
+- `runtime` enforces execution and replay policy above the rest
+
+The result is a stack that is easier to govern, easier to inspect, and easier
+to evolve without losing the plot.
+
+## What Makes It Different
+
+- Contracts are first-class. API schemas are checked in under `apis/` instead of
+  being an afterthought.
+- Determinism matters. The system is built around bounded execution, traceable
+  behavior, and replay where it matters.
+- Layers stay legible. Each package owns a specific slice of responsibility
+  instead of collapsing into one "do everything" library.
+- Compatibility is explicit. Legacy package names are preserved through compat
+  packages instead of being hidden or silently broken.
+- The repository is designed as one system. Docs, schemas, validation, release
+  flow, and automation are meant to stay aligned.
 
 ## Package Map
 
-| Package | Role |
-| --- | --- |
-| `bijux-canon-runtime` | Contract-enforced execution and replay for the runtime layer |
-| `bijux-canon-agent` | Deterministic agent orchestration and execution surfaces |
-| `bijux-canon-ingest` | Deterministic ingest, chunking, indexing, and retrieval preparation |
-| `bijux-canon-reason` | Reasoning runtime and auditable run management |
-| `bijux-canon-index` | Contract-driven vector execution and retrieval |
-| `bijux-canon-dev` | Repository-owned developer tooling for docs and workspace automation |
-| `compat-*` packages | Compatibility shims for legacy package names and migration paths |
+The 10 publishable packages in this repository are:
 
-## Repository Layout
+| Package | Purpose | PyPI | Docs | Source |
+| --- | --- | --- | --- | --- |
+| `bijux-canon-runtime` | Governed execution, policy enforcement, and replay | <https://pypi.org/project/bijux-canon-runtime/> | <https://bijux.github.io/bijux-canon-runtime/> | [`packages/bijux-canon-runtime`](packages/bijux-canon-runtime) |
+| `bijux-canon-agent` | Deterministic agent orchestration and execution surfaces | <https://pypi.org/project/bijux-canon-agent/> | <https://bijux.github.io/bijux-canon-agent/> | [`packages/bijux-canon-agent`](packages/bijux-canon-agent) |
+| `bijux-canon-ingest` | Deterministic ingest, chunking, indexing, and retrieval preparation | <https://pypi.org/project/bijux-canon-ingest/> | <https://bijux.github.io/bijux-canon-ingest/> | [`packages/bijux-canon-ingest`](packages/bijux-canon-ingest) |
+| `bijux-canon-reason` | Contract-driven reasoning runtime and run artifacts | <https://pypi.org/project/bijux-canon-reason/> | <https://bijux.github.io/bijux-canon-reason/> | [`packages/bijux-canon-reason`](packages/bijux-canon-reason) |
+| `bijux-canon-index` | Contract-driven vector execution and audited retrieval | <https://pypi.org/project/bijux-canon-index/> | <https://bijux.github.io/bijux-canon-index/> | [`packages/bijux-canon-index`](packages/bijux-canon-index) |
+| `agentic-flows` | Compatibility package for `bijux-canon-runtime` | <https://pypi.org/project/agentic-flows/> | <https://bijux.github.io/bijux-canon-runtime/> | [`packages/compat-agentic-flows`](packages/compat-agentic-flows) |
+| `bijux-agent` | Compatibility package for `bijux-canon-agent` | <https://pypi.org/project/bijux-agent/> | <https://bijux.github.io/bijux-canon-agent/> | [`packages/compat-bijux-agent`](packages/compat-bijux-agent) |
+| `bijux-rag` | Compatibility package for `bijux-canon-ingest` | <https://pypi.org/project/bijux-rag/> | <https://bijux.github.io/bijux-canon-ingest/> | [`packages/compat-bijux-rag`](packages/compat-bijux-rag) |
+| `bijux-rar` | Compatibility package for `bijux-canon-reason` | <https://pypi.org/project/bijux-rar/> | <https://bijux.github.io/bijux-canon-reason/> | [`packages/compat-bijux-rar`](packages/compat-bijux-rar) |
+| `bijux-vex` | Compatibility package for `bijux-canon-index` | <https://pypi.org/project/bijux-vex/> | <https://bijux.github.io/bijux-canon-index/> | [`packages/compat-bijux-vex`](packages/compat-bijux-vex) |
 
-- `apis/` contains checked-in API contracts, pinned OpenAPI artifacts, and hash
-  files for the publishable package surfaces.
-- `configs/` contains shared tool configuration for linting, typing, testing,
-  dependency auditing, and schema validation.
-- `docs/` contains the repository handbook and the reader-facing overview of the
-  whole Bijux Canon system.
-- `makes/` is the single source of truth for root and package automation.
-- `packages/` contains every publishable distribution and the repository-owned
-  developer tooling package.
-- `.github/workflows/` contains repository CI and publish orchestration.
+Repository-owned developer tooling also lives here in
+[`packages/bijux-canon-dev`](packages/bijux-canon-dev), but it is for
+maintaining the workspace rather than for end-user installation.
 
-## Working Model
+## Choose Your Entry Point
 
-- package runtime code stays inside the owning package
-- repository policy, governance, and shared automation stay at the root
-- generated outputs belong under `artifacts/`
-- compatibility packages exist to ease migration, not to define the future
-  architecture
+- Start with `bijux-canon-runtime` if you care about governed execution, policy,
+  replay, and system-level control.
+- Start with `bijux-canon-agent` if you need agent orchestration and
+  deterministic workflow execution.
+- Start with `bijux-canon-ingest` if your main problem is preparing, chunking,
+  and shaping source material for downstream use.
+- Start with `bijux-canon-reason` if you need a reasoning-side runtime with
+  explicit run artifacts and state boundaries.
+- Start with `bijux-canon-index` if retrieval and vector execution are the main
+  concern.
 
-This split matters because the repository is meant to behave like one designed
-system, even though it publishes multiple packages.
+## Documentation Paths
 
-## Common Entry Points
+- Repository handbook: <https://bijux.io/bijux-canon/>
+- Repository handbook source: [`docs/index.md`](docs/index.md)
+- Repository overview section: [`docs/bijux-canon`](docs/bijux-canon)
+- Compatibility handbook: [`docs/compat-packages`](docs/compat-packages)
+- Developer tooling handbook: [`docs/bijux-canon-dev`](docs/bijux-canon-dev)
 
-- read [docs/index.md](docs/index.md) for the root handbook
-- read [CONTRIBUTING.md](CONTRIBUTING.md) before changing repository-wide
-  behavior
-- read [SECURITY.md](SECURITY.md) for vulnerability reporting
-- run `make help` for the generated root command list
-- run `make docs-check` to validate the root handbook build
+If you want the fastest high-level orientation, start with the repository
+handbook and then jump to the package docs that match the layer you care about.
 
-## History and Compatibility
+## Where `bijux-canon` Fits
 
-Some package import paths and compatibility distributions preserve older Bijux
-names while the repository converges on the `bijux-canon-*` family. That
-history is documented in the compatibility handbook and in
-`docs/repository-history.md`.
+`bijux-canon` is not trying to be the most magical framework in the room. It is
+trying to be one of the clearest.
+
+Its place in the community is the gap between:
+
+- quick demos that are easy to start but hard to trust later
+- heavyweight enterprise systems that bury the actual execution model under too
+  much machinery
+
+`bijux-canon` is for people who want explicit boundaries, honest contracts,
+clear artifacts, and a codebase that still makes sense after the first demo.
+
+## Start Here
+
+- Want the whole picture: read [`docs/index.md`](docs/index.md)
+- Want package-level entry points: browse [`packages/`](packages)
+- Want checked-in API contracts: browse [`apis/`](apis)
+- Want workspace automation: run `make help`
+- Want to build the handbook locally: run `make docs-check` or `make docs-serve`
+- Want contributor guidance: read [`CONTRIBUTING.md`](CONTRIBUTING.md)
+
+## Repository Design
+
+The root keeps only the assets that truly need repository ownership:
+
+- `apis/` for checked-in contract artifacts
+- `configs/` for shared tool configuration
+- `docs/` for the root handbook
+- `makes/` for automation and orchestration
+- `.github/workflows/` for CI and release flow
+- `packages/` for the publishable distributions
+
+That split is intentional. It keeps package code local, shared governance
+visible, and repository policy discoverable for both human readers and tooling.
