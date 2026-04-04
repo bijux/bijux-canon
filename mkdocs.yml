@@ -10,6 +10,12 @@ edit_uri: edit/main/docs/
 
 docs_dir: docs
 site_dir: artifacts/root/docs/site
+watch:
+  - docs
+  - docs/assets
+  - mkdocs.yml
+  - mkdocs.shared.yml
+  - packages/bijux-canon-dev/src/bijux_canon_dev/docs
 
 nav:
   - Home: index.md

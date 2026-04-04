@@ -73,6 +73,9 @@ markdown_extensions:
 
 extra:
   homepage: https://bijux.io/
+  bijux:
+    repository: bijux-canon
+    docs_package: bijux-canon-dev
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/bijux

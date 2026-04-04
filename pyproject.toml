@@ -5,7 +5,7 @@ annotated_tag = true
 update_changelog_on_bump = false
 
 [tool.bijux_canon]
-packages = [
+primary_packages = [
   "bijux-canon-dev",
   "bijux-canon-runtime",
   "bijux-canon-agent",
@@ -13,6 +13,30 @@ packages = [
   "bijux-canon-reason",
   "bijux-canon-index",
 ]
+compat_packages = [
+  "compat-agentic-flows",
+  "compat-bijux-agent",
+  "compat-bijux-rag",
+  "compat-bijux-rar",
+  "compat-bijux-vex",
+]
+packages = [
+  "bijux-canon-dev",
+  "bijux-canon-runtime",
+  "bijux-canon-agent",
+  "bijux-canon-ingest",
+  "bijux-canon-reason",
+  "bijux-canon-index",
+  "compat-agentic-flows",
+  "compat-bijux-agent",
+  "compat-bijux-rag",
+  "compat-bijux-rar",
+  "compat-bijux-vex",
+]
+docs_package = "bijux-canon-dev"
+api_dir = "apis"
+config_dir = "configs"
+make_dir = "makes"
 
 [tool.bijux_canon.package_dirs]
 "bijux-canon-dev" = "packages/bijux-canon-dev"
@@ -21,3 +45,8 @@ packages = [
 "bijux-canon-ingest" = "packages/bijux-canon-ingest"
 "bijux-canon-reason" = "packages/bijux-canon-reason"
 "bijux-canon-index" = "packages/bijux-canon-index"
+"compat-agentic-flows" = "packages/compat-agentic-flows"
+"compat-bijux-agent" = "packages/compat-bijux-agent"
+"compat-bijux-rag" = "packages/compat-bijux-rag"
+"compat-bijux-rar" = "packages/compat-bijux-rar"
+"compat-bijux-vex" = "packages/compat-bijux-vex"
