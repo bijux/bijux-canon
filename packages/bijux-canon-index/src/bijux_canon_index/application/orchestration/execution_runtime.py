@@ -27,7 +27,7 @@ from bijux_canon_index.domain.requests.request_execution import (
     execute_request,
     start_execution_session,
 )
-from bijux_canon_index.interfaces.schemas.models import ExecutionRequestPayload
+from bijux_canon_index.interfaces.schemas.requests import ExecutionRequestPayload
 
 
 @dataclass(frozen=True)

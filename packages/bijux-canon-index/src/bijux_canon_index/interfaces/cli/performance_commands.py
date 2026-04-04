@@ -35,7 +35,7 @@ from bijux_canon_index.interfaces.errors import (
     refusal_payload,
     to_cli_exit,
 )
-from bijux_canon_index.interfaces.schemas.models import IngestRequest
+from bijux_canon_index.interfaces.schemas.requests import IngestRequest
 from bijux_canon_index.tooling.benchmarks.dataset import (
     DEFAULT_DIMENSION,
     DEFAULT_QUERY_COUNT,

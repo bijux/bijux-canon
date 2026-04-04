@@ -9,7 +9,7 @@ import threading
 import time
 from typing import Any, cast
 
-from bijux_canon_index.interfaces.schemas.models import (
+from bijux_canon_index.interfaces.schemas.requests import (
     CreateRequest,
     ExecutionArtifactRequest,
     ExecutionRequestPayload,

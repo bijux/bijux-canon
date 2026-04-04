@@ -14,7 +14,7 @@ import uuid
 if TYPE_CHECKING:  # pragma: no cover
     import numpy as np
 
-from bijux_canon_index.interfaces.schemas.models import (
+from bijux_canon_index.interfaces.schemas.requests import (
     ExecutionArtifactRequest,
     ExecutionBudgetPayload,
     ExecutionRequestPayload,

@@ -12,8 +12,10 @@ from bijux_canon_index.interfaces.errors import (
     refusal_payload,
     to_http_status,
 )
-from bijux_canon_index.interfaces.schemas.models import (
+from bijux_canon_index.interfaces.schemas.reports import (
     BackendCapabilitiesReport,
+)
+from bijux_canon_index.interfaces.schemas.requests import (
     CreateRequest,
     ExecutionArtifactRequest,
     ExecutionRequestPayload,
