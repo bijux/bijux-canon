@@ -5,6 +5,9 @@ All notable changes to `bijux-rar` are documented here.
 This compatibility package exists to preserve the former reasoning
 distribution name while the canonical package lives at `bijux-canon-reason`.
 
+Historical release entries below preserve the wording that shipped with tagged
+releases when a tagged changelog existed.
+
 ## Unreleased
 
 - No package-local changes recorded yet.
@@ -21,3 +24,12 @@ distribution name while the canonical package lives at `bijux-canon-reason`.
 - Compatibility messaging now consistently points new work to
   `bijux-canon-reason` while preserving the legacy distribution, import, and
   command names.
+
+## v0.1.0 — Initial public release
+
+- Evidence & citations: byte-span + sha256 verification, fail-closed grounding, replayable traces.
+- Retrieval: chunked BM25 with pinned corpus/index provenance, deterministic rankings, replay guards.
+- Reasoning: structured claims with enforced supports, insufficiency handling, baseline deterministic reasoner.
+- Verification: strict invariant checks, negative-capability tests, invariant IDs wired to failures.
+- API: SQLite-backed lifecycle, stateful Schemathesis coverage, auth + rate limiting + quotas.
+- Tooling: make lint/test/quality/security/api gates, docs site, frozen contract scope `release_scope_v0_1_0.md`.

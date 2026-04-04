@@ -42,17 +42,17 @@ tagged release, including legacy distribution naming where applicable.
 ### Added
 
 - Explicit vector store adapters (memory/sqlite, FAISS, Qdrant) with capability reporting and status commands.
-- Non-Deterministic (ND) execution model with budgets, quality metrics, witness options, and provenance audit fields.
+- Non‑Deterministic (ND) execution model with budgets, quality metrics, witness options, and provenance audit fields.
 - Embedding provider interface, cache controls, and embedding provenance metadata.
 - Determinism fingerprints, replay gates, and conformance tests for stability.
 - Benchmarks, dataset generator, and baseline regression checks.
-- Human-first documentation, contracts, and operational guides (trust model, safety, failure modes).
+- Human‑first documentation, contracts, and operational guides (trust model, safety, failure modes).
 
 ### Changed
 
 - CLI and API now require explicit vector store selection for persistence/ANN routes.
 - Refusal semantics are standardized and surfaced consistently across CLI/API/provenance.
-- Docs and onboarding flow rewritten for clarity, with explicit anti-goals and guarantees.
+- Docs and onboarding flow rewritten for clarity, with explicit anti‑goals and guarantees.
 
 ### Fixed
 
@@ -60,8 +60,6 @@ tagged release, including legacy distribution naming where applicable.
 - Redaction rules tightened to prevent credential leakage in logs and provenance.
 
 ## 0.1.0 – first public release
-
-### Added
 
 - First public, contract-complete release of bijux-vex.
 - Deterministic execution with replayable artifacts and provenance.
