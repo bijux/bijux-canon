@@ -7,8 +7,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
+from bijux_canon_runtime.application.flow_execution_models import (
+    ExecutionConfig,
+    FlowRunResult,
+)
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
@@ -23,12 +26,6 @@ from bijux_canon_runtime.observability.storage.execution_store_protocol import (
     ExecutionReadStoreProtocol,
 )
 from bijux_canon_runtime.ontology.ids import ClaimID, RunID, TenantID
-
-if TYPE_CHECKING:
-    from bijux_canon_runtime.application.execute_flow import (
-        ExecutionConfig,
-        FlowRunResult,
-    )
 
 
 @dataclass(frozen=True)
@@ -50,8 +47,6 @@ class ResumeState:
 
 def persist_run(result: FlowRunResult, config: ExecutionConfig) -> FlowRunResult:
     """Persist runtime execution outputs and return a normalized result record."""
-    from bijux_canon_runtime.application.execute_flow import FlowRunResult
-
     store = config.execution_store
     if store is None:
         raise ValueError("execution_store is required for persisted runs")
