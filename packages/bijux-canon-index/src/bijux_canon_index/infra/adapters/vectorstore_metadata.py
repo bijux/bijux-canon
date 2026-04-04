@@ -7,7 +7,9 @@ from datetime import UTC, datetime
 from typing import Any
 
 from bijux_canon_index.core.types import Vector
-from bijux_canon_index.infra.adapters.metadata_migrations import CURRENT_VECTOR_METADATA_VERSION
+from bijux_canon_index.infra.adapters.metadata_migrations import (
+    CURRENT_VECTOR_METADATA_VERSION,
+)
 
 
 @dataclass(frozen=True)

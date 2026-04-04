@@ -9,9 +9,15 @@ dependencies; it exercises the same contracts under a distinct backend name.
 
 from __future__ import annotations
 
-from bijux_canon_index.contracts.resources import BackendCapabilities, ExecutionResources
+from bijux_canon_index.contracts.resources import (
+    BackendCapabilities,
+    ExecutionResources,
+)
 from bijux_canon_index.core.v1_exclusions import ensure_excluded
-from bijux_canon_index.infra.adapters.sqlite.backend import SQLiteFixture, sqlite_backend
+from bijux_canon_index.infra.adapters.sqlite.backend import (
+    SQLiteFixture,
+    sqlite_backend,
+)
 from bijux_canon_index.infra.runtime_paths import default_pgvector_state_path
 
 

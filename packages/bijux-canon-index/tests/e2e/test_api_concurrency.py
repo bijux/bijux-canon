@@ -14,7 +14,9 @@ from bijux_canon_index.api.v1.app import build_app
 
 
 def test_api_execute_concurrency(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", str(tmp_path / "concurrency.sqlite"))
+    monkeypatch.setenv(
+        "BIJUX_CANON_INDEX_STATE_PATH", str(tmp_path / "concurrency.sqlite")
+    )
     app = build_app()
 
     with TestClient(app) as client:

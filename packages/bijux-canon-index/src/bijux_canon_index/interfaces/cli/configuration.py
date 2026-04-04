@@ -80,7 +80,11 @@ def load_config(config_path: Path | None) -> ExecutionConfig | None:
         )
 
     embeddings = None
-    if embedding_cfg.get("provider") or embedding_cfg.get("model") or cache_cfg.get("uri"):
+    if (
+        embedding_cfg.get("provider")
+        or embedding_cfg.get("model")
+        or cache_cfg.get("uri")
+    ):
         embeddings = EmbeddingConfig(
             provider=embedding_cfg.get("provider"),
             model=embedding_cfg.get("model"),

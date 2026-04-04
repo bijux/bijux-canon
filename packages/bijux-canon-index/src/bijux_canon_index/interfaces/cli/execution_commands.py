@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import json
 import os
+from pathlib import Path
 import sys
 
 import typer
@@ -20,15 +20,12 @@ from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
-    load_config as _load_config,
-    parse_contract as _parse_contract,
 )
-from bijux_canon_index.interfaces.cli.options import ND_WARMUP_OPTION
-from bijux_canon_index.interfaces.cli.rendering import (
-    config_to_dict as _config_to_dict,
-    emit as _emit,
-    load_bundle as _load_bundle,
-    resolve_correlation_id as _resolve_correlation_id,
+from bijux_canon_index.interfaces.cli.configuration import (
+    load_config as _load_config,
+)
+from bijux_canon_index.interfaces.cli.configuration import (
+    parse_contract as _parse_contract,
 )
 from bijux_canon_index.interfaces.cli.execution_payloads import (
     build_artifact_compare_payload,
@@ -36,13 +33,26 @@ from bijux_canon_index.interfaces.cli.execution_payloads import (
     build_replay_runtime,
     build_run_or_bundle_comparison,
 )
+from bijux_canon_index.interfaces.cli.options import ND_WARMUP_OPTION
+from bijux_canon_index.interfaces.cli.rendering import (
+    config_to_dict as _config_to_dict,
+)
+from bijux_canon_index.interfaces.cli.rendering import (
+    emit as _emit,
+)
+from bijux_canon_index.interfaces.cli.rendering import (
+    load_bundle as _load_bundle,
+)
+from bijux_canon_index.interfaces.cli.rendering import (
+    resolve_correlation_id as _resolve_correlation_id,
+)
 from bijux_canon_index.interfaces.cli.workspace_setup import initialize_workspace
-from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
     refusal_payload,
     to_cli_exit,
 )
+from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.schemas.requests import (
     ExecutionArtifactRequest,
     ExplainRequest,

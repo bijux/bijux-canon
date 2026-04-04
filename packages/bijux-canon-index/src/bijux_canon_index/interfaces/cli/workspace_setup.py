@@ -6,7 +6,6 @@ from pathlib import Path
 
 from bijux_canon_index.core.errors import ValidationError
 
-
 DEFAULT_CONFIG_TEMPLATE = """[vector_store]
 backend = "memory"
 # uri = "index.faiss"
@@ -25,7 +24,9 @@ model = "all-MiniLM-L6-v2"
 
 def initialize_workspace(config_path: Path, *, force: bool) -> dict[str, str]:
     if config_path.exists() and not force:
-        raise ValidationError(message="Config already exists. Use --force to overwrite.")
+        raise ValidationError(
+            message="Config already exists. Use --force to overwrite."
+        )
     config_path.write_text(DEFAULT_CONFIG_TEMPLATE, encoding="utf-8")
     for folder in (
         Path("artifacts") / "bijux-canon-index",
@@ -49,4 +50,8 @@ def ensure_gitignore_entries(gitignore_path: Path, *, entries: tuple[str, ...]) 
     gitignore_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-__all__ = ["DEFAULT_CONFIG_TEMPLATE", "ensure_gitignore_entries", "initialize_workspace"]
+__all__ = [
+    "DEFAULT_CONFIG_TEMPLATE",
+    "ensure_gitignore_entries",
+    "initialize_workspace",
+]

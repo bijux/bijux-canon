@@ -8,7 +8,10 @@ from enum import StrEnum
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.identity.ids import fingerprint
 from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
-from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile, VectorExecution
+from bijux_canon_index.core.runtime.vector_execution import (
+    RandomnessProfile,
+    VectorExecution,
+)
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
 
 

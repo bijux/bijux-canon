@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import NamedTuple
 
 from bijux_canon_index.contracts.authz import AllowAllAuthz, Authz
-from bijux_canon_index.contracts.resources import BackendCapabilities, ExecutionResources
+from bijux_canon_index.contracts.resources import (
+    BackendCapabilities,
+    ExecutionResources,
+)
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.adapters.sqlite.backend import (

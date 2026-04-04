@@ -24,13 +24,13 @@ from bijux_canon_index.core.types import (
     ExecutionRequest,
     NDSettings,
 )
+from bijux_canon_index.domain.non_determinism.randomness import (
+    require_randomness_for_nd,
+)
+from bijux_canon_index.domain.requests.execution_plan import build_execution_plan
 from bijux_canon_index.domain.requests.request_execution import (
     execute_request,
     start_execution_session,
-)
-from bijux_canon_index.domain.requests.execution_plan import build_execution_plan
-from bijux_canon_index.domain.non_determinism.randomness import (
-    require_randomness_for_nd,
 )
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.logging import log_event

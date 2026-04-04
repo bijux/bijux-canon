@@ -24,7 +24,6 @@ from bijux_canon_index.interfaces.errors import (
 from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.schemas.requests import ExecutionRequestPayload
 
-
 REFUSAL_EXAMPLE = {
     "error": {
         "reason": "determinism_violation",

@@ -23,11 +23,9 @@ class EmbeddingCacheEntry:
 
 
 class EmbeddingCache(Protocol):
-    def get(self, key: str) -> EmbeddingCacheEntry | None:
-        ...
+    def get(self, key: str) -> EmbeddingCacheEntry | None: ...
 
-    def set(self, key: str, entry: EmbeddingCacheEntry) -> None:
-        ...
+    def set(self, key: str, entry: EmbeddingCacheEntry) -> None: ...
 
 
 class SQLiteEmbeddingCache:

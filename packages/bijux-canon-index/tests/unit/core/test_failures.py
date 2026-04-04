@@ -5,7 +5,11 @@
 from __future__ import annotations
 import pytest
 
-from bijux_canon_index.core.failures import FailureKind, classify_failure, retry_with_policy
+from bijux_canon_index.core.failures import (
+    FailureKind,
+    classify_failure,
+    retry_with_policy,
+)
 from bijux_canon_index.core.errors import InvariantError, mark_retryable
 
 

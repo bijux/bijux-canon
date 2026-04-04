@@ -15,11 +15,11 @@ from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.errors import BijuxError, ValidationError
 from bijux_canon_index.interfaces.cli.configuration import build_config as _build_config
 from bijux_canon_index.interfaces.cli.rendering import emit as _emit
-from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
     refusal_payload,
 )
+from bijux_canon_index.interfaces.errors.reporting import record_failure
 
 
 def register_vector_store_commands(vdb_app: typer.Typer) -> None:

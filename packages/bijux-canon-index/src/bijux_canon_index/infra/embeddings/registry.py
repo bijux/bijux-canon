@@ -5,6 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+
 from bijux_canon_index.core.errors import PluginLoadError
 from bijux_canon_index.infra.plugins.contract import PluginContract
 from bijux_canon_index.infra.plugins.entrypoints import load_entrypoints

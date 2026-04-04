@@ -7,7 +7,10 @@ import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
-from bijux_canon_index.core.invariants import ALLOWED_METRICS, validate_execution_artifact
+from bijux_canon_index.core.invariants import (
+    ALLOWED_METRICS,
+    validate_execution_artifact,
+)
 from bijux_canon_index.core.types import ExecutionArtifact
 
 

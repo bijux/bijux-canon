@@ -2,8 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-import json
 from dataclasses import replace
+import json
 from typing import Any
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
@@ -14,7 +14,11 @@ from bijux_canon_index.core.runtime.vector_execution import (
     derive_execution_id,
     execution_signature,
 )
-from bijux_canon_index.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
+from bijux_canon_index.core.types import (
+    ExecutionArtifact,
+    ExecutionBudget,
+    ExecutionRequest,
+)
 from bijux_canon_index.interfaces.schemas.requests import ExecutionArtifactRequest
 
 
@@ -87,7 +91,9 @@ def attach_ann_index(
     ann_runner: Any,
     vectors: list[Any],
 ) -> ExecutionArtifact:
-    index_info = ann_runner.build_index(artifact.artifact_id, vectors, artifact.metric, None)
+    index_info = ann_runner.build_index(
+        artifact.artifact_id, vectors, artifact.metric, None
+    )
     if not index_info:
         return artifact
     index_hash = index_info.get("index_hash")

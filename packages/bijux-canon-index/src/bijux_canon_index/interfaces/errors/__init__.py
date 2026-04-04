@@ -62,6 +62,8 @@ def to_cli_exit(exc: Exception) -> int:
         if isinstance(exc, exc_type):
             return code
     raise exc
+
+
 __all__ = [
     "to_http_status",
     "to_cli_exit",

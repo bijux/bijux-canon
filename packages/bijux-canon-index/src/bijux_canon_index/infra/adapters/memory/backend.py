@@ -30,8 +30,8 @@ from bijux_canon_index.core.types import (
     Result,
     Vector,
 )
-from bijux_canon_index.domain.requests import scoring
 from bijux_canon_index.domain.provenance.audit import AuditRecord
+from bijux_canon_index.domain.requests import scoring
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 
 
@@ -442,7 +442,9 @@ def memory_backend() -> MemoryFixture:
         fixture = fixture._replace(ann=HnswAnnRunner(stores.vectors))
     except Exception:
         try:
-            from bijux_canon_index.infra.adapters.ann_reference import ReferenceAnnRunner
+            from bijux_canon_index.infra.adapters.ann_reference import (
+                ReferenceAnnRunner,
+            )
 
             fixture = fixture._replace(ann=ReferenceAnnRunner(stores.vectors))
         except Exception:

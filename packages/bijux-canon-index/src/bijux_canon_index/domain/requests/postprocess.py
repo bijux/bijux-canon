@@ -19,6 +19,9 @@ from bijux_canon_index.core.execution_result import (
 from bijux_canon_index.core.runtime.execution_session import ExecutionSession
 from bijux_canon_index.core.runtime.vector_execution import execution_signature
 from bijux_canon_index.core.types import Result
+from bijux_canon_index.domain.non_determinism.randomness import (
+    enforce_randomness_contract,
+)
 from bijux_canon_index.domain.requests.budget import apply_budget_outcomes
 from bijux_canon_index.domain.requests.nd_quality import (
     calibrate_scores,
@@ -26,9 +29,6 @@ from bijux_canon_index.domain.requests.nd_quality import (
     compute_rank_instability,
     compute_similarity_entropy,
     stability_signature,
-)
-from bijux_canon_index.domain.non_determinism.randomness import (
-    enforce_randomness_contract,
 )
 
 

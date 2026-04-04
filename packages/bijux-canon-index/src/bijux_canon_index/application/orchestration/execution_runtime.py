@@ -5,14 +5,19 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 import uuid
 
 from bijux_canon_index.contracts.tx import Tx
 from bijux_canon_index.core.config import ExecutionConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
-from bijux_canon_index.core.errors import BudgetExceededError, InvariantError, ValidationError
+from bijux_canon_index.core.errors import (
+    BudgetExceededError,
+    InvariantError,
+    ValidationError,
+)
 from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile
 from bijux_canon_index.core.types import (
     ExecutionArtifact,
@@ -44,7 +49,9 @@ def resolve_correlation_id(raw: str | None) -> str:
     return raw or "req-1"
 
 
-def validate_execute_limits(config: ExecutionConfig, req: ExecutionRequestPayload) -> None:
+def validate_execute_limits(
+    config: ExecutionConfig, req: ExecutionRequestPayload
+) -> None:
     if req.vector is None:
         raise ValidationError(message="execution vector required")
     limits = config.resource_limits

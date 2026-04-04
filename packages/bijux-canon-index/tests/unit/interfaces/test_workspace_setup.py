@@ -10,7 +10,9 @@ from bijux_canon_index.core.errors import ValidationError
 from bijux_canon_index.interfaces.cli.workspace_setup import initialize_workspace
 
 
-def test_initialize_workspace_creates_config_artifacts_and_gitignore(tmp_path: Path) -> None:
+def test_initialize_workspace_creates_config_artifacts_and_gitignore(
+    tmp_path: Path,
+) -> None:
     config_path = tmp_path / "bijux_canon_index.toml"
     gitignore_path = tmp_path / ".gitignore"
     gitignore_path.write_text("node_modules/\n", encoding="utf-8")
@@ -36,7 +38,9 @@ def test_initialize_workspace_creates_config_artifacts_and_gitignore(tmp_path: P
     ]
 
 
-def test_initialize_workspace_requires_force_for_existing_config(tmp_path: Path) -> None:
+def test_initialize_workspace_requires_force_for_existing_config(
+    tmp_path: Path,
+) -> None:
     config_path = tmp_path / "bijux_canon_index.toml"
     config_path.write_text("existing = true\n", encoding="utf-8")
 

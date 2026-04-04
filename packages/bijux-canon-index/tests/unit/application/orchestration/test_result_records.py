@@ -29,6 +29,4 @@ def test_artifact_build_params_reads_vector_store_metadata() -> None:
 
 
 def test_metadata_tuple_omits_none_values() -> None:
-    assert metadata_tuple({"provider": "test", "seed": None}) == (
-        ("provider", "test"),
-    )
+    assert metadata_tuple({"provider": "test", "seed": None}) == (("provider", "test"),)

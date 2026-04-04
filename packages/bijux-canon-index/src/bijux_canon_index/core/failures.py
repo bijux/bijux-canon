@@ -9,7 +9,11 @@ from enum import Enum
 from typing import TypeVar
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
-from bijux_canon_index.core.errors.error_types import BijuxError, InvariantError, mark_retryable
+from bijux_canon_index.core.errors.error_types import (
+    BijuxError,
+    InvariantError,
+    mark_retryable,
+)
 
 T = TypeVar("T")
 

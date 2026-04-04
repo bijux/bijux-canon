@@ -7,7 +7,10 @@ import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
-from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan, RandomnessSource
+from bijux_canon_index.core.runtime.execution_plan import (
+    ExecutionPlan,
+    RandomnessSource,
+)
 
 
 def test_plan_fingerprint_is_stable():

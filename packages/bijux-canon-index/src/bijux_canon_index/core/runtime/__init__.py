@@ -6,7 +6,10 @@ from __future__ import annotations
 
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
-from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan, RandomnessSource
+from bijux_canon_index.core.runtime.execution_plan import (
+    ExecutionPlan,
+    RandomnessSource,
+)
 from bijux_canon_index.core.runtime.execution_session import (
     ExecutionSession,
     ExecutionState,

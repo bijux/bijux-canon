@@ -30,7 +30,10 @@ from bijux_canon_index.core.execution_result import (
     ExecutionResult,
     ExecutionStatus,
 )
-from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan, RandomnessSource
+from bijux_canon_index.core.runtime.execution_plan import (
+    ExecutionPlan,
+    RandomnessSource,
+)
 from bijux_canon_index.core.types import (
     Chunk,
     Document,
@@ -659,7 +662,9 @@ def sqlite_backend(db_path: str = ":memory:") -> SQLiteFixture:
         fixture = fixture._replace(ann=HnswAnnRunner(stores.vectors))
     except Exception:
         try:
-            from bijux_canon_index.infra.adapters.ann_reference import ReferenceAnnRunner
+            from bijux_canon_index.infra.adapters.ann_reference import (
+                ReferenceAnnRunner,
+            )
 
             fixture = fixture._replace(ann=ReferenceAnnRunner(stores.vectors))
         except Exception:

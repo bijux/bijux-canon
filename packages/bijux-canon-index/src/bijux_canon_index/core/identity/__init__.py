@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
-from bijux_canon_index.core.identity.fingerprints import corpus_fingerprint, vectors_fingerprint
+from bijux_canon_index.core.identity.fingerprints import (
+    corpus_fingerprint,
+    vectors_fingerprint,
+)
 from bijux_canon_index.core.identity.ids import fingerprint, make_id
 from bijux_canon_index.core.identity.policies import (
     ContentAddressedIdPolicy,

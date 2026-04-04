@@ -2,8 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_index.core.contracts.execution_abi import assert_execution_abi
 from bijux_canon_index.application.orchestrator import Orchestrator
+from bijux_canon_index.core.contracts.execution_abi import assert_execution_abi
 
 
 class VectorExecutionEngine(Orchestrator):

@@ -14,8 +14,15 @@ from bijux_canon_index.core.errors import (
     NotFoundError,
     ValidationError,
 )
-from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, ExecutionBudget
-from bijux_canon_index.contracts.resources import BackendCapabilities, ExecutionResources
+from bijux_canon_index.core.types import (
+    ExecutionArtifact,
+    ExecutionRequest,
+    ExecutionBudget,
+)
+from bijux_canon_index.contracts.resources import (
+    BackendCapabilities,
+    ExecutionResources,
+)
 from bijux_canon_index.domain.requests.execution_plan import build_execution_plan
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 

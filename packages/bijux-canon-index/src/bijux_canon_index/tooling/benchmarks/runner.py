@@ -14,6 +14,13 @@ import uuid
 if TYPE_CHECKING:  # pragma: no cover
     import numpy as np
 
+from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.identity.fingerprints import determinism_fingerprint
+from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 from bijux_canon_index.interfaces.schemas.requests import (
     ExecutionArtifactRequest,
     ExecutionBudgetPayload,
@@ -21,13 +28,6 @@ from bijux_canon_index.interfaces.schemas.requests import (
     IngestRequest,
     RandomnessProfilePayload,
 )
-from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
-from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-from bijux_canon_index.core.execution_mode import ExecutionMode
-from bijux_canon_index.core.identity.fingerprints import determinism_fingerprint
-from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
-from bijux_canon_index.application.engine import VectorExecutionEngine
 
 
 @dataclass(frozen=True)
@@ -174,7 +174,6 @@ def run_benchmark(
     repeats: int,
     warmup: int,
 ) -> dict[str, Any]:
-
     if mode not in {"exact", "ann"}:
         raise ValueError("mode must be exact or ann")
 

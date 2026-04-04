@@ -7,12 +7,43 @@ import threading
 import time
 from typing import Any, cast
 
-from bijux_canon_index.interfaces.schemas.requests import (
-    CreateRequest,
-    ExecutionArtifactRequest,
-    ExecutionRequestPayload,
-    ExplainRequest,
-    IngestRequest,
+from bijux_canon_index.application.orchestration.capabilities_report import (
+    build_capabilities_response,
+)
+from bijux_canon_index.application.orchestration.execution_runtime import (
+    build_execution_request,
+    build_randomness_profile,
+    dispatch_execution,
+    normalize_execute_request,
+    resolve_correlation_id,
+    resolve_execution_artifact,
+    validate_execute_limits,
+)
+from bijux_canon_index.application.orchestration.ingest_embeddings import (
+    prepare_ingest_vectors,
+)
+from bijux_canon_index.application.orchestration.ingest_persistence import (
+    invalidate_ann_artifact_if_needed,
+    persist_ingest_documents,
+)
+from bijux_canon_index.application.orchestration.materialization import (
+    attach_ann_index,
+    build_materialized_artifact,
+    materialization_response,
+)
+from bijux_canon_index.application.orchestration.query_introspection import (
+    build_compare_response,
+    build_explain_response,
+    build_replay_response,
+)
+from bijux_canon_index.application.orchestration.result_records import (
+    artifact_build_params,
+    build_run_metadata,
+    finalize_execution,
+    metadata_tuple,
+)
+from bijux_canon_index.application.orchestration.runtime_bootstrap import (
+    bootstrap_runtime,
 )
 from bijux_canon_index.contracts.authz import Authz
 from bijux_canon_index.contracts.tx import Tx
@@ -47,43 +78,12 @@ from bijux_canon_index.domain.non_determinism.execution_model import (
 from bijux_canon_index.infra.logging import log_event
 from bijux_canon_index.infra.metrics import METRICS, timed
 from bijux_canon_index.infra.run_store import RunStore
-from bijux_canon_index.application.orchestration.capabilities_report import (
-    build_capabilities_response,
-)
-from bijux_canon_index.application.orchestration.ingest_embeddings import (
-    prepare_ingest_vectors,
-)
-from bijux_canon_index.application.orchestration.ingest_persistence import (
-    invalidate_ann_artifact_if_needed,
-    persist_ingest_documents,
-)
-from bijux_canon_index.application.orchestration.materialization import (
-    attach_ann_index,
-    build_materialized_artifact,
-    materialization_response,
-)
-from bijux_canon_index.application.orchestration.query_introspection import (
-    build_compare_response,
-    build_explain_response,
-    build_replay_response,
-)
-from bijux_canon_index.application.orchestration.runtime_bootstrap import (
-    bootstrap_runtime,
-)
-from bijux_canon_index.application.orchestration.execution_runtime import (
-    build_execution_request,
-    build_randomness_profile,
-    dispatch_execution,
-    normalize_execute_request,
-    resolve_execution_artifact,
-    resolve_correlation_id,
-    validate_execute_limits,
-)
-from bijux_canon_index.application.orchestration.result_records import (
-    artifact_build_params,
-    build_run_metadata,
-    finalize_execution,
-    metadata_tuple,
+from bijux_canon_index.interfaces.schemas.requests import (
+    CreateRequest,
+    ExecutionArtifactRequest,
+    ExecutionRequestPayload,
+    ExplainRequest,
+    IngestRequest,
 )
 
 

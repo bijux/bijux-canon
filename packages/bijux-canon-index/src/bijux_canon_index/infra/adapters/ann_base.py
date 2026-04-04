@@ -8,7 +8,12 @@ from collections.abc import Iterable
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.execution_result import ApproximationReport
-from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, Result, Vector
+from bijux_canon_index.core.types import (
+    ExecutionArtifact,
+    ExecutionRequest,
+    Result,
+    Vector,
+)
 
 
 class AnnExecutionRequestRunner(ABC):

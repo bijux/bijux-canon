@@ -12,6 +12,9 @@ from bijux_canon_index.api.v1.runtime import (
     raise_http_error,
     replay_inputs_from_request,
 )
+from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.core.errors import BijuxError
+from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.interfaces.schemas.reports import (
     BackendCapabilitiesReport,
 )
@@ -22,9 +25,6 @@ from bijux_canon_index.interfaces.schemas.requests import (
     ExplainRequest,
     IngestRequest,
 )
-from bijux_canon_index.core.errors import BijuxError
-from bijux_canon_index.infra.run_store import RunStore
-from bijux_canon_index.application.engine import VectorExecutionEngine
 
 
 def build_app() -> FastAPI:

@@ -63,7 +63,10 @@ EXPECTED = {
         "run_plan",
     },
     "bijux_canon_index.domain.requests.comparison": {"ExecutionComparator"},
-    "bijux_canon_index.core.invariants": {"ALLOWED_METRICS", "validate_execution_artifact"},
+    "bijux_canon_index.core.invariants": {
+        "ALLOWED_METRICS",
+        "validate_execution_artifact",
+    },
     "bijux_canon_index.contracts.resources": {
         "ExecutionResources",
         "BackendCapabilities",

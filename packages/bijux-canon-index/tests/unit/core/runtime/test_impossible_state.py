@@ -6,7 +6,10 @@ import pytest
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.errors import InvariantError
-from bijux_canon_index.core.runtime.execution_session import ExecutionSession, ExecutionState
+from bijux_canon_index.core.runtime.execution_session import (
+    ExecutionSession,
+    ExecutionState,
+)
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 

@@ -65,8 +65,7 @@ def invalidate_ann_artifact_if_needed(
     existing_artifact = stores.ledger.get_artifact(artifact_id)
     if (
         existing_artifact
-        and existing_artifact.execution_contract
-        is ExecutionContract.NON_DETERMINISTIC
+        and existing_artifact.execution_contract is ExecutionContract.NON_DETERMINISTIC
         and existing_artifact.index_state == "ready"
     ):
         updated = replace(existing_artifact, index_state="invalidated")

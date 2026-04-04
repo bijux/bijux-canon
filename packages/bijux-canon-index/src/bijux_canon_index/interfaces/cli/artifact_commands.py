@@ -19,14 +19,16 @@ from bijux_canon_index.infra.run_store import RunStore
 from bijux_canon_index.interfaces.cli.configuration import load_config as _load_config
 from bijux_canon_index.interfaces.cli.rendering import (
     emit as _emit,
+)
+from bijux_canon_index.interfaces.cli.rendering import (
     redact_config as _redact_config,
 )
-from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
     refusal_payload,
     to_cli_exit,
 )
+from bijux_canon_index.interfaces.errors.reporting import record_failure
 
 
 def register_artifact_commands(artifact_app: typer.Typer) -> None:

@@ -14,23 +14,25 @@ from bijux_canon_index.core.errors import BijuxError
 from bijux_canon_index.infra.metrics import METRICS
 from bijux_canon_index.interfaces.cli.configuration import (
     build_config as _build_config,
+)
+from bijux_canon_index.interfaces.cli.configuration import (
     load_config as _load_config,
 )
 from bijux_canon_index.interfaces.cli.rendering import (
     emit as _emit,
+)
+from bijux_canon_index.interfaces.cli.rendering import (
     redact_config as _redact_config,
 )
-from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
     refusal_payload,
     to_cli_exit,
 )
+from bijux_canon_index.interfaces.errors.reporting import record_failure
 
 
-def register_diagnostic_commands(
-    app: typer.Typer, config_app: typer.Typer
-) -> None:
+def register_diagnostic_commands(app: typer.Typer, config_app: typer.Typer) -> None:
     config_app.command("show")(config_show)
     app.command("metrics")(metrics_snapshot)
     app.command("debug-bundle")(debug_bundle)

@@ -9,9 +9,17 @@ from typing import Any
 from bijux_canon_index.contracts.resources import VectorSource
 from bijux_canon_index.core.determinism import classify_execution
 from bijux_canon_index.core.errors import BackendCapabilityError, ValidationError
-from bijux_canon_index.core.types import Chunk, Document, ExecutionRequest, Result, Vector
+from bijux_canon_index.core.types import (
+    Chunk,
+    Document,
+    ExecutionRequest,
+    Result,
+    Vector,
+)
 from bijux_canon_index.domain.requests import scoring
-from bijux_canon_index.infra.adapters.vectorstore_metadata import build_vectorstore_metadata
+from bijux_canon_index.infra.adapters.vectorstore_metadata import (
+    build_vectorstore_metadata,
+)
 from bijux_canon_index.infra.adapters.vectorstore_registry import VectorStoreResolution
 from bijux_canon_index.infra.logging import log_event
 

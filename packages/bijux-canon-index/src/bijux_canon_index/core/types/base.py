@@ -310,7 +310,9 @@ class ExecutionArtifact:
             )
         plan = self.execution_plan
         if not self.execution_id:
-            from bijux_canon_index.core.runtime.vector_execution import derive_execution_id
+            from bijux_canon_index.core.runtime.vector_execution import (
+                derive_execution_id,
+            )
 
             placeholder_request = ExecutionRequest(
                 request_id=f"{self.artifact_id}-execution",
@@ -339,7 +341,9 @@ class ExecutionArtifact:
                 ),
             )
         if plan and not self.execution_signature:
-            from bijux_canon_index.core.runtime.vector_execution import execution_signature
+            from bijux_canon_index.core.runtime.vector_execution import (
+                execution_signature,
+            )
 
             object.__setattr__(
                 self,

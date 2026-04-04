@@ -12,7 +12,11 @@ from bijux_canon_index.core.runtime.execution_session import (
     ExecutionState,
     derive_session_id,
 )
-from bijux_canon_index.core.types import ExecutionArtifact, ExecutionBudget, ExecutionRequest
+from bijux_canon_index.core.types import (
+    ExecutionArtifact,
+    ExecutionBudget,
+    ExecutionRequest,
+)
 from bijux_canon_index.core.runtime.vector_execution import VectorExecution
 
 

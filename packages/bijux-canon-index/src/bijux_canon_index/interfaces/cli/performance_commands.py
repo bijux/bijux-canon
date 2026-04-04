@@ -29,12 +29,12 @@ from bijux_canon_index.interfaces.cli.options import (
     ND_TUNE_DATASET_DIR_OPTION,
 )
 from bijux_canon_index.interfaces.cli.rendering import emit as _emit
-from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
     refusal_payload,
     to_cli_exit,
 )
+from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.schemas.requests import IngestRequest
 from bijux_canon_index.tooling.benchmarks.dataset import (
     DEFAULT_DIMENSION,
@@ -101,7 +101,9 @@ def nd_tune(
                 )
             )
             vectors = list(engine.stores.vectors.list_vectors())
-            queries = [tuple(query.tolist()) for query in dataset.queries[: max(1, samples)]]
+            queries = [
+                tuple(query.tolist()) for query in dataset.queries[: max(1, samples)]
+            ]
         if not vectors:
             raise ValidationError(message="No vectors available for tuning")
         if not queries:
@@ -172,8 +174,7 @@ def nd_tune(
                     )
                     request = ExecutionRequest(
                         request_id=(
-                            "nd-tune-"
-                            f"m{m_value}-efc{ef_construction}-efs{ef_search}"
+                            f"nd-tune-m{m_value}-efc{ef_construction}-efs{ef_search}"
                         ),
                         text=None,
                         vector=queries[0],
@@ -216,9 +217,7 @@ def nd_tune(
                                 "ef_search": ef_search,
                             },
                             "latency_ms": {
-                                "mean": round(mean(latencies), 3)
-                                if latencies
-                                else 0.0,
+                                "mean": round(mean(latencies), 3) if latencies else 0.0,
                                 "p95": round(p95, 3),
                             },
                             "quality": {

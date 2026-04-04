@@ -13,8 +13,14 @@ from bijux_canon_index.core.errors import (
     NDExecutionUnavailableError,
     ValidationError,
 )
-from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan, RandomnessSource
-from bijux_canon_index.core.runtime.vector_execution import RandomnessProfile, VectorExecution
+from bijux_canon_index.core.runtime.execution_plan import (
+    ExecutionPlan,
+    RandomnessSource,
+)
+from bijux_canon_index.core.runtime.vector_execution import (
+    RandomnessProfile,
+    VectorExecution,
+)
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, Result
 from bijux_canon_index.domain.algorithms import algorithms
 from bijux_canon_index.domain.algorithms.base import get_algorithm
