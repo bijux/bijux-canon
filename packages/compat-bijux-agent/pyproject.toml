@@ -72,4 +72,4 @@ include = ["src/bijux_agent/py.typed"]
 "bijux_agent" = ["py.typed"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_agent/**"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/bijux_agent/**"]
