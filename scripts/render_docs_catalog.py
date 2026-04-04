@@ -2084,6 +2084,16 @@ def render_root_page(
             package names matter because they let the system tell the truth about where a
             concern belongs when code, interfaces, and tests evolve over time.
 
+            ## Canonical Package Roles
+
+            | Package | Core role | Open it when |
+            | --- | --- | --- |
+            | `bijux-canon-ingest` | deterministic preparation of input material | the question starts with source material, chunking, or ingest-local safeguards |
+            | `bijux-canon-index` | retrieval execution and provenance-rich result handling | you are reviewing vector behavior, backends, or replay-aware retrieval output |
+            | `bijux-canon-reason` | evidence-aware reasoning, claims, and verification | you need to inspect how evidence becomes inspectable conclusions |
+            | `bijux-canon-agent` | role-based orchestration and trace-backed workflow control | the question is about agent coordination rather than one local reasoning step |
+            | `bijux-canon-runtime` | governed execution, replay, persistence, and final acceptability | you need the authority layer that decides whether a run is acceptable and durable |
+
             The canonical packages each own a distinct slice of the overall system:
 
             {package_links}
@@ -2254,6 +2264,14 @@ def render_root_page(
             right page, and verify the claims from checked-in assets without needing a
             private walkthrough first.
 
+            ## Handbook Shape
+
+            - one landing page that explains the split and routes readers quickly
+            - one repository handbook for cross-package rules and shared assets
+            - one five-category handbook per canonical product package
+            - one maintainer handbook for repository-health automation
+            - one compatibility handbook for legacy names and migration pressure
+
             ## Documentation Rules
 
             - use stable filenames that describe durable intent
@@ -2297,70 +2315,6 @@ def render_root_page(
         body,
         f"Use `{title}` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.",
     )
-    body = add_what_good_looks_like(
-        body,
-        (
-            f"`{title}` keeps repository guidance above package-local detail instead of competing with it",
-            "the reader can tell which root assets matter to the topic before opening code",
-            "cross-package reasoning becomes simpler because the repository frame is explicit",
-        ),
-    )
-    body = add_failure_signals(
-        body,
-        (
-            f"`{title}` begins absorbing details that should live in package-local docs",
-            "the page stops naming concrete root assets that support its claims",
-            "reviewers cannot tell whether the page is describing policy, process, or one local implementation",
-        ),
-    )
-    body = add_cross_implications(
-        body,
-        (
-            "weak repository pages force package docs to carry root context they should not own",
-            "schema, release, and automation review all become more fragmented when root guidance drifts",
-            "maintainer pages become harder to interpret if repository policy is not clear first",
-        ),
-    )
-    body = add_tradeoffs(
-        body,
-        (
-            "prefer repository-wide clarity over squeezing package-specific nuance into root pages",
-            "prefer durable repository rules over explanations that only fit the current implementation snapshot",
-            "prefer explicit ownership boundaries between root, product, maintainer, and compatibility docs over a superficially shorter navigation tree",
-        ),
-    )
-    body = add_approval_questions(
-        body,
-        (
-            "does the page stay genuinely repository-wide instead of absorbing package-local detail",
-            "can a reviewer tie the page's claims back to concrete root assets, workflows, or schemas",
-            "would a package owner still agree that the root page is clarifying shared policy rather than redefining local ownership",
-        ),
-    )
-    body = add_evidence_checklist(
-        body,
-        (
-            "inspect the named root files, workflows, or schema directories directly",
-            "check at least one owning package doc to confirm the repository page is not absorbing local detail",
-            "verify that the page's policy language still has a checked-in enforcement or review mechanism behind it",
-        ),
-    )
-    body = add_antipatterns(
-        body,
-        (
-            "using repository pages to hide unresolved package-boundary decisions",
-            "documenting root policy without naming the actual checked-in assets that support it",
-            "letting one successful workflow example stand in for repository-wide truth",
-        ),
-    )
-    body = add_escalate_when(
-        body,
-        (
-            "a supposedly root decision is really moving package ownership around",
-            "the page cannot stay accurate without changing multiple package handbooks too",
-            "the root rule described here no longer has a clear checked-in enforcement path",
-        ),
-    )
     body = add_question_section(
         body,
         (
@@ -2377,40 +2331,16 @@ def render_root_page(
             "confirm that any repository rule described here is still enforceable in code or automation",
         ),
     )
-    body = add_core_claim(
+    body = add_honesty_boundary(
         body,
-        "Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.",
+        "These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.",
     )
-    body = add_why_it_matters(
-        body,
-        "Repository pages matter because they explain the rules of coordination. Without them, every package has to re-explain shared schemas, release posture, and workspace expectations in slightly different words, and trust erodes fast.",
-    )
-    body = add_if_it_drifts(
+    body = add_anchor_section(
         body,
         (
-            "root rules become folklore instead of checked-in reference",
-            "packages start re-explaining shared repository behavior inconsistently",
-            "reviewers lose the ability to separate monorepo policy from package-local design",
-        ),
-    )
-    body = add_representative_scenario(
-        body,
-        "A cross-package change touches schemas, automation, and release behavior at once. The repository page should help the reviewer separate root-owned coordination from package-owned behavior instead of merging everything into one fuzzy story.",
-    )
-    body = add_source_of_truth(
-        body,
-        (
-            "root files like `pyproject.toml`, `Makefile`, `makes/`, and `.github/workflows/` for actual repository behavior",
-            "`apis/` for tracked shared schema artifacts",
-            "this section for the explanation of how those assets fit together",
-        ),
-    )
-    body = add_common_misreadings(
-        body,
-        (
-            "that repository policy can be inferred safely from one package alone",
-            "that root docs should silently absorb package-local details",
-            "that repository guidance is authoritative without corresponding checked-in assets",
+            "`pyproject.toml` for workspace metadata and commit conventions",
+            "`Makefile` and `makes/` for root automation",
+            "`apis/` and `.github/workflows/` for schema and validation review",
         ),
     )
     body = add_next_checks(
@@ -2419,43 +2349,6 @@ def render_root_page(
             "move to the owning package docs when the question stops being repository-wide",
             "check root files, schemas, or workflows named here before trusting prose alone",
             "use maintainer docs next if the root issue is really about automation or drift tooling",
-        ),
-    )
-    body = add_update_triggers(
-        body,
-        (
-            "root workflows, schemas, or shared governance change materially",
-            "repository policy moves into or out of package-local ownership",
-            "the current repository explanation no longer matches checked-in root assets",
-        ),
-    )
-    body = add_honesty_boundary(
-        body,
-        "These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.",
-    )
-    if slug == "index":
-        body = add_section_contract(
-            body,
-            (
-                "define the shared monorepo boundary above any single package",
-                "point readers to the package handbooks without duplicating their local detail",
-                "keep root rules tied to actual repository files and automation",
-            ),
-        )
-        body = add_reading_advice(
-            body,
-            (
-                "read this page first when the question is about workspace structure or shared governance",
-                "move to package docs when the question becomes package-specific",
-                "use this section as the repository-level frame before reviewing code or schemas",
-            ),
-        )
-    body = add_anchor_section(
-        body,
-        (
-            "`pyproject.toml` for workspace metadata and commit conventions",
-            "`Makefile` and `makes/` for root automation",
-            "`apis/` and `.github/workflows/` for schema and validation review",
         ),
     )
     return "\n".join(
