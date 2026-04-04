@@ -110,27 +110,21 @@ class ChunkedBM25Index:
         b: float = 0.75,
         parallel: bool = False,
     ) -> list[float]:
-        import math
-
         doc_count = len(self.chunks)
         scores = [0.0 for _ in range(doc_count)]
         q_terms = Counter(query_tokens)
 
         def _score_one(i: int) -> tuple[int, float]:
-            dl = len(self.doc_tokens[i])
-            tf = self.doc_tf[i]
-            denom_norm = k1 * (1.0 - b + b * (dl / self.avgdl))
-            s = 0.0
-            for term, qf in q_terms.items():
-                n = self.df.get(term, 0)
-                if n == 0:
-                    continue
-                idf = math.log(1.0 + (doc_count - n + 0.5) / (n + 0.5))
-                f = tf.get(term, 0)
-                if f == 0:
-                    continue
-                s += idf * ((f * (k1 + 1.0)) / (f + denom_norm)) * float(qf)
-            return i, round(s, 6)
+            return i, _score_document(
+                query_terms=q_terms,
+                document_tokens=self.doc_tokens[i],
+                term_frequencies=self.doc_tf[i],
+                document_frequency=self.df,
+                doc_count=doc_count,
+                avgdl=self.avgdl,
+                k1=k1,
+                b=b,
+            )
 
         if parallel and doc_count > 1:
             with ThreadPoolExecutor() as ex:
@@ -169,19 +163,7 @@ class ChunkedBM25Index:
             "max_docs": self.max_docs,
             "avgdl": self.avgdl,
             "df": dict(sorted(self.df.items())),
-            "chunks": [
-                {
-                    "doc_id": c.doc_id,
-                    "doc_sha256": c.doc_sha256,
-                    "chunk_id": c.chunk_id,
-                    "start_byte": c.start_byte,
-                    "end_byte": c.end_byte,
-                    "text": c.text,
-                    "title": c.title,
-                    "source": c.source,
-                }
-                for c in self.chunks
-            ],
+            "chunks": [_chunk_json(chunk) for chunk in self.chunks],
             "doc_tf": [dict(sorted(tf.items())) for tf in self.doc_tf],
         }
         return canonical_dumps(payload).encode("utf-8")
@@ -211,20 +193,7 @@ class ChunkedBM25Index:
         doc_tokens: list[tuple[str, ...]] = []
         doc_tf: list[Counter[str]] = []
         for ch_obj, tf_obj in zip(raw_chunks, raw_tf, strict=True):
-            ch = Chunk(
-                doc_id=str(ch_obj["doc_id"]),
-                doc_sha256=str(ch_obj["doc_sha256"]),
-                chunk_id=str(ch_obj["chunk_id"]),
-                start_byte=int(ch_obj["start_byte"]),
-                end_byte=int(ch_obj["end_byte"]),
-                text=str(ch_obj["text"]),
-                title=ch_obj.get("title")
-                if isinstance(ch_obj.get("title"), str)
-                else None,
-                source=ch_obj.get("source")
-                if isinstance(ch_obj.get("source"), str)
-                else None,
-            )
+            ch = _chunk_from_json(ch_obj)
             chunks.append(ch)
             tf = Counter({str(k): int(v) for k, v in dict(tf_obj).items()})
             doc_tf.append(tf)
@@ -257,20 +226,16 @@ def build_or_load_index(
 ) -> tuple[ChunkedBM25Index, str, str]:
     """Build or load a persisted index. Returns (index, corpus_sha, index_sha)."""
     corpus_sha = _sha256_path(corpus_path)
-    if index_path is not None and index_path.exists():
-        raw = index_path.read_bytes()
-        try:
-            idx = ChunkedBM25Index.from_json(raw)
-        except Exception:  # noqa: BLE001
-            idx = None
-        if idx is not None and (
-            idx.corpus_sha256 == corpus_sha
-            and idx.chunk_chars == int(chunk_chars)
-            and idx.overlap_chars == int(overlap_chars)
-            and idx.max_chunks == max_chunks
-            and idx.max_docs == max_docs
-        ):
-            return idx, corpus_sha, _sha256_path(index_path)
+    cached = _load_cached_index(
+        index_path=index_path,
+        corpus_sha=corpus_sha,
+        chunk_chars=chunk_chars,
+        overlap_chars=overlap_chars,
+        max_chunks=max_chunks,
+        max_docs=max_docs,
+    )
+    if cached is not None:
+        return cached, corpus_sha, _sha256_path(index_path)
 
     docs = load_corpus_jsonl_stream(
         corpus_path, max_bytes=corpus_max_bytes, max_docs=max_docs
@@ -288,3 +253,129 @@ def build_or_load_index(
         index_path.parent.mkdir(parents=True, exist_ok=True)
         index_path.write_bytes(raw)
     return idx, corpus_sha, fingerprint_bytes(raw)
+
+
+def _score_document(
+    *,
+    query_terms: Counter[str],
+    document_tokens: tuple[str, ...],
+    term_frequencies: Counter[str],
+    document_frequency: Counter[str],
+    doc_count: int,
+    avgdl: float,
+    k1: float,
+    b: float,
+) -> float:
+    import math
+
+    document_length = len(document_tokens)
+    denom_norm = k1 * (1.0 - b + b * (document_length / avgdl))
+    score = 0.0
+    for term, query_frequency in query_terms.items():
+        frequency = term_frequencies.get(term, 0)
+        if frequency == 0:
+            continue
+        idf = _inverse_document_frequency(
+            term=term,
+            document_frequency=document_frequency,
+            doc_count=doc_count,
+            math_module=math,
+        )
+        if idf == 0.0:
+            continue
+        score += (
+            idf
+            * ((frequency * (k1 + 1.0)) / (frequency + denom_norm))
+            * float(query_frequency)
+        )
+    return round(score, 6)
+
+
+def _inverse_document_frequency(
+    *,
+    term: str,
+    document_frequency: Counter[str],
+    doc_count: int,
+    math_module: object,
+) -> float:
+    matches = document_frequency.get(term, 0)
+    if matches == 0:
+        return 0.0
+    return float(
+        math_module.log(1.0 + (doc_count - matches + 0.5) / (matches + 0.5))
+    )
+
+
+def _chunk_json(chunk: Chunk) -> dict[str, object]:
+    return {
+        "doc_id": chunk.doc_id,
+        "doc_sha256": chunk.doc_sha256,
+        "chunk_id": chunk.chunk_id,
+        "start_byte": chunk.start_byte,
+        "end_byte": chunk.end_byte,
+        "text": chunk.text,
+        "title": chunk.title,
+        "source": chunk.source,
+    }
+
+
+def _chunk_from_json(chunk_payload: object) -> Chunk:
+    chunk_obj = dict(chunk_payload)
+    return Chunk(
+        doc_id=str(chunk_obj["doc_id"]),
+        doc_sha256=str(chunk_obj["doc_sha256"]),
+        chunk_id=str(chunk_obj["chunk_id"]),
+        start_byte=int(chunk_obj["start_byte"]),
+        end_byte=int(chunk_obj["end_byte"]),
+        text=str(chunk_obj["text"]),
+        title=chunk_obj.get("title") if isinstance(chunk_obj.get("title"), str) else None,
+        source=chunk_obj.get("source")
+        if isinstance(chunk_obj.get("source"), str)
+        else None,
+    )
+
+
+def _load_cached_index(
+    *,
+    index_path: Path | None,
+    corpus_sha: str,
+    chunk_chars: int,
+    overlap_chars: int,
+    max_chunks: int | None,
+    max_docs: int | None,
+) -> ChunkedBM25Index | None:
+    if index_path is None or not index_path.exists():
+        return None
+    raw = index_path.read_bytes()
+    try:
+        index = ChunkedBM25Index.from_json(raw)
+    except Exception:  # noqa: BLE001
+        return None
+    if _matches_index_config(
+        index=index,
+        corpus_sha=corpus_sha,
+        chunk_chars=chunk_chars,
+        overlap_chars=overlap_chars,
+        max_chunks=max_chunks,
+        max_docs=max_docs,
+    ):
+        return index
+    return None
+
+
+def _matches_index_config(
+    *,
+    index: ChunkedBM25Index,
+    corpus_sha: str,
+    chunk_chars: int,
+    overlap_chars: int,
+    max_chunks: int | None,
+    max_docs: int | None,
+) -> bool:
+    return (
+        index.corpus_sha256 == corpus_sha
+        and index.chunk_chars == int(chunk_chars)
+        and index.overlap_chars == int(overlap_chars)
+        and index.max_chunks == max_chunks
+        and index.max_docs == max_docs
+    )
