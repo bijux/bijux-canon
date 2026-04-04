@@ -39,6 +39,7 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 - [Boundaries](docs/BOUNDARIES.md)
 - [Contracts](docs/CONTRACTS.md)
 - [Tests](docs/TESTS.md)
+- [Changelog](CHANGELOG.md)
 
 ## Primary entrypoint
 
