@@ -21,6 +21,8 @@ changelog update are reconstructed from tag annotations and release diffs.
 - The published docs URL for `agentic-flows` now has its own migration landing
   page inside the shared handbook instead of sending legacy readers directly to
   canonical runtime docs without context.
+- Release artifacts now ship the repository license and exclude stray
+  `.gitignore` content from the published source distribution.
 
 ## 0.3.0 - 2026-04-04
 

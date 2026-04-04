@@ -67,6 +67,12 @@ fallback-version = "0.3.0"
 [tool.hatch.metadata.hooks.custom]
 canonical-name = "bijux-canon-runtime"
 
+[tool.hatch.build]
+ignore-vcs = true
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/agentic_flows/**"]
+exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
+force-include = { "../../LICENSE" = "LICENSE" }
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentic_flows"]
 include = ["src/agentic_flows/py.typed"]
@@ -76,3 +82,5 @@ include = ["src/agentic_flows/py.typed"]
 
 [tool.hatch.build.targets.sdist]
 include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/agentic_flows/**"]
+only-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/agentic_flows"]
+exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
