@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 A change in `bijux-canon-ingest` is not done when code passes locally but the package contract
 is still unclear or unprotected.
 
+Read the quality pages for `bijux-canon-ingest` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
+
 ## Page Maps
 
 ```mermaid

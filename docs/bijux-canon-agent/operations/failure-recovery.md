@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Failure recovery starts with knowing which artifacts, interfaces, and tests expose the problem.
 
+Read the operations pages for `bijux-canon-agent` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

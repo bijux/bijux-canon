@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 bijux-canon-reason interface pages describe the command, API, configuration, import, and artifact surfaces that a caller can rely on.
 
+Read the interfaces pages for `bijux-canon-reason` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+
 ## Page Maps
 
 ```mermaid

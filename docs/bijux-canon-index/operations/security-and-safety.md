@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Security review in `bijux-canon-index` should focus on the package's real boundary surfaces and outputs.
 
+Read the operations pages for `bijux-canon-index` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

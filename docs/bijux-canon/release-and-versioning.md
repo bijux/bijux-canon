@@ -13,6 +13,8 @@ The repository uses commitizen for conventional commit messages and package
 tags for version discovery through Hatch VCS. Version resolution is therefore
 both a repository concern and a package concern.
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

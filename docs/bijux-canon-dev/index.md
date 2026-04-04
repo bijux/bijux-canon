@@ -13,6 +13,8 @@ last_reviewed: 2026-04-04
 quality gates, schema drift checks, SBOM generation, and release support have a
 clear home that is outside the end-user product surface.
 
+These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they reduce hidden automation and make package-wide maintenance effects inspectable.
+
 ## Page Maps
 
 ```mermaid

@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 bijux-canon-reason operations pages describe how to install, run, observe, release, and safely operate the package.
 
+Read the operations pages for `bijux-canon-reason` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

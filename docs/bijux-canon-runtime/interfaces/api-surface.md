@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 HTTP-facing behavior should be discoverable from tracked schema files and the owning API modules.
 
+Read the interfaces pages for `bijux-canon-runtime` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+
 ## Page Maps
 
 ```mermaid

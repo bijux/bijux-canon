@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Local development should happen inside `packages/bijux-canon-ingest` with tests and docs updated
 in the same change series as the code.
 
+Read the operations pages for `bijux-canon-ingest` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

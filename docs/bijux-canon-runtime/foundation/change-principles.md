@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Changes in `bijux-canon-runtime` should keep the package boundary easier to understand, not harder.
 
+Read the foundation pages for `bijux-canon-runtime` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

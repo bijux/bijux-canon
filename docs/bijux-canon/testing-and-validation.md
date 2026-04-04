@@ -13,6 +13,8 @@ Validation in `bijux-canon` is layered: packages protect their own behavior,
 while the repository protects the seams between packages, schemas, docs, and
 release conventions.
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

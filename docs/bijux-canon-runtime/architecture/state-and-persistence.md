@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 State in `bijux-canon-runtime` should be explicit enough that a maintainer can say what is
 transient, what is serialized, and what neighboring packages must not assume.
 
+Read the architecture pages for `bijux-canon-runtime` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
+
 ## Page Maps
 
 ```mermaid

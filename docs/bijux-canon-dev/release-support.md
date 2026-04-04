@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Shared release helpers belong here so versioning and packaging practices stay
 consistent across the repository.
 
+These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they reduce hidden automation and make package-wide maintenance effects inspectable.
+
 ## Page Maps
 
 ```mermaid

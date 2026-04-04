@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Compatibility in `bijux-canon-reason` should be explicit: stable commands, tracked schemas,
 durable artifacts, and release notes that explain intentional breakage.
 
+Read the interfaces pages for `bijux-canon-reason` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+
 ## Page Maps
 
 ```mermaid

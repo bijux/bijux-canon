@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 The repository layout is intentionally direct so maintainers can see where a
 concern belongs before they open any code.
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

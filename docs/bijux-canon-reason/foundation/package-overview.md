@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 `bijux-canon-reason` is the package that owns deterministic evidence-aware reasoning, claim formation, verification, and traceable reasoning workflows.
 
+Read the foundation pages for `bijux-canon-reason` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

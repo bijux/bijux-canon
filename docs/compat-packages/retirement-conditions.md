@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 A compatibility package can be retired only when the dependent environments
 that still need it are understood and the retirement path is documented.
 
+These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.
+
 ## Page Maps
 
 ```mermaid

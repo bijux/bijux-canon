@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 bijux-canon-agent exists to own deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
 
+Read the foundation pages for `bijux-canon-agent` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

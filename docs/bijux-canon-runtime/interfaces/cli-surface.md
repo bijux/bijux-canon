@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 The CLI surface is the operator-facing command layer for `bijux-canon-runtime`.
 
+Read the interfaces pages for `bijux-canon-runtime` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+
 ## Page Maps
 
 ```mermaid

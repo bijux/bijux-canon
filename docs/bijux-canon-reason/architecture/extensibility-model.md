@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Extension work should use the package seams that already exist instead of bypassing ownership.
 
+Read the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
+
 ## Page Maps
 
 ```mermaid

@@ -13,6 +13,8 @@ last_reviewed: 2026-04-04
 package that keeps the monorepo honest when schemas drift, security tooling
 falls behind, or release metadata becomes inconsistent.
 
+These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they reduce hidden automation and make package-wide maintenance effects inspectable.
+
 ## Page Maps
 
 ```mermaid

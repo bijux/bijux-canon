@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Deployment for `bijux-canon-agent` should respect the package boundary instead of assuming the full repository is always present.
 
+Read the operations pages for `bijux-canon-agent` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 The public Python surface of `bijux-canon-runtime` starts at the package import root and any
 intentionally exported modules beneath it.
 
+Read the interfaces pages for `bijux-canon-runtime` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+
 ## Page Maps
 
 ```mermaid

@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Every package run follows a simple lifecycle: inputs enter through interfaces, domain and
 application code coordinate the work, and durable artifacts or responses leave the package.
 
+Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

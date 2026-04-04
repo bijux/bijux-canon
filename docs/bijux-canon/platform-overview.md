@@ -14,6 +14,8 @@ indexing, reasoning, agent execution, runtime governance, and repository
 maintenance. Each package is publishable on its own, but the repository keeps
 their interfaces, schemas, and shared validation work in one place.
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

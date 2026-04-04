@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Reviewing changes in `bijux-canon-reason` should include both behavior and documentation.
 
+Read the quality pages for `bijux-canon-reason` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
+
 ## Page Maps
 
 ```mermaid

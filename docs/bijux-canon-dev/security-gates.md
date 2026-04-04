@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Security checks that are about repository health rather than product behavior
 live in `bijux-canon-dev`.
 
+These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they reduce hidden automation and make package-wide maintenance effects inspectable.
+
 ## Page Maps
 
 ```mermaid

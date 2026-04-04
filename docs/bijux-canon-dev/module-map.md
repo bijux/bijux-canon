@@ -16,6 +16,8 @@ last_reviewed: 2026-04-04
 - `src/bijux_canon_dev/api` for OpenAPI and schema drift tooling
 - `src/bijux_canon_dev/packages` for package-specific repository helpers
 
+These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they reduce hidden automation and make package-wide maintenance effects inspectable.
+
 ## Page Maps
 
 ```mermaid

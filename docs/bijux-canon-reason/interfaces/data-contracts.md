@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Data contracts in `bijux-canon-reason` include schemas, structured models, and any stable
 payload shape that neighboring systems are expected to understand.
 
+Read the interfaces pages for `bijux-canon-reason` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+
 ## Page Maps
 
 ```mermaid

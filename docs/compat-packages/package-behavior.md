@@ -13,6 +13,8 @@ Each compatibility package is intentionally thin: package metadata, minimal
 import surface preservation, build glue, and documentation pointing at the
 canonical replacement.
 
+These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.
+
 ## Page Maps
 
 ```mermaid

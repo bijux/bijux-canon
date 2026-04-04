@@ -13,6 +13,8 @@ The compatibility packages preserve older distribution names, import names,
 and command names while the canonical package family now lives under the
 `bijux-canon-*` naming system.
 
+These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.
+
 ## Page Maps
 
 ```mermaid

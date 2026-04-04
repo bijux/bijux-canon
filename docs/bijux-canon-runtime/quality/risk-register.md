@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 The durable risks for `bijux-canon-runtime` are the ones that make the package boundary, interface contract,
 or produced artifacts harder to trust.
 
+Read the quality pages for `bijux-canon-runtime` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
+
 ## Page Maps
 
 ```mermaid

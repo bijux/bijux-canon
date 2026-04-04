@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Architectural risk appears when the package boundary becomes hard to explain or hard to test.
 
+Read the architecture pages for `bijux-canon-runtime` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
+
 ## Page Maps
 
 ```mermaid

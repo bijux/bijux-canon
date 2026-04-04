@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 These packages exist to reduce migration breakage, not to become the preferred
 long-term entrypoints for new work.
 
+These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.
+
 ## Page Maps
 
 ```mermaid

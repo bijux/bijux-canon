@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Release work for `bijux-canon-runtime` depends on package metadata, tracked release notes, and
 the repository's commit conventions.
 
+Read the operations pages for `bijux-canon-runtime` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

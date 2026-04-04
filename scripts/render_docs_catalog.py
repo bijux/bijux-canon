@@ -1033,6 +1033,37 @@ def package_update_triggers(package: PackageInfo, category: str) -> tuple[str, .
     return trigger_map[category]
 
 
+def package_working_interpretation(package: PackageInfo, category: str) -> str:
+    interpretation_map = {
+        "foundation": (
+            f"Read the {category} pages for `{package.title}` as the package's durable"
+            " self-description: they should explain the package in terms that remain"
+            " intelligible even after ordinary refactors."
+        ),
+        "architecture": (
+            f"Read the {category} pages for `{package.title}` as a reviewer-facing map"
+            " of structure and flow: they should be detailed enough to shorten code"
+            " reading without pretending to replace it."
+        ),
+        "interfaces": (
+            f"Read the {category} pages for `{package.title}` as the bridge between"
+            " implementation and caller expectations: they should make public surfaces"
+            " legible before a downstream dependency is formed."
+        ),
+        "operations": (
+            f"Read the {category} pages for `{package.title}` as the package's explicit"
+            " operating memory: they should make common tasks repeatable for a maintainer"
+            " who does not want to recover the workflow from scratch."
+        ),
+        "quality": (
+            f"Read the {category} pages for `{package.title}` as the proof frame around"
+            " the package: they should explain how trust is earned, defended, and revised"
+            " after change."
+        ),
+    }
+    return interpretation_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1189,6 +1220,18 @@ def add_update_triggers(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "Purpose", block)
 
 
+def add_working_interpretation(body: str, text: str) -> str:
+    lines = body.splitlines()
+    split_index = len(lines)
+    for index, line in enumerate(lines[1:], start=1):
+        if line.startswith("## "):
+            split_index = index
+            break
+    head = "\n".join(lines[:split_index]).rstrip()
+    tail = "\n".join(lines[split_index:]).lstrip()
+    return "\n\n".join(part for part in (head, text.strip(), tail) if part)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1267,6 +1310,10 @@ def render_home(
             ("Packages", ("five product handbooks", "stable package spine")),
             ("Maintenance", ("dev handbook", "compatibility handbook")),
         ),
+    )
+    body = add_working_interpretation(
+        body,
+        "Treat the root page as the routing layer for the whole documentation system. Its job is not to duplicate every handbook, but to make the correct next reading choice obvious before the reader commits to a longer path.",
     )
     body = add_reader_fit_section(
         body,
@@ -1693,6 +1740,10 @@ def render_root_page(
             ("Review outputs", ("clear decisions", "stable docs")),
         ),
     )
+    body = add_working_interpretation(
+        body,
+        "These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.",
+    )
     body = add_reader_fit_section(
         body,
         (
@@ -2058,6 +2109,10 @@ def render_dev_page(slug: str, title: str) -> str:
             ("Operational outcome", ("release clarity", "package consistency")),
         ),
     )
+    body = add_working_interpretation(
+        body,
+        "These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they reduce hidden automation and make package-wide maintenance effects inspectable.",
+    )
     body = add_reader_fit_section(
         body,
         (
@@ -2417,6 +2472,10 @@ def render_compat_page(slug: str, title: str) -> str:
             ("Decision pressure", ("migration", "retirement")),
         ),
     )
+    body = add_working_interpretation(
+        body,
+        "These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.",
+    )
     body = add_reader_fit_section(
         body,
         (
@@ -2616,6 +2675,7 @@ def render_package_page(
             ),
         ),
     )
+    body = add_working_interpretation(body, package_working_interpretation(package, category))
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))

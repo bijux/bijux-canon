@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Compatibility packages are small, but they still need validation for import
 preservation, packaging metadata, and migration pointers.
 
+These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.
+
 ## Page Maps
 
 ```mermaid

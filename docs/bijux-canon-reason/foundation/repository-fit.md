@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 `bijux-canon-reason` sits inside the monorepo as one publishable package with its own `src/`,
 tests, metadata, and release history.
 
+Read the foundation pages for `bijux-canon-reason` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

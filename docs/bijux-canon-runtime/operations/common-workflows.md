@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Most work on `bijux-canon-runtime` follows one of a few recurring paths.
 
+Read the operations pages for `bijux-canon-runtime` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

@@ -35,6 +35,8 @@ package handbooks that all share the same five-category spine.</div>
 <a class="md-button" href="compat-packages/">Open compatibility docs</a>
 </div>
 
+Treat the root page as the routing layer for the whole documentation system. Its job is not to duplicate every handbook, but to make the correct next reading choice obvious before the reader commits to a longer path.
+
 ## Page Maps
 
 ```mermaid

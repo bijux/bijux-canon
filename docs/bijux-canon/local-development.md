@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Local work should happen through the publishable packages plus the root
 orchestration commands that keep the repository consistent.
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

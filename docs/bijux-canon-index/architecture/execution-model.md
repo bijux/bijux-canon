@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 `bijux-canon-index` executes work by receiving inputs at its interfaces, coordinating policy
 and workflows in application code, and delegating specific responsibilities to owned modules.
 
+Read the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
+
 ## Page Maps
 
 ```mermaid

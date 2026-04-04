@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 The package should use language that reflects its actual ownership instead of borrowing
 vague names from neighboring packages.
 
+Read the foundation pages for `bijux-canon-agent` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

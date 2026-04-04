@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Installation for `bijux-canon-runtime` should start from the package metadata and the specific
 optional dependencies that matter for the work being done.
 
+Read the operations pages for `bijux-canon-runtime` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

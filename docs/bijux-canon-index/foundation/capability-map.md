@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 The package capabilities can be read as a map from modules to behavior.
 
+Read the foundation pages for `bijux-canon-index` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

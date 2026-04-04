@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 Produced artifacts are part of the package contract whenever another package, operator,
 or replay workflow depends on them.
 
+Read the interfaces pages for `bijux-canon-index` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
+
 ## Page Maps
 
 ```mermaid

@@ -13,6 +13,8 @@ Shared API artifacts live under `apis/` so schema review does not depend on
 reading package source alone. This repository currently tracks schemas for
 ingest, index, reason, agent, and runtime.
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

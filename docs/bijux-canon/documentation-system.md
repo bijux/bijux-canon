@@ -14,6 +14,8 @@ package behavior. It is intentionally structured like the reference documentatio
 in `bijux-pollenomics` and `bijux-masterclass`: one root index, section indexes,
 and topic pages with stable names and repeated layout.
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

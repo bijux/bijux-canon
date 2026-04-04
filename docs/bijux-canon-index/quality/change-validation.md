@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Validation after a change should target the package surfaces that were actually touched.
 
+Read the quality pages for `bijux-canon-index` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
+
 ## Page Maps
 
 ```mermaid

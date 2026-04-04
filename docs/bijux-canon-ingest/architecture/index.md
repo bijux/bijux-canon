@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 bijux-canon-ingest architecture pages describe how modules and responsibilities fit together under `bijux_canon_ingest`.
 
+Read the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
+
 ## Page Maps
 
 ```mermaid

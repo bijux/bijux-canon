@@ -12,6 +12,8 @@ last_reviewed: 2026-04-04
 The root repository owns only the concerns that are shared across packages or
 that coordinate them as one releasable workspace.
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

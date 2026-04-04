@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Package dependencies matter because they reveal which behavior is local and which behavior is delegated.
 
+Read the foundation pages for `bijux-canon-runtime` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

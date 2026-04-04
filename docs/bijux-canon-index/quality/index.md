@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 bijux-canon-index quality pages describe the tests, invariants, limits, and review rules that keep the package trustworthy over time.
 
+Read the quality pages for `bijux-canon-index` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
+
 ## Page Maps
 
 ```mermaid

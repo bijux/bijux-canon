@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 Performance work should preserve the deterministic and contract-driven behavior the package already promises.
 
+Read the operations pages for `bijux-canon-agent` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
+
 ## Page Maps
 
 ```mermaid

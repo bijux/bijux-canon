@@ -11,6 +11,8 @@ last_reviewed: 2026-04-04
 
 bijux-canon-runtime exists to own governed execution and replay authority with auditable non-determinism handling, persistence, and package-to-package coordination.
 
+Read the foundation pages for `bijux-canon-runtime` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
+
 ## Page Maps
 
 ```mermaid

@@ -17,6 +17,8 @@ release expectations that apply above any single package.
 Product behavior lives in the publishable packages under `packages/`. Shared
 repository rules live here only when they genuinely belong above package level.</div>
 
+These repository pages should explain the shared monorepo frame that no single package can explain alone. They are most useful when a reader needs to reason about packages together rather than in isolation.
+
 ## Page Maps
 
 ```mermaid

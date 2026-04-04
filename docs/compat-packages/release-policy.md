@@ -13,6 +13,8 @@ Compatibility packages should release only when they still serve a real
 migration need or when the canonical target package changes in a way that
 requires compatibility metadata to move with it.
 
+These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.
+
 ## Page Maps
 
 ```mermaid
