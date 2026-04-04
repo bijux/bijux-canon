@@ -15,6 +15,10 @@ from typing import Any
 from aiohttp import ClientResponseError, ClientSession, ClientTimeout
 
 from bijux_canon_agent.core.hashing import prompt_hash
+from bijux_canon_agent.llm.batch_support import (
+    collect_batch_responses,
+    execute_batch_requests,
+)
 from bijux_canon_agent.llm.runtime_support import (
     execute_backend_attempt,
     handle_failed_attempt,
@@ -382,24 +386,17 @@ class LLMUtils:
                 },
             )
 
-        tasks = [self.generate(prompt, max_tokens) for prompt in prompts]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        responses: list[str] = []
-        for idx, result in enumerate(results):
-            if isinstance(result, BaseException):
-                self.logger.error(
-                    f"Batch generation failed for prompt {idx}: {result!s}"
-                )
-                responses.append("")
-                self.logger_manager.log_metric(
-                    "llm_batch_errors",
-                    1,
-                    MetricType.COUNTER,
-                    tags={"backend": self.backend_name, "prompt_idx": str(idx)},
-                )
-            else:
-                responses.append(result)
+        results = await execute_batch_requests(
+            prompts=prompts,
+            max_tokens=max_tokens,
+            generate=self.generate,
+        )
+        responses = collect_batch_responses(
+            results=results,
+            backend_name=self.backend_name,
+            logger=self.logger,
+            logger_manager=self.logger_manager,
+        )
 
         self.logger.info(
             "LLM batch generation completed",
