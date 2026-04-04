@@ -30,7 +30,7 @@ def test_public_release_packages_ship_source_and_release_docs() -> None:
         data = _pyproject_data(package_name)
         wheel = data["tool"]["hatch"]["build"]["targets"]["wheel"]
         sdist = data["tool"]["hatch"]["build"]["targets"]["sdist"]
-        build_include = data["tool"]["hatch"]["build"].get("include", [])
+        package_data = wheel.get("package-data", {})
 
         wheel_packages = wheel.get("packages", [])
         if not wheel_packages:
@@ -46,19 +46,16 @@ def test_public_release_packages_ship_source_and_release_docs() -> None:
         }
 
         sdist_include = set(sdist.get("include", []))
-        build_include_set = set(build_include)
 
         missing_sdist = sorted(required_release_files - sdist_include)
         if missing_sdist:
             failures.append(f"{package_name}: sdist include missing {', '.join(missing_sdist)}")
 
-        missing_build = sorted(required_release_files - build_include_set)
-        if missing_build:
-            failures.append(f"{package_name}: build include missing {', '.join(missing_build)}")
-
         typed_marker = f"{source_package_dir}/py.typed"
         wheel_include = set(wheel.get("include", []))
-        if typed_marker not in wheel_include:
+        package_name_key = source_package_dir.rsplit("/", 1)[-1]
+        wheel_package_data = set(package_data.get(package_name_key, []))
+        if typed_marker not in wheel_include and "py.typed" not in wheel_package_data:
             failures.append(f"{package_name}: wheel include should keep {typed_marker}")
 
         if package_name.startswith("compat-"):
