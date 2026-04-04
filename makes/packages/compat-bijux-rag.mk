@@ -1,5 +1,3 @@
 include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 
-PUBLISH_PACKAGE_NAME := bijux-rag
-
 include $(PACKAGE_MAKEFILE_DIR)/compat-package.mk
