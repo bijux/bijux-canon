@@ -102,7 +102,7 @@ Use `Documentation Standards` to decide whether `bijux-canon-runtime` has actual
 
 ## Honesty Boundary
 
-This page explains how bijux-canon-runtime protects itself, but it does not claim that prose alone is enough without the listed tests, checks, and review practice.
+This page explains how `bijux-canon-runtime` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
 
 ## Purpose
 
@@ -140,7 +140,7 @@ Update it only when the shared documentation system itself changes.
 
 - does `Documentation Standards` show enough proof to trust `bijux-canon-runtime` after change
 - have limitations and known risks moved with the code rather than staying stale
-- does the acceptance bar protect the package contract instead of only one local behavior
+- does the acceptance bar protect the package contract rather than only one local behavior
 
 ## Evidence Checklist
 
@@ -162,11 +162,11 @@ Update it only when the shared documentation system itself changes.
 
 ## Core Claim
 
-The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.
+The core quality claim of `bijux-canon-runtime` is that tests, invariants, visible risks, and completion criteria jointly show whether the package is trustworthy after change.
 
 ## Why It Matters
 
-If the quality pages for `bijux-canon-runtime` are weak, it becomes difficult to tell whether a change is actually safe or merely passes a narrow local test.
+If the quality pages for `bijux-canon-runtime` are weak, it becomes difficult to tell whether a change is genuinely safe or merely passes a narrow local check.
 
 ## If It Drifts
 
@@ -181,11 +181,11 @@ A change appears correct locally, but the reviewer still needs to know whether `
 ## Source Of Truth Order
 
 - `packages/bijux-canon-runtime/tests` for executable proof
-- `packages/bijux-canon-runtime/pyproject.toml` for declared package constraints
-- this page for the review lens that explains how to read that proof
+- `packages/bijux-canon-runtime/pyproject.toml` and release notes for declared constraints and change posture
+- this page for the review lens that explains how to interpret that proof honestly
 
 ## Common Misreadings
 
 - that a passing local test automatically satisfies the package review standard
-- that documented risks are static and do not need to move with the code
-- that the definition of done is only about implementation rather than proof
+- that documented risks stay valid even when the code and interfaces have changed around them
+- that done-ness is only about implementation and not about proof, clarity, and release impact

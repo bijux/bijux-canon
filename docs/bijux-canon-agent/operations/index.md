@@ -113,7 +113,7 @@ Use `Operations` to decide whether a maintainer can repeat the package workflow 
 
 ## Honesty Boundary
 
-This page explains how bijux-canon-agent is expected to be operated, but it does not replace package metadata, runtime behavior, or validation runs in a real environment.
+This page explains how `bijux-canon-agent` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
 
 ## Section Contract
 
@@ -163,7 +163,7 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 
 - does `Operations` leave a maintainer able to repeat the workflow from checked-in assets
 - are install, diagnostics, and release statements still aligned with package metadata and tests
-- would this workflow still hold up under time pressure without relying on hidden operator memory
+- would this workflow still hold up under time pressure without hidden operator memory
 
 ## Evidence Checklist
 
@@ -185,11 +185,11 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 
 ## Core Claim
 
-The operational claim of `bijux-canon-agent` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.
+The core operational claim of `bijux-canon-agent` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.
 
 ## Why It Matters
 
-If the operations pages for `bijux-canon-agent` are weak, maintainers end up relearning install, diagnose, and release behavior from trial and error instead of from checked-in package truth.
+If the operations pages for `bijux-canon-agent` are weak, maintainers end up relearning install, diagnosis, and release from trial and error instead of from checked-in package truth.
 
 ## If It Drifts
 
@@ -203,12 +203,12 @@ A maintainer is trying to run, diagnose, or release `bijux-canon-agent` under ti
 
 ## Source Of Truth Order
 
-- `packages/bijux-canon-agent/pyproject.toml` for install and release metadata
-- `packages/bijux-canon-agent/README.md` and package tests for operator truth
-- this page for the repeatable workflow narrative that should match those assets
+- `packages/bijux-canon-agent/pyproject.toml` for install and release metadata that a maintainer can actually execute against
+- `packages/bijux-canon-agent/README.md` and package tests for the shortest checked-in operator truth
+- this page for the repeatable workflow narrative that should match those assets rather than drift away from them
 
 ## Common Misreadings
 
-- that the shortest operator path is the same thing as the most authoritative source
-- that setup or release behavior can be inferred without checking package metadata
-- that passing one local run proves the operational contract is fully intact
+- that the shortest operator path is always the most authoritative source of truth
+- that setup or release behavior can be inferred safely without checking package metadata
+- that one successful local run proves the whole operational contract is intact

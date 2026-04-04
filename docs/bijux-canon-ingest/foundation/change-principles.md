@@ -104,7 +104,7 @@ Use `Change Principles` to decide whether a change makes `bijux-canon-ingest` ea
 
 ## Honesty Boundary
 
-This page can explain the intended boundary of bijux-canon-ingest, but it does not replace the code and tests that ultimately prove that boundary.
+This page can explain the intended boundary of `bijux-canon-ingest`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
 
 ## Purpose
 
@@ -128,7 +128,7 @@ Update these principles only when the package operating model truly changes.
 
 ## Tradeoffs To Hold
 
-- prefer clean ownership over local convenience, even when a nearby package looks easier to reuse
+- prefer clean ownership over local convenience, even when nearby code looks easier to reuse
 - prefer an explicit boundary gap over a shadow responsibility that no package clearly owns
 - prefer keeping `bijux-canon-ingest` intelligible as a bounded package over making it look universally useful
 
@@ -142,7 +142,7 @@ Update these principles only when the package operating model truly changes.
 
 - does `Change Principles` still let a reviewer state `bijux-canon-ingest` ownership in one clear sentence
 - does the change preserve package boundaries without creating shadow scope in a neighbor
-- is there concrete code and test evidence behind the boundary claim rather than prose alone
+- is there concrete code and test evidence behind the boundary claim, or only persuasive prose
 
 ## Evidence Checklist
 
@@ -164,11 +164,11 @@ Update these principles only when the package operating model truly changes.
 
 ## Core Claim
 
-The foundational claim of `bijux-canon-ingest` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.
+The core foundational claim of `bijux-canon-ingest` is that its ownership can be explained as a deliberate package boundary, not as an accident of where code happened to accumulate.
 
 ## Why It Matters
 
-If the foundation pages for `bijux-canon-ingest` are weak, reviewers stop knowing where the package boundary really is and adjacent packages begin absorbing behavior by convenience instead of design.
+If the foundation pages for `bijux-canon-ingest` are weak, reviewers stop knowing where the package really begins and ends. Adjacent packages then absorb behavior by convenience instead of by design.
 
 ## If It Drifts
 
@@ -183,11 +183,11 @@ A contributor proposes moving new behavior into `bijux-canon-ingest` because it 
 ## Source Of Truth Order
 
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest` for the real ownership boundary in code
-- `packages/bijux-canon-ingest/tests` for executable proof of that boundary
-- `packages/bijux-canon-ingest/README.md` and this section for the shortest maintained framing
+- `packages/bijux-canon-ingest/tests` for executable proof that the boundary still holds under change
+- `packages/bijux-canon-ingest/README.md` plus this section for the shortest maintained explanation of that boundary
 
 ## Common Misreadings
 
-- that `bijux-canon-ingest` owns any nearby behavior just because it is convenient
-- that a boundary statement is enough without the code and tests that enforce it
-- that out-of-scope means unimportant rather than owned elsewhere
+- that `bijux-canon-ingest` owns any nearby behavior just because it would be convenient
+- that a boundary statement is enough even when code and tests tell a different story
+- that out-of-scope means unimportant rather than intentionally owned elsewhere

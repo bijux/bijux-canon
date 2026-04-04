@@ -111,7 +111,7 @@ Use `Architecture Risks` to decide whether a structural change makes `bijux-cano
 
 ## Honesty Boundary
 
-This page describes the current structural model of bijux-canon-ingest, but it does not by itself prove that every import or runtime path still obeys that model.
+This page describes the current structural model of `bijux-canon-ingest`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
 
 ## Purpose
 
@@ -149,7 +149,7 @@ Keep it aligned with the package structure and known review concerns.
 
 - does `Architecture Risks` still describe a structure that a reviewer can trace without caveats
 - is dependency direction cleaner or at least no less legible after the change
-- can the claimed execution path be matched to concrete modules, seams, and proof assets
+- can the claimed execution path still be matched to concrete modules, seams, and proof assets
 
 ## Evidence Checklist
 
@@ -171,11 +171,11 @@ Keep it aligned with the package structure and known review concerns.
 
 ## Core Claim
 
-The architectural claim of `bijux-canon-ingest` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.
+The core architectural claim of `bijux-canon-ingest` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the whole codebase.
 
 ## Why It Matters
 
-If the architecture pages for `bijux-canon-ingest` are weak, refactors become guesswork and dependency drift can hide until failures show up in tests or production-facing behavior.
+If the architecture pages for `bijux-canon-ingest` are weak, refactors become guesswork. Dependency drift can hide until it leaks into tests, caller behavior, or operator experience.
 
 ## If It Drifts
 
@@ -189,12 +189,12 @@ A reviewer is tracing a refactor through `bijux-canon-ingest` and needs to know 
 
 ## Source Of Truth Order
 
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` for the actual dependency and module structure
-- `packages/bijux-canon-ingest/tests` for structural and behavioral regressions
-- this page for the reviewer-facing map that should remain aligned with those assets
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` for the actual dependency direction and module structure
+- `packages/bijux-canon-ingest/tests` for structural and behavioral regressions that reveal drift
+- this page for the reviewer-facing map that should stay aligned with those assets
 
 ## Common Misreadings
 
 - that the documented module map guarantees every import is still clean automatically
-- that one current implementation path is the whole architecture contract
-- that diagrams replace the need to inspect the concrete modules listed here
+- that the most visible current path is the whole architectural contract
+- that diagrams excuse the reader from checking the named modules and tests

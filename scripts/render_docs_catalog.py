@@ -739,24 +739,32 @@ def package_page_reviewer_lens(
 def package_honesty_boundary(package: PackageInfo, category: str) -> str:
     honesty_map = {
         "foundation": (
-            f"This page can explain the intended boundary of {package.title}, but it does not"
-            " replace the code and tests that ultimately prove that boundary."
+            f"This page can explain the intended boundary of `{package.title}`, but it"
+            " cannot prove that boundary by itself. The real proof still lives in the"
+            " code, tests, and neighboring package seams that either support or contradict"
+            " the story told here."
         ),
         "architecture": (
-            f"This page describes the current structural model of {package.title}, but it does"
-            " not by itself prove that every import or runtime path still obeys that model."
+            f"This page describes the current structural model of `{package.title}`, but it"
+            " does not guarantee that every import path or runtime path still obeys that"
+            " model. Readers should treat it as a map that must stay aligned with code and"
+            " tests, not as an authority above them."
         ),
         "interfaces": (
-            f"This page can identify the intended public surfaces of {package.title}, but real"
-            " compatibility still depends on code, schemas, artifacts, and tests staying aligned."
+            f"This page can identify the intended public surfaces of `{package.title}`, but"
+            " real compatibility depends on code, schemas, artifacts, examples, and tests"
+            " staying aligned. If those disagree, the prose is wrong or incomplete."
         ),
         "operations": (
-            f"This page explains how {package.title} is expected to be operated, but it does"
-            " not replace package metadata, runtime behavior, or validation runs in a real environment."
+            f"This page explains how `{package.title}` is expected to be operated, but it"
+            " does not replace package metadata, actual runtime behavior, or validation in"
+            " a real environment. A workflow is only trustworthy if a maintainer can still"
+            " repeat it from the checked-in assets named here."
         ),
         "quality": (
-            f"This page explains how {package.title} protects itself, but it does not claim"
-            " that prose alone is enough without the listed tests, checks, and review practice."
+            f"This page explains how `{package.title}` is supposed to earn trust, but it"
+            " does not claim that prose alone is enough. If the listed tests, checks, and"
+            " review practice stop backing the story, the story has to change."
         ),
     }
     return honesty_map[category]
@@ -793,25 +801,29 @@ def package_anchor_bullets(package: PackageInfo, category: str) -> tuple[str, ..
 def package_core_claim(package: PackageInfo, category: str) -> str:
     claim_map = {
         "foundation": (
-            f"The foundational claim of `{package.title}` is that its package boundary can be"
-            " explained in stable ownership terms instead of by implementation accident."
+            f"The core foundational claim of `{package.title}` is that its ownership can be"
+            " explained as a deliberate package boundary, not as an accident of where code"
+            " happened to accumulate."
         ),
         "architecture": (
-            f"The architectural claim of `{package.title}` is that its structure is deliberate"
-            " enough for a reviewer to trace responsibilities, dependencies, and drift pressure"
-            " without reverse-engineering the entire codebase."
+            f"The core architectural claim of `{package.title}` is that its structure is"
+            " deliberate enough for a reviewer to trace responsibilities, dependencies, and"
+            " drift pressure without reverse-engineering the whole codebase."
         ),
         "interfaces": (
-            f"The interface claim of `{package.title}` is that commands, APIs, imports, schemas,"
-            " and artifacts form a reviewable contract rather than an implied one."
+            f"The core interface claim of `{package.title}` is that commands, APIs,"
+            " imports, schemas, and artifacts form a reviewable contract rather than a set"
+            " of implied habits."
         ),
         "operations": (
-            f"The operational claim of `{package.title}` is that install, run, diagnose, and"
-            " release paths can be repeated from explicit package assets instead of oral history."
+            f"The core operational claim of `{package.title}` is that install, run,"
+            " diagnose, and release paths can be repeated from explicit package assets"
+            " instead of oral history."
         ),
         "quality": (
-            f"The quality claim of `{package.title}` is that tests, invariants, risks, and"
-            " completion criteria jointly prove whether the package is trustworthy after change."
+            f"The core quality claim of `{package.title}` is that tests, invariants,"
+            " visible risks, and completion criteria jointly show whether the package is"
+            " trustworthy after change."
         ),
     }
     return claim_map[category]
@@ -820,28 +832,29 @@ def package_core_claim(package: PackageInfo, category: str) -> str:
 def package_why_it_matters(package: PackageInfo, category: str) -> str:
     matter_map = {
         "foundation": (
-            f"If the foundation pages for `{package.title}` are weak, reviewers stop knowing"
-            " where the package boundary really is and adjacent packages begin absorbing"
-            " behavior by convenience instead of design."
+            f"If the foundation pages for `{package.title}` are weak, reviewers stop"
+            " knowing where the package really begins and ends. Adjacent packages then"
+            " absorb behavior by convenience instead of by design."
         ),
         "architecture": (
             f"If the architecture pages for `{package.title}` are weak, refactors become"
-            " guesswork and dependency drift can hide until failures show up in tests or"
-            " production-facing behavior."
+            " guesswork. Dependency drift can hide until it leaks into tests, caller"
+            " behavior, or operator experience."
         ),
         "interfaces": (
             f"If the interface pages for `{package.title}` are weak, callers cannot tell"
-            " which commands, schemas, or artifacts are stable enough to depend on, and"
-            " compatibility review arrives too late."
+            " which surfaces are stable enough to depend on. Compatibility review then"
+            " arrives after people have already built on the wrong assumptions."
         ),
         "operations": (
             f"If the operations pages for `{package.title}` are weak, maintainers end up"
-            " relearning install, diagnose, and release behavior from trial and error"
-            " instead of from checked-in package truth."
+            " relearning install, diagnosis, and release from trial and error instead of"
+            " from checked-in package truth."
         ),
         "quality": (
-            f"If the quality pages for `{package.title}` are weak, it becomes difficult to"
-            " tell whether a change is actually safe or merely passes a narrow local test."
+            f"If the quality pages for `{package.title}` are weak, it becomes difficult"
+            " to tell whether a change is genuinely safe or merely passes a narrow local"
+            " check."
         ),
     }
     return matter_map[category]
@@ -913,28 +926,28 @@ def package_source_of_truth(package: PackageInfo, category: str) -> tuple[str, .
     truth_map = {
         "foundation": (
             f"`{package.package_dir}/src/{package.import_name}` for the real ownership boundary in code",
-            f"`{package.package_dir}/tests` for executable proof of that boundary",
-            f"`{package.package_dir}/README.md` and this section for the shortest maintained framing",
+            f"`{package.package_dir}/tests` for executable proof that the boundary still holds under change",
+            f"`{package.package_dir}/README.md` plus this section for the shortest maintained explanation of that boundary",
         ),
         "architecture": (
-            f"`{package.package_dir}/src/{package.import_name}` for the actual dependency and module structure",
-            f"`{package.package_dir}/tests` for structural and behavioral regressions",
-            "this page for the reviewer-facing map that should remain aligned with those assets",
+            f"`{package.package_dir}/src/{package.import_name}` for the actual dependency direction and module structure",
+            f"`{package.package_dir}/tests` for structural and behavioral regressions that reveal drift",
+            "this page for the reviewer-facing map that should stay aligned with those assets",
         ),
         "interfaces": (
-            f"`{package.package_dir}/src/{package.import_name}` for the implemented boundary",
-            *(f"`{item}` as tracked contract evidence" for item in package.api_specs[:1]),
+            f"`{package.package_dir}/src/{package.import_name}` for the implemented interface boundary",
+            *(f"`{item}` as tracked contract evidence for caller-facing behavior" for item in package.api_specs[:1]),
             f"`{package.package_dir}/tests` for compatibility and behavior proof",
         ),
         "operations": (
-            f"`{package.package_dir}/pyproject.toml` for install and release metadata",
-            f"`{package.package_dir}/README.md` and package tests for operator truth",
-            "this page for the repeatable workflow narrative that should match those assets",
+            f"`{package.package_dir}/pyproject.toml` for install and release metadata that a maintainer can actually execute against",
+            f"`{package.package_dir}/README.md` and package tests for the shortest checked-in operator truth",
+            "this page for the repeatable workflow narrative that should match those assets rather than drift away from them",
         ),
         "quality": (
             f"`{package.package_dir}/tests` for executable proof",
-            f"`{package.package_dir}/pyproject.toml` for declared package constraints",
-            "this page for the review lens that explains how to read that proof",
+            f"`{package.package_dir}/pyproject.toml` and release notes for declared constraints and change posture",
+            "this page for the review lens that explains how to interpret that proof honestly",
         ),
     }
     return tuple(truth_map[category])
@@ -943,29 +956,29 @@ def package_source_of_truth(package: PackageInfo, category: str) -> tuple[str, .
 def package_common_misreadings(package: PackageInfo, category: str) -> tuple[str, ...]:
     misreading_map = {
         "foundation": (
-            f"that `{package.title}` owns any nearby behavior just because it is convenient",
-            "that a boundary statement is enough without the code and tests that enforce it",
-            "that out-of-scope means unimportant rather than owned elsewhere",
+            f"that `{package.title}` owns any nearby behavior just because it would be convenient",
+            "that a boundary statement is enough even when code and tests tell a different story",
+            "that out-of-scope means unimportant rather than intentionally owned elsewhere",
         ),
         "architecture": (
             "that the documented module map guarantees every import is still clean automatically",
-            "that one current implementation path is the whole architecture contract",
-            "that diagrams replace the need to inspect the concrete modules listed here",
+            "that the most visible current path is the whole architectural contract",
+            "that diagrams excuse the reader from checking the named modules and tests",
         ),
         "interfaces": (
             "that every visible package surface is equally stable",
-            "that one schema or example is the whole compatibility story",
-            "that interface docs override package code, artifacts, or tests when they disagree",
+            "that one schema file or example captures the whole compatibility story",
+            "that interface prose overrides code, artifacts, or tests when they disagree",
         ),
         "operations": (
-            "that the shortest operator path is the same thing as the most authoritative source",
-            "that setup or release behavior can be inferred without checking package metadata",
-            "that passing one local run proves the operational contract is fully intact",
+            "that the shortest operator path is always the most authoritative source of truth",
+            "that setup or release behavior can be inferred safely without checking package metadata",
+            "that one successful local run proves the whole operational contract is intact",
         ),
         "quality": (
             "that a passing local test automatically satisfies the package review standard",
-            "that documented risks are static and do not need to move with the code",
-            "that the definition of done is only about implementation rather than proof",
+            "that documented risks stay valid even when the code and interfaces have changed around them",
+            "that done-ness is only about implementation and not about proof, clarity, and release impact",
         ),
     }
     return misreading_map[category]
@@ -1279,7 +1292,7 @@ def package_escalate_when(package: PackageInfo, category: str) -> tuple[str, ...
 def package_tradeoffs(package: PackageInfo, category: str) -> tuple[str, ...]:
     tradeoff_map = {
         "foundation": (
-            "prefer clean ownership over local convenience, even when a nearby package looks easier to reuse",
+            "prefer clean ownership over local convenience, even when nearby code looks easier to reuse",
             "prefer an explicit boundary gap over a shadow responsibility that no package clearly owns",
             f"prefer keeping `{package.title}` intelligible as a bounded package over making it look universally useful",
         ),
@@ -1314,27 +1327,27 @@ def package_approval_questions(
         "foundation": (
             f"does `{title}` still let a reviewer state `{package.title}` ownership in one clear sentence",
             "does the change preserve package boundaries without creating shadow scope in a neighbor",
-            "is there concrete code and test evidence behind the boundary claim rather than prose alone",
+            "is there concrete code and test evidence behind the boundary claim, or only persuasive prose",
         ),
         "architecture": (
             f"does `{title}` still describe a structure that a reviewer can trace without caveats",
             "is dependency direction cleaner or at least no less legible after the change",
-            "can the claimed execution path be matched to concrete modules, seams, and proof assets",
+            "can the claimed execution path still be matched to concrete modules, seams, and proof assets",
         ),
         "interfaces": (
             f"does `{title}` name only caller-facing surfaces that have explicit contract evidence",
-            "would a downstream consumer understand compatibility expectations before depending on the surface",
+            "would a downstream consumer understand the compatibility expectations before depending on the surface",
             "are code, schemas, artifacts, examples, and tests still telling the same contract story",
         ),
         "operations": (
             f"does `{title}` leave a maintainer able to repeat the workflow from checked-in assets",
             "are install, diagnostics, and release statements still aligned with package metadata and tests",
-            "would this workflow still hold up under time pressure without relying on hidden operator memory",
+            "would this workflow still hold up under time pressure without hidden operator memory",
         ),
         "quality": (
             f"does `{title}` show enough proof to trust `{package.title}` after change",
             "have limitations and known risks moved with the code rather than staying stale",
-            "does the acceptance bar protect the package contract instead of only one local behavior",
+            "does the acceptance bar protect the package contract rather than only one local behavior",
         ),
     }
     return approval_map[category]

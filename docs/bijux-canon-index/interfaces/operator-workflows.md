@@ -103,7 +103,7 @@ Use `Operator Workflows` to decide whether a caller-facing surface is explicit e
 
 ## Honesty Boundary
 
-This page can identify the intended public surfaces of bijux-canon-index, but real compatibility still depends on code, schemas, artifacts, and tests staying aligned.
+This page can identify the intended public surfaces of `bijux-canon-index`, but real compatibility depends on code, schemas, artifacts, examples, and tests staying aligned. If those disagree, the prose is wrong or incomplete.
 
 ## Purpose
 
@@ -140,7 +140,7 @@ Keep it aligned with the existing commands, endpoints, and outputs.
 ## Approval Questions
 
 - does `Operator Workflows` name only caller-facing surfaces that have explicit contract evidence
-- would a downstream consumer understand compatibility expectations before depending on the surface
+- would a downstream consumer understand the compatibility expectations before depending on the surface
 - are code, schemas, artifacts, examples, and tests still telling the same contract story
 
 ## Evidence Checklist
@@ -163,11 +163,11 @@ Keep it aligned with the existing commands, endpoints, and outputs.
 
 ## Core Claim
 
-The interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.
+The core interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than a set of implied habits.
 
 ## Why It Matters
 
-If the interface pages for `bijux-canon-index` are weak, callers cannot tell which commands, schemas, or artifacts are stable enough to depend on, and compatibility review arrives too late.
+If the interface pages for `bijux-canon-index` are weak, callers cannot tell which surfaces are stable enough to depend on. Compatibility review then arrives after people have already built on the wrong assumptions.
 
 ## If It Drifts
 
@@ -181,12 +181,12 @@ An operator or downstream caller wants to depend on a `bijux-canon-index` surfac
 
 ## Source Of Truth Order
 
-- `packages/bijux-canon-index/src/bijux_canon_index` for the implemented boundary
-- `apis/bijux-canon-index/v1/schema.yaml` as tracked contract evidence
+- `packages/bijux-canon-index/src/bijux_canon_index` for the implemented interface boundary
+- `apis/bijux-canon-index/v1/schema.yaml` as tracked contract evidence for caller-facing behavior
 - `packages/bijux-canon-index/tests` for compatibility and behavior proof
 
 ## Common Misreadings
 
 - that every visible package surface is equally stable
-- that one schema or example is the whole compatibility story
-- that interface docs override package code, artifacts, or tests when they disagree
+- that one schema file or example captures the whole compatibility story
+- that interface prose overrides code, artifacts, or tests when they disagree
