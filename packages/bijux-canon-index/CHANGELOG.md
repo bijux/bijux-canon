@@ -21,6 +21,8 @@ tagged release, including legacy distribution naming where applicable.
   consumers receive the license text with the published package.
 - Build-time version metadata now writes to a generated module so packaging
   commands stop dirtying the tracked source tree.
+- Package-local ignore rules now cover Python package metadata directories so
+  unpacked release artifacts stay cleaner during local validation.
 - OpenAPI freeze artifacts and release-gate expectations were refreshed to
   match the current FastAPI-generated validation schema and 422 response
   wording.

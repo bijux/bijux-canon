@@ -21,6 +21,8 @@ tagged release.
   consumers receive the license text with the published package.
 - Build-time version metadata now writes to a generated module so packaging
   commands stop dirtying the tracked source tree.
+- Package-local ignore rules now cover Python package metadata directories so
+  unpacked release artifacts stay cleaner during local validation.
 
 ## 0.3.0 - 2026-04-04
 
