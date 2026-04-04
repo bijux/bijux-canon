@@ -21,6 +21,10 @@ from bijux_canon_ingest.application.answer_payloads import (
     CitationPayload,
     answer_payload_from_candidates,
 )
+from bijux_canon_ingest.application.index_queries import (
+    retrieve_blob_candidates,
+    retrieve_candidates,
+)
 from bijux_canon_ingest.application.index_storage import (
     load_stored_index,
     save_stored_index,
@@ -29,8 +33,6 @@ from bijux_canon_ingest.application.index_runtime import (
     IndexBackend,
     StoredIndex,
     build_stored_index,
-    retrieve_blob_candidates,
-    retrieve_candidates,
 )
 from bijux_canon_ingest.retrieval.answering import ExtractiveAnswerer
 from bijux_canon_ingest.retrieval.ports import Answer, Candidate
