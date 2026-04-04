@@ -11,7 +11,10 @@ changelog update are reconstructed from tag annotations and release diffs.
 
 ## Unreleased
 
-- No package-local changes recorded yet.
+- PyPI metadata now points legacy `agentic-flows` readers at the canonical
+  `bijux-canon-runtime` docs, migration guide, and Bijux-owned package family.
+- The package README and overview now document the retired standalone
+  repository and use PyPI-safe badge and link targets.
 
 ## 0.3.0 - 2026-04-04
 

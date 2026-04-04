@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "agentic-flows"
 dynamic = ["version", "dependencies"]
-description = "Legacy continuation of the agentic-flows PyPI package. Preserves legacy installs and imports while installing bijux-canon-runtime at the same version."
+description = "Compatibility bridge for the legacy agentic-flows PyPI package. Preserves installs, imports, and the agentic-flows command while installing bijux-canon-runtime from the bijux-canon family at the same version."
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
@@ -13,11 +13,14 @@ authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 keywords = [
   "bijux",
+  "bijux-canon",
+  "bijux.io",
   "compatibility",
   "migration",
   "legacy-name",
   "runtime",
   "replay",
+  "legacy-command",
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -41,10 +44,12 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/"
+Homepage = "https://bijux.io/bijux-canon-runtime/"
 Website = "https://bijux.io/"
-Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-runtime/"
+MigrationGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+LegacyNameMap = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
+Repository = "https://github.com/bijux/bijux-canon"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"

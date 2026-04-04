@@ -10,7 +10,11 @@ tagged release, including legacy distribution naming where applicable.
 ## [Unreleased]  
 
 <!-- unreleased start -->
-- No package-local changes recorded yet.
+- PyPI metadata, search keywords, and project URLs now make the canonical
+  runtime package easier to discover from package indexes and Bijux-owned docs.
+- The package README now uses PyPI-safe badge and link targets, and it points
+  legacy `agentic-flows` users to the canonical migration path and retired
+  repository guidance.
 <!-- unreleased end -->  
 
 <a id="v0-3-0"></a>  

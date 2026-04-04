@@ -4,6 +4,10 @@ Use this package only when an existing environment still expects the legacy
 runtime name. Each release continues the published `agentic-flows`
 distribution and installs `bijux-canon-runtime` at the same version.
 
+The canonical package family now lives in `bijux-canon`, and the standalone
+`agentic-flows` repository is scheduled for retirement in favor of
+`https://github.com/bijux/bijux-canon`.
+
 ## What it does
 
 - installs the canonical runtime package `bijux-canon-runtime`
@@ -23,4 +27,5 @@ If you are updating scripts or dependencies, prefer changing them to:
 
 - distribution: `bijux-canon-runtime`
 - Python import: `bijux_canon_runtime`
-- docs entrypoint: `packages/bijux-canon-runtime/docs/index.md`
+- docs entrypoint: `https://bijux.io/bijux-canon-runtime/`
+- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`
