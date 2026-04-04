@@ -10,6 +10,13 @@ tagged release, including legacy distribution naming where applicable.
 ## [Unreleased]  
 
 <!-- unreleased start -->
+- No package-local changes recorded yet.
+<!-- unreleased end -->  
+
+<a id="v0-3-0"></a>  
+## [0.3.0] - 2026-04-04  
+
+<!-- release-v0-3-0 start -->
 ### Added
 * Package-local documentation now explains execution authority, replay
   semantics, operator boundaries, API contract testing, and example datasets in
@@ -39,7 +46,7 @@ tagged release, including legacy distribution naming where applicable.
 * Root package quality gates were repaired after the refactor series.
 * Replay and storage typing, readiness responses, and verification-policy
   override handling were tightened during the runtime refactor series.
-<!-- unreleased end -->  
+<!-- release-v0-3-0 end -->  
 
 ---  
 

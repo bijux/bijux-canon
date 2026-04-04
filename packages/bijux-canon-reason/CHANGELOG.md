@@ -6,6 +6,10 @@ tagged release.
 
 ## Unreleased
 
+- No package-local changes recorded yet.
+
+## 0.3.0 - 2026-04-04
+
 ### Added
 
 - Package-local documentation now explains reasoning-package ownership,

@@ -11,6 +11,10 @@ tagged release.
 
 ## Unreleased
 
+- No package-local changes recorded yet.
+
+## 0.3.0 - 2026-04-04
+
 ### Added
 
 - Package-local maintainer docs now cover scope, architecture, boundaries,
