@@ -14,6 +14,9 @@ tagged release.
 - The package README now uses PyPI-safe badge and link targets, and it points
   legacy `bijux-rar` users to the canonical migration path and retired
   repository guidance.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so reasoning release expectations stay attached to
+  the package.
 
 ## 0.3.0 - 2026-04-04
 

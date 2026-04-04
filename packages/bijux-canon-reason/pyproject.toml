@@ -145,6 +145,15 @@ include = ["src/bijux_canon_reason/py.typed"]
 include = [
   "CHANGELOG.md",
   "README.md",
+  "docs/maintainer/pypi.md",
+  "src/bijux_canon_reason/**",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "CHANGELOG.md",
+  "README.md",
+  "docs/maintainer/pypi.md",
   "src/bijux_canon_reason/**",
 ]
 
