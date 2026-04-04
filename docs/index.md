@@ -31,6 +31,7 @@ package handbooks that all share the same five-category spine.</div>
 <a class="md-button" href="bijux-canon-reason/foundation/">bijux-canon-reason</a>
 <a class="md-button" href="bijux-canon-agent/foundation/">bijux-canon-agent</a>
 <a class="md-button" href="bijux-canon-runtime/foundation/">bijux-canon-runtime</a>
+<a class="md-button" href="bijux-canon-dev/">Open maintainer docs</a>
 </div>
 
 ## Documentation Scope
@@ -41,12 +42,13 @@ package handbooks that all share the same five-category spine.</div>
 - the bijux-canon-reason section
 - the bijux-canon-agent section
 - the bijux-canon-runtime section
+- the bijux-canon-dev section
 
 ## Reading Map
 
 - start with [bijux-canon](bijux-canon/index.md) for repository-wide behavior
 - move into one product package when you need ownership details or operator guidance
-- maintainer automation pages are added when the dev section is rendered
+- use [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer automation and quality gates
 - compatibility guidance is added when the compat section is rendered
 
 ## Purpose

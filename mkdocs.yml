@@ -314,6 +314,17 @@ nav:
           - Change Validation: bijux-canon-runtime/quality/change-validation.md
           - Known Limitations: bijux-canon-runtime/quality/known-limitations.md
           - Risk Register: bijux-canon-runtime/quality/risk-register.md
+  - bijux-canon-dev:
+      - bijux-canon-dev: bijux-canon-dev/index.md
+      - Package Overview: bijux-canon-dev/package-overview.md
+      - Scope and Non-Goals: bijux-canon-dev/scope-and-non-goals.md
+      - Module Map: bijux-canon-dev/module-map.md
+      - Quality Gates: bijux-canon-dev/quality-gates.md
+      - Security Gates: bijux-canon-dev/security-gates.md
+      - Schema Governance: bijux-canon-dev/schema-governance.md
+      - Release Support: bijux-canon-dev/release-support.md
+      - SBOM and Supply Chain: bijux-canon-dev/sbom-and-supply-chain.md
+      - Operating Guidelines: bijux-canon-dev/operating-guidelines.md
 
 plugins:
   - search
