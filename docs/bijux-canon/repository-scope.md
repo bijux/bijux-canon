@@ -26,9 +26,9 @@ These repository pages should explain the cross-package frame that no single pac
 flowchart LR
     scope["bijux-canon"] --> section["Repository Handbook"]
     section --> page["Repository Scope"]
-    dest1["package boundaries"]
-    dest2["shared workflows"]
-    dest3["reviewable decisions"]
+    dest1["see root authority"]
+    dest2["see root limits"]
+    dest3["send work back down"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -37,25 +37,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Repository Scope"]
-    focus1["Repository intent"]
+    focus1["Root owns"]
     page --> focus1
-    focus1_1["scope"]
+    focus1_1["shared workflows"]
     focus1 --> focus1_1
-    focus1_2["shared ownership"]
+    focus1_2["shared schemas"]
     focus1 --> focus1_2
-    focus2["Review inputs"]
+    focus2["Root does not own"]
     page --> focus2
-    focus2_1["code"]
+    focus2_1["package-local behavior"]
     focus2 --> focus2_1
-    focus2_2["schemas"]
+    focus2_2["shadow implementation"]
     focus2 --> focus2_2
-    focus2_3["automation"]
-    focus2 --> focus2_3
-    focus3["Review outputs"]
+    focus3["Review test"]
     page --> focus3
-    focus3_1["clear decisions"]
+    focus3_1["cross-package concern"]
     focus3 --> focus3_1
-    focus3_2["stable docs"]
+    focus3_2["one-package concern"]
     focus3 --> focus3_2
 ```
 

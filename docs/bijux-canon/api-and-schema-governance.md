@@ -25,9 +25,9 @@ These repository pages should explain the cross-package frame that no single pac
 flowchart LR
     scope["bijux-canon"] --> section["Repository Handbook"]
     section --> page["API and Schema Governance"]
-    dest1["package boundaries"]
-    dest2["shared workflows"]
-    dest3["reviewable decisions"]
+    dest1["see schema assets"]
+    dest2["see drift pressure"]
+    dest3["review contract changes"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -36,25 +36,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["API and Schema Governance"]
-    focus1["Repository intent"]
+    focus1["Tracked assets"]
     page --> focus1
-    focus1_1["scope"]
+    focus1_1["apis/"]
     focus1 --> focus1_1
-    focus1_2["shared ownership"]
+    focus1_2["schema hashes and OpenAPI"]
     focus1 --> focus1_2
-    focus2["Review inputs"]
+    focus2["Owning checks"]
     page --> focus2
-    focus2_1["code"]
+    focus2_1["drift tooling"]
     focus2 --> focus2_1
-    focus2_2["schemas"]
+    focus2_2["package tests"]
     focus2 --> focus2_2
-    focus2_3["automation"]
-    focus2 --> focus2_3
-    focus3["Review outputs"]
+    focus3["Reader outcome"]
     page --> focus3
-    focus3_1["clear decisions"]
+    focus3_1["see contract movement"]
     focus3 --> focus3_1
-    focus3_2["stable docs"]
+    focus3_2["avoid schema folklore"]
     focus3 --> focus3_2
 ```
 

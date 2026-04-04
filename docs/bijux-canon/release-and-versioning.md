@@ -25,9 +25,9 @@ These repository pages should explain the cross-package frame that no single pac
 flowchart LR
     scope["bijux-canon"] --> section["Repository Handbook"]
     section --> page["Release and Versioning"]
-    dest1["package boundaries"]
-    dest2["shared workflows"]
-    dest3["reviewable decisions"]
+    dest1["see release mechanics"]
+    dest2["see package-version link"]
+    dest3["understand commit history role"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -36,25 +36,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Release and Versioning"]
-    focus1["Repository intent"]
+    focus1["Repository rules"]
     page --> focus1
-    focus1_1["scope"]
+    focus1_1["commitizen"]
     focus1 --> focus1_1
-    focus1_2["shared ownership"]
+    focus1_2["tag conventions"]
     focus1 --> focus1_2
-    focus2["Review inputs"]
+    focus2["Package mechanics"]
     page --> focus2
-    focus2_1["code"]
+    focus2_1["_version.py"]
     focus2 --> focus2_1
-    focus2_2["schemas"]
+    focus2_2["package metadata"]
     focus2 --> focus2_2
-    focus2_3["automation"]
-    focus2 --> focus2_3
-    focus3["Review outputs"]
+    focus3["Reader outcome"]
     page --> focus3
-    focus3_1["clear decisions"]
+    focus3_1["understand version movement"]
     focus3 --> focus3_1
-    focus3_2["stable docs"]
+    focus3_2["read durable intent"]
     focus3 --> focus3_2
 ```
 

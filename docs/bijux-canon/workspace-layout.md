@@ -22,9 +22,9 @@ These repository pages should explain the cross-package frame that no single pac
 flowchart LR
     scope["bijux-canon"] --> section["Repository Handbook"]
     section --> page["Workspace Layout"]
-    dest1["package boundaries"]
-    dest2["shared workflows"]
-    dest3["reviewable decisions"]
+    dest1["see directory intent"]
+    dest2["place work quickly"]
+    dest3["separate root from package"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -33,25 +33,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Workspace Layout"]
-    focus1["Repository intent"]
+    focus1["Product roots"]
     page --> focus1
-    focus1_1["scope"]
+    focus1_1["packages/"]
     focus1 --> focus1_1
-    focus1_2["shared ownership"]
+    focus1_2["apis/"]
     focus1 --> focus1_2
-    focus2["Review inputs"]
+    focus2["Repository roots"]
     page --> focus2
-    focus2_1["code"]
+    focus2_1["docs/"]
     focus2 --> focus2_1
-    focus2_2["schemas"]
+    focus2_2["Makefile and makes/"]
     focus2 --> focus2_2
-    focus2_3["automation"]
-    focus2 --> focus2_3
-    focus3["Review outputs"]
+    focus3["Review outcome"]
     page --> focus3
-    focus3_1["clear decisions"]
+    focus3_1["place the concern"]
     focus3 --> focus3_1
-    focus3_2["stable docs"]
+    focus3_2["avoid root sprawl"]
     focus3 --> focus3_2
 ```
 

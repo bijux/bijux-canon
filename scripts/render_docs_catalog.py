@@ -1636,6 +1636,100 @@ def add_approval_questions(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "Evidence Checklist", block)
 
 
+def home_map_focus_sections() -> tuple[tuple[str, tuple[str, ...]], ...]:
+    return (
+        ("System idea", ("why the split exists", "how the packages fit together")),
+        ("Reading paths", ("repository handbook", "one product handbook")),
+        ("Special cases", ("maintainer work", "legacy-name migration")),
+    )
+
+
+def root_page_map(slug: str, title: str) -> tuple[tuple[str, ...], tuple[tuple[str, tuple[str, ...]], ...]]:
+    configs = {
+        "index": (
+            ("see the whole system", "find the right root page", "move to package docs"),
+            (
+                ("Repository role", ("coordination layer", "shared rules only")),
+                ("Package family", ("five canonical packages", "one accountable flow")),
+                ("Reader outcome", ("choose the right handbook", "avoid boundary confusion")),
+            ),
+        ),
+        "platform-overview": (
+            ("see system flow", "understand package split", "place each package"),
+            (
+                ("Flow order", ("ingest", "index")),
+                ("Reasoning layer", ("reason", "agent")),
+                ("Governance layer", ("runtime", "repository coordination")),
+            ),
+        ),
+        "repository-scope": (
+            ("see root authority", "see root limits", "send work back down"),
+            (
+                ("Root owns", ("shared workflows", "shared schemas")),
+                ("Root does not own", ("package-local behavior", "shadow implementation")),
+                ("Review test", ("cross-package concern", "one-package concern")),
+            ),
+        ),
+        "workspace-layout": (
+            ("see directory intent", "place work quickly", "separate root from package"),
+            (
+                ("Product roots", ("packages/", "apis/")),
+                ("Repository roots", ("docs/", "Makefile and makes/")),
+                ("Review outcome", ("place the concern", "avoid root sprawl")),
+            ),
+        ),
+        "package-map": (
+            ("see package sequence", "compare package roles", "spot non-product sections"),
+            (
+                ("Product flow", ("ingest to runtime", "distinct responsibilities")),
+                ("Support layers", ("bijux-canon-dev", "compatibility packages")),
+                ("Reader outcome", ("choose the owning package", "avoid overlap")),
+            ),
+        ),
+        "api-and-schema-governance": (
+            ("see schema assets", "see drift pressure", "review contract changes"),
+            (
+                ("Tracked assets", ("apis/", "schema hashes and OpenAPI")),
+                ("Owning checks", ("drift tooling", "package tests")),
+                ("Reader outcome", ("see contract movement", "avoid schema folklore")),
+            ),
+        ),
+        "local-development": (
+            ("see local posture", "see cross-package trigger", "connect work to proof"),
+            (
+                ("Local work", ("owning package directory", "package tests and docs")),
+                ("Root help", ("cross-package automation", "workspace commands")),
+                ("Reader outcome", ("change locally first", "escalate only when needed")),
+            ),
+        ),
+        "testing-and-validation": (
+            ("see proof layers", "separate package from repository", "trace trust backstops"),
+            (
+                ("Package proof", ("unit to invariants", "package-local contracts")),
+                ("Repository proof", ("schema drift", "CI workflows")),
+                ("Reader outcome", ("trust locally first", "then trust the full fit")),
+            ),
+        ),
+        "release-and-versioning": (
+            ("see release mechanics", "see package-version link", "understand commit history role"),
+            (
+                ("Repository rules", ("commitizen", "tag conventions")),
+                ("Package mechanics", ("_version.py", "package metadata")),
+                ("Reader outcome", ("understand version movement", "read durable intent")),
+            ),
+        ),
+        "documentation-system": (
+            ("see handbook layout", "see honesty rule", "understand reader promise"),
+            (
+                ("Structure", ("root index", "section indexes and topic pages")),
+                ("References", ("bijux-pollenomics", "bijux-masterclass")),
+                ("Reader outcome", ("self-sufficient docs", "less meeting debt")),
+            ),
+        ),
+    }
+    return configs[slug]
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1721,11 +1815,7 @@ def render_home(
         "Root Site",
         "Docs Index",
         tuple(f"{name} section" for name in sections),
-        (
-            ("Repository", ("shared rules", "workspace scope")),
-            ("Packages", ("five product handbooks", "stable package spine")),
-            ("Maintenance", ("dev handbook", "compatibility handbook")),
-        ),
+        home_map_focus_sections(),
     )
     body = add_working_interpretation(
         body,
@@ -2289,17 +2379,14 @@ def render_root_page(
         ),
     }
     body = clean_block(bodies[slug])
+    destinations, focus_sections = root_page_map(slug, title)
     body = add_page_route_map(
         body,
         "bijux-canon",
         "Repository Handbook",
         title,
-        ("package boundaries", "shared workflows", "reviewable decisions"),
-        (
-            ("Repository intent", ("scope", "shared ownership")),
-            ("Review inputs", ("code", "schemas", "automation")),
-            ("Review outputs", ("clear decisions", "stable docs")),
-        ),
+        destinations,
+        focus_sections,
     )
     body = add_working_interpretation(
         body,

@@ -76,23 +76,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Docs Index"]
-    focus1["Repository"]
+    focus1["System idea"]
     page --> focus1
-    focus1_1["shared rules"]
+    focus1_1["why the split exists"]
     focus1 --> focus1_1
-    focus1_2["workspace scope"]
+    focus1_2["how the packages fit together"]
     focus1 --> focus1_2
-    focus2["Packages"]
+    focus2["Reading paths"]
     page --> focus2
-    focus2_1["five product handbooks"]
+    focus2_1["repository handbook"]
     focus2 --> focus2_1
-    focus2_2["stable package spine"]
+    focus2_2["one product handbook"]
     focus2 --> focus2_2
-    focus3["Maintenance"]
+    focus3["Special cases"]
     page --> focus3
-    focus3_1["dev handbook"]
+    focus3_1["maintainer work"]
     focus3 --> focus3_1
-    focus3_2["compatibility handbook"]
+    focus3_2["legacy-name migration"]
     focus3 --> focus3_2
 ```
 
