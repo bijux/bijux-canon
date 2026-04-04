@@ -8,6 +8,7 @@ from typing import Any
 from bijux_canon_agent.observability.logging import MetricType
 
 from .key_sets import get_all_data_keys, get_all_schema_keys
+from .schema_leaf_checks import validate_list_branch, validate_terminal_branch
 
 
 def validate_recursive(
@@ -285,46 +286,22 @@ def validate_recursive(
                     )
 
     elif isinstance(schema, list) and len(schema) == 1:
-        expected_type = schema[0]
-        if not isinstance(data, list):
-            error_msg = f"{path}: Expected list, got {type(data).__name__}"
-            errors.append(error_msg)
-            audit[path] = {
-                "error": "type_mismatch",
-                "expected": "list",
-                "actual": type(data).__name__,
-            }
-            agent.logger.error(error_msg, extra={"context": tags})
-            agent.logger_manager.log_metric(
-                "type_mismatch_errors", 1, MetricType.COUNTER, tags=tags
-            )
-            return errors, audit
-        for idx, item in enumerate(data):
-            item_path = f"{path}[{idx}]"
-            child_errors, child_audit = validate_recursive(
-                agent, item, expected_type, item_path
-            )
-            errors.extend(child_errors)
-            audit[item_path] = child_audit
+        return validate_list_branch(
+            agent,
+            data=data,
+            schema=schema,
+            path=path,
+            tags=tags,
+            validate_recursive=validate_recursive,
+        )
     else:
-        if not isinstance(data, schema):
-            error_msg = f"{path}: Expected {schema.__name__}, got {type(data).__name__}"
-            errors.append(error_msg)
-            audit[path] = {
-                "error": "type_mismatch",
-                "expected": schema.__name__,
-                "actual": type(data).__name__,
-            }
-            agent.logger.error(error_msg, extra={"context": tags})
-            agent.logger_manager.log_metric(
-                "type_mismatch_errors", 1, MetricType.COUNTER, tags=tags
-            )
-        else:
-            audit[path] = {
-                "value": data,
-                "expected": schema.__name__,
-                "type": type(data).__name__,
-            }
+        return validate_terminal_branch(
+            agent,
+            data=data,
+            schema=schema,
+            path=path,
+            tags=tags,
+        )
 
     return errors, audit
 
