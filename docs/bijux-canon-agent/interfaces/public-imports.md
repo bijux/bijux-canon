@@ -109,6 +109,12 @@ This page keeps the import-facing contract visible when refactoring package inte
 
 Keep it aligned with the actual package source tree and documented import paths.
 
+## What Good Looks Like
+
+- `Public Imports` leaves a caller knowing which surfaces are explicit enough to trust
+- the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately
+- compatibility review becomes a visible step rather than an afterthought
+
 ## Core Claim
 
 The interface claim of `bijux-canon-agent` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

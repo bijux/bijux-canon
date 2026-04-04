@@ -110,6 +110,12 @@ This page keeps compatibility releases from drifting into independent product wo
 
 Keep it aligned with the current maintenance strategy for legacy packages.
 
+## What Good Looks Like
+
+- `Release Policy` makes the legacy-to-canonical path obvious
+- migration pressure is clearer than nostalgia for old package names
+- retirement can be discussed from evidence rather than from vague discomfort
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

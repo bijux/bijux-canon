@@ -113,6 +113,12 @@ This page explains where configuration enters the package and how it should be r
 
 Keep it aligned with real configuration loaders, defaults, and operator-facing options.
 
+## What Good Looks Like
+
+- `Configuration Surface` leaves a caller knowing which surfaces are explicit enough to trust
+- the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately
+- compatibility review becomes a visible step rather than an afterthought
+
 ## Core Claim
 
 The interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

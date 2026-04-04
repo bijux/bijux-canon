@@ -133,6 +133,12 @@ This page explains how to use the foundation section for `bijux-canon-reason` wi
 
 This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
 
+## What Good Looks Like
+
+- `Foundation` leaves a reviewer able to explain `bijux-canon-reason` in one boundary sentence without hand-waving
+- the owned and out-of-scope areas read as complementary rather than contradictory
+- neighboring packages become easier to place because this package is clearly bounded
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-reason` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

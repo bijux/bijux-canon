@@ -134,6 +134,12 @@ This page explains how to use the interfaces section for `bijux-canon-agent` wit
 
 This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
 
+## What Good Looks Like
+
+- `Interfaces` leaves a caller knowing which surfaces are explicit enough to trust
+- the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately
+- compatibility review becomes a visible step rather than an afterthought
+
 ## Core Claim
 
 The interface claim of `bijux-canon-agent` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

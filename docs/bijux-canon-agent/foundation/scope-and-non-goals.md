@@ -115,6 +115,12 @@ This page keeps future work from leaking into the wrong package.
 
 Update it only when ownership truly moves into or out of `bijux-canon-agent`.
 
+## What Good Looks Like
+
+- `Scope and Non-Goals` leaves a reviewer able to explain `bijux-canon-agent` in one boundary sentence without hand-waving
+- the owned and out-of-scope areas read as complementary rather than contradictory
+- neighboring packages become easier to place because this package is clearly bounded
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-agent` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

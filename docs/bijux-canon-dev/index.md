@@ -137,6 +137,12 @@ This page explains how to use the maintainer handbook without confusing it with 
 
 Keep this page aligned with the actual maintainer modules that exist under `packages/bijux-canon-dev`.
 
+## What Good Looks Like
+
+- `bijux-canon-dev` makes maintainer-only behavior explicit enough that it does not surprise contributors
+- the page distinguishes repository-health work from runtime product behavior cleanly
+- automation intent stays understandable without digging through CI and helpers first
+
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

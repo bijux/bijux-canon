@@ -110,6 +110,12 @@ This page records the naming anchors that should stay stable in docs, code, and 
 
 Keep it aligned with the package's real import names, directories, and artifact nouns.
 
+## What Good Looks Like
+
+- `Domain Language` leaves a reviewer able to explain `bijux-canon-ingest` in one boundary sentence without hand-waving
+- the owned and out-of-scope areas read as complementary rather than contradictory
+- neighboring packages become easier to place because this package is clearly bounded
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-ingest` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

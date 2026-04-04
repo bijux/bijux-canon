@@ -112,6 +112,12 @@ This page explains why dependency review matters for the package.
 
 Keep it aligned with `pyproject.toml` and the package's real dependency posture.
 
+## What Good Looks Like
+
+- `Dependency Governance` leaves a reviewer able to say why the package should be trusted after a change
+- tests, limitations, and risk language reinforce one another instead of competing
+- the completion bar is demanding enough to prevent shallow acceptance
+
 ## Core Claim
 
 The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

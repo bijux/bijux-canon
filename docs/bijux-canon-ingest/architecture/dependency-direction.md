@@ -147,3 +147,9 @@ This page makes dependency direction explicit enough to review during refactors.
 ## Stability
 
 Keep it aligned with current imports and directory responsibilities.
+
+## What Good Looks Like
+
+- `Dependency Direction` lets a reviewer trace structure without guessing where the real pathway lives
+- the documented module relationships make refactors easier to reason about before code is changed
+- the page shortens code reading by pointing at the right structural hotspots first

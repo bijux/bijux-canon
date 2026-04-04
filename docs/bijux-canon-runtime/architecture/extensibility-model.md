@@ -115,6 +115,12 @@ This page helps maintainers extend the package without smearing responsibilities
 
 Keep it aligned with the package seams that actually support extension today.
 
+## What Good Looks Like
+
+- `Extensibility Model` lets a reviewer trace structure without guessing where the real pathway lives
+- the documented module relationships make refactors easier to reason about before code is changed
+- the page shortens code reading by pointing at the right structural hotspots first
+
 ## Core Claim
 
 The architectural claim of `bijux-canon-runtime` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

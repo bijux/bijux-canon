@@ -115,6 +115,12 @@ This page explains which structured shapes deserve compatibility review.
 
 Keep it aligned with tracked schemas, stable models, and durable artifacts.
 
+## What Good Looks Like
+
+- `Data Contracts` leaves a caller knowing which surfaces are explicit enough to trust
+- the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately
+- compatibility review becomes a visible step rather than an afterthought
+
 ## Core Claim
 
 The interface claim of `bijux-canon-index` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

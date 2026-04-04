@@ -109,6 +109,12 @@ This page tells maintainers how to move away from legacy names without ambiguity
 
 Keep it aligned with the canonical packages that compatibility packages currently point to.
 
+## What Good Looks Like
+
+- `Migration Guidance` makes the legacy-to-canonical path obvious
+- migration pressure is clearer than nostalgia for old package names
+- retirement can be discussed from evidence rather than from vague discomfort
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

@@ -111,6 +111,12 @@ This page explains which Python import names remain preserved.
 
 Keep it aligned with the `src/` roots inside the compatibility packages.
 
+## What Good Looks Like
+
+- `Import Surfaces` makes the legacy-to-canonical path obvious
+- migration pressure is clearer than nostalgia for old package names
+- retirement can be discussed from evidence rather than from vague discomfort
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

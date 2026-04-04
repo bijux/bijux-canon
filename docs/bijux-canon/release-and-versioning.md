@@ -117,6 +117,12 @@ This page connects the root commit conventions to the package release mechanism.
 
 Keep this page aligned with the release tooling that is actually configured in the repository.
 
+## What Good Looks Like
+
+- `Release and Versioning` keeps repository guidance above package-local detail instead of competing with it
+- the reader can tell which root assets matter to the topic before opening code
+- cross-package reasoning becomes simpler because the repository frame is explicit
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

@@ -116,6 +116,12 @@ This page ties package ownership to concrete directories instead of abstract slo
 
 Keep it aligned with the current module layout.
 
+## What Good Looks Like
+
+- `Ownership Boundary` leaves a reviewer able to explain `bijux-canon-runtime` in one boundary sentence without hand-waving
+- the owned and out-of-scope areas read as complementary rather than contradictory
+- neighboring packages become easier to place because this package is clearly bounded
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-runtime` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

@@ -133,6 +133,12 @@ This page explains how to use the quality section for `bijux-canon-reason` witho
 
 This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
 
+## What Good Looks Like
+
+- `Quality` leaves a reviewer able to say why the package should be trusted after a change
+- tests, limitations, and risk language reinforce one another instead of competing
+- the completion bar is demanding enough to prevent shallow acceptance
+
 ## Core Claim
 
 The quality claim of `bijux-canon-reason` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

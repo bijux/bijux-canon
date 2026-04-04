@@ -114,6 +114,12 @@ This page ties package-local release mechanics to the wider repository release m
 
 Keep it aligned with the package metadata and current versioning configuration.
 
+## What Good Looks Like
+
+- `Release and Versioning` leaves a maintainer able to repeat the relevant package workflow from checked-in assets
+- the operational path is explicit enough that incident pressure does not force guesswork
+- release and setup expectations stay aligned with the package metadata and tests
+
 ## Core Claim
 
 The operational claim of `bijux-canon-runtime` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

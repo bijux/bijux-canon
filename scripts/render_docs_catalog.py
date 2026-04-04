@@ -1090,6 +1090,37 @@ def package_decision_rule(package: PackageInfo, category: str, title: str) -> st
     return rule_map[category]
 
 
+def package_what_good_looks_like(package: PackageInfo, category: str, title: str) -> tuple[str, ...]:
+    good_map = {
+        "foundation": (
+            f"`{title}` leaves a reviewer able to explain `{package.title}` in one boundary sentence without hand-waving",
+            "the owned and out-of-scope areas read as complementary rather than contradictory",
+            "neighboring packages become easier to place because this package is clearly bounded",
+        ),
+        "architecture": (
+            f"`{title}` lets a reviewer trace structure without guessing where the real pathway lives",
+            "the documented module relationships make refactors easier to reason about before code is changed",
+            "the page shortens code reading by pointing at the right structural hotspots first",
+        ),
+        "interfaces": (
+            f"`{title}` leaves a caller knowing which surfaces are explicit enough to trust",
+            "the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately",
+            "compatibility review becomes a visible step rather than an afterthought",
+        ),
+        "operations": (
+            f"`{title}` leaves a maintainer able to repeat the relevant package workflow from checked-in assets",
+            "the operational path is explicit enough that incident pressure does not force guesswork",
+            "release and setup expectations stay aligned with the package metadata and tests",
+        ),
+        "quality": (
+            f"`{title}` leaves a reviewer able to say why the package should be trusted after a change",
+            "tests, limitations, and risk language reinforce one another instead of competing",
+            "the completion bar is demanding enough to prevent shallow acceptance",
+        ),
+    }
+    return good_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1271,6 +1302,17 @@ def add_decision_rule(body: str, text: str) -> str:
     return insert_before_heading(body, "Purpose", block)
 
 
+def add_what_good_looks_like(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## What Good Looks Like",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Core Claim", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1365,6 +1407,14 @@ def render_home(
     body = add_decision_rule(
         body,
         "Use this page to decide where a question belongs in the documentation system before you spend time reading deeply. If the page cannot route the reader to a single clearly better next section, then the root documentation structure itself needs revision.",
+    )
+    body = add_what_good_looks_like(
+        body,
+        (
+            "the correct next handbook path becomes obvious within a few seconds",
+            "the root page reduces orientation cost instead of adding another layer of ambiguity",
+            "the documentation system feels intentionally divided rather than accidentally scattered",
+        ),
     )
     body = add_question_section(
         body,
@@ -1799,6 +1849,14 @@ def render_root_page(
         body,
         f"Use `{title}` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.",
     )
+    body = add_what_good_looks_like(
+        body,
+        (
+            f"`{title}` keeps repository guidance above package-local detail instead of competing with it",
+            "the reader can tell which root assets matter to the topic before opening code",
+            "cross-package reasoning becomes simpler because the repository frame is explicit",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2172,6 +2230,14 @@ def render_dev_page(slug: str, title: str) -> str:
         body,
         f"Use `{title}` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.",
     )
+    body = add_what_good_looks_like(
+        body,
+        (
+            f"`{title}` makes maintainer-only behavior explicit enough that it does not surprise contributors",
+            "the page distinguishes repository-health work from runtime product behavior cleanly",
+            "automation intent stays understandable without digging through CI and helpers first",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2539,6 +2605,14 @@ def render_compat_page(slug: str, title: str) -> str:
         body,
         f"Use `{title}` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.",
     )
+    body = add_what_good_looks_like(
+        body,
+        (
+            f"`{title}` makes the legacy-to-canonical path obvious",
+            "migration pressure is clearer than nostalgia for old package names",
+            "retirement can be discussed from evidence rather than from vague discomfort",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2733,6 +2807,7 @@ def render_package_page(
     body = add_working_interpretation(body, package_working_interpretation(package, category))
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_decision_rule(body, package_decision_rule(package, category, title))
+    body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))

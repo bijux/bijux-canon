@@ -117,6 +117,12 @@ This page records the preferred development posture for the workspace without re
 
 Keep this page aligned with the root automation files that actually exist.
 
+## What Good Looks Like
+
+- `Local Development` keeps repository guidance above package-local detail instead of competing with it
+- the reader can tell which root assets matter to the topic before opening code
+- cross-package reasoning becomes simpler because the repository frame is explicit
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

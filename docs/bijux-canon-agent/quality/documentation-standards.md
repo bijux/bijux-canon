@@ -108,6 +108,12 @@ This page keeps package docs from drifting back into ad hoc structure.
 
 Update it only when the shared documentation system itself changes.
 
+## What Good Looks Like
+
+- `Documentation Standards` leaves a reviewer able to say why the package should be trusted after a change
+- tests, limitations, and risk language reinforce one another instead of competing
+- the completion bar is demanding enough to prevent shallow acceptance
+
 ## Core Claim
 
 The quality claim of `bijux-canon-agent` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

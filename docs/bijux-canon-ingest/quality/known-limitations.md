@@ -108,6 +108,12 @@ This page keeps limitation language attached to the package boundary instead of 
 
 Keep it aligned with the limitations that remain intentionally true today.
 
+## What Good Looks Like
+
+- `Known Limitations` leaves a reviewer able to say why the package should be trusted after a change
+- tests, limitations, and risk language reinforce one another instead of competing
+- the completion bar is demanding enough to prevent shallow acceptance
+
 ## Core Claim
 
 The quality claim of `bijux-canon-ingest` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

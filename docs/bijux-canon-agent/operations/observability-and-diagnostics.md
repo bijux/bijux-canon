@@ -112,6 +112,12 @@ This page points readers toward the package's observable output and diagnostic s
 
 Keep it aligned with the package modules and artifacts that currently support diagnosis.
 
+## What Good Looks Like
+
+- `Observability and Diagnostics` leaves a maintainer able to repeat the relevant package workflow from checked-in assets
+- the operational path is explicit enough that incident pressure does not force guesswork
+- release and setup expectations stay aligned with the package metadata and tests
+
 ## Core Claim
 
 The operational claim of `bijux-canon-agent` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

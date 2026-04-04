@@ -136,6 +136,12 @@ This page explains the role of the compatibility handbooks without encouraging n
 
 Keep it aligned with the legacy packages that still ship from `packages/compat-*`.
 
+## What Good Looks Like
+
+- `Compatibility Packages` makes the legacy-to-canonical path obvious
+- migration pressure is clearer than nostalgia for old package names
+- retirement can be discussed from evidence rather than from vague discomfort
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

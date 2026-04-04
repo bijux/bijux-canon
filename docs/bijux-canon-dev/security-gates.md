@@ -109,6 +109,12 @@ This page marks the boundary between maintenance security tooling and product ru
 
 Keep it aligned with the actual checks we can execute and verify.
 
+## What Good Looks Like
+
+- `Security Gates` makes maintainer-only behavior explicit enough that it does not surprise contributors
+- the page distinguishes repository-health work from runtime product behavior cleanly
+- automation intent stays understandable without digging through CI and helpers first
+
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

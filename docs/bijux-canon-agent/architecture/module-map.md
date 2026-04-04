@@ -111,6 +111,12 @@ This page provides a shortest-path code map for the package.
 
 Keep it aligned with the actual source directories under `packages/bijux-canon-agent`.
 
+## What Good Looks Like
+
+- `Module Map` lets a reviewer trace structure without guessing where the real pathway lives
+- the documented module relationships make refactors easier to reason about before code is changed
+- the page shortens code reading by pointing at the right structural hotspots first
+
 ## Core Claim
 
 The architectural claim of `bijux-canon-agent` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

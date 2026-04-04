@@ -115,6 +115,12 @@ This page keeps the package relationships visible from one place before a reader
 
 Update this page only when package ownership changes, not for ordinary internal refactors.
 
+## What Good Looks Like
+
+- `Package Map` keeps repository guidance above package-local detail instead of competing with it
+- the reader can tell which root assets matter to the topic before opening code
+- cross-package reasoning becomes simpler because the repository frame is explicit
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

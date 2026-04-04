@@ -115,6 +115,12 @@ This page records the posture for performance work in `bijux-canon-agent`.
 
 Keep it aligned with the package's actual performance-sensitive paths and validation surfaces.
 
+## What Good Looks Like
+
+- `Performance and Scaling` leaves a maintainer able to repeat the relevant package workflow from checked-in assets
+- the operational path is explicit enough that incident pressure does not force guesswork
+- release and setup expectations stay aligned with the package metadata and tests
+
 ## Core Claim
 
 The operational claim of `bijux-canon-agent` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

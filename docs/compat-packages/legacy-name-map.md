@@ -106,6 +106,12 @@ This page provides the exact mapping between retired public names and current ca
 
 Update it only when a compatibility package is added or retired.
 
+## What Good Looks Like
+
+- `Legacy Name Map` makes the legacy-to-canonical path obvious
+- migration pressure is clearer than nostalgia for old package names
+- retirement can be discussed from evidence rather than from vague discomfort
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

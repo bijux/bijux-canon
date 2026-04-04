@@ -118,6 +118,12 @@ This page keeps the repository from becoming a vague catch-all layer above the p
 
 Update this page only when ownership truly moves between the repository and one of the packages.
 
+## What Good Looks Like
+
+- `Repository Scope` keeps repository guidance above package-local detail instead of competing with it
+- the reader can tell which root assets matter to the topic before opening code
+- cross-package reasoning becomes simpler because the repository frame is explicit
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

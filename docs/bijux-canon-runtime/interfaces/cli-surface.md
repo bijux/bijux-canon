@@ -108,6 +108,12 @@ This page points maintainers toward the command entrypoints and their owning cod
 
 Keep it aligned with the declared scripts and the interface modules that implement them.
 
+## What Good Looks Like
+
+- `CLI Surface` leaves a caller knowing which surfaces are explicit enough to trust
+- the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately
+- compatibility review becomes a visible step rather than an afterthought
+
 ## Core Claim
 
 The interface claim of `bijux-canon-runtime` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

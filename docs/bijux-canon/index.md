@@ -142,6 +142,12 @@ This page explains how to use the repository handbook without duplicating the pa
 
 This page is part of the canonical docs spine. Keep it aligned with the current repository layout and the actual package set declared in `pyproject.toml`.
 
+## What Good Looks Like
+
+- `bijux-canon` keeps repository guidance above package-local detail instead of competing with it
+- the reader can tell which root assets matter to the topic before opening code
+- cross-package reasoning becomes simpler because the repository frame is explicit
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

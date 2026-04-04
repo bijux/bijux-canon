@@ -108,6 +108,12 @@ This page records the package-specific contribution posture.
 
 Update these principles only when the package operating model truly changes.
 
+## What Good Looks Like
+
+- `Change Principles` leaves a reviewer able to explain `bijux-canon-ingest` in one boundary sentence without hand-waving
+- the owned and out-of-scope areas read as complementary rather than contradictory
+- neighboring packages become easier to place because this package is clearly bounded
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-ingest` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

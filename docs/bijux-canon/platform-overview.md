@@ -120,6 +120,12 @@ This page gives the shortest description of what the repository is and why it is
 
 Keep this page aligned with the real package set and the root-level automation that currently exists in the repository.
 
+## What Good Looks Like
+
+- `Platform Overview` keeps repository guidance above package-local detail instead of competing with it
+- the reader can tell which root assets matter to the topic before opening code
+- cross-package reasoning becomes simpler because the repository frame is explicit
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

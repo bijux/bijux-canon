@@ -109,6 +109,12 @@ This page explains what counts as sufficient validation for the compatibility la
 
 Keep it aligned with the actual compatibility package tests or maintenance checks.
 
+## What Good Looks Like
+
+- `Validation Strategy` makes the legacy-to-canonical path obvious
+- migration pressure is clearer than nostalgia for old package names
+- retirement can be discussed from evidence rather than from vague discomfort
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

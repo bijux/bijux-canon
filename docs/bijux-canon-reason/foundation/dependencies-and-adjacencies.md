@@ -113,6 +113,12 @@ This page explains which surrounding tools and packages `bijux-canon-reason` dep
 
 Keep it aligned with `pyproject.toml` and the actual package seams.
 
+## What Good Looks Like
+
+- `Dependencies and Adjacencies` leaves a reviewer able to explain `bijux-canon-reason` in one boundary sentence without hand-waving
+- the owned and out-of-scope areas read as complementary rather than contradictory
+- neighboring packages become easier to place because this package is clearly bounded
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-reason` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

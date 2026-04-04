@@ -110,6 +110,12 @@ This page records the package-local development posture.
 
 Keep it aligned with the actual test layout and maintenance workflow.
 
+## What Good Looks Like
+
+- `Local Development` leaves a maintainer able to repeat the relevant package workflow from checked-in assets
+- the operational path is explicit enough that incident pressure does not force guesswork
+- release and setup expectations stay aligned with the package metadata and tests
+
 ## Core Claim
 
 The operational claim of `bijux-canon-agent` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

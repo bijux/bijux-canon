@@ -111,6 +111,12 @@ This page gives the shortest honest description of why the package exists.
 
 Keep this page aligned with real maintainer behavior, not aspirational tooling that does not yet exist.
 
+## What Good Looks Like
+
+- `Package Overview` makes maintainer-only behavior explicit enough that it does not surprise contributors
+- the page distinguishes repository-health work from runtime product behavior cleanly
+- automation intent stays understandable without digging through CI and helpers first
+
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

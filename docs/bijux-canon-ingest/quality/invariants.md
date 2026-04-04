@@ -115,6 +115,12 @@ This page records the kinds of promises that should not drift casually.
 
 Keep it aligned with invariant-focused tests and documented package guarantees.
 
+## What Good Looks Like
+
+- `Invariants` leaves a reviewer able to say why the package should be trusted after a change
+- tests, limitations, and risk language reinforce one another instead of competing
+- the completion bar is demanding enough to prevent shallow acceptance
+
 ## Core Claim
 
 The quality claim of `bijux-canon-ingest` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

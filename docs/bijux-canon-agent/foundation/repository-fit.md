@@ -114,6 +114,12 @@ This page explains how the package fits into the repository without restating re
 
 Keep it aligned with the package's checked-in directories and actual neighboring packages.
 
+## What Good Looks Like
+
+- `Repository Fit` leaves a reviewer able to explain `bijux-canon-agent` in one boundary sentence without hand-waving
+- the owned and out-of-scope areas read as complementary rather than contradictory
+- neighboring packages become easier to place because this package is clearly bounded
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-agent` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

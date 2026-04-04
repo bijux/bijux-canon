@@ -109,6 +109,12 @@ This page explains the threshold for removing a compatibility package.
 
 Update this page only when the retirement policy itself changes.
 
+## What Good Looks Like
+
+- `Retirement Conditions` makes the legacy-to-canonical path obvious
+- migration pressure is clearer than nostalgia for old package names
+- retirement can be discussed from evidence rather than from vague discomfort
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

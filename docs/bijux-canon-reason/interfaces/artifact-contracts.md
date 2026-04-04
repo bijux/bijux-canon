@@ -110,6 +110,12 @@ This page marks which outputs need stable review when behavior changes.
 
 Keep it aligned with the package outputs that are actually produced and consumed.
 
+## What Good Looks Like
+
+- `Artifact Contracts` leaves a caller knowing which surfaces are explicit enough to trust
+- the contract discussion ties together commands, schemas, artifacts, and tests instead of treating them separately
+- compatibility review becomes a visible step rather than an afterthought
+
 ## Core Claim
 
 The interface claim of `bijux-canon-reason` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

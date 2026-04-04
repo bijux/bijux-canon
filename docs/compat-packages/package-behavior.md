@@ -110,6 +110,12 @@ This page describes the intended minimalism of the compatibility layer.
 
 Keep it aligned with the actual package contents in `packages/compat-*`.
 
+## What Good Looks Like
+
+- `Package Behavior` makes the legacy-to-canonical path obvious
+- migration pressure is clearer than nostalgia for old package names
+- retirement can be discussed from evidence rather than from vague discomfort
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

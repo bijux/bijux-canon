@@ -166,6 +166,12 @@ This page routes readers into the canonical repository and package handbooks wit
 
 This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/` and the packages that still ship from this repository.
 
+## What Good Looks Like
+
+- the correct next handbook path becomes obvious within a few seconds
+- the root page reduces orientation cost instead of adding another layer of ambiguity
+- the documentation system feels intentionally divided rather than accidentally scattered
+
 ## Core Claim
 
 The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.
