@@ -1,12 +1,29 @@
 openapi: 3.1.0
 info:
-  title: bijux-canon-index execution API
+  title: bijux-canon-index API
+  summary: Contract-driven vector execution and replayable retrieval.
+  description: The bijux-canon-index HTTP API exposes the v1 surface for deterministic
+    and bounded vector execution. It separates capability discovery, artifact materialization,
+    and query execution so operators can review the contract they are invoking before
+    they ship it.
+  contact:
+    name: Bijux
+    url: https://github.com/bijux/bijux-canon
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
   version: v1
+servers:
+- url: /
 paths:
   /capabilities:
     get:
-      summary: Capabilities
-      operationId: capabilities_capabilities_get
+      tags:
+      - Discovery
+      summary: Describe backend capabilities
+      description: Report the active execution backend, supported contracts, storage
+        backends, vector store capabilities, and ANN readiness in one envelope.
+      operationId: describeBackendCapabilities
       parameters:
       - name: X-Correlation-Id
         in: header
@@ -18,7 +35,7 @@ paths:
           title: X-Correlation-Id
       responses:
         '200':
-          description: Successful Response
+          description: Capability report returned successfully.
           content:
             application/json:
               schema:
@@ -54,8 +71,12 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /artifacts:
     get:
-      summary: List Artifacts
-      operationId: list_artifacts_artifacts_get
+      tags:
+      - Discovery
+      summary: List execution artifacts
+      description: Return artifact identifiers known to the current backend so operators
+        can inspect or reuse previously materialized execution state.
+      operationId: listExecutionArtifacts
       parameters:
       - name: limit
         in: query
@@ -82,13 +103,11 @@ paths:
           title: X-Correlation-Id
       responses:
         '200':
-          description: Successful Response
+          description: Artifact inventory returned successfully.
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-                title: Response List Artifacts Artifacts Get
+                $ref: '#/components/schemas/ListArtifactsResponse'
               examples:
                 artifacts:
                   value:
@@ -102,8 +121,12 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /runs:
     get:
-      summary: List Runs
-      operationId: list_runs_runs_get
+      tags:
+      - Discovery
+      summary: List execution runs
+      description: Return recorded run identifiers from the run store for audit, replay,
+        or support workflows.
+      operationId: listExecutionRuns
       parameters:
       - name: limit
         in: query
@@ -130,13 +153,11 @@ paths:
           title: X-Correlation-Id
       responses:
         '200':
-          description: Successful Response
+          description: Run inventory returned successfully.
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-                title: Response List Runs Runs Get
+                $ref: '#/components/schemas/ListRunsResponse'
               examples:
                 runs:
                   value:
@@ -150,8 +171,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /create:
     post:
-      summary: Create
-      operationId: create_create_post
+      tags:
+      - Materialization
+      summary: Reserve a logical corpus name
+      description: Create a logical corpus entry before ingestion. The endpoint is
+        intentionally small so teams can separate naming and governance from later
+        content writes.
+      operationId: createCorpus
       parameters:
       - name: X-Correlation-Id
         in: header
@@ -173,13 +199,11 @@ paths:
                   name: my-corpus
       responses:
         '200':
-          description: Successful Response
+          description: Corpus name reserved successfully.
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-                title: Response Create Create Post
+                $ref: '#/components/schemas/CreateResponse'
               examples:
                 created:
                   value:
@@ -206,8 +230,12 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /ingest:
     post:
-      summary: Ingest
-      operationId: ingest_ingest_post
+      tags:
+      - Materialization
+      summary: Ingest documents and vectors
+      description: Persist documents and either supplied vectors or embedding-derived
+        vectors, then return the ingest count and resolved correlation identifier.
+      operationId: ingestDocuments
       parameters:
       - name: X-Correlation-Id
         in: header
@@ -244,17 +272,16 @@ paths:
                   vector_store_uri: index.faiss
       responses:
         '200':
-          description: Successful Response
+          description: Documents ingested successfully.
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-                title: Response Ingest Ingest Post
+                $ref: '#/components/schemas/IngestResponse'
               examples:
                 ingested:
                   value:
                     ingested: 1
+                    correlation_id: req-example
         '400':
           content:
             application/json:
@@ -276,8 +303,12 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /artifact:
     post:
-      summary: Artifact
-      operationId: artifact_artifact_post
+      tags:
+      - Materialization
+      summary: Materialize an execution artifact
+      description: Freeze the current corpus and vector state into an execution artifact
+        with a declared contract so later executions can be audited and replayed.
+      operationId: materializeExecutionArtifact
       parameters:
       - name: X-Correlation-Id
         in: header
@@ -299,13 +330,11 @@ paths:
                   execution_contract: deterministic
       responses:
         '200':
-          description: Successful Response
+          description: Execution artifact materialized successfully.
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-                title: Response Artifact Artifact Post
+                $ref: '#/components/schemas/ArtifactResponse'
               examples:
                 artifact:
                   value:
@@ -334,8 +363,12 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /execute:
     post:
-      summary: Execute
-      operationId: execute_execute_post
+      tags:
+      - Execution
+      summary: Execute a vector query
+      description: Execute a deterministic or bounded retrieval request against a
+        materialized artifact and return the result identifiers plus replay metadata.
+      operationId: executeVectorQuery
       parameters:
       - name: X-Correlation-Id
         in: header
@@ -365,13 +398,11 @@ paths:
                   execution_mode: strict
       responses:
         '200':
-          description: Successful Response
+          description: Execution completed successfully.
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-                title: Response Execute Execute Post
+                $ref: '#/components/schemas/ExecuteResponse'
               examples:
                 execute:
                   value:
@@ -394,11 +425,15 @@ paths:
                         vector store'
                       remediation: Use deterministic inputs or switch to non_deterministic
                         contract with declared randomness.
-          description: Unprocessable Entity
+          description: Unprocessable Content
   /explain:
     post:
-      summary: Explain
-      operationId: explain_explain_post
+      tags:
+      - Execution
+      summary: Explain a result
+      description: Resolve a result identifier back to the document, chunk, vector,
+        and execution context that produced it.
+      operationId: explainExecutionResult
       parameters:
       - name: X-Correlation-Id
         in: header
@@ -420,17 +455,25 @@ paths:
                   result_id: res-1
       responses:
         '200':
-          description: Successful Response
+          description: Result explanation returned successfully.
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-                title: Response Explain Explain Post
+                $ref: '#/components/schemas/ExplainResponse'
               examples:
                 explain:
                   value:
-                    result_id: res-1
+                    document_id: doc-1
+                    chunk_id: chunk-1
+                    vector_id: res-1
+                    artifact_id: art-1
+                    metric: l2
+                    score: 0.99
+                    correlation_id: req-example
+                    execution_contract: deterministic
+                    execution_contract_status: stable
+                    replayable: true
+                    execution_id: exec-1
         '400':
           content:
             application/json:
@@ -452,8 +495,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /replay:
     post:
-      summary: Replay
-      operationId: replay_replay_post
+      tags:
+      - Execution
+      summary: Replay an execution outcome
+      description: Replay a prior execution contract against the currently available
+        artifact and report whether the replay stayed within the declared equivalence
+        boundary.
+      operationId: replayExecutionOutcome
       parameters:
       - name: X-Correlation-Id
         in: header
@@ -476,17 +524,24 @@ paths:
                   request_text: hello
       responses:
         '200':
-          description: Successful Response
+          description: Replay completed successfully.
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
-                title: Response Replay Replay Post
+                $ref: '#/components/schemas/ReplayResponse'
               examples:
                 replay:
                   value:
                     matches: true
+                    original_fingerprint: orig-fp
+                    replay_fingerprint: replay-fp
+                    details:
+                      status: matched
+                    nondeterministic_sources: []
+                    execution_contract: deterministic
+                    execution_contract_status: stable
+                    replayable: true
+                    execution_id: exec-1
         '400':
           content:
             application/json:
@@ -508,6 +563,32 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ArtifactResponse:
+      properties:
+        artifact_id:
+          type: string
+          title: Artifact Id
+          description: Identifier of the execution artifact materialized by the API.
+        execution_contract:
+          type: string
+          title: Execution Contract
+          description: Execution contract currently attached to the artifact.
+        execution_contract_status:
+          type: string
+          title: Execution Contract Status
+          description: Human-readable stability marker for the chosen contract.
+        replayable:
+          type: boolean
+          title: Replayable
+          description: Whether the artifact can be replayed under its declared contract.
+      additionalProperties: false
+      type: object
+      required:
+      - artifact_id
+      - execution_contract
+      - execution_contract_status
+      - replayable
+      title: ArtifactResponse
     BackendCapabilitiesReport:
       properties:
         backend:
@@ -606,6 +687,60 @@ components:
       required:
       - name
       title: CreateRequest
+    CreateResponse:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Logical corpus name reserved by the API.
+        status:
+          type: string
+          title: Status
+          description: Lifecycle state returned after the create request.
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - status
+      title: CreateResponse
+    ExecuteResponse:
+      properties:
+        results:
+          items:
+            type: string
+          type: array
+          title: Results
+          description: Ordered vector identifiers returned by the execution request.
+        correlation_id:
+          type: string
+          title: Correlation Id
+          description: Correlation identifier attached to the execution lifecycle.
+        execution_contract:
+          type: string
+          title: Execution Contract
+          description: Execution contract used to evaluate the query.
+        execution_contract_status:
+          type: string
+          title: Execution Contract Status
+          description: Human-readable stability marker for the chosen contract.
+        replayable:
+          type: boolean
+          title: Replayable
+          description: Whether the execution result can be replayed faithfully.
+        execution_id:
+          type: string
+          title: Execution Id
+          description: Stable execution record identifier written by the run store.
+      additionalProperties: false
+      type: object
+      required:
+      - results
+      - correlation_id
+      - execution_contract
+      - execution_contract_status
+      - replayable
+      - execution_id
+      title: ExecuteResponse
     ExecutionArtifactRequest:
       properties:
         execution_contract:
@@ -884,6 +1019,67 @@ components:
       required:
       - result_id
       title: ExplainRequest
+    ExplainResponse:
+      properties:
+        document_id:
+          type: string
+          title: Document Id
+          description: Document that produced the requested result.
+        chunk_id:
+          type: string
+          title: Chunk Id
+          description: Chunk that contributed the requested result.
+        vector_id:
+          type: string
+          title: Vector Id
+          description: Vector identifier for the explained result.
+        artifact_id:
+          type: string
+          title: Artifact Id
+          description: Execution artifact used to resolve the result.
+        metric:
+          type: string
+          title: Metric
+          description: Similarity metric used by the artifact.
+        score:
+          type: number
+          title: Score
+          description: Score assigned to the result.
+        correlation_id:
+          type: string
+          title: Correlation Id
+          description: Correlation identifier of the execution that produced the result.
+        execution_contract:
+          type: string
+          title: Execution Contract
+          description: Execution contract used by the originating execution.
+        execution_contract_status:
+          type: string
+          title: Execution Contract Status
+          description: Human-readable stability marker for the chosen contract.
+        replayable:
+          type: boolean
+          title: Replayable
+          description: Whether the explained result belongs to a replayable artifact.
+        execution_id:
+          type: string
+          title: Execution Id
+          description: Execution record identifier associated with the explained result.
+      additionalProperties: false
+      type: object
+      required:
+      - document_id
+      - chunk_id
+      - vector_id
+      - artifact_id
+      - metric
+      - score
+      - correlation_id
+      - execution_contract
+      - execution_contract_status
+      - replayable
+      - execution_id
+      title: ExplainResponse
     HTTPValidationError:
       properties:
         detail:
@@ -956,6 +1152,49 @@ components:
       required:
       - documents
       title: IngestRequest
+    IngestResponse:
+      properties:
+        ingested:
+          type: integer
+          minimum: 0.0
+          title: Ingested
+          description: Number of documents accepted into the backend during this call.
+        correlation_id:
+          type: string
+          title: Correlation Id
+          description: Correlation identifier attached to the ingest transaction.
+      additionalProperties: false
+      type: object
+      required:
+      - ingested
+      - correlation_id
+      title: IngestResponse
+    ListArtifactsResponse:
+      properties:
+        artifacts:
+          items:
+            type: string
+          type: array
+          title: Artifacts
+          description: Execution artifact identifiers available in the active backend.
+      additionalProperties: false
+      type: object
+      required:
+      - artifacts
+      title: ListArtifactsResponse
+    ListRunsResponse:
+      properties:
+        runs:
+          items:
+            type: string
+          type: array
+          title: Runs
+          description: Recorded execution run identifiers available for inspection.
+      additionalProperties: false
+      type: object
+      required:
+      - runs
+      title: ListRunsResponse
     RandomnessProfilePayload:
       properties:
         seed:
@@ -981,6 +1220,61 @@ components:
       additionalProperties: false
       type: object
       title: RandomnessProfilePayload
+    ReplayResponse:
+      properties:
+        matches:
+          type: boolean
+          title: Matches
+          description: Whether the replay satisfied the declared equivalence expectation.
+        original_fingerprint:
+          type: string
+          title: Original Fingerprint
+          description: Fingerprint recorded for the original execution result.
+        replay_fingerprint:
+          type: string
+          title: Replay Fingerprint
+          description: Fingerprint computed for the replayed execution result.
+        details:
+          additionalProperties: true
+          type: object
+          title: Details
+          description: Structured replay diagnostics describing mismatches or checks.
+        nondeterministic_sources:
+          items:
+            type: string
+          type: array
+          title: Nondeterministic Sources
+          description: Declared or observed non-deterministic sources involved in
+            replay.
+        execution_contract:
+          type: string
+          title: Execution Contract
+          description: Execution contract enforced during replay.
+        execution_contract_status:
+          type: string
+          title: Execution Contract Status
+          description: Human-readable stability marker for the chosen contract.
+        replayable:
+          type: boolean
+          title: Replayable
+          description: Whether the original artifact was declared replayable.
+        execution_id:
+          type: string
+          title: Execution Id
+          description: Execution record identifier associated with the replay.
+      additionalProperties: false
+      type: object
+      required:
+      - matches
+      - original_fingerprint
+      - replay_fingerprint
+      - details
+      - nondeterministic_sources
+      - execution_contract
+      - execution_contract_status
+      - replayable
+      - execution_id
+      title: ReplayResponse
     StorageBackendDescriptor:
       properties:
         name:
@@ -1020,6 +1314,11 @@ components:
         type:
           type: string
           title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
       - loc
@@ -1079,3 +1378,10 @@ components:
       - deterministic_exact
       - experimental
       title: VectorStoreDescriptor
+tags:
+- name: Discovery
+  description: Read-only endpoints that describe backend capabilities and inventory.
+- name: Materialization
+  description: Endpoints that ingest data or materialize reusable execution artifacts.
+- name: Execution
+  description: Endpoints that execute queries, explain results, or replay prior outcomes.

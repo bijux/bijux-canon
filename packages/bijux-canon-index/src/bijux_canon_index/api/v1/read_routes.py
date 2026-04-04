@@ -8,6 +8,10 @@ from fastapi import FastAPI, Header, Response
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.infra.run_store import RunStore
+from bijux_canon_index.interfaces.schemas.api_responses import (
+    ListArtifactsResponse,
+    ListRunsResponse,
+)
 from bijux_canon_index.interfaces.schemas.reports import (
     BackendCapabilitiesReport,
 )
@@ -16,9 +20,17 @@ from bijux_canon_index.interfaces.schemas.reports import (
 def register_read_routes(app: FastAPI) -> None:
     @app.get(
         "/capabilities",
+        tags=["Discovery"],
+        summary="Describe backend capabilities",
+        description=(
+            "Report the active execution backend, supported contracts, storage backends, "
+            "vector store capabilities, and ANN readiness in one envelope."
+        ),
+        operation_id="describeBackendCapabilities",
         response_model=BackendCapabilitiesReport,
         responses={
             200: {
+                "description": "Capability report returned successfully.",
                 "content": {
                     "application/json": {
                         "examples": {
@@ -63,8 +75,17 @@ def register_read_routes(app: FastAPI) -> None:
 
     @app.get(
         "/artifacts",
+        tags=["Discovery"],
+        summary="List execution artifacts",
+        description=(
+            "Return artifact identifiers known to the current backend so operators can "
+            "inspect or reuse previously materialized execution state."
+        ),
+        operation_id="listExecutionArtifacts",
+        response_model=ListArtifactsResponse,
         responses={
             200: {
+                "description": "Artifact inventory returned successfully.",
                 "content": {
                     "application/json": {
                         "examples": {"artifacts": {"value": {"artifacts": ["art-1"]}}}
@@ -86,8 +107,17 @@ def register_read_routes(app: FastAPI) -> None:
 
     @app.get(
         "/runs",
+        tags=["Discovery"],
+        summary="List execution runs",
+        description=(
+            "Return recorded run identifiers from the run store for audit, replay, or "
+            "support workflows."
+        ),
+        operation_id="listExecutionRuns",
+        response_model=ListRunsResponse,
         responses={
             200: {
+                "description": "Run inventory returned successfully.",
                 "content": {
                     "application/json": {
                         "examples": {"runs": {"value": {"runs": ["run-1"]}}}

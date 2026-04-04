@@ -11,6 +11,11 @@ from bijux_canon_index.api.v1.runtime import (
 )
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.errors import BijuxError
+from bijux_canon_index.interfaces.schemas.api_responses import (
+    ArtifactResponse,
+    CreateResponse,
+    IngestResponse,
+)
 from bijux_canon_index.interfaces.schemas.requests import (
     CreateRequest,
     ExecutionArtifactRequest,
@@ -21,6 +26,14 @@ from bijux_canon_index.interfaces.schemas.requests import (
 def register_mutation_routes(app: FastAPI) -> None:
     @app.post(
         "/create",
+        tags=["Materialization"],
+        summary="Reserve a logical corpus name",
+        description=(
+            "Create a logical corpus entry before ingestion. The endpoint is intentionally "
+            "small so teams can separate naming and governance from later content writes."
+        ),
+        operation_id="createCorpus",
+        response_model=CreateResponse,
         openapi_extra={
             "requestBody": {
                 "content": {
@@ -32,6 +45,7 @@ def register_mutation_routes(app: FastAPI) -> None:
         },
         responses={
             200: {
+                "description": "Corpus name reserved successfully.",
                 "content": {
                     "application/json": {
                         "examples": {
@@ -67,6 +81,14 @@ def register_mutation_routes(app: FastAPI) -> None:
 
     @app.post(
         "/ingest",
+        tags=["Materialization"],
+        summary="Ingest documents and vectors",
+        description=(
+            "Persist documents and either supplied vectors or embedding-derived vectors, "
+            "then return the ingest count and resolved correlation identifier."
+        ),
+        operation_id="ingestDocuments",
+        response_model=IngestResponse,
         openapi_extra={
             "requestBody": {
                 "content": {
@@ -87,9 +109,17 @@ def register_mutation_routes(app: FastAPI) -> None:
         },
         responses={
             200: {
+                "description": "Documents ingested successfully.",
                 "content": {
                     "application/json": {
-                        "examples": {"ingested": {"value": {"ingested": 1}}}
+                        "examples": {
+                            "ingested": {
+                                "value": {
+                                    "ingested": 1,
+                                    "correlation_id": "req-example",
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -133,6 +163,14 @@ def register_mutation_routes(app: FastAPI) -> None:
 
     @app.post(
         "/artifact",
+        tags=["Materialization"],
+        summary="Materialize an execution artifact",
+        description=(
+            "Freeze the current corpus and vector state into an execution artifact with a "
+            "declared contract so later executions can be audited and replayed."
+        ),
+        operation_id="materializeExecutionArtifact",
+        response_model=ArtifactResponse,
         openapi_extra={
             "requestBody": {
                 "content": {
@@ -148,6 +186,7 @@ def register_mutation_routes(app: FastAPI) -> None:
         },
         responses={
             200: {
+                "description": "Execution artifact materialized successfully.",
                 "content": {
                     "application/json": {
                         "examples": {

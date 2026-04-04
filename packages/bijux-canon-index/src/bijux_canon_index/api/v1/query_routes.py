@@ -12,6 +12,11 @@ from bijux_canon_index.api.v1.runtime import (
 )
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.errors import BijuxError
+from bijux_canon_index.interfaces.schemas.api_responses import (
+    ExecuteResponse,
+    ExplainResponse,
+    ReplayResponse,
+)
 from bijux_canon_index.interfaces.schemas.requests import (
     ExecutionRequestPayload,
     ExplainRequest,
@@ -21,6 +26,14 @@ from bijux_canon_index.interfaces.schemas.requests import (
 def register_query_routes(app: FastAPI) -> None:
     @app.post(
         "/execute",
+        tags=["Execution"],
+        summary="Execute a vector query",
+        description=(
+            "Execute a deterministic or bounded retrieval request against a materialized "
+            "artifact and return the result identifiers plus replay metadata."
+        ),
+        operation_id="executeVectorQuery",
+        response_model=ExecuteResponse,
         openapi_extra={
             "requestBody": {
                 "content": {
@@ -43,6 +56,7 @@ def register_query_routes(app: FastAPI) -> None:
         },
         responses={
             200: {
+                "description": "Execution completed successfully.",
                 "content": {
                     "application/json": {
                         "examples": {
@@ -92,6 +106,14 @@ def register_query_routes(app: FastAPI) -> None:
 
     @app.post(
         "/explain",
+        tags=["Execution"],
+        summary="Explain a result",
+        description=(
+            "Resolve a result identifier back to the document, chunk, vector, and execution "
+            "context that produced it."
+        ),
+        operation_id="explainExecutionResult",
+        response_model=ExplainResponse,
         openapi_extra={
             "requestBody": {
                 "content": {
@@ -103,9 +125,26 @@ def register_query_routes(app: FastAPI) -> None:
         },
         responses={
             200: {
+                "description": "Result explanation returned successfully.",
                 "content": {
                     "application/json": {
-                        "examples": {"explain": {"value": {"result_id": "res-1"}}}
+                        "examples": {
+                            "explain": {
+                                "value": {
+                                    "document_id": "doc-1",
+                                    "chunk_id": "chunk-1",
+                                    "vector_id": "res-1",
+                                    "artifact_id": "art-1",
+                                    "metric": "l2",
+                                    "score": 0.99,
+                                    "correlation_id": "req-example",
+                                    "execution_contract": "deterministic",
+                                    "execution_contract_status": "stable",
+                                    "replayable": True,
+                                    "execution_id": "exec-1",
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -135,6 +174,14 @@ def register_query_routes(app: FastAPI) -> None:
 
     @app.post(
         "/replay",
+        tags=["Execution"],
+        summary="Replay an execution outcome",
+        description=(
+            "Replay a prior execution contract against the currently available artifact and "
+            "report whether the replay stayed within the declared equivalence boundary."
+        ),
+        operation_id="replayExecutionOutcome",
+        response_model=ReplayResponse,
         openapi_extra={
             "requestBody": {
                 "content": {
@@ -153,9 +200,24 @@ def register_query_routes(app: FastAPI) -> None:
         },
         responses={
             200: {
+                "description": "Replay completed successfully.",
                 "content": {
                     "application/json": {
-                        "examples": {"replay": {"value": {"matches": True}}}
+                        "examples": {
+                            "replay": {
+                                "value": {
+                                    "matches": True,
+                                    "original_fingerprint": "orig-fp",
+                                    "replay_fingerprint": "replay-fp",
+                                    "details": {"status": "matched"},
+                                    "nondeterministic_sources": [],
+                                    "execution_contract": "deterministic",
+                                    "execution_contract_status": "stable",
+                                    "replayable": True,
+                                    "execution_id": "exec-1",
+                                }
+                            }
+                        }
                     }
                 }
             },

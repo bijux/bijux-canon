@@ -1,6 +1,39 @@
 {
   "components": {
     "schemas": {
+      "ArtifactResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "description": "Identifier of the execution artifact materialized by the API.",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "execution_contract": {
+            "description": "Execution contract currently attached to the artifact.",
+            "title": "Execution Contract",
+            "type": "string"
+          },
+          "execution_contract_status": {
+            "description": "Human-readable stability marker for the chosen contract.",
+            "title": "Execution Contract Status",
+            "type": "string"
+          },
+          "replayable": {
+            "description": "Whether the artifact can be replayed under its declared contract.",
+            "title": "Replayable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "execution_contract",
+          "execution_contract_status",
+          "replayable"
+        ],
+        "title": "ArtifactResponse",
+        "type": "object"
+      },
       "BackendCapabilitiesReport": {
         "additionalProperties": false,
         "properties": {
@@ -65,6 +98,18 @@
             },
             "title": "Metrics",
             "type": "array"
+          },
+          "nd": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd"
           },
           "plugins": {
             "additionalProperties": {
@@ -140,11 +185,91 @@
         "title": "CreateRequest",
         "type": "object"
       },
+      "CreateResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Logical corpus name reserved by the API.",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "description": "Lifecycle state returned after the create request.",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "status"
+        ],
+        "title": "CreateResponse",
+        "type": "object"
+      },
+      "ExecuteResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "correlation_id": {
+            "description": "Correlation identifier attached to the execution lifecycle.",
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "execution_contract": {
+            "description": "Execution contract used to evaluate the query.",
+            "title": "Execution Contract",
+            "type": "string"
+          },
+          "execution_contract_status": {
+            "description": "Human-readable stability marker for the chosen contract.",
+            "title": "Execution Contract Status",
+            "type": "string"
+          },
+          "execution_id": {
+            "description": "Stable execution record identifier written by the run store.",
+            "title": "Execution Id",
+            "type": "string"
+          },
+          "replayable": {
+            "description": "Whether the execution result can be replayed faithfully.",
+            "title": "Replayable",
+            "type": "boolean"
+          },
+          "results": {
+            "description": "Ordered vector identifiers returned by the execution request.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results",
+          "correlation_id",
+          "execution_contract",
+          "execution_contract_status",
+          "replayable",
+          "execution_id"
+        ],
+        "title": "ExecuteResponse",
+        "type": "object"
+      },
       "ExecutionArtifactRequest": {
         "additionalProperties": false,
         "properties": {
           "execution_contract": {
             "$ref": "#/components/schemas/ExecutionContract"
+          },
+          "index_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Index Mode"
           },
           "vector_store": {
             "anyOf": [
@@ -301,6 +426,250 @@
             "$ref": "#/components/schemas/ExecutionMode",
             "default": "strict"
           },
+          "nd_adaptive_k": {
+            "default": false,
+            "title": "Nd Adaptive K",
+            "type": "boolean"
+          },
+          "nd_build_on_demand": {
+            "default": false,
+            "title": "Nd Build On Demand",
+            "type": "boolean"
+          },
+          "nd_candidate_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Candidate K"
+          },
+          "nd_diversity_lambda": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Diversity Lambda"
+          },
+          "nd_ef_construction": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Ef Construction"
+          },
+          "nd_ef_search": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Ef Search"
+          },
+          "nd_incremental_index": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Incremental Index"
+          },
+          "nd_latency_budget_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Latency Budget Ms"
+          },
+          "nd_low_signal_margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Low Signal Margin"
+          },
+          "nd_low_signal_refuse": {
+            "default": false,
+            "title": "Nd Low Signal Refuse",
+            "type": "boolean"
+          },
+          "nd_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd M"
+          },
+          "nd_max_candidates": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Max Candidates"
+          },
+          "nd_max_ef_search": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Max Ef Search"
+          },
+          "nd_max_index_memory_mb": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Max Index Memory Mb"
+          },
+          "nd_normalize_query": {
+            "default": false,
+            "title": "Nd Normalize Query",
+            "type": "boolean"
+          },
+          "nd_normalize_vectors": {
+            "default": false,
+            "title": "Nd Normalize Vectors",
+            "type": "boolean"
+          },
+          "nd_outlier_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Outlier Threshold"
+          },
+          "nd_profile": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Profile"
+          },
+          "nd_replay_strict": {
+            "default": false,
+            "title": "Nd Replay Strict",
+            "type": "boolean"
+          },
+          "nd_space": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Space"
+          },
+          "nd_target_recall": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Target Recall"
+          },
+          "nd_two_stage": {
+            "default": true,
+            "title": "Nd Two Stage",
+            "type": "boolean"
+          },
+          "nd_warmup_queries": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Warmup Queries"
+          },
+          "nd_witness_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Witness Mode"
+          },
+          "nd_witness_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Witness Rate"
+          },
+          "nd_witness_sample_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nd Witness Sample K"
+          },
           "randomness_profile": {
             "anyOf": [
               {
@@ -410,6 +779,81 @@
           "result_id"
         ],
         "title": "ExplainRequest",
+        "type": "object"
+      },
+      "ExplainResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "description": "Execution artifact used to resolve the result.",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "chunk_id": {
+            "description": "Chunk that contributed the requested result.",
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "correlation_id": {
+            "description": "Correlation identifier of the execution that produced the result.",
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "document_id": {
+            "description": "Document that produced the requested result.",
+            "title": "Document Id",
+            "type": "string"
+          },
+          "execution_contract": {
+            "description": "Execution contract used by the originating execution.",
+            "title": "Execution Contract",
+            "type": "string"
+          },
+          "execution_contract_status": {
+            "description": "Human-readable stability marker for the chosen contract.",
+            "title": "Execution Contract Status",
+            "type": "string"
+          },
+          "execution_id": {
+            "description": "Execution record identifier associated with the explained result.",
+            "title": "Execution Id",
+            "type": "string"
+          },
+          "metric": {
+            "description": "Similarity metric used by the artifact.",
+            "title": "Metric",
+            "type": "string"
+          },
+          "replayable": {
+            "description": "Whether the explained result belongs to a replayable artifact.",
+            "title": "Replayable",
+            "type": "boolean"
+          },
+          "score": {
+            "description": "Score assigned to the result.",
+            "title": "Score",
+            "type": "number"
+          },
+          "vector_id": {
+            "description": "Vector identifier for the explained result.",
+            "title": "Vector Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "chunk_id",
+          "vector_id",
+          "artifact_id",
+          "metric",
+          "score",
+          "correlation_id",
+          "execution_contract",
+          "execution_contract_status",
+          "replayable",
+          "execution_id"
+        ],
+        "title": "ExplainResponse",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -550,12 +994,75 @@
         "title": "IngestRequest",
         "type": "object"
       },
+      "IngestResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "correlation_id": {
+            "description": "Correlation identifier attached to the ingest transaction.",
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "ingested": {
+            "description": "Number of documents accepted into the backend during this call.",
+            "minimum": 0.0,
+            "title": "Ingested",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ingested",
+          "correlation_id"
+        ],
+        "title": "IngestResponse",
+        "type": "object"
+      },
+      "ListArtifactsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "description": "Execution artifact identifiers available in the active backend.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "artifacts"
+        ],
+        "title": "ListArtifactsResponse",
+        "type": "object"
+      },
+      "ListRunsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "runs": {
+            "description": "Recorded execution run identifiers available for inspection.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Runs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "runs"
+        ],
+        "title": "ListRunsResponse",
+        "type": "object"
+      },
       "RandomnessProfilePayload": {
         "additionalProperties": false,
         "properties": {
           "bounded": {
             "default": false,
             "title": "Bounded",
+            "type": "boolean"
+          },
+          "non_replayable": {
+            "default": false,
+            "title": "Non Replayable",
             "type": "boolean"
           },
           "seed": {
@@ -585,6 +1092,73 @@
           }
         },
         "title": "RandomnessProfilePayload",
+        "type": "object"
+      },
+      "ReplayResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "additionalProperties": true,
+            "description": "Structured replay diagnostics describing mismatches or checks.",
+            "title": "Details",
+            "type": "object"
+          },
+          "execution_contract": {
+            "description": "Execution contract enforced during replay.",
+            "title": "Execution Contract",
+            "type": "string"
+          },
+          "execution_contract_status": {
+            "description": "Human-readable stability marker for the chosen contract.",
+            "title": "Execution Contract Status",
+            "type": "string"
+          },
+          "execution_id": {
+            "description": "Execution record identifier associated with the replay.",
+            "title": "Execution Id",
+            "type": "string"
+          },
+          "matches": {
+            "description": "Whether the replay satisfied the declared equivalence expectation.",
+            "title": "Matches",
+            "type": "boolean"
+          },
+          "nondeterministic_sources": {
+            "description": "Declared or observed non-deterministic sources involved in replay.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Nondeterministic Sources",
+            "type": "array"
+          },
+          "original_fingerprint": {
+            "description": "Fingerprint recorded for the original execution result.",
+            "title": "Original Fingerprint",
+            "type": "string"
+          },
+          "replay_fingerprint": {
+            "description": "Fingerprint computed for the replayed execution result.",
+            "title": "Replay Fingerprint",
+            "type": "string"
+          },
+          "replayable": {
+            "description": "Whether the original artifact was declared replayable.",
+            "title": "Replayable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "matches",
+          "original_fingerprint",
+          "replay_fingerprint",
+          "details",
+          "nondeterministic_sources",
+          "execution_contract",
+          "execution_contract_status",
+          "replayable",
+          "execution_id"
+        ],
+        "title": "ReplayResponse",
         "type": "object"
       },
       "StorageBackendDescriptor": {
@@ -630,6 +1204,13 @@
       },
       "ValidationError": {
         "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
           "loc": {
             "items": {
               "anyOf": [
@@ -746,14 +1327,25 @@
     }
   },
   "info": {
-    "title": "bijux-canon-index execution API",
+    "contact": {
+      "name": "Bijux",
+      "url": "https://github.com/bijux/bijux-canon"
+    },
+    "description": "The bijux-canon-index HTTP API exposes the v1 surface for deterministic and bounded vector execution. It separates capability discovery, artifact materialization, and query execution so operators can review the contract they are invoking before they ship it.",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "summary": "Contract-driven vector execution and replayable retrieval.",
+    "title": "bijux-canon-index API",
     "version": "v1"
   },
   "openapi": "3.1.0",
   "paths": {
     "/artifact": {
       "post": {
-        "operationId": "artifact_artifact_post",
+        "description": "Freeze the current corpus and vector state into an execution artifact with a declared contract so later executions can be audited and replayed.",
+        "operationId": "materializeExecutionArtifact",
         "parameters": [
           {
             "in": "header",
@@ -804,13 +1396,11 @@
                   }
                 },
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Artifact Artifact Post",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ArtifactResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Execution artifact materialized successfully."
           },
           "400": {
             "content": {
@@ -841,12 +1431,16 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Artifact"
+        "summary": "Materialize an execution artifact",
+        "tags": [
+          "Materialization"
+        ]
       }
     },
     "/artifacts": {
       "get": {
-        "operationId": "list_artifacts_artifacts_get",
+        "description": "Return artifact identifiers known to the current backend so operators can inspect or reuse previously materialized execution state.",
+        "operationId": "listExecutionArtifacts",
         "parameters": [
           {
             "in": "query",
@@ -905,13 +1499,11 @@
                   }
                 },
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response List Artifacts Artifacts Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ListArtifactsResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Artifact inventory returned successfully."
           },
           "422": {
             "content": {
@@ -924,12 +1516,16 @@
             "description": "Validation Error"
           }
         },
-        "summary": "List Artifacts"
+        "summary": "List execution artifacts",
+        "tags": [
+          "Discovery"
+        ]
       }
     },
     "/capabilities": {
       "get": {
-        "operationId": "capabilities_capabilities_get",
+        "description": "Report the active execution backend, supported contracts, storage backends, vector store capabilities, and ANN readiness in one envelope.",
+        "operationId": "describeBackendCapabilities",
         "parameters": [
           {
             "in": "header",
@@ -986,7 +1582,7 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Capability report returned successfully."
           },
           "422": {
             "content": {
@@ -999,12 +1595,16 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Capabilities"
+        "summary": "Describe backend capabilities",
+        "tags": [
+          "Discovery"
+        ]
       }
     },
     "/create": {
       "post": {
-        "operationId": "create_create_post",
+        "description": "Create a logical corpus entry before ingestion. The endpoint is intentionally small so teams can separate naming and governance from later content writes.",
+        "operationId": "createCorpus",
         "parameters": [
           {
             "in": "header",
@@ -1053,13 +1653,11 @@
                   }
                 },
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Create Create Post",
-                  "type": "object"
+                  "$ref": "#/components/schemas/CreateResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Corpus name reserved successfully."
           },
           "400": {
             "content": {
@@ -1090,12 +1688,16 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Create"
+        "summary": "Reserve a logical corpus name",
+        "tags": [
+          "Materialization"
+        ]
       }
     },
     "/execute": {
       "post": {
-        "operationId": "execute_execute_post",
+        "description": "Execute a deterministic or bounded retrieval request against a materialized artifact and return the result identifiers plus replay metadata.",
+        "operationId": "executeVectorQuery",
         "parameters": [
           {
             "in": "header",
@@ -1147,7 +1749,7 @@
                 "examples": {
                   "execute": {
                     "value": {
-                      "correlation_id": "req-1",
+                      "correlation_id": "req-example",
                       "execution_contract": "deterministic",
                       "execution_contract_status": "stable",
                       "execution_id": "exec-1",
@@ -1159,13 +1761,11 @@
                   }
                 },
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Execute Execute Post",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ExecuteResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Execution completed successfully."
           },
           "422": {
             "content": {
@@ -1183,15 +1783,19 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           }
         },
-        "summary": "Execute"
+        "summary": "Execute a vector query",
+        "tags": [
+          "Execution"
+        ]
       }
     },
     "/explain": {
       "post": {
-        "operationId": "explain_explain_post",
+        "description": "Resolve a result identifier back to the document, chunk, vector, and execution context that produced it.",
+        "operationId": "explainExecutionResult",
         "parameters": [
           {
             "in": "header",
@@ -1234,18 +1838,26 @@
                 "examples": {
                   "explain": {
                     "value": {
-                      "result_id": "res-1"
+                      "artifact_id": "art-1",
+                      "chunk_id": "chunk-1",
+                      "correlation_id": "req-example",
+                      "document_id": "doc-1",
+                      "execution_contract": "deterministic",
+                      "execution_contract_status": "stable",
+                      "execution_id": "exec-1",
+                      "metric": "l2",
+                      "replayable": true,
+                      "score": 0.99,
+                      "vector_id": "res-1"
                     }
                   }
                 },
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Explain Explain Post",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ExplainResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Result explanation returned successfully."
           },
           "400": {
             "content": {
@@ -1276,12 +1888,16 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Explain"
+        "summary": "Explain a result",
+        "tags": [
+          "Execution"
+        ]
       }
     },
     "/ingest": {
       "post": {
-        "operationId": "ingest_ingest_post",
+        "description": "Persist documents and either supplied vectors or embedding-derived vectors, then return the ingest count and resolved correlation identifier.",
+        "operationId": "ingestDocuments",
         "parameters": [
           {
             "in": "header",
@@ -1351,18 +1967,17 @@
                 "examples": {
                   "ingested": {
                     "value": {
+                      "correlation_id": "req-example",
                       "ingested": 1
                     }
                   }
                 },
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Ingest Ingest Post",
-                  "type": "object"
+                  "$ref": "#/components/schemas/IngestResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Documents ingested successfully."
           },
           "400": {
             "content": {
@@ -1393,12 +2008,16 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Ingest"
+        "summary": "Ingest documents and vectors",
+        "tags": [
+          "Materialization"
+        ]
       }
     },
     "/replay": {
       "post": {
-        "operationId": "replay_replay_post",
+        "description": "Replay a prior execution contract against the currently available artifact and report whether the replay stayed within the declared equivalence boundary.",
+        "operationId": "replayExecutionOutcome",
         "parameters": [
           {
             "in": "header",
@@ -1442,18 +2061,26 @@
                 "examples": {
                   "replay": {
                     "value": {
-                      "matches": true
+                      "details": {
+                        "status": "matched"
+                      },
+                      "execution_contract": "deterministic",
+                      "execution_contract_status": "stable",
+                      "execution_id": "exec-1",
+                      "matches": true,
+                      "nondeterministic_sources": [],
+                      "original_fingerprint": "orig-fp",
+                      "replay_fingerprint": "replay-fp",
+                      "replayable": true
                     }
                   }
                 },
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Replay Replay Post",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ReplayResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Replay completed successfully."
           },
           "400": {
             "content": {
@@ -1484,12 +2111,16 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Replay"
+        "summary": "Replay an execution outcome",
+        "tags": [
+          "Execution"
+        ]
       }
     },
     "/runs": {
       "get": {
-        "operationId": "list_runs_runs_get",
+        "description": "Return recorded run identifiers from the run store for audit, replay, or support workflows.",
+        "operationId": "listExecutionRuns",
         "parameters": [
           {
             "in": "query",
@@ -1548,13 +2179,11 @@
                   }
                 },
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response List Runs Runs Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ListRunsResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Run inventory returned successfully."
           },
           "422": {
             "content": {
@@ -1567,8 +2196,30 @@
             "description": "Validation Error"
           }
         },
-        "summary": "List Runs"
+        "summary": "List execution runs",
+        "tags": [
+          "Discovery"
+        ]
       }
     }
-  }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Read-only endpoints that describe backend capabilities and inventory.",
+      "name": "Discovery"
+    },
+    {
+      "description": "Endpoints that ingest data or materialize reusable execution artifacts.",
+      "name": "Materialization"
+    },
+    {
+      "description": "Endpoints that execute queries, explain results, or replay prior outcomes.",
+      "name": "Execution"
+    }
+  ]
 }
