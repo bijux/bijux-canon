@@ -54,7 +54,7 @@ def boundary_app_config(args: list[str]) -> Result[AppConfig, str]:
         return Err(f"Invalid config: {exc}")
 
     cfg = replace(cfg, debug=debug)
-    return Ok(AppConfig(input_path=ns.input, output_path=ns.output, rag=cfg))
+    return Ok(AppConfig(input_path=ns.input, output_path=ns.output, ingest=cfg))
 
 
 def read_docs(path: str) -> Result[list[RawDoc], str]:
