@@ -22,6 +22,7 @@ from .execution_flow import (
     record_completion,
     record_stage_success,
 )
+from .stage_execution import execute_stage
 
 
 class StageRunnerAgent(BaseAgent):
@@ -243,55 +244,8 @@ class StageRunnerAgent(BaseAgent):
     async def _execute_stage(
         self, stage: dict[str, Any], context: dict[str, Any]
     ) -> dict[str, Any]:
-        """Execute a single stage with the given context.
-
-        Args:
-            stage: Stage configuration containing agent(s) and settings.
-            context: Input context for the stage.
-
-        Returns:
-            Stage output dictionary.
-        """
-        stage_name = stage["name"]
-        self.logger.debug(
-            f"Executing stage {stage_name} with context: {context}",
-            extra={"context": {"stage": stage_name}},
-        )
-
-        if "agents" in stage:
-            # Ensemble mode: multiple agents with weights
-            results = []
-            weights = []
-            for agent_entry in stage["agents"]:
-                agent = agent_entry["agent"]
-                weight = agent_entry["weight"]
-                try:
-                    agent_result = await agent.run(context)
-                    results.append(agent_result)
-                    weights.append(weight)
-                except Exception as e:
-                    self.logger.error(
-                        f"Agent in stage '{stage_name}' failed: {e!s}",
-                        extra={"context": {"stage": stage_name}},
-                    )
-                    return {"error": str(e)}
-            # Simple weighted merge (example implementation)
-            if results:
-                # Simplified; could implement actual weighted merging
-                merged_result = results[0]
-                return merged_result
-            return {"error": "No successful agent results"}
-        else:
-            # Single agent execution
-            agent = stage["agent"]
-            try:
-                return await agent.run(context)
-            except Exception as e:
-                self.logger.error(
-                    f"Agent in stage '{stage_name}' failed: {e!s}",
-                    extra={"context": {"stage": stage_name}},
-                )
-                return {"error": str(e)}
+        """Execute a single stage with the given context."""
+        return await execute_stage(stage, context, logger=self.logger)
 
     def error_payload(
         self,
