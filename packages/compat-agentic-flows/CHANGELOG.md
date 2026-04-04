@@ -18,6 +18,9 @@ changelog update are reconstructed from tag annotations and release diffs.
 - Package-local PyPI publication guidance is now checked in and shipped with
   the source distribution so legacy runtime release expectations stay attached
   to the compatibility package.
+- The published docs URL for `agentic-flows` now has its own migration landing
+  page inside the shared handbook instead of sending legacy readers directly to
+  canonical runtime docs without context.
 
 ## 0.3.0 - 2026-04-04
 

@@ -37,6 +37,11 @@ Publish this package when the legacy distribution must keep tracking the
 canonical `bijux-canon-runtime` version with the same install, import, and
 command continuity guarantees.
 
+The published package docs URL for this legacy name is
+<https://bijux.io/bijux-canon/compat-packages/agentic-flows/> so PyPI readers
+land on migration-specific guidance before moving to the canonical runtime
+handbook.
+
 ## Pre-publish checks
 
 - confirm the compatibility wheel still depends on `bijux-canon-runtime` at

@@ -30,7 +30,8 @@ command surfaces available while installing `bijux-canon-runtime` at the same
 version.
 
 This package exists to reduce migration breakage, not to become the preferred
-entrypoint for new work.
+entrypoint for new work. Its package handbook lives at
+<https://bijux.io/bijux-canon/compat-packages/agentic-flows/>.
 
 ## Migration note
 
@@ -62,6 +63,7 @@ entrypoint for new work.
 Depend on `bijux-canon-runtime` directly and read the canonical docs there:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime>
+- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/agentic-flows/>
 - package docs: <https://bijux.io/bijux-canon/bijux-canon-runtime/>
 - migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md>
