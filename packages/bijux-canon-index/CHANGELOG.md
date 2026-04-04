@@ -12,6 +12,9 @@ tagged release, including legacy distribution naming where applicable.
 - The package README now uses PyPI-safe badge and link targets, and it points
   legacy `bijux-vex` users to the canonical migration path and retired
   repository guidance.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so index release expectations stay attached to the
+  package.
 - OpenAPI freeze artifacts and release-gate expectations were refreshed to
   match the current FastAPI-generated validation schema and 422 response
   wording.
