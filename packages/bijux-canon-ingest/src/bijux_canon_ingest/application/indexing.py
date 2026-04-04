@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
-from pathlib import Path
 
 from bijux_canon_ingest.core.types import (
     Chunk,
@@ -16,9 +15,7 @@ from bijux_canon_ingest.core.types import (
     RagEnv,
     RawDoc,
 )
-from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.processing.stages import clean_doc, iter_chunk_doc
-from bijux_canon_ingest.result.types import is_err, is_ok
 from bijux_canon_ingest.retrieval.embedders import (
     HashEmbedder,
     SentenceTransformersEmbedder,
@@ -61,38 +58,6 @@ def _make_embedder(cfg: IndexBuildConfig) -> Embedder:
     raise ValueError(f"unknown embedder backend: {cfg.embedder}")
 
 
-def ingest_csv_to_chunks(*, csv_path: Path, env: RagEnv) -> list[Chunk]:
-    """Read a CSV corpus and return chunk records ready for indexing."""
-
-    storage = FileStorage()
-    docs: list[RawDoc] = []
-    errors: list[str] = []
-    for res in storage.read_docs(str(csv_path)):
-        if is_ok(res):
-            docs.append(res.value)
-        elif is_err(res):
-            errors.append(f"{res.error.code}: {res.error.msg}")
-        else:  # pragma: no cover
-            errors.append("unknown error")
-
-    if errors:
-        raise ValueError("CSV parse failures: " + "; ".join(errors[:3]))
-
-    cleaned = list(_iter_clean_docs(docs))
-    raw_chunks = list(_iter_chunks(cleaned, env))
-    return [
-        Chunk(
-            doc_id=chunk.doc_id,
-            text=chunk.text,
-            start=chunk.start,
-            end=chunk.end,
-            metadata=chunk.metadata,
-            embedding=(),
-        )
-        for chunk in raw_chunks
-    ]
-
-
 def ingest_docs_to_chunks(*, docs: Iterable[RawDoc], env: RagEnv) -> list[Chunk]:
     """Chunk in-memory documents without touching the persistence layer."""
 
@@ -111,15 +76,15 @@ def ingest_docs_to_chunks(*, docs: Iterable[RawDoc], env: RagEnv) -> list[Chunk]
     ]
 
 
-def build_index_from_csv(
-    *, csv_path: Path, out_path: Path, cfg: IndexBuildConfig
+def build_index_from_docs(
+    *, docs: Iterable[RawDoc], out_path: str, cfg: IndexBuildConfig
 ) -> str:
-    """Build and persist a retrieval index from a CSV corpus."""
+    """Build and persist a retrieval index from in-memory documents."""
 
-    chunks = ingest_csv_to_chunks(csv_path=csv_path, env=cfg.chunk_env)
+    chunks = ingest_docs_to_chunks(docs=docs, env=cfg.chunk_env)
     if cfg.backend == "bm25":
         bm25_index = build_bm25_index(chunks=chunks, buckets=cfg.bm25_buckets)
-        bm25_index.save(str(out_path))
+        bm25_index.save(out_path)
         return bm25_index.fingerprint
 
     if cfg.backend == "numpy-cosine":
@@ -127,7 +92,7 @@ def build_index_from_csv(
             chunks=chunks,
             embedder=_make_embedder(cfg),
         )
-        cosine_index.save(str(out_path))
+        cosine_index.save(out_path)
         return cosine_index.fingerprint
 
     raise ValueError(f"unknown index backend: {cfg.backend}")
@@ -135,7 +100,6 @@ def build_index_from_csv(
 
 __all__ = [
     "IndexBuildConfig",
-    "build_index_from_csv",
-    "ingest_csv_to_chunks",
+    "build_index_from_docs",
     "ingest_docs_to_chunks",
 ]
