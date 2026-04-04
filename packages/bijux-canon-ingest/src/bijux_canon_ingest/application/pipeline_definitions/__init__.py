@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from .configured import PipelineConfig, StepConfig, build_rag_pipeline
 from .distributed import (
+    DistributedCompilerError,
     DistributedCompilerSupport,
-    UnsupportedDistributedCompiler,
     beam_available,
     beam_support,
     compile_to_beam,
@@ -30,8 +30,8 @@ __all__ = [
     "StepConfig",
     "PipelineConfig",
     "build_rag_pipeline",
+    "DistributedCompilerError",
     "DistributedCompilerSupport",
-    "UnsupportedDistributedCompiler",
     "dask_available",
     "dask_support",
     "beam_available",

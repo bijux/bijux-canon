@@ -8,8 +8,8 @@ from __future__ import annotations
 from typing import Any
 
 from bijux_canon_ingest.application.pipeline_definitions.compiler_support import (
+    DistributedCompilerError,
     DistributedCompilerSupport,
-    UnsupportedDistributedCompiler,
     detect_support,
 )
 
@@ -43,18 +43,18 @@ def beam_available() -> bool:
 def compile_to_dask_bag(*_args: Any, **_kwargs: Any) -> Any:
     """Raise a typed boundary error for the optional Dask compiler."""
 
-    raise UnsupportedDistributedCompiler(support=dask_support())
+    raise DistributedCompilerError(support=dask_support())
 
 
 def compile_to_beam(*_args: Any, **_kwargs: Any) -> Any:
     """Raise a typed boundary error for the optional Beam compiler."""
 
-    raise UnsupportedDistributedCompiler(support=beam_support())
+    raise DistributedCompilerError(support=beam_support())
 
 
 __all__ = [
+    "DistributedCompilerError",
     "DistributedCompilerSupport",
-    "UnsupportedDistributedCompiler",
     "beam_available",
     "beam_support",
     "compile_to_beam",

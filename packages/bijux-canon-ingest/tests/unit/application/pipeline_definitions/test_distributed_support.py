@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 
 from bijux_canon_ingest.application.pipeline_definitions import (
-    UnsupportedDistributedCompiler,
+    DistributedCompilerError,
     beam_support,
     compile_to_beam,
     compile_to_dask_bag,
@@ -29,10 +29,10 @@ def test_beam_support_is_explicit_about_missing_compiler() -> None:
 
 
 def test_compile_to_dask_bag_raises_typed_boundary_error() -> None:
-    with pytest.raises(UnsupportedDistributedCompiler):
+    with pytest.raises(DistributedCompilerError):
         compile_to_dask_bag()
 
 
 def test_compile_to_beam_raises_typed_boundary_error() -> None:
-    with pytest.raises(UnsupportedDistributedCompiler):
+    with pytest.raises(DistributedCompilerError):
         compile_to_beam()

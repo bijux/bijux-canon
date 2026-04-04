@@ -17,7 +17,7 @@ class DistributedCompilerSupport:
     reason: str | None = None
 
 
-class UnsupportedDistributedCompiler(RuntimeError):
+class DistributedCompilerError(RuntimeError):
     def __init__(self, *, support: DistributedCompilerSupport) -> None:
         self.support = support
         message = support.reason or f"{support.backend} compiler is not available"
@@ -60,6 +60,6 @@ def detect_support(
 
 __all__ = [
     "DistributedCompilerSupport",
-    "UnsupportedDistributedCompiler",
+    "DistributedCompilerError",
     "detect_support",
 ]
