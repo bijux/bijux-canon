@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 
-PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 
 LINT_DIRS                      := src tests stubs

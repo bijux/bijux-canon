@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 
 LINT_DIRS         := src/bijux_canon_reason
