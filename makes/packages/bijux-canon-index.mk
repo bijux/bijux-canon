@@ -3,11 +3,9 @@
 # Testing policy: gates (lint/quality/security/typing) intentionally run on lowest supported Python (3.11); full matrix via tox.
 
 PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-PROJECT_SLUG := bijux-canon-index
-PYTHON := python3.11
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package-profile.mk
 
-include $(PACKAGE_MAKEFILE_DIR)/../env.mk
+PYTHON := python3.11
 
 LINT_DIRS         := src/bijux_canon_index
 FMT_DIRS          := src tests

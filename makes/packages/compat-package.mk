@@ -1,10 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-
-include $(PACKAGE_MAKEFILE_DIR)/../env.mk
-
 LINT_DIRS := src hatch_build.py
 LINT_TARGETS := src hatch_build.py
 MYPY_TARGETS :=

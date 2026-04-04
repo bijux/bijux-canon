@@ -2,11 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 
 PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-PROJECT_SLUG := bijux-canon-runtime
-PYTHON := python3.11
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package-profile.mk
 
-include $(PACKAGE_MAKEFILE_DIR)/../env.mk
+PYTHON := python3.11
 
 # ---- Single virtualenv (Python 3.11+) ----
 ACT             := $(if $(wildcard $(VENV)/bin/activate),$(VENV)/bin,$(ACT))

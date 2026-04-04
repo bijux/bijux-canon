@@ -2,10 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 
 PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
-PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-PROJECT_SLUG := bijux-canon-agent
-
-include $(PACKAGE_MAKEFILE_DIR)/../env.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package-profile.mk
 
 LINT_DIRS            := src/bijux_canon_agent tests
 MYPY_CONFIG          := $(MONOREPO_ROOT)/configs/mypy.ini
