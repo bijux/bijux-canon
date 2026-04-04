@@ -797,6 +797,28 @@ def add_honesty_boundary(body: str, text: str) -> str:
     return insert_before_heading(body, "Purpose", block)
 
 
+def add_section_contract(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Section Contract",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Purpose", block)
+
+
+def add_reading_advice(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Reading Advice",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Purpose", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -903,6 +925,22 @@ def render_home(
     body = add_honesty_boundary(
         body,
         "This page can route readers to the right section quickly, but it does not replace the more specific handbook pages that prove package, maintainer, or compatibility details.",
+    )
+    body = add_section_contract(
+        body,
+        (
+            "route readers into the correct repository, package, maintainer, or compatibility section",
+            "keep the overall documentation system legible from one entry page",
+            "avoid collapsing all handbook responsibilities into the home page itself",
+        ),
+    )
+    body = add_reading_advice(
+        body,
+        (
+            "start with the repository handbook when the question spans packages",
+            "move into a product package when you need ownership, interfaces, operations, or quality detail",
+            "use the maintainer or compatibility sections only when the problem is explicitly about those concerns",
+        ),
     )
     return "\n".join(
         [
@@ -1253,6 +1291,23 @@ def render_root_page(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
     )
+    if slug == "index":
+        body = add_section_contract(
+            body,
+            (
+                "define the shared monorepo boundary above any single package",
+                "point readers to the package handbooks without duplicating their local detail",
+                "keep root rules tied to actual repository files and automation",
+            ),
+        )
+        body = add_reading_advice(
+            body,
+            (
+                "read this page first when the question is about workspace structure or shared governance",
+                "move to package docs when the question becomes package-specific",
+                "use this section as the repository-level frame before reviewing code or schemas",
+            ),
+        )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "guide"),
@@ -1541,6 +1596,23 @@ def render_dev_page(slug: str, title: str) -> str:
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
     )
+    if slug == "index":
+        body = add_section_contract(
+            body,
+            (
+                "explain repository maintenance behavior without turning it into product documentation",
+                "tie maintainer claims to helper modules, tests, and workflows",
+                "keep automation boundaries explicit enough to review safely",
+            ),
+        )
+        body = add_reading_advice(
+            body,
+            (
+                "start here when the change affects CI, release support, schema drift, or repository health checks",
+                "return to product package docs when the issue is user-facing behavior",
+                "use this section to separate maintainer intent from runtime intent",
+            ),
+        )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "guide"),
@@ -1823,6 +1895,23 @@ def render_compat_page(slug: str, title: str) -> str:
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
     )
+    if slug == "index":
+        body = add_section_contract(
+            body,
+            (
+                "record which legacy package names remain supported",
+                "make migration guidance faster than guessing from old names",
+                "keep retirement decisions tied to explicit evidence rather than habit",
+            ),
+        )
+        body = add_reading_advice(
+            body,
+            (
+                "start here when you encounter a legacy package name in old automation or documentation",
+                "move to the canonical package docs once you know the current target",
+                "use this section to evaluate whether a compatibility surface should remain",
+            ),
+        )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "guide"),
@@ -1921,6 +2010,23 @@ def render_package_page(
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
     body = add_honesty_boundary(body, package_honesty_boundary(package, category))
+    if slug == "index":
+        body = add_section_contract(
+            body,
+            (
+                f"define what the {category} section covers for {package.title}",
+                "point readers to the topic pages that hold the detailed explanations",
+                "keep the section boundary reviewable as the package evolves",
+            ),
+        )
+        body = add_reading_advice(
+            body,
+            (
+                "start here when you know the package but not yet the right page inside the section",
+                "use the page list to choose the narrowest topic that matches the current question",
+                "move across sections only after this section stops being the right lens",
+            ),
+        )
     return "\n".join(
         [
             front_matter(title, package.owner, "index" if slug == "index" else "guide"),

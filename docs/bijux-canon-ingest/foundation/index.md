@@ -89,6 +89,18 @@ flowchart TD
 
 This page can explain the intended boundary of bijux-canon-ingest, but it does not replace the code and tests that ultimately prove that boundary.
 
+## Section Contract
+
+- define what the foundation section covers for bijux-canon-ingest
+- point readers to the topic pages that hold the detailed explanations
+- keep the section boundary reviewable as the package evolves
+
+## Reading Advice
+
+- start here when you know the package but not yet the right page inside the section
+- use the page list to choose the narrowest topic that matches the current question
+- move across sections only after this section stops being the right lens
+
 ## Purpose
 
 This page explains how to use the foundation section for `bijux-canon-ingest` without repeating the detail that belongs on the topic pages beneath it.

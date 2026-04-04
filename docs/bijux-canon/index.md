@@ -98,6 +98,18 @@ flowchart TD
 
 These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.
 
+## Section Contract
+
+- define the shared monorepo boundary above any single package
+- point readers to the package handbooks without duplicating their local detail
+- keep root rules tied to actual repository files and automation
+
+## Reading Advice
+
+- read this page first when the question is about workspace structure or shared governance
+- move to package docs when the question becomes package-specific
+- use this section as the repository-level frame before reviewing code or schemas
+
 ## Purpose
 
 This page explains how to use the repository handbook without duplicating the package-specific detail that belongs in the package handbooks.

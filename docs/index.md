@@ -122,6 +122,18 @@ flowchart TD
 
 This page can route readers to the right section quickly, but it does not replace the more specific handbook pages that prove package, maintainer, or compatibility details.
 
+## Section Contract
+
+- route readers into the correct repository, package, maintainer, or compatibility section
+- keep the overall documentation system legible from one entry page
+- avoid collapsing all handbook responsibilities into the home page itself
+
+## Reading Advice
+
+- start with the repository handbook when the question spans packages
+- move into a product package when you need ownership, interfaces, operations, or quality detail
+- use the maintainer or compatibility sections only when the problem is explicitly about those concerns
+
 ## Purpose
 
 This page routes readers into the canonical repository and package handbooks without mixing product ownership with maintenance-only or legacy-only concerns.

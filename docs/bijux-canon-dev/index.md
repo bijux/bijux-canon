@@ -93,6 +93,18 @@ flowchart TD
 
 This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.
 
+## Section Contract
+
+- explain repository maintenance behavior without turning it into product documentation
+- tie maintainer claims to helper modules, tests, and workflows
+- keep automation boundaries explicit enough to review safely
+
+## Reading Advice
+
+- start here when the change affects CI, release support, schema drift, or repository health checks
+- return to product package docs when the issue is user-facing behavior
+- use this section to separate maintainer intent from runtime intent
+
 ## Purpose
 
 This page explains how to use the maintainer handbook without confusing it with user-facing product docs.

@@ -92,6 +92,18 @@ flowchart TD
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.
 
+## Section Contract
+
+- record which legacy package names remain supported
+- make migration guidance faster than guessing from old names
+- keep retirement decisions tied to explicit evidence rather than habit
+
+## Reading Advice
+
+- start here when you encounter a legacy package name in old automation or documentation
+- move to the canonical package docs once you know the current target
+- use this section to evaluate whether a compatibility surface should remain
+
 ## Purpose
 
 This page explains the role of the compatibility handbooks without encouraging new work to start there.
