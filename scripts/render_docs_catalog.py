@@ -3230,43 +3230,50 @@ def render_package_page(
     body = add_working_interpretation(body, package_working_interpretation(package, category))
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_decision_rule(body, package_decision_rule(package, category, title))
-    body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
-    body = add_failure_signals(body, package_failure_signals(package, category, title))
-    body = add_cross_implications(body, package_cross_implications(package, category))
-    body = add_tradeoffs(body, package_tradeoffs(package, category))
-    body = add_approval_questions(body, package_approval_questions(package, category, title))
-    body = add_evidence_checklist(body, package_evidence_checklist(package, category))
-    body = add_antipatterns(body, package_antipatterns(package, category))
-    body = add_escalate_when(body, package_escalate_when(package, category))
-    body = add_core_claim(body, package_core_claim(package, category))
-    body = add_why_it_matters(body, package_why_it_matters(package, category))
-    body = add_if_it_drifts(body, package_if_it_drifts(package, category))
-    body = add_representative_scenario(body, package_scenario(package, category))
-    body = add_source_of_truth(body, package_source_of_truth(package, category))
-    body = add_common_misreadings(body, package_common_misreadings(package, category))
-    body = add_anchor_section(body, package_anchor_bullets(package, category))
-    body = add_next_checks(body, package_next_checks(package, category))
-    body = add_update_triggers(body, package_update_triggers(package, category))
-    body = add_question_section(body, package_page_questions(package, category, title))
-    body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
-    body = add_honesty_boundary(body, package_honesty_boundary(package, category))
-    if slug == "index":
-        body = add_section_contract(
-            body,
-            (
-                f"define what the {category} section covers for {package.title}",
-                "point readers to the topic pages that hold the detailed explanations",
-                "keep the section boundary reviewable as the package evolves",
-            ),
-        )
-        body = add_reading_advice(
-            body,
-            (
-                "start here when you know the package but not yet the right page inside the section",
-                "use the page list to choose the narrowest topic that matches the current question",
-                "move across sections only after this section stops being the right lens",
-            ),
-        )
+    if category == "foundation":
+        body = add_question_section(body, package_page_questions(package, category, title))
+        body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
+        body = add_honesty_boundary(body, package_honesty_boundary(package, category))
+        body = add_anchor_section(body, package_anchor_bullets(package, category))
+        body = add_next_checks(body, package_next_checks(package, category))
+    else:
+        body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
+        body = add_failure_signals(body, package_failure_signals(package, category, title))
+        body = add_cross_implications(body, package_cross_implications(package, category))
+        body = add_tradeoffs(body, package_tradeoffs(package, category))
+        body = add_approval_questions(body, package_approval_questions(package, category, title))
+        body = add_evidence_checklist(body, package_evidence_checklist(package, category))
+        body = add_antipatterns(body, package_antipatterns(package, category))
+        body = add_escalate_when(body, package_escalate_when(package, category))
+        body = add_core_claim(body, package_core_claim(package, category))
+        body = add_why_it_matters(body, package_why_it_matters(package, category))
+        body = add_if_it_drifts(body, package_if_it_drifts(package, category))
+        body = add_representative_scenario(body, package_scenario(package, category))
+        body = add_source_of_truth(body, package_source_of_truth(package, category))
+        body = add_common_misreadings(body, package_common_misreadings(package, category))
+        body = add_anchor_section(body, package_anchor_bullets(package, category))
+        body = add_next_checks(body, package_next_checks(package, category))
+        body = add_update_triggers(body, package_update_triggers(package, category))
+        body = add_question_section(body, package_page_questions(package, category, title))
+        body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
+        body = add_honesty_boundary(body, package_honesty_boundary(package, category))
+        if slug == "index":
+            body = add_section_contract(
+                body,
+                (
+                    f"define what the {category} section covers for {package.title}",
+                    "point readers to the topic pages that hold the detailed explanations",
+                    "keep the section boundary reviewable as the package evolves",
+                ),
+            )
+            body = add_reading_advice(
+                body,
+                (
+                    "start here when you know the package but not yet the right page inside the section",
+                    "use the page list to choose the narrowest topic that matches the current question",
+                    "move across sections only after this section stops being the right lens",
+                ),
+            )
     return "\n".join(
         [
             front_matter(title, package.owner, "index" if slug == "index" else "explanation"),
