@@ -11,30 +11,31 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.openapi.utils import get_openapi
 
 from bijux_canon_ingest.application.service import (
-    AnswerPayload,
     IndexBackend,
     IngestService,
     StoredIndex,
 )
-from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.processing.stages import (
     ChunkAndEmbedConfig,
     chunk_and_embed_docs,
 )
+from bijux_canon_ingest.interfaces.http.mappers import (
+    ask_response_from_payload,
+    chunk_response_from_result,
+    index_build_response,
+    raw_docs_from_http_docs,
+    retrieve_response_from_candidates,
+)
 from bijux_canon_ingest.interfaces.http.models import (
     AskRequest,
     AskResponse,
-    CandidateModel,
-    ChunkOut,
     ChunkRequest,
     ChunkResponse,
-    CitationModel,
     IndexBuildRequest,
     IndexBuildResponse,
     RetrieveRequest,
     RetrieveResponse,
 )
-from bijux_canon_ingest.retrieval.ports import Candidate
 from bijux_canon_ingest.result.types import Err
 
 
@@ -82,32 +83,11 @@ def create_app() -> FastAPI:
         if isinstance(res, Err):
             raise HTTPException(status_code=400, detail=res.error)
 
-        return ChunkResponse(
-            chunks=[
-                ChunkOut(
-                    doc_id=c.doc_id,
-                    text=c.text,
-                    start=c.start,
-                    end=c.end,
-                    metadata=dict(c.metadata),
-                    embedding=c.embedding if c.embedding else None,
-                    chunk_id=c.chunk_id,
-                )
-                for c in res.value
-            ]
-        )
+        return chunk_response_from_result(res.value)
 
     @router.post("/index/build", response_model=IndexBuildResponse)
     async def index_build(req: IndexBuildRequest) -> IndexBuildResponse:
-        docs = [
-            RawDoc(
-                doc_id=d.doc_id,
-                title=d.title or "",
-                abstract=d.text,
-                categories=d.category or "",
-            )
-            for d in req.docs
-        ]
+        docs = raw_docs_from_http_docs(req.docs)
         res = rag_app.build_index(
             docs=docs,
             backend=_backend_from_str(req.backend),
@@ -121,8 +101,8 @@ def create_app() -> FastAPI:
         index_id = f"idx_{idx.fingerprint}"
         index_store[index_id] = idx
 
-        return IndexBuildResponse(
-            index_id=index_id,
+        return index_build_response(
+            index_id,
             fingerprint=idx.fingerprint,
             schema_version=idx.schema_version,
         )
@@ -139,24 +119,7 @@ def create_app() -> FastAPI:
         if isinstance(res, Err):
             raise HTTPException(status_code=400, detail=res.error)
 
-        candidates: list[Candidate] = res.value
-        return RetrieveResponse(
-            candidates=[
-                CandidateModel(
-                    score=c.score,
-                    chunk={
-                        "doc_id": c.chunk.doc_id,
-                        "chunk_id": c.chunk.chunk_id,
-                        "text": c.chunk.text,
-                        "start": c.chunk.start,
-                        "end": c.chunk.end,
-                        "metadata": dict(c.chunk.metadata),
-                    },
-                    metadata=dict(c.metadata),
-                )
-                for c in candidates
-            ]
-        )
+        return retrieve_response_from_candidates(res.value)
 
     @router.post("/ask", response_model=AskResponse)
     async def ask(req: AskRequest) -> AskResponse:
@@ -174,35 +137,7 @@ def create_app() -> FastAPI:
         if isinstance(res, Err):
             raise HTTPException(status_code=400, detail=res.error)
 
-        ans: AnswerPayload = res.value
-        return AskResponse(
-            answer=ans["answer"],
-            citations=[
-                CitationModel(
-                    doc_id=c["doc_id"],
-                    chunk_id=c["chunk_id"],
-                    start=c["start"],
-                    end=c["end"],
-                    text=c["text"],
-                )
-                for c in ans["citations"]
-            ],
-            candidates=[
-                CandidateModel(
-                    score=c["score"],
-                    chunk={
-                        "doc_id": c["doc_id"],
-                        "chunk_id": c["chunk_id"],
-                        "text": c["text"],
-                        "start": c["start"],
-                        "end": c["end"],
-                        "metadata": {},
-                    },
-                    metadata={},
-                )
-                for c in ans["contexts"]
-            ],
-        )
+        return ask_response_from_payload(res.value)
 
     app.include_router(router)
 
