@@ -121,7 +121,9 @@ def _ranked_evidence(state: ExecutionState) -> list[tuple[str, bytes]]:
     ]
 
 
-def _available_evidence(ranked_evidence: list[tuple[str, bytes]]) -> list[tuple[str, bytes]]:
+def _available_evidence(
+    ranked_evidence: list[tuple[str, bytes]],
+) -> list[tuple[str, bytes]]:
     return [evidence for evidence in ranked_evidence if evidence[1]]
 
 
@@ -135,7 +137,7 @@ def _resolve_max_citations(*, spec: ProblemSpec, min_supports: int) -> int:
         if isinstance(raw_max, (int, float, str)):
             return max(min_supports, int(raw_max))
     except Exception:  # noqa: BLE001
-        pass
+        return min_supports
     return min_supports
 
 

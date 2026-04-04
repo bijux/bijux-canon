@@ -13,7 +13,12 @@ from bijux_canon_reason.application.run_artifacts import (
     RunBuilder,
     RunInputs,
 )
-from bijux_canon_reason.core.types import Plan, ProblemSpec, ReplayResult, VerificationReport
+from bijux_canon_reason.core.types import (
+    Plan,
+    ProblemSpec,
+    ReplayResult,
+    VerificationReport,
+)
 from bijux_canon_reason.evaluation.suite_workflow import EvalResult, run_eval_suite
 from bijux_canon_reason.interfaces.serialization.json_file import (
     read_json_file,

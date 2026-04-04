@@ -179,7 +179,9 @@ def _case_metrics(arts: RunArtifacts) -> EvalCaseMetrics:
             1 for check in verify_report.checks if not check.passed
         ),
         claims_failed=sum(
-            1 for failure in verify_report.failures if "claim" in failure.message.lower()
+            1
+            for failure in verify_report.failures
+            if "claim" in failure.message.lower()
         ),
     )
 
@@ -190,7 +192,11 @@ def suite_summary(results: list[dict[str, object]]) -> dict[str, object]:
         return {"count": 0, "insufficient_rate": 0.0, "failure_taxonomy": {}}
 
     metrics = _summary_metrics(results)
-    return {"count": len(results), "insufficient_rate": metrics.insufficiency_rate, **metrics.to_json()}
+    return {
+        "count": len(results),
+        "insufficient_rate": metrics.insufficiency_rate,
+        **metrics.to_json(),
+    }
 
 
 def run_eval_suite(

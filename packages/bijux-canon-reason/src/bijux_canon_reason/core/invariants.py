@@ -58,9 +58,7 @@ def _duplicate_node_id_errors(plan: Plan) -> list[str]:
     return ["Plan contains duplicate node ids."]
 
 
-def _missing_dependency_errors(
-    plan: Plan, nodes_by_id: dict[str, object]
-) -> list[str]:
+def _missing_dependency_errors(plan: Plan, nodes_by_id: dict[str, object]) -> list[str]:
     return [
         f"PlanNode {node.id} depends on missing node id: {dependency}"
         for node in plan.nodes

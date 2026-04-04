@@ -301,9 +301,7 @@ def _inverse_document_frequency(
     matches = document_frequency.get(term, 0)
     if matches == 0:
         return 0.0
-    return float(
-        math_module.log(1.0 + (doc_count - matches + 0.5) / (matches + 0.5))
-    )
+    return float(math_module.log(1.0 + (doc_count - matches + 0.5) / (matches + 0.5)))
 
 
 def _chunk_json(chunk: Chunk) -> dict[str, object]:
@@ -328,7 +326,9 @@ def _chunk_from_json(chunk_payload: object) -> Chunk:
         start_byte=int(chunk_obj["start_byte"]),
         end_byte=int(chunk_obj["end_byte"]),
         text=str(chunk_obj["text"]),
-        title=chunk_obj.get("title") if isinstance(chunk_obj.get("title"), str) else None,
+        title=chunk_obj.get("title")
+        if isinstance(chunk_obj.get("title"), str)
+        else None,
         source=chunk_obj.get("source")
         if isinstance(chunk_obj.get("source"), str)
         else None,

@@ -214,16 +214,12 @@ def check_reasoning_trace(
         metadata.get("reasoning_trace") if isinstance(metadata, dict) else None
     )
     if not isinstance(reasoning_meta, dict):
-        failures.append(
-            _failure(message="reasoning_trace: missing reasoning metadata")
-        )
+        failures.append(_failure(message="reasoning_trace: missing reasoning metadata"))
         return VerificationCheck(name="reasoning_trace", passed=False), failures
 
     expected_hash = reasoning_meta.get("reasoning_trace_sha256")
     if not isinstance(expected_hash, str) or len(expected_hash) != 64:
-        failures.append(
-            _failure(message="reasoning_trace: missing result hash")
-        )
+        failures.append(_failure(message="reasoning_trace: missing result hash"))
         return VerificationCheck(name="reasoning_trace", passed=False), failures
 
     claim_hashes = _derived_claim_hashes(ctx=ctx, failures=failures)
@@ -240,9 +236,7 @@ def check_reasoning_trace(
         )
         return VerificationCheck(name="reasoning_trace", passed=False), failures
     if next(iter(claim_hashes)) != expected_hash:
-        failures.append(
-            _failure(message="reasoning_trace: metadata hash mismatch")
-        )
+        failures.append(_failure(message="reasoning_trace: metadata hash mismatch"))
     return VerificationCheck(
         name="reasoning_trace",
         passed=(len(failures) == 0),
@@ -325,7 +319,9 @@ def _derived_claim_hashes(
             claim_hashes.add(result_hash)
             continue
         failures.append(
-            _failure(message=f"reasoning_trace: claim {event.claim.id} missing result_sha256")
+            _failure(
+                message=f"reasoning_trace: claim {event.claim.id} missing result_sha256"
+            )
         )
     return claim_hashes
 

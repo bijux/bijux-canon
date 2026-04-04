@@ -123,7 +123,9 @@ def check_insufficient_reasoning(
         )
     if has_claim and has_insuff:
         failures.append(
-            _failure(message="Both derived claims and insufficiency present (ambiguous)")
+            _failure(
+                message="Both derived claims and insufficiency present (ambiguous)"
+            )
         )
     return VerificationCheck(
         name="insufficient_reasoning",
