@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from collections.abc import Callable
 import hashlib
-from pathlib import Path
 from typing import Any
 
 from bijux_canon_agent.agents.base import BaseAgent
@@ -22,6 +21,7 @@ from .reporting import (
     build_file_reader_error_payload,
     build_self_report_schema,
 )
+from .read_request import build_file_read_request
 from .result_assembly import (
     apply_extra_analyzers,
     finalize_read_result,
@@ -29,7 +29,6 @@ from .result_assembly import (
 from .runtime_flow import (
     load_cached_result,
     read_with_retries,
-    resolve_file_path,
     store_cached_result,
 )
 from .telemetry_support import (
@@ -173,33 +172,33 @@ class FileReaderAgent(BaseAgent):
                     context,
                     "pre_hook",
                 )
-            file_path = resolve_file_path(
-                context,
+            cache_key = self._generate_cache_key(context)
+            request = build_file_read_request(
+                context=context,
+                cache_key=cache_key,
                 logger=self.logger,
                 logger_manager=self.logger_manager,
             )
-            if file_path is None:
+            if request is None:
                 return await self.execution_kernel.error_result(
                     "No 'file_path' found in context",
                     context,
                     "input_validation",
                 )
 
-            cache_key = self._generate_cache_key(context)
             cached_result = load_cached_result(
                 self._cache,
-                cache_key,
+                request.cache_key,
                 logger=self.logger,
                 logger_manager=self.logger_manager,
             )
             if cached_result is not None:
                 return cached_result
 
-            file_suffix = Path(file_path).suffix.lstrip(".").lower()
             read_result = await read_with_retries(
                 context=context,
-                file_path=file_path,
-                file_suffix=file_suffix,
+                file_path=request.file_path,
+                file_suffix=request.file_suffix,
                 custom_readers=self._custom_readers,
                 default_reader=self._read_file,
                 max_retries=self.max_retries,
@@ -212,12 +211,15 @@ class FileReaderAgent(BaseAgent):
                 self.logger.warning(
                     "All retries failed",
                     extra={
-                        "context": {"stage": "file_read", "file_path": str(file_path)}
+                        "context": {
+                            "stage": "file_read",
+                            "file_path": request.file_path,
+                        }
                     },
                 )
                 store_cached_result(
                     self._cache,
-                    cache_key,
+                    request.cache_key,
                     read_result,
                     logger=self.logger,
                     logger_manager=self.logger_manager,
@@ -234,9 +236,9 @@ class FileReaderAgent(BaseAgent):
                 read_result,
                 context=context,
                 post_hook=self.post_hook,
-                file_path=file_path,
+                file_path=request.file_path,
                 context_id=context_id,
-                file_suffix=file_suffix,
+                file_suffix=request.file_suffix,
                 agent_version=str(self.version),
                 agent_id=str(self.id),
                 cache_enabled=self.cache_enabled,
@@ -246,12 +248,16 @@ class FileReaderAgent(BaseAgent):
             )
             store_cached_result(
                 self._cache,
-                cache_key,
+                request.cache_key,
                 read_result,
                 logger=self.logger,
                 logger_manager=self.logger_manager,
             )
-            await self._log_completion(file_path, file_suffix, read_result)
+            await self._log_completion(
+                request.file_path,
+                request.file_suffix,
+                read_result,
+            )
             return read_result
 
     def _apply_pre_hook(
