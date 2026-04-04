@@ -14,6 +14,9 @@ releases when a tagged changelog existed.
   `bijux-canon-ingest` docs, migration guide, and Bijux-owned package family.
 - The package README and overview now document the retired standalone
   repository and use PyPI-safe badge and link targets.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so legacy ingest release expectations stay attached
+  to the compatibility package.
 
 ## 0.3.0 - 2026-04-04
 
