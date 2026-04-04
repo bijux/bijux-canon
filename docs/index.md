@@ -190,6 +190,12 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 - root routing mistakes amplify the cost of weak package or maintainer pages because readers reach them later
 - the value of the whole docs system depends on this page remaining a fast orientation surface
 
+## Approval Questions
+
+- does the page still route most readers to one clearly better next section
+- would a new reviewer understand the difference between repository, product, maintainer, and compatibility docs from this page alone
+- is the navigation claim backed by the current rendered handbook structure rather than by intention only
+
 ## Evidence Checklist
 
 - check `mkdocs.yml` against the rendered root navigation

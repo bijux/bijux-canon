@@ -157,6 +157,12 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 - foundation, architecture, interface, and operations claims all become weaker if proof expectations drift
 - review discipline here determines whether neighboring sections remain explanatory or merely aspirational
 
+## Approval Questions
+
+- does `Quality` show enough proof to trust `bijux-canon-reason` after change
+- have limitations and known risks moved with the code rather than staying stale
+- does the acceptance bar protect the package contract instead of only one local behavior
+
 ## Evidence Checklist
 
 - read `packages/bijux-canon-reason/tests` with the page's proof claims in hand

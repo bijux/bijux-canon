@@ -132,6 +132,12 @@ Keep it aligned with the declared scripts and the interface modules that impleme
 - operations and quality pages become stale quickly if contract surfaces move silently
 - architectural seams need review whenever a new public surface appears for convenience
 
+## Approval Questions
+
+- does `CLI Surface` name only caller-facing surfaces that have explicit contract evidence
+- would a downstream consumer understand compatibility expectations before depending on the surface
+- are code, schemas, artifacts, examples, and tests still telling the same contract story
+
 ## Evidence Checklist
 
 - inspect the implemented interface modules under `packages/bijux-canon-reason/src/bijux_canon_reason`

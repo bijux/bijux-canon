@@ -133,6 +133,12 @@ Keep it aligned with the actual workflow code and entrypoints.
 - structural drift often becomes visible in caller-facing seams before it is obvious in prose
 - quality expectations need to move when the architecture adds new execution or dependency pressure
 
+## Approval Questions
+
+- does `Execution Model` still describe a structure that a reviewer can trace without caveats
+- is dependency direction cleaner or at least no less legible after the change
+- can the claimed execution path be matched to concrete modules, seams, and proof assets
+
 ## Evidence Checklist
 
 - open the listed structural modules in `packages/bijux-canon-reason/src/bijux_canon_reason` and trace whether they still match the page narrative

@@ -142,6 +142,12 @@ Keep it aligned with the actual artifact shapes and serialized outputs.
 - structural drift often becomes visible in caller-facing seams before it is obvious in prose
 - quality expectations need to move when the architecture adds new execution or dependency pressure
 
+## Approval Questions
+
+- does `State and Persistence` still describe a structure that a reviewer can trace without caveats
+- is dependency direction cleaner or at least no less legible after the change
+- can the claimed execution path be matched to concrete modules, seams, and proof assets
+
 ## Evidence Checklist
 
 - open the listed structural modules in `packages/bijux-canon-agent/src/bijux_canon_agent` and trace whether they still match the page narrative

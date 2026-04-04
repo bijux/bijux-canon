@@ -136,6 +136,12 @@ Keep it aligned with `pyproject.toml` and the package's real dependency posture.
 - foundation, architecture, interface, and operations claims all become weaker if proof expectations drift
 - review discipline here determines whether neighboring sections remain explanatory or merely aspirational
 
+## Approval Questions
+
+- does `Dependency Governance` show enough proof to trust `bijux-canon-ingest` after change
+- have limitations and known risks moved with the code rather than staying stale
+- does the acceptance bar protect the package contract instead of only one local behavior
+
 ## Evidence Checklist
 
 - read `packages/bijux-canon-ingest/tests` with the page's proof claims in hand

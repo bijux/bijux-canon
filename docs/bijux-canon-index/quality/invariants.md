@@ -139,6 +139,12 @@ Keep it aligned with invariant-focused tests and documented package guarantees.
 - foundation, architecture, interface, and operations claims all become weaker if proof expectations drift
 - review discipline here determines whether neighboring sections remain explanatory or merely aspirational
 
+## Approval Questions
+
+- does `Invariants` show enough proof to trust `bijux-canon-index` after change
+- have limitations and known risks moved with the code rather than staying stale
+- does the acceptance bar protect the package contract instead of only one local behavior
+
 ## Evidence Checklist
 
 - read `packages/bijux-canon-index/tests` with the page's proof claims in hand

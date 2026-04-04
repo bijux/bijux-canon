@@ -132,6 +132,12 @@ Update these principles only when the package operating model truly changes.
 - a weak boundary explanation raises architectural and quality ambiguity immediately
 - interface and operations pages inherit confusion when foundational ownership is unclear
 
+## Approval Questions
+
+- does `Change Principles` still let a reviewer state `bijux-canon-index` ownership in one clear sentence
+- does the change preserve package boundaries without creating shadow scope in a neighbor
+- is there concrete code and test evidence behind the boundary claim rather than prose alone
+
 ## Evidence Checklist
 
 - read the owned module roots under `packages/bijux-canon-index/src/bijux_canon_index` with the boundary statement in mind

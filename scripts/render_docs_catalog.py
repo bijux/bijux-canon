@@ -1307,6 +1307,39 @@ def package_tradeoffs(package: PackageInfo, category: str) -> tuple[str, ...]:
     return tradeoff_map[category]
 
 
+def package_approval_questions(
+    package: PackageInfo, category: str, title: str
+) -> tuple[str, ...]:
+    approval_map = {
+        "foundation": (
+            f"does `{title}` still let a reviewer state `{package.title}` ownership in one clear sentence",
+            "does the change preserve package boundaries without creating shadow scope in a neighbor",
+            "is there concrete code and test evidence behind the boundary claim rather than prose alone",
+        ),
+        "architecture": (
+            f"does `{title}` still describe a structure that a reviewer can trace without caveats",
+            "is dependency direction cleaner or at least no less legible after the change",
+            "can the claimed execution path be matched to concrete modules, seams, and proof assets",
+        ),
+        "interfaces": (
+            f"does `{title}` name only caller-facing surfaces that have explicit contract evidence",
+            "would a downstream consumer understand compatibility expectations before depending on the surface",
+            "are code, schemas, artifacts, examples, and tests still telling the same contract story",
+        ),
+        "operations": (
+            f"does `{title}` leave a maintainer able to repeat the workflow from checked-in assets",
+            "are install, diagnostics, and release statements still aligned with package metadata and tests",
+            "would this workflow still hold up under time pressure without relying on hidden operator memory",
+        ),
+        "quality": (
+            f"does `{title}` show enough proof to trust `{package.title}` after change",
+            "have limitations and known risks moved with the code rather than staying stale",
+            "does the acceptance bar protect the package contract instead of only one local behavior",
+        ),
+    }
+    return approval_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1565,6 +1598,17 @@ def add_tradeoffs(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "Cross Implications", block)
 
 
+def add_approval_questions(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Approval Questions",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Evidence Checklist", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1690,6 +1734,14 @@ def render_home(
             "prefer routing clarity over turning the root page into a compressed summary of every section",
             "prefer a small amount of duplication in navigation language over forcing readers to infer where a question belongs",
             "prefer stable handbook boundaries over a root index that changes shape every time one package adds material",
+        ),
+    )
+    body = add_approval_questions(
+        body,
+        (
+            "does the page still route most readers to one clearly better next section",
+            "would a new reviewer understand the difference between repository, product, maintainer, and compatibility docs from this page alone",
+            "is the navigation claim backed by the current rendered handbook structure rather than by intention only",
         ),
     )
     body = add_evidence_checklist(
@@ -2181,6 +2233,14 @@ def render_root_page(
             "prefer explicit ownership boundaries between root, product, maintainer, and compatibility docs over a superficially shorter navigation tree",
         ),
     )
+    body = add_approval_questions(
+        body,
+        (
+            "does the page stay genuinely repository-wide instead of absorbing package-local detail",
+            "can a reviewer tie the page's claims back to concrete root assets, workflows, or schemas",
+            "would a package owner still agree that the root page is clarifying shared policy rather than redefining local ownership",
+        ),
+    )
     body = add_evidence_checklist(
         body,
         (
@@ -2610,6 +2670,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "prefer explicit maintainer scope over letting dev pages quietly absorb product-contract decisions",
         ),
     )
+    body = add_approval_questions(
+        body,
+        (
+            "does the page still describe maintainer scope rather than end-user runtime behavior",
+            "can contributors inspect the named automation, tests, or helpers that support the page",
+            "is the product-package impact explicit enough that maintainers are not making contract changes by accident",
+        ),
+    )
     body = add_evidence_checklist(
         body,
         (
@@ -3033,6 +3101,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "prefer repository-wide contract clarity over retaining compatibility language that now conflicts with canonical package docs",
         ),
     )
+    body = add_approval_questions(
+        body,
+        (
+            "does the page make the canonical replacement clearer than the legacy name itself",
+            "is there still real evidence for preservation or is the section only reflecting habit",
+            "would a reader leave knowing whether to migrate, preserve temporarily, or retire the legacy surface",
+        ),
+    )
     body = add_evidence_checklist(
         body,
         (
@@ -3255,6 +3331,7 @@ def render_package_page(
     body = add_failure_signals(body, package_failure_signals(package, category, title))
     body = add_cross_implications(body, package_cross_implications(package, category))
     body = add_tradeoffs(body, package_tradeoffs(package, category))
+    body = add_approval_questions(body, package_approval_questions(package, category, title))
     body = add_evidence_checklist(body, package_evidence_checklist(package, category))
     body = add_antipatterns(body, package_antipatterns(package, category))
     body = add_escalate_when(body, package_escalate_when(package, category))

@@ -135,6 +135,12 @@ Keep it aligned with the `src/` roots inside the compatibility packages.
 - retirement planning becomes harder because repository and package owners lack one shared migration story
 - legacy naming pressure can distort product package expectations if it is not kept explicitly separate
 
+## Approval Questions
+
+- does the page make the canonical replacement clearer than the legacy name itself
+- is there still real evidence for preservation or is the section only reflecting habit
+- would a reader leave knowing whether to migrate, preserve temporarily, or retire the legacy surface
+
 ## Evidence Checklist
 
 - inspect the relevant `packages/compat-*` metadata and README files

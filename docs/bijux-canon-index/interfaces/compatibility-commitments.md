@@ -138,6 +138,12 @@ Keep it aligned with the package's actual public surfaces and release process.
 - operations and quality pages become stale quickly if contract surfaces move silently
 - architectural seams need review whenever a new public surface appears for convenience
 
+## Approval Questions
+
+- does `Compatibility Commitments` name only caller-facing surfaces that have explicit contract evidence
+- would a downstream consumer understand compatibility expectations before depending on the surface
+- are code, schemas, artifacts, examples, and tests still telling the same contract story
+
 ## Evidence Checklist
 
 - inspect the implemented interface modules under `packages/bijux-canon-index/src/bijux_canon_index`

@@ -157,6 +157,12 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 - a weak boundary explanation raises architectural and quality ambiguity immediately
 - interface and operations pages inherit confusion when foundational ownership is unclear
 
+## Approval Questions
+
+- does `Foundation` still let a reviewer state `bijux-canon-runtime` ownership in one clear sentence
+- does the change preserve package boundaries without creating shadow scope in a neighbor
+- is there concrete code and test evidence behind the boundary claim rather than prose alone
+
 ## Evidence Checklist
 
 - read the owned module roots under `packages/bijux-canon-runtime/src/bijux_canon_runtime` with the boundary statement in mind

@@ -158,6 +158,12 @@ This page is part of the canonical package docs spine. Keep it aligned with the 
 - operations and quality pages become stale quickly if contract surfaces move silently
 - architectural seams need review whenever a new public surface appears for convenience
 
+## Approval Questions
+
+- does `Interfaces` name only caller-facing surfaces that have explicit contract evidence
+- would a downstream consumer understand compatibility expectations before depending on the surface
+- are code, schemas, artifacts, examples, and tests still telling the same contract story
+
 ## Evidence Checklist
 
 - inspect the implemented interface modules under `packages/bijux-canon-ingest/src/bijux_canon_ingest`

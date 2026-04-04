@@ -139,6 +139,12 @@ Keep it aligned with the package's actual performance-sensitive paths and valida
 - interface expectations often surface again as operational preconditions or diagnostics
 - quality pages must evolve when the operational path changes what counts as sufficient validation
 
+## Approval Questions
+
+- does `Performance and Scaling` leave a maintainer able to repeat the workflow from checked-in assets
+- are install, diagnostics, and release statements still aligned with package metadata and tests
+- would this workflow still hold up under time pressure without relying on hidden operator memory
+
 ## Evidence Checklist
 
 - verify `packages/bijux-canon-ingest/pyproject.toml` and `packages/bijux-canon-ingest/README.md` still match the operational story

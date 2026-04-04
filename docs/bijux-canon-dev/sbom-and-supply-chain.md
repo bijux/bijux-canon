@@ -133,6 +133,12 @@ Keep it aligned with the checked-in SBOM helpers and tests.
 - release and validation pressure becomes harder to reason about across the monorepo
 - root governance pages become less actionable when maintainer intent is implicit
 
+## Approval Questions
+
+- does the page still describe maintainer scope rather than end-user runtime behavior
+- can contributors inspect the named automation, tests, or helpers that support the page
+- is the product-package impact explicit enough that maintainers are not making contract changes by accident
+
 ## Evidence Checklist
 
 - inspect the named helper modules under `packages/bijux-canon-dev/src/bijux_canon_dev`

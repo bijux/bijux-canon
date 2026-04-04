@@ -143,6 +143,12 @@ Keep this page aligned with the real root directories and remove any mention of 
 - schema, release, and automation review all become more fragmented when root guidance drifts
 - maintainer pages become harder to interpret if repository policy is not clear first
 
+## Approval Questions
+
+- does the page stay genuinely repository-wide instead of absorbing package-local detail
+- can a reviewer tie the page's claims back to concrete root assets, workflows, or schemas
+- would a package owner still agree that the root page is clarifying shared policy rather than redefining local ownership
+
 ## Evidence Checklist
 
 - inspect the named root files, workflows, or schema directories directly
