@@ -30,6 +30,7 @@ package handbooks that all share the same five-category spine.</div>
 <a class="md-button" href="bijux-canon-index/foundation/">bijux-canon-index</a>
 <a class="md-button" href="bijux-canon-reason/foundation/">bijux-canon-reason</a>
 <a class="md-button" href="bijux-canon-agent/foundation/">bijux-canon-agent</a>
+<a class="md-button" href="bijux-canon-runtime/foundation/">bijux-canon-runtime</a>
 </div>
 
 ## Documentation Scope
@@ -39,6 +40,7 @@ package handbooks that all share the same five-category spine.</div>
 - the bijux-canon-index section
 - the bijux-canon-reason section
 - the bijux-canon-agent section
+- the bijux-canon-runtime section
 
 ## Reading Map
 
