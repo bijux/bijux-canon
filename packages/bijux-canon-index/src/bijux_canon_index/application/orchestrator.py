@@ -8,13 +8,6 @@ from typing import Any, cast
 from bijux_canon_index.application.orchestration.capabilities_report import (
     build_capabilities_response,
 )
-from bijux_canon_index.application.orchestration.execution_tracking import (
-    build_execution_tracking_context,
-)
-from bijux_canon_index.application.orchestration.idempotency_cache import (
-    IdempotencyCache,
-)
-from bijux_canon_index.application.orchestration.nd_guard import NDExecutionGuard
 from bijux_canon_index.application.orchestration.execution_runtime import (
     build_execution_request,
     build_randomness_profile,
@@ -23,6 +16,12 @@ from bijux_canon_index.application.orchestration.execution_runtime import (
     resolve_correlation_id,
     resolve_execution_artifact,
     validate_execute_limits,
+)
+from bijux_canon_index.application.orchestration.execution_tracking import (
+    build_execution_tracking_context,
+)
+from bijux_canon_index.application.orchestration.idempotency_cache import (
+    IdempotencyCache,
 )
 from bijux_canon_index.application.orchestration.ingest_embeddings import (
     prepare_ingest_vectors,
@@ -36,6 +35,7 @@ from bijux_canon_index.application.orchestration.materialization import (
     build_materialized_artifact,
     materialization_response,
 )
+from bijux_canon_index.application.orchestration.nd_guard import NDExecutionGuard
 from bijux_canon_index.application.orchestration.query_introspection import (
     build_compare_response,
     build_explain_response,
