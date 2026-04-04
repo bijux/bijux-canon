@@ -28,13 +28,16 @@ from bijux_canon_runtime.model.verification.verification_rule import Verificatio
 from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_policy,
 )
+from bijux_canon_runtime.verification.contradiction_support import (
+    detect_contradictions,
+)
 from bijux_canon_runtime.ontology import (
     ArbitrationRule,
     ReasonCode,
     VerificationPhase,
     VerificationRandomness,
 )
-from bijux_canon_runtime.ontology.ids import ArtifactID, PolicyFingerprint, RuleID
+from bijux_canon_runtime.ontology.ids import ArtifactID, PolicyFingerprint
 
 
 class VerificationEngine(Protocol):
@@ -137,7 +140,7 @@ class ContradictionVerificationEngine:
         policy: VerificationPolicy,
     ) -> VerificationResult:
         """Execute verify_flow and enforce its contract."""
-        violations = _detect_contradictions(reasoning_bundles)
+        violations = detect_contradictions(reasoning_bundles)
         status = "PASS"
         reason = "no_contradictions"
         if violations:
@@ -158,24 +161,6 @@ class ContradictionVerificationEngine:
             rules_applied=(),
             decision=status,
         )
-
-
-def _detect_contradictions(
-    bundles: list[ReasoningBundle],
-) -> tuple[RuleID, ...]:
-    """Internal helper; not part of the public API."""
-    statements, negatives, circular = _collect_statement_facts(bundles)
-    violations: list[RuleID] = []
-    _append_direct_contradiction(violations, statements, negatives)
-    _append_weakened_restatement(violations, statements)
-    if circular:
-        violations.append(RuleID("circular_justification"))
-    return tuple(dict.fromkeys(violations))
-
-
-def _normalize_statement(statement: str) -> str:
-    """Internal helper; not part of the public API."""
-    return " ".join(statement.lower().strip().split())
 
 
 class VerificationOrchestrator:
@@ -249,50 +234,6 @@ def _arbitrate(
         engine_statuses=engine_statuses,
         target_artifact_ids=_target_artifact_ids(results),
     )
-
-
-def _collect_statement_facts(
-    bundles: list[ReasoningBundle],
-) -> tuple[dict[str, list[float]], set[str], bool]:
-    """Internal helper; not part of the public API."""
-    statements: dict[str, list[float]] = {}
-    negatives: set[str] = set()
-    circular = False
-    for bundle in bundles:
-        for claim in bundle.claims:
-            normalized = _normalize_statement(claim.statement)
-            if normalized.startswith("not "):
-                negatives.add(normalized.removeprefix("not ").strip())
-            statements.setdefault(normalized, []).append(claim.confidence)
-            if str(claim.claim_id) in normalized:
-                circular = True
-    return statements, negatives, circular
-
-
-def _append_direct_contradiction(
-    violations: list[RuleID],
-    statements: dict[str, list[float]],
-    negatives: set[str],
-) -> None:
-    """Internal helper; not part of the public API."""
-    for statement in statements:
-        base = statement.removeprefix("not ").strip()
-        if base in negatives and statement != f"not {base}":
-            violations.append(RuleID("direct_contradiction"))
-            return
-
-
-def _append_weakened_restatement(
-    violations: list[RuleID],
-    statements: dict[str, list[float]],
-) -> None:
-    """Internal helper; not part of the public API."""
-    for confidences in statements.values():
-        if len(confidences) > 1 and any(
-            conf < max(confidences) for conf in confidences
-        ):
-            violations.append(RuleID("weakened_restatement"))
-            return
 
 
 def _arbitration_decision(
