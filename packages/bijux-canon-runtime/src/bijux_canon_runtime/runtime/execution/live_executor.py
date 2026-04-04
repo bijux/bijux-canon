@@ -31,7 +31,6 @@ from bijux_canon_runtime.model.verification.verification_result import (
     VerificationResult,
 )
 from bijux_canon_runtime.ontology import (
-    CausalityTag,
     VerificationPhase,
     VerificationRandomness,
 )
@@ -72,24 +71,6 @@ def _notify_stage(context: ExecutionContext, stage: str, phase: str) -> None:
         hook = getattr(observer, hook_name, None)
         if callable(hook):
             hook(stage)
-
-
-_EVENT_CAUSALITY = {
-    EventType.TOOL_CALL_START: CausalityTag.TOOL,
-    EventType.TOOL_CALL_END: CausalityTag.TOOL,
-    EventType.TOOL_CALL_FAIL: CausalityTag.TOOL,
-    EventType.RETRIEVAL_START: CausalityTag.DATASET,
-    EventType.RETRIEVAL_END: CausalityTag.DATASET,
-    EventType.RETRIEVAL_FAILED: CausalityTag.DATASET,
-    EventType.HUMAN_INTERVENTION: CausalityTag.HUMAN,
-    EventType.EXECUTION_INTERRUPTED: CausalityTag.ENVIRONMENT,
-    EventType.SEMANTIC_VIOLATION: CausalityTag.ENVIRONMENT,
-}
-
-
-def _causality_tag(event_type: EventType) -> CausalityTag:
-    """Internal helper; not part of the public API."""
-    return _EVENT_CAUSALITY.get(event_type, CausalityTag.AGENT)
 
 
 class LiveExecutor:

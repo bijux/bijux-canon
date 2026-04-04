@@ -12,6 +12,7 @@ import signal
 
 from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
+from bijux_canon_runtime.runtime.execution.event_causality import event_causality_tag
 from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
 from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
 from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
@@ -39,7 +40,6 @@ from bijux_canon_runtime.model.verification.verification_result import (
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
-    CausalityTag,
     StepType,
     VerificationPhase,
     VerificationRandomness,
@@ -97,7 +97,7 @@ def run_execution(
             event_index=event_index,
             step_index=step_index,
             event_type=event_type,
-            causality_tag=_causality_tag(event_type),
+            causality_tag=event_causality_tag(event_type),
             timestamp_utc=utc_now_deterministic(event_index),
             payload=payload,
             payload_hash=fingerprint_inputs(payload),
@@ -877,33 +877,6 @@ def execute_steps(
             },
         )
     return interrupted
-
-
-def _causality_tag(event_type: EventType) -> CausalityTag:
-    """Internal helper; not part of the public API."""
-    if event_type in {
-        EventType.RETRIEVAL_START,
-        EventType.RETRIEVAL_END,
-        EventType.RETRIEVAL_FAILED,
-    }:
-        return CausalityTag.DATASET
-    if event_type in {EventType.TOOL_CALL_START, EventType.TOOL_CALL_END}:
-        return CausalityTag.TOOL
-    if event_type in {EventType.STEP_START, EventType.STEP_END}:
-        return CausalityTag.AGENT
-    if event_type in {
-        EventType.VERIFICATION_START,
-        EventType.VERIFICATION_PASS,
-        EventType.VERIFICATION_FAIL,
-        EventType.VERIFICATION_ESCALATE,
-        EventType.VERIFICATION_ARBITRATION,
-    }:
-        return CausalityTag.TOOL
-    if event_type in {EventType.STEP_FAILED, EventType.VERIFICATION_FAIL}:
-        return CausalityTag.AGENT
-    if event_type in {EventType.EXECUTION_INTERRUPTED, EventType.SEMANTIC_VIOLATION}:
-        return CausalityTag.ENVIRONMENT
-    return CausalityTag.AGENT
 
 
 __all__ = ["run_execution", "execute_steps"]
