@@ -73,6 +73,10 @@ from bijux_canon_index.application.orchestration.capabilities_report import (
 from bijux_canon_index.application.orchestration.ingest_embeddings import (
     prepare_ingest_vectors,
 )
+from bijux_canon_index.application.orchestration.ingest_persistence import (
+    invalidate_ann_artifact_if_needed,
+    persist_ingest_documents,
+)
 from bijux_canon_index.application.orchestration.runtime_bootstrap import (
     bootstrap_runtime,
 )
@@ -297,52 +301,27 @@ class Orchestrator:
         vectors = prepared_vectors.vectors
         embedding_meta_by_index = prepared_vectors.embedding_meta_by_index
         embedding_model = prepared_vectors.embedding_model
-        with timed("ingest_latency_ms") as elapsed, self._tx() as tx:
-            for idx, doc_text in enumerate(req.documents):
-                doc_id = self.id_policy.document_id(doc_text)
-                doc = Document(document_id=doc_id, text=doc_text)
-                self.authz.check(tx, action="put_document", resource="document")
-                self.stores.vectors.put_document(tx, doc)
-                chunk = Chunk(
-                    chunk_id=self.id_policy.chunk_id(doc.document_id, 0),
-                    document_id=doc.document_id,
-                    text=doc_text,
-                    ordinal=0,
-                )
-                self.authz.check(tx, action="put_chunk", resource="chunk")
-                self.stores.vectors.put_chunk(tx, chunk)
-                vec = Vector(
-                    vector_id=self.id_policy.vector_id(
-                        chunk.chunk_id, tuple(vectors[idx])
-                    ),
-                    chunk_id=chunk.chunk_id,
-                    values=tuple(vectors[idx]),
-                    dimension=len(vectors[idx]),
-                    model=embedding_model,
-                    metadata=self._metadata_tuple(embedding_meta_by_index.get(idx, {}))
-                    if embedding_meta_by_index
-                    else None,
-                )
-                self.authz.check(tx, action="put_vector", resource="vector")
-                self.stores.vectors.put_vector(tx, vec)
+        with timed("ingest_latency_ms") as elapsed:
+            persist_ingest_documents(
+                tx_factory=self._tx,
+                stores=self.stores,
+                authz=self.authz,
+                id_policy=self.id_policy,
+                documents=req.documents,
+                vectors=vectors,
+                embedding_model=embedding_model,
+                embedding_meta_by_index=embedding_meta_by_index,
+                metadata_tuple=self._metadata_tuple,
+            )
         METRICS.increment("vectors_indexed_total", value=len(req.documents))
         log_event("ingest_end", correlation_id=correlation_id, elapsed_ms=elapsed())
         self._latest_corpus_fingerprint = corpus_fingerprint(req.documents)
         self._latest_vector_fingerprint = vectors_fingerprint(vectors)
-        existing_artifact = self.stores.ledger.get_artifact(self.default_artifact_id)
-        if (
-            existing_artifact
-            and existing_artifact.execution_contract
-            is ExecutionContract.NON_DETERMINISTIC
-            and existing_artifact.index_state == "ready"
-        ):
-            updated = replace(existing_artifact, index_state="invalidated")
-            with self._tx() as tx:
-                self.stores.ledger.put_artifact(tx, updated)
-            log_event(
-                "ann_index_invalidated",
-                artifact_id=existing_artifact.artifact_id,
-            )
+        invalidate_ann_artifact_if_needed(
+            tx_factory=self._tx,
+            stores=self.stores,
+            artifact_id=self.default_artifact_id,
+        )
         result = {"ingested": len(req.documents), "correlation_id": correlation_id}
         if req.idempotency_key:
             with self._idempotency_lock:
