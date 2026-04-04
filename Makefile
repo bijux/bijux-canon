@@ -13,33 +13,6 @@ ROOT_DOCS_CACHE_DIR := $(ROOT_DOCS_ARTIFACTS_DIR)/cache
 ROOT_DOCS_SERVE_CFG := $(ROOT_DOCS_ARTIFACTS_DIR)/mkdocs.serve.yml
 ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
 ROOT_DOCS_ENV := NO_MKDOCS_2_WARNING=true
-ROOT_CHECK_BOOTSTRAP_PYTHON := $(shell command -v python3.11 || command -v python3)
-ROOT_CHECK_PACKAGES := \
-	bandit \
-	codespell \
-	deptry \
-	interrogate \
-	mkdocs \
-	mkdocs-click \
-	mkdocs-gen-files \
-	mkdocs-git-revision-date-localized-plugin \
-	mkdocs-glightbox \
-	mkdocs-include-markdown-plugin \
-	mkdocs-literate-nav \
-	mkdocs-material \
-	mkdocs-minify-plugin \
-	mkdocs-redirects \
-	mkdocs-section-index \
-	mkdocstrings \
-	mypy \
-	pydantic \
-	pip-audit \
-	pydocstyle \
-	pymdown-extensions \
-	radon \
-	ruff \
-	types-requests \
-	vulture
 
 export PYTHONDONTWRITEBYTECODE := 1
 export PYTHONPYCACHEPREFIX := $(ROOT_ARTIFACTS_DIR)/pycache
@@ -48,6 +21,8 @@ export HYPOTHESIS_STORAGE_DIRECTORY := $(ROOT_ARTIFACTS_DIR)/hypothesis
 export PYTHONPATH := $(CURDIR)/packages/bijux-canon-dev/src$(if $(PYTHONPATH),:$(PYTHONPATH))
 
 include $(CURDIR)/makes/root/dispatch.mk
+include $(CURDIR)/makes/root/toolchain.mk
+include $(CURDIR)/makes/root/cleanup.mk
 
 DEFAULT_GOAL := help
 .PHONY: \
@@ -79,31 +54,6 @@ list:
 
 list-all:
 	@printf "%s\n" $(ALL_PACKAGES)
-
-clean-root-artifacts:
-	@rm -rf \
-	  "$(CURDIR)/.hypothesis" \
-	  "$(CURDIR)/.pytest_cache" \
-	  "$(CURDIR)/.ruff_cache" \
-	  "$(CURDIR)/.mypy_cache" \
-	  "$(CURDIR)/.coverage" \
-	  "$(CURDIR)/.coverage."* \
-	  "$(CURDIR)/.benchmarks" \
-	  "$(CURDIR)/htmlcov" \
-	  "$(CURDIR)/configs/.pytest_cache" \
-	  "$(CURDIR)/configs/.ruff_cache" \
-	  "$(CURDIR)/configs/.mypy_cache" \
-	  "$(CURDIR)/configs/.hypothesis" || true
-
-root-check-env: $(ROOT_CHECK_STAMP)
-
-$(ROOT_CHECK_STAMP):
-	@mkdir -p "$(ROOT_ARTIFACTS_DIR)"
-	@rm -rf "$(ROOT_CHECK_VENV)"
-	@"$(ROOT_CHECK_BOOTSTRAP_PYTHON)" -m venv "$(ROOT_CHECK_VENV)"
-	@"$(ROOT_CHECK_PYTHON)" -m pip install --upgrade pip setuptools wheel >/dev/null
-	@"$(ROOT_CHECK_PYTHON)" -m pip install --upgrade $(ROOT_CHECK_PACKAGES) >/dev/null
-	@touch "$(ROOT_CHECK_STAMP)"
 
 docs:
 	@mkdir -p "$(ROOT_DOCS_ARTIFACTS_DIR)" "$(ROOT_DOCS_CACHE_DIR)"
