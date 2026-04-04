@@ -21,7 +21,7 @@ LAZY_EXPORTS: dict[str, LazyExport] = {
     "iter_ingest_pipeline_core": (".application.pipeline", "iter_ingest_pipeline_core"),
     "make_chunk_stream_fn": (".config.ingest", "make_chunk_stream_fn"),
     "make_ingest_fn": (".config.ingest", "make_ingest_fn"),
-    "parse_ingest_config": (".config.ingest", "parse_ingest_config"),
+    "parse_ingest_config": (".config.ingest_parsing", "parse_ingest_config"),
     "gen_bounded_chunks": (".processing.streaming", "gen_bounded_chunks"),
     "gen_grouped_chunks": (".processing.streaming", "gen_grouped_chunks"),
     "gen_stream_deduped": (".processing.streaming", "gen_stream_deduped"),

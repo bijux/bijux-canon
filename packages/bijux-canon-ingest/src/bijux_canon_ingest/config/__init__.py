@@ -22,7 +22,7 @@ _LAZY_EXPORTS: dict[str, LazyExport] = {
     "IngestBoundaryDeps": (".ingest", "IngestBoundaryDeps"),
     "IngestConfig": (".ingest", "IngestConfig"),
     "IngestDeps": (".ingest", "IngestDeps"),
-    "parse_ingest_config": (".ingest", "parse_ingest_config"),
+    "parse_ingest_config": (".ingest_parsing", "parse_ingest_config"),
     "build_ingest_deps": (".ingest", "build_ingest_deps"),
     "make_chunk_stream_fn": (".ingest", "make_chunk_stream_fn"),
     "make_ingest_fn": (".ingest", "make_ingest_fn"),
