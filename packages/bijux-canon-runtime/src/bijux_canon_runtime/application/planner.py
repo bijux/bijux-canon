@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from heapq import heapify, heappop, heappush
 
-from bijux_canon_runtime.core.package_versions import distribution_version
 from bijux_canon_runtime.contracts.execution_plan_contract import (
     validate as validate_execution_plan,
 )
 from bijux_canon_runtime.contracts.flow_contract import (
     validate as validate_flow_manifest,
 )
+from bijux_canon_runtime.core.package_versions import distribution_version
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
@@ -36,7 +36,6 @@ from bijux_canon_runtime.ontology.ids import (
     ResolverID,
     VersionID,
 )
-
 
 bijux_canon_agent_version = distribution_version("bijux-canon-agent")
 bijux_cli_version = distribution_version("bijux-cli")
@@ -136,8 +135,8 @@ class ExecutionPlanner:
                 forward[dep].append(agent)
                 indegree[agent] += 1
 
-        for downstream in forward.values():
-            downstream.sort()
+        for downstream_agents in forward.values():
+            downstream_agents.sort()
 
         ready = [agent for agent, degree in indegree.items() if degree == 0]
         heapify(ready)

@@ -9,9 +9,11 @@ from dataclasses import asdict
 import json
 from typing import Any
 
-from bijux_canon_runtime.model.execution.command_modes import DRY_RUN_COMMAND
-from bijux_canon_runtime.model.execution.command_modes import EXECUTION_TRACE_COMMANDS
-from bijux_canon_runtime.model.execution.command_modes import PLAN_COMMAND
+from bijux_canon_runtime.model.execution.command_modes import (
+    DRY_RUN_COMMAND,
+    EXECUTION_TRACE_COMMANDS,
+    PLAN_COMMAND,
+)
 from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summary
 from bijux_canon_runtime.observability.classification.determinism_classification import (
     determinism_classes_for_trace,

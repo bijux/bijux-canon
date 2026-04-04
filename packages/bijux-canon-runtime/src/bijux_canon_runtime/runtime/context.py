@@ -8,9 +8,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
-    NonDeterminismLifecycle,
-)
 from bijux_canon_runtime.core.authority import AuthorityToken
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
@@ -35,6 +32,9 @@ from bijux_canon_runtime.ontology.ids import (
 from bijux_canon_runtime.ontology.public import EntropySource
 from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
 from bijux_canon_runtime.runtime.budget import BudgetState
+from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
+    NonDeterminismLifecycle,
+)
 
 if TYPE_CHECKING:
     from bijux_canon_runtime.observability.storage.execution_store_protocol import (

@@ -42,12 +42,12 @@ from bijux_canon_runtime.runtime.artifact_store import (
 )
 from bijux_canon_runtime.runtime.budget import BudgetState
 from bijux_canon_runtime.runtime.context import ExecutionContext
-from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
-    NonDeterminismLifecycle,
-)
 from bijux_canon_runtime.runtime.execution.dry_run_executor import DryRunExecutor
 from bijux_canon_runtime.runtime.execution.live_executor import LiveExecutor
 from bijux_canon_runtime.runtime.execution.observer_executor import ObserverExecutor
+from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
+    NonDeterminismLifecycle,
+)
 
 
 def effective_execution_config(execution_config: ExecutionConfig) -> ExecutionConfig:

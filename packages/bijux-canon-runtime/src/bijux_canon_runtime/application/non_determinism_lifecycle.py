@@ -10,5 +10,4 @@ from bijux_canon_runtime.runtime.non_determinism_lifecycle import (
     NonDeterminismVerdict,
 )
 
-
 __all__ = ["NonDeterminismLifecycle", "NonDeterminismVerdict"]
