@@ -12,7 +12,9 @@ from typing import no_type_check
 import typer
 
 from bijux_canon_index.infra.logging import enable_trace
-from bijux_canon_index.interfaces.cli.artifact_commands import register_artifact_commands
+from bijux_canon_index.interfaces.cli.artifact_commands import (
+    register_artifact_commands,
+)
 from bijux_canon_index.interfaces.cli.diagnostic_commands import (
     register_diagnostic_commands,
 )
@@ -46,16 +48,16 @@ def _main_callback(
         None,
         "--format",
         help="Output format: json|table (default: json)",
-        show_default=True,
+        show_default=False,
     ),
     output: Path | None = typer.Option(  # noqa: B008
-        None, "--output", help="Write output to a file", show_default=True
+        None, "--output", help="Write output to a file", show_default=False
     ),
     config: Path | None = typer.Option(  # noqa: B008
         None,
         "--config",
         help="Load configuration from a TOML/YAML file",
-        show_default=True,
+        show_default=False,
     ),
     trace: bool = typer.Option(False, "--trace", help="Emit trace metadata"),
     quiet: bool = typer.Option(False, "--quiet", help="Suppress non-error output"),
