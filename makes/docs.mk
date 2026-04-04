@@ -102,8 +102,8 @@ docs-serve:
 	  exit 0; \
 	fi; \
 	trap 'rm -f "$$status_file"; rm -rf "$$lock_dir"' EXIT INT TERM; \
-	rm -f "$$status_file"
-	@if [ -n "$(strip $(DOCS_SERVE_GUARD_TARGETS))" ]; then \
+	rm -f "$$status_file"; \
+	if [ -n "$(strip $(DOCS_SERVE_GUARD_TARGETS))" ]; then \
 	  $(MAKE) $(DOCS_SERVE_GUARD_TARGETS); \
 	  if [ "$$(cat "$(DOCS_SERVE_STATUS_FILE)" 2>/dev/null || true)" = "reuse" ]; then \
 	    exit 0; \
