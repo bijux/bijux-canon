@@ -8,7 +8,6 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import StrEnum
-from pathlib import Path
 
 import msgpack
 
@@ -19,7 +18,6 @@ from bijux_canon_ingest.retrieval.indexes import (
     NumpyCosineIndex,
     build_bm25_index,
     build_numpy_cosine_index,
-    load_index,
 )
 from bijux_canon_ingest.retrieval.ports import Candidate
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
@@ -83,23 +81,6 @@ def build_stored_index(
         )
     )
 
-
-def save_stored_index(index: StoredIndex, path: Path) -> Result[None, str]:
-    try:
-        index.index.save(str(path))
-        return Ok(None)
-    except Exception as exc:  # pragma: no cover
-        return Err(str(exc))
-
-
-def load_stored_index(path: Path) -> Result[StoredIndex, str]:
-    try:
-        index = load_index(str(path))
-        return Ok(_wrap_loaded_index(index))
-    except Exception as exc:  # pragma: no cover
-        return Err(str(exc))
-
-
 def retrieve_candidates(
     *,
     index: StoredIndex,
@@ -153,29 +134,10 @@ def retrieve_blob_candidates(
         )
     return Err("unknown index backend")
 
-
-def _wrap_loaded_index(index: BM25Index | NumpyCosineIndex) -> StoredIndex:
-    if isinstance(index, BM25Index):
-        return StoredIndex(
-            backend=IndexBackend.BM25,
-            index=index,
-            fingerprint=index.fingerprint,
-        )
-    if isinstance(index, NumpyCosineIndex):
-        return StoredIndex(
-            backend=IndexBackend.NUMPY_COSINE,
-            index=index,
-            fingerprint=index.fingerprint,
-        )
-    raise ValueError("unknown index backend")
-
-
 __all__ = [
     "IndexBackend",
     "StoredIndex",
     "build_stored_index",
-    "load_stored_index",
     "retrieve_blob_candidates",
     "retrieve_candidates",
-    "save_stored_index",
 ]
