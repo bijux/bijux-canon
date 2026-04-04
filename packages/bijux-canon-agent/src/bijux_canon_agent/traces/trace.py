@@ -13,13 +13,17 @@ from typing import Any, ClassVar
 
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
 from bijux_canon_agent.core.version import get_runtime_version
-from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
 from bijux_canon_agent.pipeline.results.failure import FailureArtifact
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
+from bijux_canon_agent.traces.replayability import (
+    enforce_replayable_temperature,
+    has_required_replay_metadata,
+    resolve_contract_version,
+)
 from bijux_canon_agent.traces.trace_serialization import (
     serialize_run_trace,
     serialize_trace_entry,
@@ -251,9 +255,7 @@ class TraceRecorder:
         metadata: dict[str, Any] = {}
         if isinstance(entry.output, dict):
             metadata = entry.output.get("metadata", {})
-        entry.replay_metadata.contract_version = (
-            metadata.get("contract_version", CONTRACT_VERSION) or CONTRACT_VERSION
-        )
+        entry.replay_metadata.contract_version = resolve_contract_version(metadata)
         model_metadata = self._extract_model_metadata(metadata)
         if model_metadata:
             if (
@@ -277,25 +279,14 @@ class TraceRecorder:
             entry.termination_reason = self.trace.header.termination_reason
         if self.trace.header.convergence_hash:
             entry.replay_metadata.convergence_hash = self.trace.header.convergence_hash
-        if not self._entry_has_replay_metadata(entry):
+        if not has_required_replay_metadata(
+            entry.replay_metadata,
+            phase=entry.phase,
+            convergence_hash=self.trace.header.convergence_hash,
+        ):
             self.trace.header.replay_status = ReplayStatus.NON_REPLAYABLE
         self._enforce_replayability()
         self.trace.entries.append(entry)
-
-    def _entry_has_replay_metadata(self, entry: TraceEntry) -> bool:
-        required = ("input_hash", "config_hash", "model_id")
-        for field_name in required:
-            value = getattr(entry.replay_metadata, field_name, "")
-            if not value:
-                return False
-        if entry.replay_metadata.model_metadata is None:
-            return False
-        convergence_missing = (
-            self.trace.header.convergence_hash
-            and entry.phase == PipelineLifecycle.FINALIZE.value
-            and not entry.replay_metadata.convergence_hash
-        )
-        return not convergence_missing
 
     @staticmethod
     def _extract_model_metadata(
@@ -314,11 +305,10 @@ class TraceRecorder:
         metadata = self.trace.header.model_metadata
         if not metadata:
             return
-        if (
-            metadata.temperature > 0
-            and self.trace.header.replay_status == ReplayStatus.REPLAYABLE
-        ):
-            raise RuntimeError("Trace marked replayable despite non-zero temperature")
+        enforce_replayable_temperature(
+            temperature=metadata.temperature,
+            replayable=self.trace.header.replay_status == ReplayStatus.REPLAYABLE,
+        )
 
     def finish(self, status: str = "completed") -> None:
         self.trace.status = status
