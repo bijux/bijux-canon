@@ -10,13 +10,17 @@ import asyncio
 from dataclasses import dataclass
 import hashlib
 import logging
-import time
 from typing import Any
 
-import aiohttp
 from aiohttp import ClientResponseError, ClientSession, ClientTimeout
 
 from bijux_canon_agent.core.hashing import prompt_hash
+from bijux_canon_agent.llm.runtime_support import (
+    execute_backend_attempt,
+    handle_failed_attempt,
+    record_generation_success,
+    retry_backoff,
+)
 from bijux_canon_agent.observability.logging import (
     LoggerConfig,
     LoggerManager,
@@ -307,15 +311,33 @@ class LLMUtils:
 
         for attempt in range(1, self.max_retries + 1):
             try:
-                response, duration = await self._execute_attempt(prompt, max_tokens)
+                response, duration = await execute_backend_attempt(
+                    backend=self.backend,
+                    timeout=self.timeout,
+                    prompt=prompt,
+                    max_tokens=max_tokens,
+                    backend_name=self.backend_name,
+                    logger_manager=self.logger_manager,
+                )
                 if response.error:
-                    await self._handle_failed_attempt(
+                    await handle_failed_attempt(
                         attempt=attempt,
                         duration=duration,
                         error=response.error,
+                        max_retries=self.max_retries,
+                        retry_delay=self.retry_delay,
+                        backend_name=self.backend_name,
+                        logger=self.logger,
+                        logger_manager=self.logger_manager,
                     )
                     continue
-                self._record_success(duration=duration, response=response)
+                record_generation_success(
+                    duration=duration,
+                    response=response,
+                    backend_name=self.backend_name,
+                    logger=self.logger,
+                    logger_manager=self.logger_manager,
+                )
                 return response.content
 
             except Exception as e:
@@ -331,7 +353,7 @@ class LLMUtils:
                 )
                 if attempt == self.max_retries:
                     raise Exception(f"All retries failed: {e!s}") from e
-                await asyncio.sleep(self._retry_backoff(attempt))
+                await asyncio.sleep(retry_backoff(self.retry_delay, attempt))
 
         raise Exception("Unexpected error: Retry loop exited without result")
 
@@ -412,56 +434,3 @@ class LLMUtils:
         self.logger_manager.log_metric(
             "log_flush", 1, MetricType.COUNTER, tags={"stage": "log_flush"}
         )
-
-    async def _execute_attempt(
-        self, prompt: str, max_tokens: int | None
-    ) -> tuple[LLMResponse, float]:
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            start_time = time.time()
-            response = await self.backend.generate(prompt, max_tokens, session)
-            duration = time.time() - start_time
-        self.logger_manager.log_metric(
-            "llm_request_duration",
-            duration,
-            MetricType.HISTOGRAM,
-            tags={"backend": self.backend_name},
-        )
-        return response, duration
-
-    async def _handle_failed_attempt(
-        self, *, attempt: int, duration: float, error: str
-    ) -> None:
-        self.logger.warning(
-            f"LLM generation failed: {error}",
-            extra={"context": {"attempt": attempt, "duration": duration}},
-        )
-        self.logger_manager.log_metric(
-            "llm_request_errors",
-            1,
-            MetricType.COUNTER,
-            tags={"backend": self.backend_name, "attempt": str(attempt)},
-        )
-        if attempt == self.max_retries:
-            raise Exception(f"All retries failed: {error}")
-        await asyncio.sleep(self._retry_backoff(attempt))
-
-    def _record_success(self, *, duration: float, response: LLMResponse) -> None:
-        self.logger_manager.log_metric(
-            "llm_requests",
-            1,
-            MetricType.COUNTER,
-            tags={"backend": self.backend_name, "status": "success"},
-        )
-        self.logger.info(
-            "LLM generation completed",
-            extra={
-                "context": {
-                    "stage": "completion",
-                    "duration": duration,
-                    "response_length": len(response.content),
-                }
-            },
-        )
-
-    def _retry_backoff(self, attempt: int) -> float:
-        return float(self.retry_delay) * float(2 ** (attempt - 1))
