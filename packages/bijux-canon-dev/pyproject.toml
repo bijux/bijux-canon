@@ -27,6 +27,14 @@ dependencies = [
   "PyYAML>=6.0,<7.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-dev"
+Repository = "https://github.com/bijux/bijux-canon"
+Documentation = "https://bijux.io/bijux-canon-dev/"
+Issues = "https://github.com/bijux/bijux-canon/issues"
+Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-dev/CHANGELOG.md"
+Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
+
 [project.optional-dependencies]
 dev = [
   "pytest>=8.4.1,<9.0",
@@ -51,9 +59,14 @@ fallback-version = "0.1.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_dev"]
+include = ["src/bijux_canon_dev/py.typed"]
+
+[tool.hatch.build.targets.wheel.package-data]
+"bijux_canon_dev" = ["py.typed"]
 
 [tool.hatch.build]
 include = [
+  "CHANGELOG.md",
   "README.md",
   "src/bijux_canon_dev/**",
 ]

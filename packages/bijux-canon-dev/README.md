@@ -39,3 +39,4 @@ repository healthy rather than to run the product, it should usually live here.
 - [Architecture](docs/ARCHITECTURE.md)
 - [Contracts](docs/CONTRACTS.md)
 - [Tests](docs/TESTS.md)
+- [Changelog](CHANGELOG.md)
