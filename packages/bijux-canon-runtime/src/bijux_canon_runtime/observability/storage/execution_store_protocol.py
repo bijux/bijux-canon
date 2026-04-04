@@ -14,10 +14,10 @@ from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescrip
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.ontology.ids import ClaimID, RunID, TenantID
-from bijux_canon_runtime.runtime.context import RunMode
 
 
 class ExecutionWriteStoreProtocol(Protocol):

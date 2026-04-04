@@ -9,6 +9,7 @@ from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
+from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.model.policy.non_determinism_policy import (
     NonDeterminismPolicy,
@@ -32,7 +33,7 @@ from bijux_canon_runtime.ontology import DeterminismLevel
 from bijux_canon_runtime.ontology.ids import ClaimID, FlowID, RunID
 from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
-from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
+from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
 
 

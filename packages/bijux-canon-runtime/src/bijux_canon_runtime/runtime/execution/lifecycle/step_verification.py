@@ -11,6 +11,7 @@ from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.model.verification.verification_arbitration import (
@@ -22,7 +23,7 @@ from bijux_canon_runtime.model.verification.verification_result import (
 from bijux_canon_runtime.ontology import VerificationPhase, VerificationRandomness
 from bijux_canon_runtime.ontology.ids import RuleID
 from bijux_canon_runtime.ontology.public import EventType
-from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
+from bijux_canon_runtime.runtime.context import ExecutionContext
 
 
 class VerificationCallbacks(Protocol):

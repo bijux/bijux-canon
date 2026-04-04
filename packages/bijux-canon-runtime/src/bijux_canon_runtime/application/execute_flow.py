@@ -30,8 +30,8 @@ from bijux_canon_runtime.core.authority import (
     enforce_runtime_semantics,
 )
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
-from bijux_canon_runtime.runtime.context import RunMode
 
 
 class FlowPreparation:

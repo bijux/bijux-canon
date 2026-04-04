@@ -16,6 +16,7 @@ from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvide
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
+from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
@@ -31,7 +32,7 @@ from bijux_canon_runtime.ontology import (
 )
 from bijux_canon_runtime.ontology.ids import ClaimID, ContentHash, RuleID, ToolID
 from bijux_canon_runtime.ontology.public import EventType
-from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
+from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.lifecycle import (
     execute_steps,
     finalize_execution,

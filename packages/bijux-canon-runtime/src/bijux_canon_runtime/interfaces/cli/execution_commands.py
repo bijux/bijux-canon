@@ -15,7 +15,6 @@ import sys
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     FlowRunResult,
-    RunMode,
     execute_flow,
 )
 from bijux_canon_runtime.application.planner import ExecutionPlanner
@@ -25,6 +24,7 @@ from bijux_canon_runtime.interfaces.cli.manifest_loader import load_manifest
 from bijux_canon_runtime.interfaces.cli.policy_loader import load_policy
 from bijux_canon_runtime.interfaces.cli.result_rendering import render_result
 from bijux_canon_runtime.interfaces.cli.store_commands import normalize_for_json
+from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,

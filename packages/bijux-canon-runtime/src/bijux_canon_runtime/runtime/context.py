@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
 from typing import TYPE_CHECKING, cast
 
 from bijux_canon_runtime.application.non_determinism_lifecycle import (
@@ -19,6 +18,7 @@ from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
 from bijux_canon_runtime.observability.capture.hooks import RuntimeObserver
@@ -40,16 +40,6 @@ if TYPE_CHECKING:
     from bijux_canon_runtime.observability.storage.execution_store_protocol import (
         ExecutionWriteStoreProtocol,
     )
-
-
-class RunMode(StrEnum):
-    """Execution mode; misuse breaks mode-specific guarantees."""
-
-    PLAN = "plan"
-    DRY_RUN = "dry-run"
-    LIVE = "live"
-    OBSERVE = "observe"
-    UNSAFE = "unsafe"
 
 
 @dataclass(frozen=True)
@@ -167,4 +157,4 @@ class ExecutionContext:
         return cast(bool, object.__getattribute__(self, "_cancelled"))
 
 
-__all__ = ["RunMode"]
+__all__ = ["ExecutionContext", "RunMode"]
