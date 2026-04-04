@@ -12,12 +12,13 @@ from __future__ import annotations
 from bijux_canon_index.contracts.resources import BackendCapabilities, ExecutionResources
 from bijux_canon_index.core.v1_exclusions import ensure_excluded
 from bijux_canon_index.infra.adapters.sqlite.backend import SQLiteFixture, sqlite_backend
+from bijux_canon_index.infra.runtime_paths import default_pgvector_state_path
 
 
 def pgvector_backend(path: str | None = None) -> SQLiteFixture:
     """Return execution resources that mimic a pgvector backend."""
     ensure_excluded("pgvector_backend")
-    base = sqlite_backend(path or "pgvector.sqlite")
+    base = sqlite_backend(path or str(default_pgvector_state_path()))
     caps = base.stores.capabilities
     capabilities = (
         BackendCapabilities(

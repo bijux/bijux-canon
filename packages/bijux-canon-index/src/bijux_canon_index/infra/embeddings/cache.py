@@ -10,6 +10,10 @@ import sqlite3
 from typing import Any, Protocol
 
 from bijux_canon_index.core.identity.ids import fingerprint
+from bijux_canon_index.infra.runtime_paths import (
+    default_embedding_cache_path,
+    ensure_parent_dir,
+)
 
 
 @dataclass(frozen=True)
@@ -28,7 +32,7 @@ class EmbeddingCache(Protocol):
 
 class SQLiteEmbeddingCache:
     def __init__(self, path: str | Path) -> None:
-        self._path = Path(path)
+        self._path = ensure_parent_dir(path)
         self._conn = sqlite3.connect(self._path)
         self._conn.execute(
             "CREATE TABLE IF NOT EXISTS embeddings_cache(key TEXT PRIMARY KEY, vector TEXT, metadata TEXT)"
@@ -57,7 +61,7 @@ def build_cache(cache_spec: str | None) -> EmbeddingCache | None:
     if not cache_spec:
         return None
     if cache_spec.lower() == "sqlite":
-        return SQLiteEmbeddingCache(Path.cwd() / "embeddings-cache.sqlite")
+        return SQLiteEmbeddingCache(default_embedding_cache_path())
     if cache_spec.lower().startswith("sqlite:"):
         path = cache_spec.split(":", 1)[1]
         return SQLiteEmbeddingCache(path)

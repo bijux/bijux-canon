@@ -21,6 +21,7 @@ from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
 from bijux_canon_index.infra.adapters.vectorstore_source import VectorStoreVectorSource
 from bijux_canon_index.infra.environment import read_env
 from bijux_canon_index.infra.logging import log_event
+from bijux_canon_index.infra.runtime_paths import default_state_path, ensure_parent_dir
 
 _BACKEND_POOL: dict[tuple[str, str], Any] = {}
 _BACKEND_LOCK = threading.Lock()
@@ -47,7 +48,8 @@ def resolve_backend(backend_env: str, chosen_path: Path) -> Any:
         from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
         return memory_backend()
-    key = (backend_env or "", str(chosen_path))
+    normalized_path = ensure_parent_dir(chosen_path)
+    key = (backend_env or "", str(normalized_path))
     with _BACKEND_LOCK:
         cached = _BACKEND_POOL.get(key)
         if cached is not None:
@@ -57,14 +59,14 @@ def resolve_backend(backend_env: str, chosen_path: Path) -> Any:
             from bijux_canon_index.infra.adapters.hnsw.backend import hnsw_backend
 
             backend = hnsw_backend(
-                db_path=str(chosen_path),
+                db_path=str(normalized_path),
                 index_dir=read_env(
                     "BIJUX_CANON_INDEX_HNSW_PATH",
                     legacy="BIJUX_VEX_HNSW_PATH",
                 ),
             )
         else:
-            backend = sqlite_backend(str(chosen_path))
+            backend = sqlite_backend(str(normalized_path))
         _BACKEND_POOL[key] = backend
         return backend
 
@@ -143,9 +145,9 @@ def _resolve_backend_from_env(state_path: str | Path | None) -> Any:
         or read_env(
             "BIJUX_CANON_INDEX_STATE_PATH",
             legacy="BIJUX_VEX_STATE_PATH",
-            default="session.sqlite",
+            default=str(default_state_path()),
         )
-        or "session.sqlite"
+        or str(default_state_path())
     )
     return resolve_backend(backend_env, Path(chosen_raw))
 
