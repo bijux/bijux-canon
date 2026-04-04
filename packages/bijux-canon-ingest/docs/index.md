@@ -1,17 +1,25 @@
-# INDEX
+# Ingest Package Guide
 
-Package-local documentation for `bijux-canon-ingest`:
+This documentation set explains `bijux-canon-ingest` as a package with a wide
+source tree but a clear mission: deterministic document preparation and
+ingest-local retrieval assembly.
 
-- [Project Overview](project_overview.md)
-- [LAYOUT](LAYOUT.md)
-- [SCOPE](SCOPE.md)
-- [ARCHITECTURE](ARCHITECTURE.md)
-- [BOUNDARIES](BOUNDARIES.md)
-- [CONTRACTS](CONTRACTS.md)
-- [EFFECTS](EFFECTS.md)
-- [INVARIANTS](INVARIANTS.md)
-- [PUBLIC_API](PUBLIC_API.md)
-- [SSOT](SSOT.md)
-- [TESTS](TESTS.md)
+## Start with these questions
 
-These files are the package-local source for ingest package ownership and constraints.
+- What the package is for: [project_overview.md](project_overview.md)
+- How the tree should be read: [LAYOUT](LAYOUT.md)
+- What belongs here: [SCOPE](SCOPE.md)
+- How the package is structured: [ARCHITECTURE](ARCHITECTURE.md)
+- Where ownership stops: [BOUNDARIES](BOUNDARIES.md)
+- Which surfaces are stable: [CONTRACTS](CONTRACTS.md)
+- Which effects need care: [EFFECTS](EFFECTS.md)
+- What maintainers must defend: [INVARIANTS](INVARIANTS.md)
+- What callers can rely on: [PUBLIC_API](PUBLIC_API.md)
+- Which files are authoritative: [SSOT](SSOT.md)
+- How behavior is protected: [TESTS](TESTS.md)
+
+## Suggested reading order
+
+1. Read [project_overview.md](project_overview.md).
+2. Read [LAYOUT](LAYOUT.md) before moving modules.
+3. Read [BOUNDARIES](BOUNDARIES.md) and [CONTRACTS](CONTRACTS.md) before changing public behavior.

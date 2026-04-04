@@ -1,9 +1,17 @@
-# CONTRACTS
+# Contracts
 
-Stable contracts in `bijux-canon-ingest` are:
+The stable surface of `bijux-canon-ingest` includes both its entrypoints and
+the shapes callers depend on.
+
+## Stable surfaces
+
 - console entrypoint `bijux-canon-ingest`
-- HTTP surface under `src/bijux_canon_ingest/interfaces/http/`
-- API schema under `apis/bijux-canon-ingest/v1/schema.yaml`
+- HTTP surface under `interfaces/http/`
+- pinned API schema under `apis/bijux-canon-ingest/v1/schema.yaml`
 - package-facing request, result, and configuration models
 
-Package contracts should remain stable even if internals move between `application/`, `processing/`, `retrieval/`, and `infra/`.
+## Change policy
+
+Internal modules may move between `application/`, `processing/`, `retrieval/`,
+and `infra/`, but boundary behavior and package-facing shapes should change only
+with documentation and test updates in the same review.

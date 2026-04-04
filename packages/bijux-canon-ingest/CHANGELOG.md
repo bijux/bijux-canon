@@ -1,6 +1,16 @@
 # Changelog
 
-All notable changes to **bijux-rag** are documented here. This project adheres to [Semantic Versioning](https://semver.org) and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
+All notable changes to `bijux-canon-ingest` are documented here.
+
+This changelog should focus on:
+
+- ingest and retrieval behavior that changes user-visible output
+- package-facing CLI or HTTP changes
+- schema and compatibility changes
+- operator-visible changes to deterministic ingest guarantees
+
+Historical names such as `bijux-rag` may appear in older compatibility notes,
+but the canonical package described here is `bijux-canon-ingest`.
 
 ## [0.1.0] – 2025-12-26
 

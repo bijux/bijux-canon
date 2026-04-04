@@ -1,9 +1,17 @@
-# TESTS
+# Tests
 
-`bijux-canon-ingest` coverage is organized around:
+The test layout matches the package's main risks: transform drift, retrieval
+drift, and layout drift.
+
+## Main layers
+
 - `tests/unit/` for local module behavior
 - `tests/e2e/` for package-facing flows
 - `tests/eval/` for pinned corpus and retrieval assets
-- `tests/invariants/` for package layout and repository hygiene rules
+- `tests/invariants/` for layout and repository hygiene rules
 
-Changes to transforms, retrieval behavior, or public boundaries should land with focused tests in the matching layer.
+## What to add when behavior changes
+
+- add unit coverage when changing transforms or models
+- add e2e coverage when changing CLI, HTTP, or workflow behavior
+- add eval coverage when changing retrieval-facing output against fixed corpora

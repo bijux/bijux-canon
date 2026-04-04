@@ -1,9 +1,17 @@
-# EFFECTS
+# Effects
 
-`bijux-canon-ingest` performs these important effects:
-- reads source documents and request payloads
-- writes retrieval/index artifacts and generated API snapshots
-- may call embedder adapters through `infra/`
-- emits HTTP responses, CLI output, and observability records
+The package touches files, requests, adapters, and generated artifacts, so its
+effects need to stay understandable.
 
-Pure transforms belong in `processing/` and retrieval logic. Filesystem, network, and adapter effects belong at boundaries.
+## Main side effects
+
+- reading source documents and request payloads
+- writing ingest and retrieval artifacts
+- calling embedder or integration adapters
+- emitting HTTP responses, CLI output, and observability records
+
+## Guardrails
+
+- deterministic transforms should stay separate from I/O code
+- filesystem, network, and adapter effects should stay near boundaries and adapters
+- ingest outputs should remain explainable after the fact

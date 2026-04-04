@@ -1,44 +1,35 @@
 # Project Overview
 
-`bijux-canon-ingest` is the package responsible for deterministic document
-ingestion and package-local retrieval assembly in the `bijux-canon` monorepo.
+`bijux-canon-ingest` is the package that prepares content for the rest of the
+system. It takes messy document inputs, runs deterministic transforms, and
+produces retrieval-oriented structures without absorbing responsibilities that
+belong to the index or runtime packages.
 
-What this package owns:
+## The job to keep in mind
 
-- document cleaning, chunking, and deterministic ingest transforms
-- package-local retrieval assembly and in-memory index workflows
-- package-facing CLI and HTTP boundaries
-- ingest-specific adapters, tracing, and observability helpers
+This package should make it easy to explain:
 
-What this package should not own:
+- how a document was cleaned or chunked
+- how ingest configuration shaped the result
+- how retrieval-ready output was assembled before index execution takes over
 
-- standalone vector execution engines or cross-package index authorities
-- runtime-wide replay governance, storage authority, or workflow coordination
-- monorepo tooling, release automation, or general developer infrastructure
-- generic shared foundations that deserve extraction into a dedicated package
+## What belongs here
 
-Current source shape:
+- deterministic document transforms
+- ingest-local retrieval assembly and helper models
+- package-local CLI and HTTP boundaries
+- ingest-specific adapters, observability, safeguards, and support utilities
 
-- `src/bijux_canon_ingest/application/`: orchestration and service flows
-- `src/bijux_canon_ingest/config/`: ingest-facing configuration models and builders
-- `src/bijux_canon_ingest/core/`: durable rules, shared value helpers, and core types
-- `src/bijux_canon_ingest/domain/`: pure protocols and effect descriptions
-- `src/bijux_canon_ingest/infra/`: concrete adapters
-- `src/bijux_canon_ingest/interfaces/`: CLI, HTTP, serialization, and edge helpers
-- `src/bijux_canon_ingest/observability/`: deterministic trace and observation models
-- `src/bijux_canon_ingest/processing/`: pure ingest transforms and streaming stages
-- `src/bijux_canon_ingest/retrieval/`: retrieval contracts, indexes, and retrieval models
+## What does not belong here
 
-Extraction candidates:
+- vector execution engines or cross-package index authority
+- runtime-wide replay, persistence, or execution governance
+- repository tooling and general monorepo infrastructure
 
-- `fp/`, `result/`, `streaming/`, `tree/`, `safeguards/`, and parts of `integrations/`
-  are still useful here, but they are generic enough that another dedicated shared
-  package may eventually own them if multiple packages need the same abstractions.
-- Until then, they should stay dependency-light and free of package-external business
-  logic so extraction remains straightforward.
+## Why the source tree is broad
 
-Quality priorities:
-
-1. `src/` should reflect clear ownership boundaries and stable public surfaces.
-2. `tests/` should protect behavior, structure, and repository hygiene.
-3. `docs/` should explain the package in durable language that still makes sense years later.
+The package contains both strongly domain-specific modules and a few support
+areas that are still package-local for now. Some subpackages, such as `fp/`,
+`result/`, `streaming/`, `tree/`, `safeguards/`, and parts of `integrations/`,
+may eventually deserve extraction if multiple canonical packages need the same
+abstractions. Until then, they should stay dependency-light and clearly scoped.
