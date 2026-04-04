@@ -13,6 +13,7 @@ from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager
 
 from .advanced_checks import CritiqueCheckState, run_advanced_checks
+from .criteria_execution import evaluate_rule_criteria
 from .reporting import (
     build_critique_coverage_report,
     build_critique_error_payload,
@@ -390,29 +391,13 @@ class CritiqueAgent(BaseAgent):
         context: dict[str, Any],
     ) -> CritiqueCheckState:
         """Evaluate the configured rule-backed critique criteria."""
-        per_critique: list[CriterionResult] = []
-        warnings: list[str] = []
-        issues: list[str] = []
-        score = 1.0
-        for crit in self.criteria:
-            check_fn = self.RULES.get(crit)
-            if not check_fn:
-                warnings.append(f"Criterion '{crit}' not implemented")
-                continue
-            try:
-                result = check_fn(self, text, context)
-                per_critique.append(result)
-                if result.result == "FAIL":
-                    score -= self.penalties.get(crit, 0.1)
-                    issues.extend(result.issues)
-            except Exception as exc:
-                error_msg = f"Check failed: {exc!s}"
-                per_critique.append(
-                    self._create_result(crit, False, [error_msg], severity="Critical")
-                )
-                score -= self.penalties.get(crit, 0.1)
-                issues.append(f"Criterion {crit} failed: {exc!s}")
-        return CritiqueCheckState(score, per_critique, warnings, issues)
+        return evaluate_rule_criteria(
+            self,
+            text=text,
+            context=context,
+            criteria=self.criteria,
+            rules=self.RULES,
+        )
 
     async def _run_advanced_checks(
         self,
