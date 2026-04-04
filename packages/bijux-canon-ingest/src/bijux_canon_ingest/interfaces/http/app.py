@@ -5,16 +5,21 @@
 
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any
 
 from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field, model_validator
 
+from bijux_canon_ingest.application.service import (
+    AnswerPayload,
+    IndexBackend,
+    IngestService,
+    StoredIndex,
+)
 from bijux_canon_ingest.core.types import RawDoc
-from bijux_canon_ingest.application.service import IndexBackend, IngestService, StoredIndex
 from bijux_canon_ingest.processing.stages import ChunkAndEmbedConfig, chunk_and_embed_docs
-from bijux_canon_ingest.retrieval.ports import Answer, Candidate
+from bijux_canon_ingest.retrieval.ports import Candidate
 from bijux_canon_ingest.result.types import Err
 
 # API Models (request/response)
@@ -248,33 +253,33 @@ def create_app() -> FastAPI:
         if isinstance(res, Err):
             raise HTTPException(status_code=400, detail=res.error)
 
-        ans = cast(Answer, res.value)
+        ans: AnswerPayload = res.value
         return AskResponse(
-            answer=ans.text,
+            answer=ans["answer"],
             citations=[
                 PCitation(
-                    doc_id=c.doc_id,
-                    chunk_id=c.chunk_id,
-                    start=c.start,
-                    end=c.end,
-                    text=c.text,
+                    doc_id=c["doc_id"],
+                    chunk_id=c["chunk_id"],
+                    start=c["start"],
+                    end=c["end"],
+                    text=c["text"],
                 )
-                for c in ans.citations
+                for c in ans["citations"]
             ],
             candidates=[
                 PCandidate(
-                    score=c.score,
+                    score=c["score"],
                     chunk={
-                        "doc_id": c.chunk.doc_id,
-                        "chunk_id": c.chunk.chunk_id,
-                        "text": c.chunk.text,
-                        "start": c.chunk.start,
-                        "end": c.chunk.end,
-                        "metadata": dict(c.chunk.metadata),
+                        "doc_id": c["doc_id"],
+                        "chunk_id": c["chunk_id"],
+                        "text": c["text"],
+                        "start": c["start"],
+                        "end": c["end"],
+                        "metadata": {},
                     },
-                    metadata=dict(c.metadata),
+                    metadata={},
                 )
-                for c in ans.candidates
+                for c in ans["contexts"]
             ],
         )
 
