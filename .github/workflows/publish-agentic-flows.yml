@@ -1,6 +1,9 @@
 name: publish-agentic-flows
 
 on:
+  push:
+    tags:
+      - "bijux-canon-runtime/v*"
   workflow_dispatch:
 
 permissions:

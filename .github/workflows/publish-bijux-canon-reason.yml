@@ -1,6 +1,9 @@
 name: publish-bijux-canon-reason
 
 on:
+  push:
+    tags:
+      - "bijux-canon-reason/v*"
   workflow_dispatch:
 
 permissions:

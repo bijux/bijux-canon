@@ -1,6 +1,9 @@
 name: publish-bijux-canon-index
 
 on:
+  push:
+    tags:
+      - "bijux-canon-index/v*"
   workflow_dispatch:
 
 permissions:

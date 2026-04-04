@@ -1,6 +1,9 @@
 name: publish-bijux-canon-runtime
 
 on:
+  push:
+    tags:
+      - "bijux-canon-runtime/v*"
   workflow_dispatch:
 
 permissions:

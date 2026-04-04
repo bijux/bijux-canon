@@ -1,6 +1,9 @@
 name: publish-bijux-rag
 
 on:
+  push:
+    tags:
+      - "bijux-canon-ingest/v*"
   workflow_dispatch:
 
 permissions:

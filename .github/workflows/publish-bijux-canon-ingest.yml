@@ -1,6 +1,9 @@
 name: publish-bijux-canon-ingest
 
 on:
+  push:
+    tags:
+      - "bijux-canon-ingest/v*"
   workflow_dispatch:
 
 permissions:
