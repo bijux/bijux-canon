@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-canon-ingest"
 dynamic = ["version"]
-description = "Deterministic document ingestion, chunking, and retrieval preparation for bijux workflows."
+description = "Deterministic document ingestion, chunking, and retrieval preparation for the bijux-canon package family from Bijux."
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
@@ -13,19 +13,29 @@ authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 keywords = [
   "bijux",
+  "bijux-canon",
+  "bijux.io",
   "ingest",
   "retrieval",
+  "retrieval-augmented-generation",
   "document-processing",
   "chunking",
   "indexing",
 ]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "License :: OSI Approved :: Apache Software License",
   "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Software Development :: Libraries :: Python Modules",
   "Typing :: Typed",
 ]
 dependencies = [
@@ -90,7 +100,7 @@ dev = [
 bijux-canon-ingest = "bijux_canon_ingest.interfaces.cli.entrypoint:main"
 
 [project.urls]
-Homepage = "https://bijux.io/"
+Homepage = "https://bijux.io/bijux-canon-ingest/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-ingest/"
@@ -98,6 +108,8 @@ Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
+PackageMap = "https://bijux.io/bijux-canon/package-map/"
+CompatibilityGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
 
 [tool.hatch.version]
 source = "vcs"

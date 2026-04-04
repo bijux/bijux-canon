@@ -4,6 +4,10 @@ Use this package only when an existing environment still expects the legacy
 ingest package name. Each release continues the published `bijux-rag`
 distribution and installs `bijux-canon-ingest` at the same version.
 
+The canonical package family now lives in `bijux-canon`, and the standalone
+`bijux-rag` repository is scheduled for retirement in favor of
+`https://github.com/bijux/bijux-canon`.
+
 ## What it does
 
 - installs the canonical package `bijux-canon-ingest`
@@ -23,4 +27,5 @@ When updating callers, move to:
 
 - distribution: `bijux-canon-ingest`
 - Python import: `bijux_canon_ingest`
-- docs entrypoint: `packages/bijux-canon-ingest/docs/index.md`
+- docs entrypoint: `https://bijux.io/bijux-canon-ingest/`
+- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-rag"
 dynamic = ["version", "dependencies"]
-description = "Legacy continuation of the bijux-rag PyPI package. Preserves legacy installs and imports while installing bijux-canon-ingest at the same version."
+description = "Compatibility bridge for the legacy bijux-rag PyPI package. Preserves installs, imports, and the bijux-rag command while installing bijux-canon-ingest from the bijux-canon family at the same version."
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
@@ -13,6 +13,8 @@ authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 keywords = [
   "bijux",
+  "bijux-canon",
+  "bijux.io",
   "compatibility",
   "migration",
   "legacy-name",
@@ -21,17 +23,24 @@ keywords = [
   "ingest",
 ]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "License :: OSI Approved :: Apache Software License",
   "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Software Development :: Libraries :: Python Modules",
   "Typing :: Typed",
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/"
+Homepage = "https://bijux.io/bijux-canon-ingest/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-ingest/"
@@ -39,6 +48,8 @@ Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
+MigrationGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+LegacyNameMap = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
 
 [project.scripts]
 bijux-rag = "bijux_canon_ingest.interfaces.cli.entrypoint:main"

@@ -10,7 +10,10 @@ releases when a tagged changelog existed.
 
 ## Unreleased
 
-- No package-local changes recorded yet.
+- PyPI metadata now points legacy `bijux-rag` readers at the canonical
+  `bijux-canon-ingest` docs, migration guide, and Bijux-owned package family.
+- The package README and overview now document the retired standalone
+  repository and use PyPI-safe badge and link targets.
 
 ## 0.3.0 - 2026-04-04
 
