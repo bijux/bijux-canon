@@ -23,9 +23,9 @@ Read the architecture pages for `bijux-canon-index` as a reviewer-facing map of 
 flowchart LR
     scope["bijux-canon-index"] --> section["Architecture"]
     section --> page["Extensibility Model"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["trace execution"]
+    dest2["spot dependency pressure"]
+    dest3["judge structural drift"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -34,21 +34,21 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Extensibility Model"]
-    focus1["Owned package surface"]
+    focus1["Module groups"]
     page --> focus1
-    focus1_1["vector execution semantics and backend orchestration"]
+    focus1_1["execution, provenance, and request semantics"]
     focus1 --> focus1_1
-    focus1_2["provenance-aware result artifacts and replay-oriented comparison"]
+    focus1_2["workflow coordination"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Read in code"]
     page --> focus2
     focus2_1["src/bijux_canon_index/domain"]
     focus2 --> focus2_1
-    focus2_2["vector execution result collections"]
+    focus2_2["src/bijux_canon_index/application"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Design pressure"]
     page --> focus3
-    focus3_1["Architecture"]
+    focus3_1["Extensibility Model"]
     focus3 --> focus3_1
     focus3_2["tests/unit for API, application, contracts, domain, infra, and tooling"]
     focus3 --> focus3_2

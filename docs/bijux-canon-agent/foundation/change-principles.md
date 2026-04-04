@@ -25,9 +25,9 @@ Read the foundation pages for `bijux-canon-agent` as the package's durable self-
 flowchart LR
     scope["bijux-canon-agent"] --> section["Foundation"]
     section --> page["Change Principles"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["own the right work"]
+    dest2["name the boundary"]
+    dest3["compare neighbors"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -36,23 +36,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Change Principles"]
-    focus1["Owned package surface"]
+    focus1["Owned here"]
     page --> focus1
     focus1_1["agent role implementations and role-specific helpers"]
     focus1 --> focus1_1
     focus1_2["deterministic orchestration of the local agent pipeline"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Not owned here"]
     page --> focus2
-    focus2_1["src/bijux_canon_agent/agents"]
+    focus2_1["runtime-wide persistence and replay acceptance"]
     focus2 --> focus2_1
-    focus2_2["trace-backed final outputs"]
+    focus2_2["ingest and index domain ownership"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Proof anchors"]
     page --> focus3
-    focus3_1["Foundation"]
+    focus3_1["packages/bijux-canon-agent"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for local behavior and utility coverage"]
+    focus3_2["packages/bijux-canon-agent/tests"]
     focus3 --> focus3_2
 ```
 

@@ -24,9 +24,9 @@ Read the interfaces pages for `bijux-canon-index` as the bridge between implemen
 flowchart LR
     scope["bijux-canon-index"] --> section["Interfaces"]
     section --> page["API Surface"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["identify contracts"]
+    dest2["see caller impact"]
+    dest3["review compatibility"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -35,21 +35,21 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["API Surface"]
-    focus1["Owned package surface"]
+    focus1["Caller surfaces"]
     page --> focus1
-    focus1_1["vector execution semantics and backend orchestration"]
+    focus1_1["CLI modules under src/bijux_canon_index/interfaces/cli"]
     focus1 --> focus1_1
-    focus1_2["provenance-aware result artifacts and replay-oriented comparison"]
+    focus1_2["HTTP app under src/bijux_canon_index/api"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Contract evidence"]
     page --> focus2
-    focus2_1["src/bijux_canon_index/domain"]
+    focus2_1["apis/bijux-canon-index/v1/schema.yaml"]
     focus2 --> focus2_1
     focus2_2["vector execution result collections"]
     focus2 --> focus2_2
     focus3["Review pressure"]
     page --> focus3
-    focus3_1["Interfaces"]
+    focus3_1["API Surface"]
     focus3 --> focus3_1
     focus3_2["tests/unit for API, application, contracts, domain, infra, and tooling"]
     focus3 --> focus3_2

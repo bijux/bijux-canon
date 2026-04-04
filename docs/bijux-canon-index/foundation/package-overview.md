@@ -24,9 +24,9 @@ Read the foundation pages for `bijux-canon-index` as the package's durable self-
 flowchart LR
     scope["bijux-canon-index"] --> section["Foundation"]
     section --> page["Package Overview"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["own the right work"]
+    dest2["name the boundary"]
+    dest3["compare neighbors"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -35,23 +35,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Package Overview"]
-    focus1["Owned package surface"]
+    focus1["Owned here"]
     page --> focus1
     focus1_1["vector execution semantics and backend orchestration"]
     focus1 --> focus1_1
     focus1_2["provenance-aware result artifacts and replay-oriented comparison"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Not owned here"]
     page --> focus2
-    focus2_1["src/bijux_canon_index/domain"]
+    focus2_1["document ingestion and normalization"]
     focus2 --> focus2_1
-    focus2_2["vector execution result collections"]
+    focus2_2["runtime-wide replay policy and execution governance"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Proof anchors"]
     page --> focus3
-    focus3_1["Foundation"]
+    focus3_1["packages/bijux-canon-index"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for API, application, contracts, domain, infra, and tooling"]
+    focus3_2["packages/bijux-canon-index/tests"]
     focus3 --> focus3_2
 ```
 

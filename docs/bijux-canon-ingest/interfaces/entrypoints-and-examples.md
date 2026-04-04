@@ -23,9 +23,9 @@ Read the interfaces pages for `bijux-canon-ingest` as the bridge between impleme
 flowchart LR
     scope["bijux-canon-ingest"] --> section["Interfaces"]
     section --> page["Entrypoints and Examples"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["identify contracts"]
+    dest2["see caller impact"]
+    dest3["review compatibility"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -34,21 +34,21 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Entrypoints and Examples"]
-    focus1["Owned package surface"]
+    focus1["Caller surfaces"]
     page --> focus1
-    focus1_1["document cleaning, normalization, and chunking"]
+    focus1_1["CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py"]
     focus1 --> focus1_1
-    focus1_2["ingest-local retrieval and indexing assembly"]
+    focus1_2["HTTP boundaries under src/bijux_canon_ingest/interfaces"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Contract evidence"]
     page --> focus2
-    focus2_1["src/bijux_canon_ingest/processing"]
+    focus2_1["apis/bijux-canon-ingest/v1/schema.yaml"]
     focus2 --> focus2_1
     focus2_2["normalized document trees"]
     focus2 --> focus2_2
     focus3["Review pressure"]
     page --> focus3
-    focus3_1["Interfaces"]
+    focus3_1["Entrypoints and Examples"]
     focus3 --> focus3_1
     focus3_2["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
     focus3 --> focus3_2

@@ -3386,6 +3386,50 @@ def related_links(package: PackageInfo, category: str, active_categories: tuple[
     return "\n".join(section_links)
 
 
+def package_map_destinations(category: str) -> tuple[str, ...]:
+    destination_map = {
+        "foundation": ("own the right work", "name the boundary", "compare neighbors"),
+        "architecture": ("trace execution", "spot dependency pressure", "judge structural drift"),
+        "interfaces": ("identify contracts", "see caller impact", "review compatibility"),
+        "operations": ("repeat workflows", "find diagnostics", "release safely"),
+        "quality": ("see proof", "see limitations", "judge done-ness"),
+    }
+    return destination_map[category]
+
+
+def package_map_focus_sections(
+    package: PackageInfo, category: str, title: str
+) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    focus_map = {
+        "foundation": (
+            ("Owned here", (package.owns[0], package.owns[1] if len(package.owns) > 1 else package.owns[0])),
+            ("Not owned here", (package.not_owns[0], package.not_owns[1] if len(package.not_owns) > 1 else package.not_owns[0])),
+            ("Proof anchors", (package.package_dir, f"{package.package_dir}/tests")),
+        ),
+        "architecture": (
+            ("Module groups", (package.modules[0][1], package.modules[1][1] if len(package.modules) > 1 else package.modules[0][1])),
+            ("Read in code", (package.modules[0][0], package.modules[1][0] if len(package.modules) > 1 else package.modules[0][0])),
+            ("Design pressure", (title, package.tests[0])),
+        ),
+        "interfaces": (
+            ("Caller surfaces", (package.interfaces[0], package.interfaces[1] if len(package.interfaces) > 1 else package.interfaces[0])),
+            ("Contract evidence", (package.api_specs[0] if package.api_specs else package.release_notes[0], package.artifacts[0])),
+            ("Review pressure", (title, package.tests[0])),
+        ),
+        "operations": (
+            ("Workflow anchors", (package.package_dir + "/pyproject.toml", package.interfaces[0])),
+            ("Operational evidence", (package.tests[0], package.artifacts[0])),
+            ("Release pressure", (package.release_notes[0], title)),
+        ),
+        "quality": (
+            ("Proof surfaces", (package.tests[0], package.tests[1] if len(package.tests) > 1 else package.tests[0])),
+            ("Risk anchors", (package.release_notes[0], package.artifacts[0])),
+            ("Review bar", (title, "package trust after change")),
+        ),
+    }
+    return focus_map[category]
+
+
 def render_package_page(
     package: PackageInfo,
     category: str,
@@ -3432,27 +3476,8 @@ def render_package_page(
         package.title,
         category.title(),
         title,
-        ("reviewable boundaries", "operator clarity", "change safety"),
-        (
-            (
-                "Owned package surface",
-                (package.owns[0], package.owns[1] if len(package.owns) > 1 else package.owns[0]),
-            ),
-            (
-                "Evidence to inspect",
-                (
-                    package.modules[0][0],
-                    package.artifacts[0],
-                ),
-            ),
-            (
-                "Review pressure",
-                (
-                    category.title(),
-                    package.tests[0],
-                ),
-            ),
-        ),
+        package_map_destinations(category),
+        package_map_focus_sections(package, category, title),
     )
     body = add_working_interpretation(body, package_working_interpretation(package, category))
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))

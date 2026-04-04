@@ -25,9 +25,9 @@ Read the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of
 flowchart LR
     scope["bijux-canon-ingest"] --> section["Architecture"]
     section --> page["Execution Model"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["trace execution"]
+    dest2["spot dependency pressure"]
+    dest3["judge structural drift"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -36,21 +36,21 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Execution Model"]
-    focus1["Owned package surface"]
+    focus1["Module groups"]
     page --> focus1
-    focus1_1["document cleaning, normalization, and chunking"]
+    focus1_1["deterministic document transforms"]
     focus1 --> focus1_1
-    focus1_2["ingest-local retrieval and indexing assembly"]
+    focus1_2["retrieval-oriented models and assembly"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Read in code"]
     page --> focus2
     focus2_1["src/bijux_canon_ingest/processing"]
     focus2 --> focus2_1
-    focus2_2["normalized document trees"]
+    focus2_2["src/bijux_canon_ingest/retrieval"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Design pressure"]
     page --> focus3
-    focus3_1["Architecture"]
+    focus3_1["Execution Model"]
     focus3 --> focus3_1
     focus3_2["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
     focus3 --> focus3_2

@@ -25,9 +25,9 @@ Read the foundation pages for `bijux-canon-ingest` as the package's durable self
 flowchart LR
     scope["bijux-canon-ingest"] --> section["Foundation"]
     section --> page["Change Principles"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["own the right work"]
+    dest2["name the boundary"]
+    dest3["compare neighbors"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -36,23 +36,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Change Principles"]
-    focus1["Owned package surface"]
+    focus1["Owned here"]
     page --> focus1
     focus1_1["document cleaning, normalization, and chunking"]
     focus1 --> focus1_1
     focus1_2["ingest-local retrieval and indexing assembly"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Not owned here"]
     page --> focus2
-    focus2_1["src/bijux_canon_ingest/processing"]
+    focus2_1["runtime-wide replay authority and persistence"]
     focus2 --> focus2_1
-    focus2_2["normalized document trees"]
+    focus2_2["cross-package vector execution semantics"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Proof anchors"]
     page --> focus3
-    focus3_1["Foundation"]
+    focus3_1["packages/bijux-canon-ingest"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
+    focus3_2["packages/bijux-canon-ingest/tests"]
     focus3 --> focus3_2
 ```
 

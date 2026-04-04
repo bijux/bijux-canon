@@ -23,9 +23,9 @@ Read the architecture pages for `bijux-canon-agent` as a reviewer-facing map of 
 flowchart LR
     scope["bijux-canon-agent"] --> section["Architecture"]
     section --> page["Extensibility Model"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["trace execution"]
+    dest2["spot dependency pressure"]
+    dest3["judge structural drift"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -34,21 +34,21 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Extensibility Model"]
-    focus1["Owned package surface"]
+    focus1["Module groups"]
     page --> focus1
-    focus1_1["agent role implementations and role-specific helpers"]
+    focus1_1["role-local behavior"]
     focus1 --> focus1_1
-    focus1_2["deterministic orchestration of the local agent pipeline"]
+    focus1_2["execution flow orchestration"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Read in code"]
     page --> focus2
     focus2_1["src/bijux_canon_agent/agents"]
     focus2 --> focus2_1
-    focus2_2["trace-backed final outputs"]
+    focus2_2["src/bijux_canon_agent/pipeline"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Design pressure"]
     page --> focus3
-    focus3_1["Architecture"]
+    focus3_1["Extensibility Model"]
     focus3 --> focus3_1
     focus3_2["tests/unit for local behavior and utility coverage"]
     focus3 --> focus3_2

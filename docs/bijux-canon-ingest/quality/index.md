@@ -21,9 +21,9 @@ Read the quality pages for `bijux-canon-ingest` as the proof frame around the pa
 flowchart LR
     scope["bijux-canon-ingest"] --> section["Quality"]
     section --> page["Quality"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["see proof"]
+    dest2["see limitations"]
+    dest3["judge done-ness"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -32,23 +32,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Quality"]
-    focus1["Owned package surface"]
+    focus1["Proof surfaces"]
     page --> focus1
-    focus1_1["document cleaning, normalization, and chunking"]
+    focus1_1["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
     focus1 --> focus1_1
-    focus1_2["ingest-local retrieval and indexing assembly"]
+    focus1_2["tests/e2e for package boundary coverage"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Risk anchors"]
     page --> focus2
-    focus2_1["src/bijux_canon_ingest/processing"]
+    focus2_1["README.md"]
     focus2 --> focus2_1
     focus2_2["normalized document trees"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Review bar"]
     page --> focus3
     focus3_1["Quality"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
+    focus3_2["package trust after change"]
     focus3 --> focus3_2
 ```
 

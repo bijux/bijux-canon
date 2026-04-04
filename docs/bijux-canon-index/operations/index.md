@@ -21,9 +21,9 @@ Read the operations pages for `bijux-canon-index` as the package's explicit oper
 flowchart LR
     scope["bijux-canon-index"] --> section["Operations"]
     section --> page["Operations"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["repeat workflows"]
+    dest2["find diagnostics"]
+    dest3["release safely"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -32,23 +32,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Operations"]
-    focus1["Owned package surface"]
+    focus1["Workflow anchors"]
     page --> focus1
-    focus1_1["vector execution semantics and backend orchestration"]
+    focus1_1["packages/bijux-canon-index/pyproject.toml"]
     focus1 --> focus1_1
-    focus1_2["provenance-aware result artifacts and replay-oriented comparison"]
+    focus1_2["CLI modules under src/bijux_canon_index/interfaces/cli"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Operational evidence"]
     page --> focus2
-    focus2_1["src/bijux_canon_index/domain"]
+    focus2_1["tests/unit for API, application, contracts, domain, infra, and tooling"]
     focus2 --> focus2_1
     focus2_2["vector execution result collections"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Release pressure"]
     page --> focus3
-    focus3_1["Operations"]
+    focus3_1["README.md"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for API, application, contracts, domain, infra, and tooling"]
+    focus3_2["Operations"]
     focus3 --> focus3_2
 ```
 

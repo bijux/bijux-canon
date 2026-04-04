@@ -24,9 +24,9 @@ Read the operations pages for `bijux-canon-reason` as the package's explicit ope
 flowchart LR
     scope["bijux-canon-reason"] --> section["Operations"]
     section --> page["Local Development"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["repeat workflows"]
+    dest2["find diagnostics"]
+    dest3["release safely"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -35,23 +35,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Local Development"]
-    focus1["Owned package surface"]
+    focus1["Workflow anchors"]
     page --> focus1
-    focus1_1["reasoning plans, claims, and evidence-aware reasoning models"]
+    focus1_1["packages/bijux-canon-reason/pyproject.toml"]
     focus1 --> focus1_1
-    focus1_2["execution of reasoning steps and local tool dispatch"]
+    focus1_2["CLI app in src/bijux_canon_reason/interfaces/cli"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Operational evidence"]
     page --> focus2
-    focus2_1["src/bijux_canon_reason/planning"]
+    focus2_1["tests/unit for planning, reasoning, execution, verification, and interfaces"]
     focus2 --> focus2_1
     focus2_2["reasoning traces and replay diffs"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Release pressure"]
     page --> focus3
-    focus3_1["Operations"]
+    focus3_1["README.md"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for planning, reasoning, execution, verification, and interfaces"]
+    focus3_2["Local Development"]
     focus3 --> focus3_2
 ```
 

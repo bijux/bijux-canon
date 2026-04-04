@@ -24,9 +24,9 @@ Read the operations pages for `bijux-canon-runtime` as the package's explicit op
 flowchart LR
     scope["bijux-canon-runtime"] --> section["Operations"]
     section --> page["Release and Versioning"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["repeat workflows"]
+    dest2["find diagnostics"]
+    dest3["release safely"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -35,23 +35,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Release and Versioning"]
-    focus1["Owned package surface"]
+    focus1["Workflow anchors"]
     page --> focus1
-    focus1_1["flow execution authority"]
+    focus1_1["packages/bijux-canon-runtime/pyproject.toml"]
     focus1 --> focus1_1
-    focus1_2["replay and acceptability semantics"]
+    focus1_2["CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Operational evidence"]
     page --> focus2
-    focus2_1["src/bijux_canon_runtime/model"]
+    focus2_1["tests/unit for api, contracts, core, interfaces, model, and runtime"]
     focus2 --> focus2_1
     focus2_2["execution store records"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Release pressure"]
     page --> focus3
-    focus3_1["Operations"]
+    focus3_1["README.md"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for api, contracts, core, interfaces, model, and runtime"]
+    focus3_2["Release and Versioning"]
     focus3 --> focus3_2
 ```
 

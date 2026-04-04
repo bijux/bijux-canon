@@ -24,9 +24,9 @@ Read the foundation pages for `bijux-canon-reason` as the package's durable self
 flowchart LR
     scope["bijux-canon-reason"] --> section["Foundation"]
     section --> page["Domain Language"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["own the right work"]
+    dest2["name the boundary"]
+    dest3["compare neighbors"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -35,23 +35,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Domain Language"]
-    focus1["Owned package surface"]
+    focus1["Owned here"]
     page --> focus1
     focus1_1["reasoning plans, claims, and evidence-aware reasoning models"]
     focus1 --> focus1_1
     focus1_2["execution of reasoning steps and local tool dispatch"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Not owned here"]
     page --> focus2
-    focus2_1["src/bijux_canon_reason/planning"]
+    focus2_1["runtime persistence and replay authority"]
     focus2 --> focus2_1
-    focus2_2["reasoning traces and replay diffs"]
+    focus2_2["ingest and index engines"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Proof anchors"]
     page --> focus3
-    focus3_1["Foundation"]
+    focus3_1["packages/bijux-canon-reason"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for planning, reasoning, execution, verification, and interfaces"]
+    focus3_2["packages/bijux-canon-reason/tests"]
     focus3 --> focus3_2
 ```
 

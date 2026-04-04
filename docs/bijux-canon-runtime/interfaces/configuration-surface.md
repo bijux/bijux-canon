@@ -24,9 +24,9 @@ Read the interfaces pages for `bijux-canon-runtime` as the bridge between implem
 flowchart LR
     scope["bijux-canon-runtime"] --> section["Interfaces"]
     section --> page["Configuration Surface"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["identify contracts"]
+    dest2["see caller impact"]
+    dest3["review compatibility"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -35,21 +35,21 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Configuration Surface"]
-    focus1["Owned package surface"]
+    focus1["Caller surfaces"]
     page --> focus1
-    focus1_1["flow execution authority"]
+    focus1_1["CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py"]
     focus1 --> focus1_1
-    focus1_2["replay and acceptability semantics"]
+    focus1_2["HTTP app in src/bijux_canon_runtime/api/v1"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Contract evidence"]
     page --> focus2
-    focus2_1["src/bijux_canon_runtime/model"]
+    focus2_1["apis/bijux-canon-runtime/v1/schema.yaml"]
     focus2 --> focus2_1
     focus2_2["execution store records"]
     focus2 --> focus2_2
     focus3["Review pressure"]
     page --> focus3
-    focus3_1["Interfaces"]
+    focus3_1["Configuration Surface"]
     focus3 --> focus3_1
     focus3_2["tests/unit for api, contracts, core, interfaces, model, and runtime"]
     focus3 --> focus3_2

@@ -24,9 +24,9 @@ Read the operations pages for `bijux-canon-ingest` as the package's explicit ope
 flowchart LR
     scope["bijux-canon-ingest"] --> section["Operations"]
     section --> page["Installation and Setup"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["repeat workflows"]
+    dest2["find diagnostics"]
+    dest3["release safely"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -35,23 +35,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Installation and Setup"]
-    focus1["Owned package surface"]
+    focus1["Workflow anchors"]
     page --> focus1
-    focus1_1["document cleaning, normalization, and chunking"]
+    focus1_1["packages/bijux-canon-ingest/pyproject.toml"]
     focus1 --> focus1_1
-    focus1_2["ingest-local retrieval and indexing assembly"]
+    focus1_2["CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Operational evidence"]
     page --> focus2
-    focus2_1["src/bijux_canon_ingest/processing"]
+    focus2_1["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
     focus2 --> focus2_1
     focus2_2["normalized document trees"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Release pressure"]
     page --> focus3
-    focus3_1["Operations"]
+    focus3_1["README.md"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
+    focus3_2["Installation and Setup"]
     focus3 --> focus3_2
 ```
 

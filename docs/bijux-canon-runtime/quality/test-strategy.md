@@ -23,9 +23,9 @@ Read the quality pages for `bijux-canon-runtime` as the proof frame around the p
 flowchart LR
     scope["bijux-canon-runtime"] --> section["Quality"]
     section --> page["Test Strategy"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["see proof"]
+    dest2["see limitations"]
+    dest3["judge done-ness"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -34,23 +34,23 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Test Strategy"]
-    focus1["Owned package surface"]
+    focus1["Proof surfaces"]
     page --> focus1
-    focus1_1["flow execution authority"]
+    focus1_1["tests/unit for api, contracts, core, interfaces, model, and runtime"]
     focus1 --> focus1_1
-    focus1_2["replay and acceptability semantics"]
+    focus1_2["tests/e2e for governed flow behavior"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Risk anchors"]
     page --> focus2
-    focus2_1["src/bijux_canon_runtime/model"]
+    focus2_1["README.md"]
     focus2 --> focus2_1
     focus2_2["execution store records"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Review bar"]
     page --> focus3
-    focus3_1["Quality"]
+    focus3_1["Test Strategy"]
     focus3 --> focus3_1
-    focus3_2["tests/unit for api, contracts, core, interfaces, model, and runtime"]
+    focus3_2["package trust after change"]
     focus3 --> focus3_2
 ```
 

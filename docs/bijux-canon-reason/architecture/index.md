@@ -21,9 +21,9 @@ Read the architecture pages for `bijux-canon-reason` as a reviewer-facing map of
 flowchart LR
     scope["bijux-canon-reason"] --> section["Architecture"]
     section --> page["Architecture"]
-    dest1["reviewable boundaries"]
-    dest2["operator clarity"]
-    dest3["change safety"]
+    dest1["trace execution"]
+    dest2["spot dependency pressure"]
+    dest3["judge structural drift"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -32,19 +32,19 @@ flowchart LR
 ```mermaid
 flowchart TD
     page["Architecture"]
-    focus1["Owned package surface"]
+    focus1["Module groups"]
     page --> focus1
-    focus1_1["reasoning plans, claims, and evidence-aware reasoning models"]
+    focus1_1["plan construction and intermediate representation"]
     focus1 --> focus1_1
-    focus1_2["execution of reasoning steps and local tool dispatch"]
+    focus1_2["claim and reasoning semantics"]
     focus1 --> focus1_2
-    focus2["Evidence to inspect"]
+    focus2["Read in code"]
     page --> focus2
     focus2_1["src/bijux_canon_reason/planning"]
     focus2 --> focus2_1
-    focus2_2["reasoning traces and replay diffs"]
+    focus2_2["src/bijux_canon_reason/reasoning"]
     focus2 --> focus2_2
-    focus3["Review pressure"]
+    focus3["Design pressure"]
     page --> focus3
     focus3_1["Architecture"]
     focus3 --> focus3_1
