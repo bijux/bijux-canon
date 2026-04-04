@@ -1,14 +1,22 @@
-# SCOPE
+# Scope
 
-`bijux-canon-reason` exists to model and execute deterministic reasoning workflows with explicit verification.
+`bijux-canon-reason` exists to model and execute reasoning workflows with
+explicit verification, structured claims, and evidence-aware behavior.
 
-Its scope includes:
+## In scope
+
 - reasoning plan and claim modeling
-- reasoning-step execution
-- provenance and verification rules
+- planning and execution of reasoning steps
+- verification rules and provenance checks that belong to reasoning itself
 - package-local CLI and API access
 
-Its scope excludes:
-- canonical runtime storage governance
+## Out of scope
+
+- runtime storage, governance, and replay authority
 - ingest and vector index ownership
 - monorepo tooling concerns
+
+## Rule of thumb
+
+If the question is "how should the system reason, justify, and verify this
+answer," the change likely belongs here.

@@ -1,9 +1,14 @@
-# EFFECTS
+# Effects
 
-`bijux-canon-reason` performs these important effects:
-- reads reasoning requests, plans, and evaluation inputs
-- writes reasoning outputs, traces, and API responses
-- dispatches step execution and tool calls through `execution/`
-- emits verification outcomes and serialized artifacts
+## Main side effects
 
-Effectful behavior should stay explicit in execution and interface layers. Core models should remain pure.
+- reading reasoning requests, plans, and evaluation inputs
+- dispatching step execution and tool calls
+- writing reasoning outputs, traces, and API responses
+- emitting verification outcomes and serialized artifacts
+
+## Guardrails
+
+- effectful behavior should stay explicit in execution and interface layers
+- reasoning and verification models should remain easy to inspect without hidden I/O
+- evidence use should be explainable after the fact

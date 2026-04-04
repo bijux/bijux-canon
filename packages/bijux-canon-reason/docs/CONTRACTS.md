@@ -1,9 +1,16 @@
-# CONTRACTS
+# Contracts
 
-Stable contracts in `bijux-canon-reason` are:
-- console scripts `bijux-canon-reason` and `bijux-rar`
-- API surface under `src/bijux_canon_reason/api/v1/`
+The stable contract surface of `bijux-canon-reason` includes both operator
+entrypoints and typed reasoning outputs.
+
+## Stable surfaces
+
+- console scripts `bijux-canon-reason` and the legacy compatibility command `bijux-rar`
+- HTTP surface under `api/v1/`
 - pinned OpenAPI assets under `apis/bijux-canon-reason/v1/`
-- stable core reasoning and verification models
+- stable reasoning and verification models that callers are expected to consume
 
-Public contracts should be protected even when execution and verification internals are reorganized.
+## Change policy
+
+Public contracts should be protected even when planning, execution, or
+verification internals are reorganized.

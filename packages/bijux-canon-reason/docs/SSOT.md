@@ -1,9 +1,11 @@
-# SSOT
+# Source Of Truth
 
-Source-of-truth locations for `bijux-canon-reason` are:
+## Authoritative locations
+
 - `src/bijux_canon_reason/` for implementation
 - `apis/bijux-canon-reason/v1/` for pinned API artifacts
 - `tests/` for executable behavior and regressions
-- `docs/*.md` here for package-local scope and architecture
+- `docs/` for package-local scope and architecture
 
-When package scope or public reasoning surfaces are in question, this directory is authoritative.
+When package scope or public reasoning surfaces are in question, these package
+docs should win over higher-level summaries.

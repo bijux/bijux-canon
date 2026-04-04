@@ -1,21 +1,39 @@
 # bijux-canon-reason
 
-`bijux-canon-reason` owns deterministic reasoning workflows and verification in `bijux-canon`.
+`bijux-canon-reason` is the package that turns available evidence into planned
+reasoning steps, structured claims, and verification outcomes. It is where
+reasoning behavior is made explicit enough to inspect, test, and defend.
 
-It owns:
-- reasoning plans and claims
-- reasoning-step execution
-- provenance and verification checks local to reasoning
+If you need to understand how claims are formed, how reasoning steps are
+planned and executed, how evidence is used, or where verification lives, start
+here. If you need runtime governance, storage, or vector execution internals,
+you are outside this package's boundary.
+
+## What this package owns
+
+- reasoning plans, claims, and evidence-aware reasoning models
+- execution of reasoning steps and local tool dispatch
+- verification and provenance checks that belong to reasoning itself
 - package-local CLI and API boundaries
 
-It does not own runtime persistence, ingest/index engines, or repository tooling.
+## What this package does not own
 
-Start here:
-- local package docs: [docs/index.md](docs/index.md)
-- package-local architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- package-local contracts: [docs/CONTRACTS.md](docs/CONTRACTS.md)
+- runtime persistence, replay authority, or execution governance
+- ingest and index engines
+- repository tooling and release automation
 
-Source layout:
-- [src/bijux_canon_reason](src/bijux_canon_reason)
-- [tests](tests)
-- [tooling](tooling)
+## Source map
+
+- [`src/bijux_canon_reason/planning`](src/bijux_canon_reason/planning) for planning behavior
+- [`src/bijux_canon_reason/reasoning`](src/bijux_canon_reason/reasoning) for claim and reasoning semantics
+- [`src/bijux_canon_reason/execution`](src/bijux_canon_reason/execution) for step execution
+- [`src/bijux_canon_reason/verification`](src/bijux_canon_reason/verification) for checks and outcomes
+- [`src/bijux_canon_reason/interfaces`](src/bijux_canon_reason/interfaces) and [`src/bijux_canon_reason/api`](src/bijux_canon_reason/api) for boundaries
+- [`tests`](tests) for executable protection of the package contract
+
+## Read this next
+
+- [Package guide](docs/index.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Contracts](docs/CONTRACTS.md)
+- [Tests](docs/TESTS.md)

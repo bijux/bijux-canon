@@ -1,5 +1,12 @@
-
 # Changelog
+
+This changelog should record reasoning-package changes that affect users,
+operators, or maintainers directly:
+
+- reasoning and verification behavior changes
+- evidence and provenance contract changes
+- package-facing API or CLI changes
+- compatibility changes that alter how the package is consumed
 
 ## v0.1.0 — Initial public release
 
