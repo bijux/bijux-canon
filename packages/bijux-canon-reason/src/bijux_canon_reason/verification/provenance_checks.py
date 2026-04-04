@@ -54,7 +54,9 @@ def check_derived_grounding(
             continue
 
         evidence_supports = [
-            support for support in claim.supports if support.kind == SupportKind.evidence
+            support
+            for support in claim.supports
+            if support.kind == SupportKind.evidence
         ]
         if not evidence_supports:
             failures.append(
@@ -259,7 +261,9 @@ def check_reasoning_trace(
         return VerificationCheck(name="reasoning_trace", passed=True), []
 
     metadata = ctx.trace.metadata if isinstance(ctx.trace.metadata, dict) else {}
-    reasoning_meta = metadata.get("reasoning_trace") if isinstance(metadata, dict) else None
+    reasoning_meta = (
+        metadata.get("reasoning_trace") if isinstance(metadata, dict) else None
+    )
     if not isinstance(reasoning_meta, dict):
         failures.append(
             VerificationFailure(
@@ -286,10 +290,14 @@ def check_reasoning_trace(
             and getattr(event.claim, "claim_type", None) == ClaimType.derived
         ):
             structured = (
-                event.claim.structured if isinstance(event.claim.structured, dict) else {}
+                event.claim.structured
+                if isinstance(event.claim.structured, dict)
+                else {}
             )
             result_hash = (
-                structured.get("result_sha256") if isinstance(structured, dict) else None
+                structured.get("result_sha256")
+                if isinstance(structured, dict)
+                else None
             )
             if isinstance(result_hash, str) and len(result_hash) == 64:
                 claim_hashes.add(result_hash)

@@ -8,11 +8,18 @@ from typing import NoReturn, no_type_check
 
 import typer
 
-from bijux_canon_reason.interfaces.serialization.json_file import read_json_file, write_json_file
+from bijux_canon_reason.interfaces.serialization.json_file import (
+    read_json_file,
+    write_json_file,
+)
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
 from bijux_canon_reason.core.types import Plan, ProblemSpec
 from bijux_canon_reason.evaluation.suite_workflow import run_eval_suite
-from bijux_canon_reason.application.run_artifacts import RunArtifacts, RunBuilder, RunInputs
+from bijux_canon_reason.application.run_artifacts import (
+    RunArtifacts,
+    RunBuilder,
+    RunInputs,
+)
 from bijux_canon_reason.traces.replay import replay_from_artifacts
 from bijux_canon_reason.verification.verifier import verify_trace
 
@@ -27,7 +34,9 @@ SPEC_PATH_OPTION = typer.Option(
 PRESET_OPTION = typer.Option("default", "--preset", help="Pipeline preset name.")
 SEED_OPTION = typer.Option(0, "--seed", help="Deterministic seed.")
 ARTIFACTS_DIR_OPTION = typer.Option(
-    Path("artifacts/bijux-canon-reason"), "--artifacts-dir", help="Base artifacts directory."
+    Path("artifacts/bijux-canon-reason"),
+    "--artifacts-dir",
+    help="Base artifacts directory.",
 )
 FAIL_ON_VERIFY_OPTION = typer.Option(
     False,

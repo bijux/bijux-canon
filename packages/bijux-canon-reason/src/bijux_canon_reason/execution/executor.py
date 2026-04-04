@@ -16,7 +16,10 @@ from bijux_canon_reason.core.types import (
     TraceEventKind,
 )
 from bijux_canon_reason.execution.runtime import Runtime
-from bijux_canon_reason.execution.step_execution import ExecutionState, build_step_output
+from bijux_canon_reason.execution.step_execution import (
+    ExecutionState,
+    build_step_output,
+)
 from bijux_canon_reason.execution.trace_metadata import build_trace_result
 from bijux_canon_reason.execution.tool_dispatch import dispatch_tool_requests
 
@@ -33,6 +36,8 @@ class ExecutionResult:
 
     def model_dump(self, mode: str = "json") -> dict[str, object]:
         return {"trace": self.trace.model_dump(mode=mode)}
+
+
 def _validate_topology(plan: Plan) -> None:
     """Fail fast on topology violations before any execution starts."""
     nodes = {n.id for n in plan.nodes}

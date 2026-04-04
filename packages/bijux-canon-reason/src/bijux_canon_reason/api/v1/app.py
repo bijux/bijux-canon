@@ -42,7 +42,10 @@ from bijux_canon_reason.api.v1.http_guards import (
     guard_request,
     initialize_rate_limit_state,
 )
-from bijux_canon_reason.api.v1.item_routes import configure_item_store, register_item_routes
+from bijux_canon_reason.api.v1.item_routes import (
+    configure_item_store,
+    register_item_routes,
+)
 from bijux_canon_reason.api.v1.run_routes import register_run_routes
 
 
@@ -96,6 +99,7 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
     @no_type_check
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
     register_item_routes(
         app,
         guard_request=_guard,

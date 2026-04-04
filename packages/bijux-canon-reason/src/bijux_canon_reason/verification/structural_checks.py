@@ -89,7 +89,10 @@ def check_claim_supports(
                         invariant_id=INV_LNK_001,
                     )
                 )
-            if support.kind == SupportKind.tool_call and support.ref_id not in known_calls:
+            if (
+                support.kind == SupportKind.tool_call
+                and support.ref_id not in known_calls
+            ):
                 failures.append(
                     VerificationFailure(
                         severity=VerificationSeverity.error,

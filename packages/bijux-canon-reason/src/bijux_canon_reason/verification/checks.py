@@ -5,6 +5,8 @@ from __future__ import annotations
 from bijux_canon_reason.core.types import VerificationCheck, VerificationFailure
 from bijux_canon_reason.verification.check_registry import CHECK_SEQUENCE
 from bijux_canon_reason.verification.context import VerificationContext
+
+
 def run_all_checks(
     ctx: VerificationContext,
 ) -> tuple[list[VerificationCheck], list[VerificationFailure]]:

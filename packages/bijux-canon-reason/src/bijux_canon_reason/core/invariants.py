@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from collections import defaultdict, deque
 
-from bijux_canon_reason.core.types import Plan, Trace, TraceEventKind, VerificationReport
+from bijux_canon_reason.core.types import (
+    Plan,
+    Trace,
+    TraceEventKind,
+    VerificationReport,
+)
 
 SUPPORTED_TRACE_SCHEMA_VERSIONS = {1, 2}
 SUPPORTED_RUNTIME_PROTOCOL_VERSIONS = {1}

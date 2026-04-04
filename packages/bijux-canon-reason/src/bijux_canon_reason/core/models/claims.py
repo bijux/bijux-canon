@@ -85,7 +85,9 @@ class Claim(StableModel):
                 "statement": self.statement,
                 "status": self.status,
                 "confidence": self.confidence,
-                "supports": [support.model_dump(mode="json") for support in self.supports],
+                "supports": [
+                    support.model_dump(mode="json") for support in self.supports
+                ],
                 "claim_type": self.claim_type,
                 "structured": self.structured,
             },
