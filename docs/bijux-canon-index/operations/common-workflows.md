@@ -116,3 +116,9 @@ If the operations pages for `bijux-canon-index` are weak, maintainers end up rel
 ## Representative Scenario
 
 A maintainer is trying to run, diagnose, or release `bijux-canon-index` under time pressure and needs an explicit path that starts from checked-in metadata and lands in repeatable validation.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-index/pyproject.toml` for install and release metadata
+- `packages/bijux-canon-index/README.md` and package tests for operator truth
+- this page for the repeatable workflow narrative that should match those assets

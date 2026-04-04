@@ -113,3 +113,9 @@ If the interface pages for `bijux-canon-index` are weak, callers cannot tell whi
 ## Representative Scenario
 
 An operator or downstream caller wants to depend on a `bijux-canon-index` surface and needs to know which command, API, schema, import, or artifact is stable enough to treat as a contract.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-index/src/bijux_canon_index` for the implemented boundary
+- `apis/bijux-canon-index/v1/schema.yaml` as tracked contract evidence
+- `packages/bijux-canon-index/tests` for compatibility and behavior proof

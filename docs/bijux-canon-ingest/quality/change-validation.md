@@ -114,3 +114,9 @@ If the quality pages for `bijux-canon-ingest` are weak, it becomes difficult to 
 ## Representative Scenario
 
 A change appears correct locally, but the reviewer still needs to know whether `bijux-canon-ingest` has actually satisfied its proof obligations before the work is accepted.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-ingest/tests` for executable proof
+- `packages/bijux-canon-ingest/pyproject.toml` for declared package constraints
+- this page for the review lens that explains how to read that proof

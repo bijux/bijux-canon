@@ -112,3 +112,9 @@ If the interface pages for `bijux-canon-runtime` are weak, callers cannot tell w
 ## Representative Scenario
 
 An operator or downstream caller wants to depend on a `bijux-canon-runtime` surface and needs to know which command, API, schema, import, or artifact is stable enough to treat as a contract.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime` for the implemented boundary
+- `apis/bijux-canon-runtime/v1/schema.yaml` as tracked contract evidence
+- `packages/bijux-canon-runtime/tests` for compatibility and behavior proof

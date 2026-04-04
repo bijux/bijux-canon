@@ -115,3 +115,9 @@ If the architecture pages for `bijux-canon-agent` are weak, refactors become gue
 ## Representative Scenario
 
 A reviewer is tracing a refactor through `bijux-canon-agent` and needs to know whether the changed modules still line up with the documented execution and dependency structure.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-agent/src/bijux_canon_agent` for the actual dependency and module structure
+- `packages/bijux-canon-agent/tests` for structural and behavioral regressions
+- this page for the reviewer-facing map that should remain aligned with those assets

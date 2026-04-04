@@ -909,6 +909,37 @@ def package_scenario(package: PackageInfo, category: str) -> str:
     return scenario_map[category]
 
 
+def package_source_of_truth(package: PackageInfo, category: str) -> tuple[str, ...]:
+    truth_map = {
+        "foundation": (
+            f"`{package.package_dir}/src/{package.import_name}` for the real ownership boundary in code",
+            f"`{package.package_dir}/tests` for executable proof of that boundary",
+            f"`{package.package_dir}/README.md` and this section for the shortest maintained framing",
+        ),
+        "architecture": (
+            f"`{package.package_dir}/src/{package.import_name}` for the actual dependency and module structure",
+            f"`{package.package_dir}/tests` for structural and behavioral regressions",
+            "this page for the reviewer-facing map that should remain aligned with those assets",
+        ),
+        "interfaces": (
+            f"`{package.package_dir}/src/{package.import_name}` for the implemented boundary",
+            *(f"`{item}` as tracked contract evidence" for item in package.api_specs[:1]),
+            f"`{package.package_dir}/tests` for compatibility and behavior proof",
+        ),
+        "operations": (
+            f"`{package.package_dir}/pyproject.toml` for install and release metadata",
+            f"`{package.package_dir}/README.md` and package tests for operator truth",
+            "this page for the repeatable workflow narrative that should match those assets",
+        ),
+        "quality": (
+            f"`{package.package_dir}/tests` for executable proof",
+            f"`{package.package_dir}/pyproject.toml` for declared package constraints",
+            "this page for the review lens that explains how to read that proof",
+        ),
+    }
+    return tuple(truth_map[category])
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1016,6 +1047,17 @@ def add_representative_scenario(body: str, text: str) -> str:
             "## Representative Scenario",
             "",
             text,
+        ]
+    )
+    return insert_before_heading(body, "Concrete Anchors", block)
+
+
+def add_source_of_truth(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Source Of Truth Order",
+            "",
+            bullet_lines(bullets),
         ]
     )
     return insert_before_heading(body, "Concrete Anchors", block)
@@ -1163,6 +1205,14 @@ def render_home(
     body = add_representative_scenario(
         body,
         "A reviewer opens the docs with only a vague question like 'where does this change belong'. The root page should route them to the right handbook branch before they spend time reading the wrong kind of documentation.",
+    )
+    body = add_source_of_truth(
+        body,
+        (
+            "`docs/index.md` and `mkdocs.yml` for the published routing structure",
+            "`scripts/render_docs_catalog.py` for how that structure is generated",
+            "the target handbook pages themselves for the actual subject-specific detail",
+        ),
     )
     body = add_anchor_section(
         body,
@@ -1537,6 +1587,14 @@ def render_root_page(
         body,
         "A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.",
     )
+    body = add_source_of_truth(
+        body,
+        (
+            "root files like `pyproject.toml`, `Makefile`, `makes/`, and `.github/workflows/` for actual repository behavior",
+            "`apis/` for tracked shared schema artifacts",
+            "this section for the explanation of how those assets fit together",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
@@ -1870,6 +1928,14 @@ def render_dev_page(slug: str, title: str) -> str:
         body,
         "A CI or release helper changes behavior and a contributor needs to know whether the effect is repository maintenance only or whether it changes a product package contract. This section should make that distinction fast.",
     )
+    body = add_source_of_truth(
+        body,
+        (
+            "`packages/bijux-canon-dev/src/bijux_canon_dev` for implemented maintainer helpers",
+            "`packages/bijux-canon-dev/tests` for executable proof of maintainer behavior",
+            "this section for the maintained explanation of maintainer intent",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
@@ -2197,6 +2263,14 @@ def render_compat_page(slug: str, title: str) -> str:
         body,
         "A legacy dependency name appears in an old environment file. The compatibility docs should let a maintainer map it to the canonical package and judge whether that old name still deserves to survive.",
     )
+    body = add_source_of_truth(
+        body,
+        (
+            "the `packages/compat-*` metadata and README files for preserved legacy surfaces",
+            "the matching canonical package docs for current behavior",
+            "this section for the migration and retirement explanation that ties them together",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
@@ -2325,6 +2399,7 @@ def render_package_page(
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))
     body = add_representative_scenario(body, package_scenario(package, category))
+    body = add_source_of_truth(body, package_source_of_truth(package, category))
     body = add_anchor_section(body, package_anchor_bullets(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))

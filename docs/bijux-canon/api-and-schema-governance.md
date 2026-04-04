@@ -119,3 +119,9 @@ Repository pages matter because they keep shared rules, schemas, workflows, and 
 ## Representative Scenario
 
 A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.
+
+## Source Of Truth Order
+
+- root files like `pyproject.toml`, `Makefile`, `makes/`, and `.github/workflows/` for actual repository behavior
+- `apis/` for tracked shared schema artifacts
+- this section for the explanation of how those assets fit together

@@ -114,3 +114,9 @@ If the foundation pages for `bijux-canon-runtime` are weak, reviewers stop knowi
 ## Representative Scenario
 
 A contributor proposes moving new behavior into `bijux-canon-runtime` because it is nearby in the repository. This page should make it obvious whether that work fits the package boundary or belongs in a neighboring package instead.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime` for the real ownership boundary in code
+- `packages/bijux-canon-runtime/tests` for executable proof of that boundary
+- `packages/bijux-canon-runtime/README.md` and this section for the shortest maintained framing

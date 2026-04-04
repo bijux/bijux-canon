@@ -107,3 +107,9 @@ If the foundation pages for `bijux-canon-agent` are weak, reviewers stop knowing
 ## Representative Scenario
 
 A contributor proposes moving new behavior into `bijux-canon-agent` because it is nearby in the repository. This page should make it obvious whether that work fits the package boundary or belongs in a neighboring package instead.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-agent/src/bijux_canon_agent` for the real ownership boundary in code
+- `packages/bijux-canon-agent/tests` for executable proof of that boundary
+- `packages/bijux-canon-agent/README.md` and this section for the shortest maintained framing

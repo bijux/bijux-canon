@@ -108,3 +108,9 @@ Maintainer pages matter because hidden automation is one of the fastest ways for
 ## Representative Scenario
 
 A CI or release helper changes behavior and a contributor needs to know whether the effect is repository maintenance only or whether it changes a product package contract. This section should make that distinction fast.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-dev/src/bijux_canon_dev` for implemented maintainer helpers
+- `packages/bijux-canon-dev/tests` for executable proof of maintainer behavior
+- this section for the maintained explanation of maintainer intent

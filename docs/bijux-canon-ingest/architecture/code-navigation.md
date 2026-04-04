@@ -72,6 +72,12 @@ If the architecture pages for `bijux-canon-ingest` are weak, refactors become gu
 
 A reviewer is tracing a refactor through `bijux-canon-ingest` and needs to know whether the changed modules still line up with the documented execution and dependency structure.
 
+## Source Of Truth Order
+
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` for the actual dependency and module structure
+- `packages/bijux-canon-ingest/tests` for structural and behavioral regressions
+- this page for the reviewer-facing map that should remain aligned with those assets
+
 ## Concrete Anchors
 
 - `src/bijux_canon_ingest/processing` for deterministic document transforms

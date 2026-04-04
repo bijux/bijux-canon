@@ -105,3 +105,9 @@ Compatibility pages matter because legacy package names often survive longer tha
 ## Representative Scenario
 
 A legacy dependency name appears in an old environment file. The compatibility docs should let a maintainer map it to the canonical package and judge whether that old name still deserves to survive.
+
+## Source Of Truth Order
+
+- the `packages/compat-*` metadata and README files for preserved legacy surfaces
+- the matching canonical package docs for current behavior
+- this section for the migration and retirement explanation that ties them together

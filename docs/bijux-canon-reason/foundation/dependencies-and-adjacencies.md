@@ -112,3 +112,9 @@ If the foundation pages for `bijux-canon-reason` are weak, reviewers stop knowin
 ## Representative Scenario
 
 A contributor proposes moving new behavior into `bijux-canon-reason` because it is nearby in the repository. This page should make it obvious whether that work fits the package boundary or belongs in a neighboring package instead.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-reason/src/bijux_canon_reason` for the real ownership boundary in code
+- `packages/bijux-canon-reason/tests` for executable proof of that boundary
+- `packages/bijux-canon-reason/README.md` and this section for the shortest maintained framing

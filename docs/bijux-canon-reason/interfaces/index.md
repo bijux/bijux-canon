@@ -133,3 +133,9 @@ If the interface pages for `bijux-canon-reason` are weak, callers cannot tell wh
 ## Representative Scenario
 
 An operator or downstream caller wants to depend on a `bijux-canon-reason` surface and needs to know which command, API, schema, import, or artifact is stable enough to treat as a contract.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-reason/src/bijux_canon_reason` for the implemented boundary
+- `apis/bijux-canon-reason/v1/schema.yaml` as tracked contract evidence
+- `packages/bijux-canon-reason/tests` for compatibility and behavior proof

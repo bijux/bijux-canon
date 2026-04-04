@@ -73,6 +73,12 @@ If the architecture pages for `bijux-canon-index` are weak, refactors become gue
 
 A reviewer is tracing a refactor through `bijux-canon-index` and needs to know whether the changed modules still line up with the documented execution and dependency structure.
 
+## Source Of Truth Order
+
+- `packages/bijux-canon-index/src/bijux_canon_index` for the actual dependency and module structure
+- `packages/bijux-canon-index/tests` for structural and behavioral regressions
+- this page for the reviewer-facing map that should remain aligned with those assets
+
 ## Concrete Anchors
 
 - `src/bijux_canon_index/domain` for execution, provenance, and request semantics

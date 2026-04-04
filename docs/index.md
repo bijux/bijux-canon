@@ -165,3 +165,9 @@ If this page is vague, readers enter the wrong handbook branch first and the cos
 ## Representative Scenario
 
 A reviewer opens the docs with only a vague question like 'where does this change belong'. The root page should route them to the right handbook branch before they spend time reading the wrong kind of documentation.
+
+## Source Of Truth Order
+
+- `docs/index.md` and `mkdocs.yml` for the published routing structure
+- `scripts/render_docs_catalog.py` for how that structure is generated
+- the target handbook pages themselves for the actual subject-specific detail

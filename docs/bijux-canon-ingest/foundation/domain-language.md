@@ -109,3 +109,9 @@ If the foundation pages for `bijux-canon-ingest` are weak, reviewers stop knowin
 ## Representative Scenario
 
 A contributor proposes moving new behavior into `bijux-canon-ingest` because it is nearby in the repository. This page should make it obvious whether that work fits the package boundary or belongs in a neighboring package instead.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` for the real ownership boundary in code
+- `packages/bijux-canon-ingest/tests` for executable proof of that boundary
+- `packages/bijux-canon-ingest/README.md` and this section for the shortest maintained framing

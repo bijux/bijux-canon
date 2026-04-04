@@ -108,3 +108,9 @@ If the interface pages for `bijux-canon-ingest` are weak, callers cannot tell wh
 ## Representative Scenario
 
 An operator or downstream caller wants to depend on a `bijux-canon-ingest` surface and needs to know which command, API, schema, import, or artifact is stable enough to treat as a contract.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` for the implemented boundary
+- `apis/bijux-canon-ingest/v1/schema.yaml` as tracked contract evidence
+- `packages/bijux-canon-ingest/tests` for compatibility and behavior proof

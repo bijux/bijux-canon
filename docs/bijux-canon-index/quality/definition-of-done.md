@@ -108,3 +108,9 @@ If the quality pages for `bijux-canon-index` are weak, it becomes difficult to t
 ## Representative Scenario
 
 A change appears correct locally, but the reviewer still needs to know whether `bijux-canon-index` has actually satisfied its proof obligations before the work is accepted.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-index/tests` for executable proof
+- `packages/bijux-canon-index/pyproject.toml` for declared package constraints
+- this page for the review lens that explains how to read that proof

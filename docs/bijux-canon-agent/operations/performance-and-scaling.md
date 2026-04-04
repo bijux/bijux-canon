@@ -114,3 +114,9 @@ If the operations pages for `bijux-canon-agent` are weak, maintainers end up rel
 ## Representative Scenario
 
 A maintainer is trying to run, diagnose, or release `bijux-canon-agent` under time pressure and needs an explicit path that starts from checked-in metadata and lands in repeatable validation.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-agent/pyproject.toml` for install and release metadata
+- `packages/bijux-canon-agent/README.md` and package tests for operator truth
+- this page for the repeatable workflow narrative that should match those assets

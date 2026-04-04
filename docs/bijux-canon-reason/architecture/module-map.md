@@ -110,3 +110,9 @@ If the architecture pages for `bijux-canon-reason` are weak, refactors become gu
 ## Representative Scenario
 
 A reviewer is tracing a refactor through `bijux-canon-reason` and needs to know whether the changed modules still line up with the documented execution and dependency structure.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-reason/src/bijux_canon_reason` for the actual dependency and module structure
+- `packages/bijux-canon-reason/tests` for structural and behavioral regressions
+- this page for the reviewer-facing map that should remain aligned with those assets

@@ -107,3 +107,9 @@ If the operations pages for `bijux-canon-ingest` are weak, maintainers end up re
 ## Representative Scenario
 
 A maintainer is trying to run, diagnose, or release `bijux-canon-ingest` under time pressure and needs an explicit path that starts from checked-in metadata and lands in repeatable validation.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-ingest/pyproject.toml` for install and release metadata
+- `packages/bijux-canon-ingest/README.md` and package tests for operator truth
+- this page for the repeatable workflow narrative that should match those assets

@@ -117,3 +117,9 @@ If the architecture pages for `bijux-canon-runtime` are weak, refactors become g
 ## Representative Scenario
 
 A reviewer is tracing a refactor through `bijux-canon-runtime` and needs to know whether the changed modules still line up with the documented execution and dependency structure.
+
+## Source Of Truth Order
+
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime` for the actual dependency and module structure
+- `packages/bijux-canon-runtime/tests` for structural and behavioral regressions
+- this page for the reviewer-facing map that should remain aligned with those assets
