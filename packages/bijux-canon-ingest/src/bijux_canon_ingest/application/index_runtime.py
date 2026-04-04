@@ -113,21 +113,27 @@ def build_stored_index(
         tail_policy=tail_policy,
     )
     if isinstance(chunk_result, Err):
-        return chunk_result
+        return Err(chunk_result.error)
 
     chunks = chunk_result.value
     if backend not in (IndexBackend.BM25, IndexBackend.NUMPY_COSINE):
         return Err(f"unsupported backend: {backend}")
     if backend == IndexBackend.BM25:
-        index = build_bm25_index(chunks=chunks, buckets=2048)
-        return Ok(StoredIndex(backend=IndexBackend.BM25, index=index, fingerprint=index.fingerprint))
+        bm25_index = build_bm25_index(chunks=chunks, buckets=2048)
+        return Ok(
+            StoredIndex(
+                backend=IndexBackend.BM25,
+                index=bm25_index,
+                fingerprint=bm25_index.fingerprint,
+            )
+        )
 
-    index = build_numpy_cosine_index(chunks=chunks, embedder=HashEmbedder())
+    cosine_index = build_numpy_cosine_index(chunks=chunks, embedder=HashEmbedder())
     return Ok(
         StoredIndex(
             backend=IndexBackend.NUMPY_COSINE,
-            index=index,
-            fingerprint=index.fingerprint,
+            index=cosine_index,
+            fingerprint=cosine_index.fingerprint,
         )
     )
 
@@ -184,16 +190,23 @@ def retrieve_blob_candidates(
     payload = msgpack.unpackb(blob, raw=False)
     backend = payload.get("backend")
     if backend == IndexBackend.BM25:
-        index = BM25Index.load_bytes(blob)
-        return Ok(index.retrieve(query=query, top_k=top_k, filters=filters))
+        bm25_index = BM25Index.load_bytes(blob)
+        return Ok(bm25_index.retrieve(query=query, top_k=top_k, filters=filters))
     if backend == IndexBackend.NUMPY_COSINE:
-        index = NumpyCosineIndex.load_bytes(blob)
-        embedder = _embedder_for_spec(index.spec.model)
-        return Ok(index.retrieve(query=query, top_k=top_k, filters=filters, embedder=embedder))
+        cosine_index = NumpyCosineIndex.load_bytes(blob)
+        embedder = _embedder_for_spec(cosine_index.spec.model)
+        return Ok(
+            cosine_index.retrieve(
+                query=query,
+                top_k=top_k,
+                filters=filters,
+                embedder=embedder,
+            )
+        )
     return Err("unknown index backend")
 
 
-def _embedder_for_spec(model_name: str):
+def _embedder_for_spec(model_name: str) -> HashEmbedder | SentenceTransformersEmbedder:
     if isinstance(model_name, str) and model_name.startswith("sbert:"):
         return SentenceTransformersEmbedder(model_name=model_name.split(":", 1)[1])
     return HashEmbedder()

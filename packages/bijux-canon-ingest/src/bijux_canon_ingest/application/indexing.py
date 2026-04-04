@@ -106,14 +106,17 @@ def build_index_from_csv(
 
     chunks = ingest_csv_to_chunks(csv_path=csv_path, env=cfg.chunk_env)
     if cfg.backend == "bm25":
-        idx = build_bm25_index(chunks=chunks, buckets=cfg.bm25_buckets)
-        idx.save(str(out_path))
-        return idx.fingerprint
+        bm25_index = build_bm25_index(chunks=chunks, buckets=cfg.bm25_buckets)
+        bm25_index.save(str(out_path))
+        return bm25_index.fingerprint
 
     if cfg.backend == "numpy-cosine":
-        idx = build_numpy_cosine_index(chunks=chunks, embedder=_make_embedder(cfg))
-        idx.save(str(out_path))
-        return idx.fingerprint
+        cosine_index = build_numpy_cosine_index(
+            chunks=chunks,
+            embedder=_make_embedder(cfg),
+        )
+        cosine_index.save(str(out_path))
+        return cosine_index.fingerprint
 
     raise ValueError(f"unknown index backend: {cfg.backend}")
 
