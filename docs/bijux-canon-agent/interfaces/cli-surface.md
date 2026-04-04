@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 The CLI surface is the operator-facing command layer for `bijux-canon-agent`.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Interfaces"]
+    section --> page["CLI Surface"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Command Facts
 
 - canonical command: `bijux-canon-agent`

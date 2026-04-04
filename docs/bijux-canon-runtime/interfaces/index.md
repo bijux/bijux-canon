@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 bijux-canon-runtime interface pages describe the command, API, configuration, import, and artifact surfaces that a caller can rely on.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-runtime"] --> section["Interfaces"]
+    section --> page["Interfaces"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Pages in This Section
 
 - [CLI Surface](cli-surface.md)

@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Package dependencies matter because they reveal which behavior is local and which behavior is delegated.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Foundation"]
+    section --> page["Dependencies and Adjacencies"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Direct Dependency Themes
 
 - pydantic

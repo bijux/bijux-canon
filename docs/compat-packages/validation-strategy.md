@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Compatibility packages are small, but they still need validation for import
 preservation, packaging metadata, and migration pointers.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Compatibility Handbook"]
+    section --> page["Validation Strategy"]
+    dest1["legacy package names"]
+    dest2["migration decisions"]
+    dest3["retirement review"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Validation Focus
 
 - import resolution

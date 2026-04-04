@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 These packages exist to reduce migration breakage, not to become the preferred
 long-term entrypoints for new work.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Compatibility Handbook"]
+    section --> page["Compatibility Overview"]
+    dest1["legacy package names"]
+    dest2["migration decisions"]
+    dest3["retirement review"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Preserved Surfaces
 
 - legacy distribution names

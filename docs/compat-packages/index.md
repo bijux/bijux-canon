@@ -13,6 +13,20 @@ The compatibility packages preserve older distribution names, import names,
 and command names while the canonical package family now lives under the
 `bijux-canon-*` naming system.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Compatibility Handbook"]
+    section --> page["Compatibility Packages"]
+    dest1["legacy package names"]
+    dest2["migration decisions"]
+    dest3["retirement review"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Pages in This Section
 
 - [Compatibility Overview](compatibility-overview.md)

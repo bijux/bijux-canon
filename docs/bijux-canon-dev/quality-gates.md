@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Repository quality checks live here so package code does not each reinvent the
 same maintenance logic.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Maintainer Handbook"]
+    section --> page["Quality Gates"]
+    dest1["quality gates"]
+    dest2["schema governance"]
+    dest3["release support"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Current Quality Surfaces
 
 - dependency analysis in `quality/deptry_scan.py`

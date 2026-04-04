@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Reviewing changes in `bijux-canon-ingest` should include both behavior and documentation.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Quality"]
+    section --> page["Review Checklist"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Checklist
 
 - did ownership stay inside the correct package boundary

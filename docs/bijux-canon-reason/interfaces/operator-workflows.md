@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Operator workflows should start from documented package entrypoints and end in reviewable outputs.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Interfaces"]
+    section --> page["Operator Workflows"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Workflow Anchors
 
 - entry surfaces: CLI app in src/bijux_canon_reason/interfaces/cli, HTTP app in src/bijux_canon_reason/api/v1, schema files in apis/bijux-canon-reason/v1

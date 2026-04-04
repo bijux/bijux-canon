@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 The package capabilities can be read as a map from modules to behavior.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Foundation"]
+    section --> page["Capability Map"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Capability Map
 
 - `src/bijux_canon_agent/agents` for role-local behavior

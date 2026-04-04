@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 The public Python surface of `bijux-canon-agent` starts at the package import root and any
 intentionally exported modules beneath it.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Interfaces"]
+    section --> page["Public Imports"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Import Anchor
 
 - import root: `bijux_canon_agent`

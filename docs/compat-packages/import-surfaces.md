@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Compatibility imports exist only so older code can keep resolving package names
 during migration.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Compatibility Handbook"]
+    section --> page["Import Surfaces"]
+    dest1["legacy package names"]
+    dest2["migration decisions"]
+    dest3["retirement review"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Current Import Roots
 
 - `agentic_flows`

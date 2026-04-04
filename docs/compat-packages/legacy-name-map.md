@@ -15,6 +15,20 @@ last_reviewed: 2026-04-04
 - `bijux-rar` maps to `bijux-canon-reason`
 - `bijux-vex` maps to `bijux-canon-index`
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Compatibility Handbook"]
+    section --> page["Legacy Name Map"]
+    dest1["legacy package names"]
+    dest2["migration decisions"]
+    dest3["retirement review"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Purpose
 
 This page provides the exact mapping between retired public names and current canonical names.

@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 `bijux-canon-ingest` is the package that owns deterministic document ingestion, chunking, retrieval assembly, and ingest-facing boundaries.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Foundation"]
+    section --> page["Package Overview"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## What It Owns
 
 - document cleaning, normalization, and chunking

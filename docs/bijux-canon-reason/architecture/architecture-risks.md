@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Architectural risk appears when the package boundary becomes hard to explain or hard to test.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Architecture"]
+    section --> page["Architecture Risks"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Risk Signals
 
 - behavior moves into the wrong package because it seems convenient

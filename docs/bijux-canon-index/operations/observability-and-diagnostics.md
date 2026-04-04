@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Diagnostics should make it easier to explain what `bijux-canon-index` did, not merely that it ran.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-index"] --> section["Operations"]
+    section --> page["Observability and Diagnostics"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Diagnostic Anchors
 
 - vector execution result collections

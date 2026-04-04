@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 `bijux-canon-dev` is for maintainers and automation.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Maintainer Handbook"]
+    section --> page["Scope and Non-Goals"]
+    dest1["quality gates"]
+    dest2["schema governance"]
+    dest3["release support"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## In Scope
 
 - CI-facing helpers

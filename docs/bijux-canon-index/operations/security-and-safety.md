@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Security review in `bijux-canon-index` should focus on the package's real boundary surfaces and outputs.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-index"] --> section["Operations"]
+    section --> page["Security and Safety"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Review Anchors
 
 - CLI modules under src/bijux_canon_index/interfaces/cli

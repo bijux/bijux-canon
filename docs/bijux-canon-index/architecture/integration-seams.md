@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Integration seams are the points where `bijux-canon-index` meets configuration, APIs,
 operators, or neighboring packages.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-index"] --> section["Architecture"]
+    section --> page["Integration Seams"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Integration Surfaces
 
 - CLI modules under src/bijux_canon_index/interfaces/cli

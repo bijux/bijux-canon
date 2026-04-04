@@ -17,6 +17,20 @@ The canonical packages each own a distinct slice of the overall system:
 - [bijux-canon-agent](../bijux-canon-agent/foundation/index.md) for deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
 - [bijux-canon-runtime](../bijux-canon-runtime/foundation/index.md) for governed execution and replay authority with auditable non-determinism handling, persistence, and package-to-package coordination.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Repository Handbook"]
+    section --> page["Package Map"]
+    dest1["package boundaries"]
+    dest2["shared workflows"]
+    dest3["reviewable decisions"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Shared Maintainer Packages
 
 - [bijux-canon-dev](../bijux-canon-dev/index.md) for repository automation, schema drift checks, SBOM support, and quality gates

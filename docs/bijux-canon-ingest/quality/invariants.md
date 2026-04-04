@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Invariants are the promises that should survive ordinary implementation change.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Quality"]
+    section --> page["Invariants"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Invariant Anchors
 
 - package boundary stays explicit

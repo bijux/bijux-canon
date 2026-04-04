@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 bijux-canon-reason operations pages describe how to install, run, observe, release, and safely operate the package.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Operations"]
+    section --> page["Operations"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Pages in This Section
 
 - [Installation and Setup](installation-and-setup.md)

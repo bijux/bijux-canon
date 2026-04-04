@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 When you need to understand a change in `bijux-canon-runtime`, use this reading order:
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-runtime"] --> section["Architecture"]
+    section --> page["Code Navigation"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Reading Order
 
 - start at the relevant interface or API module

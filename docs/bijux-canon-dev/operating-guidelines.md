@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Changes in `bijux-canon-dev` should be especially careful because they can
 affect multiple packages at once.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Maintainer Handbook"]
+    section --> page["Operating Guidelines"]
+    dest1["quality gates"]
+    dest2["schema governance"]
+    dest3["release support"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Guidelines
 
 - prefer checks that are reviewable and testable over opaque shell glue

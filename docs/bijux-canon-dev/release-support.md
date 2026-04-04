@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Shared release helpers belong here so versioning and packaging practices stay
 consistent across the repository.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Maintainer Handbook"]
+    section --> page["Release Support"]
+    dest1["quality gates"]
+    dest2["schema governance"]
+    dest3["release support"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Current Surfaces
 
 - `release/version_resolver.py`

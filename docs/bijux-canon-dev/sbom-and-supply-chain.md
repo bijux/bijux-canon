@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Supply-chain visibility is a repository maintenance concern, so SBOM helpers
 live in `bijux-canon-dev` instead of being duplicated by each package.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Maintainer Handbook"]
+    section --> page["SBOM and Supply Chain"]
+    dest1["quality gates"]
+    dest2["schema governance"]
+    dest3["release support"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Current Surfaces
 
 - `sbom/requirements_writer.py`

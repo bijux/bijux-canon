@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 The package owns repository-level helpers that keep API schemas and tracked
 schema artifacts synchronized with the code that claims to implement them.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Maintainer Handbook"]
+    section --> page["Schema Governance"]
+    dest1["quality gates"]
+    dest2["schema governance"]
+    dest3["release support"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Current Surfaces
 
 - `api/openapi_drift.py`

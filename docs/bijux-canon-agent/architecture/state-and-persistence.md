@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 State in `bijux-canon-agent` should be explicit enough that a maintainer can say what is
 transient, what is serialized, and what neighboring packages must not assume.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Architecture"]
+    section --> page["State and Persistence"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Durable Surfaces
 
 - trace-backed final outputs

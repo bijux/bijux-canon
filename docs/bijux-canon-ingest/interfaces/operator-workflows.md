@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Operator workflows should start from documented package entrypoints and end in reviewable outputs.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Interfaces"]
+    section --> page["Operator Workflows"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Workflow Anchors
 
 - entry surfaces: CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py, HTTP boundaries under src/bijux_canon_ingest/interfaces, configuration modules under src/bijux_canon_ingest/config

@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 bijux-canon-reason quality pages describe the tests, invariants, limits, and review rules that keep the package trustworthy over time.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Quality"]
+    section --> page["Quality"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Pages in This Section
 
 - [Test Strategy](test-strategy.md)

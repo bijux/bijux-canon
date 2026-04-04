@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 The architecture of `bijux-canon-ingest` is easiest to understand from the major module groups.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Architecture"]
+    section --> page["Module Map"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Major Modules
 
 - `src/bijux_canon_ingest/processing` for deterministic document transforms

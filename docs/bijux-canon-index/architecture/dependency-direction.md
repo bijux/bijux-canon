@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 The package should keep dependency direction readable: domain intent near the center,
 interfaces and infrastructure at the edges.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-index"] --> section["Architecture"]
+    section --> page["Dependency Direction"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Directional Reading Order
 
 - domain and model concerns under the core module groups

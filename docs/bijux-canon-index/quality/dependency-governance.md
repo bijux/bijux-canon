@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Dependency changes in `bijux-canon-index` should be treated as contract changes when they
 alter package authority, operational risk, or public setup expectations.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-index"] --> section["Quality"]
+    section --> page["Dependency Governance"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Current Dependency Themes
 
 - pydantic

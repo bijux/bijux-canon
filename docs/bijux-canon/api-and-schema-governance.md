@@ -13,6 +13,20 @@ Shared API artifacts live under `apis/` so schema review does not depend on
 reading package source alone. This repository currently tracks schemas for
 ingest, index, reason, agent, and runtime.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Repository Handbook"]
+    section --> page["API and Schema Governance"]
+    dest1["package boundaries"]
+    dest2["shared workflows"]
+    dest3["reviewable decisions"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Governance Rules
 
 - package code and tracked schema files must describe the same public behavior

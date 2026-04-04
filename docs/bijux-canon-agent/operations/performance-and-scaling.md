@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Performance work should preserve the deterministic and contract-driven behavior the package already promises.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Operations"]
+    section --> page["Performance and Scaling"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Performance Review Anchors
 
 - inspect workflow modules before optimizing boundary code blindly

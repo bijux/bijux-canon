@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 `bijux-canon-agent` executes work by receiving inputs at its interfaces, coordinating policy
 and workflows in application code, and delegating specific responsibilities to owned modules.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Architecture"]
+    section --> page["Execution Model"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Execution Anchors
 
 - entry surfaces: CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py, operator configuration under src/bijux_canon_agent/config, HTTP-adjacent modules under src/bijux_canon_agent/api

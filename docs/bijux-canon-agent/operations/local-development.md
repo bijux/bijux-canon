@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Local development should happen inside `packages/bijux-canon-agent` with tests and docs updated
 in the same change series as the code.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Operations"]
+    section --> page["Local Development"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Development Anchors
 
 - tests/unit for local behavior and utility coverage

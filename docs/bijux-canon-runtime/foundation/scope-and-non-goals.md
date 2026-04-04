@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 The package boundary exists so neighboring packages can evolve without hidden overlap.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-runtime"] --> section["Foundation"]
+    section --> page["Scope and Non-Goals"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## In Scope
 
 - flow execution authority

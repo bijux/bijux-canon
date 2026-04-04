@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 A compatibility package can be retired only when the dependent environments
 that still need it are understood and the retirement path is documented.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Compatibility Handbook"]
+    section --> page["Retirement Conditions"]
+    dest1["legacy package names"]
+    dest2["migration decisions"]
+    dest3["retirement review"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Retirement Signals
 
 - no remaining supported consumers depend on the legacy name

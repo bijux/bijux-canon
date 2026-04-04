@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Failure recovery starts with knowing which artifacts, interfaces, and tests expose the problem.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Operations"]
+    section --> page["Failure Recovery"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Recovery Anchors
 
 - interface surfaces: CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py, HTTP boundaries under src/bijux_canon_ingest/interfaces, configuration modules under src/bijux_canon_ingest/config

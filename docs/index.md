@@ -35,6 +35,30 @@ package handbooks that all share the same five-category spine.</div>
 <a class="md-button" href="compat-packages/">Open compatibility docs</a>
 </div>
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Root Site"]
+    section --> page["Docs Index"]
+    dest1["bijux-canon section"]
+    dest2["bijux-canon-ingest section"]
+    dest3["bijux-canon-index section"]
+    dest4["bijux-canon-reason section"]
+    dest5["bijux-canon-agent section"]
+    dest6["bijux-canon-runtime section"]
+    dest7["bijux-canon-dev section"]
+    dest8["compatibility packages section"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+    page --> dest4
+    page --> dest5
+    page --> dest6
+    page --> dest7
+    page --> dest8
+```
+
 ## Documentation Scope
 
 - the bijux-canon section

@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Installation for `bijux-canon-agent` should start from the package metadata and the specific
 optional dependencies that matter for the work being done.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Operations"]
+    section --> page["Installation and Setup"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Package Metadata Anchors
 
 - package root: `packages/bijux-canon-agent`

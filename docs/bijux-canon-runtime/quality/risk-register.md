@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 The durable risks for `bijux-canon-runtime` are the ones that make the package boundary, interface contract,
 or produced artifacts harder to trust.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-runtime"] --> section["Quality"]
+    section --> page["Risk Register"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Ongoing Risks to Watch
 
 - hidden overlap with neighboring packages

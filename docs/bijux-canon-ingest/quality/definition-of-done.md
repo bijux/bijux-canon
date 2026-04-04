@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 A change in `bijux-canon-ingest` is not done when code passes locally but the package contract
 is still unclear or unprotected.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Quality"]
+    section --> page["Definition of Done"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Done Means
 
 - code, docs, and tests agree on the new behavior

@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 New work should target the canonical package names directly and treat the
 compatibility packages as temporary bridges.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Compatibility Handbook"]
+    section --> page["Migration Guidance"]
+    dest1["legacy package names"]
+    dest2["migration decisions"]
+    dest3["retirement review"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Recommended Migration Pattern
 
 - switch dependencies to the canonical `bijux-canon-*` distribution

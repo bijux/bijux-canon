@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Changes in `bijux-canon-ingest` should keep the package boundary easier to understand, not harder.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Foundation"]
+    section --> page["Change Principles"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Principles
 
 - prefer moving behavior toward the owning package instead of letting boundary overlap grow

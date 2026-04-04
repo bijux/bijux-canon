@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Local work should happen through the publishable packages plus the root
 orchestration commands that keep the repository consistent.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Repository Handbook"]
+    section --> page["Local Development"]
+    dest1["package boundaries"]
+    dest2["shared workflows"]
+    dest3["reviewable decisions"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Working Rules
 
 - make package-local changes in the owning package directory

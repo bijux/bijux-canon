@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 bijux-canon-agent architecture pages describe how modules and responsibilities fit together under `bijux_canon_agent`.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-agent"] --> section["Architecture"]
+    section --> page["Architecture"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Pages in This Section
 
 - [Module Map](module-map.md)

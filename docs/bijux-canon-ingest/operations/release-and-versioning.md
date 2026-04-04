@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Release work for `bijux-canon-ingest` depends on package metadata, tracked release notes, and
 the repository's commit conventions.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-ingest"] --> section["Operations"]
+    section --> page["Release and Versioning"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Release Anchors
 
 - README.md

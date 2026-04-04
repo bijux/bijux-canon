@@ -13,6 +13,20 @@ last_reviewed: 2026-04-04
 quality gates, schema drift checks, SBOM generation, and release support have a
 clear home that is outside the end-user product surface.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Maintainer Handbook"]
+    section --> page["bijux-canon-dev"]
+    dest1["quality gates"]
+    dest2["schema governance"]
+    dest3["release support"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Pages in This Section
 
 - [Package Overview](package-overview.md)

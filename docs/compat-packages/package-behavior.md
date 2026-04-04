@@ -13,6 +13,20 @@ Each compatibility package is intentionally thin: package metadata, minimal
 import surface preservation, build glue, and documentation pointing at the
 canonical replacement.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Compatibility Handbook"]
+    section --> page["Package Behavior"]
+    dest1["legacy package names"]
+    dest2["migration decisions"]
+    dest3["retirement review"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Expected Behavior
 
 - preserve name-based compatibility

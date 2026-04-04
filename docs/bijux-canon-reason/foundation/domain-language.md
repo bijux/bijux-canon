@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 The package should use language that reflects its actual ownership instead of borrowing
 vague names from neighboring packages.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Foundation"]
+    section --> page["Domain Language"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Package Vocabulary Anchors
 
 - package name: `bijux-canon-reason`

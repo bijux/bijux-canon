@@ -538,6 +538,71 @@ def link(label: str, target: str) -> str:
     return f"[{label}]({target})"
 
 
+def mermaid_block(source: str) -> str:
+    return "\n".join(["```mermaid", source.rstrip(), "```"])
+
+
+def insert_after_intro(body: str, block: str) -> str:
+    lines = body.splitlines()
+    split_index = len(lines)
+    for index, line in enumerate(lines[1:], start=1):
+        if line.startswith("## "):
+            split_index = index
+            break
+    head = "\n".join(lines[:split_index]).rstrip()
+    tail = "\n".join(lines[split_index:]).lstrip()
+    return "\n\n".join(part for part in (head, block.strip(), tail) if part)
+
+
+def insert_before_heading(body: str, heading: str, block: str) -> str:
+    marker = f"## {heading}"
+    if marker not in body:
+        return "\n\n".join([body.rstrip(), block.strip()])
+    return body.replace(marker, block.strip() + "\n\n" + marker, 1)
+
+
+def render_route_diagram(
+    scope_title: str,
+    section_title: str,
+    page_title: str,
+    destination_titles: tuple[str, ...],
+) -> str:
+    destination_nodes = []
+    destination_edges = []
+    for index, title in enumerate(destination_titles, start=1):
+        node_name = f"dest{index}"
+        destination_nodes.append(f'    {node_name}["{title}"]')
+        destination_edges.append(f"    page --> {node_name}")
+    return mermaid_block(
+        "\n".join(
+            [
+                "flowchart LR",
+                f'    scope["{scope_title}"] --> section["{section_title}"]',
+                f'    section --> page["{page_title}"]',
+                *destination_nodes,
+                *destination_edges,
+            ]
+        )
+    )
+
+
+def add_page_route_map(
+    body: str,
+    scope_title: str,
+    section_title: str,
+    page_title: str,
+    destination_titles: tuple[str, ...],
+) -> str:
+    block = "\n".join(
+        [
+            "## Page Maps",
+            "",
+            render_route_diagram(scope_title, section_title, page_title, destination_titles),
+        ]
+    )
+    return insert_after_intro(body, block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -562,9 +627,8 @@ def render_home(
         quicklinks.append('<a class="md-button" href="bijux-canon-dev/">Open maintainer docs</a>')
     if "compat" in targets:
         quicklinks.append('<a class="md-button" href="compat-packages/">Open compatibility docs</a>')
-    return "\n".join(
+    body = "\n".join(
         [
-            front_matter("bijux-canon Documentation", "bijux-canon-docs", "index"),
             "# Docs Index",
             "",
             "`bijux-canon` is the canonical documentation site for the monorepo, the five",
@@ -604,6 +668,19 @@ def render_home(
             "## Stability",
             "",
             "This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/` and the packages that still ship from this repository.",
+        ]
+    )
+    body = add_page_route_map(
+        body,
+        "bijux-canon",
+        "Root Site",
+        "Docs Index",
+        tuple(f"{name} section" for name in sections),
+    )
+    return "\n".join(
+        [
+            front_matter("bijux-canon Documentation", "bijux-canon-docs", "index"),
+            body,
         ]
     )
 
@@ -908,10 +985,18 @@ def render_root_page(
             """
         ),
     }
+    body = clean_block(bodies[slug])
+    body = add_page_route_map(
+        body,
+        "bijux-canon",
+        "Repository Handbook",
+        title,
+        ("package boundaries", "shared workflows", "reviewable decisions"),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "guide"),
-            clean_block(bodies[slug]),
+            body,
         ]
     )
 
@@ -1155,10 +1240,18 @@ def render_dev_page(slug: str, title: str) -> str:
             """
         ),
     }
+    body = clean_block(bodies[slug])
+    body = add_page_route_map(
+        body,
+        "bijux-canon",
+        "Maintainer Handbook",
+        title,
+        ("quality gates", "schema governance", "release support"),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "guide"),
-            clean_block(bodies[slug]),
+            body,
         ]
     )
 
@@ -1396,10 +1489,18 @@ def render_compat_page(slug: str, title: str) -> str:
             """
         ),
     }
+    body = clean_block(bodies[slug])
+    body = add_page_route_map(
+        body,
+        "bijux-canon",
+        "Compatibility Handbook",
+        title,
+        ("legacy package names", "migration decisions", "retirement review"),
+    )
     return "\n".join(
         [
             front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "guide"),
-            clean_block(bodies[slug]),
+            body,
         ]
     )
 
@@ -1462,10 +1563,18 @@ def render_package_page(
         )
     else:
         body = render_package_topic(package, category, slug, title, package_root)
+    body = clean_block(body)
+    body = add_page_route_map(
+        body,
+        package.title,
+        category.title(),
+        title,
+        ("reviewable boundaries", "operator clarity", "change safety"),
+    )
     return "\n".join(
         [
             front_matter(title, package.owner, "index" if slug == "index" else "guide"),
-            clean_block(body),
+            body,
         ]
     )
 

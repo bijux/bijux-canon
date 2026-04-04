@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Ownership in `bijux-canon-reason` is easiest to read from the source tree plus the tests that protect it.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Foundation"]
+    section --> page["Ownership Boundary"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Owned Code Areas
 
 - `src/bijux_canon_reason/planning` for plan construction and intermediate representation

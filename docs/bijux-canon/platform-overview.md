@@ -14,6 +14,20 @@ indexing, reasoning, agent execution, runtime governance, and repository
 maintenance. Each package is publishable on its own, but the repository keeps
 their interfaces, schemas, and shared validation work in one place.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Repository Handbook"]
+    section --> page["Platform Overview"]
+    dest1["package boundaries"]
+    dest2["shared workflows"]
+    dest3["reviewable decisions"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## What the Repository Provides
 
 - publishable Python distributions under `packages/`

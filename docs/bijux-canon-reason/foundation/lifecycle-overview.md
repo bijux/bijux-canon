@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 Every package run follows a simple lifecycle: inputs enter through interfaces, domain and
 application code coordinate the work, and durable artifacts or responses leave the package.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Foundation"]
+    section --> page["Lifecycle Overview"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Lifecycle Anchors
 
 - entry surfaces: CLI app in src/bijux_canon_reason/interfaces/cli, HTTP app in src/bijux_canon_reason/api/v1, schema files in apis/bijux-canon-reason/v1

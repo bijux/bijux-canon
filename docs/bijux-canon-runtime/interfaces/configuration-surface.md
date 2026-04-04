@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Configuration belongs at the package boundary, not scattered through unrelated modules.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-runtime"] --> section["Interfaces"]
+    section --> page["Configuration Surface"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Configuration Anchors
 
 - CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py

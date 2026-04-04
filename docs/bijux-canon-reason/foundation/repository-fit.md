@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 `bijux-canon-reason` sits inside the monorepo as one publishable package with its own `src/`,
 tests, metadata, and release history.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Foundation"]
+    section --> page["Repository Fit"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Repository Relationships
 
 - consumes evidence prepared by ingest and retrieval provided by index

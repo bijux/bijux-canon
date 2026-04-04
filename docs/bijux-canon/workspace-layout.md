@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 The repository layout is intentionally direct so maintainers can see where a
 concern belongs before they open any code.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Repository Handbook"]
+    section --> page["Workspace Layout"]
+    dest1["package boundaries"]
+    dest2["shared workflows"]
+    dest3["reviewable decisions"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Top-Level Directories
 
 - `packages/` for publishable Python distributions

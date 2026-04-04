@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 `bijux-canon-runtime` is the package that owns governed execution and replay authority with auditable non-determinism handling, persistence, and package-to-package coordination.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-runtime"] --> section["Foundation"]
+    section --> page["Package Overview"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## What It Owns
 
 - flow execution authority

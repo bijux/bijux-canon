@@ -13,6 +13,20 @@ Validation in `bijux-canon` is layered: packages protect their own behavior,
 while the repository protects the seams between packages, schemas, docs, and
 release conventions.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon"] --> section["Repository Handbook"]
+    section --> page["Testing and Validation"]
+    dest1["package boundaries"]
+    dest2["shared workflows"]
+    dest3["reviewable decisions"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Validation Layers
 
 - package-local unit, integration, e2e, and invariant suites

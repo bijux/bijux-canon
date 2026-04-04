@@ -12,6 +12,20 @@ last_reviewed: 2026-04-04
 The package error model should make it clear which failures are local validation issues,
 which are dependency failures, and which are contract violations.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-reason"] --> section["Architecture"]
+    section --> page["Error Model"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Review Anchors
 
 - inspect interface modules for operator-facing error shape

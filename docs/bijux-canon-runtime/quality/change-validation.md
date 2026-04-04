@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 Validation after a change should target the package surfaces that were actually touched.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-runtime"] --> section["Quality"]
+    section --> page["Change Validation"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Validation Targets
 
 - interface changes should update interface docs and owning tests

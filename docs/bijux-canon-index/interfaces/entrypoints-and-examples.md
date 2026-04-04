@@ -11,6 +11,20 @@ last_reviewed: 2026-04-04
 
 The fastest way to understand the package interfaces is to pair entrypoints with concrete examples.
 
+## Page Maps
+
+```mermaid
+flowchart LR
+    scope["bijux-canon-index"] --> section["Interfaces"]
+    section --> page["Entrypoints and Examples"]
+    dest1["reviewable boundaries"]
+    dest2["operator clarity"]
+    dest3["change safety"]
+    page --> dest1
+    page --> dest2
+    page --> dest3
+```
+
 ## Entrypoints
 
 - CLI modules under src/bijux_canon_index/interfaces/cli
