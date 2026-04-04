@@ -13,6 +13,7 @@ from typing import Any, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager, MetricType
+
 from .execution_flow import (
     StageRunnerResult,
     add_stage_warning,

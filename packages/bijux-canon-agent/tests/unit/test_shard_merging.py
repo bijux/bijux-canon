@@ -45,9 +45,7 @@ def test_update_critique_status_and_propagate_shard_status() -> None:
                 "iterations": 2,
                 "converged": True,
                 "convergence_reason": "stable",
-                "termination_reason": (
-                    ExecutionTerminationReason.RESOURCE_EXHAUSTION
-                ),
+                "termination_reason": (ExecutionTerminationReason.RESOURCE_EXHAUSTION),
             },
         }
     ]

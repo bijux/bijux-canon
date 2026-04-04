@@ -28,6 +28,7 @@ from .binary import (
 from .binary import (
     IMAGE_EXTENSIONS as BINARY_IMAGE_EXTENSIONS,
 )
+from .dispatch import ExtractionHandlers, FileExtractionDispatcher
 from .structured import (
     HAS_PANDAS,
     HAS_XML,
@@ -40,7 +41,6 @@ from .structured import (
 from .structured import (
     YAML_EXTENSIONS as STRUCTURED_YAML_EXTENSIONS,
 )
-from .dispatch import ExtractionHandlers, FileExtractionDispatcher
 from .text import (
     DOCX_EXTENSIONS as TEXT_DOCX_EXTENSIONS,
 )

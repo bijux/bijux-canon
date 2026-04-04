@@ -21,13 +21,13 @@ from .reporting import (
     create_criterion_result,
     log_critique_completion,
 )
-from .run_context import build_critique_run_input
 from .rules import consistency, content, formatting
 from .rules.types import (
     CriterionResult,
     CritiqueResult,
     CritiqueSeverity,
 )
+from .run_context import build_critique_run_input
 
 
 class CritiqueAgent(BaseAgent):
