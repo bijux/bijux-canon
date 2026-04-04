@@ -7,12 +7,15 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
@@ -26,7 +29,7 @@ from bijux_canon_runtime.ontology import (
     VerificationPhase,
     VerificationRandomness,
 )
-from bijux_canon_runtime.ontology.ids import ContentHash, RuleID, ToolID
+from bijux_canon_runtime.ontology.ids import ClaimID, ContentHash, RuleID, ToolID
 from bijux_canon_runtime.ontology.public import EventType
 from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
 from bijux_canon_runtime.runtime.execution.lifecycle import (
@@ -94,11 +97,13 @@ class LiveExecutor:
         return result
 
     @staticmethod
-    def _prepare_execution(plan: ExecutionPlan):
+    def _prepare_execution(plan: ExecutionPlan) -> ExecutionSteps:
         """Internal helper; not part of the public API."""
         return prepare_execution(plan)
 
-    def _run_execution(self, steps_plan, context: ExecutionContext) -> _ExecutionState:
+    def _run_execution(
+        self, steps_plan: ExecutionSteps, context: ExecutionContext
+    ) -> _ExecutionState:
         """Internal helper; not part of the public API."""
         return run_execution(
             steps_plan=steps_plan,
@@ -110,16 +115,16 @@ class LiveExecutor:
     def _execute_steps(
         self,
         *,
-        steps_plan,
+        steps_plan: ExecutionSteps,
         context: ExecutionContext,
-        record_event,
-        record_tool_invocation,
-        record_evidence,
-        record_artifacts,
-        record_claims,
-        flush_entropy_usage,
-        enforce_entropy_authorization,
-        save_checkpoint,
+        record_event: Callable[[EventType, int, dict[str, object]], None],
+        record_tool_invocation: Callable[[ToolInvocation], None],
+        record_evidence: Callable[[list[RetrievedEvidence]], None],
+        record_artifacts: Callable[[list[Artifact]], None],
+        record_claims: Callable[[tuple[ClaimID, ...]], None],
+        flush_entropy_usage: Callable[[], None],
+        enforce_entropy_authorization: Callable[[], None],
+        save_checkpoint: Callable[[int], None],
         artifacts: list[Artifact],
         evidence: list[RetrievedEvidence],
         reasoning_bundles: list[ReasoningBundle],
@@ -169,9 +174,9 @@ class LiveExecutor:
     def _handle_verification_override(
         self,
         *,
-        step,
+        step: ResolvedStep,
         context: ExecutionContext,
-        record_event,
+        record_event: Callable[[EventType, int, dict[str, object]], None],
         verification_results: list[VerificationResult],
         step_artifacts: list[Artifact],
     ) -> str | None:
@@ -227,7 +232,7 @@ class LiveExecutor:
 
     def _finalize_execution(
         self,
-        steps_plan,
+        steps_plan: ExecutionSteps,
         context: ExecutionContext,
         state: _ExecutionState,
     ) -> ExecutionOutcome:

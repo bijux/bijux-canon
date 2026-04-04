@@ -5,12 +5,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from typing import Protocol
 
 from bijux_canon_runtime.contracts.step_contract import validate_outputs
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
@@ -29,6 +32,7 @@ from bijux_canon_runtime.observability.classification.retrieval_fingerprint impo
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
+    DeterminismLevel,
     StepType,
     VerificationPhase,
     VerificationRandomness,
@@ -74,12 +78,28 @@ class StepServices:
     tool_agent: ToolID
     tool_retrieval: ToolID
     tool_reasoning: ToolID
-    handle_verification_override: Callable[..., str | None]
+    handle_verification_override: VerificationOverrideHandler
+
+
+class VerificationOverrideHandler(Protocol):
+    """Verification override callback contract."""
+
+    def __call__(
+        self,
+        *,
+        step: ResolvedStep,
+        context: ExecutionContext,
+        record_event: Callable[[EventType, int, dict[str, object]], None],
+        verification_results: list[VerificationResult],
+        step_artifacts: list[Artifact],
+    ) -> str | None:
+        """Return an override action for the current step."""
+        ...
 
 
 def execute_retrieval_step(
     *,
-    step,
+    step: ResolvedStep,
     context: ExecutionContext,
     callbacks: StepCallbacks,
     services: StepServices,
@@ -191,7 +211,7 @@ def execute_retrieval_step(
 
 def execute_agent_step(
     *,
-    step,
+    step: ResolvedStep,
     context: ExecutionContext,
     callbacks: StepCallbacks,
     services: StepServices,
@@ -265,7 +285,7 @@ def execute_agent_step(
 
 def execute_reasoning_step(
     *,
-    step,
+    step: ResolvedStep,
     context: ExecutionContext,
     callbacks: StepCallbacks,
     services: StepServices,
@@ -328,7 +348,7 @@ def execute_reasoning_step(
         callbacks.record_claims(tuple(claim.claim_id for claim in bundle.claims))
         reasoning_artifact = context.artifact_store.create(
             spec_version="v1",
-            artifact_id=bundle.bundle_id,
+            artifact_id=ArtifactID(str(bundle.bundle_id)),
             tenant_id=context.tenant_id,
             artifact_type=ArtifactType.REASONING_BUNDLE,
             producer="reasoning",
@@ -366,7 +386,7 @@ def execute_reasoning_step(
 
 def verify_step_outcome(
     *,
-    step,
+    step: ResolvedStep,
     context: ExecutionContext,
     callbacks: StepCallbacks,
     services: StepServices,
@@ -377,6 +397,9 @@ def verify_step_outcome(
     verification_arbitrations: list[VerificationArbitration],
 ) -> bool:
     """Verify step outputs and return whether execution should stop."""
+    policy = services.policy
+    if policy is None:
+        raise ValueError("verification policy is required for step verification")
     callbacks.record_event(
         EventType.VERIFICATION_START,
         step.step_index,
@@ -426,7 +449,7 @@ def verify_step_outcome(
         return True
 
     results, arbitration = services.verification_orchestrator.verify_bundle(
-        bundle, current_evidence, stored_artifacts, services.policy
+        bundle, current_evidence, stored_artifacts, policy
     )
     verification_results.extend(results)
     verification_arbitrations.append(arbitration)
@@ -489,7 +512,7 @@ def verify_step_outcome(
 
 def record_flow_verification(
     *,
-    steps_plan,
+    steps_plan: ExecutionSteps,
     callbacks: StepCallbacks,
     services: StepServices,
     reasoning_bundles: list[ReasoningBundle],
@@ -519,7 +542,7 @@ def record_flow_verification(
 
 def _persist_retrieval_artifacts(
     *,
-    step,
+    step: ResolvedStep,
     context: ExecutionContext,
     retrieved: list[RetrievedEvidence],
 ) -> None:
@@ -553,8 +576,8 @@ def _record_tool_success(
     *,
     step_index: int,
     tool_id: ToolID,
-    determinism_level,
-    tool_input: dict[str, object],
+    determinism_level: DeterminismLevel,
+    tool_input: Mapping[str, object],
     output_fingerprint: str,
     pending_invocations: dict[tuple[int, ToolID], ContentHash],
     callbacks: StepCallbacks,
@@ -590,8 +613,8 @@ def _record_tool_failure(
     *,
     step_index: int,
     tool_id: ToolID,
-    determinism_level,
-    tool_input: dict[str, object],
+    determinism_level: DeterminismLevel,
+    tool_input: Mapping[str, object],
     pending_invocations: dict[tuple[int, ToolID], ContentHash],
     callbacks: StepCallbacks,
     error: Exception,
@@ -629,6 +652,7 @@ def _record_tool_failure(
 __all__ = [
     "StepCallbacks",
     "StepServices",
+    "VerificationOverrideHandler",
     "execute_agent_step",
     "execute_reasoning_step",
     "execute_retrieval_step",

@@ -9,10 +9,13 @@ from collections.abc import Callable
 from contextlib import suppress
 import os
 import signal
+from types import FrameType
+from typing import TypeVar
 
 from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
@@ -39,6 +42,7 @@ from bijux_canon_runtime.runtime.execution.event_causality import event_causalit
 from bijux_canon_runtime.runtime.execution.lifecycle.step_operations import (
     StepCallbacks,
     StepServices,
+    VerificationOverrideHandler,
     execute_agent_step,
     execute_reasoning_step,
     execute_retrieval_step,
@@ -49,14 +53,16 @@ from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningEx
 from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
 from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator
 
+StateT = TypeVar("StateT")
+
 
 def run_execution(
     *,
-    steps_plan,
+    steps_plan: ExecutionSteps,
     context: ExecutionContext,
-    state_cls,
-    handle_verification_override: Callable,
-):
+    state_cls: Callable[..., StateT],
+    handle_verification_override: VerificationOverrideHandler,
+) -> StateT:
     """Internal helper; not part of the public API."""
     recorder = context.trace_recorder
     event_index = context.starting_event_index
@@ -205,7 +211,7 @@ def run_execution(
 
     previous_handler = signal.getsignal(signal.SIGINT)
 
-    def _handle_interrupt(_signum, _frame) -> None:
+    def _handle_interrupt(_signum: int, _frame: FrameType | None) -> None:
         """Internal helper; not part of the public API."""
         context.cancel()
 
@@ -258,16 +264,16 @@ def run_execution(
 
 def execute_steps(
     *,
-    steps_plan,
+    steps_plan: ExecutionSteps,
     context: ExecutionContext,
-    record_event,
-    record_tool_invocation,
-    record_evidence,
-    record_artifacts,
-    record_claims,
-    flush_entropy_usage,
-    enforce_entropy_authorization,
-    save_checkpoint,
+    record_event: Callable[[EventType, int, dict[str, object]], None],
+    record_tool_invocation: Callable[[ToolInvocation], None],
+    record_evidence: Callable[[list[RetrievedEvidence]], None],
+    record_artifacts: Callable[[list[Artifact]], None],
+    record_claims: Callable[[tuple[ClaimID, ...]], None],
+    flush_entropy_usage: Callable[[], None],
+    enforce_entropy_authorization: Callable[[], None],
+    save_checkpoint: Callable[[int], None],
     artifacts: list[Artifact],
     evidence: list[RetrievedEvidence],
     reasoning_bundles: list[ReasoningBundle],
@@ -283,7 +289,7 @@ def execute_steps(
     tool_agent: ToolID,
     tool_retrieval: ToolID,
     tool_reasoning: ToolID,
-    handle_verification_override: Callable,
+    handle_verification_override: VerificationOverrideHandler,
 ) -> bool:
     """Internal helper; not part of the public API."""
     interrupted = False
