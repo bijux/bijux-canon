@@ -190,6 +190,12 @@ This page is part of the canonical docs spine. Keep it aligned with the sections
 - inspect `scripts/render_docs_catalog.py` if the page routing no longer reflects the intended handbook structure
 - sample at least one target handbook branch to confirm the route this page recommends is still the right one
 
+## Anti-Patterns
+
+- turning the root page into a second copy of the whole handbook
+- assuming navigation clarity emerges automatically from file count or section count
+- treating handbook routing as cosmetic instead of as part of review efficiency
+
 ## Core Claim
 
 The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.

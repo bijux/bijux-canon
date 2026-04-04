@@ -134,6 +134,12 @@ Keep it aligned with the package's real import names, directories, and artifact 
 - inspect `packages/bijux-canon-agent/tests` for proof that the boundary is enforced instead of merely described
 - check whether adjacent package docs now tell a conflicting ownership story
 
+## Anti-Patterns
+
+- using package adjacency as a substitute for package ownership
+- letting boundary exceptions accumulate until they become the real rule
+- writing boundary prose that cannot be checked against code or tests
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-agent` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.

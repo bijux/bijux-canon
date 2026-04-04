@@ -133,6 +133,12 @@ Keep it aligned with `pyproject.toml` and the package's real dependency posture.
 - verify package metadata and release notes in `packages/bijux-canon-reason` do not contradict the review standard
 - check whether known limitations, risks, and completion language all moved together in the current change
 
+## Anti-Patterns
+
+- equating one local pass with full contract confidence
+- keeping old risk prose after the code and tests have materially changed
+- treating definition-of-done language as ceremonial rather than operational
+
 ## Core Claim
 
 The quality claim of `bijux-canon-reason` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

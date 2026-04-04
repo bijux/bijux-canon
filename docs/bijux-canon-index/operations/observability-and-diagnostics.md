@@ -137,6 +137,12 @@ Keep it aligned with the package modules and artifacts that currently support di
 - inspect `packages/bijux-canon-index/tests` for the workflow or environment proof the page implies
 - compare the documented operating path with the actual steps needed in local or CI use
 
+## Anti-Patterns
+
+- relying on tribal memory for steps that should live in checked-in assets
+- documenting the happy path while leaving diagnostics and failure handling implicit
+- letting release or setup guidance drift away from package metadata
+
 ## Core Claim
 
 The operational claim of `bijux-canon-index` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

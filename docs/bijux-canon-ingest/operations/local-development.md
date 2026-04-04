@@ -134,6 +134,12 @@ Keep it aligned with the actual test layout and maintenance workflow.
 - inspect `packages/bijux-canon-ingest/tests` for the workflow or environment proof the page implies
 - compare the documented operating path with the actual steps needed in local or CI use
 
+## Anti-Patterns
+
+- relying on tribal memory for steps that should live in checked-in assets
+- documenting the happy path while leaving diagnostics and failure handling implicit
+- letting release or setup guidance drift away from package metadata
+
 ## Core Claim
 
 The operational claim of `bijux-canon-ingest` is that install, run, diagnose, and release paths can be repeated from explicit package assets instead of oral history.

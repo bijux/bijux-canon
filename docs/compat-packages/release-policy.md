@@ -134,6 +134,12 @@ Keep it aligned with the current maintenance strategy for legacy packages.
 - check the canonical target package docs named by this page
 - confirm there is still a real migration consumer before accepting preservation as necessary
 
+## Anti-Patterns
+
+- treating compatibility shims like long-term product expansion points
+- preserving legacy names because they are familiar rather than because they are needed
+- letting migration guidance become less visible than the legacy label itself
+
 ## Core Claim
 
 Each compatibility page should make migration pressure clearer than legacy habit, so preserved names remain understandable without becoming a second product line.

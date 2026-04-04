@@ -177,3 +177,9 @@ Keep it aligned with the real source tree and current test layout.
 - open the listed structural modules in `packages/bijux-canon-reason/src/bijux_canon_reason` and trace whether they still match the page narrative
 - inspect `packages/bijux-canon-reason/tests` for regressions that reveal changed execution or dependency structure
 - compare the documented hotspots with the actual changed files in the review
+
+## Anti-Patterns
+
+- explaining structure with diagrams that no longer match the modules listed
+- treating temporary implementation shortcuts as if they were enduring architectural seams
+- allowing dependency direction to drift because the code still happens to run

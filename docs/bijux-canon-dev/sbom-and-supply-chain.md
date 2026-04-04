@@ -133,6 +133,12 @@ Keep it aligned with the checked-in SBOM helpers and tests.
 - check the corresponding maintainer tests before trusting the page's operational claims
 - confirm which product packages are affected so maintainer scope stays explicit
 
+## Anti-Patterns
+
+- describing maintainer automation as if it were part of the end-user runtime
+- letting CI behavior become the only place where maintainer intent is visible
+- changing repository-health tools without updating the maintainer story they imply
+
 ## Core Claim
 
 Each maintainer page should explain repository-health behavior in a way that is explicit, testable, and clearly separate from end-user product behavior.

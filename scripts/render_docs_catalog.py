@@ -1214,6 +1214,37 @@ def package_evidence_checklist(package: PackageInfo, category: str) -> tuple[str
     return tuple(checklist_map[category])
 
 
+def package_antipatterns(package: PackageInfo, category: str) -> tuple[str, ...]:
+    antipattern_map = {
+        "foundation": (
+            "using package adjacency as a substitute for package ownership",
+            "letting boundary exceptions accumulate until they become the real rule",
+            "writing boundary prose that cannot be checked against code or tests",
+        ),
+        "architecture": (
+            "explaining structure with diagrams that no longer match the modules listed",
+            "treating temporary implementation shortcuts as if they were enduring architectural seams",
+            "allowing dependency direction to drift because the code still happens to run",
+        ),
+        "interfaces": (
+            "treating convenience surfaces as if they were deliberate contracts",
+            "changing schemas or artifacts without a caller-facing compatibility discussion",
+            "using examples to imply stability that code and tests do not actually promise",
+        ),
+        "operations": (
+            "relying on tribal memory for steps that should live in checked-in assets",
+            "documenting the happy path while leaving diagnostics and failure handling implicit",
+            "letting release or setup guidance drift away from package metadata",
+        ),
+        "quality": (
+            "equating one local pass with full contract confidence",
+            "keeping old risk prose after the code and tests have materially changed",
+            "treating definition-of-done language as ceremonial rather than operational",
+        ),
+    }
+    return antipattern_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1439,6 +1470,17 @@ def add_evidence_checklist(body: str, bullets: tuple[str, ...]) -> str:
     return insert_before_heading(body, "Reviewer Lens", block)
 
 
+def add_antipatterns(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Anti-Patterns",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Common Misreadings", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1564,6 +1606,14 @@ def render_home(
             "check `mkdocs.yml` against the rendered root navigation",
             "inspect `scripts/render_docs_catalog.py` if the page routing no longer reflects the intended handbook structure",
             "sample at least one target handbook branch to confirm the route this page recommends is still the right one",
+        ),
+    )
+    body = add_antipatterns(
+        body,
+        (
+            "turning the root page into a second copy of the whole handbook",
+            "assuming navigation clarity emerges automatically from file count or section count",
+            "treating handbook routing as cosmetic instead of as part of review efficiency",
         ),
     )
     body = add_question_section(
@@ -2031,6 +2081,14 @@ def render_root_page(
             "verify that the page's policy language still has a checked-in enforcement or review mechanism behind it",
         ),
     )
+    body = add_antipatterns(
+        body,
+        (
+            "using repository pages to hide unresolved package-boundary decisions",
+            "documenting root policy without naming the actual checked-in assets that support it",
+            "letting one successful workflow example stand in for repository-wide truth",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2436,6 +2494,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "confirm which product packages are affected so maintainer scope stays explicit",
         ),
     )
+    body = add_antipatterns(
+        body,
+        (
+            "describing maintainer automation as if it were part of the end-user runtime",
+            "letting CI behavior become the only place where maintainer intent is visible",
+            "changing repository-health tools without updating the maintainer story they imply",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -2835,6 +2901,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "confirm there is still a real migration consumer before accepting preservation as necessary",
         ),
     )
+    body = add_antipatterns(
+        body,
+        (
+            "treating compatibility shims like long-term product expansion points",
+            "preserving legacy names because they are familiar rather than because they are needed",
+            "letting migration guidance become less visible than the legacy label itself",
+        ),
+    )
     body = add_question_section(
         body,
         (
@@ -3033,6 +3107,7 @@ def render_package_page(
     body = add_failure_signals(body, package_failure_signals(package, category, title))
     body = add_cross_implications(body, package_cross_implications(package, category))
     body = add_evidence_checklist(body, package_evidence_checklist(package, category))
+    body = add_antipatterns(body, package_antipatterns(package, category))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))

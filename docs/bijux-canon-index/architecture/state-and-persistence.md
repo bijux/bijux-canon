@@ -142,6 +142,12 @@ Keep it aligned with the actual artifact shapes and serialized outputs.
 - inspect `packages/bijux-canon-index/tests` for regressions that reveal changed execution or dependency structure
 - compare the documented hotspots with the actual changed files in the review
 
+## Anti-Patterns
+
+- explaining structure with diagrams that no longer match the modules listed
+- treating temporary implementation shortcuts as if they were enduring architectural seams
+- allowing dependency direction to drift because the code still happens to run
+
 ## Core Claim
 
 The architectural claim of `bijux-canon-index` is that its structure is deliberate enough for a reviewer to trace responsibilities, dependencies, and drift pressure without reverse-engineering the entire codebase.

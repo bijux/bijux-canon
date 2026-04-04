@@ -132,6 +132,12 @@ Update it only when the shared documentation system itself changes.
 - verify package metadata and release notes in `packages/bijux-canon-agent` do not contradict the review standard
 - check whether known limitations, risks, and completion language all moved together in the current change
 
+## Anti-Patterns
+
+- equating one local pass with full contract confidence
+- keeping old risk prose after the code and tests have materially changed
+- treating definition-of-done language as ceremonial rather than operational
+
 ## Core Claim
 
 The quality claim of `bijux-canon-agent` is that tests, invariants, risks, and completion criteria jointly prove whether the package is trustworthy after change.

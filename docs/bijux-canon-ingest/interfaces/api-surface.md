@@ -137,6 +137,12 @@ Keep it aligned with the actual API modules and schema files.
 - review `apis/bijux-canon-ingest/v1/schema.yaml` as tracked contract evidence
 - run through `packages/bijux-canon-ingest/tests` or equivalent proofs that protect the surface
 
+## Anti-Patterns
+
+- treating convenience surfaces as if they were deliberate contracts
+- changing schemas or artifacts without a caller-facing compatibility discussion
+- using examples to imply stability that code and tests do not actually promise
+
 ## Core Claim
 
 The interface claim of `bijux-canon-ingest` is that commands, APIs, imports, schemas, and artifacts form a reviewable contract rather than an implied one.

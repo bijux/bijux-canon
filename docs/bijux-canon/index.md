@@ -166,6 +166,12 @@ This page is part of the canonical docs spine. Keep it aligned with the current 
 - check at least one owning package doc to confirm the repository page is not absorbing local detail
 - verify that the page's policy language still has a checked-in enforcement or review mechanism behind it
 
+## Anti-Patterns
+
+- using repository pages to hide unresolved package-boundary decisions
+- documenting root policy without naming the actual checked-in assets that support it
+- letting one successful workflow example stand in for repository-wide truth
+
 ## Core Claim
 
 Each repository handbook page should make one monorepo-level decision legible enough that package-local pages do not need to reinvent root context.

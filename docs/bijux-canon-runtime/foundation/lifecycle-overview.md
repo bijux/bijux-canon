@@ -133,6 +133,12 @@ Keep it aligned with the current entrypoints and produced outputs.
 - inspect `packages/bijux-canon-runtime/tests` for proof that the boundary is enforced instead of merely described
 - check whether adjacent package docs now tell a conflicting ownership story
 
+## Anti-Patterns
+
+- using package adjacency as a substitute for package ownership
+- letting boundary exceptions accumulate until they become the real rule
+- writing boundary prose that cannot be checked against code or tests
+
 ## Core Claim
 
 The foundational claim of `bijux-canon-runtime` is that its package boundary can be explained in stable ownership terms instead of by implementation accident.
