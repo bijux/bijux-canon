@@ -9,11 +9,7 @@ from pathlib import Path
 import time
 
 from bijux_canon_reason import __version__ as package_version
-from bijux_canon_reason.interfaces.serialization.json_file import write_json_file
-from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
-    fingerprint_trace_file,
-    write_trace_jsonl,
-)
+from bijux_canon_reason.application.run_workflow import run_app
 from bijux_canon_reason.core.fingerprints import fingerprint_obj, stable_id
 from bijux_canon_reason.core.types import (
     Plan,
@@ -23,8 +19,12 @@ from bijux_canon_reason.core.types import (
     TraceEventKind,
     VerificationReport,
 )
-from bijux_canon_reason.application.run_workflow import run_app
 from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.interfaces.serialization.json_file import write_json_file
+from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
+    fingerprint_trace_file,
+    write_trace_jsonl,
+)
 from bijux_canon_reason.traces.checksum import compute_invariant_checksum
 
 SCHEMA_VERSION = 1

@@ -11,21 +11,21 @@ from bijux_canon_reason.core.types import (
     Plan,
     PlanNode,
     ProblemSpec,
+    ToolResult,
     Trace,
     TraceEvent,
     TraceEventKind,
-    ToolResult,
 )
 from bijux_canon_reason.execution.runtime import ExecutionRuntime
 from bijux_canon_reason.execution.step_execution import (
     ExecutionState,
     build_step_output,
 )
-from bijux_canon_reason.execution.trace_metadata import build_trace_result
 from bijux_canon_reason.execution.tool_dispatch import (
     ToolDispatchResult,
     dispatch_tool_requests,
 )
+from bijux_canon_reason.execution.trace_metadata import build_trace_result
 
 
 @dataclass(frozen=True)

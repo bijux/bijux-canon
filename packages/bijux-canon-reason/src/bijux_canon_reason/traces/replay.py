@@ -6,12 +6,7 @@ import hashlib
 from pathlib import Path
 from typing import cast
 
-from bijux_canon_reason.interfaces.serialization.json_file import read_json_file
-from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
-    fingerprint_trace_file,
-    read_trace_jsonl,
-    write_trace_jsonl,
-)
+from bijux_canon_reason.application.run_workflow import run_app
 from bijux_canon_reason.core.types import (
     JsonValue,
     Plan,
@@ -20,9 +15,14 @@ from bijux_canon_reason.core.types import (
     RuntimeDescriptor,
     TraceEventKind,
 )
-from bijux_canon_reason.application.run_workflow import run_app
 from bijux_canon_reason.execution.replay_runtime import RecordedCall
 from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.interfaces.serialization.json_file import read_json_file
+from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
+    fingerprint_trace_file,
+    read_trace_jsonl,
+    write_trace_jsonl,
+)
 from bijux_canon_reason.traces.checksum import compute_invariant_checksum
 from bijux_canon_reason.traces.diff import diff_traces
 
