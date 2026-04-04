@@ -104,3 +104,7 @@ Maintainer pages matter because hidden automation is one of the fastest ways for
 - maintainer-only behavior becomes harder to discover before it surprises a contributor
 - repository automation changes without a stable explanation of its intent
 - product docs get polluted with infrastructure concerns that belong elsewhere
+
+## Representative Scenario
+
+A CI or release helper changes behavior and a contributor needs to know whether the effect is repository maintenance only or whether it changes a product package contract. This section should make that distinction fast.

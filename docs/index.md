@@ -161,3 +161,7 @@ If this page is vague, readers enter the wrong handbook branch first and the cos
 - readers start the wrong review path and waste time rebuilding orientation
 - the root site stops acting like the reliable front door to the repository handbook
 - package, maintainer, and compatibility sections become harder to distinguish quickly
+
+## Representative Scenario
+
+A reviewer opens the docs with only a vague question like 'where does this change belong'. The root page should route them to the right handbook branch before they spend time reading the wrong kind of documentation.

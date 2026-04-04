@@ -105,3 +105,7 @@ If the foundation pages for `bijux-canon-runtime` are weak, reviewers stop knowi
 - ownership starts migrating by convenience instead of by explicit package boundary
 - neighboring packages inherit responsibilities without deliberate review
 - reviewers lose confidence that the package description still means anything stable
+
+## Representative Scenario
+
+A contributor proposes moving new behavior into `bijux-canon-runtime` because it is nearby in the repository. This page should make it obvious whether that work fits the package boundary or belongs in a neighboring package instead.

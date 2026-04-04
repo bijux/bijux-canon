@@ -69,6 +69,10 @@ If the architecture pages for `bijux-canon-reason` are weak, refactors become gu
 - refactors can land without anyone noticing structural regressions until later
 - code navigation becomes slower because the documented map no longer matches reality
 
+## Representative Scenario
+
+A reviewer is tracing a refactor through `bijux-canon-reason` and needs to know whether the changed modules still line up with the documented execution and dependency structure.
+
 ## Concrete Anchors
 
 - `src/bijux_canon_reason/planning` for plan construction and intermediate representation

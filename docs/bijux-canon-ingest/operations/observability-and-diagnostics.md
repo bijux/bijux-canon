@@ -108,3 +108,7 @@ If the operations pages for `bijux-canon-ingest` are weak, maintainers end up re
 - maintainers relearn package operation by trial and error
 - release and setup steps quietly diverge from the checked-in package metadata
 - diagnostic workflows become harder to repeat under incident pressure
+
+## Representative Scenario
+
+A maintainer is trying to run, diagnose, or release `bijux-canon-ingest` under time pressure and needs an explicit path that starts from checked-in metadata and lands in repeatable validation.

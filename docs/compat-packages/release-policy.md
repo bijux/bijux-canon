@@ -105,3 +105,7 @@ Compatibility pages matter because legacy package names often survive longer tha
 - legacy names become easier to keep using than to migrate away from
 - canonical targets become ambiguous in old automation or docs
 - retirement decisions get delayed because the actual migration state is unclear
+
+## Representative Scenario
+
+A legacy dependency name appears in an old environment file. The compatibility docs should let a maintainer map it to the canonical package and judge whether that old name still deserves to survive.

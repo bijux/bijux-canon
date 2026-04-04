@@ -69,6 +69,10 @@ If the architecture pages for `bijux-canon-runtime` are weak, refactors become g
 - refactors can land without anyone noticing structural regressions until later
 - code navigation becomes slower because the documented map no longer matches reality
 
+## Representative Scenario
+
+A reviewer is tracing a refactor through `bijux-canon-runtime` and needs to know whether the changed modules still line up with the documented execution and dependency structure.
+
 ## Concrete Anchors
 
 - `src/bijux_canon_runtime/model` for durable runtime models

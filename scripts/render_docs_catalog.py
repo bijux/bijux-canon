@@ -878,6 +878,37 @@ def package_if_it_drifts(package: PackageInfo, category: str) -> tuple[str, ...]
     return drift_map[category]
 
 
+def package_scenario(package: PackageInfo, category: str) -> str:
+    scenario_map = {
+        "foundation": (
+            f"A contributor proposes moving new behavior into `{package.title}` because it is"
+            " nearby in the repository. This page should make it obvious whether that work"
+            " fits the package boundary or belongs in a neighboring package instead."
+        ),
+        "architecture": (
+            f"A reviewer is tracing a refactor through `{package.title}` and needs to know"
+            " whether the changed modules still line up with the documented execution and"
+            " dependency structure."
+        ),
+        "interfaces": (
+            f"An operator or downstream caller wants to depend on a `{package.title}` surface"
+            " and needs to know which command, API, schema, import, or artifact is stable"
+            " enough to treat as a contract."
+        ),
+        "operations": (
+            f"A maintainer is trying to run, diagnose, or release `{package.title}` under time"
+            " pressure and needs an explicit path that starts from checked-in metadata and"
+            " lands in repeatable validation."
+        ),
+        "quality": (
+            f"A change appears correct locally, but the reviewer still needs to know whether"
+            f" `{package.title}` has actually satisfied its proof obligations before the work"
+            " is accepted."
+        ),
+    }
+    return scenario_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -974,6 +1005,17 @@ def add_if_it_drifts(body: str, bullets: tuple[str, ...]) -> str:
             "## If It Drifts",
             "",
             bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Concrete Anchors", block)
+
+
+def add_representative_scenario(body: str, text: str) -> str:
+    block = "\n".join(
+        [
+            "## Representative Scenario",
+            "",
+            text,
         ]
     )
     return insert_before_heading(body, "Concrete Anchors", block)
@@ -1117,6 +1159,10 @@ def render_home(
             "the root site stops acting like the reliable front door to the repository handbook",
             "package, maintainer, and compatibility sections become harder to distinguish quickly",
         ),
+    )
+    body = add_representative_scenario(
+        body,
+        "A reviewer opens the docs with only a vague question like 'where does this change belong'. The root page should route them to the right handbook branch before they spend time reading the wrong kind of documentation.",
     )
     body = add_anchor_section(
         body,
@@ -1487,6 +1533,10 @@ def render_root_page(
             "reviewers lose the ability to separate monorepo policy from package-local design",
         ),
     )
+    body = add_representative_scenario(
+        body,
+        "A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.",
+    )
     body = add_honesty_boundary(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
@@ -1816,6 +1866,10 @@ def render_dev_page(slug: str, title: str) -> str:
             "product docs get polluted with infrastructure concerns that belong elsewhere",
         ),
     )
+    body = add_representative_scenario(
+        body,
+        "A CI or release helper changes behavior and a contributor needs to know whether the effect is repository maintenance only or whether it changes a product package contract. This section should make that distinction fast.",
+    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
@@ -2139,6 +2193,10 @@ def render_compat_page(slug: str, title: str) -> str:
             "retirement decisions get delayed because the actual migration state is unclear",
         ),
     )
+    body = add_representative_scenario(
+        body,
+        "A legacy dependency name appears in an old environment file. The compatibility docs should let a maintainer map it to the canonical package and judge whether that old name still deserves to survive.",
+    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
@@ -2266,6 +2324,7 @@ def render_package_page(
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))
+    body = add_representative_scenario(body, package_scenario(package, category))
     body = add_anchor_section(body, package_anchor_bullets(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))

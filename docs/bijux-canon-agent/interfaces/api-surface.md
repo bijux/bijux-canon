@@ -108,3 +108,7 @@ If the interface pages for `bijux-canon-agent` are weak, callers cannot tell whi
 - callers depend on surfaces that are less stable than the docs imply
 - schema and artifact changes stop receiving the compatibility review they need
 - operator examples begin pointing at stale or misleading entrypaths
+
+## Representative Scenario
+
+An operator or downstream caller wants to depend on a `bijux-canon-agent` surface and needs to know which command, API, schema, import, or artifact is stable enough to treat as a contract.

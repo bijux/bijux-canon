@@ -109,3 +109,7 @@ If the quality pages for `bijux-canon-agent` are weak, it becomes difficult to t
 - reviewers cannot tell whether the listed proof still covers the real risk surface
 - limitations stop being visible until they show up as rework later
 - definition-of-done language drifts away from actual validation practice
+
+## Representative Scenario
+
+A change appears correct locally, but the reviewer still needs to know whether `bijux-canon-agent` has actually satisfied its proof obligations before the work is accepted.

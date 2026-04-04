@@ -110,3 +110,7 @@ Repository pages matter because they keep shared rules, schemas, workflows, and 
 - root rules become folklore instead of checked-in reference
 - packages start re-explaining shared repository behavior inconsistently
 - reviewers lose the ability to separate monorepo policy from package-local design
+
+## Representative Scenario
+
+A cross-package change touches schemas, automation, and release behavior at once. The repository page should tell the reviewer which part of that decision belongs at the root and which part belongs back in package-local docs.
