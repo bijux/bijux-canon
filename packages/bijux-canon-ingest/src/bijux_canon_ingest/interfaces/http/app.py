@@ -303,7 +303,7 @@ def create_app() -> FastAPI:
             raise RuntimeError("FastAPI returned a non-dict OpenAPI schema")
         return generated_schema
 
-    app.openapi = _custom_openapi
+    setattr(app, "openapi", _custom_openapi)
     return app
 
 
