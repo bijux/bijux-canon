@@ -57,18 +57,12 @@ PACKAGE_CLEAN_PATHS := \
   docs/reference $(COMMON_ARTIFACT_CLEAN_PATHS) usage_test usage_test_artifacts \
   $(COMMON_CONFIG_CACHE_CLEAN_PATHS)
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
+PACKAGE_DEFINE_ALL_PARALLEL := 1
 
 include $(ROOT_MAKE_DIR)/package/primary.mk
+include $(ROOT_MAKE_DIR)/package/parallel.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
-
-# Run independent checks in parallel
-.NOTPARALLEL:
-
-all-parallel: clean install
-	@$(MAKE) -j4 quality security api
-	@$(MAKE) build sbom
-	@echo "✔ All targets completed (parallel mode)"
 
 ci-fast: lint test mypy-core
 .PHONY: ci-fast
@@ -78,6 +72,3 @@ line_limit:
 .PHONY: line_limit
 
 include $(ROOT_MAKE_DIR)/package/core-help.mk
-
-##@ Core
-all-parallel: ## Run pipeline with parallelized lint, quality, security, and api
