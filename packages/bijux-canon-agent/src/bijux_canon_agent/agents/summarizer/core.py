@@ -17,11 +17,6 @@ from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.llm.llm_runtime import LLMUtils
 from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
-from .rules import (
-    abstractive,
-    extractive,
-    postprocessing,
-)
 from .inputs import extract_keywords, extract_summarizer_text
 from .reporting import (
     build_summarizer_coverage_report,
@@ -29,6 +24,11 @@ from .reporting import (
     build_summarizer_result,
     build_summarizer_schema,
     get_summarizer_telemetry,
+)
+from .rules import (
+    abstractive,
+    extractive,
+    postprocessing,
 )
 
 
@@ -70,6 +70,14 @@ class SummarizerErrorResult(SummarizerResult, total=False):
     error: str
     stage: str
     input: dict[str, Any]
+
+
+class SummaryRunInputs(TypedDict):
+    text: str
+    task_goal: str
+    keywords: list[str]
+    cache_key: str
+    prompt_prefix: str
 
 
 class SummarizerAgent(BaseAgent):
@@ -266,79 +274,20 @@ class SummarizerAgent(BaseAgent):
                     ),
                 )
 
-            task_goal = context.get("task_goal", "summarize the text")
-            keywords = self._extract_keywords(text, task_goal)
-
-            # Check cache
-            cache_key = hashlib.sha256((text + task_goal).encode()).hexdigest()
-            if self._cache is not None and cache_key in self._cache:
-                self.logger.debug(
-                    "Returning cached summarization result",
-                    extra={"context": {"cache_key": cache_key}},
-                )
-                self.logger_manager.log_metric(
-                    "cache_hits", 1, MetricType.COUNTER, tags={"stage": "cache_check"}
-                )
-                return cast(SummarizerResult, self._cache[cache_key])
-
-            # Handle feedback for revision
-            retry_instruction = context.get("feedback", "")
-            prompt_prefix = ""
-            if retry_instruction:
-                prompt_prefix = (
-                    f"Previous summary had issues. {retry_instruction}. "
-                    f"Please revise accordingly:\n\n"
-                )
-                self.logger.info(
-                    "Applying revision instruction",
-                    extra={
-                        "context": {
-                            "stage": "revision",
-                            "retry_instruction": retry_instruction,
-                        }
-                    },
-                )
+            run_inputs = self._build_run_inputs(context=context, text=text)
+            cached_result = self._cached_result(run_inputs["cache_key"])
+            if cached_result is not None:
+                return cached_result
 
             # Summarize with retry mechanism
             start_time = time.perf_counter()
-            summary_text, method = None, None
-            for attempt in range(self.max_retries + 1):
-                try:
-                    summary_text, method = await self._summarize(
-                        text, prompt_prefix, task_goal, keywords
-                    )
-                    break
-                except Exception as e:
-                    error_msg = (
-                        f"Summarization attempt {attempt + 1}/"
-                        f"{self.max_retries + 1} failed: {e!s}"
-                    )
-                    self.logger.error(
-                        error_msg,
-                        extra={"context": {"stage": "summarization", "error": str(e)}},
-                    )
-                    if attempt == self.max_retries:
-                        self.logger_manager.log_metric(
-                            "summarization_errors",
-                            1,
-                            MetricType.COUNTER,
-                            tags={"stage": "summarization"},
-                        )
-                        error_msg = (
-                            f"Summarization failed after {self.max_retries + 1} "
-                            f"attempts: {e!s}"
-                        )
-                        return cast(
-                            SummarizerErrorResult,
-                            await self.execution_kernel.error_result(
-                                error_msg,
-                                context,
-                                "summarization",
-                            ),
-                        )
-
-            summary_text = summary_text or ""
-            method = method or ""
+            summary_attempt = await self._summarize_with_retries(
+                context=context,
+                run_inputs=run_inputs,
+            )
+            if isinstance(summary_attempt, dict) and "error" in summary_attempt:
+                return summary_attempt
+            summary_text, method = summary_attempt
             duration = time.perf_counter() - start_time
             self.logger_manager.log_metric(
                 "summarization_duration",
@@ -351,7 +300,10 @@ class SummarizerAgent(BaseAgent):
             structured_summary = cast(
                 SummarizerSummary,
                 postprocessing.format_structured_summary(
-                    self, summary_text, text, keywords
+                    self,
+                    summary_text,
+                    run_inputs["text"],
+                    run_inputs["keywords"],
                 ),
             )
 
@@ -360,7 +312,7 @@ class SummarizerAgent(BaseAgent):
                 build_summarizer_result(
                     structured_summary=structured_summary,
                     method=method,
-                    text=text,
+                    text=run_inputs["text"],
                     backend=self.backend,
                     strategy=self.strategy,
                     chunk_size=self.chunk_size,
@@ -369,38 +321,10 @@ class SummarizerAgent(BaseAgent):
             )
 
             # Post-hook
-            if self.post_hook:
-                try:
-                    result = cast(SummarizerResult, self.post_hook(context, result))
-                    self.logger.debug(
-                        "Post-hook applied successfully",
-                        extra={"context": {"stage": "post_hook"}},
-                    )
-                    self.logger_manager.log_metric(
-                        "post_hook_success",
-                        1,
-                        MetricType.COUNTER,
-                        tags={"stage": "post_hook"},
-                    )
-                except Exception as e:
-                    self.logger.warning(
-                        f"Post-hook failed: {e!s}",
-                        extra={"context": {"stage": "post_hook", "error": str(e)}},
-                    )
-                    self.logger_manager.log_metric(
-                        "post_hook_errors",
-                        1,
-                        MetricType.COUNTER,
-                        tags={"stage": "post_hook"},
-                    )
-                    result["warnings"].append(f"Post-hook failed: {e!s}")
+            result = await self._apply_post_hook(context=context, result=result)
 
             # Cache the result
-            if self._cache is not None:
-                self._cache[cache_key] = result
-                self.logger_manager.log_metric(
-                    "cache_stores", 1, MetricType.COUNTER, tags={"stage": "cache_store"}
-                )
+            self._store_cached_result(run_inputs["cache_key"], result)
 
             self.logger.info(
                 "Summarization completed successfully",
@@ -439,6 +363,155 @@ class SummarizerAgent(BaseAgent):
             min_keyword_length=self.min_keyword_length,
             top_keywords_count=self.top_keywords_count,
             logger=self.logger,
+        )
+
+    def _build_run_inputs(
+        self, *, context: dict[str, Any], text: str
+    ) -> SummaryRunInputs:
+        task_goal = context.get("task_goal", "summarize the text")
+        keywords = self._extract_keywords(text, task_goal)
+        prompt_prefix = self._prompt_prefix(context.get("feedback", ""))
+        return {
+            "text": text,
+            "task_goal": task_goal,
+            "keywords": keywords,
+            "cache_key": hashlib.sha256((text + task_goal).encode()).hexdigest(),
+            "prompt_prefix": prompt_prefix,
+        }
+
+    def _cached_result(self, cache_key: str) -> SummarizerResult | None:
+        if self._cache is None or cache_key not in self._cache:
+            return None
+        self.logger.debug(
+            "Returning cached summarization result",
+            extra={"context": {"cache_key": cache_key}},
+        )
+        self.logger_manager.log_metric(
+            "cache_hits", 1, MetricType.COUNTER, tags={"stage": "cache_check"}
+        )
+        return cast(SummarizerResult, self._cache[cache_key])
+
+    def _prompt_prefix(self, feedback: Any) -> str:
+        if not feedback:
+            return ""
+        prompt_prefix = (
+            f"Previous summary had issues. {feedback}. "
+            f"Please revise accordingly:\n\n"
+        )
+        self.logger.info(
+            "Applying revision instruction",
+            extra={
+                "context": {
+                    "stage": "revision",
+                    "retry_instruction": feedback,
+                }
+            },
+        )
+        return prompt_prefix
+
+    async def _summarize_with_retries(
+        self,
+        *,
+        context: dict[str, Any],
+        run_inputs: SummaryRunInputs,
+    ) -> tuple[str, str] | SummarizerErrorResult:
+        for attempt in range(self.max_retries + 1):
+            try:
+                return await self._summarize(
+                    run_inputs["text"],
+                    run_inputs["prompt_prefix"],
+                    run_inputs["task_goal"],
+                    run_inputs["keywords"],
+                )
+            except Exception as e:
+                error_result = await self._retryable_summary_error(
+                    attempt=attempt,
+                    context=context,
+                    error=e,
+                )
+                if error_result is not None:
+                    return error_result
+        raise RuntimeError("Summarization retry loop exited without a result")
+
+    async def _retryable_summary_error(
+        self,
+        *,
+        attempt: int,
+        context: dict[str, Any],
+        error: Exception,
+    ) -> SummarizerErrorResult | None:
+        error_msg = (
+            f"Summarization attempt {attempt + 1}/{self.max_retries + 1} "
+            f"failed: {error!s}"
+        )
+        self.logger.error(
+            error_msg,
+            extra={"context": {"stage": "summarization", "error": str(error)}},
+        )
+        if attempt != self.max_retries:
+            return None
+        self.logger_manager.log_metric(
+            "summarization_errors",
+            1,
+            MetricType.COUNTER,
+            tags={"stage": "summarization"},
+        )
+        final_error = (
+            f"Summarization failed after {self.max_retries + 1} "
+            f"attempts: {error!s}"
+        )
+        return cast(
+            SummarizerErrorResult,
+            await self.execution_kernel.error_result(
+                final_error,
+                context,
+                "summarization",
+            ),
+        )
+
+    async def _apply_post_hook(
+        self,
+        *,
+        context: dict[str, Any],
+        result: SummarizerResult,
+    ) -> SummarizerResult:
+        if self.post_hook is None:
+            return result
+        try:
+            updated = cast(SummarizerResult, self.post_hook(context, result))
+            self.logger.debug(
+                "Post-hook applied successfully",
+                extra={"context": {"stage": "post_hook"}},
+            )
+            self.logger_manager.log_metric(
+                "post_hook_success",
+                1,
+                MetricType.COUNTER,
+                tags={"stage": "post_hook"},
+            )
+            return updated
+        except Exception as e:
+            self.logger.warning(
+                f"Post-hook failed: {e!s}",
+                extra={"context": {"stage": "post_hook", "error": str(e)}},
+            )
+            self.logger_manager.log_metric(
+                "post_hook_errors",
+                1,
+                MetricType.COUNTER,
+                tags={"stage": "post_hook"},
+            )
+            result["warnings"].append(f"Post-hook failed: {e!s}")
+            return result
+
+    def _store_cached_result(
+        self, cache_key: str, result: SummarizerResult
+    ) -> None:
+        if self._cache is None:
+            return
+        self._cache[cache_key] = result
+        self.logger_manager.log_metric(
+            "cache_stores", 1, MetricType.COUNTER, tags={"stage": "cache_store"}
         )
 
     async def _summarize(
