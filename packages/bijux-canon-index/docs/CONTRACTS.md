@@ -1,9 +1,19 @@
-# CONTRACTS
+# Contracts
 
-Stable contracts in `bijux-canon-index` are:
+The contract surface of `bijux-canon-index` includes more than HTTP schemas.
+
+## Stable surfaces
+
 - API schemas under `apis/bijux-canon-index/v1/`
-- plugin entrypoint groups under `bijux_canon_index.vectorstores`, `bijux_canon_index.embeddings`, and `bijux_canon_index.runners`
-- public HTTP surface under `src/bijux_canon_index/api/v1/`
-- stable package-facing models and errors under `src/bijux_canon_index/core/` and `interfaces/schemas/`
+- plugin entrypoint groups for vector stores, embeddings, and runners
+- public HTTP behavior under `src/bijux_canon_index/api/v1/`
+- stable models and typed failures under `core/` and boundary schemas
 
-The package does not currently declare a published console script in `pyproject.toml`. Treat CLI internals as operator tooling unless explicitly promoted.
+## Change policy
+
+- schema changes must be intentional and reviewed as contract changes
+- plugin contracts must stay explicit enough that third-party or internal plugins know what to implement
+- failure meanings should not drift just because backend behavior changed
+
+The package does not currently publish a primary console script. Treat CLI code
+as operator tooling unless the package explicitly promotes it as a supported surface.

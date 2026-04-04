@@ -1,15 +1,22 @@
 # Freeze Criteria
 
-`bijux-canon-index` is ready for a release freeze only when these conditions hold:
-- root package targets pass: `make PACKAGE=bijux-canon-index lint`, `quality`, and `test`
-- CLI help and flag snapshots match the intended public surface
-- OpenAPI output and compatibility snapshots remain stable or are updated intentionally
-- replay, comparison, and provenance flows pass across the supported deterministic paths
-- package docs still describe the current contract surface and failure semantics
-- no runtime state files or caches leak into the package tree
+`bijux-canon-index` is ready for a release freeze only when a maintainer can
+answer "yes" to all of these questions without hand-waving.
 
-Changes that alter public contracts must update the corresponding freeze artifact in the same review:
-- CLI help or flags
+## Release checklist
+
+- do the root package targets pass: `make PACKAGE=bijux-canon-index lint`, `quality`, and `test`
+- do public boundary artifacts match the intended surface
+- do replay, comparison, and provenance flows still pass on supported paths
+- do package docs still explain the actual contract surface and failure semantics
+- is the package tree free of accidental runtime state and caches
+
+## Artifacts that must move with public changes
+
+- CLI help or flag snapshots
 - OpenAPI output
 - compatibility snapshots
-- required package docs under `docs/spec/` and `docs/maintainer/`
+- docs under `docs/spec/` and `docs/maintainer/`
+
+If a reviewer would need to infer the new contract from code alone, the package
+is not ready to freeze yet.

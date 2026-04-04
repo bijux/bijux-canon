@@ -1,17 +1,21 @@
 # Failure Semantics
 
-Failures in `bijux-canon-index` are part of the contract surface.
+Failures in `bijux-canon-index` are not an implementation detail. They are part
+of the package contract because callers and operators need to understand what
+went wrong and whether retry, fallback, or investigation makes sense.
 
-The package distinguishes between:
-- validation failures: the request shape or declared contract is invalid
-- invariant failures: internal or cross-layer guarantees were violated
-- capability failures: the selected backend, vector store, or plugin cannot satisfy the request
-- budget failures: configured latency, memory, or approximation limits were exceeded
-- replay failures: a replay request cannot be honored under the declared reproducibility constraints
+## Failure categories
 
-Boundary layers must preserve these meanings:
-- CLI maps typed failures to stable exit codes
-- HTTP maps typed failures to stable status codes and refusal payloads
-- run records store failure details without inventing new categories
+- validation failures: the request or declared contract is invalid before execution starts
+- invariant failures: an internal guarantee was violated
+- capability failures: the chosen backend or plugin cannot do what was asked
+- budget failures: latency, memory, or approximation constraints were exceeded
+- replay failures: the package cannot honor the requested reproducibility constraint
 
-New failure types should only be introduced when they add a durable distinction that downstream tooling can act on.
+## Boundary rule
+
+CLI, HTTP, and stored run records must preserve these meanings instead of
+inventing ad-hoc categories or flattening everything into a generic failure.
+
+New failure categories are justified only when downstream tooling or operators
+can act differently because of the distinction.

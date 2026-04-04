@@ -1,14 +1,21 @@
 # Vector Store Profile
 
-Vector-store integrations in `bijux-canon-index` must describe behavior through a stable profile rather than ad-hoc backend claims.
+Every vector-store integration should describe itself through a stable profile
+instead of through vague marketing language or backend folklore.
 
-Each backend profile should state:
+## A useful profile should say
+
 - whether exact queries are deterministic
 - whether ANN queries are supported
 - whether delete and filtering are supported
-- what consistency semantics the backend exposes
-- which backend version and plugin source produced the capability report
+- what consistency semantics are exposed
+- which backend version and plugin source produced the report
 
-The package treats vector stores as execution dependencies, not opaque infrastructure. Their profile is part of provenance, capability reporting, and replay reasoning.
+## Why this matters
 
-When adding a backend, prefer declaring the narrowest truthful profile first and broadening later only when the implementation and tests prove it.
+`bijux-canon-index` treats backends as execution dependencies with consequences
+for provenance and replay, not as invisible infrastructure.
+
+When adding a backend, declare the narrowest truthful profile first. Expanding a
+capability claim later is safer than over-promising and then having to explain a
+broken replay or comparison story.

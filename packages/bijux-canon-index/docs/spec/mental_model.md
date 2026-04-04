@@ -1,14 +1,23 @@
 # Mental Model
 
-`bijux-canon-index` is an execution package, not a general vector database.
+`bijux-canon-index` is an execution package, not a generic vector database.
 
-The package accepts declared execution intent and contract, runs the request against a stored artifact, and returns results with enough provenance to explain, compare, and replay the outcome later.
+The package accepts declared execution intent, runs that intent against a
+specific backend or artifact, and returns results together with enough context
+to answer the follow-up questions a serious system always has:
 
-Keep these boundaries in mind:
-- `core` defines durable execution types, contracts, and invariants.
-- `domain` defines execution semantics such as planning, scoring, replay, and drift handling.
-- `application` wires those rules into package-facing workflows.
-- `infra` owns storage, ANN runners, embeddings, and plugin loading.
-- `interfaces` owns CLI and HTTP request shaping.
+- which backend produced this result
+- what capabilities and limits were in play
+- how reproducible was the execution
+- what changed when we compared or replayed it later
 
-The main question this package answers is not only "what were the nearest vectors?" but also "under which contract, with which artifact, and with which replay guarantees did we produce them?"
+## Keep these roles in mind
+
+- `core` defines durable types and package-wide primitives
+- `domain` defines the meaning of execution, scoring, replay, and drift
+- `application` turns those rules into package workflows
+- `infra` does the real backend and plugin work
+- `interfaces` shapes requests and responses for callers
+
+The package is successful when maintainers can explain not just "what matched,"
+but also "why that answer is trustworthy under this contract."

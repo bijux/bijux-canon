@@ -1,15 +1,29 @@
-# INDEX
+# Index Package Guide
 
-Package-local documentation for `bijux-canon-index`:
+This documentation set explains `bijux-canon-index` as an execution package
+with provenance, replay, and backend capability concerns.
 
-- [SCOPE](SCOPE.md)
-- [ARCHITECTURE](ARCHITECTURE.md)
-- [BOUNDARIES](BOUNDARIES.md)
-- [CONTRACTS](CONTRACTS.md)
-- [EFFECTS](EFFECTS.md)
-- [INVARIANTS](INVARIANTS.md)
-- [PUBLIC_API](PUBLIC_API.md)
-- [SSOT](SSOT.md)
-- [TESTS](TESTS.md)
+## Start with these questions
 
-Use these local docs for package-local responsibility and stable interface intent.
+- What belongs in this package: [SCOPE](SCOPE.md)
+- How the package is arranged: [ARCHITECTURE](ARCHITECTURE.md)
+- Where ownership stops: [BOUNDARIES](BOUNDARIES.md)
+- Which surfaces are stable: [CONTRACTS](CONTRACTS.md)
+- Which effects need care: [EFFECTS](EFFECTS.md)
+- What maintainers must defend: [INVARIANTS](INVARIANTS.md)
+- What callers can rely on: [PUBLIC_API](PUBLIC_API.md)
+- Which files are authoritative: [SSOT](SSOT.md)
+- How behavior is protected: [TESTS](TESTS.md)
+
+## Deep reference
+
+- [Mental model](spec/mental_model.md)
+- [Failure semantics](spec/failure_semantics.md)
+- [Vector store profile](spec/vdb_profile.md)
+- [Freeze criteria](maintainer/freeze_criteria.md)
+
+## Suggested reading order
+
+1. Read [spec/mental_model.md](spec/mental_model.md) first.
+2. Read [ARCHITECTURE](ARCHITECTURE.md) and [BOUNDARIES](BOUNDARIES.md) before changing code placement.
+3. Read [CONTRACTS](CONTRACTS.md) and [spec/failure_semantics.md](spec/failure_semantics.md) before changing package behavior.

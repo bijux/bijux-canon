@@ -1,9 +1,17 @@
-# SSOT
+# Source Of Truth
 
-Source-of-truth locations for `bijux-canon-index` are:
+## Authoritative locations
+
 - `src/bijux_canon_index/` for implementation
 - `apis/bijux-canon-index/v1/` for pinned API contracts
-- `tests/` and `plugins/template_plugin/tests/` for executable contract checks
-- `docs/*.md` here for package-local scope and architecture
+- `tests/` and plugin tests for executable conformance
+- `docs/` for package-local intent and ownership
 
-Package-local docs here should override summaries elsewhere when boundary questions arise.
+## Preferred order when checking a claim
+
+1. Look at tests and schemas for the currently enforced contract.
+2. Look at the implementation for current behavior.
+3. Look at these docs for design intent and boundaries.
+
+Package-local docs should win over higher-level repository summaries when the
+question is specifically about index behavior or ownership.

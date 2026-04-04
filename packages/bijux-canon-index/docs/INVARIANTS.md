@@ -1,7 +1,11 @@
-# INVARIANTS
+# Invariants
 
-`bijux-canon-index` keeps these invariants:
-- execution artifacts remain replay- and provenance-aware
-- plugin loading remains explicit and contract-declared
-- backend adapters do not leak into stable domain semantics
-- pinned API schemas match the live app intentionally
+These are the rules the package should keep even when backend support grows.
+
+- execution artifacts remain provenance-aware and replay-relevant
+- plugin loading remains explicit, declared, and inspectable
+- backend details do not silently redefine stable domain meaning
+- pinned schemas change only on purpose and with review
+
+If a shortcut makes the package harder to explain after the fact, it is
+probably violating an invariant.

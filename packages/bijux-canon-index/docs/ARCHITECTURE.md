@@ -1,13 +1,26 @@
-# ARCHITECTURE
+# Architecture
 
-`bijux-canon-index` is a contract-driven vector execution package.
+The package is shaped around a strong center and replaceable edges.
 
-Core layout:
-- `src/bijux_canon_index/core/` owns stable execution types, errors, and primitives
-- `src/bijux_canon_index/domain/` owns execution, provenance, and drift semantics
-- `src/bijux_canon_index/application/` owns orchestration and package-facing facades
-- `src/bijux_canon_index/infra/` owns vector stores, embeddings, runners, and plugin loading
-- `src/bijux_canon_index/interfaces/` and `api/v1/` own CLI and HTTP boundaries
-- `src/bijux_canon_index/tooling/` owns benchmark support
+## Main layers
 
-The architecture should keep vector execution semantics in the core/domain layers and adapters at the edges.
+- `core/` holds stable primitives, typed failures, and package-wide value objects
+- `domain/` holds execution, provenance, drift, and replay semantics
+- `application/` wires domain rules into package workflows
+- `infra/` talks to vector stores, embedding systems, runners, and plugin infrastructure
+- `interfaces/` and `api/v1/` expose boundary behavior
+- `tooling/` supports benchmarks and operational package tooling
+
+## Intended flow
+
+1. A caller declares an execution request.
+2. Application code validates and prepares the request.
+3. Domain logic defines how the request should behave and what provenance must be preserved.
+4. Infrastructure executes the request against a backend.
+5. Boundary code returns results together with the right contract and provenance shape.
+
+## Design expectations
+
+- backend-specific behavior should not leak into stable domain semantics
+- provenance should be first-class, not bolted on after the fact
+- plugin loading should stay explicit and contract-driven

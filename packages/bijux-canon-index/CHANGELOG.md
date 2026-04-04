@@ -1,6 +1,16 @@
 # Changelog
 
-All notable changes to bijux-canon-index are documented here. This project adheres to Semantic Versioning and the Keep a Changelog format.
+All notable changes to `bijux-canon-index` are documented here.
+
+This changelog should emphasize:
+
+- backend and plugin compatibility changes
+- replay, provenance, and determinism behavior changes
+- package-facing API and schema changes
+- operational changes that affect maintainers or operators
+
+Pure internal refactors belong in git history unless they change the meaning of
+the package for callers or maintainers.
 
 ## Unreleased
 

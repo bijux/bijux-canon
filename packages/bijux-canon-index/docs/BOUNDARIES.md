@@ -1,13 +1,22 @@
-# BOUNDARIES
+# Boundaries
 
-`bijux-canon-index` owns vector execution, provenance, replay-facing artifact comparison, and backend/plugin integration.
+`bijux-canon-index` is the place where vector execution becomes concrete.
 
-It does own:
-- vector store and embedding backend integration
-- deterministic and non-deterministic execution behavior
-- index-facing API and CLI boundaries
+## This package owns
 
-It does not own:
-- ingest document preparation and lexical retrieval policy from `bijux-canon-ingest`
-- runtime-wide execution authority from `bijux-canon-runtime`
-- repository maintenance tooling from `bijux-canon-dev`
+- vector-store and embedding integration
+- deterministic and non-deterministic execution behavior for index workloads
+- provenance-aware result comparison and replay-facing bookkeeping
+- package-local boundary behavior for index execution
+
+## Neighbor packages own
+
+- `bijux-canon-ingest`: document preparation and ingest-local retrieval assembly
+- `bijux-canon-runtime`: execution authority, persistence, and replay governance
+- `bijux-canon-dev`: repository tooling and maintenance automation
+
+## Boundary discipline
+
+- do not absorb ingest-specific content preparation here
+- do not let runtime governance leak into backend adapters
+- do not allow backend quirks to redefine stable package contracts silently
