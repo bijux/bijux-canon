@@ -102,3 +102,45 @@ def test_resolver_rejects_duplicate_dependency_edges() -> None:
         ValueError, match="dependencies must not contain duplicate edges"
     ):
         ExecutionPlanner().resolve(manifest)
+
+
+def test_resolver_normalizes_declared_dependency_order() -> None:
+    manifest = FlowManifest(
+        spec_version="v1",
+        flow_id=FlowID("flow-ordering"),
+        tenant_id=TenantID("tenant-a"),
+        flow_state=FlowState.VALIDATED,
+        determinism_level=DeterminismLevel.STRICT,
+        replay_acceptability=ReplayAcceptability.EXACT_MATCH,
+        entropy_budget=EntropyBudget(
+            spec_version="v1",
+            allowed_sources=(EntropySource.SEEDED_RNG, EntropySource.DATA),
+            max_magnitude=EntropyMagnitude.LOW,
+        ),
+        replay_envelope=ReplayEnvelope(
+            spec_version="v1",
+            min_claim_overlap=1.0,
+            max_contradiction_delta=0,
+        ),
+        dataset=DatasetDescriptor(
+            spec_version="v1",
+            dataset_id=DatasetID("dataset"),
+            tenant_id=TenantID("tenant-a"),
+            dataset_version="1.0.0",
+            dataset_hash="hash",
+            dataset_state=DatasetState.FROZEN,
+            storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
+        ),
+        allow_deprecated_datasets=False,
+        agents=(AgentID("alpha"), AgentID("bravo"), AgentID("charlie")),
+        dependencies=("charlie:bravo", "charlie:alpha"),
+        retrieval_contracts=(),
+        verification_gates=(),
+    )
+
+    resolved = ExecutionPlanner().resolve(manifest)
+    charlie_step = next(
+        step for step in resolved.plan.steps if step.agent_id == AgentID("charlie")
+    )
+
+    assert charlie_step.declared_dependencies == (AgentID("alpha"), AgentID("bravo"))

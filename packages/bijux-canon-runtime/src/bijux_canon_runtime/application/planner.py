@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+from heapq import heapify, heappop, heappush
+
 from bijux_canon_runtime.core.package_versions import distribution_version
 from bijux_canon_runtime.contracts.execution_plan_contract import (
     validate as validate_execution_plan,
@@ -125,7 +127,7 @@ class ExecutionPlanner:
     def _toposort_agents(self, manifest: FlowManifest) -> list[str]:
         """Deterministic topological sort using lexical tie-breaking for stability."""
         dependencies = self._parse_dependencies(manifest)
-        agents = {str(agent) for agent in manifest.agents}
+        agents = sorted(str(agent) for agent in manifest.agents)
         indegree: dict[str, int] = dict.fromkeys(agents, 0)
         forward: dict[str, list[str]] = {agent: [] for agent in agents}
 
@@ -134,16 +136,19 @@ class ExecutionPlanner:
                 forward[dep].append(agent)
                 indegree[agent] += 1
 
-        ready = sorted([agent for agent, degree in indegree.items() if degree == 0])
-        ordered = []
+        for downstream in forward.values():
+            downstream.sort()
+
+        ready = [agent for agent, degree in indegree.items() if degree == 0]
+        heapify(ready)
+        ordered: list[str] = []
         while ready:
-            current = ready.pop(0)
+            current = heappop(ready)
             ordered.append(current)
-            for downstream in sorted(forward[current]):
+            for downstream in forward[current]:
                 indegree[downstream] -= 1
                 if indegree[downstream] == 0:
-                    ready.append(downstream)
-                    ready.sort()
+                    heappush(ready, downstream)
 
         if len(ordered) != len(agents):
             raise ValueError("dependencies contain a cycle or reference unknown agents")
@@ -165,7 +170,10 @@ class ExecutionPlanner:
             if dependency_id in mapping[agent_id]:
                 raise ValueError("dependencies must not contain duplicate edges")
             mapping[agent_id].append(dependency_id)
-        return mapping
+        return {
+            agent_id: sorted(dependency_ids)
+            for agent_id, dependency_ids in mapping.items()
+        }
 
     def _plan_hash(
         self,
