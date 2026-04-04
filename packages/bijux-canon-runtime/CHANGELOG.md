@@ -19,6 +19,8 @@ tagged release, including legacy distribution naming where applicable.
   the source distribution so runtime release expectations stay durable.
 - Release artifacts now ship the repository `LICENSE` file so downstream
   consumers receive the license text with the published package.
+- Source distributions now publish package-local ignore rules instead of a
+  generic repo-level `.gitignore`.
 <!-- unreleased end -->  
 
 <a id="v0-3-0"></a>  

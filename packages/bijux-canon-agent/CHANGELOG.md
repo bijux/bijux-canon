@@ -18,6 +18,8 @@ tagged release.
   the source distribution so release expectations stay attached to the package.
 - Release artifacts now ship the repository `LICENSE` file so downstream
   consumers receive the license text with the published package.
+- Source distributions now publish package-local ignore rules instead of a
+  generic repo-level `.gitignore`.
 
 ## 0.3.0 - 2026-04-04
 
