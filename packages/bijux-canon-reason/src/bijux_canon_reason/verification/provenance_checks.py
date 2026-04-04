@@ -21,6 +21,9 @@ from bijux_canon_reason.verification.context import VerificationContext
 INV_GRD_001 = "INV-GRD-001"
 INV_GRD_002 = "INV-GRD-002"
 INV_EVD_001 = "INV-EVD-001"
+EVIDENCE_MARKER_RE = re.compile(
+    r"\[evidence:(?P<eid>[^:\]]+):(?P<b0>\d+)-(?P<b1>\d+):(?P<sha>[0-9a-f]{64})\]"
+)
 
 
 def check_derived_grounding(
@@ -28,24 +31,7 @@ def check_derived_grounding(
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
     """Derived claims must be grounded in evidence with canonical span and hash citations."""
     failures: list[VerificationFailure] = []
-    policy = (
-        ctx.trace.metadata.get("reasoning_policy", {})
-        if isinstance(ctx.trace.metadata, dict)
-        else {}
-    )
-    raw_min: JsonValue | None = None
-    if isinstance(policy, dict):
-        value = policy.get("min_supports_per_claim")
-        raw_min = value if isinstance(value, (int, float, str)) else None
-    min_supports = 2
-    if raw_min is not None and isinstance(raw_min, (int, float, str)):
-        try:
-            min_supports = max(1, int(raw_min))
-        except Exception:  # noqa: BLE001
-            min_supports = 1
-    marker_re = re.compile(
-        r"\[evidence:(?P<eid>[^:\]]+):(?P<b0>\d+)-(?P<b1>\d+):(?P<sha>[0-9a-f]{64})\]"
-    )
+    min_supports = _resolve_min_supports(_reasoning_policy(ctx))
     for event in ctx.trace.events:
         if event.kind != TraceEventKind.claim_emitted:
             continue
@@ -81,15 +67,7 @@ def check_derived_grounding(
                 )
             )
 
-        marker_map = {
-            (
-                match.group("eid"),
-                int(match.group("b0")),
-                int(match.group("b1")),
-                match.group("sha"),
-            )
-            for match in marker_re.finditer(claim.statement or "")
-        }
+        marker_map = _marker_map(claim.statement or "")
         for support in evidence_supports:
             start, end = support.span
             marker_key = (support.ref_id, start, end, support.snippet_sha256)
@@ -192,21 +170,7 @@ def check_support_spans(
     failures: list[VerificationFailure] = []
     evidence_bytes: dict[str, bytes] = {}
     evidence_spans: dict[str, tuple[int, int]] = {}
-    chunk_spans: dict[str, tuple[int, int]] = {}
-    chunk_hashes: dict[str, str] = {}
-    chunks_file = ctx.artifacts_dir / "provenance" / "chunks.jsonl"
-    if chunks_file.exists():
-        for line in chunks_file.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            obj = json.loads(line)
-            chunk_id = str(obj.get("chunk_id", ""))
-            if chunk_id and "start_byte" in obj and "end_byte" in obj:
-                start = int(obj["start_byte"])
-                end = int(obj["end_byte"])
-                chunk_spans[chunk_id] = (start, end)
-                if "chunk_sha256" in obj:
-                    chunk_hashes[chunk_id] = str(obj["chunk_sha256"])
+    chunk_spans, chunk_hashes = _load_chunk_manifest(ctx.artifacts_dir)
 
     for event in ctx.trace.events:
         if event.kind != TraceEventKind.evidence_registered:
@@ -283,33 +247,9 @@ def check_reasoning_trace(
         )
         return VerificationCheck(name="reasoning_trace", passed=False), failures
 
-    claim_hashes: set[str] = set()
-    for event in ctx.trace.events:
-        if (
-            event.kind == TraceEventKind.claim_emitted
-            and getattr(event.claim, "claim_type", None) == ClaimType.derived
-        ):
-            structured = (
-                event.claim.structured
-                if isinstance(event.claim.structured, dict)
-                else {}
-            )
-            result_hash = (
-                structured.get("result_sha256")
-                if isinstance(structured, dict)
-                else None
-            )
-            if isinstance(result_hash, str) and len(result_hash) == 64:
-                claim_hashes.add(result_hash)
-            else:
-                failures.append(
-                    VerificationFailure(
-                        severity=VerificationSeverity.error,
-                        message=(
-                            f"reasoning_trace: claim {event.claim.id} missing result_sha256"
-                        ),
-                    )
-                )
+    claim_hashes = _derived_claim_hashes(ctx=ctx, failures=failures)
+    if not claim_hashes and failures:
+        return VerificationCheck(name="reasoning_trace", passed=False), failures
     if not claim_hashes:
         failures.append(
             VerificationFailure(
@@ -343,6 +283,86 @@ def _sha256_path(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _reasoning_policy(ctx: VerificationContext) -> dict[str, JsonValue]:
+    metadata = ctx.trace.metadata if isinstance(ctx.trace.metadata, dict) else {}
+    policy = metadata.get("reasoning_policy", {}) if isinstance(metadata, dict) else {}
+    return policy if isinstance(policy, dict) else {}
+
+
+def _resolve_min_supports(policy: dict[str, JsonValue]) -> int:
+    raw_min = policy.get("min_supports_per_claim")
+    if not isinstance(raw_min, (int, float, str)):
+        return 2
+    try:
+        return max(1, int(raw_min))
+    except ValueError:
+        return 1
+
+
+def _marker_map(statement: str) -> set[tuple[str, int, int, str]]:
+    return {
+        (
+            match.group("eid"),
+            int(match.group("b0")),
+            int(match.group("b1")),
+            match.group("sha"),
+        )
+        for match in EVIDENCE_MARKER_RE.finditer(statement)
+    }
+
+
+def _load_chunk_manifest(
+    artifacts_dir: Path,
+) -> tuple[dict[str, tuple[int, int]], dict[str, str]]:
+    chunk_spans: dict[str, tuple[int, int]] = {}
+    chunk_hashes: dict[str, str] = {}
+    chunks_file = artifacts_dir / "provenance" / "chunks.jsonl"
+    if not chunks_file.exists():
+        return chunk_spans, chunk_hashes
+
+    for line in chunks_file.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        obj = json.loads(line)
+        chunk_id = str(obj.get("chunk_id", ""))
+        if not chunk_id or "start_byte" not in obj or "end_byte" not in obj:
+            continue
+        chunk_spans[chunk_id] = (int(obj["start_byte"]), int(obj["end_byte"]))
+        if "chunk_sha256" in obj:
+            chunk_hashes[chunk_id] = str(obj["chunk_sha256"])
+    return chunk_spans, chunk_hashes
+
+
+def _derived_claim_hashes(
+    *,
+    ctx: VerificationContext,
+    failures: list[VerificationFailure],
+) -> set[str]:
+    claim_hashes: set[str] = set()
+    for event in ctx.trace.events:
+        if (
+            event.kind != TraceEventKind.claim_emitted
+            or getattr(event.claim, "claim_type", None) != ClaimType.derived
+        ):
+            continue
+        structured = (
+            event.claim.structured if isinstance(event.claim.structured, dict) else {}
+        )
+        result_hash = (
+            structured.get("result_sha256") if isinstance(structured, dict) else None
+        )
+        if isinstance(result_hash, str) and len(result_hash) == 64:
+            claim_hashes.add(result_hash)
+            continue
+        failures.append(
+            VerificationFailure(
+                severity=VerificationSeverity.error,
+                message=f"reasoning_trace: claim {event.claim.id} missing result_sha256",
+            )
+        )
+    return claim_hashes
+
+
 def _resolve_under_root(root: Path, rel_posix_path: str) -> Path | None:
     """Resolve rel_posix_path under root, rejecting traversal and escape."""
     try:
@@ -350,7 +370,7 @@ def _resolve_under_root(root: Path, rel_posix_path: str) -> Path | None:
         candidate = (root_resolved / rel_posix_path).resolve(strict=True)
         candidate.relative_to(root_resolved)
         return candidate
-    except Exception:  # noqa: BLE001
+    except (FileNotFoundError, OSError, ValueError):
         return None
 
 
