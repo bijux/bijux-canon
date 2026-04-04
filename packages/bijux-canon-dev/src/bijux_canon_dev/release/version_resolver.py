@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import subprocess
+import sys
 from pathlib import Path
 
 try:
@@ -19,21 +20,59 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _pyproject_data(pyproject_path: Path) -> dict[str, object]:
+    return tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
+
+
+def _resolve_hatch_version(pyproject_path: Path) -> str | None:
+    result = subprocess.run(
+        [sys.executable, "-m", "hatch", "version"],
+        capture_output=True,
+        check=False,
+        cwd=pyproject_path.parent,
+        text=True,
+    )
+    if result.returncode != 0:
+        return None
+    version = result.stdout.strip()
+    return version or None
+
+
+def _tag_glob(pyproject: dict[str, object], package_name: str) -> str:
+    hatch_version = pyproject.get("tool", {}).get("hatch", {}).get("version", {})
+    tag_pattern = hatch_version.get("tag-pattern")
+    if isinstance(tag_pattern, str):
+        marker = "(?P<version>"
+        if tag_pattern.startswith("^") and marker in tag_pattern:
+            prefix = tag_pattern[1:].split(marker, 1)[0]
+            if prefix:
+                return f"{prefix}*"
+    return f"{package_name}/v*"
+
+
 def resolve_version(pyproject_path: Path, package_name: str) -> str:
-    project = tomllib.loads(pyproject_path.read_text(encoding="utf-8")).get("project", {})
+    pyproject = _pyproject_data(pyproject_path)
+    project = pyproject.get("project", {})
     version = project.get("version")
     if isinstance(version, str) and version:
         return version
 
+    hatch_version = _resolve_hatch_version(pyproject_path)
+    if hatch_version:
+        return hatch_version
+
     tag_process = subprocess.run(
-        ["git", "tag", "--sort=v:refname", "--list", f"{package_name}/v*"],
+        ["git", "tag", "--sort=v:refname", "--list", _tag_glob(pyproject, package_name)],
         capture_output=True,
         check=False,
         text=True,
     )
     tags = [line.strip() for line in tag_process.stdout.splitlines() if line.strip()]
     if tags:
-        return tags[-1].removeprefix(f"{package_name}/v")
+        tag = tags[-1]
+        if "/v" in tag:
+            return tag.rsplit("/v", 1)[1]
+        return tag
     return "0.0.0"
 
 

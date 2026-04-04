@@ -2,6 +2,7 @@ PUBLISH_PYTHON            ?= $(if $(wildcard $(VENV_PYTHON)),$(VENV_PYTHON),pyth
 PUBLISH_DIST_DIR          ?= $(PROJECT_ARTIFACTS_DIR)/build
 PUBLISH_PACKAGE_NAME      ?= $(PROJECT_SLUG)
 PUBLISH_VERSION_RESOLVER  ?= -m bijux_canon_dev.release.version_resolver
+PUBLISH_VERSION_GUARD     ?= -m bijux_canon_dev.release.publication_guard
 PKG_VERSION               ?= $(strip $(shell $(PUBLISH_PYTHON) $(PUBLISH_VERSION_RESOLVER) --pyproject pyproject.toml --package-name "$(PUBLISH_PACKAGE_NAME)" 2>/dev/null || echo 0.0.0))
 TWINE                     ?= $(PUBLISH_PYTHON) -m twine
 TWINE_REPOSITORY          ?= pypi
@@ -12,6 +13,11 @@ SKIP_EXISTING             ?= 1
 PUBLISH_UPLOAD_ENABLED    ?= 1
 PUBLISH_TEST_ENABLED      ?= $(PUBLISH_UPLOAD_ENABLED)
 PUBLISH_VERIFY_INSTALL_CMD ?=
+PUBLISH_ALLOW_PRERELEASE  ?= 0
+PUBLISH_ALLOW_LOCAL_VERSION ?= 0
+
+PUBLISH_VERSION_GUARD_FLAGS = $(if $(filter 1,$(PUBLISH_ALLOW_PRERELEASE)),--allow-prerelease,) \
+	$(if $(filter 1,$(PUBLISH_ALLOW_LOCAL_VERSION)),--allow-local-version,)
 
 .PHONY: publish publish-test twine twine-check twine-upload twine-upload-test ensure-dists check-version verify-test-install
 
@@ -33,15 +39,24 @@ publish-test: check-version build twine-check
 	  echo "→ Ready to upload to TestPyPI from $(PUBLISH_DIST_DIR); run '$(TWINE) upload --repository testpypi $(PUBLISH_DIST_DIR)/*' when credentials are configured."; \
 	fi
 
-check-version:
+check-version: build-tools
 	@echo "→ Package version: $(PKG_VERSION)"
 	@[ "$(PKG_VERSION)" != "0.0.0" ] || { echo "✘ PKG_VERSION resolved to 0.0.0"; exit 1; }
+	@$(PUBLISH_PYTHON) $(PUBLISH_VERSION_GUARD) \
+	  --pyproject pyproject.toml \
+	  --package-name "$(PUBLISH_PACKAGE_NAME)" \
+	  $(PUBLISH_VERSION_GUARD_FLAGS) >/dev/null
 
 ensure-dists:
 	@echo "→ Verifying artifacts for $(PKG_VERSION) in '$(PUBLISH_DIST_DIR)'"
 	@test -d "$(PUBLISH_DIST_DIR)" || { echo "✘ Dist dir missing: $(PUBLISH_DIST_DIR)"; exit 1; }
 	@ls "$(PUBLISH_DIST_DIR)"/*.whl >/dev/null 2>&1 || { echo "✘ Missing wheel in $(PUBLISH_DIST_DIR)"; exit 1; }
 	@ls "$(PUBLISH_DIST_DIR)"/*.tar.gz >/dev/null 2>&1 || { echo "✘ Missing sdist in $(PUBLISH_DIST_DIR)"; exit 1; }
+	@$(PUBLISH_PYTHON) $(PUBLISH_VERSION_GUARD) \
+	  --pyproject pyproject.toml \
+	  --package-name "$(PUBLISH_PACKAGE_NAME)" \
+	  --dist-dir "$(PUBLISH_DIST_DIR)" \
+	  $(PUBLISH_VERSION_GUARD_FLAGS) >/dev/null
 	@ls -lh "$(PUBLISH_DIST_DIR)"/*.whl "$(PUBLISH_DIST_DIR)"/*.tar.gz
 
 twine-check: ensure-dists

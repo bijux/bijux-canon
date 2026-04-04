@@ -8,7 +8,9 @@ governance.
 
 ## Unreleased
 
-- No package-local changes recorded yet.
+- Release publish checks now resolve the same effective version Hatch builds,
+  refuse accidental prerelease uploads by default, and verify built artifact
+  versions before upload.
 
 ## 0.3.0 - 2026-04-04
 
