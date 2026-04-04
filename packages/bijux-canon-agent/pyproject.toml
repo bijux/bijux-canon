@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-canon-agent"
 dynamic = ["version"]
-description = "bijux-canon-agent: a deterministic, auditable agent pipeline for document processing and replayable traces."
+description = "Deterministic agent workflow execution with auditable traces, replay support, and document-processing pipelines from Bijux."
 authors = [
     { name = "Bijan Mousavi", email = "bijan@bijux.io" }
 ]
@@ -15,7 +15,7 @@ maintainers = [
 readme = "README.md"
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
-keywords = ["pipeline", "agent-runtime", "document-processing", "audit-trace", "replay", "llm"]
+keywords = ["bijux", "agent", "workflow", "document-processing", "audit-trace", "replay", "llm"]
 classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -55,7 +55,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent"
+Homepage = "https://bijux.io/"
+Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-agent/"
 Issues = "https://github.com/bijux/bijux-canon/issues"

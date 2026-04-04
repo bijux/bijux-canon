@@ -8,7 +8,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bijux-canon-index"
-description = "bijux-canon-index: contract-driven vector execution with replayable determinism and audited ANN."
+description = "Deterministic vector execution, replayable ANN, and provenance-aware indexing for bijux workflows."
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
@@ -131,7 +131,8 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index"
+"Homepage" = "https://bijux.io/"
+"Website" = "https://bijux.io/"
 "Repository" = "https://github.com/bijux/bijux-canon"
 "Issues" = "https://github.com/bijux/bijux-canon/issues"
 "Documentation" = "https://bijux.io/bijux-canon-index/"

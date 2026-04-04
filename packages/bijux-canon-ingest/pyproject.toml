@@ -5,11 +5,20 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-canon-ingest"
 dynamic = ["version"]
-description = "Deterministic document ingestion, indexing, and retrieval toolkit"
+description = "Deterministic document ingestion, chunking, and retrieval preparation for bijux workflows."
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+keywords = [
+  "bijux",
+  "ingest",
+  "retrieval",
+  "document-processing",
+  "chunking",
+  "indexing",
+]
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
@@ -81,12 +90,14 @@ dev = [
 bijux-canon-ingest = "bijux_canon_ingest.interfaces.cli.entrypoint:main"
 
 [project.urls]
-Homepage = "https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest"
+Homepage = "https://bijux.io/"
+Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
 Documentation = "https://bijux.io/bijux-canon-ingest/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
+Funding = "https://github.com/sponsors/bijux"
 
 [tool.hatch.version]
 source = "vcs"
