@@ -5,13 +5,16 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
-import hashlib
-import json
 from statistics import mean
 from typing import Any, Protocol, cast
 import warnings
 
 from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.pipeline.convergence.snapshots import (
+    build_convergence_snapshot,
+    build_debug_state,
+    compute_convergence_hash,
+)
 
 DEFAULT_EPSILON = 1e-3
 DEFAULT_IDENTICAL_VERDICTS = 2
@@ -299,18 +302,14 @@ class ConvergenceMonitor:
         self.history.append((dict(scores), verdict, confidence))
         self._update_convergence_hash()
         converged = self.has_converged()
-        snapshot = {
-            "iteration": len(self.history),
-            "last_confidence": confidence,
-            "converged": converged,
-            "convergence_type": self.convergence_type.value
-            if self.convergence_type
-            else None,
-            "convergence_hash": self.convergence_hash,
-            "convergence_reason": self.convergence_reason.value
-            if self.convergence_reason
-            else None,
-        }
+        snapshot = build_convergence_snapshot(
+            iteration=len(self.history),
+            confidence=confidence,
+            converged=converged,
+            convergence_type=self.convergence_type,
+            convergence_hash=self.convergence_hash,
+            convergence_reason=self.convergence_reason,
+        )
         self.trace_metadata.append(snapshot)
 
     def has_converged(self) -> bool:
@@ -328,34 +327,17 @@ class ConvergenceMonitor:
 
     def _update_convergence_hash(self) -> str:
         window = self.history[-self.config.window_size :]
-        if not window:
-            self.convergence_hash = ""
-            return self.convergence_hash
-        normalized: list[tuple[tuple[tuple[str, float], ...], str]] = []
-        for scores, verdict, _ in window:
-            normalized.append(
-                (
-                    tuple(sorted(scores.items())),
-                    verdict.value,
-                )
-            )
-        payload = json.dumps(normalized, separators=(",", ":"), ensure_ascii=False)
-        hashed = hashlib.sha256(payload.encode()).hexdigest()
-        self.convergence_hash = hashed
-        return hashed
+        self.convergence_hash = compute_convergence_hash(window)
+        return self.convergence_hash
 
     def debug_state(self) -> dict[str, Any]:
-        return {
-            "history": list(self.history),
-            "trace_metadata": list(self.trace_metadata),
-            "convergence_type": self.convergence_type.value
-            if self.convergence_type
-            else None,
-            "convergence_hash": self.convergence_hash,
-            "convergence_reason": self.convergence_reason.value
-            if self.convergence_reason
-            else None,
-        }
+        return build_debug_state(
+            history=self.history,
+            trace_metadata=self.trace_metadata,
+            convergence_type=self.convergence_type,
+            convergence_hash=self.convergence_hash,
+            convergence_reason=self.convergence_reason,
+        )
 
     def set_convergence_reason(self, reason: ConvergenceReason) -> None:
         """Override the inferred convergence reason."""
