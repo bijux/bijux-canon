@@ -26,3 +26,4 @@ Use `bijux-canon-ingest` directly:
 - [pyproject.toml](pyproject.toml)
 - [hatch_build.py](hatch_build.py)
 - [overview.md](overview.md)
+- [CHANGELOG.md](CHANGELOG.md)
