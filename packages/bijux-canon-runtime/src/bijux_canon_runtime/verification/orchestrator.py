@@ -161,37 +161,12 @@ def _detect_contradictions(
     bundles: list[ReasoningBundle],
 ) -> tuple[RuleID, ...]:
     """Internal helper; not part of the public API."""
-    statements: dict[str, list[float]] = {}
-    negatives: set[str] = set()
-    circular = False
-
-    for bundle in bundles:
-        for claim in bundle.claims:
-            normalized = _normalize_statement(claim.statement)
-            if normalized.startswith("not "):
-                base = normalized.removeprefix("not ").strip()
-                negatives.add(base)
-            statements.setdefault(normalized, []).append(claim.confidence)
-            if str(claim.claim_id) in normalized:
-                circular = True
-
+    statements, negatives, circular = _collect_statement_facts(bundles)
     violations: list[RuleID] = []
-    for statement in statements:
-        base = statement.removeprefix("not ").strip()
-        if base in negatives and statement != f"not {base}":
-            violations.append(RuleID("direct_contradiction"))
-            break
-
-    for confidences in statements.values():
-        if len(confidences) > 1 and any(
-            conf < max(confidences) for conf in confidences
-        ):
-            violations.append(RuleID("weakened_restatement"))
-            break
-
+    _append_direct_contradiction(violations, statements, negatives)
+    _append_weakened_restatement(violations, statements)
     if circular:
         violations.append(RuleID("circular_justification"))
-
     return tuple(dict.fromkeys(violations))
 
 
@@ -250,42 +225,17 @@ def _arbitrate(
 ) -> VerificationArbitration:
     """Internal helper; not part of the public API."""
     arbitration_policy = policy.arbitration_policy
-    rule = arbitration_policy.rule
     statuses = [result.status for result in results]
     randomness = _max_result_randomness(results)
-    decision = "PASS"
-    if rule == ArbitrationRule.STRICT_FIRST_FAILURE:
-        for status in statuses:
-            if status != "PASS":
-                decision = status
-                break
-    elif rule == ArbitrationRule.UNANIMOUS:
-        if all(status == "PASS" for status in statuses):
-            decision = "PASS"
-        elif any(status == "FAIL" for status in statuses):
-            decision = "FAIL"
-        else:
-            decision = "ESCALATE"
-    elif rule == ArbitrationRule.QUORUM:
-        counts = Counter(statuses)
-        threshold = arbitration_policy.quorum_threshold
-        if threshold is None:
-            threshold = len(statuses) // 2 + 1
-        if counts["PASS"] >= threshold:
-            decision = "PASS"
-        elif counts["FAIL"] >= threshold:
-            decision = "FAIL"
-        else:
-            decision = "ESCALATE"
+    decision = _arbitration_decision(
+        statuses, arbitration_policy.rule, arbitration_policy.quorum_threshold
+    )
     if decision == "PASS" and _randomness_exceeds(
         randomness, policy.randomness_tolerance
     ):
         decision = "ESCALATE"
     engine_ids = tuple(result.engine_id for result in results)
     engine_statuses = tuple(statuses)
-    target_ids: list[ArtifactID] = []
-    for result in results:
-        target_ids.extend(result.checked_artifact_ids)
     return VerificationArbitration(
         spec_version="v1",
         rule=arbitration_policy.rule,
@@ -294,8 +244,107 @@ def _arbitrate(
         randomness=randomness,
         engine_ids=engine_ids,
         engine_statuses=engine_statuses,
-        target_artifact_ids=tuple(target_ids),
+        target_artifact_ids=_target_artifact_ids(results),
     )
+
+
+def _collect_statement_facts(
+    bundles: list[ReasoningBundle],
+) -> tuple[dict[str, list[float]], set[str], bool]:
+    """Internal helper; not part of the public API."""
+    statements: dict[str, list[float]] = {}
+    negatives: set[str] = set()
+    circular = False
+    for bundle in bundles:
+        for claim in bundle.claims:
+            normalized = _normalize_statement(claim.statement)
+            if normalized.startswith("not "):
+                negatives.add(normalized.removeprefix("not ").strip())
+            statements.setdefault(normalized, []).append(claim.confidence)
+            if str(claim.claim_id) in normalized:
+                circular = True
+    return statements, negatives, circular
+
+
+def _append_direct_contradiction(
+    violations: list[RuleID],
+    statements: dict[str, list[float]],
+    negatives: set[str],
+) -> None:
+    """Internal helper; not part of the public API."""
+    for statement in statements:
+        base = statement.removeprefix("not ").strip()
+        if base in negatives and statement != f"not {base}":
+            violations.append(RuleID("direct_contradiction"))
+            return
+
+
+def _append_weakened_restatement(
+    violations: list[RuleID],
+    statements: dict[str, list[float]],
+) -> None:
+    """Internal helper; not part of the public API."""
+    for confidences in statements.values():
+        if len(confidences) > 1 and any(
+            conf < max(confidences) for conf in confidences
+        ):
+            violations.append(RuleID("weakened_restatement"))
+            return
+
+
+def _arbitration_decision(
+    statuses: list[str],
+    rule: ArbitrationRule,
+    quorum_threshold: int | None,
+) -> str:
+    """Internal helper; not part of the public API."""
+    if rule == ArbitrationRule.STRICT_FIRST_FAILURE:
+        return _strict_first_failure_decision(statuses)
+    if rule == ArbitrationRule.UNANIMOUS:
+        return _unanimous_decision(statuses)
+    if rule == ArbitrationRule.QUORUM:
+        return _quorum_decision(statuses, quorum_threshold)
+    return "PASS"
+
+
+def _strict_first_failure_decision(statuses: list[str]) -> str:
+    """Internal helper; not part of the public API."""
+    for status in statuses:
+        if status != "PASS":
+            return status
+    return "PASS"
+
+
+def _unanimous_decision(statuses: list[str]) -> str:
+    """Internal helper; not part of the public API."""
+    if all(status == "PASS" for status in statuses):
+        return "PASS"
+    if any(status == "FAIL" for status in statuses):
+        return "FAIL"
+    return "ESCALATE"
+
+
+def _quorum_decision(statuses: list[str], quorum_threshold: int | None) -> str:
+    """Internal helper; not part of the public API."""
+    counts = Counter(statuses)
+    threshold = quorum_threshold
+    if threshold is None:
+        threshold = len(statuses) // 2 + 1
+    if counts["PASS"] >= threshold:
+        return "PASS"
+    if counts["FAIL"] >= threshold:
+        return "FAIL"
+    return "ESCALATE"
+
+
+def _target_artifact_ids(
+    results: list[VerificationResult],
+) -> tuple[ArtifactID, ...]:
+    """Internal helper; not part of the public API."""
+    target_ids: list[ArtifactID] = []
+    for result in results:
+        target_ids.extend(result.checked_artifact_ids)
+    return tuple(target_ids)
 
 
 def _max_rule_randomness(rules: tuple[object, ...]) -> VerificationRandomness:
