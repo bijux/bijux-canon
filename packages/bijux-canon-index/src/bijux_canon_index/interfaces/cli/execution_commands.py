@@ -34,6 +34,7 @@ from bijux_canon_index.interfaces.cli.rendering import (
     load_bundle as _load_bundle,
     resolve_correlation_id as _resolve_correlation_id,
 )
+from bijux_canon_index.interfaces.cli.workspace_setup import initialize_workspace
 from bijux_canon_index.interfaces.errors.reporting import record_failure
 from bijux_canon_index.interfaces.errors import (
     is_refusal,
@@ -90,38 +91,11 @@ def init(
     ),
     force: bool = typer.Option(False, "--force"),
 ) -> None:
-    config_template = """[vector_store]
-backend = "memory"
-# uri = "index.faiss"
-
-[embeddings]
-provider = "sentence_transformers"
-model = "all-MiniLM-L6-v2"
-
-[resource_limits]
-# max_vectors_per_ingest = 10000
-# max_k = 50
-# max_query_size = 10000
-# max_execution_time_ms = 2000
-"""
-    if config_path.exists() and not force:
-        typer.echo("Config already exists. Use --force to overwrite.")
+    try:
+        _emit(ctx, initialize_workspace(config_path, force=force))
+    except ValidationError as exc:
+        typer.echo(str(exc))
         sys.exit(1)
-    config_path.write_text(config_template, encoding="utf-8")
-    for folder in (
-        Path("artifacts") / "bijux-canon-index",
-        Path("artifacts") / "bijux-canon-index" / "runs",
-    ):
-        folder.mkdir(parents=True, exist_ok=True)
-    gitignore = Path(".gitignore")
-    lines = []
-    if gitignore.exists():
-        lines = gitignore.read_text(encoding="utf-8").splitlines()
-    for entry in ["artifacts/", "*.sqlite", "*.faiss", "*.meta.json"]:
-        if entry not in lines:
-            lines.append(entry)
-    gitignore.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    _emit(ctx, {"status": "initialized", "config": str(config_path)})
 
 
 def capabilities(ctx: typer.Context) -> None:
