@@ -78,6 +78,10 @@ flowchart TD
 - you need operational anchors rather than conceptual framing
 - you are responding to package behavior in a local or CI environment
 
+## Decision Rule
+
+Use `Installation and Setup` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. If a step only works when tribal knowledge fills the gap, the page should drive the reviewer back toward clearer operational documentation or simpler behavior.
+
 ## Next Checks
 
 - move to interfaces when the operational path depends on a specific surface contract

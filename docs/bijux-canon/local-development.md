@@ -77,6 +77,10 @@ flowchart TD
 - you need shared workflow, schema, or governance context before changing code
 - you want the monorepo view that sits above the package handbooks
 
+## Decision Rule
+
+Use `Local Development` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.
+
 ## What This Page Answers
 
 - which repository-level decision this page clarifies

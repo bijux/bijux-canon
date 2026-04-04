@@ -114,6 +114,10 @@ A reviewer is tracing a refactor through `bijux-canon-ingest` and needs to know 
 - you need to understand where modules fit before refactoring
 - you are reviewing architectural drift instead of one local bug
 
+## Decision Rule
+
+Use `Code Navigation` to decide whether a structural change makes `bijux-canon-ingest` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change only works because the architecture becomes less legible, the page should push the reviewer toward redesign rather than acceptance.
+
 ## Next Checks
 
 - move to interfaces when the review reaches a public or operator-facing seam

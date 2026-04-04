@@ -82,6 +82,10 @@ flowchart TD
 - you are checking whether a caller can rely on a given shape or entrypoint
 - you need the contract-facing side of the package before using it
 
+## Decision Rule
+
+Use `Interfaces` to decide whether a caller-facing surface is explicit enough to be depended on. If the surface cannot be tied back to concrete code, schemas, artifacts, and tests, it should be treated as unstable until that evidence exists.
+
 ## Next Checks
 
 - move to operations when the caller-facing question becomes procedural or environmental

@@ -69,6 +69,10 @@ flowchart TD
 - you need maintainer-only context that should not live in product package docs
 - you are reviewing CI, schema drift, or supply-chain behavior
 
+## Decision Rule
+
+Use `Schema Governance` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+
 ## What This Page Answers
 
 - which repository maintenance concern this page explains

@@ -73,6 +73,10 @@ flowchart TD
 - you are deciding whether work belongs in this package or a neighboring one
 - you need the shortest stable description of package intent
 
+## Decision Rule
+
+Use `Dependencies and Adjacencies` to decide whether a change clarifies or blurs `bijux-canon-index` as a bounded package. If the work expands package authority without a cleaner ownership story, the default answer should be to stop and re-check the boundary before implementation continues.
+
 ## Next Checks
 
 - move to architecture when the question becomes structural rather than boundary-oriented

@@ -70,6 +70,10 @@ flowchart TD
 - you need migration guidance rather than product implementation detail
 - you are deciding whether a compatibility surface still deserves to exist
 
+## Decision Rule
+
+Use `Release Policy` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
+
 ## What This Page Answers
 
 - which legacy surface is still preserved

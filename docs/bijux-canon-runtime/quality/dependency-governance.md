@@ -72,6 +72,10 @@ flowchart TD
 - you need evidence that the documented contract is actually protected
 - you are deciding whether a change is done rather than merely implemented
 
+## Decision Rule
+
+Use `Dependency Governance` to decide whether `bijux-canon-runtime` has actually earned trust after a change. If the package passes one narrow check but leaves the wider contract, risk, or validation story unclear, the correct answer is that the work is not done yet.
+
 ## Next Checks
 
 - move to foundation when the risk appears to be boundary confusion rather than missing tests

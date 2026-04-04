@@ -114,6 +114,10 @@ flowchart TD
 - you need the fastest route to the correct handbook section
 - you are reviewing whether the current docs system covers the right surfaces
 
+## Decision Rule
+
+Use this page to decide where a question belongs in the documentation system before you spend time reading deeply. If the page cannot route the reader to a single clearly better next section, then the root documentation structure itself needs revision.
+
 ## What This Page Answers
 
 - which handbook to open first for a given repository question

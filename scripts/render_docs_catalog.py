@@ -1064,6 +1064,32 @@ def package_working_interpretation(package: PackageInfo, category: str) -> str:
     return interpretation_map[category]
 
 
+def package_decision_rule(package: PackageInfo, category: str, title: str) -> str:
+    rule_map = {
+        "foundation": (
+            f"Use `{title}` to decide whether a change clarifies or blurs `{package.title}` as a bounded package. "
+            "If the work expands package authority without a cleaner ownership story, the default answer should be to stop and re-check the boundary before implementation continues."
+        ),
+        "architecture": (
+            f"Use `{title}` to decide whether a structural change makes `{package.title}` easier or harder to explain in terms of modules, dependency direction, and execution flow. "
+            "If the change only works because the architecture becomes less legible, the page should push the reviewer toward redesign rather than acceptance."
+        ),
+        "interfaces": (
+            f"Use `{title}` to decide whether a caller-facing surface is explicit enough to be depended on. "
+            "If the surface cannot be tied back to concrete code, schemas, artifacts, and tests, it should be treated as unstable until that evidence exists."
+        ),
+        "operations": (
+            f"Use `{title}` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. "
+            "If a step only works when tribal knowledge fills the gap, the page should drive the reviewer back toward clearer operational documentation or simpler behavior."
+        ),
+        "quality": (
+            f"Use `{title}` to decide whether `{package.title}` has actually earned trust after a change. "
+            "If the package passes one narrow check but leaves the wider contract, risk, or validation story unclear, the correct answer is that the work is not done yet."
+        ),
+    }
+    return rule_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1232,6 +1258,19 @@ def add_working_interpretation(body: str, text: str) -> str:
     return "\n\n".join(part for part in (head, text.strip(), tail) if part)
 
 
+def add_decision_rule(body: str, text: str) -> str:
+    block = "\n".join(
+        [
+            "## Decision Rule",
+            "",
+            text,
+        ]
+    )
+    if "## What This Page Answers" in body:
+        return insert_before_heading(body, "What This Page Answers", block)
+    return insert_before_heading(body, "Purpose", block)
+
+
 def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
@@ -1322,6 +1361,10 @@ def render_home(
             "you need the fastest route to the correct handbook section",
             "you are reviewing whether the current docs system covers the right surfaces",
         ),
+    )
+    body = add_decision_rule(
+        body,
+        "Use this page to decide where a question belongs in the documentation system before you spend time reading deeply. If the page cannot route the reader to a single clearly better next section, then the root documentation structure itself needs revision.",
     )
     body = add_question_section(
         body,
@@ -1752,6 +1795,10 @@ def render_root_page(
             "you want the monorepo view that sits above the package handbooks",
         ),
     )
+    body = add_decision_rule(
+        body,
+        f"Use `{title}` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect rather than absorb that detail.",
+    )
     body = add_question_section(
         body,
         (
@@ -2121,6 +2168,10 @@ def render_dev_page(slug: str, title: str) -> str:
             "you are reviewing CI, schema drift, or supply-chain behavior",
         ),
     )
+    body = add_decision_rule(
+        body,
+        f"Use `{title}` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.",
+    )
     body = add_question_section(
         body,
         (
@@ -2484,6 +2535,10 @@ def render_compat_page(slug: str, title: str) -> str:
             "you are deciding whether a compatibility surface still deserves to exist",
         ),
     )
+    body = add_decision_rule(
+        body,
+        f"Use `{title}` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.",
+    )
     body = add_question_section(
         body,
         (
@@ -2677,6 +2732,7 @@ def render_package_page(
     )
     body = add_working_interpretation(body, package_working_interpretation(package, category))
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
+    body = add_decision_rule(body, package_decision_rule(package, category, title))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))
