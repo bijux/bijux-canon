@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Any, Protocol, TypeVar, cast
+from typing import Any, Protocol, TypeVar
 
 from bijux_canon_agent.pipeline.execution.shard_processing import process_shard
 from bijux_canon_agent.pipeline.execution.telemetry import PipelineExecutionContext
-from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
+from bijux_canon_agent.pipeline.execution.iteration_transitions import (
+    append_shard_result,
+    apply_shard_failure,
+    apply_validation_failure,
+)
 
 PipelineExecutionResult = dict[str, Any]
 ShardResult = dict[str, Any]
@@ -169,21 +173,7 @@ async def execute_iteration_state(
             preparation.required_stages,
         )
         shard_results.append(shard_result)
-
-        audit_trail = cast(
-            list[dict[str, Any]], preparation.pipeline_result["audit_trail"]
-        )
-        revision_history = cast(
-            list[dict[str, Any]], preparation.pipeline_result["revision_history"]
-        )
-        execution_path = cast(
-            list[dict[str, Any]], preparation.pipeline_result["execution_path"]
-        )
-        warnings = cast(list[str], preparation.pipeline_result["warnings"])
-        audit_trail.extend(shard_result.get("audit_trail", []))
-        revision_history.extend(shard_result.get("revision_history", []))
-        execution_path.extend(shard_result.get("execution_path", []))
-        warnings.extend(shard_result.get("warnings", []))
+        append_shard_result(preparation.pipeline_result, shard_result)
 
         if "error" in shard_result:
             owner.logger.error(
@@ -196,23 +186,9 @@ async def execute_iteration_state(
                     }
                 },
             )
-            preparation.pipeline_result["final_status"] = {
-                "success": False,
-                "error": shard_result["error"],
-                "stages_processed": shard_result.get("final_status", {}).get(
-                    "stages_processed",
-                    [],
-                ),
-                "iterations": shard_result.get("final_status", {}).get(
-                    "iterations",
-                    0,
-                ),
-                "termination_reason": ExecutionTerminationReason.FAILURE,
-                "converged": False,
-                "convergence_reason": None,
-                "convergence_iterations": 0,
-            }
-            return failed_cls(preparation.pipeline_result)
+            return failed_cls(
+                apply_shard_failure(preparation.pipeline_result, shard_result)
+            )
 
     merged_result = await owner._merge_shard_results(
         shard_results, preparation.required_stages
@@ -260,23 +236,9 @@ async def apply_convergence_result(
                 }
             },
         )
-        final_status = iteration.pipeline_result["final_status"]
-        final_status["success"] = False
-        if (
-            final_status.get("termination_reason")
-            == ExecutionTerminationReason.COMPLETED
-        ):
-            final_status["error"] = (
-                f"Final result does not meet task goal: {validation_result['issues']}"
-            )
-            final_status["termination_reason"] = ExecutionTerminationReason.FAILURE
-        else:
-            final_status.setdefault(
-                "error",
-                f"Validation issues: {validation_result['issues']}",
-            )
-        iteration.pipeline_result["final_status"] = final_status
-        return failed_cls(iteration.pipeline_result)
+        return failed_cls(
+            apply_validation_failure(iteration.pipeline_result, validation_result)
+        )
 
     return convergence_cls(
         context_id=iteration.context_id,
