@@ -116,3 +116,9 @@ A reviewer is tracing a refactor through `bijux-canon-reason` and needs to know 
 - `packages/bijux-canon-reason/src/bijux_canon_reason` for the actual dependency and module structure
 - `packages/bijux-canon-reason/tests` for structural and behavioral regressions
 - this page for the reviewer-facing map that should remain aligned with those assets
+
+## Common Misreadings
+
+- that the documented module map guarantees every import is still clean automatically
+- that one current implementation path is the whole architecture contract
+- that diagrams replace the need to inspect the concrete modules listed here

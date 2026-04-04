@@ -119,3 +119,9 @@ A CI or release helper changes behavior and a contributor needs to know whether 
 - `packages/bijux-canon-dev/src/bijux_canon_dev` for implemented maintainer helpers
 - `packages/bijux-canon-dev/tests` for executable proof of maintainer behavior
 - this section for the maintained explanation of maintainer intent
+
+## Common Misreadings
+
+- that maintainer automation belongs in product package docs
+- that CI behavior is self-explanatory without maintainer documentation
+- that repository-health tools are part of the public runtime product surface

@@ -138,3 +138,9 @@ A maintainer is trying to run, diagnose, or release `bijux-canon-agent` under ti
 - `packages/bijux-canon-agent/pyproject.toml` for install and release metadata
 - `packages/bijux-canon-agent/README.md` and package tests for operator truth
 - this page for the repeatable workflow narrative that should match those assets
+
+## Common Misreadings
+
+- that the shortest operator path is the same thing as the most authoritative source
+- that setup or release behavior can be inferred without checking package metadata
+- that passing one local run proves the operational contract is fully intact

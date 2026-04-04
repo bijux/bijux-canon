@@ -121,3 +121,9 @@ A reviewer is tracing a refactor through `bijux-canon-index` and needs to know w
 - `packages/bijux-canon-index/src/bijux_canon_index` for the actual dependency and module structure
 - `packages/bijux-canon-index/tests` for structural and behavioral regressions
 - this page for the reviewer-facing map that should remain aligned with those assets
+
+## Common Misreadings
+
+- that the documented module map guarantees every import is still clean automatically
+- that one current implementation path is the whole architecture contract
+- that diagrams replace the need to inspect the concrete modules listed here

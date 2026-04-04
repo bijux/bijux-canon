@@ -122,3 +122,9 @@ A cross-package change touches schemas, automation, and release behavior at once
 - root files like `pyproject.toml`, `Makefile`, `makes/`, and `.github/workflows/` for actual repository behavior
 - `apis/` for tracked shared schema artifacts
 - this section for the explanation of how those assets fit together
+
+## Common Misreadings
+
+- that repository policy can be inferred safely from one package alone
+- that root docs should silently absorb package-local details
+- that repository guidance is authoritative without corresponding checked-in assets

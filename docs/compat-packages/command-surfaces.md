@@ -113,3 +113,9 @@ A legacy dependency name appears in an old environment file. The compatibility d
 - the `packages/compat-*` metadata and README files for preserved legacy surfaces
 - the matching canonical package docs for current behavior
 - this section for the migration and retirement explanation that ties them together
+
+## Common Misreadings
+
+- that legacy names are still the preferred public names
+- that compatibility packages should grow like first-class product packages
+- that preserved import or distribution names prove long-term architectural importance

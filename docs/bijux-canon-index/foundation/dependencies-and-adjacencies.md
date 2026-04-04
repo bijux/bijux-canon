@@ -118,3 +118,9 @@ A contributor proposes moving new behavior into `bijux-canon-index` because it i
 - `packages/bijux-canon-index/src/bijux_canon_index` for the real ownership boundary in code
 - `packages/bijux-canon-index/tests` for executable proof of that boundary
 - `packages/bijux-canon-index/README.md` and this section for the shortest maintained framing
+
+## Common Misreadings
+
+- that `bijux-canon-index` owns any nearby behavior just because it is convenient
+- that a boundary statement is enough without the code and tests that enforce it
+- that out-of-scope means unimportant rather than owned elsewhere

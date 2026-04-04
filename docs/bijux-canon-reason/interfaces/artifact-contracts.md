@@ -115,3 +115,9 @@ An operator or downstream caller wants to depend on a `bijux-canon-reason` surfa
 - `packages/bijux-canon-reason/src/bijux_canon_reason` for the implemented boundary
 - `apis/bijux-canon-reason/v1/schema.yaml` as tracked contract evidence
 - `packages/bijux-canon-reason/tests` for compatibility and behavior proof
+
+## Common Misreadings
+
+- that every visible package surface is equally stable
+- that one schema or example is the whole compatibility story
+- that interface docs override package code, artifacts, or tests when they disagree

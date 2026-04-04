@@ -114,3 +114,9 @@ A change appears correct locally, but the reviewer still needs to know whether `
 - `packages/bijux-canon-reason/tests` for executable proof
 - `packages/bijux-canon-reason/pyproject.toml` for declared package constraints
 - this page for the review lens that explains how to read that proof
+
+## Common Misreadings
+
+- that a passing local test automatically satisfies the package review standard
+- that documented risks are static and do not need to move with the code
+- that the definition of done is only about implementation rather than proof

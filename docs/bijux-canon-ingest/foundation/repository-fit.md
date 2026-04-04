@@ -119,3 +119,9 @@ A contributor proposes moving new behavior into `bijux-canon-ingest` because it 
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest` for the real ownership boundary in code
 - `packages/bijux-canon-ingest/tests` for executable proof of that boundary
 - `packages/bijux-canon-ingest/README.md` and this section for the shortest maintained framing
+
+## Common Misreadings
+
+- that `bijux-canon-ingest` owns any nearby behavior just because it is convenient
+- that a boundary statement is enough without the code and tests that enforce it
+- that out-of-scope means unimportant rather than owned elsewhere

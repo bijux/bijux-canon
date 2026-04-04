@@ -940,6 +940,37 @@ def package_source_of_truth(package: PackageInfo, category: str) -> tuple[str, .
     return tuple(truth_map[category])
 
 
+def package_common_misreadings(package: PackageInfo, category: str) -> tuple[str, ...]:
+    misreading_map = {
+        "foundation": (
+            f"that `{package.title}` owns any nearby behavior just because it is convenient",
+            "that a boundary statement is enough without the code and tests that enforce it",
+            "that out-of-scope means unimportant rather than owned elsewhere",
+        ),
+        "architecture": (
+            "that the documented module map guarantees every import is still clean automatically",
+            "that one current implementation path is the whole architecture contract",
+            "that diagrams replace the need to inspect the concrete modules listed here",
+        ),
+        "interfaces": (
+            "that every visible package surface is equally stable",
+            "that one schema or example is the whole compatibility story",
+            "that interface docs override package code, artifacts, or tests when they disagree",
+        ),
+        "operations": (
+            "that the shortest operator path is the same thing as the most authoritative source",
+            "that setup or release behavior can be inferred without checking package metadata",
+            "that passing one local run proves the operational contract is fully intact",
+        ),
+        "quality": (
+            "that a passing local test automatically satisfies the package review standard",
+            "that documented risks are static and do not need to move with the code",
+            "that the definition of done is only about implementation rather than proof",
+        ),
+    }
+    return misreading_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1056,6 +1087,17 @@ def add_source_of_truth(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
             "## Source Of Truth Order",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Concrete Anchors", block)
+
+
+def add_common_misreadings(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Common Misreadings",
             "",
             bullet_lines(bullets),
         ]
@@ -1212,6 +1254,14 @@ def render_home(
             "`docs/index.md` and `mkdocs.yml` for the published routing structure",
             "`scripts/render_docs_catalog.py` for how that structure is generated",
             "the target handbook pages themselves for the actual subject-specific detail",
+        ),
+    )
+    body = add_common_misreadings(
+        body,
+        (
+            "that the root page itself should contain all of the repository detail",
+            "that package, maintainer, and compatibility docs are interchangeable reading paths",
+            "that the navigation tree alone is enough without explicit routing guidance",
         ),
     )
     body = add_anchor_section(
@@ -1595,6 +1645,14 @@ def render_root_page(
             "this section for the explanation of how those assets fit together",
         ),
     )
+    body = add_common_misreadings(
+        body,
+        (
+            "that repository policy can be inferred safely from one package alone",
+            "that root docs should silently absorb package-local details",
+            "that repository guidance is authoritative without corresponding checked-in assets",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
@@ -1936,6 +1994,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "this section for the maintained explanation of maintainer intent",
         ),
     )
+    body = add_common_misreadings(
+        body,
+        (
+            "that maintainer automation belongs in product package docs",
+            "that CI behavior is self-explanatory without maintainer documentation",
+            "that repository-health tools are part of the public runtime product surface",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
@@ -2271,6 +2337,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "this section for the migration and retirement explanation that ties them together",
         ),
     )
+    body = add_common_misreadings(
+        body,
+        (
+            "that legacy names are still the preferred public names",
+            "that compatibility packages should grow like first-class product packages",
+            "that preserved import or distribution names prove long-term architectural importance",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
@@ -2400,6 +2474,7 @@ def render_package_page(
     body = add_if_it_drifts(body, package_if_it_drifts(package, category))
     body = add_representative_scenario(body, package_scenario(package, category))
     body = add_source_of_truth(body, package_source_of_truth(package, category))
+    body = add_common_misreadings(body, package_common_misreadings(package, category))
     body = add_anchor_section(body, package_anchor_bullets(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))

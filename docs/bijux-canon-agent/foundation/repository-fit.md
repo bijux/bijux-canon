@@ -119,3 +119,9 @@ A contributor proposes moving new behavior into `bijux-canon-agent` because it i
 - `packages/bijux-canon-agent/src/bijux_canon_agent` for the real ownership boundary in code
 - `packages/bijux-canon-agent/tests` for executable proof of that boundary
 - `packages/bijux-canon-agent/README.md` and this section for the shortest maintained framing
+
+## Common Misreadings
+
+- that `bijux-canon-agent` owns any nearby behavior just because it is convenient
+- that a boundary statement is enough without the code and tests that enforce it
+- that out-of-scope means unimportant rather than owned elsewhere

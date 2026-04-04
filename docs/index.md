@@ -171,3 +171,9 @@ A reviewer opens the docs with only a vague question like 'where does this chang
 - `docs/index.md` and `mkdocs.yml` for the published routing structure
 - `scripts/render_docs_catalog.py` for how that structure is generated
 - the target handbook pages themselves for the actual subject-specific detail
+
+## Common Misreadings
+
+- that the root page itself should contain all of the repository detail
+- that package, maintainer, and compatibility docs are interchangeable reading paths
+- that the navigation tree alone is enough without explicit routing guidance

@@ -119,3 +119,9 @@ A contributor proposes moving new behavior into `bijux-canon-reason` because it 
 - `packages/bijux-canon-reason/src/bijux_canon_reason` for the real ownership boundary in code
 - `packages/bijux-canon-reason/tests` for executable proof of that boundary
 - `packages/bijux-canon-reason/README.md` and this section for the shortest maintained framing
+
+## Common Misreadings
+
+- that `bijux-canon-reason` owns any nearby behavior just because it is convenient
+- that a boundary statement is enough without the code and tests that enforce it
+- that out-of-scope means unimportant rather than owned elsewhere
