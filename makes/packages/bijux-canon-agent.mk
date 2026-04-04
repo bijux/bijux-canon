@@ -5,9 +5,7 @@ PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJECT_SLUG := bijux-canon-agent
 
-include $(PACKAGE_MAKEFILE_DIR)/../shared/python-package.mk
-
-.NOTPARALLEL: all clean
+include $(PACKAGE_MAKEFILE_DIR)/../env.mk
 
 LINT_DIRS            := src/bijux_canon_agent tests
 MYPY_CONFIG          := $(MONOREPO_ROOT)/configs/mypy.ini
@@ -56,6 +54,14 @@ TEST_SYNTAX_PATHS    := src tests
 TEST_PYCACHE_PREFIX  = $(TEST_ARTIFACTS_DIR)/pycache
 TEST_RESET_PYCACHE   := 1
 TEST_PRE_TARGETS     := bootstrap
+PACKAGE_BOOTSTRAP_TARGETS := lint quality security api
+PACKAGE_CLEAN_PATHS := \
+  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox demo .tmp_home \
+  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
+  spec.json openapitools.json node_modules site \
+  docs/reference artifacts "$(PROJECT_ARTIFACTS_DIR)" usage_test usage_test_artifacts .cache \
+  "$(CONFIG_DIR)/.ruff_cache"
+PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
 # Modular Includes
 include $(ROOT_MAKE_DIR)/api.mk
@@ -67,42 +73,9 @@ include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
-# Environment
-$(VENV):
-	@echo "→ Creating virtualenv with '$$(which $(PYTHON))' ..."
-	@$(PYTHON) -m venv $(VENV)
-
-install: $(VENV)
-	@echo "→ Installing dependencies..."
-	@$(VENV_PYTHON) -m pip install --upgrade pip setuptools wheel
-	@$(VENV_PYTHON) -m pip install -e ".[dev]"
-
-bootstrap: install
-.PHONY: bootstrap
-
-# Cleanup
-clean: clean-soft
-	@echo "→ Cleaning (.venv) ..."
-	@$(RM) $(VENV)
-
-clean-soft:
-	@echo "→ Cleaning (no .venv) ..."
-	@$(RM) \
-	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox demo .tmp_home \
-	  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
-	  spec.json openapitools.json node_modules site \
-	  docs/reference artifacts "$(PROJECT_ARTIFACTS_DIR)" usage_test usage_test_artifacts .cache || true
-	@$(RM) $(CONFIG_DIR)/.ruff_cache || true
-	@if [ "$(OS)" != "Windows_NT" ]; then \
-	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
-	fi
-
-# Pipelines
-all: clean install test lint quality security api build sbom
-	@echo "✔ All targets completed"
+include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
 # Run independent checks in parallel
-lint quality security api: | bootstrap
 .NOTPARALLEL:
 
 all-parallel: clean install
@@ -116,13 +89,6 @@ ci-fast: lint test mypy-core
 line_limit:
 	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/agent/check_line_limit.py"
 .PHONY: line_limit
-
-help:
-	@awk 'BEGIN{FS=":.*##"; OFS="";} \
-	  /^##@/ {gsub(/^##@ */,""); print "\n\033[1m" $$0 "\033[0m"; next} \
-	  /^[a-zA-Z0-9_.-]+:.*##/ {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' \
-	  $(MAKEFILE_LIST)
-.PHONY: help
 
 ##@ Core
 clean: ## Remove virtualenv, caches, build, and artifacts

@@ -6,9 +6,7 @@ PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJECT_SLUG := bijux-canon-runtime
 PYTHON := python3.11
 
-include $(PACKAGE_MAKEFILE_DIR)/../shared/python-package.mk
-
-.NOTPARALLEL: all clean
+include $(PACKAGE_MAKEFILE_DIR)/../env.mk
 
 # ---- Single virtualenv (Python 3.11+) ----
 ACT             := $(if $(wildcard $(VENV)/bin/activate),$(VENV)/bin,$(ACT))
@@ -52,6 +50,10 @@ TEST_PATHS_EVALUATION := tests/regression
 TEST_MAIN_ARGS := -m "not real_local and not api"
 TEST_CI_TARGETS := test-unit test-e2e test-regression test-evaluation
 TEST_REAL_LOCAL_PATH := tests/real_local
+PACKAGE_DEFINE_INSTALL := 0
+PACKAGE_DEFINE_CLEAN := 0
+PACKAGE_ALL_TARGETS := clean install test lint quality security sbom build api
+PACKAGE_HELP_WIDTH := 22
 
 # ---- Includes ----
 include $(ROOT_MAKE_DIR)/test.mk
@@ -70,10 +72,10 @@ export
         clean clean-soft clean-venv \
         all help
 
-$(VENV):
-	@echo "→ Creating virtualenv at '$(VENV)' with '$$(which $(PYTHON))' ..."
-	@$(PYTHON) -m venv "$(VENV)"
+PACKAGE_VENV_CREATE_MESSAGE := → Creating virtualenv at '$(VENV)' with '$$(which $(PYTHON))' ...
+include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
+##@ Core
 ensure-venv: $(VENV) ## Ensure venv exists and deps are installed
 	@set -e; \
 	echo "→ Ensuring dependencies in $(VENV) ..."; \
@@ -107,16 +109,11 @@ clean-soft: ## Remove build artifacts but keep venv
 	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
 	fi
 
-clean-venv:
+clean-venv: ## Remove the virtualenv only
 	@echo "→ Cleaning ($(VENV)) ..."
 	@$(RM) "$(VENV)"
 
 clean: clean-soft clean-venv ## Remove venv + artifacts
 
-all: clean install test lint quality security sbom build api ## Full pipeline
-	@echo "✔ All targets completed"
-
+all: ## Full pipeline
 help: ## Show this help
-	@awk 'BEGIN{FS=":.*##"; OFS="";} \
-	  /^[a-zA-Z0-9_.-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' \
-	  $(MAKEFILE_LIST)

@@ -7,9 +7,7 @@ PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJECT_SLUG := bijux-canon-index
 PYTHON := python3.11
 
-include $(PACKAGE_MAKEFILE_DIR)/../shared/python-package.mk
-
-.NOTPARALLEL: all clean
+include $(PACKAGE_MAKEFILE_DIR)/../env.mk
 
 LINT_DIRS         := src/bijux_canon_index
 FMT_DIRS          := src tests
@@ -37,6 +35,19 @@ PUBLISH_DIST_DIR := $(PROJECT_ARTIFACTS_DIR)/release
 PUBLISH_UPLOAD_ENABLED := 0
 TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_index/core) $(abspath src/bijux_canon_index/contracts) $(abspath src/bijux_canon_index/domain)
 TEST_MAIN_ARGS := --maxfail=1
+PACKAGE_VENV_CREATE_MESSAGE := [INFO] Creating virtualenv with '$$(which $(PYTHON))' ...
+PACKAGE_INSTALL_MESSAGE := [INFO] Installing dependencies...
+PACKAGE_CLEAN_MESSAGE := [INFO] Cleaning (.venv) ...
+PACKAGE_CLEAN_SOFT_MESSAGE := [INFO] Cleaning (no .venv) ...
+PACKAGE_BOOTSTRAP_PREREQS := $(VENV)
+PACKAGE_BOOTSTRAP_TARGETS := lint quality security api docs
+PACKAGE_CLEAN_PATHS := \
+  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox \
+  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
+  spec.json openapitools.json node_modules session.sqlite site \
+  docs/site artifacts "$(PROJECT_ARTIFACTS_DIR)" "$(CONFIG_DIR)/.ruff_cache"
+PACKAGE_ALL_TARGETS := clean install fmt lint test quality api security sbom
+PACKAGE_ALL_MESSAGE := [OK] All targets completed
 
 # Modular Includes
 include $(ROOT_MAKE_DIR)/lint.mk
@@ -47,43 +58,9 @@ include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/quality.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
-# Environment
-$(VENV):
-	@echo "[INFO] Creating virtualenv with '$$(which $(PYTHON))' ..."
-	@$(PYTHON) -m venv $(VENV)
-
-install: $(VENV)
-	@echo "[INFO] Installing dependencies..."
-	@$(VENV_PYTHON) -m pip install --upgrade pip setuptools wheel
-	@$(VENV_PYTHON) -m pip install -e ".[dev]"
-
-bootstrap: $(VENV)
-.PHONY: bootstrap
-
-# Cleanup
-clean: clean-soft
-	@echo "[INFO] Cleaning (.venv) ..."
-	@rm -rf $(VENV)
-
-clean-soft:
-	@echo "[INFO] Cleaning (no .venv) ..."
-	@rm -rf \
-	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox \
-	  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
-	  spec.json openapitools.json node_modules session.sqlite site \
-	  docs/site artifacts "$(PROJECT_ARTIFACTS_DIR)" || true
-	@rm -rf $(CONFIG_DIR)/.ruff_cache || true
-	@if [ "$(OS)" != "Windows_NT" ]; then \
-	  find . -type d -name '__pycache__' -exec rm -rf {} +; \
-	  find . -type f -name '*.pyc' -delete; \
-	fi
-
-# Pipelines
-all: clean install fmt lint test quality api security sbom
-	@echo "[OK] All targets completed"
+include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
 # Run independent checks in parallel
-lint quality security api docs: | bootstrap
 .NOTPARALLEL:
 
 release: clean install fmt lint test quality security sbom
@@ -103,13 +80,6 @@ release: clean install fmt lint test quality security sbom
 
 build: release
 	@echo "[OK] build target completed (alias for make release)"
-
-help:
-	@awk 'BEGIN{FS=":.*##"; OFS="";} \
-	  /^##@/ {gsub(/^##@ */,""); print "\n\033[1m" $$0 "\033[0m"; next} \
-	  /^[a-zA-Z0-9_.-]+:.*##/ {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' \
-	  $(MAKEFILE_LIST)
-.PHONY: help
 
 ##@ Core
 clean: ## Remove virtualenv, caches, build, and artifacts

@@ -4,12 +4,8 @@ PACKAGE_PROFILE_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 PACKAGE_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJECT_SLUG := bijux-canon-ingest
 
-include $(PACKAGE_MAKEFILE_DIR)/../shared/python-package.mk
+include $(PACKAGE_MAKEFILE_DIR)/../env.mk
 
-export PYTHONDONTWRITEBYTECODE := 1
-export PYTHONPYCACHEPREFIX     := $(PROJECT_ARTIFACTS_DIR)/pycache
-export XDG_CACHE_HOME          := $(PROJECT_ARTIFACTS_DIR)/xdg_cache
-export COVERAGE_FILE           := $(PROJECT_ARTIFACTS_DIR)/test/.coverage
 LINT_DIRS                      := src tests stubs
 RUFF_CONFIG                    := pyproject.toml
 MYPY_TARGETS                   = $(if $(LINT_SCOPE),$(LINT_SCOPE),src/bijux_canon_ingest)
@@ -36,8 +32,14 @@ API_DRIFT_COMMAND              = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_d
 BUILD_CHECK_DISTS              := 1
 BUILD_CLEAN_PATHS              := dist build *.egg-info
 PUBLISH_UPLOAD_ENABLED         := 0
-
-.NOTPARALLEL: all clean
+PACKAGE_CLEAN_PATHS := \
+  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox .nox \
+  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
+  artifacts "$(PROJECT_ARTIFACTS_DIR)" site .cache
+PACKAGE_INSTALL_TARGETS := \
+  test lint fmt quality security api build sbom \
+  fmt-artifacts lint-artifacts interrogate-report
+PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
 include $(ROOT_MAKE_DIR)/test.mk
 include $(ROOT_MAKE_DIR)/lint.mk
@@ -48,48 +50,7 @@ include $(ROOT_MAKE_DIR)/security.mk
 include $(ROOT_MAKE_DIR)/sbom.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
-# Environment
-$(VENV):
-	@echo "→ Creating virtualenv with '$$(which $(PYTHON))' ..."
-	@$(PYTHON) -m venv $(VENV)
-
-install: $(VENV)
-	@echo "→ Installing dependencies..."
-	@$(VENV_PYTHON) -m pip install --upgrade pip setuptools wheel
-	@$(VENV_PYTHON) -m pip install -e ".[dev]"
-
-bootstrap: install
-.PHONY: bootstrap
-
-# Cleanup
-clean: clean-soft
-	@echo "→ Cleaning ($(VENV)) ..."
-	@$(RM) $(VENV)
-
-clean-soft:
-	@echo "→ Cleaning (artifacts, caches) ..."
-	@$(RM) \
-	  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox .nox \
-	  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
-	  artifacts "$(PROJECT_ARTIFACTS_DIR)" site .cache || true
-	@if [ "$(OS)" != "Windows_NT" ]; then \
-	  find . -type d -name '__pycache__' -exec $(RM) {} +; \
-	fi
-
-# Ensure core tasks run inside the managed virtualenv
-test lint fmt quality security api build sbom: install
-fmt-artifacts lint-artifacts interrogate-report quality security: install
-
-# Pipelines
-all: clean install test lint quality security api build sbom
-	@echo "✔ All targets completed"
-
-help:
-	@awk 'BEGIN{FS=":.*##"; OFS="";} \
-	  /^##@/ {gsub(/^##@ */,""); print "\n\033[1m" $$0 "\033[0m"; next} \
-	  /^[a-zA-Z0-9_.-]+:.*##/ {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' \
-	  $(MAKEFILE_LIST)
-.PHONY: help
+include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
 ##@ Core
 clean: ## Remove virtualenv plus caches/artifacts
