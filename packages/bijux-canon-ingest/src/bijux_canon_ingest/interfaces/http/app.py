@@ -9,7 +9,6 @@ from typing import Any
 
 from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.openapi.utils import get_openapi
-from pydantic import BaseModel, Field, model_validator
 
 from bijux_canon_ingest.application.service import (
     AnswerPayload,
@@ -22,102 +21,21 @@ from bijux_canon_ingest.processing.stages import (
     ChunkAndEmbedConfig,
     chunk_and_embed_docs,
 )
+from bijux_canon_ingest.interfaces.http.models import (
+    AskRequest,
+    AskResponse,
+    CandidateModel,
+    ChunkOut,
+    ChunkRequest,
+    ChunkResponse,
+    CitationModel,
+    IndexBuildRequest,
+    IndexBuildResponse,
+    RetrieveRequest,
+    RetrieveResponse,
+)
 from bijux_canon_ingest.retrieval.ports import Candidate
 from bijux_canon_ingest.result.types import Err
-
-# API Models (request/response)
-
-
-class DocIn(BaseModel):
-    doc_id: str = Field(..., min_length=1)
-    text: str = Field(..., min_length=1)
-    title: str | None = None
-    category: str | None = None
-
-
-class ChunkOut(BaseModel):
-    doc_id: str
-    text: str
-    start: int
-    end: int
-    metadata: dict[str, Any] = Field(default_factory=dict)
-    embedding: tuple[float, ...] | None = None
-    chunk_id: str | None = None
-
-
-class PChunkResponse(BaseModel):
-    chunks: list[ChunkOut]
-
-
-class PChunkRequest(BaseModel):
-    chunk_size: int = Field(128, ge=1)
-    overlap: int = Field(0, ge=0)
-    include_embeddings: bool = True
-    docs: list[DocIn] = Field(..., min_length=1)
-
-    @model_validator(mode="after")
-    def _validate_overlap(self) -> PChunkRequest:
-        if self.overlap >= self.chunk_size:
-            raise ValueError("overlap must be < chunk_size")
-        return self
-
-
-class IndexBuildRequest(BaseModel):
-    docs: list[DocIn] = Field(..., min_length=1)
-    backend: str = Field(..., pattern="^(bm25|numpy-cosine)$")
-    chunk_size: int = Field(512, ge=1)
-    overlap: int = Field(50, ge=0)
-
-    @model_validator(mode="after")
-    def _validate_overlap(self) -> IndexBuildRequest:
-        if self.overlap >= self.chunk_size:
-            raise ValueError("overlap must be < chunk_size")
-        return self
-
-
-class IndexBuildResponse(BaseModel):
-    index_id: str
-    fingerprint: str
-    schema_version: int
-
-
-class RetrieveRequest(BaseModel):
-    index_id: str = Field(..., min_length=1)
-    query: str = Field(..., min_length=1)
-    top_k: int = Field(5, ge=1)
-    filters: dict[str, str] = Field(default_factory=dict)
-
-
-class PCandidate(BaseModel):
-    score: float
-    chunk: Any
-    metadata: dict[str, Any] = Field(default_factory=dict)
-
-
-class RetrieveResponse(BaseModel):
-    candidates: list[PCandidate]
-
-
-class AskRequest(BaseModel):
-    index_id: str = Field(..., min_length=1)
-    query: str = Field(..., min_length=1)
-    top_k: int = Field(5, ge=1)
-    rerank: bool = True
-    filters: dict[str, str] = Field(default_factory=dict)
-
-
-class PCitation(BaseModel):
-    doc_id: str
-    chunk_id: str
-    start: int
-    end: int
-    text: str | None = None
-
-
-class AskResponse(BaseModel):
-    answer: str
-    citations: list[PCitation]
-    candidates: list[PCandidate]
 
 
 # Helpers
@@ -146,8 +64,8 @@ def create_app() -> FastAPI:
     async def healthz() -> dict[str, bool]:
         return {"ok": True}
 
-    @router.post("/chunks", response_model=PChunkResponse)
-    async def chunks(req: PChunkRequest) -> PChunkResponse:
+    @router.post("/chunks", response_model=ChunkResponse)
+    async def chunks(req: ChunkRequest) -> ChunkResponse:
         # Boundary validation ensures we do not 500 on invalid inputs.
         try:
             docs = [(d.doc_id, d.text, d.title, d.category) for d in req.docs]
@@ -164,7 +82,7 @@ def create_app() -> FastAPI:
         if isinstance(res, Err):
             raise HTTPException(status_code=400, detail=res.error)
 
-        return PChunkResponse(
+        return ChunkResponse(
             chunks=[
                 ChunkOut(
                     doc_id=c.doc_id,
@@ -224,7 +142,7 @@ def create_app() -> FastAPI:
         candidates: list[Candidate] = res.value
         return RetrieveResponse(
             candidates=[
-                PCandidate(
+                CandidateModel(
                     score=c.score,
                     chunk={
                         "doc_id": c.chunk.doc_id,
@@ -260,7 +178,7 @@ def create_app() -> FastAPI:
         return AskResponse(
             answer=ans["answer"],
             citations=[
-                PCitation(
+                CitationModel(
                     doc_id=c["doc_id"],
                     chunk_id=c["chunk_id"],
                     start=c["start"],
@@ -270,7 +188,7 @@ def create_app() -> FastAPI:
                 for c in ans["citations"]
             ],
             candidates=[
-                PCandidate(
+                CandidateModel(
                     score=c["score"],
                     chunk={
                         "doc_id": c["doc_id"],

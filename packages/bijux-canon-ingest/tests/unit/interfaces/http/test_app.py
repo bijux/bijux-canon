@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
+import pytest
 
 from bijux_canon_ingest.interfaces.http.app import create_app
+from bijux_canon_ingest.interfaces.http.models import ChunkRequest, IndexBuildRequest
 
 
 def _docs() -> list[dict[str, str]]:
@@ -83,3 +85,22 @@ def test_ask_endpoint_reports_unknown_index() -> None:
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Unknown index_id"
+
+
+def test_chunk_request_rejects_overlap_at_or_above_chunk_size() -> None:
+    with pytest.raises(ValueError, match="overlap must be < chunk_size"):
+        ChunkRequest(
+            chunk_size=32,
+            overlap=32,
+            docs=[{"doc_id": "d1", "text": "body"}],
+        )
+
+
+def test_index_build_request_rejects_overlap_at_or_above_chunk_size() -> None:
+    with pytest.raises(ValueError, match="overlap must be < chunk_size"):
+        IndexBuildRequest(
+            docs=[{"doc_id": "d1", "text": "body"}],
+            backend="bm25",
+            chunk_size=16,
+            overlap=16,
+        )
