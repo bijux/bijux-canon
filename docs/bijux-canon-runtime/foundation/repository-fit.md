@@ -26,6 +26,29 @@ flowchart LR
     page --> dest3
 ```
 
+```mermaid
+flowchart TD
+    page["Repository Fit"]
+    focus1["Owned package surface"]
+    page --> focus1
+    focus1_1["flow execution authority"]
+    focus1 --> focus1_1
+    focus1_2["replay and acceptability semantics"]
+    focus1 --> focus1_2
+    focus2["Evidence to inspect"]
+    page --> focus2
+    focus2_1["src/bijux_canon_runtime/model"]
+    focus2 --> focus2_1
+    focus2_2["execution store records"]
+    focus2 --> focus2_2
+    focus3["Review pressure"]
+    page --> focus3
+    focus3_1["Foundation"]
+    focus3 --> focus3_1
+    focus3_2["tests/unit for api, contracts, core, interfaces, model, and runtime"]
+    focus3 --> focus3_2
+```
+
 ## Repository Relationships
 
 - governs the other canonical packages instead of replacing their local ownership

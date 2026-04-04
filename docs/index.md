@@ -59,6 +59,29 @@ flowchart LR
     page --> dest8
 ```
 
+```mermaid
+flowchart TD
+    page["Docs Index"]
+    focus1["Repository"]
+    page --> focus1
+    focus1_1["shared rules"]
+    focus1 --> focus1_1
+    focus1_2["workspace scope"]
+    focus1 --> focus1_2
+    focus2["Packages"]
+    page --> focus2
+    focus2_1["five product handbooks"]
+    focus2 --> focus2_1
+    focus2_2["stable package spine"]
+    focus2 --> focus2_2
+    focus3["Maintenance"]
+    page --> focus3
+    focus3_1["dev handbook"]
+    focus3 --> focus3_1
+    focus3_2["compatibility handbook"]
+    focus3 --> focus3_2
+```
+
 ## Documentation Scope
 
 - the bijux-canon section

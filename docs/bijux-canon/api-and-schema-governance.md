@@ -27,6 +27,31 @@ flowchart LR
     page --> dest3
 ```
 
+```mermaid
+flowchart TD
+    page["API and Schema Governance"]
+    focus1["Repository intent"]
+    page --> focus1
+    focus1_1["scope"]
+    focus1 --> focus1_1
+    focus1_2["shared ownership"]
+    focus1 --> focus1_2
+    focus2["Review inputs"]
+    page --> focus2
+    focus2_1["code"]
+    focus2 --> focus2_1
+    focus2_2["schemas"]
+    focus2 --> focus2_2
+    focus2_3["automation"]
+    focus2 --> focus2_3
+    focus3["Review outputs"]
+    page --> focus3
+    focus3_1["clear decisions"]
+    focus3 --> focus3_1
+    focus3_2["stable docs"]
+    focus3 --> focus3_2
+```
+
 ## Governance Rules
 
 - package code and tracked schema files must describe the same public behavior

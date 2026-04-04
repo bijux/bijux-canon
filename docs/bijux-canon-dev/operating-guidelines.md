@@ -26,6 +26,29 @@ flowchart LR
     page --> dest3
 ```
 
+```mermaid
+flowchart TD
+    page["Operating Guidelines"]
+    focus1["Maintainer role"]
+    page --> focus1
+    focus1_1["quality"]
+    focus1 --> focus1_1
+    focus1_2["security"]
+    focus1 --> focus1_2
+    focus2["Repository health"]
+    page --> focus2
+    focus2_1["schemas"]
+    focus2 --> focus2_1
+    focus2_2["supply chain"]
+    focus2 --> focus2_2
+    focus3["Operational outcome"]
+    page --> focus3
+    focus3_1["release clarity"]
+    focus3 --> focus3_1
+    focus3_2["package consistency"]
+    focus3 --> focus3_2
+```
+
 ## Guidelines
 
 - prefer checks that are reviewable and testable over opaque shell glue

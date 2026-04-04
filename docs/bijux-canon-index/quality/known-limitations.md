@@ -25,6 +25,29 @@ flowchart LR
     page --> dest3
 ```
 
+```mermaid
+flowchart TD
+    page["Known Limitations"]
+    focus1["Owned package surface"]
+    page --> focus1
+    focus1_1["vector execution semantics and backend orchestration"]
+    focus1 --> focus1_1
+    focus1_2["provenance-aware result artifacts and replay-oriented comparison"]
+    focus1 --> focus1_2
+    focus2["Evidence to inspect"]
+    page --> focus2
+    focus2_1["src/bijux_canon_index/domain"]
+    focus2 --> focus2_1
+    focus2_2["vector execution result collections"]
+    focus2 --> focus2_2
+    focus3["Review pressure"]
+    page --> focus3
+    focus3_1["Quality"]
+    focus3 --> focus3_1
+    focus3_2["tests/unit for API, application, contracts, domain, infra, and tooling"]
+    focus3 --> focus3_2
+```
+
 ## Honest Boundaries
 
 - document ingestion and normalization

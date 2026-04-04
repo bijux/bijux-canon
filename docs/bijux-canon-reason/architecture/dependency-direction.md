@@ -26,6 +26,29 @@ flowchart LR
     page --> dest3
 ```
 
+```mermaid
+flowchart TD
+    page["Dependency Direction"]
+    focus1["Owned package surface"]
+    page --> focus1
+    focus1_1["reasoning plans, claims, and evidence-aware reasoning models"]
+    focus1 --> focus1_1
+    focus1_2["execution of reasoning steps and local tool dispatch"]
+    focus1 --> focus1_2
+    focus2["Evidence to inspect"]
+    page --> focus2
+    focus2_1["src/bijux_canon_reason/planning"]
+    focus2 --> focus2_1
+    focus2_2["reasoning traces and replay diffs"]
+    focus2 --> focus2_2
+    focus3["Review pressure"]
+    page --> focus3
+    focus3_1["Architecture"]
+    focus3 --> focus3_1
+    focus3_2["tests/unit for planning, reasoning, execution, verification, and interfaces"]
+    focus3 --> focus3_2
+```
+
 ## Directional Reading Order
 
 - domain and model concerns under the core module groups

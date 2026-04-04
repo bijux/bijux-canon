@@ -586,18 +586,37 @@ def render_route_diagram(
     )
 
 
+def render_focus_diagram(
+    page_title: str,
+    focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
+) -> str:
+    lines = ["flowchart TD", f'    page["{page_title}"]']
+    for index, (section_title, detail_titles) in enumerate(focus_sections, start=1):
+        section_node = f"focus{index}"
+        lines.append(f'    {section_node}["{section_title}"]')
+        lines.append(f"    page --> {section_node}")
+        for detail_index, detail_title in enumerate(detail_titles, start=1):
+            detail_node = f"{section_node}_{detail_index}"
+            lines.append(f'    {detail_node}["{detail_title}"]')
+            lines.append(f"    {section_node} --> {detail_node}")
+    return mermaid_block("\n".join(lines))
+
+
 def add_page_route_map(
     body: str,
     scope_title: str,
     section_title: str,
     page_title: str,
     destination_titles: tuple[str, ...],
+    focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
 ) -> str:
     block = "\n".join(
         [
             "## Page Maps",
             "",
             render_route_diagram(scope_title, section_title, page_title, destination_titles),
+            "",
+            render_focus_diagram(page_title, focus_sections),
         ]
     )
     return insert_after_intro(body, block)
@@ -676,6 +695,11 @@ def render_home(
         "Root Site",
         "Docs Index",
         tuple(f"{name} section" for name in sections),
+        (
+            ("Repository", ("shared rules", "workspace scope")),
+            ("Packages", ("five product handbooks", "stable package spine")),
+            ("Maintenance", ("dev handbook", "compatibility handbook")),
+        ),
     )
     return "\n".join(
         [
@@ -992,6 +1016,11 @@ def render_root_page(
         "Repository Handbook",
         title,
         ("package boundaries", "shared workflows", "reviewable decisions"),
+        (
+            ("Repository intent", ("scope", "shared ownership")),
+            ("Review inputs", ("code", "schemas", "automation")),
+            ("Review outputs", ("clear decisions", "stable docs")),
+        ),
     )
     return "\n".join(
         [
@@ -1247,6 +1276,11 @@ def render_dev_page(slug: str, title: str) -> str:
         "Maintainer Handbook",
         title,
         ("quality gates", "schema governance", "release support"),
+        (
+            ("Maintainer role", ("quality", "security")),
+            ("Repository health", ("schemas", "supply chain")),
+            ("Operational outcome", ("release clarity", "package consistency")),
+        ),
     )
     return "\n".join(
         [
@@ -1496,6 +1530,11 @@ def render_compat_page(slug: str, title: str) -> str:
         "Compatibility Handbook",
         title,
         ("legacy package names", "migration decisions", "retirement review"),
+        (
+            ("Legacy surface", ("distribution names", "import names")),
+            ("Canonical target", ("current packages", "new work")),
+            ("Decision pressure", ("migration", "retirement")),
+        ),
     )
     return "\n".join(
         [
@@ -1570,6 +1609,26 @@ def render_package_page(
         category.title(),
         title,
         ("reviewable boundaries", "operator clarity", "change safety"),
+        (
+            (
+                "Owned package surface",
+                (package.owns[0], package.owns[1] if len(package.owns) > 1 else package.owns[0]),
+            ),
+            (
+                "Evidence to inspect",
+                (
+                    package.modules[0][0],
+                    package.artifacts[0],
+                ),
+            ),
+            (
+                "Review pressure",
+                (
+                    category.title(),
+                    package.tests[0],
+                ),
+            ),
+        ),
     )
     return "\n".join(
         [

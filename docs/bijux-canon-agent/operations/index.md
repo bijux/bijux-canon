@@ -25,6 +25,29 @@ flowchart LR
     page --> dest3
 ```
 
+```mermaid
+flowchart TD
+    page["Operations"]
+    focus1["Owned package surface"]
+    page --> focus1
+    focus1_1["agent role implementations and role-specific helpers"]
+    focus1 --> focus1_1
+    focus1_2["deterministic orchestration of the local agent pipeline"]
+    focus1 --> focus1_2
+    focus2["Evidence to inspect"]
+    page --> focus2
+    focus2_1["src/bijux_canon_agent/agents"]
+    focus2 --> focus2_1
+    focus2_2["trace-backed final outputs"]
+    focus2 --> focus2_2
+    focus3["Review pressure"]
+    page --> focus3
+    focus3_1["Operations"]
+    focus3 --> focus3_1
+    focus3_2["tests/unit for local behavior and utility coverage"]
+    focus3 --> focus3_2
+```
+
 ## Pages in This Section
 
 - [Installation and Setup](installation-and-setup.md)
