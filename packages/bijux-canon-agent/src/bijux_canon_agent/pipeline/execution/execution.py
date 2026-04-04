@@ -7,7 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 import hashlib
 from pathlib import Path
-from typing import Any, Protocol, TypeAlias
+from typing import Any, Protocol, TypeAlias, cast
 
 from bijux_canon_agent.pipeline.execution.io import PipelineIOMixin
 from bijux_canon_agent.pipeline.execution.iteration_support import (
@@ -172,38 +172,54 @@ class PipelineExecutionMixin(PipelineIOMixin):
     async def prepare_execution(
         self, context: dict[str, Any]
     ) -> CachedExecution | FailedExecution | PreparedExecution:
-        return await prepare_execution_state(
-            self,
-            context,
-            prepared_cls=self.PreparedExecution,
-            cached_cls=self.CachedExecution,
-            failed_cls=self.FailedExecution,
+        return cast(
+            PipelineExecutionMixin.CachedExecution
+            | PipelineExecutionMixin.FailedExecution
+            | PipelineExecutionMixin.PreparedExecution,
+            await prepare_execution_state(
+                self,
+                context,
+                prepared_cls=self.PreparedExecution,
+                cached_cls=self.CachedExecution,
+                failed_cls=self.FailedExecution,
+            ),
         )
 
     async def execute_iteration(
         self, preparation: PreparedExecution
     ) -> IterationResult | FailedExecution:
-        return await execute_iteration_state(
-            self,
-            preparation,
-            iteration_cls=self.IterationResult,
-            failed_cls=self.FailedExecution,
+        return cast(
+            PipelineExecutionMixin.IterationResult
+            | PipelineExecutionMixin.FailedExecution,
+            await execute_iteration_state(
+                cast(Any, self),
+                cast(Any, preparation),
+                iteration_cls=self.IterationResult,
+                failed_cls=self.FailedExecution,
+            ),
         )
 
     async def apply_convergence(
         self, iteration: IterationResult
     ) -> ConvergenceApplied | FailedExecution:
-        return await apply_convergence_result(
-            self,
-            iteration,
-            convergence_cls=self.ConvergenceApplied,
-            failed_cls=self.FailedExecution,
+        return cast(
+            PipelineExecutionMixin.ConvergenceApplied
+            | PipelineExecutionMixin.FailedExecution,
+            await apply_convergence_result(
+                cast(Any, self),
+                cast(Any, iteration),
+                convergence_cls=self.ConvergenceApplied,
+                failed_cls=self.FailedExecution,
+            ),
         )
 
     async def finalize_or_abort(
         self, convergence: ConvergenceApplied
     ) -> PipelineExecutionResult:
-        return await finalize_execution_result(self, convergence)
+        return cast(
+            PipelineExecutionResult,
+            await finalize_execution_result(cast(Any, self), cast(Any, convergence)),
+        )
 
     def _generate_cache_key(self, context: dict[str, Any]) -> str:
         context_str = str(

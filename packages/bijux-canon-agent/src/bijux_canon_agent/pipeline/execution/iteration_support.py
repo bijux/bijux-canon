@@ -2,21 +2,154 @@
 
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, Protocol, TypeVar, cast
 
 from bijux_canon_agent.pipeline.execution.shard_processing import process_shard
+from bijux_canon_agent.pipeline.execution.telemetry import PipelineExecutionContext
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
+
+PipelineExecutionResult = dict[str, Any]
+ShardResult = dict[str, Any]
+MergedShardResult = dict[str, Any]
+
+PreparationT = TypeVar("PreparationT", bound="_PreparedExecutionState")
+IterationT = TypeVar("IterationT", covariant=True)
+ConvergenceT = TypeVar("ConvergenceT", covariant=True)
+FailedT = TypeVar("FailedT", covariant=True)
+
+
+class _ExecutionHooks(Protocol):
+    async def _merge_shard_results(
+        self,
+        shard_results: list[ShardResult],
+        required_stages: list[dict[str, Any]],
+    ) -> MergedShardResult: ...
+
+    async def _extract_final_result(
+        self, stages: dict[str, dict[str, Any]], task_goal: str
+    ) -> Any: ...
+
+    async def _validate_final_result(
+        self, result: Any, task_goal: str, context_id: str | None = None
+    ) -> dict[str, Any]: ...
+
+
+class _PreparedExecutionState(Protocol):
+    @property
+    def context_id(self) -> str: ...
+
+    @property
+    def cache_key(self) -> str: ...
+
+    @property
+    def task_goal(self) -> str: ...
+
+    @property
+    def shards(self) -> list[dict[str, Any]]: ...
+
+    @property
+    def required_stages(self) -> list[dict[str, Any]]: ...
+
+    @property
+    def pipeline_result(self) -> PipelineExecutionResult: ...
+
+    @property
+    def execution_context(self) -> PipelineExecutionContext: ...
+
+
+class _IterationState(Protocol):
+    @property
+    def context_id(self) -> str: ...
+
+    @property
+    def cache_key(self) -> str: ...
+
+    @property
+    def task_goal(self) -> str: ...
+
+    @property
+    def shards(self) -> list[dict[str, Any]]: ...
+
+    @property
+    def final_result(self) -> Any: ...
+
+    @property
+    def pipeline_result(self) -> PipelineExecutionResult: ...
+
+    @property
+    def execution_context(self) -> PipelineExecutionContext: ...
+
+
+class _ConvergenceState(Protocol):
+    @property
+    def context_id(self) -> str: ...
+
+    @property
+    def cache_key(self) -> str: ...
+
+    @property
+    def shards(self) -> list[dict[str, Any]]: ...
+
+    @property
+    def pipeline_result(self) -> PipelineExecutionResult: ...
+
+    @property
+    def execution_context(self) -> PipelineExecutionContext: ...
+
+
+class _IterationCtor(Protocol[IterationT]):
+    def __call__(
+        self,
+        *,
+        context_id: str,
+        cache_key: str,
+        task_goal: str,
+        shards: list[dict[str, Any]],
+        required_stages: list[dict[str, Any]],
+        shard_results: list[ShardResult],
+        final_result: Any,
+        pipeline_result: PipelineExecutionResult,
+        execution_context: PipelineExecutionContext,
+    ) -> IterationT: ...
+
+
+class _ConvergenceCtor(Protocol[ConvergenceT]):
+    def __call__(
+        self,
+        *,
+        context_id: str,
+        cache_key: str,
+        task_goal: str,
+        shards: list[dict[str, Any]],
+        pipeline_result: PipelineExecutionResult,
+        execution_context: PipelineExecutionContext,
+    ) -> ConvergenceT: ...
+
+
+class _FailedCtor(Protocol[FailedT]):
+    def __call__(self, result: PipelineExecutionResult) -> FailedT: ...
+
+
+class _ExecutionOwner(_ExecutionHooks, Protocol):
+    logger: Any
+    logger_manager: Any
+    _metric_type: Any
+    _cache: dict[str, PipelineExecutionResult] | None
+
+    def _persist_pipeline_result(
+        self, result: PipelineExecutionResult, context_id: str
+    ) -> None: ...
 
 
 async def execute_iteration_state(
-    owner,
-    preparation,
+    owner: _ExecutionOwner,
+    preparation: PreparationT,
     *,
-    iteration_cls,
-    failed_cls,
-):
+    iteration_cls: _IterationCtor[IterationT],
+    failed_cls: _FailedCtor[FailedT],
+) -> IterationT | FailedT:
     """Execute all prepared shards and produce the merged iteration result."""
-    shard_results: list[dict[str, Any]] = []
+    shard_results: list[ShardResult] = []
     for shard_idx, shard_context in enumerate(preparation.shards):
         owner.logger.info(
             "Processing shard",
@@ -81,14 +214,13 @@ async def execute_iteration_state(
             }
             return failed_cls(preparation.pipeline_result)
 
-    hooks = cast(object, owner)
-    merged_result = await hooks._merge_shard_results(
+    merged_result = await owner._merge_shard_results(
         shard_results, preparation.required_stages
     )
     preparation.pipeline_result["stages"] = merged_result["stages"]
     preparation.pipeline_result["final_status"] = merged_result["final_status"]
 
-    final_result = await hooks._extract_final_result(
+    final_result = await owner._extract_final_result(
         merged_result["stages"], preparation.task_goal
     )
     preparation.pipeline_result["result"] = final_result
@@ -106,10 +238,15 @@ async def execute_iteration_state(
     )
 
 
-async def apply_convergence_result(owner, iteration, *, convergence_cls, failed_cls):
+async def apply_convergence_result(
+    owner: _ExecutionOwner,
+    iteration: _IterationState,
+    *,
+    convergence_cls: _ConvergenceCtor[ConvergenceT],
+    failed_cls: _FailedCtor[FailedT],
+) -> ConvergenceT | FailedT:
     """Validate final results and convert them to convergence state."""
-    hooks = cast(object, owner)
-    validation_result = await hooks._validate_final_result(
+    validation_result = await owner._validate_final_result(
         iteration.final_result, iteration.task_goal, iteration.context_id
     )
     if not validation_result["is_valid"]:
@@ -151,7 +288,10 @@ async def apply_convergence_result(owner, iteration, *, convergence_cls, failed_
     )
 
 
-async def finalize_execution_result(owner, convergence) -> dict[str, Any]:
+async def finalize_execution_result(
+    owner: _ExecutionOwner,
+    convergence: _ConvergenceState,
+) -> PipelineExecutionResult:
     """Finalize telemetry, cache storage, and artifact persistence."""
     convergence.pipeline_result["telemetry"] = convergence.execution_context.finalize(
         len(convergence.shards)

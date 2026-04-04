@@ -4,22 +4,61 @@ from __future__ import annotations
 
 import hashlib
 import time
-from typing import Any
+from typing import Any, Protocol, TypeVar
 
 from bijux_canon_agent.pipeline.agent_registry import determine_execution_plan
 from bijux_canon_agent.pipeline.execution.shard_processing import shard_input
 from bijux_canon_agent.pipeline.execution.telemetry import PipelineExecutionContext
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
 
+PipelineExecutionResult = dict[str, Any]
+
+PreparedExecutionT = TypeVar("PreparedExecutionT", covariant=True)
+CachedExecutionT = TypeVar("CachedExecutionT", covariant=True)
+FailedExecutionT = TypeVar("FailedExecutionT", covariant=True)
+
+
+class _PreparationOwner(Protocol):
+    logger: Any
+    logger_manager: Any
+    _metric_type: Any
+    _cache: dict[str, PipelineExecutionResult] | None
+    _stages: list[dict[str, Any]]
+    audit_trail: list[dict[str, Any]]
+    revision_history: list[dict[str, Any]]
+
+    def reset_telemetry(self) -> None: ...
+
+    def _generate_cache_key(self, context: dict[str, Any]) -> str: ...
+
+
+class _PreparedCtor(Protocol[PreparedExecutionT]):
+    def __call__(
+        self,
+        *,
+        context_id: str,
+        cache_key: str,
+        context: dict[str, Any],
+        task_goal: str,
+        required_stages: list[dict[str, Any]],
+        shards: list[dict[str, Any]],
+        pipeline_result: PipelineExecutionResult,
+        execution_context: PipelineExecutionContext,
+    ) -> PreparedExecutionT: ...
+
+
+class _SingleResultCtor(Protocol[CachedExecutionT]):
+    def __call__(self, result: PipelineExecutionResult) -> CachedExecutionT: ...
+
 
 async def prepare_execution_state(
-    owner,
+    owner: _PreparationOwner,
     context: dict[str, Any],
     *,
-    prepared_cls,
-    cached_cls,
-    failed_cls,
-):
+    prepared_cls: _PreparedCtor[PreparedExecutionT],
+    cached_cls: _SingleResultCtor[CachedExecutionT],
+    failed_cls: _SingleResultCtor[FailedExecutionT],
+) -> CachedExecutionT | FailedExecutionT | PreparedExecutionT:
     """Prepare a pipeline execution request for iteration."""
     context_id = context.get(
         "context_id",
@@ -38,7 +77,7 @@ async def prepare_execution_state(
             },
         )
 
-    pipeline_result: dict[str, Any] = {
+    pipeline_result: PipelineExecutionResult = {
         "result": None,
         "stages": {},
         "audit_trail": [],
@@ -134,14 +173,14 @@ async def prepare_execution_state(
 
 
 async def build_error_result(
-    owner,
+    owner: _PreparationOwner,
     msg: str,
     context: dict[str, Any] | None = None,
     *,
     stage: str = "pipeline",
-) -> dict[str, Any]:
+) -> PipelineExecutionResult:
     """Build the standardized pipeline execution error result."""
-    result: dict[str, Any] = {
+    result: PipelineExecutionResult = {
         "result": None,
         "stages": {},
         "audit_trail": [
