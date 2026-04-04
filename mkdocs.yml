@@ -325,6 +325,17 @@ nav:
       - Release Support: bijux-canon-dev/release-support.md
       - SBOM and Supply Chain: bijux-canon-dev/sbom-and-supply-chain.md
       - Operating Guidelines: bijux-canon-dev/operating-guidelines.md
+  - Compatibility Packages:
+      - Compatibility Packages: compat-packages/index.md
+      - Compatibility Overview: compat-packages/compatibility-overview.md
+      - Legacy Name Map: compat-packages/legacy-name-map.md
+      - Migration Guidance: compat-packages/migration-guidance.md
+      - Package Behavior: compat-packages/package-behavior.md
+      - Import Surfaces: compat-packages/import-surfaces.md
+      - Command Surfaces: compat-packages/command-surfaces.md
+      - Release Policy: compat-packages/release-policy.md
+      - Validation Strategy: compat-packages/validation-strategy.md
+      - Retirement Conditions: compat-packages/retirement-conditions.md
 
 plugins:
   - search
