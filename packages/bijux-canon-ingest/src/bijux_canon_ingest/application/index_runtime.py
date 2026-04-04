@@ -76,6 +76,8 @@ def build_stored_index(
             fingerprint=cosine_index.fingerprint,
         )
     )
+
+
 __all__ = [
     "IndexBackend",
     "StoredIndex",

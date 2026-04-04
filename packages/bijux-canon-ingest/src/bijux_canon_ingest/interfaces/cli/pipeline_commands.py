@@ -84,4 +84,5 @@ def _read_ok_docs(path: Path) -> Result[list[RawDoc], ErrInfo]:
         return Err(doc_result.error)
     return Ok(docs)
 
+
 __all__ = ["run_pipeline_commands"]

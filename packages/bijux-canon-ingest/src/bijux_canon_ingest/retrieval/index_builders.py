@@ -103,4 +103,6 @@ def build_bm25_index(
         k1=float(k1),
         b=float(b),
     )
+
+
 __all__ = ["build_bm25_index", "build_numpy_cosine_index", "load_index"]

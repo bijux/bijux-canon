@@ -15,8 +15,7 @@ from bijux_canon_ingest.interfaces.cli.document_pipeline_io import (
 def test_read_csv_docs_projects_expected_tuple_shape(tmp_path: Path) -> None:
     path = tmp_path / "docs.csv"
     path.write_text(
-        "doc_id,text,title,category\n"
-        "d1,alpha,Title,cs.AI\n",
+        "doc_id,text,title,category\nd1,alpha,Title,cs.AI\n",
         encoding="utf-8",
     )
 

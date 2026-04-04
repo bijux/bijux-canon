@@ -55,7 +55,9 @@ def write_chunk_results(results: list[Result[Any, ErrInfo]], *, out_path: Path) 
     with out_path.open("w", encoding="utf-8") as handle:
         for result in results:
             if isinstance(result, Ok):
-                handle.write(json.dumps(chunk_to_json(result.value), ensure_ascii=False))
+                handle.write(
+                    json.dumps(chunk_to_json(result.value), ensure_ascii=False)
+                )
                 handle.write("\n")
 
 

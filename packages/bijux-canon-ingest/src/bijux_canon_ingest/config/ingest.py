@@ -17,7 +17,11 @@ from bijux_canon_ingest.core.types import (
     RawDoc,
 )
 from bijux_canon_ingest.core.rules_pred import DEFAULT_RULES, RulesConfig
-from bijux_canon_ingest.config.cleaning import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
+from bijux_canon_ingest.config.cleaning import (
+    DEFAULT_CLEAN_CONFIG,
+    CleanConfig,
+    make_cleaner,
+)
 from bijux_canon_ingest.observability import (
     DebugConfig,
     IngestTaps,
@@ -104,6 +108,7 @@ def make_chunk_stream_fn(
         return gen_bounded_chunks(docs, config, deps, max_chunks=max_chunks)
 
     return run
+
 
 __all__ = [
     "DocsReader",

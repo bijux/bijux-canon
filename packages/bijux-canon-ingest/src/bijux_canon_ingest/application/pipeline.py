@@ -49,6 +49,7 @@ T = TypeVar("T")
 def _identity_iter(items: Iterable[RawDoc]) -> Iterable[RawDoc]:
     return items
 
+
 def iter_ingest_pipeline(
     docs: Iterable[RawDoc],
     env: RagEnv,

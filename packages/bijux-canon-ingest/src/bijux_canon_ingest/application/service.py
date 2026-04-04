@@ -153,6 +153,7 @@ class IngestService:
             candidates = candidates[:top_k]
         return Ok(self.answerer.generate(query=query, candidates=candidates))
 
+
 __all__ = [
     "AnswerPayload",
     "CandidatePayload",
