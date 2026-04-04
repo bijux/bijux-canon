@@ -37,6 +37,11 @@ Publish this package when the legacy `bijux-rar` distribution must keep
 tracking `bijux-canon-reason` with the same install, import, and command
 continuity guarantees.
 
+The published package docs URL for this legacy name is
+<https://bijux.io/bijux-canon/compat-packages/bijux-rar/> so PyPI readers land
+on migration-specific guidance before moving to the canonical reasoning
+handbook.
+
 ## Pre-publish checks
 
 - confirm the compatibility wheel still depends on `bijux-canon-reason` at the

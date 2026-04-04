@@ -18,6 +18,9 @@ releases when a tagged changelog existed.
 - Package-local PyPI publication guidance is now checked in and shipped with
   the source distribution so legacy reasoning release expectations stay
   attached to the compatibility package.
+- The published docs URL for `bijux-rar` now has its own migration landing
+  page inside the shared handbook instead of sending legacy readers directly to
+  canonical reasoning docs without context.
 
 ## 0.3.0 - 2026-04-04
 
