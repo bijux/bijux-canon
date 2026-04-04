@@ -40,11 +40,11 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://bijux.io/bijux-canon/bijux-canon-index/"
+"Homepage" = "https://bijux.io/bijux-canon/compat-packages/bijux-vex/"
 "Website" = "https://bijux.io/"
 "Repository" = "https://github.com/bijux/bijux-canon"
 "Issues" = "https://github.com/bijux/bijux-canon/issues"
-"Documentation" = "https://bijux.io/bijux-canon/bijux-canon-index/"
+"Documentation" = "https://bijux.io/bijux-canon/compat-packages/bijux-vex/"
 "Changelog" = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/CHANGELOG.md"
 "Security" = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
