@@ -9,7 +9,6 @@
 
 from __future__ import annotations
 
-from collections import Counter
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -24,20 +23,19 @@ from bijux_canon_runtime.model.verification.verification_arbitration import (
 from bijux_canon_runtime.model.verification.verification_result import (
     VerificationResult,
 )
-from bijux_canon_runtime.model.verification.verification_rule import VerificationRule
-from bijux_canon_runtime.observability.classification.fingerprint import (
-    fingerprint_policy,
-)
-from bijux_canon_runtime.verification.contradiction_support import (
-    detect_contradictions,
-)
 from bijux_canon_runtime.ontology import (
-    ArbitrationRule,
     ReasonCode,
     VerificationPhase,
     VerificationRandomness,
 )
-from bijux_canon_runtime.ontology.ids import ArtifactID, PolicyFingerprint
+from bijux_canon_runtime.ontology.ids import ArtifactID
+from bijux_canon_runtime.verification.arbitration_support import (
+    arbitrate_results,
+    max_rule_randomness,
+)
+from bijux_canon_runtime.verification.contradiction_support import (
+    detect_contradictions,
+)
 
 
 class VerificationEngine(Protocol):
@@ -85,7 +83,7 @@ class ContentVerificationEngine:
     ) -> VerificationResult:
         """Execute verify and enforce its contract."""
         result = evaluate_verification(reasoning, evidence, artifacts, policy)
-        randomness = _max_rule_randomness(policy.rules)
+        randomness = max_rule_randomness(policy.rules)
         return VerificationResult(
             spec_version=result.spec_version,
             engine_id=self.engine_id,
@@ -191,7 +189,7 @@ class VerificationOrchestrator:
             engine.verify(reasoning, evidence, artifacts, policy)
             for engine in self._bundle_engines
         ]
-        arbitration = _arbitrate(results, policy)
+        arbitration = arbitrate_results(results, policy)
         return results, arbitration
 
     def verify_flow(
@@ -204,129 +202,8 @@ class VerificationOrchestrator:
             engine.verify_flow(reasoning_bundles, policy)
             for engine in self._flow_engines
         ]
-        arbitration = _arbitrate(results, policy)
+        arbitration = arbitrate_results(results, policy)
         return results, arbitration
-
-
-def _arbitrate(
-    results: list[VerificationResult], policy: VerificationPolicy
-) -> VerificationArbitration:
-    """Internal helper; not part of the public API."""
-    arbitration_policy = policy.arbitration_policy
-    statuses = [result.status for result in results]
-    randomness = _max_result_randomness(results)
-    decision = _arbitration_decision(
-        statuses, arbitration_policy.rule, arbitration_policy.quorum_threshold
-    )
-    if decision == "PASS" and _randomness_exceeds(
-        randomness, policy.randomness_tolerance
-    ):
-        decision = "ESCALATE"
-    engine_ids = tuple(result.engine_id for result in results)
-    engine_statuses = tuple(statuses)
-    return VerificationArbitration(
-        spec_version="v1",
-        rule=arbitration_policy.rule,
-        policy_fingerprint=PolicyFingerprint(fingerprint_policy(policy)),
-        decision=decision,
-        randomness=randomness,
-        engine_ids=engine_ids,
-        engine_statuses=engine_statuses,
-        target_artifact_ids=_target_artifact_ids(results),
-    )
-
-
-def _arbitration_decision(
-    statuses: list[str],
-    rule: ArbitrationRule,
-    quorum_threshold: int | None,
-) -> str:
-    """Internal helper; not part of the public API."""
-    if rule == ArbitrationRule.STRICT_FIRST_FAILURE:
-        return _strict_first_failure_decision(statuses)
-    if rule == ArbitrationRule.UNANIMOUS:
-        return _unanimous_decision(statuses)
-    if rule == ArbitrationRule.QUORUM:
-        return _quorum_decision(statuses, quorum_threshold)
-    raise ValueError(f"unsupported arbitration rule: {rule}")
-
-
-def _strict_first_failure_decision(statuses: list[str]) -> str:
-    """Internal helper; not part of the public API."""
-    for status in statuses:
-        if status != "PASS":
-            return status
-    return "PASS"
-
-
-def _unanimous_decision(statuses: list[str]) -> str:
-    """Internal helper; not part of the public API."""
-    if all(status == "PASS" for status in statuses):
-        return "PASS"
-    if any(status == "FAIL" for status in statuses):
-        return "FAIL"
-    return "ESCALATE"
-
-
-def _quorum_decision(statuses: list[str], quorum_threshold: int | None) -> str:
-    """Internal helper; not part of the public API."""
-    counts = Counter(statuses)
-    threshold = quorum_threshold
-    if threshold is None:
-        threshold = len(statuses) // 2 + 1
-    if counts["PASS"] >= threshold:
-        return "PASS"
-    if counts["FAIL"] >= threshold:
-        return "FAIL"
-    return "ESCALATE"
-
-
-def _target_artifact_ids(
-    results: list[VerificationResult],
-) -> tuple[ArtifactID, ...]:
-    """Internal helper; not part of the public API."""
-    target_ids: list[ArtifactID] = []
-    for result in results:
-        target_ids.extend(result.checked_artifact_ids)
-    return tuple(target_ids)
-
-
-def _max_rule_randomness(
-    rules: tuple[VerificationRule, ...],
-) -> VerificationRandomness:
-    """Internal helper; not part of the public API."""
-    if not rules:
-        return VerificationRandomness.DETERMINISTIC
-    return max(
-        (rule.randomness_requirement for rule in rules),
-        key=_randomness_rank,
-    )
-
-
-def _max_result_randomness(
-    results: list[VerificationResult],
-) -> VerificationRandomness:
-    """Internal helper; not part of the public API."""
-    if not results:
-        return VerificationRandomness.DETERMINISTIC
-    return max((result.randomness for result in results), key=_randomness_rank)
-
-
-def _randomness_rank(randomness: VerificationRandomness) -> int:
-    """Internal helper; not part of the public API."""
-    order = {
-        VerificationRandomness.DETERMINISTIC: 0,
-        VerificationRandomness.SAMPLED: 1,
-        VerificationRandomness.STATISTICAL: 2,
-    }
-    return order[randomness]
-
-
-def _randomness_exceeds(
-    observed: VerificationRandomness, tolerance: VerificationRandomness
-) -> bool:
-    """Internal helper; not part of the public API."""
-    return _randomness_rank(observed) > _randomness_rank(tolerance)
 
 
 __all__ = [

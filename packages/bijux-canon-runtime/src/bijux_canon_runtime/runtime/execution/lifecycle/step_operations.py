@@ -39,13 +39,13 @@ from bijux_canon_runtime.ontology.ids import (
 from bijux_canon_runtime.ontology.public import EventType
 from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
-from bijux_canon_runtime.runtime.execution.lifecycle.tool_event_recording import (
-    record_tool_failure,
-    record_tool_success,
-)
 from bijux_canon_runtime.runtime.execution.lifecycle.step_verification import (
     record_flow_verification,
     verify_step_outcome,
+)
+from bijux_canon_runtime.runtime.execution.lifecycle.tool_event_recording import (
+    record_tool_failure,
+    record_tool_success,
 )
 from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
 from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor

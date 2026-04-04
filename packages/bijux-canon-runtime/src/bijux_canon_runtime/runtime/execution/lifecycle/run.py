@@ -30,10 +30,10 @@ from bijux_canon_runtime.runtime.execution.agent_executor import AgentExecutor
 from bijux_canon_runtime.runtime.execution.lifecycle.run_recording import (
     ExecutionRunRecorder,
 )
+from bijux_canon_runtime.runtime.execution.lifecycle.step_loop import execute_steps
 from bijux_canon_runtime.runtime.execution.lifecycle.step_operations import (
     VerificationOverrideHandler,
 )
-from bijux_canon_runtime.runtime.execution.lifecycle.step_loop import execute_steps
 from bijux_canon_runtime.runtime.execution.reasoning_executor import ReasoningExecutor
 from bijux_canon_runtime.runtime.execution.retrieval_executor import RetrievalExecutor
 from bijux_canon_runtime.verification.orchestrator import VerificationOrchestrator

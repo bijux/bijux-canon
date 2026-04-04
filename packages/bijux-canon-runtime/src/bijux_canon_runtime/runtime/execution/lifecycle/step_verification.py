@@ -47,11 +47,40 @@ class VerificationCallbacks(Protocol):
         ...
 
 
+class VerificationOrchestratorLike(Protocol):
+    """Verification orchestrator contract used by step verification."""
+
+    def verify_bundle(
+        self,
+        reasoning: ReasoningBundle,
+        evidence: list[RetrievedEvidence],
+        artifacts: list[Artifact],
+        policy: VerificationPolicy,
+    ) -> tuple[list[VerificationResult], VerificationArbitration]:
+        """Verify the current reasoning bundle."""
+        ...
+
+    def verify_flow(
+        self,
+        reasoning_bundles: list[ReasoningBundle],
+        policy: VerificationPolicy,
+    ) -> tuple[list[VerificationResult], VerificationArbitration]:
+        """Verify flow-level reasoning results."""
+        ...
+
+
 class VerificationServices(Protocol):
     """Service contract used by step verification."""
 
-    policy: VerificationPolicy | None
-    verification_orchestrator: object
+    @property
+    def policy(self) -> VerificationPolicy | None:
+        """Return the active verification policy."""
+        ...
+
+    @property
+    def verification_orchestrator(self) -> VerificationOrchestratorLike:
+        """Return the verification orchestrator."""
+        ...
 
 
 def verify_step_outcome(

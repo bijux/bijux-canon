@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+from bijux_canon_runtime.application.execution_persistence import persist_run
 from bijux_canon_runtime.application.flow_execution_models import (
     ExecutionConfig,
     FlowRunResult,
@@ -25,7 +26,6 @@ from bijux_canon_runtime.application.flow_preparation_support import (
     validated_execution_config,
 )
 from bijux_canon_runtime.application.planner import ExecutionPlanner
-from bijux_canon_runtime.application.execution_persistence import persist_run
 from bijux_canon_runtime.core.authority import (
     enforce_runtime_semantics,
 )

@@ -14,6 +14,7 @@ from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvide
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
 from bijux_canon_runtime.observability.capture.time import utc_now_deterministic
+from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
 from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
@@ -28,7 +29,7 @@ class ExecutionRunRecorder:
     """Mutable recorder state for a single runtime execution."""
 
     context: ExecutionContext
-    recorder: object
+    recorder: TraceRecorder
     tool_invocations: list[ToolInvocation]
     event_index: int
     evidence_index: int
@@ -41,7 +42,7 @@ class ExecutionRunRecorder:
         cls,
         *,
         context: ExecutionContext,
-        recorder: object,
+        recorder: TraceRecorder,
         tool_invocations: list[ToolInvocation],
     ) -> ExecutionRunRecorder:
         """Create recorder state from the execution context offsets."""
