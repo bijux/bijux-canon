@@ -29,7 +29,7 @@ T = TypeVar("T")
 def gen_grouped_chunks(
     chunks: Iterable[ChunkWithoutEmbedding],
 ) -> Iterator[tuple[str, Iterator[ChunkWithoutEmbedding]]]:
-    """Group contiguous chunk runs by ``doc_id`` (Bijux RAG)."""
+    """Group contiguous chunk runs by ``doc_id``."""
 
     guarded = ensure_contiguous(attrgetter("doc_id"))(chunks)
     yield from groupby(guarded, key=attrgetter("doc_id"))
@@ -90,7 +90,7 @@ def gen_bounded_chunks(
     *,
     max_chunks: int | None = None,
 ) -> Iterator[ChunkWithoutEmbedding]:
-    """Hard fence on the number of chunks produced (Bijux RAG)."""
+    """Hard fence on the number of chunks produced."""
 
     chunked = stream_chunks(docs, config, deps)
     if max_chunks is None:
@@ -107,7 +107,7 @@ def safe_rag_pipeline(
     max_chunks: int = 10_000,
     min_doc_len: int = 500,
 ) -> Iterator[ChunkWithoutEmbedding]:
-    """Defensive streaming pipeline with explicit fences (Bijux RAG)."""
+    """Defensive streaming pipeline with explicit fences."""
 
     fenced_docs = dropwhile(lambda d: len(d.abstract) < min_doc_len, docs)
     yield from gen_bounded_chunks(fenced_docs, config, deps, max_chunks=max_chunks)

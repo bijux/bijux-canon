@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Pure, composable RAG pipeline stages (end-of-Bijux RAG).
+"""Pure, composable document processing stages.
 
 These stages are deterministic and side-effect free. Higher-level APIs wire
 them together with configuration-as-data, taps/probes, and boundary adapters.

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Core domain value types for the Bijux RAG toolkit.
+"""Core domain value types for ingest pipelines.
 
 All types are frozen dataclasses → instances are values:
 - They support structural equality.
@@ -245,7 +245,7 @@ class RagEnv:
 
 @dataclass(frozen=True)
 class TextNode:
-    """A single text-bearing node in a document hierarchy (Bijux RAG)."""
+    """A single text-bearing node in a document hierarchy."""
 
     text: str
     metadata: Mapping[str, str] = field(default_factory=dict)
@@ -259,7 +259,7 @@ class TextNode:
 
 @dataclass(frozen=True)
 class TreeDoc:
-    """Immutable, recursive document structure (Bijux RAG)."""
+    """Immutable, recursive document structure."""
 
     node: TextNode
     children: tuple[TreeDoc, ...] = ()

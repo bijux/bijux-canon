@@ -173,7 +173,7 @@ def run_ingest_pipeline_docs(
     config: IngestConfig,
     deps: IngestDeps,
 ) -> tuple[list[Chunk], Observations]:
-    """Doc-based API: materializes at the edge for taps/observations."""
+    """Document-first API that materializes results for taps and observations."""
 
     docs_list = list(docs)
     sample_size = config.env.sample_size
@@ -206,7 +206,7 @@ def run_ingest_pipeline(
     config: IngestConfig,
     deps: IngestDeps,
 ) -> tuple[list[Chunk], Observations]:
-    """Doc-based API shape used across Modules 02–03 cores."""
+    """Compatibility wrapper for the document-first pipeline API."""
 
     return run_ingest_pipeline_docs(docs, config, deps)
 
@@ -216,7 +216,7 @@ def run_ingest_pipeline_path(
     config: IngestConfig,
     deps: IngestBoundaryDeps,
 ) -> Result[tuple[list[Chunk], Observations], str]:
-    """Boundary API shape (introduced in M02C05): path in, Result out."""
+    """Boundary entrypoint that accepts a path and returns a typed result."""
 
     docs_res = deps.reader.read_docs(path)
     if isinstance(docs_res, Err):

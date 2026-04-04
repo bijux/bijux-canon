@@ -39,7 +39,7 @@ def gen_overlapping_chunks(
     o: int = 0,
     tail_policy: str = "emit_short",
 ) -> Iterator[ChunkWithoutEmbedding]:
-    """Chunk raw text lazily with overlap and a tail policy (Bijux RAG)."""
+    """Chunk raw text lazily with overlap and a tail policy."""
 
     yield from iter_overlapping_chunks_text(
         doc_id, text, k=k, o=o, tail_policy=tail_policy

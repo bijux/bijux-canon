@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""A tiny, frozen predicate DSL expressed as data (Modules 02–03)."""
+"""A small, frozen predicate DSL expressed as data."""
 
 from __future__ import annotations
 
