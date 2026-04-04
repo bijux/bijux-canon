@@ -14,6 +14,7 @@ from bijux_canon_reason.core.types import (
     Trace,
     TraceEvent,
     TraceEventKind,
+    ToolResult,
 )
 from bijux_canon_reason.execution.runtime import ExecutionRuntime
 from bijux_canon_reason.execution.step_execution import (
@@ -21,7 +22,10 @@ from bijux_canon_reason.execution.step_execution import (
     build_step_output,
 )
 from bijux_canon_reason.execution.trace_metadata import build_trace_result
-from bijux_canon_reason.execution.tool_dispatch import dispatch_tool_requests
+from bijux_canon_reason.execution.tool_dispatch import (
+    ToolDispatchResult,
+    dispatch_tool_requests,
+)
 
 
 @dataclass(frozen=True)
@@ -36,6 +40,18 @@ class ExecutionResult:
 
     def model_dump(self, mode: str = "json") -> dict[str, object]:
         return {"trace": self.trace.model_dump(mode=mode)}
+
+
+@dataclass
+class _EventLog:
+    adapter: TypeAdapter[TraceEvent]
+    events: list[TraceEvent]
+    next_idx: int = 0
+
+    def append(self, payload: dict[str, object]) -> None:
+        payload["idx"] = self.next_idx
+        self.next_idx += 1
+        self.events.append(self.adapter.validate_python(payload))
 
 
 def _validate_topology(plan: Plan) -> None:
@@ -93,69 +109,20 @@ def execute_plan(
     if plan_errors:
         raise ValueError("; ".join(plan_errors))
 
-    adapter: TypeAdapter[TraceEvent] = TypeAdapter(TraceEvent)
     events: list[TraceEvent] = []
+    event_log = _EventLog(adapter=TypeAdapter(TraceEvent), events=events)
     state = ExecutionState()
-    min_supports = policy.min_supports_per_claim
-    if isinstance(spec.constraints, dict):
-        raw_min = spec.constraints.get("min_supports_per_claim")
-        if isinstance(raw_min, (int, float, str)):
-            min_supports = max(1, int(raw_min))
-
-    idx_counter = 0
-
-    def _push_event(payload: dict[str, object]) -> None:
-        nonlocal idx_counter
-        payload["idx"] = idx_counter
-        idx_counter += 1
-        events.append(adapter.validate_python(payload))
+    min_supports = _resolve_min_supports(spec=spec, policy=policy)
 
     for node in _topo(plan):
-        events.append(
-            adapter.validate_python(
-                {
-                    "kind": TraceEventKind.step_started,
-                    "step_id": node.id,
-                    "idx": idx_counter,
-                }
-            )
-        )
-        idx_counter += 1
-
-        tool_dispatch = dispatch_tool_requests(
-            node_id=node.id,
-            tool_requests=node.step.tool_requests,
-            runtime=runtime,
-            push_event=_push_event,
-        )
-        if tool_dispatch.retrieval_provenance:
-            state.retrieval_provenance = tool_dispatch.retrieval_provenance
-        for evidence_record in tool_dispatch.evidences:
-            state.evidence_ids.append(evidence_record.reference.id)
-            state.evidence_bytes[evidence_record.reference.id] = evidence_record.content
-
-        out = build_step_output(
+        _execute_node(
             node=node,
             spec=spec,
+            runtime=runtime,
             state=state,
             min_supports=min_supports,
-        )
-        if node.kind == "derive" and getattr(out, "claim_ids", None):
-            claim_id = out.claim_ids[0]
-            _push_event(
-                {
-                    "kind": TraceEventKind.claim_emitted,
-                    "step_id": node.id,
-                    "claim": state.claims[claim_id].model_dump(mode="json"),
-                }
-            )
-
-        _push_event(
-            {
-                "kind": TraceEventKind.step_finished,
-                "step_id": node.id,
-                "output": out.model_dump(mode="json"),
-            }
+            policy=policy,
+            event_log=event_log,
         )
 
     trace = build_trace_result(
@@ -168,3 +135,87 @@ def execute_plan(
     )
 
     return ExecutionResult(trace=trace)
+
+
+def _resolve_min_supports(*, spec: ProblemSpec, policy: ExecutionPolicy) -> int:
+    min_supports = policy.min_supports_per_claim
+    if isinstance(spec.constraints, dict):
+        raw_min = spec.constraints.get("min_supports_per_claim")
+        if isinstance(raw_min, (int, float, str)):
+            min_supports = max(1, int(raw_min))
+    return min_supports
+
+
+def _execute_node(
+    *,
+    node: PlanNode,
+    spec: ProblemSpec,
+    runtime: ExecutionRuntime,
+    state: ExecutionState,
+    min_supports: int,
+    policy: ExecutionPolicy,
+    event_log: _EventLog,
+) -> None:
+    event_log.append(
+        {
+            "kind": TraceEventKind.step_started,
+            "step_id": node.id,
+        }
+    )
+    tool_dispatch = dispatch_tool_requests(
+        node_id=node.id,
+        tool_requests=node.step.tool_requests,
+        runtime=runtime,
+        push_event=event_log.append,
+    )
+    _merge_tool_dispatch(state=state, tool_dispatch=tool_dispatch)
+    _raise_on_tool_failures(
+        node_id=node.id,
+        policy=policy,
+        failures=tool_dispatch.failures,
+    )
+
+    out = build_step_output(
+        node=node,
+        spec=spec,
+        state=state,
+        min_supports=min_supports,
+    )
+    if node.kind == "derive" and getattr(out, "claim_ids", None):
+        claim_id = out.claim_ids[0]
+        event_log.append(
+            {
+                "kind": TraceEventKind.claim_emitted,
+                "step_id": node.id,
+                "claim": state.claims[claim_id].model_dump(mode="json"),
+            }
+        )
+    event_log.append(
+        {
+            "kind": TraceEventKind.step_finished,
+            "step_id": node.id,
+            "output": out.model_dump(mode="json"),
+        }
+    )
+
+
+def _merge_tool_dispatch(
+    *,
+    state: ExecutionState,
+    tool_dispatch: ToolDispatchResult,
+) -> None:
+    if tool_dispatch.retrieval_provenance:
+        state.retrieval_provenance = tool_dispatch.retrieval_provenance
+    for evidence_record in tool_dispatch.evidences:
+        state.evidence_ids.append(evidence_record.reference.id)
+        state.evidence_bytes[evidence_record.reference.id] = evidence_record.content
+
+
+def _raise_on_tool_failures(
+    *, node_id: str, policy: ExecutionPolicy, failures: list[ToolResult]
+) -> None:
+    if not failures or not policy.fail_fast:
+        return
+    first_failure = failures[0]
+    detail = getattr(first_failure, "error", None) or "unknown tool error"
+    raise RuntimeError(f"step {node_id} tool failure: {detail}")

@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from bijux_canon_reason.core.fingerprints import stable_id
-from bijux_canon_reason.core.types import EvidenceRef, JsonValue, ToolCall
+from bijux_canon_reason.core.types import EvidenceRef, JsonValue, ToolCall, ToolResult
 from bijux_canon_reason.execution.evidence_records import write_evidence_record
 from bijux_canon_reason.execution.runtime import ExecutionRuntime
 
@@ -21,6 +21,7 @@ class RetrievedEvidenceRecord:
 class ToolDispatchResult:
     retrieval_provenance: dict[str, JsonValue] = field(default_factory=dict)
     evidences: list[RetrievedEvidenceRecord] = field(default_factory=list)
+    failures: list[ToolResult] = field(default_factory=list)
 
 
 def dispatch_tool_requests(
@@ -32,6 +33,7 @@ def dispatch_tool_requests(
 ) -> ToolDispatchResult:
     retrieval_provenance: dict[str, JsonValue] = {}
     evidences: list[RetrievedEvidenceRecord] = []
+    failures: list[ToolResult] = []
 
     for index, tool_request in enumerate(tool_requests):
         call = ToolCall(
@@ -64,6 +66,9 @@ def dispatch_tool_requests(
                 "result": result.model_dump(mode="json"),
             }
         )
+        if not result.success:
+            failures.append(result)
+            continue
         if (
             tool_request.tool_name == "retrieve"
             and result.success
@@ -82,6 +87,7 @@ def dispatch_tool_requests(
     return ToolDispatchResult(
         retrieval_provenance=retrieval_provenance,
         evidences=evidences,
+        failures=failures,
     )
 
 
