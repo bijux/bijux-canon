@@ -9,9 +9,10 @@ from dataclasses import asdict
 import hashlib
 import json
 
-import bijux_canon_reason
-
 from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.execution.integration_loaders import (
+    load_reasoning_runner,
+)
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
@@ -23,19 +24,19 @@ class ReasoningExecutor:
 
     def execute(self, step: ResolvedStep, context: ExecutionContext) -> ReasoningBundle:
         """Execute execute and enforce its contract."""
-        if not hasattr(bijux_canon_reason, "reason"):
-            raise RuntimeError("bijux_canon_reason.reason is required for reasoning")
-
+        reason = load_reasoning_runner()
         agent_outputs = list(context.artifacts_for_step(step.step_index))
         retrieved_evidence = list(context.evidence_for_step(step.step_index))
         seed = self._deterministic_seed(agent_outputs, retrieved_evidence)
-        bundle = bijux_canon_reason.reason(
+        bundle = reason(
             agent_outputs=agent_outputs,
             evidence=retrieved_evidence,
             seed=seed,
         )
         if not isinstance(bundle, ReasoningBundle):
-            raise ValueError("bijux_canon_reason.reason must return ReasoningBundle")
+            raise ValueError(
+                "runtime reasoning integration must return ReasoningBundle"
+            )
         return bundle
 
     @staticmethod

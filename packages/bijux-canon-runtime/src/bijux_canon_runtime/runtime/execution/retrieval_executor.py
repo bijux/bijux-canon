@@ -8,10 +8,11 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-import bijux_rag
-import bijux_canon_index
-
 from bijux_canon_runtime.runtime.context import ExecutionContext
+from bijux_canon_runtime.runtime.execution.integration_loaders import (
+    load_retrieval_runner,
+    load_vector_contract_enforcer,
+)
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
@@ -42,12 +43,9 @@ class RetrievalExecutor:
         if request is None:
             context.record_evidence(step.step_index, [])
             return []
-        if not hasattr(bijux_rag, "retrieve"):
-            raise RuntimeError("bijux_rag.retrieve is required for retrieval")
-        if not hasattr(bijux_canon_index, "enforce_contract"):
-            raise RuntimeError("bijux_canon_index.enforce_contract is required for enforcement")
-
-        raw_evidence = bijux_rag.retrieve(
+        retrieve = load_retrieval_runner()
+        enforce_contract = load_vector_contract_enforcer()
+        raw_evidence = retrieve(
             query=request.query,
             top_k=request.top_k,
             scope=request.scope,
@@ -63,7 +61,7 @@ class RetrievalExecutor:
         ):
             raise ValueError("retrieval evidence vector contract mismatch")
 
-        if not bijux_canon_index.enforce_contract(request.vector_contract_id, evidence):
+        if not enforce_contract(request.vector_contract_id, evidence):
             raise ValueError("retrieval evidence failed vector contract enforcement")
 
         if any(
