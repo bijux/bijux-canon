@@ -64,7 +64,6 @@ from bijux_canon_index.domain.non_determinism.execution_model import (
 )
 from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.domain.provenance.replay import replay
-from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
 from bijux_canon_index.infra.embeddings.cache import (
     build_cache,
     cache_key,
@@ -75,7 +74,9 @@ from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
 from bijux_canon_index.infra.logging import log_event
 from bijux_canon_index.infra.metrics import METRICS, timed
 from bijux_canon_index.infra.run_store import RunStore
-from bijux_canon_index.infra.runners.registry import RUNNERS
+from bijux_canon_index.application.orchestration.capabilities_report import (
+    build_capabilities_response,
+)
 from bijux_canon_index.application.orchestration.runtime_bootstrap import (
     bootstrap_runtime,
 )
@@ -263,96 +264,14 @@ class Orchestrator:
             supports_ann = bool(
                 caps.supports_ann if caps.supports_ann is not None else caps.ann_support
             )
-        ann_status = "experimental" if supports_ann else "unavailable"
-        execution_modes = [mode.value for mode in ExecutionMode]
-        storage_backends = [
-            {
-                "name": "memory",
-                "status": "stable",
-                "persistence": "ephemeral",
-            },
-            {
-                "name": "sqlite",
-                "status": "stable",
-                "persistence": "local",
-            },
-            {
-                "name": "hnsw",
-                "status": "experimental",
-                "persistence": "local",
-            },
-            {
-                "name": "pgvector",
-                "status": "experimental_excluded",
-                "persistence": "external",
-                "notes": "excluded from v1 freeze",
-            },
-        ]
-        vector_stores = [
-            {
-                "name": desc.name,
-                "available": desc.available,
-                "supports_exact": desc.supports_exact,
-                "supports_ann": desc.supports_ann,
-                "delete_supported": desc.delete_supported,
-                "filtering_supported": desc.filtering_supported,
-                "deterministic_exact": desc.deterministic_exact,
-                "experimental": desc.experimental,
-                "consistency": desc.consistency,
-                "version": desc.version,
-                "notes": desc.notes,
-            }
-            for desc in VECTOR_STORES.descriptors()
-        ]
-        plugins = {
-            "vectorstores": VECTOR_STORES.plugin_reports(),
-            "embeddings": EMBEDDING_PROVIDERS.plugin_reports(),
-            "runners": RUNNERS.plugin_reports(),
-        }
-        if caps is None:
-            return {
-                "backend": getattr(self.backend, "name", "unknown"),
-                "contracts": [],
-                "deterministic_query": None,
-                "supports_ann": False,
-                "replayable": None,
-                "metrics": [],
-                "max_vector_size": None,
-                "isolation_level": None,
-                "execution_modes": execution_modes,
-                "ann_status": ann_status,
-                "nd": {
-                    "default_runner": default_runner,
-                    "health": nd_health,
-                    "notes": tuple(nd_notes),
-                },
-                "storage_backends": storage_backends,
-                "vector_stores": vector_stores,
-                "plugins": plugins,
-            }
-        return {
-            "backend": getattr(self.backend, "name", "unknown"),
-            "contracts": sorted(
-                c.value if hasattr(c, "value") else str(c)
-                for c in (caps.contracts or [])
-            ),
-            "deterministic_query": caps.deterministic_query,
-            "supports_ann": supports_ann,
-            "replayable": caps.replayable,
-            "metrics": sorted(caps.metrics or []),
-            "max_vector_size": caps.max_vector_size,
-            "isolation_level": caps.isolation_level,
-            "execution_modes": execution_modes,
-            "ann_status": ann_status,
-            "nd": {
-                "default_runner": default_runner,
-                "health": nd_health,
-                "notes": tuple(nd_notes),
-            },
-            "storage_backends": storage_backends,
-            "vector_stores": vector_stores,
-            "plugins": plugins,
-        }
+        return build_capabilities_response(
+            backend_name=getattr(self.backend, "name", "unknown"),
+            caps=caps,
+            supports_ann=supports_ann,
+            default_runner=default_runner,
+            nd_health=nd_health,
+            nd_notes=tuple(nd_notes),
+        )
 
     def create(self, req: CreateRequest) -> dict[str, Any]:
         self._guard_mutation("create")
