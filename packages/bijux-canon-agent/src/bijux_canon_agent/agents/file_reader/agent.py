@@ -8,11 +8,9 @@ fully integrated with LoggerManager for structured logging.
 
 from __future__ import annotations
 
-import asyncio
 from collections.abc import Callable
 import hashlib
 from pathlib import Path
-import time
 from typing import Any
 
 from bijux_canon_agent.agents.base import BaseAgent
@@ -27,6 +25,12 @@ from .reporting import (
 from .result_assembly import (
     apply_extra_analyzers,
     finalize_read_result,
+)
+from .runtime_flow import (
+    load_cached_result,
+    read_with_retries,
+    resolve_file_path,
+    store_cached_result,
 )
 from .telemetry_support import (
     emit_cache_key_metric,
@@ -169,7 +173,11 @@ class FileReaderAgent(BaseAgent):
                     context,
                     "pre_hook",
                 )
-            file_path = self._resolve_file_path(context)
+            file_path = resolve_file_path(
+                context,
+                logger=self.logger,
+                logger_manager=self.logger_manager,
+            )
             if file_path is None:
                 return await self.execution_kernel.error_result(
                     "No 'file_path' found in context",
@@ -178,12 +186,28 @@ class FileReaderAgent(BaseAgent):
                 )
 
             cache_key = self._generate_cache_key(context)
-            cached_result = self._cached_result(cache_key)
+            cached_result = load_cached_result(
+                self._cache,
+                cache_key,
+                logger=self.logger,
+                logger_manager=self.logger_manager,
+            )
             if cached_result is not None:
                 return cached_result
 
             file_suffix = Path(file_path).suffix.lstrip(".").lower()
-            read_result = await self._read_with_retries(context, file_path, file_suffix)
+            read_result = await read_with_retries(
+                context=context,
+                file_path=file_path,
+                file_suffix=file_suffix,
+                custom_readers=self._custom_readers,
+                default_reader=self._read_file,
+                max_retries=self.max_retries,
+                backoff_strategy=self.backoff_strategy,
+                logger=self.logger,
+                logger_manager=self.logger_manager,
+                error_result=self.execution_kernel.error_result,
+            )
             if read_result.get("error"):
                 self.logger.warning(
                     "All retries failed",
@@ -191,7 +215,13 @@ class FileReaderAgent(BaseAgent):
                         "context": {"stage": "file_read", "file_path": str(file_path)}
                     },
                 )
-                self._store_cache(cache_key, read_result)
+                store_cached_result(
+                    self._cache,
+                    cache_key,
+                    read_result,
+                    logger=self.logger,
+                    logger_manager=self.logger_manager,
+                )
                 return read_result
 
             apply_extra_analyzers(
@@ -214,7 +244,13 @@ class FileReaderAgent(BaseAgent):
                 logger=self.logger,
                 logger_manager=self.logger_manager,
             )
-            self._store_cache(cache_key, read_result)
+            store_cached_result(
+                self._cache,
+                cache_key,
+                read_result,
+                logger=self.logger,
+                logger_manager=self.logger_manager,
+            )
             await self._log_completion(file_path, file_suffix, read_result)
             return read_result
 
@@ -249,160 +285,6 @@ class FileReaderAgent(BaseAgent):
                 tags={"stage": "pre_hook"},
             )
             return context, f"Pre-hook failed: {exc!s}"
-
-    def _resolve_file_path(self, context: dict[str, Any]) -> str | None:
-        """Return the requested file path or record input validation metrics."""
-        file_path = context.get("file_path")
-        if file_path:
-            return str(file_path)
-        self.logger.error(
-            "No file_path provided",
-            extra={"context": {"stage": "input_validation"}},
-        )
-        self.logger_manager.log_metric(
-            "input_validation_errors",
-            1,
-            MetricType.COUNTER,
-            tags={"stage": "input_validation"},
-        )
-        return None
-
-    def _cached_result(self, cache_key: str) -> dict[str, Any] | None:
-        """Return the cached file-read result when present."""
-        if self._cache is None or cache_key not in self._cache:
-            return None
-        self.logger.debug(
-            "Cache hit",
-            extra={"context": {"stage": "cache_check", "cache_key": cache_key}},
-        )
-        self.logger_manager.log_metric(
-            "cache_hits",
-            1,
-            MetricType.COUNTER,
-            tags={"stage": "cache_check"},
-        )
-        return {**self._cache[cache_key], "cache_hit": True}
-
-    async def _read_with_retries(
-        self,
-        context: dict[str, Any],
-        file_path: str,
-        file_suffix: str,
-    ) -> dict[str, Any]:
-        """Read a file using the configured reader with retry/backoff semantics."""
-        reader = self._custom_readers.get(file_suffix, self._read_file)
-        read_result: dict[str, Any] = {}
-        for attempt in range(1, self.max_retries + 1):
-            try:
-                start = time.perf_counter()
-                read_result = await reader(file_path)
-                duration = time.perf_counter() - start
-                read_result["read_duration_sec"] = round(duration, 4)
-                read_result["attempt"] = attempt
-                self._record_read_success(duration, attempt, file_suffix)
-                if "error" not in read_result or not read_result["error"]:
-                    return read_result
-            except Exception as exc:
-                read_result = await self._handle_read_failure(
-                    exc=exc,
-                    attempt=attempt,
-                    context=context,
-                    file_suffix=file_suffix,
-                )
-            if attempt < self.max_retries:
-                await self._sleep_for_retry(attempt)
-        return read_result
-
-    def _record_read_success(
-        self, duration: float, attempt: int, file_suffix: str
-    ) -> None:
-        """Record successful file-read telemetry and debug logs."""
-        self.logger_manager.log_metric(
-            "file_read_duration",
-            duration,
-            MetricType.HISTOGRAM,
-            tags={
-                "stage": "file_read",
-                "attempt": str(attempt),
-                "file_type": file_suffix,
-            },
-        )
-        self.logger.debug(
-            "File read successful",
-            extra={
-                "context": {
-                    "stage": "file_read",
-                    "attempt": attempt,
-                    "duration": duration,
-                    "file_type": file_suffix,
-                }
-            },
-        )
-
-    async def _handle_read_failure(
-        self,
-        *,
-        exc: Exception,
-        attempt: int,
-        context: dict[str, Any],
-        file_suffix: str,
-    ) -> dict[str, Any]:
-        """Record file-read failure telemetry and return a standard error payload."""
-        self.logger.error(
-            f"Read failed on attempt {attempt}: {exc!s}",
-            extra={
-                "context": {
-                    "stage": "file_read",
-                    "attempt": attempt,
-                    "error": str(exc),
-                    "file_type": file_suffix,
-                }
-            },
-        )
-        self.logger_manager.log_metric(
-            "file_read_errors",
-            1,
-            MetricType.COUNTER,
-            tags={
-                "stage": "file_read",
-                "attempt": str(attempt),
-                "file_type": file_suffix,
-            },
-        )
-        return await self.execution_kernel.error_result(
-            str(exc),
-            context,
-            "file_read",
-            {"attempt": attempt},
-        )
-
-    async def _sleep_for_retry(self, attempt: int) -> None:
-        """Sleep for the configured retry backoff and log the retry event."""
-        backoff_delay = self._calculate_backoff(attempt)
-        await asyncio.sleep(backoff_delay)
-        self.logger.debug(
-            "Retrying after backoff",
-            extra={
-                "context": {
-                    "stage": "retry",
-                    "attempt": attempt,
-                    "backoff_delay": backoff_delay,
-                }
-            },
-        )
-
-    def _store_cache(self, cache_key: str, read_result: dict[str, Any]) -> None:
-        """Persist the current read result in cache when caching is enabled."""
-        if self._cache is None:
-            return
-        self._cache[cache_key] = read_result
-        self.logger.debug("Cached result", extra={"context": {"cache_key": cache_key}})
-        self.logger_manager.log_metric(
-            "cache_stores",
-            1,
-            MetricType.COUNTER,
-            tags={"stage": "cache_store"},
-        )
 
     async def _log_completion(
         self,
@@ -480,20 +362,6 @@ class FileReaderAgent(BaseAgent):
             cache_enabled=self.cache_enabled,
             async_io=self.async_io,
         )
-
-    def _calculate_backoff(self, attempt: int) -> float:
-        """Calculate backoff delay based on the strategy.
-
-        Args:
-            attempt: Current attempt number.
-
-        Returns:
-            Delay in seconds.
-        """
-        if self.backoff_strategy == "exponential":
-            return 0.5 * (2 ** (attempt - 1))  # Exponential: 0.5s, 1s, 2s, ...
-        else:  # Linear
-            return 0.5 * attempt  # Linear: 0.5s, 1s, 1.5s, ...
 
     def _generate_cache_key(self, context: dict[str, Any]) -> str:
         """Generate a cache key based on context.
