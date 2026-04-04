@@ -19,7 +19,7 @@ LINT_ARTIFACTS_DIR     ?= $(PROJECT_ARTIFACTS_DIR)/lint
 FMT_LOG                ?= $(LINT_ARTIFACTS_DIR)/fmt.log
 RUFF_CACHE_DIR         ?= $(LINT_ARTIFACTS_DIR)/.ruff_cache
 MYPY_CACHE_DIR         ?= $(LINT_ARTIFACTS_DIR)/.mypy_cache
-LINT_SELF_MAKE         ?= $(if $(PACKAGE_PROFILE_MAKEFILE),$(MAKE) -f "$(PACKAGE_PROFILE_MAKEFILE)",$(MAKE))
+LINT_SELF_MAKE         ?= $(SELF_MAKE)
 
 RUFF_CONFIG            ?= $(MONOREPO_ROOT)/configs/ruff.toml
 MYPY_CONFIG            ?= $(MONOREPO_ROOT)/configs/mypy.ini

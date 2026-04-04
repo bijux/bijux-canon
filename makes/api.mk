@@ -12,7 +12,7 @@ API_ARTIFACTS_DIR_ABS       := $(abspath $(API_ARTIFACTS_DIR))
 API_LINT_DIR_ABS            := $(abspath $(API_LINT_DIR))
 API_TEST_DIR_ABS            := $(abspath $(API_TEST_DIR))
 API_MAKEFILE_DIR            := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-API_SELF_MAKE               ?= $(if $(PACKAGE_PROFILE_MAKEFILE),$(MAKE) -f "$(PACKAGE_PROFILE_MAKEFILE)",$(MAKE))
+API_SELF_MAKE               ?= $(SELF_MAKE)
 
 ifeq ($(API_MODE),contract)
 include $(API_MAKEFILE_DIR)/api/contract.mk

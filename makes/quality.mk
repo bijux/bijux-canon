@@ -21,7 +21,7 @@ INTERROGATE ?= $(VENV_PYTHON) -m interrogate
 MYPY        ?= $(VENV_PYTHON) -m mypy
 DEPTRY_SCAN_SCRIPT ?= $(VENV_PYTHON) -m bijux_canon_dev.quality.deptry_scan
 DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
-QUALITY_SELF_MAKE ?= $(if $(PACKAGE_PROFILE_MAKEFILE),$(MAKE) -f "$(PACKAGE_PROFILE_MAKEFILE)",$(MAKE))
+QUALITY_SELF_MAKE ?= $(SELF_MAKE)
 
 SKIP_DEPTRY      ?= 0
 SKIP_INTERROGATE ?= 0

@@ -22,6 +22,7 @@ PYTHON ?= $(shell command -v python3.11 || command -v python3)
 VENV ?= $(PROJECT_ARTIFACTS_DIR)/venv
 VENV_PYTHON ?= $(VENV)/bin/python
 ACT ?= $(VENV)/bin
+SELF_MAKE ?= $(if $(PACKAGE_PROFILE_MAKEFILE),$(MAKE) -f "$(PACKAGE_PROFILE_MAKEFILE)",$(MAKE))
 override RM := rm -rf
 
 ifneq ($(strip $(PACKAGE_PROFILE_MAKEFILE)),)
