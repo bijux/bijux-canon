@@ -8,7 +8,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bijux-canon-index"
-description = "Deterministic vector execution, replayable ANN, and provenance-aware indexing for bijux workflows."
+description = "Deterministic vector execution, replayable ANN, and provenance-aware indexing for the bijux-canon package family from Bijux."
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
@@ -18,6 +18,8 @@ keywords = [
   "ann",
   "audit",
   "bijux",
+  "bijux-canon",
+  "bijux.io",
   "determinism",
   "execution",
   "nearest-neighbor",
@@ -131,7 +133,7 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://bijux.io/"
+"Homepage" = "https://bijux.io/bijux-canon-index/"
 "Website" = "https://bijux.io/"
 "Repository" = "https://github.com/bijux/bijux-canon"
 "Issues" = "https://github.com/bijux/bijux-canon/issues"
@@ -139,6 +141,8 @@ dev = [
 "Changelog" = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md"
 "Security" = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
+"PackageMap" = "https://bijux.io/bijux-canon/package-map/"
+"CompatibilityGuide" = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
 
 [tool.hatch.version]
 source = "vcs"

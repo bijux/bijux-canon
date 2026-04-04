@@ -7,7 +7,11 @@ tagged release, including legacy distribution naming where applicable.
 
 ## Unreleased
 
-- No package-local changes recorded yet.
+- PyPI metadata, search keywords, and project URLs now make the canonical
+  index package easier to discover from package indexes and Bijux-owned docs.
+- The package README now uses PyPI-safe badge and link targets, and it points
+  legacy `bijux-vex` users to the canonical migration path and retired
+  repository guidance.
 
 ## 0.3.0 - 2026-04-04
 
