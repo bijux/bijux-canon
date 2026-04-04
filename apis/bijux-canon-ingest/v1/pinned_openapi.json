@@ -1,0 +1,732 @@
+{
+  "components": {
+    "schemas": {
+      "AskRequest": {
+        "properties": {
+          "filters": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional metadata filters applied before answer synthesis.",
+            "title": "Filters",
+            "type": "object"
+          },
+          "index_id": {
+            "description": "Index identifier returned by the index build endpoint.",
+            "minLength": 1,
+            "title": "Index Id",
+            "type": "string"
+          },
+          "query": {
+            "description": "Reader query text.",
+            "minLength": 1,
+            "title": "Query",
+            "type": "string"
+          },
+          "rerank": {
+            "default": true,
+            "description": "Whether the answer flow should rerank retrieved candidates.",
+            "title": "Rerank",
+            "type": "boolean"
+          },
+          "top_k": {
+            "default": 5,
+            "description": "Maximum number of retrieval candidates to use for answering.",
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "index_id",
+          "query"
+        ],
+        "title": "AskRequest",
+        "type": "object"
+      },
+      "AskResponse": {
+        "properties": {
+          "answer": {
+            "description": "Reader-facing answer synthesized by the API.",
+            "title": "Answer",
+            "type": "string"
+          },
+          "candidates": {
+            "description": "Ranked candidates that informed the answer.",
+            "items": {
+              "$ref": "#/components/schemas/CandidateModel"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "citations": {
+            "description": "Evidence citations supporting the returned answer.",
+            "items": {
+              "$ref": "#/components/schemas/CitationModel"
+            },
+            "title": "Citations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "answer",
+          "citations",
+          "candidates"
+        ],
+        "title": "AskResponse",
+        "type": "object"
+      },
+      "CandidateModel": {
+        "properties": {
+          "chunk": {
+            "description": "Chunk payload associated with the candidate.",
+            "title": "Chunk"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "description": "Candidate metadata preserved from indexing time.",
+            "title": "Metadata",
+            "type": "object"
+          },
+          "score": {
+            "description": "Score assigned to the retrieval candidate.",
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "score",
+          "chunk"
+        ],
+        "title": "CandidateModel",
+        "type": "object"
+      },
+      "ChunkOut": {
+        "properties": {
+          "chunk_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Stable chunk identifier when one has been materialized.",
+            "title": "Chunk Id"
+          },
+          "doc_id": {
+            "description": "Source document identifier for the chunk.",
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "embedding": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional embedding values when embeddings are requested.",
+            "title": "Embedding"
+          },
+          "end": {
+            "description": "Exclusive character offset where the chunk ends.",
+            "title": "End",
+            "type": "integer"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "description": "Chunk metadata preserved by the ingest pipeline.",
+            "title": "Metadata",
+            "type": "object"
+          },
+          "start": {
+            "description": "Inclusive character offset where the chunk starts.",
+            "title": "Start",
+            "type": "integer"
+          },
+          "text": {
+            "description": "Chunk text returned by the pipeline.",
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id",
+          "text",
+          "start",
+          "end"
+        ],
+        "title": "ChunkOut",
+        "type": "object"
+      },
+      "ChunkRequest": {
+        "properties": {
+          "chunk_size": {
+            "default": 128,
+            "description": "Target chunk size used by the chunking stage.",
+            "minimum": 1.0,
+            "title": "Chunk Size",
+            "type": "integer"
+          },
+          "docs": {
+            "description": "Documents that should be chunked by the API.",
+            "items": {
+              "$ref": "#/components/schemas/DocIn"
+            },
+            "minItems": 1,
+            "title": "Docs",
+            "type": "array"
+          },
+          "include_embeddings": {
+            "default": true,
+            "description": "Whether chunk embeddings should be included in the response.",
+            "title": "Include Embeddings",
+            "type": "boolean"
+          },
+          "overlap": {
+            "default": 0,
+            "description": "Character overlap preserved between adjacent chunks.",
+            "minimum": 0.0,
+            "title": "Overlap",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "docs"
+        ],
+        "title": "ChunkRequest",
+        "type": "object"
+      },
+      "ChunkResponse": {
+        "properties": {
+          "chunks": {
+            "description": "Chunk sequence produced from the submitted documents.",
+            "items": {
+              "$ref": "#/components/schemas/ChunkOut"
+            },
+            "title": "Chunks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "chunks"
+        ],
+        "title": "ChunkResponse",
+        "type": "object"
+      },
+      "CitationModel": {
+        "properties": {
+          "chunk_id": {
+            "description": "Chunk identifier cited by the answer.",
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "doc_id": {
+            "description": "Source document identifier.",
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "end": {
+            "description": "Exclusive cited end offset.",
+            "title": "End",
+            "type": "integer"
+          },
+          "start": {
+            "description": "Inclusive cited start offset.",
+            "title": "Start",
+            "type": "integer"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional cited text span carried with the citation.",
+            "title": "Text"
+          }
+        },
+        "required": [
+          "doc_id",
+          "chunk_id",
+          "start",
+          "end"
+        ],
+        "title": "CitationModel",
+        "type": "object"
+      },
+      "DocIn": {
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional category label used for filtering or grouping.",
+            "title": "Category"
+          },
+          "doc_id": {
+            "description": "Stable document identifier.",
+            "minLength": 1,
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "text": {
+            "description": "Full document text to process.",
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional reader-facing title used for retrieval displays.",
+            "title": "Title"
+          }
+        },
+        "required": [
+          "doc_id",
+          "text"
+        ],
+        "title": "DocIn",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "ok": {
+            "description": "Liveness indicator for the HTTP adapter.",
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "IndexBuildRequest": {
+        "properties": {
+          "backend": {
+            "description": "Retrieval backend used to build the index.",
+            "pattern": "^(bm25|numpy-cosine)$",
+            "title": "Backend",
+            "type": "string"
+          },
+          "chunk_size": {
+            "default": 512,
+            "description": "Chunk size used during index construction.",
+            "minimum": 1.0,
+            "title": "Chunk Size",
+            "type": "integer"
+          },
+          "docs": {
+            "description": "Documents that should be indexed into a retrievable store.",
+            "items": {
+              "$ref": "#/components/schemas/DocIn"
+            },
+            "minItems": 1,
+            "title": "Docs",
+            "type": "array"
+          },
+          "overlap": {
+            "default": 50,
+            "description": "Chunk overlap preserved during index construction.",
+            "minimum": 0.0,
+            "title": "Overlap",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "docs",
+          "backend"
+        ],
+        "title": "IndexBuildRequest",
+        "type": "object"
+      },
+      "IndexBuildResponse": {
+        "properties": {
+          "fingerprint": {
+            "description": "Fingerprint of the built index contents and configuration.",
+            "title": "Fingerprint",
+            "type": "string"
+          },
+          "index_id": {
+            "description": "Stable identifier assigned to the built index.",
+            "title": "Index Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "description": "Schema version emitted by the index representation.",
+            "title": "Schema Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "index_id",
+          "fingerprint",
+          "schema_version"
+        ],
+        "title": "IndexBuildResponse",
+        "type": "object"
+      },
+      "RetrieveRequest": {
+        "properties": {
+          "filters": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional metadata filters applied during retrieval.",
+            "title": "Filters",
+            "type": "object"
+          },
+          "index_id": {
+            "description": "Index identifier returned by the index build endpoint.",
+            "minLength": 1,
+            "title": "Index Id",
+            "type": "string"
+          },
+          "query": {
+            "description": "Reader query text.",
+            "minLength": 1,
+            "title": "Query",
+            "type": "string"
+          },
+          "top_k": {
+            "default": 5,
+            "description": "Maximum number of ranked retrieval candidates to return.",
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "index_id",
+          "query"
+        ],
+        "title": "RetrieveRequest",
+        "type": "object"
+      },
+      "RetrieveResponse": {
+        "properties": {
+          "candidates": {
+            "description": "Ranked retrieval candidates returned for the query.",
+            "items": {
+              "$ref": "#/components/schemas/CandidateModel"
+            },
+            "title": "Candidates",
+            "type": "array"
+          }
+        },
+        "required": [
+          "candidates"
+        ],
+        "title": "RetrieveResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "contact": {
+      "name": "Bijux",
+      "url": "https://github.com/bijux/bijux-canon"
+    },
+    "description": "The bijux-canon-ingest HTTP API exposes the v1 ingest boundary for chunk generation, index construction, retrieval, and answer synthesis. It keeps the ingestion lifecycle explicit so operators can trace what was chunked, indexed, retrieved, and answered.",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "summary": "Deterministic chunking, indexing, retrieval, and answer assembly.",
+    "title": "bijux-canon-ingest API",
+    "version": "v1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/ask": {
+      "post": {
+        "description": "Retrieve candidates from the selected index, optionally rerank them, and return a synthesized answer with explicit citations.",
+        "operationId": "answerQuery",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Answer a query from the index",
+        "tags": [
+          "Retrieval"
+        ]
+      }
+    },
+    "/v1/chunks": {
+      "post": {
+        "description": "Split submitted documents into chunk payloads and optionally include embeddings for each emitted chunk.",
+        "operationId": "chunkDocuments",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChunkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChunkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Chunk documents",
+        "tags": [
+          "Chunking"
+        ]
+      }
+    },
+    "/v1/healthz": {
+      "get": {
+        "description": "Return a lightweight liveness signal for the ingest HTTP adapter.",
+        "operationId": "getIngestHealth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Report adapter health",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/v1/index/build": {
+      "post": {
+        "description": "Chunk the submitted documents, build an index using the requested backend, and return the stable identifier for later retrieval.",
+        "operationId": "buildIndex",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexBuildRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexBuildResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Build an index",
+        "tags": [
+          "Indexing"
+        ]
+      }
+    },
+    "/v1/retrieve": {
+      "post": {
+        "description": "Run retrieval against a built index and return the ranked candidate chunks that satisfy the query and optional filters.",
+        "operationId": "retrieveCandidates",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetrieveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retrieve ranked candidates",
+        "tags": [
+          "Retrieval"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Endpoints that split raw documents into chunk payloads.",
+      "name": "Chunking"
+    },
+    {
+      "description": "Endpoints that build and manage retrievable indexes.",
+      "name": "Indexing"
+    },
+    {
+      "description": "Endpoints that retrieve evidence or synthesize answers.",
+      "name": "Retrieval"
+    },
+    {
+      "description": "Operational health signals for the HTTP adapter.",
+      "name": "Health"
+    }
+  ]
+}

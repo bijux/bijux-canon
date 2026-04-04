@@ -160,7 +160,11 @@ PRODUCT_PACKAGES = {
             "package README for entry framing",
             "tests/e2e fixtures for executable usage samples",
         ),
-        api_specs=("apis/bijux-canon-ingest/v1/schema.yaml",),
+        api_specs=(
+            "apis/bijux-canon-ingest/v1/schema.yaml",
+            "apis/bijux-canon-ingest/v1/pinned_openapi.json",
+            "apis/bijux-canon-ingest/v1/schema.hash",
+        ),
         dependencies=("pydantic", "msgpack", "numpy", "fastapi", "uvicorn", "PyYAML"),
         adjacencies=(
             "feeds prepared material toward bijux-canon-index and bijux-canon-reason",
@@ -216,11 +220,12 @@ PRODUCT_PACKAGES = {
         ),
         examples=(
             "tests/e2e and tests/scenarios as executable usage guides",
-            "apis/bijux-canon-index/v1/openapi.v1.json for HTTP contract shape",
+            "apis/bijux-canon-index/v1/pinned_openapi.json for machine-readable HTTP contract shape",
         ),
         api_specs=(
             "apis/bijux-canon-index/v1/schema.yaml",
-            "apis/bijux-canon-index/v1/openapi.v1.json",
+            "apis/bijux-canon-index/v1/pinned_openapi.json",
+            "apis/bijux-canon-index/v1/schema.hash",
         ),
         dependencies=("pydantic", "typer", "fastapi"),
         adjacencies=(
@@ -282,6 +287,7 @@ PRODUCT_PACKAGES = {
         api_specs=(
             "apis/bijux-canon-reason/v1/schema.yaml",
             "apis/bijux-canon-reason/v1/pinned_openapi.json",
+            "apis/bijux-canon-reason/v1/schema.hash",
         ),
         dependencies=("pydantic", "typer", "fastapi"),
         adjacencies=(
@@ -340,7 +346,11 @@ PRODUCT_PACKAGES = {
             "tests/e2e and tests/fixtures as executable examples",
             "config/execution_policy.yaml as a concrete policy surface",
         ),
-        api_specs=("apis/bijux-canon-agent/v1/schema.yaml",),
+        api_specs=(
+            "apis/bijux-canon-agent/v1/schema.yaml",
+            "apis/bijux-canon-agent/v1/pinned_openapi.json",
+            "apis/bijux-canon-agent/v1/schema.hash",
+        ),
         dependencies=(
             "aiohttp",
             "typer",
@@ -405,10 +415,12 @@ PRODUCT_PACKAGES = {
         ),
         examples=(
             "examples/ for minimal flows, replay violations, and datasets",
+            "apis/bijux-canon-runtime/v1/pinned_openapi.json for machine-readable HTTP contract shape",
             "apis/bijux-canon-runtime/v1/schema.hash for schema integrity checks",
         ),
         api_specs=(
             "apis/bijux-canon-runtime/v1/schema.yaml",
+            "apis/bijux-canon-runtime/v1/pinned_openapi.json",
             "apis/bijux-canon-runtime/v1/schema.hash",
         ),
         dependencies=(

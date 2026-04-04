@@ -38,7 +38,7 @@ flowchart LR
     page --> proof1
     proof2["apis/bijux-canon-index/v1/schema.yaml"]
     page --> proof2
-    proof3["apis/bijux-canon-index/v1/openapi.v1.json"]
+    proof3["apis/bijux-canon-index/v1/pinned_openapi.json"]
     page --> proof3
     review1["tests/unit for API, application, contracts, domain, infra, and tooling"]
     review1 -.raises compatibility pressure on.-> page
@@ -55,7 +55,7 @@ flowchart LR
 ## Contract Anchors
 
 - apis/bijux-canon-index/v1/schema.yaml
-- apis/bijux-canon-index/v1/openapi.v1.json
+- apis/bijux-canon-index/v1/pinned_openapi.json
 
 ## Artifact Anchors
 

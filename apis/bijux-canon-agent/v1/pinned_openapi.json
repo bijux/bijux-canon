@@ -1,0 +1,365 @@
+{
+  "components": {
+    "schemas": {
+      "ErrorResponseV1": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "INVALID_REQUEST",
+              "VALIDATION_ERROR",
+              "EXECUTION_FAILED",
+              "CONVERGENCE_FAILED",
+              "INTERNAL_ERROR"
+            ],
+            "type": "string"
+          },
+          "http_status": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "http_status"
+        ],
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "ok"
+            ],
+            "type": "string"
+          },
+          "version": {
+            "description": "Runtime version of the API server.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "version"
+        ],
+        "type": "object"
+      },
+      "RunConfigV1": {
+        "additionalProperties": true,
+        "properties": {
+          "agents": {
+            "description": "Ordered subset of pipeline agents to enable for this run.",
+            "items": {
+              "enum": [
+                "file_reader",
+                "summarizer",
+                "validator",
+                "critique",
+                "stage_runner"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "backend": {
+            "anyOf": [
+              {
+                "enum": [
+                  "simple"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional backend override for deterministic runs."
+          },
+          "strategy": {
+            "anyOf": [
+              {
+                "enum": [
+                  "extractive"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional execution strategy override."
+          }
+        },
+        "type": "object"
+      },
+      "RunRequestV1": {
+        "additionalProperties": false,
+        "properties": {
+          "config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunConfigV1"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional deterministic config overrides for the pipeline."
+          },
+          "context_id": {
+            "default": "api-v1",
+            "description": "Identifier for the execution context.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "task_goal": {
+            "description": "Goal or task description for the pipeline.",
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "text": {
+            "description": "Input text to process.",
+            "maxLength": 200000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "task_goal"
+        ],
+        "type": "object"
+      },
+      "RunResponseV1": {
+        "additionalProperties": false,
+        "properties": {
+          "context_id": {
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorResponseV1"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Structured error details (present on failure)."
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pipeline execution result (present on success)."
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "trace_metadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TraceMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional tracing metadata."
+          }
+        },
+        "required": [
+          "success",
+          "context_id"
+        ],
+        "type": "object"
+      },
+      "TraceMetadata": {
+        "additionalProperties": false,
+        "properties": {
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trace_schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "contact": {
+      "name": "Bijux",
+      "url": "https://github.com/bijux/bijux-canon"
+    },
+    "description": "The bijux-canon-agent HTTP API exposes the v1 execution boundary for running the canonical agent pipeline and reading a lightweight health signal. The surface is intentionally small so callers can submit pipeline work, receive structured failure reasons, and trace run metadata without negotiating a wider mutable state model.\n",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "summary": "Deterministic execution over the canonical agent pipeline.",
+    "title": "bijux-canon-agent API",
+    "version": "v1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "description": "Return a lightweight liveness signal for the agent API process.",
+        "operationId": "v1Health",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Health check result."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseV1"
+                }
+              }
+            },
+            "description": "Bad request"
+          }
+        },
+        "summary": "Report API health",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/v1/run": {
+      "post": {
+        "description": "Validate the submitted request, execute the canonical agent pipeline, and return either the structured result envelope or a typed failure payload.\n",
+        "operationId": "runPipelineV1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "minimal": {
+                  "summary": "Minimal valid request (uses default context_id)",
+                  "value": {
+                    "task_goal": "Summarize the key points and extract structured data.",
+                    "text": "Example document text to process."
+                  }
+                },
+                "with_context": {
+                  "summary": "Request with explicit context_id",
+                  "value": {
+                    "config": {
+                      "backend": "simple",
+                      "strategy": "extractive"
+                    },
+                    "context_id": "custom-execution-2026",
+                    "task_goal": "Summarize the key points and extract structured data.",
+                    "text": "Example document text to process."
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/RunRequestV1"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResponseV1"
+                }
+              }
+            },
+            "description": "Successful pipeline run."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseV1"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseV1"
+                }
+              }
+            },
+            "description": "Execution or convergence failure"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseV1"
+                }
+              }
+            },
+            "description": "Internal execution failure"
+          }
+        },
+        "summary": "Run the canonical agent pipeline",
+        "tags": [
+          "Runs"
+        ]
+      }
+    }
+  },
+  "security": [],
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Execute the canonical agent pipeline.",
+      "name": "Runs"
+    },
+    {
+      "description": "Lightweight health signals for the API process.",
+      "name": "Health"
+    }
+  ]
+}

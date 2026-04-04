@@ -33,7 +33,7 @@ flowchart RL
     surface2 --> page
     surface3["HTTP app under src/bijux_canon_index/api"]
     surface3 --> page
-    proof1["apis/bijux-canon-index/v1/openapi.v1.json"]
+    proof1["apis/bijux-canon-index/v1/pinned_openapi.json"]
     page --> proof1
     proof2["vector execution result collections"]
     page --> proof2

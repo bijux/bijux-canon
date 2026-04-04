@@ -36,7 +36,7 @@ flowchart LR
     surface3 --> page
     proof1["apis/bijux-canon-index/v1/schema.yaml"]
     page --> proof1
-    proof2["apis/bijux-canon-index/v1/openapi.v1.json"]
+    proof2["apis/bijux-canon-index/v1/pinned_openapi.json"]
     page --> proof2
     proof3["vector execution result collections"]
     page --> proof3

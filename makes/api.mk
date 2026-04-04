@@ -411,7 +411,7 @@ endif
 
 ifeq ($(API_MODE),freeze)
 API_SCHEMA_YAML           ?= $(API_DIR)/v1/schema.yaml
-API_SCHEMA_JSON           ?= $(API_DIR)/v1/openapi.v1.json
+API_SCHEMA_JSON           ?= $(API_DIR)/v1/pinned_openapi.json
 API_DRIFT_COMMAND         ?=
 
 .PHONY: api api-install api-freeze api-clean
@@ -428,10 +428,10 @@ api-install:
 	@echo "→ API tooling is managed by the package install target"
 
 api-freeze: | $(VENV)
-	@echo "→ Freezing API schema (yaml → json)"
+	@echo "→ Freezing API schema (yaml → pinned json)"
 	@mkdir -p "$(API_ARTIFACTS_DIR_ABS)"
-	@$(VENV_PYTHON) -c "from pathlib import Path; import json, yaml; schema_yaml=Path('$(API_SCHEMA_YAML)'); tmp=Path('$(API_ARTIFACTS_DIR)')/'openapi.v1.json'; data=yaml.safe_load(schema_yaml.read_text()); tmp.write_text(json.dumps(data, indent=2))"
-	@diff -u "$(API_SCHEMA_JSON)" "$(API_ARTIFACTS_DIR)/openapi.v1.json" || (echo "OpenAPI JSON drifted; regenerate and commit" && exit 1)
+	@$(VENV_PYTHON) -c "from pathlib import Path; import json, yaml; schema_yaml=Path('$(API_SCHEMA_YAML)'); tmp=Path('$(API_ARTIFACTS_DIR)')/'pinned_openapi.json'; data=yaml.safe_load(schema_yaml.read_text()); tmp.write_text(json.dumps(data, indent=2, sort_keys=True))"
+	@diff -u "$(API_SCHEMA_JSON)" "$(API_ARTIFACTS_DIR)/pinned_openapi.json" || (echo "Pinned OpenAPI JSON drifted; regenerate and commit" && exit 1)
 	@echo "✔ API schema frozen"
 
 api-clean:
