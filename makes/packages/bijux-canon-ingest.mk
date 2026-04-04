@@ -27,12 +27,11 @@ API_SERVER_IMPORT              := bijux_canon_ingest.interfaces.http.app:create_
 API_DRIFT_OUT                  = $(API_ARTIFACTS_DIR)/openapi.generated.json
 API_DRIFT_COMMAND              = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_ingest.interfaces.http.app:create_app --schema "$(API_SCHEMA)" --out "$(API_DRIFT_OUT)"
 BUILD_CHECK_DISTS              := 1
-BUILD_CLEAN_PATHS              := dist build *.egg-info
+BUILD_CLEAN_PATHS              := $(COMMON_BUILD_CLEAN_PATHS)
 PUBLISH_UPLOAD_ENABLED         := 0
 PACKAGE_CLEAN_PATHS := \
-  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox .nox \
-  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
-  artifacts "$(PROJECT_ARTIFACTS_DIR)" site .cache
+  $(COMMON_PYTHON_CLEAN_PATHS) \
+  $(COMMON_ARTIFACT_CLEAN_PATHS) site
 PACKAGE_INSTALL_TARGETS := \
   test lint fmt quality security api build sbom \
   fmt-artifacts lint-artifacts interrogate-report

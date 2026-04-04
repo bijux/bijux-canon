@@ -40,10 +40,9 @@ PACKAGE_CLEAN_SOFT_MESSAGE := [INFO] Cleaning (no .venv) ...
 PACKAGE_BOOTSTRAP_PREREQS := $(VENV)
 PACKAGE_BOOTSTRAP_TARGETS := lint quality security api docs
 PACKAGE_CLEAN_PATHS := \
-  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox \
-  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
-  spec.json openapitools.json node_modules session.sqlite site \
-  docs/site artifacts "$(PROJECT_ARTIFACTS_DIR)" "$(CONFIG_DIR)/.ruff_cache"
+  $(COMMON_PYTHON_CLEAN_PATHS) \
+  $(COMMON_API_TEMP_CLEAN_PATHS) session.sqlite \
+  docs/site $(COMMON_ARTIFACT_CLEAN_PATHS) $(COMMON_CONFIG_CACHE_CLEAN_PATHS)
 PACKAGE_ALL_TARGETS := clean install fmt lint test quality api security sbom
 PACKAGE_ALL_MESSAGE := [OK] All targets completed
 

@@ -6,3 +6,4 @@ PACKAGE_MAKEFILE_DIR ?= $(abspath $(dir $(PACKAGE_PROFILE_MAKEFILE)))
 PROJECT_SLUG ?= $(basename $(notdir $(PACKAGE_PROFILE_MAKEFILE)))
 
 include $(PACKAGE_MAKEFILE_DIR)/../env.mk
+include $(PACKAGE_MAKEFILE_DIR)/../path-sets.mk

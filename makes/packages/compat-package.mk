@@ -24,9 +24,9 @@ PUBLISH_UPLOAD_ENABLED := 0
 PACKAGE_DEFINE_INSTALL := 0
 PACKAGE_DEFINE_BOOTSTRAP := 0
 PACKAGE_CLEAN_PATHS := \
-  "$(PROJECT_ARTIFACTS_DIR)" build dist *.egg-info .cache "$(COMPAT_TOOLCHAIN_STAMP)" \
+  $(COMMON_ARTIFACT_CLEAN_PATHS) $(COMMON_BUILD_CLEAN_PATHS) "$(COMPAT_TOOLCHAIN_STAMP)" \
   .pytest_cache .ruff_cache .mypy_cache .hypothesis .coverage .coverage.* \
-  htmlcov
+  htmlcov .cache
 PACKAGE_INSTALL_TARGETS := \
   lint-artifacts quality security-bandit security-audit security-deps \
   build publish publish-test release-dry

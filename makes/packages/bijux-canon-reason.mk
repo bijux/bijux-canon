@@ -24,7 +24,7 @@ API_SCHEMATHESIS_FILTER_MODE := warnings
 API_ENABLE_REPRO := 1
 SCHEMATHESIS_OPTS = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --exclude-checks=positive_data_acceptance,response_schema_conformance --suppress-health-check=filter_too_much
 BUILD_CHECK_DISTS := 1
-BUILD_CLEAN_PATHS := build dist *.egg-info
+BUILD_CLEAN_PATHS := $(COMMON_BUILD_CLEAN_PATHS)
 BUILD_CLEAN_PYCACHE := 1
 PUBLISH_VERIFY_INSTALL_CMD := bijux --version
 TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_reason/core) $(abspath src/bijux_canon_reason/interfaces)
@@ -32,11 +32,10 @@ TEST_MAIN_ARGS := --maxfail=1
 ENABLE_BENCH := 0
 PACKAGE_BOOTSTRAP_TARGETS := lint quality security api
 PACKAGE_CLEAN_PATHS := \
-  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox demo .tmp_home \
-  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
-  spec.json openapitools.json node_modules site \
-  docs/reference artifacts "$(PROJECT_ARTIFACTS_DIR)" usage_test usage_test_artifacts .cache \
-  "$(CONFIG_DIR)/.ruff_cache"
+  $(COMMON_PYTHON_CLEAN_PATHS) demo .tmp_home \
+  $(COMMON_API_TEMP_CLEAN_PATHS) \
+  docs/reference $(COMMON_ARTIFACT_CLEAN_PATHS) usage_test usage_test_artifacts \
+  $(COMMON_CONFIG_CACHE_CLEAN_PATHS)
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
 # Modular Includes

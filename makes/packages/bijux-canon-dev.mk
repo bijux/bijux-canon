@@ -16,11 +16,10 @@ ENABLE_RADON      := 0
 ENABLE_PYDOCSTYLE := 0
 PUBLISH_UPLOAD_ENABLED := 0
 BUILD_CHECK_DISTS := 1
-BUILD_CLEAN_PATHS := build dist *.egg-info
+BUILD_CLEAN_PATHS := $(COMMON_BUILD_CLEAN_PATHS)
 PACKAGE_CLEAN_PATHS := \
-  .pytest_cache htmlcov coverage.xml dist build *.egg-info .tox .nox \
-  .ruff_cache .mypy_cache .hypothesis .coverage.* .coverage .benchmarks \
-  artifacts "$(PROJECT_ARTIFACTS_DIR)" .cache
+  $(COMMON_PYTHON_CLEAN_PATHS) \
+  $(COMMON_ARTIFACT_CLEAN_PATHS)
 PACKAGE_ALL_TARGETS := clean install test lint quality security build sbom
 
 include $(ROOT_MAKE_DIR)/lint.mk
