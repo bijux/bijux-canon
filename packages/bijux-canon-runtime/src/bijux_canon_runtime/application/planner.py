@@ -6,8 +6,7 @@
 
 from __future__ import annotations
 
-from importlib.metadata import PackageNotFoundError, version
-
+from bijux_canon_runtime.core.package_versions import distribution_version
 from bijux_canon_runtime.contracts.execution_plan_contract import (
     validate as validate_execution_plan,
 )
@@ -37,18 +36,8 @@ from bijux_canon_runtime.ontology.ids import (
 )
 
 
-def _distribution_version(*names: str) -> str:
-    """Resolve the first available distribution version from canonical and legacy names."""
-    for name in names:
-        try:
-            return version(name)
-        except PackageNotFoundError:
-            continue
-    return "0.0.0"
-
-
-bijux_canon_agent_version = _distribution_version("bijux-canon-agent", "bijux-agent")
-bijux_cli_version = _distribution_version("bijux-cli")
+bijux_canon_agent_version = distribution_version("bijux-canon-agent", "bijux-agent")
+bijux_cli_version = distribution_version("bijux-cli")
 
 
 class ExecutionPlanner:
