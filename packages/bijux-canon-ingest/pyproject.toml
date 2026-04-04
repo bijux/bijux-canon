@@ -104,12 +104,14 @@ ignore-private = true
 ignore-semiprivate = true
 
 [tool.pytest.ini_options]
+cache_dir = "../../.pytest_cache/bijux-canon-ingest"
 markers = [
   "e2e: end-to-end coverage for package boundaries and retrieval contracts",
 ]
 testpaths = ["tests"]
 
 [tool.ruff]
+cache-dir = "../../.ruff_cache/bijux-canon-ingest"
 src = ["src", "tests"]
 target-version = "py311"
 
@@ -117,6 +119,7 @@ target-version = "py311"
 "__init__.py" = ["F401"]
 
 [tool.mypy]
+cache_dir = "../../.mypy_cache/bijux-canon-ingest"
 python_version = "3.11"
 mypy_path = ["src", "stubs"]
 namespace_packages = false
