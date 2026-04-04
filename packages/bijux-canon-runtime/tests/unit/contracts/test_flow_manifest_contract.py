@@ -32,10 +32,10 @@ from bijux_canon_runtime.ontology.public import (
 pytestmark = pytest.mark.unit
 
 
-def test_invalid_manifest_rejected() -> None:
-    manifest = FlowManifest(
+def _base_manifest(*, dependencies: tuple[str, ...]) -> FlowManifest:
+    return FlowManifest(
         spec_version="v1",
-        flow_id=FlowID(""),
+        flow_id=FlowID("flow-a"),
         tenant_id=TenantID("tenant-a"),
         flow_state=FlowState.VALIDATED,
         determinism_level=DeterminismLevel.STRICT,
@@ -60,11 +60,36 @@ def test_invalid_manifest_rejected() -> None:
             storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
         ),
         allow_deprecated_datasets=False,
-        agents=(AgentID("agent-a"),),
-        dependencies=("dep-a",),
+        agents=(AgentID("agent-a"), AgentID("agent-b")),
+        dependencies=dependencies,
         retrieval_contracts=(ContractID("retrieval-a"),),
         verification_gates=(GateID("gate-a"),),
     )
 
+
+def test_invalid_manifest_rejected() -> None:
+    manifest = _base_manifest(dependencies=("dep-a",))
+    manifest = FlowManifest(
+        **{**manifest.__dict__, "flow_id": FlowID(""), "agents": (AgentID("agent-a"),)}
+    )
+
     with pytest.raises(ValueError, match="flow_id must be a non-empty string"):
+        validate(manifest)
+
+
+def test_manifest_rejects_duplicate_dependency_edges() -> None:
+    manifest = _base_manifest(
+        dependencies=("agent-b:agent-a", "agent-b:agent-a"),
+    )
+
+    with pytest.raises(ValueError, match="dependencies must not contain duplicate edges"):
+        validate(manifest)
+
+
+def test_manifest_rejects_self_referential_dependency() -> None:
+    manifest = _base_manifest(dependencies=("agent-a:agent-a",))
+
+    with pytest.raises(
+        ValueError, match="dependencies must not reference the same agent"
+    ):
         validate(manifest)

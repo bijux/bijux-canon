@@ -62,3 +62,43 @@ def test_resolver_uses_lexical_tiebreak_for_ordering() -> None:
     resolved = ExecutionPlanner().resolve(manifest)
     step_agents = tuple(step.agent_id for step in resolved.plan.steps)
     assert step_agents == (AgentID("alpha"), AgentID("bravo"), AgentID("charlie"))
+
+
+def test_resolver_rejects_duplicate_dependency_edges() -> None:
+    manifest = FlowManifest(
+        spec_version="v1",
+        flow_id=FlowID("flow-ordering"),
+        tenant_id=TenantID("tenant-a"),
+        flow_state=FlowState.VALIDATED,
+        determinism_level=DeterminismLevel.STRICT,
+        replay_acceptability=ReplayAcceptability.EXACT_MATCH,
+        entropy_budget=EntropyBudget(
+            spec_version="v1",
+            allowed_sources=(EntropySource.SEEDED_RNG, EntropySource.DATA),
+            max_magnitude=EntropyMagnitude.LOW,
+        ),
+        replay_envelope=ReplayEnvelope(
+            spec_version="v1",
+            min_claim_overlap=1.0,
+            max_contradiction_delta=0,
+        ),
+        dataset=DatasetDescriptor(
+            spec_version="v1",
+            dataset_id=DatasetID("dataset"),
+            tenant_id=TenantID("tenant-a"),
+            dataset_version="1.0.0",
+            dataset_hash="hash",
+            dataset_state=DatasetState.FROZEN,
+            storage_uri="file://examples/datasets/retrieval_corpus.jsonl",
+        ),
+        allow_deprecated_datasets=False,
+        agents=(AgentID("alpha"), AgentID("bravo")),
+        dependencies=("bravo:alpha", "bravo:alpha"),
+        retrieval_contracts=(),
+        verification_gates=(),
+    )
+
+    with pytest.raises(
+        ValueError, match="dependencies must not contain duplicate edges"
+    ):
+        ExecutionPlanner().resolve(manifest)

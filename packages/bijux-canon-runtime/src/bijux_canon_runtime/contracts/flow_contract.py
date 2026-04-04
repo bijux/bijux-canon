@@ -187,7 +187,7 @@ def _validate_dependencies(dependencies: tuple[str, ...], agents: list[str]) -> 
         if agent_id == dependency_id:
             raise ValueError("dependencies must not reference the same agent")
         if agent_id in forward[dependency_id]:
-            continue
+            raise ValueError("dependencies must not contain duplicate edges")
         forward[dependency_id].add(agent_id)
         indegree[agent_id] += 1
 

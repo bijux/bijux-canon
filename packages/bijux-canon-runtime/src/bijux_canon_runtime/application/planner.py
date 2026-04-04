@@ -160,6 +160,10 @@ class ExecutionPlanner:
             agent_id, dependency_id = parts
             if agent_id not in agents or dependency_id not in agents:
                 raise ValueError("dependencies must reference known agents")
+            if agent_id == dependency_id:
+                raise ValueError("dependencies must not reference the same agent")
+            if dependency_id in mapping[agent_id]:
+                raise ValueError("dependencies must not contain duplicate edges")
             mapping[agent_id].append(dependency_id)
         return mapping
 
