@@ -3299,21 +3299,77 @@ def render_compat_page(slug: str, title: str) -> str:
 
 def package_section_summary(category: str, package: PackageInfo) -> str:
     summaries = {
-        "foundation": f"{package.title} exists to own {package.description.lower()}",
-        "architecture": f"{package.title} architecture pages describe how modules and responsibilities fit together under `{package.import_name}`.",
-        "interfaces": f"{package.title} interface pages describe the command, API, configuration, import, and artifact surfaces that a caller can rely on.",
-        "operations": f"{package.title} operations pages describe how to install, run, observe, release, and safely operate the package.",
-        "quality": f"{package.title} quality pages describe the tests, invariants, limits, and review rules that keep the package trustworthy over time.",
+        "foundation": (
+            f"Start the {package.title} handbook here when you need the package in one"
+            " honest sentence: what it owns, why it exists, and where its boundary stops."
+        ),
+        "architecture": (
+            f"Use the architecture section to understand how `{package.import_name}` is"
+            " put together before you judge a refactor, a dependency change, or a new seam."
+        ),
+        "interfaces": (
+            f"Use the interfaces section to see what `{package.title}` is really asking"
+            " callers and operators to depend on, and which surfaces are stable enough to"
+            " treat like contracts."
+        ),
+        "operations": (
+            f"Use the operations section when you need to run, diagnose, release, or"
+            f" support `{package.title}` without reconstructing the workflow from source."
+        ),
+        "quality": (
+            f"Use the quality section to understand how `{package.title}` earns trust:"
+            " which tests matter, which risks remain visible, and what done should mean"
+            " after a real change."
+        ),
     }
     return summaries[category]
 
 
+def package_section_orientation(category: str, package: PackageInfo) -> str:
+    orientations = {
+        "foundation": (
+            f"These pages establish the durable idea of `{package.title}`. A reader should"
+            " be able to skim this section and understand why the package exists, what"
+            " neighboring packages should not assume about it, and which claims are worth"
+            " defending during review."
+        ),
+        "architecture": (
+            f"These pages turn `{package.title}` from a directory tree into a readable"
+            " design. They should help a reviewer trace responsibilities, execution paths,"
+            " and pressure points quickly enough to keep structural conversations grounded."
+        ),
+        "interfaces": (
+            f"These pages explain the public face of `{package.title}`. They exist so a"
+            " caller can tell which commands, APIs, imports, schemas, and artifacts are"
+            " deliberate surfaces rather than incidental visibility."
+        ),
+        "operations": (
+            f"These pages are the checked-in operating memory for `{package.title}`. They"
+            " should let a maintainer move from setup to diagnosis to release without"
+            " depending on private habits or half-remembered shell history."
+        ),
+        "quality": (
+            f"These pages explain the proof story for `{package.title}`. They should make"
+            " it clear why the package is trustworthy today, what still needs explicit"
+            " skepticism, and which review questions protect against shallow acceptance."
+        ),
+    }
+    return orientations[category]
+
+
 def related_links(package: PackageInfo, category: str, active_categories: tuple[str, ...]) -> str:
+    reasons = {
+        "foundation": "when you need the package boundary and ownership story",
+        "architecture": "when the question becomes structural or execution-oriented",
+        "interfaces": "when the question becomes caller-facing or contract-facing",
+        "operations": "when the question becomes procedural, environmental, or release-oriented",
+        "quality": "when the question becomes proof, risk, or review sufficiency",
+    }
     section_links = []
     for other in active_categories:
         if other == category:
             continue
-        section_links.append(f"- [{other.title()}](../{other}/index.md)")
+        section_links.append(f"- [{other.title()}](../{other}/index.md) {reasons[other]}")
     return "\n".join(section_links)
 
 
@@ -3335,6 +3391,8 @@ def render_package_page(
             # {title}
 
             {package_section_summary(category, package)}
+
+            {package_section_orientation(category, package)}
 
             ## Pages in This Section
 

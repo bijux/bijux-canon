@@ -9,7 +9,9 @@ last_reviewed: 2026-04-04
 
 # Quality
 
-bijux-canon-ingest quality pages describe the tests, invariants, limits, and review rules that keep the package trustworthy over time.
+Use the quality section to understand how `bijux-canon-ingest` earns trust: which tests matter, which risks remain visible, and what done should mean after a real change.
+
+These pages explain the proof story for `bijux-canon-ingest`. They should make it clear why the package is trustworthy today, what still needs explicit skepticism, and which review questions protect against shallow acceptance.
 
 Read the quality pages for `bijux-canon-ingest` as the proof frame around the package: they should explain how trust is earned, defended, and revised after change.
 
@@ -64,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Foundation](../foundation/index.md)
-- [Architecture](../architecture/index.md)
-- [Interfaces](../interfaces/index.md)
-- [Operations](../operations/index.md)
+- [Foundation](../foundation/index.md) when you need the package boundary and ownership story
+- [Architecture](../architecture/index.md) when the question becomes structural or execution-oriented
+- [Interfaces](../interfaces/index.md) when the question becomes caller-facing or contract-facing
+- [Operations](../operations/index.md) when the question becomes procedural, environmental, or release-oriented
 
 ## Concrete Anchors
 

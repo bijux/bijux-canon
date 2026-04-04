@@ -9,7 +9,9 @@ last_reviewed: 2026-04-04
 
 # Architecture
 
-bijux-canon-index architecture pages describe how modules and responsibilities fit together under `bijux_canon_index`.
+Use the architecture section to understand how `bijux_canon_index` is put together before you judge a refactor, a dependency change, or a new seam.
+
+These pages turn `bijux-canon-index` from a directory tree into a readable design. They should help a reviewer trace responsibilities, execution paths, and pressure points quickly enough to keep structural conversations grounded.
 
 Read the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow: they should be detailed enough to shorten code reading without pretending to replace it.
 
@@ -64,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Foundation](../foundation/index.md)
-- [Interfaces](../interfaces/index.md)
-- [Operations](../operations/index.md)
-- [Quality](../quality/index.md)
+- [Foundation](../foundation/index.md) when you need the package boundary and ownership story
+- [Interfaces](../interfaces/index.md) when the question becomes caller-facing or contract-facing
+- [Operations](../operations/index.md) when the question becomes procedural, environmental, or release-oriented
+- [Quality](../quality/index.md) when the question becomes proof, risk, or review sufficiency
 
 ## Concrete Anchors
 

@@ -9,7 +9,9 @@ last_reviewed: 2026-04-04
 
 # Interfaces
 
-bijux-canon-runtime interface pages describe the command, API, configuration, import, and artifact surfaces that a caller can rely on.
+Use the interfaces section to see what `bijux-canon-runtime` is really asking callers and operators to depend on, and which surfaces are stable enough to treat like contracts.
+
+These pages explain the public face of `bijux-canon-runtime`. They exist so a caller can tell which commands, APIs, imports, schemas, and artifacts are deliberate surfaces rather than incidental visibility.
 
 Read the interfaces pages for `bijux-canon-runtime` as the bridge between implementation and caller expectations: they should make public surfaces legible before a downstream dependency is formed.
 
@@ -64,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Foundation](../foundation/index.md)
-- [Architecture](../architecture/index.md)
-- [Operations](../operations/index.md)
-- [Quality](../quality/index.md)
+- [Foundation](../foundation/index.md) when you need the package boundary and ownership story
+- [Architecture](../architecture/index.md) when the question becomes structural or execution-oriented
+- [Operations](../operations/index.md) when the question becomes procedural, environmental, or release-oriented
+- [Quality](../quality/index.md) when the question becomes proof, risk, or review sufficiency
 
 ## Concrete Anchors
 

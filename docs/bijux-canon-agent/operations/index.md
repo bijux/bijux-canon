@@ -9,7 +9,9 @@ last_reviewed: 2026-04-04
 
 # Operations
 
-bijux-canon-agent operations pages describe how to install, run, observe, release, and safely operate the package.
+Use the operations section when you need to run, diagnose, release, or support `bijux-canon-agent` without reconstructing the workflow from source.
+
+These pages are the checked-in operating memory for `bijux-canon-agent`. They should let a maintainer move from setup to diagnosis to release without depending on private habits or half-remembered shell history.
 
 Read the operations pages for `bijux-canon-agent` as the package's explicit operating memory: they should make common tasks repeatable for a maintainer who does not want to recover the workflow from scratch.
 
@@ -64,10 +66,10 @@ flowchart TD
 
 ## Read Across the Package
 
-- [Foundation](../foundation/index.md)
-- [Architecture](../architecture/index.md)
-- [Interfaces](../interfaces/index.md)
-- [Quality](../quality/index.md)
+- [Foundation](../foundation/index.md) when you need the package boundary and ownership story
+- [Architecture](../architecture/index.md) when the question becomes structural or execution-oriented
+- [Interfaces](../interfaces/index.md) when the question becomes caller-facing or contract-facing
+- [Quality](../quality/index.md) when the question becomes proof, risk, or review sufficiency
 
 ## Concrete Anchors
 
