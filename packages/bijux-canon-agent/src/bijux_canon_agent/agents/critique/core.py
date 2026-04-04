@@ -6,7 +6,6 @@ This module provides the CritiqueAgent class for evaluating AI-generated outputs
 from __future__ import annotations
 
 from collections.abc import Callable
-import hashlib
 import time
 from typing import Any, ClassVar, TypeAlias, cast
 
@@ -22,6 +21,7 @@ from .reporting import (
     create_criterion_result,
     log_critique_completion,
 )
+from .run_context import build_critique_run_input
 from .rules import consistency, content, formatting
 from .rules.types import (
     CriterionResult,
@@ -237,8 +237,8 @@ class CritiqueAgent(BaseAgent):
                 )
             context = prepared_context
 
-            text = self._extract_text(context)
-            if text is None:
+            critique_input = build_critique_run_input(context)
+            if critique_input is None:
                 error_msg = (
                     "Text must be a string. Ensure 'summary', 'text', or 'content' "
                     "is a string."
@@ -250,16 +250,14 @@ class CritiqueAgent(BaseAgent):
                     {"context": str(context)[:1000]},
                 )
 
-            source_text = self._source_text(context)
-            cache_key = hashlib.sha256(text.encode()).hexdigest()
-            cached_result = self._cached_result(cache_key)
+            cached_result = self._cached_result(critique_input.cache_key)
             if cached_result is not None:
                 return cached_result
             start_time = time.perf_counter()
             result = await self._perform_critique_with_retries(
-                text,
+                critique_input.text,
                 context,
-                source_text,
+                critique_input.source_text,
             )
             if result is None:
                 return await self.execution_kernel.error_result(
@@ -278,9 +276,9 @@ class CritiqueAgent(BaseAgent):
                     {"context": str(context)[:1000]},
                 )
             formatted_result = self._format_critique_output(
-                critique_result, text, source_text
+                critique_result, critique_input.text, critique_input.source_text
             )
-            self._store_cached_result(cache_key, formatted_result)
+            self._store_cached_result(critique_input.cache_key, formatted_result)
             self._log_critique_completion(critique_result, duration)
             return formatted_result
 
@@ -294,11 +292,6 @@ class CritiqueAgent(BaseAgent):
             return self.pre_hook(context), None
         except Exception as exc:
             return context, f"Pre-hook failed: {exc!s}"
-
-    @staticmethod
-    def _source_text(context: dict[str, Any]) -> str:
-        """Return the source text fallback chain for critique reporting."""
-        return str(context.get("source_text", context.get("text", "")))
 
     def _cached_result(self, cache_key: str) -> dict[str, Any] | None:
         """Return a cached critique result when available."""
@@ -354,33 +347,6 @@ class CritiqueAgent(BaseAgent):
                 extra={"context": {"stage": "post_hook"}},
             )
             return None
-
-    @staticmethod
-    def _extract_text(context: dict[str, Any]) -> str | None:
-        """Extract text from context with improved handling for summary dictionaries."""
-        # Handle dictionary input (e.g., summary with executive_summary, key_points)
-        if isinstance(context.get("summary"), dict):
-            summary_dict = context["summary"]
-            text_parts = []
-            for key in ["executive_summary", "key_points", "content", "text"]:
-                if key in summary_dict:
-                    value = summary_dict[key]
-                    if isinstance(value, str):
-                        text_parts.append(value)
-                    elif isinstance(value, list):
-                        text_parts.extend(
-                            [str(item) for item in value if isinstance(item, str)]
-                        )
-            text = " ".join(text_parts) if text_parts else None
-        else:
-            # Fallback to original extraction logic
-            text = (
-                context.get("summary") or context.get("text") or context.get("content")
-            )
-            if text is None:
-                text = str(context) if context else ""
-
-        return text if isinstance(text, str) else None
 
     async def _perform_critique(
         self,
