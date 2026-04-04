@@ -4424,15 +4424,24 @@ def write_mkdocs(
 def validate_rendered_docs() -> None:
     required_headings = (
         "## Page Maps",
+        "## Decision Rule",
+        "## What Good Looks Like",
         "## Core Claim",
         "## Why It Matters",
+        "## Failure Signals",
         "## If It Drifts",
         "## Representative Scenario",
+        "## Tradeoffs To Hold",
+        "## Cross Implications",
         "## Source Of Truth Order",
+        "## Approval Questions",
+        "## Evidence Checklist",
+        "## Anti-Patterns",
         "## Common Misreadings",
         "## Concrete Anchors",
         "## Use This Page When",
         "## Next Checks",
+        "## Escalate When",
         "## Update This Page When",
         "## What This Page Answers",
         "## Reviewer Lens",
@@ -4448,10 +4457,10 @@ def validate_rendered_docs() -> None:
         for heading in required_headings:
             if heading not in text:
                 failures.append(f"{path}: missing heading {heading}")
-        if text.count("- ") < 18:
+        if text.count("- ") < 45:
             failures.append(f"{path}: too few bullet points for current handbook depth standard")
         word_count = len(text.split())
-        if word_count < 260:
+        if word_count < 850:
             failures.append(f"{path}: too few words for current handbook depth standard ({word_count})")
     if failures:
         joined = "\n".join(failures[:50])
