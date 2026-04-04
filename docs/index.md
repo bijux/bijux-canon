@@ -155,3 +155,9 @@ The root page should let a reviewer choose the right handbook path in seconds in
 ## Why It Matters
 
 If this page is vague, readers enter the wrong handbook branch first and the cost of reviewing the repository rises immediately because context has to be rebuilt page by page.
+
+## If It Drifts
+
+- readers start the wrong review path and waste time rebuilding orientation
+- the root site stops acting like the reliable front door to the repository handbook
+- package, maintainer, and compatibility sections become harder to distinguish quickly

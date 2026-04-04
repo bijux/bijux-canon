@@ -106,3 +106,9 @@ Each repository handbook page should make one monorepo-level decision legible en
 ## Why It Matters
 
 Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.
+
+## If It Drifts
+
+- root rules become folklore instead of checked-in reference
+- packages start re-explaining shared repository behavior inconsistently
+- reviewers lose the ability to separate monorepo policy from package-local design

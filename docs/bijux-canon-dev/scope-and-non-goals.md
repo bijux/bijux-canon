@@ -103,3 +103,9 @@ Each maintainer page should explain repository-health behavior in a way that is 
 ## Why It Matters
 
 Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely.
+
+## If It Drifts
+
+- maintainer-only behavior becomes harder to discover before it surprises a contributor
+- repository automation changes without a stable explanation of its intent
+- product docs get polluted with infrastructure concerns that belong elsewhere

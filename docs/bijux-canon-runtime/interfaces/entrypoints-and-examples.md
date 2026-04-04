@@ -103,3 +103,9 @@ The interface claim of `bijux-canon-runtime` is that commands, APIs, imports, sc
 ## Why It Matters
 
 If the interface pages for `bijux-canon-runtime` are weak, callers cannot tell which commands, schemas, or artifacts are stable enough to depend on, and compatibility review arrives too late.
+
+## If It Drifts
+
+- callers depend on surfaces that are less stable than the docs imply
+- schema and artifact changes stop receiving the compatibility review they need
+- operator examples begin pointing at stale or misleading entrypaths

@@ -106,3 +106,9 @@ The foundational claim of `bijux-canon-ingest` is that its package boundary can 
 ## Why It Matters
 
 If the foundation pages for `bijux-canon-ingest` are weak, reviewers stop knowing where the package boundary really is and adjacent packages begin absorbing behavior by convenience instead of design.
+
+## If It Drifts
+
+- ownership starts migrating by convenience instead of by explicit package boundary
+- neighboring packages inherit responsibilities without deliberate review
+- reviewers lose confidence that the package description still means anything stable

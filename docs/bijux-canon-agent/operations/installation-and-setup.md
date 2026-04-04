@@ -109,3 +109,9 @@ The operational claim of `bijux-canon-agent` is that install, run, diagnose, and
 ## Why It Matters
 
 If the operations pages for `bijux-canon-agent` are weak, maintainers end up relearning install, diagnose, and release behavior from trial and error instead of from checked-in package truth.
+
+## If It Drifts
+
+- maintainers relearn package operation by trial and error
+- release and setup steps quietly diverge from the checked-in package metadata
+- diagnostic workflows become harder to repeat under incident pressure

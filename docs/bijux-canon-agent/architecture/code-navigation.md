@@ -62,6 +62,12 @@ The architectural claim of `bijux-canon-agent` is that its structure is delibera
 
 If the architecture pages for `bijux-canon-agent` are weak, refactors become guesswork and dependency drift can hide until failures show up in tests or production-facing behavior.
 
+## If It Drifts
+
+- dependency direction becomes harder to inspect quickly
+- refactors can land without anyone noticing structural regressions until later
+- code navigation becomes slower because the documented map no longer matches reality
+
 ## Concrete Anchors
 
 - `src/bijux_canon_agent/agents` for role-local behavior

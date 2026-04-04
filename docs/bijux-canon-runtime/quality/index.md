@@ -122,3 +122,9 @@ The quality claim of `bijux-canon-runtime` is that tests, invariants, risks, and
 ## Why It Matters
 
 If the quality pages for `bijux-canon-runtime` are weak, it becomes difficult to tell whether a change is actually safe or merely passes a narrow local test.
+
+## If It Drifts
+
+- reviewers cannot tell whether the listed proof still covers the real risk surface
+- limitations stop being visible until they show up as rework later
+- definition-of-done language drifts away from actual validation practice

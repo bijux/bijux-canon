@@ -63,6 +63,12 @@ The architectural claim of `bijux-canon-reason` is that its structure is deliber
 
 If the architecture pages for `bijux-canon-reason` are weak, refactors become guesswork and dependency drift can hide until failures show up in tests or production-facing behavior.
 
+## If It Drifts
+
+- dependency direction becomes harder to inspect quickly
+- refactors can land without anyone noticing structural regressions until later
+- code navigation becomes slower because the documented map no longer matches reality
+
 ## Concrete Anchors
 
 - `src/bijux_canon_reason/planning` for plan construction and intermediate representation

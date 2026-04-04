@@ -847,6 +847,37 @@ def package_why_it_matters(package: PackageInfo, category: str) -> str:
     return matter_map[category]
 
 
+def package_if_it_drifts(package: PackageInfo, category: str) -> tuple[str, ...]:
+    drift_map = {
+        "foundation": (
+            "ownership starts migrating by convenience instead of by explicit package boundary",
+            "neighboring packages inherit responsibilities without deliberate review",
+            "reviewers lose confidence that the package description still means anything stable",
+        ),
+        "architecture": (
+            "dependency direction becomes harder to inspect quickly",
+            "refactors can land without anyone noticing structural regressions until later",
+            "code navigation becomes slower because the documented map no longer matches reality",
+        ),
+        "interfaces": (
+            "callers depend on surfaces that are less stable than the docs imply",
+            "schema and artifact changes stop receiving the compatibility review they need",
+            "operator examples begin pointing at stale or misleading entrypaths",
+        ),
+        "operations": (
+            "maintainers relearn package operation by trial and error",
+            "release and setup steps quietly diverge from the checked-in package metadata",
+            "diagnostic workflows become harder to repeat under incident pressure",
+        ),
+        "quality": (
+            "reviewers cannot tell whether the listed proof still covers the real risk surface",
+            "limitations stop being visible until they show up as rework later",
+            "definition-of-done language drifts away from actual validation practice",
+        ),
+    }
+    return drift_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -932,6 +963,17 @@ def add_why_it_matters(body: str, text: str) -> str:
             "## Why It Matters",
             "",
             text,
+        ]
+    )
+    return insert_before_heading(body, "Concrete Anchors", block)
+
+
+def add_if_it_drifts(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## If It Drifts",
+            "",
+            bullet_lines(bullets),
         ]
     )
     return insert_before_heading(body, "Concrete Anchors", block)
@@ -1067,6 +1109,14 @@ def render_home(
     body = add_why_it_matters(
         body,
         "If this page is vague, readers enter the wrong handbook branch first and the cost of reviewing the repository rises immediately because context has to be rebuilt page by page.",
+    )
+    body = add_if_it_drifts(
+        body,
+        (
+            "readers start the wrong review path and waste time rebuilding orientation",
+            "the root site stops acting like the reliable front door to the repository handbook",
+            "package, maintainer, and compatibility sections become harder to distinguish quickly",
+        ),
     )
     body = add_anchor_section(
         body,
@@ -1429,6 +1479,14 @@ def render_root_page(
         body,
         "Repository pages matter because they keep shared rules, schemas, workflows, and release expectations from being rediscovered separately inside each package.",
     )
+    body = add_if_it_drifts(
+        body,
+        (
+            "root rules become folklore instead of checked-in reference",
+            "packages start re-explaining shared repository behavior inconsistently",
+            "reviewers lose the ability to separate monorepo policy from package-local design",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
@@ -1750,6 +1808,14 @@ def render_dev_page(slug: str, title: str) -> str:
         body,
         "Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely.",
     )
+    body = add_if_it_drifts(
+        body,
+        (
+            "maintainer-only behavior becomes harder to discover before it surprises a contributor",
+            "repository automation changes without a stable explanation of its intent",
+            "product docs get polluted with infrastructure concerns that belong elsewhere",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
@@ -2065,6 +2131,14 @@ def render_compat_page(slug: str, title: str) -> str:
         body,
         "Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist, and that makes migration drift expensive.",
     )
+    body = add_if_it_drifts(
+        body,
+        (
+            "legacy names become easier to keep using than to migrate away from",
+            "canonical targets become ambiguous in old automation or docs",
+            "retirement decisions get delayed because the actual migration state is unclear",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
@@ -2191,6 +2265,7 @@ def render_package_page(
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_core_claim(body, package_core_claim(package, category))
     body = add_why_it_matters(body, package_why_it_matters(package, category))
+    body = add_if_it_drifts(body, package_if_it_drifts(package, category))
     body = add_anchor_section(body, package_anchor_bullets(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))

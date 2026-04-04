@@ -97,3 +97,9 @@ Each compatibility page should make migration pressure clearer than legacy habit
 ## Why It Matters
 
 Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist, and that makes migration drift expensive.
+
+## If It Drifts
+
+- legacy names become easier to keep using than to migrate away from
+- canonical targets become ambiguous in old automation or docs
+- retirement decisions get delayed because the actual migration state is unclear
