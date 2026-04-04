@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import Any, Protocol, TypeVar
 
-from bijux_canon_agent.pipeline.execution.shard_processing import process_shard
-from bijux_canon_agent.pipeline.execution.telemetry import PipelineExecutionContext
 from bijux_canon_agent.pipeline.execution.iteration_transitions import (
     append_shard_result,
     apply_shard_failure,
     apply_validation_failure,
 )
+from bijux_canon_agent.pipeline.execution.shard_processing import process_shard
+from bijux_canon_agent.pipeline.execution.telemetry import PipelineExecutionContext
 
 PipelineExecutionResult = dict[str, Any]
 ShardResult = dict[str, Any]

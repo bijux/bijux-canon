@@ -35,12 +35,13 @@ def has_required_replay_metadata(
             return False
     if getattr(replay_metadata, "model_metadata", None) is None:
         return False
-    if requires_convergence_hash(
-        convergence_hash=convergence_hash,
-        phase=phase,
-    ) and not getattr(replay_metadata, "convergence_hash", ""):
-        return False
-    return True
+    return not (
+        requires_convergence_hash(
+            convergence_hash=convergence_hash,
+            phase=phase,
+        )
+        and not getattr(replay_metadata, "convergence_hash", "")
+    )
 
 
 def enforce_replayable_temperature(

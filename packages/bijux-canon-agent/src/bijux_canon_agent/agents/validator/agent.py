@@ -16,17 +16,17 @@ from typing import Any, cast
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
-from .run_context import (
-    apply_pre_hook,
-    build_validation_run_context,
-    cache_schema,
-)
 from .rules import (
     reporting,
     rule_execution,
 )
 from .rules import (
     schema as schema_walker,
+)
+from .run_context import (
+    apply_pre_hook,
+    build_validation_run_context,
+    cache_schema,
 )
 
 
