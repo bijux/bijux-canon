@@ -12,6 +12,8 @@ tagged release.
 - The package README now uses PyPI-safe badge and link targets, and it points
   legacy `bijux-agent` users to the canonical migration path and retired
   repository guidance.
+- The published wheel now ships the `py.typed` marker that matches the typed
+  package classifier.
 
 ## 0.3.0 - 2026-04-04
 

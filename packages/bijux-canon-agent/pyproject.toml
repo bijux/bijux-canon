@@ -175,6 +175,10 @@ fallback-version = "0.3.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_agent"]
+include = ["src/bijux_canon_agent/py.typed"]
+
+[tool.hatch.build.targets.wheel.package-data]
+"bijux_canon_agent" = ["py.typed"]
 
 [tool.mypy-core]
 config-file = "../../configs/mypy.ini"
