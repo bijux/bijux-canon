@@ -6,10 +6,10 @@ from typing import Any
 
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.constants import CONTRACT_VERSION
-from bijux_canon_agent.enums import AgentType, DecisionOutcome
+from bijux_canon_agent.contracts import ExecutionPlan
 from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.contracts.retrieval import RetrievalRequest
-from bijux_canon_agent.contracts import ExecutionPlan
+from bijux_canon_agent.enums import AgentType, DecisionOutcome
 
 
 class PlannerAgent(BaseAgent):

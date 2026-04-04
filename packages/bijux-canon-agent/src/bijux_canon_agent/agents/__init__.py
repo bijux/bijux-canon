@@ -13,8 +13,8 @@ from .critique import CritiqueAgent
 from .file_reader import FileReaderAgent
 from .judge import JudgeAgent
 from .planner import PlannerAgent
-from .summarizer import SummarizerAgent
 from .stage_runner import StageRunnerAgent
+from .summarizer import SummarizerAgent
 from .validator import ValidatorAgent
 from .verifier import VerifierAgent
 

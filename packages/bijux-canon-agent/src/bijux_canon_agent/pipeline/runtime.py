@@ -15,8 +15,8 @@ if TYPE_CHECKING:
     from bijux_canon_agent.agents.file_reader.capabilities.universal_file_reader_core import (
         UniversalFileReader,
     )
-    from bijux_canon_agent.agents.summarizer import SummarizerAgent
     from bijux_canon_agent.agents.stage_runner import StageRunnerAgent
+    from bijux_canon_agent.agents.summarizer import SummarizerAgent
     from bijux_canon_agent.agents.validator import ValidatorAgent
     from bijux_canon_agent.observability.logging import LoggerManager
 

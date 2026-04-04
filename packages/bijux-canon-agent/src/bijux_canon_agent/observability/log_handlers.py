@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 import datetime
@@ -19,7 +19,7 @@ from pathlib import Path
 import queue
 import sys
 import threading
-from typing import Any, ClassVar, Iterator, cast
+from typing import Any, ClassVar, cast
 
 import colorlog
 

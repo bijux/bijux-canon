@@ -1,17 +1,11 @@
-"""SummarizerAgent module for Bijux Agent.
-
-This module provides the SummarizerAgent class for enhanced text summarization
-in a multi-agent system. It supports chunking, multiple strategies (extractive,
-abstractive, hybrid), section-aware summarization, iterative revision, and
-structured summaries.
-"""
+"""Enhanced text summarization agent for Bijux Agent."""
 
 from __future__ import annotations
 
 from collections.abc import Callable
 import hashlib
 import time
-from typing import Any, TypedDict, cast
+from typing import Any, cast
 
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.llm.llm_runtime import LLMUtils
@@ -30,54 +24,12 @@ from .rules import (
     extractive,
     postprocessing,
 )
-
-
-class SummarizerSummary(TypedDict):
-    """Structured summary payload."""
-
-    executive_summary: str
-    key_points: list[str]
-    actionable_insights: str
-    critical_risks: str
-    missing_info: str
-
-
-class SummarizerAudit(TypedDict):
-    """Audit metadata for summarization runs."""
-
-    timestamp: str
-    duration_sec: float
-    input_tokens: int
-    output_tokens: int
-    chunks_processed: int
-
-
-class SummarizerResult(TypedDict):
-    """TypedDict for a successful summarization result."""
-
-    summary: SummarizerSummary
-    method: str
-    input_length: int
-    backend: str
-    strategy: str
-    warnings: list[str]
-    audit: SummarizerAudit
-
-
-class SummarizerErrorResult(SummarizerResult, total=False):
-    """TypedDict describing an error result."""
-
-    error: str
-    stage: str
-    input: dict[str, Any]
-
-
-class SummaryRunInputs(TypedDict):
-    text: str
-    task_goal: str
-    keywords: list[str]
-    cache_key: str
-    prompt_prefix: str
+from .types import (
+    SummarizerErrorResult,
+    SummarizerResult,
+    SummarizerSummary,
+    SummaryRunInputs,
+)
 
 
 class SummarizerAgent(BaseAgent):
@@ -89,7 +41,6 @@ class SummarizerAgent(BaseAgent):
     insights, critical risks, and missing information.
     """
 
-    # Supported summarization strategies
     STRATEGY_EXTRACTIVE = "extractive"
     STRATEGY_ABSTRACTIVE = "abstractive"
     STRATEGY_HYBRID = "hybrid"
@@ -395,8 +346,7 @@ class SummarizerAgent(BaseAgent):
         if not feedback:
             return ""
         prompt_prefix = (
-            f"Previous summary had issues. {feedback}. "
-            f"Please revise accordingly:\n\n"
+            f"Previous summary had issues. {feedback}. Please revise accordingly:\n\n"
         )
         self.logger.info(
             "Applying revision instruction",
@@ -457,8 +407,7 @@ class SummarizerAgent(BaseAgent):
             tags={"stage": "summarization"},
         )
         final_error = (
-            f"Summarization failed after {self.max_retries + 1} "
-            f"attempts: {error!s}"
+            f"Summarization failed after {self.max_retries + 1} attempts: {error!s}"
         )
         return cast(
             SummarizerErrorResult,
@@ -504,9 +453,7 @@ class SummarizerAgent(BaseAgent):
             result["warnings"].append(f"Post-hook failed: {e!s}")
             return result
 
-    def _store_cached_result(
-        self, cache_key: str, result: SummarizerResult
-    ) -> None:
+    def _store_cached_result(self, cache_key: str, result: SummarizerResult) -> None:
         if self._cache is None:
             return
         self._cache[cache_key] = result

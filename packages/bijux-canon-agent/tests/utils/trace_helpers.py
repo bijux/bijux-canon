@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
+from bijux_canon_agent.core.hashing import prompt_hash
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.definition import (
@@ -19,7 +20,6 @@ from bijux_canon_agent.traces import (
     TraceEntry,
 )
 from bijux_canon_agent.traces.trace import ModelMetadata
-from bijux_canon_agent.core.hashing import prompt_hash
 
 DEFAULT_PIPELINE_DEFINITION: PipelineDefinition = standard_pipeline_definition()
 

@@ -6,12 +6,12 @@ from enum import StrEnum
 
 from pydantic import ConfigDict, Field
 
+from bijux_canon_agent.contracts.base import TypedBaseModel
+from bijux_canon_agent.core.final import final_class
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_canon_agent.contracts.base import TypedBaseModel
 from bijux_canon_agent.traces.trace import ModelMetadata, RunTrace
-from bijux_canon_agent.core.final import final_class
 
 
 class PipelineStatus(StrEnum):

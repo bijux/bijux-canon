@@ -12,13 +12,13 @@ from tests.stubs.file_reader_stub import FileReaderStub
 from tests.utils.trace_helpers import default_model_metadata
 
 from bijux_canon_agent.agents.critique.core import CritiqueAgent
+from bijux_canon_agent.agents.stage_runner.agent import StageRunnerAgent
 from bijux_canon_agent.agents.summarizer import SummarizerAgent
 from bijux_canon_agent.agents.summarizer.core import SummarizerResult
-from bijux_canon_agent.agents.stage_runner.agent import StageRunnerAgent
 from bijux_canon_agent.agents.validator import ValidatorAgent
-from bijux_canon_agent.interfaces.cli.helpers import build_trace_from_result
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.interfaces.cli.helpers import build_trace_from_result
 from bijux_canon_agent.pipeline import AuditableDocPipeline
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
 

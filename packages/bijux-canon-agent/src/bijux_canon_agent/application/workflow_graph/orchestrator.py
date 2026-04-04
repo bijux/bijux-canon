@@ -153,18 +153,6 @@ class WorkflowOrchestrator:
             start_time = datetime.now(UTC)
             try:
                 output = await node.runner(context)
-                state.record_success(node.name, output)
-                self._record_trace_entry(
-                    node=node,
-                    context=context,
-                    trace_entry=self._success_trace_entry(
-                        node=node,
-                        context=context,
-                        output=output,
-                        start_time=start_time,
-                    ),
-                )
-                return
             except Exception as exc:  # pragma: no cover
                 error = self._error_schema(exc=exc, attempt=attempt, node=node)
                 state.record_error(node.name, error)
@@ -185,6 +173,19 @@ class WorkflowOrchestrator:
                 if attempt >= node.max_retries:
                     break
                 await asyncio.sleep(0)
+                continue
+            state.record_success(node.name, output)
+            self._record_trace_entry(
+                node=node,
+                context=context,
+                trace_entry=self._success_trace_entry(
+                    node=node,
+                    context=context,
+                    output=output,
+                    start_time=start_time,
+                ),
+            )
+            return
         if not state.aborted and node.abort_on_failure:
             state.aborted = True
 

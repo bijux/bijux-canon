@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from bijux_canon_agent.agents.kernel.lifecycle import LifecyclePhase
-from bijux_canon_agent.enums import AgentStatus, FailureMode
 from bijux_canon_agent.contracts import AgentInput, AgentOutput
+from bijux_canon_agent.enums import AgentStatus, FailureMode
 
 OutputT = TypeVar("OutputT")
 

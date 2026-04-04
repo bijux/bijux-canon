@@ -6,9 +6,9 @@ from collections.abc import Sequence
 
 from pydantic import ConfigDict, Field
 
-from bijux_canon_agent.enums import AgentType
-from bijux_canon_agent.contracts.retrieval import RetrievalRequest
 from bijux_canon_agent.contracts.base import TypedBaseModel
+from bijux_canon_agent.contracts.retrieval import RetrievalRequest
+from bijux_canon_agent.enums import AgentType
 
 
 class ExecutionPlan(TypedBaseModel):

@@ -14,9 +14,9 @@ from typing import Any, Generic, TypeVar, final
 
 from bijux_canon_agent.agents.kernel.execution_kernel import AgentExecutionKernel
 from bijux_canon_agent.agents.kernel.lifecycle import LifecyclePhase
-from bijux_canon_agent.enums import AgentType, ExecutionMode, FailureMode
-from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.contracts import AgentInput, AgentOutput
+from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
+from bijux_canon_agent.enums import AgentType, ExecutionMode, FailureMode
 from bijux_canon_agent.observability.logging import LoggerManager
 
 InputT = TypeVar("InputT", bound=Mapping[str, Any])

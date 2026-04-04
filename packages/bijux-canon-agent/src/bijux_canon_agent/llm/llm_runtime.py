@@ -136,9 +136,7 @@ class DeepSeekBackend(LLMBackend):
             "Content-Type": "application/json",
         }
 
-    def _request_payload(
-        self, prompt: str, max_tokens: int | None
-    ) -> dict[str, Any]:
+    def _request_payload(self, prompt: str, max_tokens: int | None) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [
@@ -466,4 +464,4 @@ class LLMUtils:
         )
 
     def _retry_backoff(self, attempt: int) -> float:
-        return self.retry_delay * (2 ** (attempt - 1))
+        return float(self.retry_delay) * float(2 ** (attempt - 1))

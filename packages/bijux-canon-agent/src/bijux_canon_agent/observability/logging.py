@@ -23,7 +23,6 @@ from bijux_canon_agent.observability.log_handlers import (
 )
 from bijux_canon_agent.observability.log_metrics import LoggerTelemetry, MetricType
 
-
 install_custom_log_record_factory()
 
 

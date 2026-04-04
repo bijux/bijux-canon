@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
+from bijux_canon_agent.core.version import get_runtime_version
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
 from bijux_canon_agent.pipeline.definition import PipelineDefinition
@@ -19,7 +20,6 @@ from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
 from bijux_canon_agent.pipeline.results.failure import FailureArtifact
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
-from bijux_canon_agent.core.version import get_runtime_version
 
 
 class TraceFieldClassification(StrEnum):

@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from .orchestrator import WorkflowRunState, WorkflowNode, WorkflowOrchestrator
+from .orchestrator import WorkflowNode, WorkflowOrchestrator, WorkflowRunState
 
 __all__ = ["WorkflowOrchestrator", "WorkflowNode", "WorkflowRunState"]

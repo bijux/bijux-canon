@@ -8,8 +8,8 @@ from datetime import UTC, datetime
 import hashlib
 import json
 from pathlib import Path
-import uuid
 from typing import Any
+import uuid
 
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION
 from bijux_canon_agent.core import version

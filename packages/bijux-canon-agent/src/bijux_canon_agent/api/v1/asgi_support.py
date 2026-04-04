@@ -9,7 +9,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from bijux_canon_agent.api.v1.errors import APIErrorCode, HTTP_STATUS_BY_CODE
+from bijux_canon_agent.api.v1.errors import HTTP_STATUS_BY_CODE, APIErrorCode
 from bijux_canon_agent.api.v1.handlers import run_pipeline_v1
 from bijux_canon_agent.api.v1.schemas import ErrorResponseV1, RunRequestV1
 from bijux_canon_agent.core.version import get_runtime_version

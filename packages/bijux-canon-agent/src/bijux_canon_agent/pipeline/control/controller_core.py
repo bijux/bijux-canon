@@ -9,8 +9,8 @@ from typing import Any
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
 from bijux_canon_agent.pipeline.control.lifecycle import (
     LIFECYCLE_DETAILS,
-    LifecycleInfo,
     PIPELINE_LIFECYCLE,
+    LifecycleInfo,
     PipelineLifecycle,
 )
 from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict

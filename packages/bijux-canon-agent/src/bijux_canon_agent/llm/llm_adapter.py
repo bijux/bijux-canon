@@ -16,14 +16,14 @@ from pydantic import ConfigDict, Field
 import requests
 
 from bijux_canon_agent.config.env import key_for_provider
+from bijux_canon_agent.contracts.base import TypedBaseModel
+from bijux_canon_agent.core.hashing import prompt_hash
 from bijux_canon_agent.pipeline.results.failure import (
     FailureCategory,
     FailureClass,
     failure_profile_for,
 )
-from bijux_canon_agent.contracts.base import TypedBaseModel
 from bijux_canon_agent.traces.trace import ModelMetadata
-from bijux_canon_agent.core.hashing import prompt_hash
 
 _openai_module: ModuleType | None = None
 try:  # pragma: no cover
