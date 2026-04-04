@@ -12,6 +12,10 @@ PACKAGE_NOTPARALLEL_TARGETS ?= all clean
 PACKAGE_VENV_CREATE_MESSAGE ?= → Creating virtualenv with '$$(which $(PYTHON))' ...
 PACKAGE_INSTALL_MESSAGE ?= → Installing dependencies...
 PACKAGE_INSTALL_SPEC ?= .[dev]
+PACKAGE_INSTALL_EDITABLE ?= 1
+PACKAGE_INSTALL_BOOTSTRAP_PACKAGES ?= pip setuptools wheel
+PACKAGE_INSTALL_PYTHON_PACKAGES ?=
+PACKAGE_INSTALL_STAMP ?=
 PACKAGE_BOOTSTRAP_PREREQS ?= install
 PACKAGE_CLEAN_MESSAGE ?= → Cleaning ($(VENV)) ...
 PACKAGE_CLEAN_SOFT_MESSAGE ?= → Cleaning (artifacts, caches) ...
@@ -33,10 +37,35 @@ $(VENV):
 endif
 
 ifeq ($(PACKAGE_DEFINE_INSTALL),1)
+ifneq ($(strip $(PACKAGE_INSTALL_STAMP)),)
+$(PACKAGE_INSTALL_STAMP): $(VENV)
+	@echo "$(PACKAGE_INSTALL_MESSAGE)"
+	@mkdir -p "$(PROJECT_ARTIFACTS_DIR)"
+	@if [ -n "$(strip $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES))" ]; then \
+	  $(VENV_PYTHON) -m pip install --upgrade $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES); \
+	fi
+	@if [ -n "$(strip $(PACKAGE_INSTALL_PYTHON_PACKAGES))" ]; then \
+	  $(VENV_PYTHON) -m pip install --upgrade $(PACKAGE_INSTALL_PYTHON_PACKAGES); \
+	fi
+	@if [ "$(PACKAGE_INSTALL_EDITABLE)" = "1" ] && [ -n "$(strip $(PACKAGE_INSTALL_SPEC))" ]; then \
+	  $(VENV_PYTHON) -m pip install -e "$(PACKAGE_INSTALL_SPEC)"; \
+	fi
+	@touch "$(PACKAGE_INSTALL_STAMP)"
+
+install: $(PACKAGE_INSTALL_STAMP)
+else
 install: $(VENV)
 	@echo "$(PACKAGE_INSTALL_MESSAGE)"
-	@$(VENV_PYTHON) -m pip install --upgrade pip setuptools wheel
-	@$(VENV_PYTHON) -m pip install -e "$(PACKAGE_INSTALL_SPEC)"
+	@if [ -n "$(strip $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES))" ]; then \
+	  $(VENV_PYTHON) -m pip install --upgrade $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES); \
+	fi
+	@if [ -n "$(strip $(PACKAGE_INSTALL_PYTHON_PACKAGES))" ]; then \
+	  $(VENV_PYTHON) -m pip install --upgrade $(PACKAGE_INSTALL_PYTHON_PACKAGES); \
+	fi
+	@if [ "$(PACKAGE_INSTALL_EDITABLE)" = "1" ] && [ -n "$(strip $(PACKAGE_INSTALL_SPEC))" ]; then \
+	  $(VENV_PYTHON) -m pip install -e "$(PACKAGE_INSTALL_SPEC)"; \
+	fi
+endif
 .PHONY: install
 endif
 

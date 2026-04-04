@@ -10,7 +10,12 @@ INTERROGATE_PATHS := hatch_build.py
 QUALITY_PATHS := src hatch_build.py
 QUALITY_VULTURE_MIN_CONFIDENCE := 80
 SECURITY_PATHS := src hatch_build.py
-COMPAT_TOOLCHAIN_STAMP := $(PROJECT_ARTIFACTS_DIR)/.compat-toolchain.stamp
+PACKAGE_INSTALL_STAMP := $(PROJECT_ARTIFACTS_DIR)/.compat-toolchain.stamp
+PACKAGE_INSTALL_EDITABLE := 0
+PACKAGE_INSTALL_MESSAGE := → Installing compatibility package toolchain...
+PACKAGE_INSTALL_PYTHON_PACKAGES := \
+  ruff codespell vulture deptry interrogate bandit pip-audit \
+  build twine hatchling hatch-vcs
 ENABLE_MYPY := 0
 ENABLE_CODESPELL := 1
 ENABLE_RADON := 0
@@ -21,10 +26,9 @@ SKIP_MYPY := 1
 SKIP_BANDIT := 0
 
 PUBLISH_UPLOAD_ENABLED := 0
-PACKAGE_DEFINE_INSTALL := 0
 PACKAGE_DEFINE_BOOTSTRAP := 0
 PACKAGE_CLEAN_PATHS := \
-  $(COMMON_ARTIFACT_CLEAN_PATHS) $(COMMON_BUILD_CLEAN_PATHS) "$(COMPAT_TOOLCHAIN_STAMP)" \
+  $(COMMON_ARTIFACT_CLEAN_PATHS) $(COMMON_BUILD_CLEAN_PATHS) "$(PACKAGE_INSTALL_STAMP)" \
   .pytest_cache .ruff_cache .mypy_cache .hypothesis .coverage .coverage.* \
   htmlcov .cache
 PACKAGE_INSTALL_TARGETS := \
@@ -40,19 +44,6 @@ include $(ROOT_MAKE_DIR)/publish.mk
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
 ##@ Core
-$(COMPAT_TOOLCHAIN_STAMP): | $(VENV)
-	@echo "→ Installing compatibility package toolchain..."
-	@mkdir -p "$(PROJECT_ARTIFACTS_DIR)"
-	@$(VENV_PYTHON) -m pip install --upgrade pip setuptools wheel
-	@$(VENV_PYTHON) -m pip install --upgrade \
-	  ruff codespell vulture deptry interrogate bandit pip-audit \
-	  build twine hatchling hatch-vcs
-	@touch "$(COMPAT_TOOLCHAIN_STAMP)"
-
-install: $(COMPAT_TOOLCHAIN_STAMP)
-	@true
-.PHONY: install
-
 clean: ## Remove virtualenv plus compatibility package artifacts
 clean-soft: ## Remove build artifacts but keep .venv
 install: ## Install compatibility package toolchain
