@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import asdict, dataclass, field, is_dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import StrEnum
 import hashlib
@@ -20,6 +20,11 @@ from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
 from bijux_canon_agent.pipeline.results.failure import FailureArtifact
 from bijux_canon_agent.pipeline.termination import ExecutionTerminationReason
+from bijux_canon_agent.traces.trace_serialization import (
+    serialize_run_trace,
+    serialize_trace_entry,
+    serialize_value,
+)
 
 
 class TraceFieldClassification(StrEnum):
@@ -58,20 +63,6 @@ class ModelMetadata:
             temperature=temperature,
             max_tokens=max_tokens,
         )
-
-
-def _serialize_value(value: Any) -> Any:
-    """Ensure BaseModel-like values become serializable dictionaries."""
-
-    dumper = getattr(value, "model_dump", None)
-    if callable(dumper):
-        return dumper()
-    dumper = getattr(value, "dict", None)
-    if callable(dumper):
-        return dumper()
-    if is_dataclass(value) and not isinstance(value, type):
-        return asdict(value)
-    return value
 
 
 @dataclass
@@ -208,46 +199,7 @@ class TraceEntry:
         return {key: value for key, value in data.items() if key not in observational}
 
     def to_dict(self) -> dict[str, Any]:
-        failure_dict = None
-        if self.failure_artifact:
-            failure_dict = _serialize_value(self.failure_artifact)
-            failure_dict["phase"] = self.failure_artifact.phase.value
-        output_value = None
-        if self.output is not None:
-            output_value = _serialize_value(self.output)
-        return {
-            "agent_id": self.agent_id,
-            "node": self.node,
-            "status": self.status,
-            "start_time": self.start_time.isoformat(),
-            "end_time": self.end_time.isoformat(),
-            "input": self.input,
-            "output": output_value,
-            "error": self.error,
-            "scores": self.scores,
-            "prompt_hash": self.prompt_hash,
-            "model_hash": self.model_hash,
-            "phase": self.phase,
-            "run_id": self.run_id,
-            "stop_reason": self.stop_reason.value if self.stop_reason else None,
-            "failure_artifact": failure_dict,
-            "replay_metadata": asdict(self.replay_metadata),
-            "epistemic_status": asdict(self.epistemic_status)
-            if self.epistemic_status
-            else None,
-            "epistemic_verdict": self.epistemic_verdict.value
-            if self.epistemic_verdict
-            else None,
-            "decision_artifact": _serialize_value(self.decision_artifact)
-            if self.decision_artifact
-            else None,
-            "run_fingerprint": asdict(self.run_fingerprint)
-            if self.run_fingerprint
-            else None,
-            "termination_reason": self.termination_reason.value
-            if self.termination_reason
-            else None,
-        }
+        return serialize_trace_entry(self)
 
 
 @dataclass
@@ -260,29 +212,7 @@ class RunTrace:
     entries: list[TraceEntry] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "run_id": self.run_id,
-            "started_at": self.started_at.isoformat(),
-            "completed_at": self.completed_at.isoformat()
-            if self.completed_at
-            else None,
-            "status": self.status,
-            "trace_schema_version": self.header.trace_schema_version,
-            "config_hash": self.header.config_hash,
-            "pipeline_definition_hash": self.header.pipeline_definition_hash,
-            "agent_versions": self.header.agent_versions,
-            "replay_status": self.header.replay_status.value,
-            "runtime_version": self.header.runtime_version,
-            "convergence_hash": self.header.convergence_hash,
-            "convergence_reason": self.header.convergence_reason,
-            "termination_reason": self.header.termination_reason.value
-            if self.header.termination_reason
-            else None,
-            "model_metadata": asdict(self.header.model_metadata)
-            if self.header.model_metadata
-            else None,
-            "entries": [entry.to_dict() for entry in self.entries],
-        }
+        return serialize_run_trace(self)
 
 
 class TraceRecorder:
@@ -403,7 +333,7 @@ class TraceRecorder:
             json.dumps(
                 self.trace.to_dict(),
                 indent=2,
-                default=_serialize_value,
+                default=serialize_value,
             ),
             encoding="utf-8",
         )
