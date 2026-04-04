@@ -19,7 +19,8 @@ from bijux_canon_reason.retrieval.chunked_bm25 import (
     SCHEMA_VERSION as BM25_SCHEMA_VERSION,
 )
 from bijux_canon_reason.retrieval.chunked_bm25 import build_or_load_index
-from bijux_canon_reason.retrieval.corpus import load_corpus_jsonl
+from bijux_canon_reason.retrieval.chunking import Chunk
+from bijux_canon_reason.retrieval.corpus import CorpusDoc, load_corpus_jsonl
 
 
 class Tool(Protocol):
@@ -205,29 +206,13 @@ class BM25Retriever:
         ranked = self._index.top_k(
             q, k=top_k, k1=self.k1, b=self.b, parallel=self.parallel_scoring
         )
-        evidences: list[dict[str, JsonValue]] = []
         doc_meta = {d.doc_id: d for d in self._docs}
+        evidences = _build_retrieved_evidences(ranked=ranked, doc_meta=doc_meta)
+        provenance = self._build_retrieval_provenance()
+        self._persist_retrieval_provenance(provenance)
+        return {"evidences": cast(JsonValue, evidences), "provenance": provenance}
 
-        for chunk, score in ranked:
-            meta = doc_meta.get(chunk.doc_id)
-            evidences.append(
-                {
-                    "uri": f"corpus://{chunk.doc_id}#{chunk.start_byte}-{chunk.end_byte}",
-                    "doc_id": chunk.doc_id,
-                    "chunk_id": chunk.chunk_id,
-                    "score": float(score),
-                    "text": chunk.text,
-                    "span": [chunk.start_byte, chunk.end_byte],
-                    "chunk_span": [chunk.start_byte, chunk.end_byte],
-                    "chunk_sha256": hashlib.sha256(
-                        chunk.text.encode("utf-8")
-                    ).hexdigest(),
-                    "doc_sha256": chunk.doc_sha256,
-                    "title": meta.title if meta else None,
-                    "source": meta.source if meta else None,
-                }
-            )
-
+    def _build_retrieval_provenance(self) -> dict[str, JsonValue]:
         provenance: dict[str, JsonValue] = {
             "schema_version": BM25_SCHEMA_VERSION,
             "corpus_sha256": self._index.corpus_sha256,
@@ -242,66 +227,122 @@ class BM25Retriever:
             "parallel_scoring": self.parallel_scoring,
             "lazy_index": self.lazy_index,
             "corpus_max_bytes": self.corpus_max_bytes,
+            "config_sha256": _config_sha256(
+                chunk_chars=self.chunk_chars,
+                overlap_chars=self.overlap_chars,
+                k1=self.k1,
+                b=self.b,
+                max_chunks=self.max_chunks,
+                max_docs=self.max_docs,
+                parallel_scoring=self.parallel_scoring,
+                lazy_index=self.lazy_index,
+                corpus_max_bytes=self.corpus_max_bytes,
+            ),
         }
-        cfg_hash = hashlib.sha256(
-            canonical_dumps(
-                {
-                    "chunk_chars": self.chunk_chars,
-                    "overlap_chars": self.overlap_chars,
-                    "k1": self.k1,
-                    "b": self.b,
-                    "tokenizer": "unicode_word",
-                    "max_chunks": self.max_chunks,
-                    "max_docs": self.max_docs,
-                    "parallel_scoring": self.parallel_scoring,
-                    "lazy_index": self.lazy_index,
-                    "corpus_max_bytes": self.corpus_max_bytes,
-                }
-            ).encode("utf-8")
-        ).hexdigest()
-        provenance["config_sha256"] = cfg_hash
-        if self.artifacts_dir is not None:
-            corpus_rel = (
-                (self.artifacts_dir / "provenance" / "corpus.jsonl")
-                .relative_to(self.artifacts_dir)
-                .as_posix()
-            )
-            index_rel = (
-                (self.artifacts_dir / "provenance" / "index" / "bm25_index.json")
-                .relative_to(self.artifacts_dir)
-                .as_posix()
-            )
-            provenance["corpus_path"] = corpus_rel
-            provenance["index_path"] = index_rel
-            chunks_path = self.artifacts_dir / "provenance" / "chunks.jsonl"
-            chunks_path.parent.mkdir(parents=True, exist_ok=True)
-            if not chunks_path.exists():
-                with chunks_path.open("w", encoding="utf-8", newline="") as fh:
-                    for ch in self._index.chunks:
-                        fh.write(
-                            canonical_dumps(
-                                {
-                                    "chunk_id": ch.chunk_id,
-                                    "doc_id": ch.doc_id,
-                                    "start_byte": ch.start_byte,
-                                    "end_byte": ch.end_byte,
-                                    "chunk_sha256": hashlib.sha256(
-                                        ch.text.encode("utf-8")
-                                    ).hexdigest(),
-                                    "doc_sha256": ch.doc_sha256,
-                                }
-                            )
-                            + "\n"
-                        )
-            provenance["chunks_path"] = chunks_path.relative_to(
-                self.artifacts_dir
-            ).as_posix()
-            prov_file = self.artifacts_dir / "provenance" / "retrieval_provenance.json"
-            if not prov_file.exists():
-                prov_file.parent.mkdir(parents=True, exist_ok=True)
-                prov_file.write_text(
-                    canonical_dumps(provenance) + "\n", encoding="utf-8"
-                )
-        else:
+        if self.artifacts_dir is None:
             provenance["corpus_path"] = str(self.corpus_path)
-        return {"evidences": cast(JsonValue, evidences), "provenance": provenance}
+            return provenance
+
+        provenance_root = self.artifacts_dir / "provenance"
+        provenance["corpus_path"] = (
+            (provenance_root / "corpus.jsonl")
+            .relative_to(self.artifacts_dir)
+            .as_posix()
+        )
+        provenance["index_path"] = (
+            (provenance_root / "index" / "bm25_index.json")
+            .relative_to(self.artifacts_dir)
+            .as_posix()
+        )
+        provenance["chunks_path"] = _write_chunk_manifest(
+            artifacts_dir=self.artifacts_dir,
+            chunks=self._index.chunks,
+        )
+        return provenance
+
+    def _persist_retrieval_provenance(self, provenance: dict[str, JsonValue]) -> None:
+        if self.artifacts_dir is None:
+            return
+
+        prov_file = self.artifacts_dir / "provenance" / "retrieval_provenance.json"
+        if prov_file.exists():
+            return
+        prov_file.parent.mkdir(parents=True, exist_ok=True)
+        prov_file.write_text(canonical_dumps(provenance) + "\n", encoding="utf-8")
+
+
+def _build_retrieved_evidences(
+    *,
+    ranked: list[tuple[Chunk, float]],
+    doc_meta: dict[str, CorpusDoc],
+) -> list[dict[str, JsonValue]]:
+    evidences: list[dict[str, JsonValue]] = []
+    for chunk, score in ranked:
+        meta = doc_meta.get(chunk.doc_id)
+        evidences.append(
+            {
+                "uri": f"corpus://{chunk.doc_id}#{chunk.start_byte}-{chunk.end_byte}",
+                "doc_id": chunk.doc_id,
+                "chunk_id": chunk.chunk_id,
+                "score": float(score),
+                "text": chunk.text,
+                "span": [chunk.start_byte, chunk.end_byte],
+                "chunk_span": [chunk.start_byte, chunk.end_byte],
+                "chunk_sha256": hashlib.sha256(chunk.text.encode("utf-8")).hexdigest(),
+                "doc_sha256": chunk.doc_sha256,
+                "title": meta.title if meta else None,
+                "source": meta.source if meta else None,
+            }
+        )
+    return evidences
+
+
+def _config_sha256(
+    *,
+    chunk_chars: int,
+    overlap_chars: int,
+    k1: float,
+    b: float,
+    max_chunks: int | None,
+    max_docs: int | None,
+    parallel_scoring: bool,
+    lazy_index: bool,
+    corpus_max_bytes: int | None,
+) -> str:
+    payload = {
+        "chunk_chars": chunk_chars,
+        "overlap_chars": overlap_chars,
+        "k1": k1,
+        "b": b,
+        "tokenizer": "unicode_word",
+        "max_chunks": max_chunks,
+        "max_docs": max_docs,
+        "parallel_scoring": parallel_scoring,
+        "lazy_index": lazy_index,
+        "corpus_max_bytes": corpus_max_bytes,
+    }
+    return hashlib.sha256(canonical_dumps(payload).encode("utf-8")).hexdigest()
+
+
+def _write_chunk_manifest(*, artifacts_dir: Path, chunks: tuple[Chunk, ...]) -> str:
+    chunks_path = artifacts_dir / "provenance" / "chunks.jsonl"
+    chunks_path.parent.mkdir(parents=True, exist_ok=True)
+    if not chunks_path.exists():
+        with chunks_path.open("w", encoding="utf-8", newline="") as fh:
+            for chunk in chunks:
+                fh.write(
+                    canonical_dumps(
+                        {
+                            "chunk_id": chunk.chunk_id,
+                            "doc_id": chunk.doc_id,
+                            "start_byte": chunk.start_byte,
+                            "end_byte": chunk.end_byte,
+                            "chunk_sha256": hashlib.sha256(
+                                chunk.text.encode("utf-8")
+                            ).hexdigest(),
+                            "doc_sha256": chunk.doc_sha256,
+                        }
+                    )
+                    + "\n"
+                )
+    return chunks_path.relative_to(artifacts_dir).as_posix()

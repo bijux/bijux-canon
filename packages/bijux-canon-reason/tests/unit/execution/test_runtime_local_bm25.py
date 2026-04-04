@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from bijux_canon_reason.core.types import ToolCall
 from bijux_canon_reason.execution.runtime import Runtime
 from bijux_canon_reason.retrieval.chunked_bm25 import build_or_load_index
 
@@ -51,3 +52,18 @@ def test_local_bm25_descriptor_and_provenance(tmp_path: Path) -> None:
     )
     assert idx.corpus_sha256 == corpus_sha
     assert index_sha
+
+    result = rt.tools.invoke(
+        ToolCall(
+            id="call-1",
+            tool_name="retrieve",
+            arguments={"query": "beta", "top_k": 1},
+            step_id="gather-1",
+            call_idx=0,
+        ),
+        seed=rt.seed,
+    )
+    assert result.success is True
+    provenance_dir = tmp_path / "provenance"
+    assert (provenance_dir / "retrieval_provenance.json").exists()
+    assert (provenance_dir / "chunks.jsonl").exists()
