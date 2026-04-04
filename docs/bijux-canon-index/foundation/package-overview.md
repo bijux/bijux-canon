@@ -9,7 +9,12 @@ last_reviewed: 2026-04-04
 
 # Package Overview
 
-`bijux-canon-index` is the package that owns contract-driven vector execution with replay-aware determinism, audited backend behavior, and provenance-rich result handling.
+`bijux-canon-index` exists so one durable part of the system can stay legible.
+Its job is to own contract-driven vector execution with replay-aware determinism, audited backend behavior, and provenance-rich result handling.
+
+If a reader cannot explain this package in one or two sentences after skimming
+this page, the package boundary is still too fuzzy and later pages will inherit
+that confusion.
 
 Read the foundation pages for `bijux-canon-index` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

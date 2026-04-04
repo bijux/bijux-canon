@@ -9,7 +9,13 @@ last_reviewed: 2026-04-04
 
 # Scope and Non-Goals
 
-The package boundary exists so neighboring packages can evolve without hidden overlap.
+This page names the line that keeps `bijux-canon-ingest` useful instead of bloated.
+The point of a package boundary is not to make work harder. It is to keep
+neighboring packages from silently accumulating overlapping authority.
+
+The non-goals matter as much as the goals. A package becomes easier to trust
+when readers can see what it refuses to absorb just because the code happens to
+be nearby.
 
 Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

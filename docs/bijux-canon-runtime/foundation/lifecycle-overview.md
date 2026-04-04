@@ -10,7 +10,12 @@ last_reviewed: 2026-04-04
 # Lifecycle Overview
 
 Every package run follows a simple lifecycle: inputs enter through interfaces, domain and
-application code coordinate the work, and durable artifacts or responses leave the package.
+application code coordinate the work, and durable artifacts or responses leave
+the package.
+
+The value of this page is speed. A reader should be able to skim it and leave
+with one coherent story about how work moves through `bijux-canon-runtime` from
+entrypoint to result.
 
 Read the foundation pages for `bijux-canon-runtime` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

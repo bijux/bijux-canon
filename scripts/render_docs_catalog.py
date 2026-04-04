@@ -3500,7 +3500,12 @@ def render_package_topic(
         "foundation": {
             "package-overview": f"""# {title}
 
-`{package.title}` is the package that owns {package.description.lower()}
+`{package.title}` exists so one durable part of the system can stay legible.
+Its job is to own {package.description.lower()}
+
+If a reader cannot explain this package in one or two sentences after skimming
+this page, the package boundary is still too fuzzy and later pages will inherit
+that confusion.
 
 ## What It Owns
 
@@ -3520,7 +3525,13 @@ Keep it aligned with the real package boundary described by the code and tests.
 """,
             "scope-and-non-goals": f"""# {title}
 
-The package boundary exists so neighboring packages can evolve without hidden overlap.
+This page names the line that keeps `{package.title}` useful instead of bloated.
+The point of a package boundary is not to make work harder. It is to keep
+neighboring packages from silently accumulating overlapping authority.
+
+The non-goals matter as much as the goals. A package becomes easier to trust
+when readers can see what it refuses to absorb just because the code happens to
+be nearby.
 
 ## In Scope
 
@@ -3540,7 +3551,12 @@ Update it only when ownership truly moves into or out of `{package.title}`.
 """,
             "ownership-boundary": f"""# {title}
 
-Ownership in `{package.title}` is easiest to read from the source tree plus the tests that protect it.
+Ownership in `{package.title}` should be visible in checked-in structure, not
+only in prose. The source tree shows where the package expects work to live, and
+the tests show whether that expectation is protected when the code changes.
+
+Use this page when a change proposal feels plausible in more than one package
+and someone needs a concrete reason to keep the work here or move it elsewhere.
 
 ## Owned Code Areas
 
@@ -3560,8 +3576,13 @@ Keep it aligned with the current module layout.
 """,
             "repository-fit": f"""# {title}
 
-`{package.title}` sits inside the monorepo as one publishable package with its own `src/`,
-tests, metadata, and release history.
+`{package.title}` is one publishable part of a larger system. It sits in the
+monorepo with its own `src/`, tests, metadata, and release history because the
+repository wants package ownership to stay visible even when the packages evolve
+together.
+
+This page is here to answer a simple but important question: why is this work a
+package at all, instead of just another folder inside a single giant project?
 
 ## Repository Relationships
 
@@ -3583,7 +3604,12 @@ Keep it aligned with the package's checked-in directories and actual neighboring
 """,
             "capability-map": f"""# {title}
 
-The package capabilities can be read as a map from modules to behavior.
+The fastest way to understand `{package.title}` is to map capabilities to the
+code that carries them. This page should help a reader move from a package claim
+to a likely code area without pretending that module names alone are enough.
+
+When this page is healthy, the package feels like a set of deliberate abilities,
+not a pile of implementation details.
 
 ## Capability Map
 
@@ -3603,8 +3629,12 @@ Keep it aligned with the real package modules and generated outputs.
 """,
             "domain-language": f"""# {title}
 
-The package should use language that reflects its actual ownership instead of borrowing
-vague names from neighboring packages.
+The language around `{package.title}` should reinforce the real package
+boundary. Good names shorten review. Weak names force people to keep asking
+whether they are looking at local behavior or at something owned elsewhere.
+
+This page keeps the package vocabulary stable enough that docs, code, commit
+messages, and review conversations can describe the same idea without drift.
 
 ## Package Vocabulary Anchors
 
@@ -3624,7 +3654,12 @@ Keep it aligned with the package's real import names, directories, and artifact 
             "lifecycle-overview": f"""# {title}
 
 Every package run follows a simple lifecycle: inputs enter through interfaces, domain and
-application code coordinate the work, and durable artifacts or responses leave the package.
+application code coordinate the work, and durable artifacts or responses leave
+the package.
+
+The value of this page is speed. A reader should be able to skim it and leave
+with one coherent story about how work moves through `{package.title}` from
+entrypoint to result.
 
 ## Lifecycle Anchors
 
@@ -3642,7 +3677,13 @@ Keep it aligned with the current entrypoints and produced outputs.
 """,
             "dependencies-and-adjacencies": f"""# {title}
 
-Package dependencies matter because they reveal which behavior is local and which behavior is delegated.
+Dependencies and adjacencies explain what `{package.title}` can do by itself and
+what it deliberately leans on. They are part of the package story, not just
+implementation trivia, because they show where local authority ends.
+
+This page should help a reviewer see both kinds of dependency pressure: library
+dependencies that shape the implementation, and neighboring packages that shape
+the system boundary.
 
 ## Direct Dependency Themes
 
@@ -3662,7 +3703,13 @@ Keep it aligned with `pyproject.toml` and the actual package seams.
 """,
             "change-principles": f"""# {title}
 
-Changes in `{package.title}` should keep the package boundary easier to understand, not harder.
+Changes in `{package.title}` should leave the package easier to explain, not
+harder. A good change makes ownership clearer, contract language more honest,
+and the proof story easier to follow.
+
+These principles are not slogans. They are the filter for deciding whether a
+local improvement is worth the long-term cost it creates for the rest of the
+system.
 
 ## Principles
 

@@ -9,8 +9,12 @@ last_reviewed: 2026-04-04
 
 # Domain Language
 
-The package should use language that reflects its actual ownership instead of borrowing
-vague names from neighboring packages.
+The language around `bijux-canon-runtime` should reinforce the real package
+boundary. Good names shorten review. Weak names force people to keep asking
+whether they are looking at local behavior or at something owned elsewhere.
+
+This page keeps the package vocabulary stable enough that docs, code, commit
+messages, and review conversations can describe the same idea without drift.
 
 Read the foundation pages for `bijux-canon-runtime` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

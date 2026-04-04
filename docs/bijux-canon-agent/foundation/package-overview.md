@@ -9,7 +9,12 @@ last_reviewed: 2026-04-04
 
 # Package Overview
 
-`bijux-canon-agent` is the package that owns deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
+`bijux-canon-agent` exists so one durable part of the system can stay legible.
+Its job is to own deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
+
+If a reader cannot explain this package in one or two sentences after skimming
+this page, the package boundary is still too fuzzy and later pages will inherit
+that confusion.
 
 Read the foundation pages for `bijux-canon-agent` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

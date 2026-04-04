@@ -9,8 +9,13 @@ last_reviewed: 2026-04-04
 
 # Repository Fit
 
-`bijux-canon-ingest` sits inside the monorepo as one publishable package with its own `src/`,
-tests, metadata, and release history.
+`bijux-canon-ingest` is one publishable part of a larger system. It sits in the
+monorepo with its own `src/`, tests, metadata, and release history because the
+repository wants package ownership to stay visible even when the packages evolve
+together.
+
+This page is here to answer a simple but important question: why is this work a
+package at all, instead of just another folder inside a single giant project?
 
 Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

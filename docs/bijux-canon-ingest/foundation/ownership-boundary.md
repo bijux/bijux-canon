@@ -9,7 +9,12 @@ last_reviewed: 2026-04-04
 
 # Ownership Boundary
 
-Ownership in `bijux-canon-ingest` is easiest to read from the source tree plus the tests that protect it.
+Ownership in `bijux-canon-ingest` should be visible in checked-in structure, not
+only in prose. The source tree shows where the package expects work to live, and
+the tests show whether that expectation is protected when the code changes.
+
+Use this page when a change proposal feels plausible in more than one package
+and someone needs a concrete reason to keep the work here or move it elsewhere.
 
 Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

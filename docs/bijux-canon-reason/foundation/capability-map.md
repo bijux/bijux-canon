@@ -9,7 +9,12 @@ last_reviewed: 2026-04-04
 
 # Capability Map
 
-The package capabilities can be read as a map from modules to behavior.
+The fastest way to understand `bijux-canon-reason` is to map capabilities to the
+code that carries them. This page should help a reader move from a package claim
+to a likely code area without pretending that module names alone are enough.
+
+When this page is healthy, the package feels like a set of deliberate abilities,
+not a pile of implementation details.
 
 Read the foundation pages for `bijux-canon-reason` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

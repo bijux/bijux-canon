@@ -9,7 +9,13 @@ last_reviewed: 2026-04-04
 
 # Change Principles
 
-Changes in `bijux-canon-reason` should keep the package boundary easier to understand, not harder.
+Changes in `bijux-canon-reason` should leave the package easier to explain, not
+harder. A good change makes ownership clearer, contract language more honest,
+and the proof story easier to follow.
+
+These principles are not slogans. They are the filter for deciding whether a
+local improvement is worth the long-term cost it creates for the rest of the
+system.
 
 Read the foundation pages for `bijux-canon-reason` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

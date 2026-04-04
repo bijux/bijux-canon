@@ -9,7 +9,12 @@ last_reviewed: 2026-04-04
 
 # Package Overview
 
-`bijux-canon-ingest` is the package that owns deterministic document ingestion, chunking, retrieval assembly, and ingest-facing boundaries.
+`bijux-canon-ingest` exists so one durable part of the system can stay legible.
+Its job is to own deterministic document ingestion, chunking, retrieval assembly, and ingest-facing boundaries.
+
+If a reader cannot explain this package in one or two sentences after skimming
+this page, the package boundary is still too fuzzy and later pages will inherit
+that confusion.
 
 Read the foundation pages for `bijux-canon-ingest` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 

@@ -9,7 +9,13 @@ last_reviewed: 2026-04-04
 
 # Dependencies and Adjacencies
 
-Package dependencies matter because they reveal which behavior is local and which behavior is delegated.
+Dependencies and adjacencies explain what `bijux-canon-reason` can do by itself and
+what it deliberately leans on. They are part of the package story, not just
+implementation trivia, because they show where local authority ends.
+
+This page should help a reviewer see both kinds of dependency pressure: library
+dependencies that shape the implementation, and neighboring packages that shape
+the system boundary.
 
 Read the foundation pages for `bijux-canon-reason` as the package's durable self-description: they should explain the package in terms that remain intelligible even after ordinary refactors.
 
