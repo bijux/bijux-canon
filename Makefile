@@ -1,22 +1,4 @@
-PRIMARY_PACKAGES := \
-	bijux-canon-dev \
-	bijux-canon-runtime \
-	bijux-canon-agent \
-	bijux-canon-ingest \
-	bijux-canon-reason \
-	bijux-canon-index
-
-COMPAT_PACKAGES := \
-	compat-agentic-flows \
-	compat-bijux-agent \
-	compat-bijux-rag \
-	compat-bijux-rar \
-	compat-bijux-vex
-
-ALL_PACKAGES := $(PRIMARY_PACKAGES) $(COMPAT_PACKAGES)
-CHECK_PACKAGES := $(ALL_PACKAGES)
-PACKAGE ?=
-PACKAGE_MAKE_DIR := $(CURDIR)/makes/packages
+include $(CURDIR)/makes/root/packages.mk
 
 ARTIFACTS_ROOT := $(CURDIR)/artifacts
 ROOT_ARTIFACTS_DIR := $(ARTIFACTS_ROOT)/root
@@ -69,25 +51,6 @@ DEFAULT_GOAL := help
 .PHONY: \
 	help list list-all lint quality security test docs docs-check docs-serve api build sbom clean all \
 	clean-root-artifacts root-check-env
-
-define resolve_package
-$(strip \
-$(if $(filter $(1),$(ALL_PACKAGES)),$(1), \
-$(if $(filter $(1),agentic-flows),bijux-canon-runtime, \
-$(if $(filter $(1),bijux-agent),bijux-canon-agent, \
-$(if $(filter $(1),bijux-rag),bijux-canon-ingest, \
-$(if $(filter $(1),bijux-rar),bijux-canon-reason, \
-$(if $(filter $(1),bijux-vex),bijux-canon-index)))))))
-endef
-
-define assert_package
-	@if [ -n "$(PACKAGE)" ] && [ -z "$(call resolve_package,$(PACKAGE))" ]; then \
-	  echo "Unknown package '$(PACKAGE)'."; \
-	  echo "Valid package values:"; \
-	  printf "  %s\n" $(ALL_PACKAGES) agentic-flows bijux-agent bijux-rag bijux-rar bijux-vex; \
-	  exit 2; \
-	fi
-endef
 
 define run_target
 	@set -eu; \
