@@ -116,6 +116,10 @@ def _shared_docs_url(package_name: str) -> str:
     return f"{BIJUX_CANON_DOCS_URL}{package_name}/"
 
 
+def _compat_docs_url(distribution_name: str) -> str:
+    return f"{BIJUX_CANON_DOCS_URL}compat-packages/{distribution_name}/"
+
+
 def test_all_packages_have_package_local_changelogs() -> None:
     missing = [
         pyproject_path.parent.name
@@ -218,7 +222,7 @@ def test_public_release_packages_use_shared_handbook_paths_for_docs() -> None:
         if package_name in CANONICAL_PACKAGES:
             expected_docs_url = _shared_docs_url(package_name)
         else:
-            expected_docs_url = _shared_docs_url(COMPATIBILITY_PACKAGES[package_name]["canonical"])
+            expected_docs_url = _compat_docs_url(COMPATIBILITY_PACKAGES[package_name]["distribution"])
 
         for key in ("Homepage", "Documentation"):
             if urls.get(key) != expected_docs_url:
@@ -360,6 +364,11 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(f"{package_name}: README should document the same-version dependency")
         if f"console script: `{script}`" not in readme:
             failures.append(f"{package_name}: README should document the legacy console script")
+        legacy_handbook = _compat_docs_url(distribution)
+        if legacy_handbook not in readme:
+            failures.append(f"{package_name}: README should link the legacy package handbook")
+        if legacy_handbook not in overview:
+            failures.append(f"{package_name}: overview should link the legacy package handbook")
         if retired_repo not in readme:
             failures.append(f"{package_name}: README should document the retired repository")
         if f"installs `{canonical}` at the same version" not in overview:
