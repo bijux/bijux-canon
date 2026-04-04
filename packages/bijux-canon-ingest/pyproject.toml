@@ -157,6 +157,8 @@ include = [
   "src/bijux_canon_ingest/**",
   "stubs/**",
   "README.md",
+  "CHANGELOG.md",
+  "docs/maintainer/pypi.md",
   "pyproject.toml",
 ]
 
@@ -164,6 +166,16 @@ include = [
 packages = ["src/bijux_canon_ingest"]
 include = ["src/bijux_canon_ingest/py.typed"]
 only-include = ["src/bijux_canon_ingest"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/bijux_canon_ingest/**",
+  "stubs/**",
+  "README.md",
+  "CHANGELOG.md",
+  "docs/maintainer/pypi.md",
+  "pyproject.toml",
+]
 
 [tool.hatch.build.targets.wheel.package-data]
 "bijux_canon_ingest" = ["py.typed"]
