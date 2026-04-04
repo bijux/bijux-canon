@@ -48,6 +48,24 @@ sequenceDiagram
 - `bijux-canon-dev` remains versioned for internal maintainer work, but it is
   not part of the public `0.3.0` publication set
 
+## Legacy Distribution Continuity
+
+The compatibility packages are the continuation line for the already-published
+legacy PyPI project names. They keep the historical distribution name,
+preserve the legacy import surface, and depend on the canonical package at the
+same version.
+
+- `agentic-flows` continues through `compat-agentic-flows` and installs
+  `bijux-canon-runtime`
+- `bijux-agent` continues through `compat-bijux-agent` and installs
+  `bijux-canon-agent`
+- `bijux-rag` continues through `compat-bijux-rag` and installs
+  `bijux-canon-ingest`
+- `bijux-rar` continues through `compat-bijux-rar` and installs
+  `bijux-canon-reason`
+- `bijux-vex` continues through `compat-bijux-vex` and installs
+  `bijux-canon-index`
+
 ## Versioning Rule
 
 Commit messages should communicate long-lived intent clearly enough that a
