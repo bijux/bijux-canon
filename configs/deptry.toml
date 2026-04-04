@@ -5,7 +5,7 @@ extend_exclude = ["docs", "api", "artifacts"]
 package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-canon-agent" = "bijux_canon_agent", "bijux-canon-ingest" = "bijux_rag", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
 
 [tool.repo_deptry.packages."bijux-canon-runtime"]
-known_first_party = ["agentic_flows"]
+known_first_party = ["bijux_canon_runtime"]
 ignore = ["DEP002", "DEP003"]
 
 [tool.repo_deptry.packages."bijux-canon-agent"]
