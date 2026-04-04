@@ -100,6 +100,12 @@ flowchart TD
 - inspect compatibility package metadata if the question is about what remains preserved
 - use this section again only when evaluating migration progress or retirement readiness
 
+## Update This Page When
+
+- a legacy package is added, retired, or repointed to a different canonical target
+- migration guidance becomes stale compared with the current package set
+- compatibility scope changes materially enough to affect retirement decisions
+
 ## Honesty Boundary
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.

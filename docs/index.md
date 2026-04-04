@@ -146,6 +146,12 @@ This page can route readers to the right section quickly, but it does not replac
 - open a product package handbook when the question is about ownership or package behavior
 - open the maintainer or compatibility handbooks only when the question is explicitly about those concerns
 
+## Update This Page When
+
+- the rendered handbook structure changes materially
+- the root site stops being the fastest route into the documentation system
+- new major sections are added or retired from the root docs tree
+
 ## Purpose
 
 This page routes readers into the canonical repository and package handbooks without mixing product ownership with maintenance-only or legacy-only concerns.

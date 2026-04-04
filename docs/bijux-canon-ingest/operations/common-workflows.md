@@ -81,6 +81,12 @@ flowchart TD
 - move to quality when the question becomes whether the workflow is sufficiently proven
 - move back to architecture when operational complexity suggests a structural problem
 
+## Update This Page When
+
+- install, setup, diagnostics, or release behavior changes materially
+- package metadata or runtime workflow changes the expected operator path
+- new operational constraints appear that a maintainer needs to know before acting
+
 ## What This Page Answers
 
 - how bijux-canon-ingest is installed, run, diagnosed, and released

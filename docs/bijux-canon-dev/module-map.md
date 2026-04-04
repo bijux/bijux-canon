@@ -83,6 +83,12 @@ flowchart TD
 - open the relevant helper module or test after using this page to orient yourself
 - return to repository handbook pages when the maintainer issue turns out to be root policy instead
 
+## Update This Page When
+
+- maintainer helpers, tests, or CI integrations change materially
+- repository-health work moves across package boundaries
+- the section stops matching the actual maintainer-only operating model
+
 ## Honesty Boundary
 
 This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.

@@ -85,6 +85,12 @@ flowchart TD
 - move to interfaces when the question becomes contract-facing
 - move to quality when the question becomes proof or review sufficiency
 
+## Update This Page When
+
+- package ownership moves between this package and a neighboring one
+- the package description, core outputs, or boundary modules materially change
+- tests or docs reveal that the old boundary explanation is no longer accurate
+
 ## What This Page Answers
 
 - what bijux-canon-ingest is expected to own

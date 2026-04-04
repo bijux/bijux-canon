@@ -85,6 +85,12 @@ flowchart TD
 - move to architecture when the proof gap points to structural drift
 - move to interfaces or operations when the proof question is really about a contract or workflow
 
+## Update This Page When
+
+- test layout, invariant protection, or risk posture changes materially
+- definition-of-done or validation practice changes in a way reviewers must understand
+- known limitations or evidence expectations move with the codebase
+
 ## What This Page Answers
 
 - what proves the bijux-canon-agent contract today

@@ -1002,6 +1002,37 @@ def package_next_checks(package: PackageInfo, category: str) -> tuple[str, ...]:
     return next_map[category]
 
 
+def package_update_triggers(package: PackageInfo, category: str) -> tuple[str, ...]:
+    trigger_map = {
+        "foundation": (
+            "package ownership moves between this package and a neighboring one",
+            "the package description, core outputs, or boundary modules materially change",
+            "tests or docs reveal that the old boundary explanation is no longer accurate",
+        ),
+        "architecture": (
+            "module responsibilities or dependency direction change materially",
+            "new execution pathways or structural seams become important to review",
+            "architectural risk shifts enough that the current map is misleading",
+        ),
+        "interfaces": (
+            "commands, schemas, API modules, imports, or artifacts change in a caller-visible way",
+            "compatibility expectations change or a new contract surface appears",
+            "examples or entrypoints stop matching the actual package boundary",
+        ),
+        "operations": (
+            "install, setup, diagnostics, or release behavior changes materially",
+            "package metadata or runtime workflow changes the expected operator path",
+            "new operational constraints appear that a maintainer needs to know before acting",
+        ),
+        "quality": (
+            "test layout, invariant protection, or risk posture changes materially",
+            "definition-of-done or validation practice changes in a way reviewers must understand",
+            "known limitations or evidence expectations move with the codebase",
+        ),
+    }
+    return trigger_map[category]
+
+
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
@@ -1140,6 +1171,17 @@ def add_next_checks(body: str, bullets: tuple[str, ...]) -> str:
     block = "\n".join(
         [
             "## Next Checks",
+            "",
+            bullet_lines(bullets),
+        ]
+    )
+    return insert_before_heading(body, "Purpose", block)
+
+
+def add_update_triggers(body: str, bullets: tuple[str, ...]) -> str:
+    block = "\n".join(
+        [
+            "## Update This Page When",
             "",
             bullet_lines(bullets),
         ]
@@ -1312,6 +1354,14 @@ def render_home(
             "open the repository handbook when the question spans packages or schemas",
             "open a product package handbook when the question is about ownership or package behavior",
             "open the maintainer or compatibility handbooks only when the question is explicitly about those concerns",
+        ),
+    )
+    body = add_update_triggers(
+        body,
+        (
+            "the rendered handbook structure changes materially",
+            "the root site stops being the fastest route into the documentation system",
+            "new major sections are added or retired from the root docs tree",
         ),
     )
     body = add_anchor_section(
@@ -1711,6 +1761,14 @@ def render_root_page(
             "use maintainer docs next if the root issue is really about automation or drift tooling",
         ),
     )
+    body = add_update_triggers(
+        body,
+        (
+            "root workflows, schemas, or shared governance change materially",
+            "repository policy moves into or out of package-local ownership",
+            "the current repository explanation no longer matches checked-in root assets",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.",
@@ -2068,6 +2126,14 @@ def render_dev_page(slug: str, title: str) -> str:
             "return to repository handbook pages when the maintainer issue turns out to be root policy instead",
         ),
     )
+    body = add_update_triggers(
+        body,
+        (
+            "maintainer helpers, tests, or CI integrations change materially",
+            "repository-health work moves across package boundaries",
+            "the section stops matching the actual maintainer-only operating model",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
@@ -2419,6 +2485,14 @@ def render_compat_page(slug: str, title: str) -> str:
             "use this section again only when evaluating migration progress or retirement readiness",
         ),
     )
+    body = add_update_triggers(
+        body,
+        (
+            "a legacy package is added, retired, or repointed to a different canonical target",
+            "migration guidance becomes stale compared with the current package set",
+            "compatibility scope changes materially enough to affect retirement decisions",
+        ),
+    )
     body = add_honesty_boundary(
         body,
         "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
@@ -2551,6 +2625,7 @@ def render_package_page(
     body = add_common_misreadings(body, package_common_misreadings(package, category))
     body = add_anchor_section(body, package_anchor_bullets(package, category))
     body = add_next_checks(body, package_next_checks(package, category))
+    body = add_update_triggers(body, package_update_triggers(package, category))
     body = add_question_section(body, package_page_questions(package, category, title))
     body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
     body = add_honesty_boundary(body, package_honesty_boundary(package, category))

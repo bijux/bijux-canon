@@ -91,6 +91,12 @@ flowchart TD
 - check root files, schemas, or workflows named here before trusting prose alone
 - use maintainer docs next if the root issue is really about automation or drift tooling
 
+## Update This Page When
+
+- root workflows, schemas, or shared governance change materially
+- repository policy moves into or out of package-local ownership
+- the current repository explanation no longer matches checked-in root assets
+
 ## Honesty Boundary
 
 These pages explain repository-level intent and shared rules, but they do not override package-local ownership or serve as evidence without the referenced files, workflows, and checks.

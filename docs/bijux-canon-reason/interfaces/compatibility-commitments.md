@@ -78,6 +78,12 @@ Breaking changes must be visible in code, docs, and validation together.
 - move to quality when compatibility or evidence of protection becomes the real issue
 - move back to architecture when a public-surface question reveals a deeper structural drift
 
+## Update This Page When
+
+- commands, schemas, API modules, imports, or artifacts change in a caller-visible way
+- compatibility expectations change or a new contract surface appears
+- examples or entrypoints stop matching the actual package boundary
+
 ## What This Page Answers
 
 - which public or operator-facing surfaces bijux-canon-reason exposes

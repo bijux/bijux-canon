@@ -112,6 +112,12 @@ A reviewer is tracing a refactor through `bijux-canon-reason` and needs to know 
 - move to operations when the concern becomes repeatable runtime behavior
 - move to quality when you need proof that the documented structure is still protected
 
+## Update This Page When
+
+- module responsibilities or dependency direction change materially
+- new execution pathways or structural seams become important to review
+- architectural risk shifts enough that the current map is misleading
+
 ## What This Page Answers
 
 - how bijux-canon-reason is structured internally
