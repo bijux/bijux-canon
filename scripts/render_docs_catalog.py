@@ -538,7 +538,7 @@ def link(label: str, target: str) -> str:
     return f"[{label}]({target})"
 
 
-def render_home(targets: set[str]) -> str:
+def render_home(targets: set[str], product_categories: tuple[str, ...]) -> str:
     sections = ["bijux-canon"]
     for target in TARGET_ORDER:
         if target in PRODUCT_PACKAGES and target in targets:
@@ -551,7 +551,7 @@ def render_home(targets: set[str]) -> str:
     if "platform" in targets:
         quicklinks.append('<a class="md-button md-button--primary" href="bijux-canon/">Open the repository handbook</a>')
     for target in ("ingest", "index", "reason", "agent", "runtime"):
-        if target in targets:
+        if target in targets and "foundation" in product_categories:
             quicklinks.append(
                 f'<a class="md-button" href="{PRODUCT_PACKAGES[target].slug}/foundation/">{PRODUCT_PACKAGES[target].title}</a>'
             )
@@ -605,11 +605,16 @@ def render_home(targets: set[str]) -> str:
     )
 
 
-def render_root_page(slug: str, title: str, targets: set[str]) -> str:
+def render_root_page(
+    slug: str,
+    title: str,
+    targets: set[str],
+    product_categories: tuple[str, ...],
+) -> str:
     package_links = "\n".join(
         (
             f"- [{info.title}](../{info.slug}/foundation/index.md) for {info.description.lower()}"
-            if key in targets
+            if key in targets and "foundation" in product_categories
             else f"- `{info.title}` for {info.description.lower()}"
         )
         for key, info in PRODUCT_PACKAGES.items()
@@ -1407,18 +1412,22 @@ def package_section_summary(category: str, package: PackageInfo) -> str:
     return summaries[category]
 
 
-def related_links(package: PackageInfo, category: str) -> str:
-    root = ".."
+def related_links(package: PackageInfo, category: str, active_categories: tuple[str, ...]) -> str:
     section_links = []
-    for other in PACKAGE_CATEGORY_ORDER:
+    for other in active_categories:
         if other == category:
             continue
-        section_links.append(f"- [{other.title()}]({root}/{other}/index.md)")
+        section_links.append(f"- [{other.title()}](../{other}/index.md)")
     return "\n".join(section_links)
 
 
-def render_package_page(package: PackageInfo, category: str, slug: str, title: str) -> str:
-    section_root = f"../../{package.slug}/{category}"
+def render_package_page(
+    package: PackageInfo,
+    category: str,
+    slug: str,
+    title: str,
+    active_categories: tuple[str, ...],
+) -> str:
     package_root = f"../../{package.slug}"
     category_page_links = "\n".join(
         f"- [{page_title}]({page_slug}.md)"
@@ -1437,7 +1446,7 @@ def render_package_page(package: PackageInfo, category: str, slug: str, title: s
 
             ## Read Across the Package
 
-            {related_links(package, category)}
+            {related_links(package, category, active_categories)}
 
             ## Purpose
 
@@ -2372,19 +2381,25 @@ Update it when the durable risk profile changes, not for routine day-to-day chur
     return shared[category][slug]
 
 
-def write_platform_docs(targets: set[str]) -> None:
-    write_doc(DOCS_ROOT / "index.md", render_home(targets))
+def write_platform_docs(targets: set[str], product_categories: tuple[str, ...]) -> None:
+    write_doc(DOCS_ROOT / "index.md", render_home(targets, product_categories))
     base = DOCS_ROOT / "bijux-canon"
     for slug, title in ROOT_PAGES:
-        write_doc(base / f"{slug}.md", render_root_page(slug, title, targets))
+        write_doc(
+            base / f"{slug}.md",
+            render_root_page(slug, title, targets, product_categories),
+        )
 
 
-def write_package_docs(package_key: str) -> None:
+def write_package_docs(package_key: str, active_categories: tuple[str, ...]) -> None:
     package = PRODUCT_PACKAGES[package_key]
     base = DOCS_ROOT / package.slug
-    for category in PACKAGE_CATEGORY_ORDER:
+    for category in active_categories:
         for slug, title in PACKAGE_CATEGORY_PAGES[category]:
-            write_doc(base / category / f"{slug}.md", render_package_page(package, category, slug, title))
+            write_doc(
+                base / category / f"{slug}.md",
+                render_package_page(package, category, slug, title, active_categories),
+            )
 
 
 def write_dev_docs() -> None:
@@ -2399,7 +2414,7 @@ def write_compat_docs() -> None:
         write_doc(base / f"{slug}.md", render_compat_page(slug, title))
 
 
-def nav_lines(targets: set[str]) -> list[str]:
+def nav_lines(targets: set[str], product_categories: tuple[str, ...]) -> list[str]:
     lines = [
         "nav:",
         "  - Home: index.md",
@@ -2419,7 +2434,7 @@ def nav_lines(targets: set[str]) -> list[str]:
             continue
         package = PRODUCT_PACKAGES[key]
         lines.append(f"  - {package.title}:")
-        for category in PACKAGE_CATEGORY_ORDER:
+        for category in product_categories:
             lines.append(f"      - {category.title()}:")
             for slug, title in PACKAGE_CATEGORY_PAGES[category]:
                 lines.append(
@@ -2448,7 +2463,7 @@ def nav_lines(targets: set[str]) -> list[str]:
     return lines
 
 
-def write_mkdocs(targets: set[str]) -> None:
+def write_mkdocs(targets: set[str], product_categories: tuple[str, ...]) -> None:
     body = "\n".join(
         [
             "site_name: bijux-canon",
@@ -2474,7 +2489,7 @@ def write_mkdocs(targets: set[str]) -> None:
             "extra_css:",
             "  - assets/styles/extra.css",
             "",
-            *nav_lines(targets),
+            *nav_lines(targets, product_categories),
             "",
             "plugins:",
             "  - search",
@@ -2501,27 +2516,35 @@ def parse_args() -> argparse.Namespace:
         choices=TARGET_ORDER,
         help="Sections to render. Defaults to all sections.",
     )
+    parser.add_argument(
+        "--product-categories",
+        nargs="+",
+        choices=PACKAGE_CATEGORY_ORDER,
+        default=PACKAGE_CATEGORY_ORDER,
+        help="Package categories to render for product packages.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
     targets = set(args.targets or TARGET_ORDER)
+    product_categories = tuple(args.product_categories)
     clean_docs_root()
     if "platform" in targets:
-        write_platform_docs(targets)
+        write_platform_docs(targets, product_categories)
     for key in ("ingest", "index", "reason", "agent", "runtime"):
         if key in targets:
-            write_package_docs(key)
+            write_package_docs(key, product_categories)
     if "dev" in targets:
         write_dev_docs()
     if "compat" in targets:
         write_compat_docs()
     if not (DOCS_ROOT / "index.md").exists():
-        write_doc(DOCS_ROOT / "index.md", render_home(targets))
+        write_doc(DOCS_ROOT / "index.md", render_home(targets, product_categories))
     else:
-        write_doc(DOCS_ROOT / "index.md", render_home(targets))
-    write_mkdocs(targets)
+        write_doc(DOCS_ROOT / "index.md", render_home(targets, product_categories))
+    write_mkdocs(targets, product_categories)
     count = len(list(DOCS_ROOT.rglob("*.md")))
     print(f"Rendered {count} Markdown files for targets: {', '.join(sorted(targets))}")
 

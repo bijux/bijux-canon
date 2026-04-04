@@ -34,6 +34,40 @@ nav:
       - Testing and Validation: bijux-canon/testing-and-validation.md
       - Release and Versioning: bijux-canon/release-and-versioning.md
       - Documentation System: bijux-canon/documentation-system.md
+  - bijux-canon-ingest:
+      - Foundation:
+          - Foundation: bijux-canon-ingest/foundation/index.md
+          - Package Overview: bijux-canon-ingest/foundation/package-overview.md
+          - Scope and Non-Goals: bijux-canon-ingest/foundation/scope-and-non-goals.md
+          - Ownership Boundary: bijux-canon-ingest/foundation/ownership-boundary.md
+          - Repository Fit: bijux-canon-ingest/foundation/repository-fit.md
+          - Capability Map: bijux-canon-ingest/foundation/capability-map.md
+          - Domain Language: bijux-canon-ingest/foundation/domain-language.md
+          - Lifecycle Overview: bijux-canon-ingest/foundation/lifecycle-overview.md
+          - Dependencies and Adjacencies: bijux-canon-ingest/foundation/dependencies-and-adjacencies.md
+          - Change Principles: bijux-canon-ingest/foundation/change-principles.md
+      - Architecture:
+          - Architecture: bijux-canon-ingest/architecture/index.md
+          - Module Map: bijux-canon-ingest/architecture/module-map.md
+          - Dependency Direction: bijux-canon-ingest/architecture/dependency-direction.md
+          - Execution Model: bijux-canon-ingest/architecture/execution-model.md
+          - State and Persistence: bijux-canon-ingest/architecture/state-and-persistence.md
+          - Integration Seams: bijux-canon-ingest/architecture/integration-seams.md
+          - Error Model: bijux-canon-ingest/architecture/error-model.md
+          - Extensibility Model: bijux-canon-ingest/architecture/extensibility-model.md
+          - Code Navigation: bijux-canon-ingest/architecture/code-navigation.md
+          - Architecture Risks: bijux-canon-ingest/architecture/architecture-risks.md
+      - Interfaces:
+          - Interfaces: bijux-canon-ingest/interfaces/index.md
+          - CLI Surface: bijux-canon-ingest/interfaces/cli-surface.md
+          - API Surface: bijux-canon-ingest/interfaces/api-surface.md
+          - Configuration Surface: bijux-canon-ingest/interfaces/configuration-surface.md
+          - Data Contracts: bijux-canon-ingest/interfaces/data-contracts.md
+          - Artifact Contracts: bijux-canon-ingest/interfaces/artifact-contracts.md
+          - Entrypoints and Examples: bijux-canon-ingest/interfaces/entrypoints-and-examples.md
+          - Operator Workflows: bijux-canon-ingest/interfaces/operator-workflows.md
+          - Public Imports: bijux-canon-ingest/interfaces/public-imports.md
+          - Compatibility Commitments: bijux-canon-ingest/interfaces/compatibility-commitments.md
 
 plugins:
   - search
