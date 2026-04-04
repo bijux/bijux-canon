@@ -132,7 +132,7 @@ raw-options = { git_describe_command = "git describe --dirty --tags --long --mat
 fallback-version = "0.3.0"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/bijux_canon_reason/_version.py"
+version-file = "src/bijux_canon_reason/_build_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_reason"]

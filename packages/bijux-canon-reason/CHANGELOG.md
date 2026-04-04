@@ -19,6 +19,8 @@ tagged release.
   the package.
 - Release artifacts now ship the repository `LICENSE` file so downstream
   consumers receive the license text with the published package.
+- Build-time version metadata now writes to a generated module so packaging
+  commands stop dirtying the tracked source tree.
 
 ## 0.3.0 - 2026-04-04
 
