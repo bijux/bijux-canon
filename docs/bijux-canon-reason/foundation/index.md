@@ -27,6 +27,8 @@ bijux-canon-reason exists to own deterministic evidence-aware reasoning, claim f
 
 - [Architecture](../architecture/index.md)
 - [Interfaces](../interfaces/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 

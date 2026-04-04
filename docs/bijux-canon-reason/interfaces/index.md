@@ -27,6 +27,8 @@ bijux-canon-reason interface pages describe the command, API, configuration, imp
 
 - [Foundation](../foundation/index.md)
 - [Architecture](../architecture/index.md)
+- [Operations](../operations/index.md)
+- [Quality](../quality/index.md)
 
 ## Purpose
 

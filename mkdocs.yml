@@ -180,6 +180,28 @@ nav:
           - Operator Workflows: bijux-canon-reason/interfaces/operator-workflows.md
           - Public Imports: bijux-canon-reason/interfaces/public-imports.md
           - Compatibility Commitments: bijux-canon-reason/interfaces/compatibility-commitments.md
+      - Operations:
+          - Operations: bijux-canon-reason/operations/index.md
+          - Installation and Setup: bijux-canon-reason/operations/installation-and-setup.md
+          - Local Development: bijux-canon-reason/operations/local-development.md
+          - Common Workflows: bijux-canon-reason/operations/common-workflows.md
+          - Observability and Diagnostics: bijux-canon-reason/operations/observability-and-diagnostics.md
+          - Performance and Scaling: bijux-canon-reason/operations/performance-and-scaling.md
+          - Failure Recovery: bijux-canon-reason/operations/failure-recovery.md
+          - Release and Versioning: bijux-canon-reason/operations/release-and-versioning.md
+          - Security and Safety: bijux-canon-reason/operations/security-and-safety.md
+          - Deployment Boundaries: bijux-canon-reason/operations/deployment-boundaries.md
+      - Quality:
+          - Quality: bijux-canon-reason/quality/index.md
+          - Test Strategy: bijux-canon-reason/quality/test-strategy.md
+          - Invariants: bijux-canon-reason/quality/invariants.md
+          - Review Checklist: bijux-canon-reason/quality/review-checklist.md
+          - Documentation Standards: bijux-canon-reason/quality/documentation-standards.md
+          - Definition of Done: bijux-canon-reason/quality/definition-of-done.md
+          - Dependency Governance: bijux-canon-reason/quality/dependency-governance.md
+          - Change Validation: bijux-canon-reason/quality/change-validation.md
+          - Known Limitations: bijux-canon-reason/quality/known-limitations.md
+          - Risk Register: bijux-canon-reason/quality/risk-register.md
 
 plugins:
   - search
