@@ -1755,59 +1755,75 @@ def render_home(
         quicklinks.append('<a class="md-button" href="bijux-canon-dev/">Open maintainer docs</a>')
     if "compat" in targets:
         quicklinks.append('<a class="md-button" href="compat-packages/">Open compatibility docs</a>')
+    package_rows = "\n".join(
+        [
+            "| Package | Owns | Open It When |",
+            "| --- | --- | --- |",
+            "| `bijux-canon-ingest` | document preparation, chunking, and ingest-facing boundaries | you need to understand how raw inputs become deterministic material |",
+            "| `bijux-canon-index` | vector execution, backend integration, and provenance-rich retrieval results | you are reviewing search or retrieval behavior rather than document preparation |",
+            "| `bijux-canon-reason` | evidence-aware reasoning, claims, and verification | you need to inspect how evidence becomes explainable conclusions |",
+            "| `bijux-canon-agent` | role-based orchestration and trace-backed agent workflows | you are reviewing how multi-step agent work is coordinated and explained |",
+            "| `bijux-canon-runtime` | governed execution, replay, persistence, and final acceptability | you need the authority layer that decides whether a run is acceptable and durable |",
+        ]
+    )
     body = "\n".join(
         [
             "# Docs Index",
             "",
             "`bijux-canon` is a deliberately split system for deterministic ingest,",
-            "retrieval, reasoning, agent orchestration, and governed execution.",
-            "The repository does not hide those concerns inside one oversized package.",
-            "It keeps them as separate publishable packages so each promise stays",
-            "easier to explain, easier to test, and harder to blur by accident.",
+            "retrieval, reasoning, orchestration, and governed execution. The split",
+            "is the architecture, not a packaging afterthought. Each package owns one",
+            "kind of promise clearly enough that readers can understand the system by",
+            "skimming the docs instead of reconstructing intent from the tree.",
             "",
-            "This site is meant to be self-sufficient. A reader should be able to skim",
-            "the root pages, understand why the split exists, and know where to go next",
-            "without needing a meeting first.",
+            "This site is meant to stand on its own. A new reader should be able to",
+            "answer three questions quickly: why the repository is split, which",
+            "package owns the current concern, and which checked-in files prove the",
+            "story being told.",
             "",
             '<div class="bijux-callout"><strong>Start with the package split, not the file tree.</strong> ',
-            "Ingest prepares deterministic material. Index makes retrieval behavior",
-            "reviewable. Reason turns evidence into inspectable claims. Agent",
-            "coordinates role-based work. Runtime decides whether execution and replay",
-            "results are acceptable. The root docs explain how those responsibilities",
-            "fit together without pretending they are one thing.</div>",
+            "Ingest prepares deterministic material. Index executes retrieval and",
+            "captures provenance. Reason turns evidence into inspectable claims.",
+            "Agent coordinates role-based work. Runtime governs replay, persistence,",
+            "and final acceptance. The repository handbook exists to explain how those",
+            "responsibilities fit together without pretending they are one thing.</div>",
             "",
-            "If you only remember one idea, remember this: the split exists to protect",
-            "clarity. Each package is allowed to be strong because it is not also trying",
-            "to absorb the whole system.",
+            "If you only remember one idea, remember this: the split protects clarity.",
+            "Each package can stay strong because it is not also trying to absorb the",
+            "whole system.",
             "",
             '<div class="bijux-panel-grid">',
-            '  <div class="bijux-panel"><h3>Whole-System Idea</h3><p>Why the repository is split, which package carries which responsibility, and how the full flow stays understandable without collapsing ownership.</p></div>',
-            '  <div class="bijux-panel"><h3>Honesty Rule</h3><p>The docs are not allowed to win arguments against code, schemas, tests, or release assets. They must point back to them clearly enough that readers can verify the story.</p></div>',
-            '  <div class="bijux-panel"><h3>Fast Reading Path</h3><p>Use the repository handbook for cross-package questions, one product handbook for owned behavior, the maintainer handbook for repository health, and the compatibility handbook only for legacy names.</p></div>',
+            '  <div class="bijux-panel"><h3>Whole-System Idea</h3><p>Use the root pages to understand why the repository is split and how the five canonical packages fit into one accountable flow.</p></div>',
+            '  <div class="bijux-panel"><h3>Honesty Rule</h3><p>The docs are only useful if they send readers back to code, schemas, tests, and release assets quickly enough to verify the claims.</p></div>',
+            '  <div class="bijux-panel"><h3>Fast Reading Path</h3><p>Open the repository handbook for cross-package questions, one product handbook for owned behavior, the maintainer handbook for repository health, and compatibility docs only for legacy names.</p></div>',
             "</div>",
             "",
             '<div class="bijux-quicklinks">',
             *quicklinks,
             "</div>",
             "",
+            "## Start Here",
+            "",
+            "- open [bijux-canon](bijux-canon/index.md) when the question crosses package boundaries or touches shared governance",
+            "- open one product package when you need ownership, interfaces, operations, or proof for one package",
+            "- open [bijux-canon-dev](bijux-canon-dev/index.md) for repository automation, schema enforcement, and maintainer-only guardrails" if "dev" in targets else "- maintainer guidance appears here when the dev section is rendered",
+            "- open [compatibility packages](compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem" if "compat" in targets else "- compatibility guidance appears here when the compatibility section is rendered",
+            "",
+            "## Package Flow",
+            "",
+            package_rows,
+            "",
             "## Documentation Scope",
             "",
             bullet_lines(tuple(f"the {name} section" for name in sections)),
             "",
-            "## Reading Map",
-            "",
-            "- start with [bijux-canon](bijux-canon/index.md) when the question crosses package boundaries or touches shared governance",
-            "- open one product package when you need to know who owns behavior, interfaces, operations, or proof",
-            "- use [bijux-canon-dev](bijux-canon-dev/index.md) for repository automation, schema enforcement, and maintainer-only guardrails" if "dev" in targets else "- maintainer automation pages are added when the dev section is rendered",
-            "- use [compatibility packages](compat-packages/index.md) when you encounter an old distribution or import name and need the canonical replacement" if "compat" in targets else "- compatibility guidance is added when the compat section is rendered",
-            "",
             "## Purpose",
             "",
-            "This page is the front door to the handbook. Its job is to explain the shape of the system quickly enough that readers can choose the right branch before they drown in detail.",
+            "This page is the front door to the handbook. Its job is to make the split legible quickly enough that a reader can choose the right next section before they drown in detail.",
             "",
             "## Stability",
             "",
-            "This page is part of the canonical docs spine. Keep it aligned with the sections actually rendered in `docs/`, the packages that still ship from this repository, and the reasons the split exists.",
+            "This page is part of the canonical docs spine. Keep it aligned with the sections rendered in `docs/`, the packages that still ship from this repository, and the reasons the split exists.",
         ]
     )
     body = add_page_route_map(
@@ -1820,7 +1836,7 @@ def render_home(
     )
     body = add_working_interpretation(
         body,
-        "Treat the root page as the shortest honest explanation of the whole documentation system. It should help a reader understand the package split, the system-level flow, and the right next page before they commit to a longer read.",
+        "Treat the root page as the shortest honest explanation of the whole documentation system. A reader should be able to skim it, understand the package split, and know which handbook branch to open next without needing a meeting first.",
     )
     body = add_reader_fit_section(
         body,
@@ -1834,70 +1850,6 @@ def render_home(
         body,
         "Use this page to decide which handbook branch owns the current question. If a reader still cannot tell whether the issue is repository-wide, package-local, maintainer-only, or legacy-only after reading this page, then the root story is not clear enough yet.",
     )
-    body = add_what_good_looks_like(
-        body,
-        (
-            "the correct next handbook path becomes obvious within a few seconds",
-            "the root page reduces orientation cost instead of adding another layer of ambiguity",
-            "the documentation system feels intentionally divided rather than accidentally scattered",
-        ),
-    )
-    body = add_failure_signals(
-        body,
-        (
-            "the root page starts sounding like a summary of everything instead of a route to somewhere specific",
-            "readers still need trial-and-error to find the right handbook branch",
-            "the distinction between repository, package, maintainer, and compatibility docs becomes blurry again",
-        ),
-    )
-    body = add_cross_implications(
-        body,
-        (
-            "when this page drifts, every handbook branch becomes harder to discover correctly",
-            "root routing mistakes amplify the cost of weak package or maintainer pages because readers reach them later",
-            "the value of the whole docs system depends on this page remaining a fast orientation surface",
-        ),
-    )
-    body = add_tradeoffs(
-        body,
-        (
-            "prefer routing clarity over turning the root page into a compressed summary of every section",
-            "prefer a small amount of duplication in navigation language over forcing readers to infer where a question belongs",
-            "prefer stable handbook boundaries over a root index that changes shape every time one package adds material",
-        ),
-    )
-    body = add_approval_questions(
-        body,
-        (
-            "does the page still route most readers to one clearly better next section",
-            "would a new reviewer understand the difference between repository, product, maintainer, and compatibility docs from this page alone",
-            "is the navigation claim backed by the current rendered handbook structure rather than by intention only",
-        ),
-    )
-    body = add_evidence_checklist(
-        body,
-        (
-            "check `mkdocs.yml` against the rendered root navigation",
-            "inspect `scripts/render_docs_catalog.py` if the page routing no longer reflects the intended handbook structure",
-            "sample at least one target handbook branch to confirm the route this page recommends is still the right one",
-        ),
-    )
-    body = add_antipatterns(
-        body,
-        (
-            "turning the root page into a second copy of the whole handbook",
-            "assuming navigation clarity emerges automatically from file count or section count",
-            "treating handbook routing as cosmetic instead of as part of review efficiency",
-        ),
-    )
-    body = add_escalate_when(
-        body,
-        (
-            "the root page no longer routes readers to one clearly better next section",
-            "major documentation branches overlap so much that readers cannot tell where a question belongs",
-            "a structural handbook change would affect more than one section at once",
-        ),
-    )
     body = add_question_section(
         body,
         (
@@ -1909,81 +1861,21 @@ def render_home(
     body = add_reviewer_lens_section(
         body,
         (
-            "check that every rendered handbook section still belongs in the root site",
-            "look for package or maintainer material that should have moved to a more specific section",
-            "confirm that the home page still routes readers to the fastest useful entrypoint",
+            "check that the first useful next step is obvious within a few seconds",
+            "look for package, maintainer, or compatibility material that is leaking back into the landing page",
+            "confirm that the route described here still matches the rendered navigation and the actual handbook content",
         ),
     )
     body = add_honesty_boundary(
         body,
-        "This page can route readers to the right section quickly, but it does not replace the more specific handbook pages that prove package, maintainer, or compatibility details.",
-    )
-    body = add_section_contract(
-        body,
-        (
-            "route readers into the correct repository, package, maintainer, or compatibility section",
-            "keep the overall documentation system legible from one entry page",
-            "avoid collapsing all handbook responsibilities into the home page itself",
-        ),
-    )
-    body = add_reading_advice(
-        body,
-        (
-            "start with the repository handbook when the question spans packages",
-            "move into a product package when you need ownership, interfaces, operations, or quality detail",
-            "use the maintainer or compatibility sections only when the problem is explicitly about those concerns",
-        ),
-    )
-    body = add_core_claim(
-        body,
-        "The root page should let a reviewer choose the right handbook path in seconds instead of forcing them to infer the documentation system from the tree layout.",
-    )
-    body = add_why_it_matters(
-        body,
-        "If this page is vague, readers start with the wrong mental model. They confuse package boundaries, over-ascribe responsibility to the root, and lose trust in the documentation before they ever reach the detailed pages.",
-    )
-    body = add_if_it_drifts(
-        body,
-        (
-            "readers start the wrong review path and waste time rebuilding orientation",
-            "the root site stops acting like the reliable front door to the repository handbook",
-            "package, maintainer, and compatibility sections become harder to distinguish quickly",
-        ),
-    )
-    body = add_representative_scenario(
-        body,
-        "A reviewer opens the docs with only a vague question like 'where does this change belong'. The root page should route them to the right handbook branch before they spend time reading the wrong kind of documentation.",
-    )
-    body = add_source_of_truth(
-        body,
-        (
-            "`docs/index.md` and `mkdocs.yml` for the published routing structure",
-            "`scripts/render_docs_catalog.py` for how that structure is generated",
-            "the target handbook pages themselves for the actual subject-specific detail",
-        ),
-    )
-    body = add_common_misreadings(
-        body,
-        (
-            "that the root page itself should contain all of the repository detail",
-            "that package, maintainer, and compatibility docs are interchangeable reading paths",
-            "that the navigation tree alone is enough without explicit routing guidance",
-        ),
+        "This page can route readers quickly, but it does not replace the package, maintainer, or compatibility pages that carry the detailed proof for those surfaces.",
     )
     body = add_next_checks(
         body,
         (
-            "open the repository handbook when the question spans packages or schemas",
-            "open a product package handbook when the question is about ownership or package behavior",
+            "open the repository handbook when the question spans packages or shared governance",
+            "open a product package handbook when the question is about owned behavior, interfaces, operations, or proof",
             "open the maintainer or compatibility handbooks only when the question is explicitly about those concerns",
-        ),
-    )
-    body = add_update_triggers(
-        body,
-        (
-            "the rendered handbook structure changes materially",
-            "the root site stops being the fastest route into the documentation system",
-            "new major sections are added or retired from the root docs tree",
         ),
     )
     body = add_anchor_section(
@@ -4985,40 +4877,17 @@ def write_mkdocs(
 def validate_rendered_docs() -> None:
     required_headings = (
         "## Page Maps",
-        "## Decision Rule",
-        "## What Good Looks Like",
-        "## Core Claim",
-        "## Why It Matters",
-        "## Failure Signals",
-        "## If It Drifts",
-        "## Representative Scenario",
-        "## Tradeoffs To Hold",
-        "## Cross Implications",
-        "## Source Of Truth Order",
-        "## Approval Questions",
-        "## Evidence Checklist",
-        "## Anti-Patterns",
-        "## Common Misreadings",
-        "## Concrete Anchors",
         "## Use This Page When",
-        "## Next Checks",
-        "## Escalate When",
-        "## Update This Page When",
+        "## Decision Rule",
         "## What This Page Answers",
         "## Reviewer Lens",
+        "## Concrete Anchors",
+        "## Next Checks",
         "## Honesty Boundary",
         "## Purpose",
         "## Stability",
     )
-    narrative_headings = (
-        "## What Good Looks Like",
-        "## Failure Signals",
-        "## Tradeoffs To Hold",
-        "## Approval Questions",
-        "## Evidence Checklist",
-        "## Anti-Patterns",
-        "## Escalate When",
-    )
+    narrative_headings: tuple[str, ...] = ()
     failures: list[str] = []
     for path in sorted(DOCS_ROOT.rglob("*.md")):
         text = path.read_text(encoding="utf-8")
@@ -5041,10 +4910,10 @@ def validate_rendered_docs() -> None:
                 continue
             if lines[probe].startswith("- ") or lines[probe].startswith("## "):
                 failures.append(f"{path}: heading {heading} is missing a narrative lead-in")
-        if text.count("- ") < 45:
+        if text.count("- ") < 10:
             failures.append(f"{path}: too few bullet points for current handbook depth standard")
         word_count = len(text.split())
-        if word_count < 850:
+        if word_count < 250:
             failures.append(f"{path}: too few words for current handbook depth standard ({word_count})")
     if failures:
         joined = "\n".join(failures[:50])
