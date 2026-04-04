@@ -13,7 +13,10 @@ Each compatibility package is intentionally thin: package metadata, minimal
 import surface preservation, build glue, and documentation pointing at the
 canonical replacement.
 
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.
+Thinness is the design goal here. These packages should preserve a path, not
+become a parallel product line with its own growing surface area.
+
+These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
 ## Page Maps
 
@@ -21,9 +24,9 @@ These compatibility pages should make legacy names understandable without romant
 flowchart LR
     scope["bijux-canon"] --> section["Compatibility Handbook"]
     section --> page["Package Behavior"]
-    dest1["legacy package names"]
-    dest2["migration decisions"]
-    dest3["retirement review"]
+    dest1["map old names"]
+    dest2["choose migration"]
+    dest3["judge retirement"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -46,9 +49,9 @@ flowchart TD
     focus2 --> focus2_2
     focus3["Decision pressure"]
     page --> focus3
-    focus3_1["migration"]
+    focus3_1["migration pressure"]
     focus3 --> focus3_1
-    focus3_2["retirement"]
+    focus3_2["retirement readiness"]
     focus3 --> focus3_2
 ```
 
@@ -100,7 +103,7 @@ Use `Package Behavior` to decide whether a preserved legacy name is still servin
 
 ## Honesty Boundary
 
-This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.
+This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
 
 ## Purpose
 
@@ -164,7 +167,7 @@ Each compatibility page should make migration pressure clearer than legacy habit
 
 ## Why It Matters
 
-Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist, and that makes migration drift expensive.
+Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist. Without explicit migration guidance, old names become sticky and retirement decisions become emotionally expensive instead of evidence-based.
 
 ## If It Drifts
 

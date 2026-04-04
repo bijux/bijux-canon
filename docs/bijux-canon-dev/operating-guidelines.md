@@ -12,7 +12,11 @@ last_reviewed: 2026-04-04
 Changes in `bijux-canon-dev` should be especially careful because they can
 affect multiple packages at once.
 
-These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they reduce hidden automation and make package-wide maintenance effects inspectable.
+That is why this section needs to be unusually honest. A small maintainer
+change can carry wide consequences, so the package should bias toward
+explicit scope, explicit tests, and explicit explanations.
+
+These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
 
 ## Page Maps
 
@@ -20,9 +24,9 @@ These maintainer pages should read like explicit operational memory for reposito
 flowchart LR
     scope["bijux-canon"] --> section["Maintainer Handbook"]
     section --> page["Operating Guidelines"]
-    dest1["quality gates"]
-    dest2["schema governance"]
-    dest3["release support"]
+    dest1["explain automation"]
+    dest2["see repository-health scope"]
+    dest3["review package impact"]
     page --> dest1
     page --> dest2
     page --> dest3
@@ -33,15 +37,15 @@ flowchart TD
     page["Operating Guidelines"]
     focus1["Maintainer role"]
     page --> focus1
-    focus1_1["quality"]
+    focus1_1["quality gates"]
     focus1 --> focus1_1
-    focus1_2["security"]
+    focus1_2["security gates"]
     focus1 --> focus1_2
     focus2["Repository health"]
     page --> focus2
-    focus2_1["schemas"]
+    focus2_1["schema integrity"]
     focus2 --> focus2_1
-    focus2_2["supply chain"]
+    focus2_2["supply-chain visibility"]
     focus2 --> focus2_2
     focus3["Operational outcome"]
     page --> focus3
@@ -99,7 +103,7 @@ Use `Operating Guidelines` to decide whether a change belongs to maintainer auto
 
 ## Honesty Boundary
 
-This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.
+This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.
 
 ## Purpose
 
@@ -163,7 +167,7 @@ Each maintainer page should explain repository-health behavior in a way that is 
 
 ## Why It Matters
 
-Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely.
+Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely. If the tooling is powerful but unexplained, contributors start treating the repository like a trap.
 
 ## If It Drifts
 

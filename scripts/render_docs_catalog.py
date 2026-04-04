@@ -2461,9 +2461,13 @@ def render_dev_page(slug: str, title: str) -> str:
             f"""\
             # bijux-canon-dev
 
-            `bijux-canon-dev` is the maintainer package for repository health. It exists so
-            quality gates, schema drift checks, SBOM generation, and release support have a
-            clear home that is outside the end-user product surface.
+            `bijux-canon-dev` is the maintainer package for repository health. It exists
+            so schema drift checks, quality gates, supply-chain helpers, and release
+            support have one clear home outside the end-user product surface.
+
+            This package matters because hidden maintenance logic erodes trust fast. If
+            contributors can only discover repository policy by reading CI output or shell
+            glue, the monorepo stops feeling reviewable.
 
             ## Pages in This Section
 
@@ -2486,9 +2490,13 @@ def render_dev_page(slug: str, title: str) -> str:
             """\
             # Package Overview
 
-            `bijux-canon-dev` is intentionally not part of the end-user runtime. It is the
-            package that keeps the monorepo honest when schemas drift, security tooling
-            falls behind, or release metadata becomes inconsistent.
+            `bijux-canon-dev` is intentionally not part of the end-user runtime. It is
+            the package that keeps the monorepo honest when schemas drift, security
+            tooling falls behind, or release metadata becomes inconsistent.
+
+            A good maintainer package should reduce mystery, not create a new layer of
+            it. This page should help readers see why the automation exists and why it
+            does not belong in the product packages themselves.
 
             ## What It Owns
 
@@ -2511,6 +2519,10 @@ def render_dev_page(slug: str, title: str) -> str:
             # Scope and Non-Goals
 
             `bijux-canon-dev` is for maintainers and automation.
+
+            Its value depends on discipline. If maintainer code starts absorbing
+            product behavior, the repository loses one of its most important
+            boundaries: the difference between health tooling and product surface.
 
             ## In Scope
 
@@ -2539,6 +2551,11 @@ def render_dev_page(slug: str, title: str) -> str:
 
             {modules}
 
+            Read this page as a map of repository-health responsibilities. It should let
+            a contributor find the right maintenance code path without guessing whether
+            the behavior is about quality, security, schema governance, release work, or
+            supply-chain support.
+
             ## Purpose
 
             This page is the shortest code-navigation aid for `bijux-canon-dev`.
@@ -2554,6 +2571,10 @@ def render_dev_page(slug: str, title: str) -> str:
 
             Repository quality checks live here so package code does not each reinvent the
             same maintenance logic.
+
+            This page should make the gates feel concrete and inspectable. A quality bar
+            is more credible when a contributor can point to the helper, the test, and
+            the workflow that back it.
 
             ## Current Quality Surfaces
 
@@ -2577,6 +2598,10 @@ def render_dev_page(slug: str, title: str) -> str:
             Security checks that are about repository health rather than product behavior
             live in `bijux-canon-dev`.
 
+            This page is here to keep security work from becoming vague compliance
+            theater. The useful question is always which checked-in tool or test is
+            carrying the actual security expectation.
+
             ## Current Security Surfaces
 
             - `security/pip_audit_gate.py`
@@ -2598,6 +2623,10 @@ def render_dev_page(slug: str, title: str) -> str:
 
             The package owns repository-level helpers that keep API schemas and tracked
             schema artifacts synchronized with the code that claims to implement them.
+
+            Schema drift is one of the easiest ways to lose user trust quietly. This
+            page should make it obvious where the repository checks that risk and why
+            that work belongs in maintainer tooling.
 
             ## Current Surfaces
 
@@ -2621,6 +2650,10 @@ def render_dev_page(slug: str, title: str) -> str:
             Shared release helpers belong here so versioning and packaging practices stay
             consistent across the repository.
 
+            This page should help readers see release support as a coordination problem,
+            not as hidden magic. If release logic matters, it should be visible, named,
+            and tied to the workflows that actually use it.
+
             ## Current Surfaces
 
             - `release/version_resolver.py`
@@ -2642,6 +2675,10 @@ def render_dev_page(slug: str, title: str) -> str:
 
             Supply-chain visibility is a repository maintenance concern, so SBOM helpers
             live in `bijux-canon-dev` instead of being duplicated by each package.
+
+            The point is not just compliance. The point is to keep dependency and build
+            provenance explainable at repository level without smearing that burden
+            across every product package.
 
             ## Current Surfaces
 
@@ -2665,6 +2702,10 @@ def render_dev_page(slug: str, title: str) -> str:
             Changes in `bijux-canon-dev` should be especially careful because they can
             affect multiple packages at once.
 
+            That is why this section needs to be unusually honest. A small maintainer
+            change can carry wide consequences, so the package should bias toward
+            explicit scope, explicit tests, and explicit explanations.
+
             ## Guidelines
 
             - prefer checks that are reviewable and testable over opaque shell glue
@@ -2687,16 +2728,16 @@ def render_dev_page(slug: str, title: str) -> str:
         "bijux-canon",
         "Maintainer Handbook",
         title,
-        ("quality gates", "schema governance", "release support"),
+        ("explain automation", "see repository-health scope", "review package impact"),
         (
-            ("Maintainer role", ("quality", "security")),
-            ("Repository health", ("schemas", "supply chain")),
+            ("Maintainer role", ("quality gates", "security gates")),
+            ("Repository health", ("schema integrity", "supply-chain visibility")),
             ("Operational outcome", ("release clarity", "package consistency")),
         ),
     )
     body = add_working_interpretation(
         body,
-        "These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they reduce hidden automation and make package-wide maintenance effects inspectable.",
+        "These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.",
     )
     body = add_reader_fit_section(
         body,
@@ -2796,7 +2837,7 @@ def render_dev_page(slug: str, title: str) -> str:
     )
     body = add_why_it_matters(
         body,
-        "Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely.",
+        "Maintainer pages matter because hidden automation is one of the fastest ways for a monorepo to become hard to trust, hard to change, and hard to release safely. If the tooling is powerful but unexplained, contributors start treating the repository like a trap.",
     )
     body = add_if_it_drifts(
         body,
@@ -2844,7 +2885,7 @@ def render_dev_page(slug: str, title: str) -> str:
     )
     body = add_honesty_boundary(
         body,
-        "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface.",
+        "This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.",
     )
     if slug == "index":
         body = add_section_contract(
@@ -2900,6 +2941,10 @@ def render_compat_page(slug: str, title: str) -> str:
             and command names while the canonical package family now lives under the
             `bijux-canon-*` naming system.
 
+            They should be easy to understand but hard to romanticize. Their job is to
+            reduce migration pain, not to compete with the canonical package family for
+            new work.
+
             ## Pages in This Section
 
             {compat_page_links}
@@ -2923,6 +2968,10 @@ def render_compat_page(slug: str, title: str) -> str:
 
             These packages exist to reduce migration breakage, not to become the preferred
             long-term entrypoints for new work.
+
+            This page should help readers see the compatibility layer as a bridge with a
+            cost. Preserving old names is sometimes necessary, but it is still a debt
+            that should be visible and justified.
 
             ## Preserved Surfaces
 
@@ -2961,6 +3010,10 @@ def render_compat_page(slug: str, title: str) -> str:
             New work should target the canonical package names directly and treat the
             compatibility packages as temporary bridges.
 
+            This page should make the path forward feel more concrete than the comfort of
+            staying on the legacy name. If readers leave unsure which name to use next,
+            the migration story is still too weak.
+
             ## Recommended Migration Pattern
 
             - switch dependencies to the canonical `bijux-canon-*` distribution
@@ -2984,6 +3037,9 @@ def render_compat_page(slug: str, title: str) -> str:
             import surface preservation, build glue, and documentation pointing at the
             canonical replacement.
 
+            Thinness is the design goal here. These packages should preserve a path, not
+            become a parallel product line with its own growing surface area.
+
             ## Expected Behavior
 
             - preserve name-based compatibility
@@ -3005,6 +3061,10 @@ def render_compat_page(slug: str, title: str) -> str:
 
             Compatibility imports exist only so older code can keep resolving package names
             during migration.
+
+            This page should make that temporary intent impossible to miss. Preserved
+            imports are a migration aid, not a sign that the legacy name regained first-
+            class status.
 
             ## Current Import Roots
 
@@ -3030,6 +3090,10 @@ def render_compat_page(slug: str, title: str) -> str:
             Some compatibility packages also preserve historic command names so migration
             does not break operator scripts immediately.
 
+            This page should keep those commands in context. A preserved command should
+            feel like a safety rail on the way to the canonical package, not like a new
+            invitation to stay on the old name forever.
+
             ## Command Rule
 
             A compatibility command should only exist when the canonical package still
@@ -3051,6 +3115,10 @@ def render_compat_page(slug: str, title: str) -> str:
             Compatibility packages should release only when they still serve a real
             migration need or when the canonical target package changes in a way that
             requires compatibility metadata to move with it.
+
+            A compatibility release should feel justified, narrow, and temporary. If the
+            release story starts sounding like ordinary feature delivery, the layer is
+            drifting away from its purpose.
 
             ## Policy
 
@@ -3074,6 +3142,10 @@ def render_compat_page(slug: str, title: str) -> str:
             Compatibility packages are small, but they still need validation for import
             preservation, packaging metadata, and migration pointers.
 
+            Small does not mean unimportant. These packages carry trust mainly through
+            naming continuity, so the validation has to prove that the bridge still
+            points to the right place.
+
             ## Validation Focus
 
             - import resolution
@@ -3095,6 +3167,9 @@ def render_compat_page(slug: str, title: str) -> str:
 
             A compatibility package can be retired only when the dependent environments
             that still need it are understood and the retirement path is documented.
+
+            Retirement is where honesty matters most. A package should not survive on
+            vague anxiety, and it should not disappear on untested optimism.
 
             ## Retirement Signals
 
@@ -3118,16 +3193,16 @@ def render_compat_page(slug: str, title: str) -> str:
         "bijux-canon",
         "Compatibility Handbook",
         title,
-        ("legacy package names", "migration decisions", "retirement review"),
+        ("map old names", "choose migration", "judge retirement"),
         (
             ("Legacy surface", ("distribution names", "import names")),
             ("Canonical target", ("current packages", "new work")),
-            ("Decision pressure", ("migration", "retirement")),
+            ("Decision pressure", ("migration pressure", "retirement readiness")),
         ),
     )
     body = add_working_interpretation(
         body,
-        "These compatibility pages should make legacy names understandable without romanticizing them. Their value is in clarifying preservation, migration, and retirement pressure with as little ambiguity as possible.",
+        "These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.",
     )
     body = add_reader_fit_section(
         body,
@@ -3227,7 +3302,7 @@ def render_compat_page(slug: str, title: str) -> str:
     )
     body = add_why_it_matters(
         body,
-        "Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist, and that makes migration drift expensive.",
+        "Compatibility pages matter because legacy package names often survive longer than the people who remember why they exist. Without explicit migration guidance, old names become sticky and retirement decisions become emotionally expensive instead of evidence-based.",
     )
     body = add_if_it_drifts(
         body,
@@ -3275,7 +3350,7 @@ def render_compat_page(slug: str, title: str) -> str:
     )
     body = add_honesty_boundary(
         body,
-        "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth.",
+        "This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.",
     )
     if slug == "index":
         body = add_section_contract(
