@@ -1,19 +1,37 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: bijux-canon-agent HTTP API
+  title: bijux-canon-agent API
   version: v1
-  description: Execution-only, deterministic, stateless API for running the canonical pipeline.
+  summary: Deterministic execution over the canonical agent pipeline.
+  description: >
+    The bijux-canon-agent HTTP API exposes the v1 execution boundary for running the
+    canonical agent pipeline and reading a lightweight health signal. The surface is
+    intentionally small so callers can submit pipeline work, receive structured failure
+    reasons, and trace run metadata without negotiating a wider mutable state model.
+  contact:
+    name: Bijux
+    url: https://github.com/bijux/bijux-canon
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
   - url: /
 security: []
+tags:
+  - name: Runs
+    description: Execute the canonical agent pipeline.
+  - name: Health
+    description: Lightweight health signals for the API process.
 paths:
   /v1/run:
     post:
+      tags:
+        - Runs
       operationId: runPipelineV1
-      summary: Run the canonical pipeline
+      summary: Run the canonical agent pipeline
+      description: >
+        Validate the submitted request, execute the canonical agent pipeline, and
+        return either the structured result envelope or a typed failure payload.
       requestBody:
         required: true
         content:
@@ -32,9 +50,12 @@ paths:
                   text: "Example document text to process."
                   task_goal: "Summarize the key points and extract structured data."
                   context_id: "custom-execution-2026"
+                  config:
+                    strategy: "extractive"
+                    backend: "simple"
       responses:
         "200":
-          description: Successful pipeline run
+          description: Successful pipeline run.
           content:
             application/json:
               schema:
@@ -59,11 +80,14 @@ paths:
                 $ref: "#/components/schemas/ErrorResponseV1"
   /v1/health:
     get:
+      tags:
+        - Health
       operationId: v1Health
-      summary: Health status for the API
+      summary: Report API health
+      description: Return a lightweight liveness signal for the agent API process.
       responses:
         "200":
-          description: Health check result
+          description: Health check result.
           content:
             application/json:
               schema:
@@ -99,16 +123,52 @@ components:
           maxLength: 128
           default: api-v1
           description: Identifier for the execution context.
+        config:
+          anyOf:
+            - $ref: "#/components/schemas/RunConfigV1"
+            - type: "null"
+          description: Optional deterministic config overrides for the pipeline.
+    RunConfigV1:
+      type: object
+      additionalProperties: true
+      properties:
+        agents:
+          type: array
+          description: Ordered subset of pipeline agents to enable for this run.
+          items:
+            type: string
+            enum:
+              - file_reader
+              - summarizer
+              - validator
+              - critique
+              - stage_runner
+        strategy:
+          anyOf:
+            - type: string
+              enum:
+                - extractive
+            - type: "null"
+          description: Optional execution strategy override.
+        backend:
+          anyOf:
+            - type: string
+              enum:
+                - simple
+            - type: "null"
+          description: Optional backend override for deterministic runs.
     TraceMetadata:
       type: object
       additionalProperties: false
       properties:
         run_id:
-          type: string
-          nullable: true
+          anyOf:
+            - type: string
+            - type: "null"
         trace_schema_version:
-          type: string
-          nullable: true
+          anyOf:
+            - type: string
+            - type: "null"
     ErrorResponseV1:
       type: object
       additionalProperties: false
@@ -141,21 +201,20 @@ components:
         context_id:
           type: string
         result:
-          type: object
-          nullable: true
-          additionalProperties: true
+          anyOf:
+            - type: object
+              additionalProperties: true
+            - type: "null"
           description: Pipeline execution result (present on success).
         error:
-          type: object
-          nullable: true
-          allOf:
+          anyOf:
             - $ref: "#/components/schemas/ErrorResponseV1"
+            - type: "null"
           description: Structured error details (present on failure).
         trace_metadata:
-          type: object
-          nullable: true
-          allOf:
+          anyOf:
             - $ref: "#/components/schemas/TraceMetadata"
+            - type: "null"
           description: Optional tracing metadata.
     HealthResponse:
       type: object

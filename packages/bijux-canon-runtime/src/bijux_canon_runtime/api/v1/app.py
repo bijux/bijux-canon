@@ -36,9 +36,32 @@ from bijux_canon_runtime.observability.storage.execution_store import (
 )
 
 app = FastAPI(
-    title="bijux-canon-runtime",
-    description="HTTP API exposing the same contracts as the CLI.",
-    version="0.1",
+    title="bijux-canon-runtime API",
+    summary="Contract-enforced execution and replay for the runtime layer.",
+    description=(
+        "The bijux-canon-runtime HTTP API exposes the v1 execution and replay surface "
+        "for flow contracts. It keeps required headers, request envelopes, and replay "
+        "acceptability visible at the boundary so failures are reviewable rather than "
+        "implicit."
+    ),
+    version="v1",
+    openapi_version="3.1.0",
+    contact={"name": "Bijux", "url": "https://github.com/bijux/bijux-canon"},
+    license_info={
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    },
+    servers=[{"url": "/"}],
+    openapi_tags=[
+        {
+            "name": "Health",
+            "description": "Operational liveness and readiness signals for the runtime API.",
+        },
+        {
+            "name": "Flows",
+            "description": "Flow execution and replay endpoints governed by runtime contracts.",
+        },
+    ],
 )
 
 

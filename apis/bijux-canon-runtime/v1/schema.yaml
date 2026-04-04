@@ -1,16 +1,66 @@
 openapi: 3.1.0
 info:
-  title: bijux-canon-runtime API schemas
+  title: bijux-canon-runtime API
   version: v1
+  summary: Contract-enforced execution and replay for the runtime layer.
+  description: >
+    The bijux-canon-runtime HTTP API exposes the v1 execution and replay surface for
+    flow contracts. It treats required headers, request envelopes, and replay
+    acceptability as first-class API concerns so callers can tell exactly which
+    contract failed when a request is rejected.
+  contact:
+    name: Bijux
+    url: https://github.com/bijux/bijux-canon
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
   - url: /
 security: []
+tags:
+  - name: Health
+    description: Operational liveness and readiness signals for the runtime API.
+  - name: Flows
+    description: Flow execution and replay endpoints governed by runtime contracts.
 paths:
-  /flows/run:
+  /api/v1/health:
+    get:
+      tags:
+        - Health
+      summary: Report API health
+      description: Return a lightweight liveness signal for the runtime API process.
+      operationId: getRuntimeHealth
+      responses:
+        '200':
+          description: Health check completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/v1/ready:
+    get:
+      tags:
+        - Health
+      summary: Report runtime readiness
+      description: Report whether the runtime can reach its configured execution store.
+      operationId: getRuntimeReadiness
+      responses:
+        '200':
+          description: Readiness check completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+        '503':
+          description: Runtime dependencies are not ready for execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+  /api/v1/flows/run:
     post:
+      tags:
+        - Flows
       summary: Run a flow
       description: Executes a flow only when the declared policy, dataset, and headers satisfy the execution contract, otherwise returns a FailureEnvelope.
       operationId: runFlow
@@ -58,8 +108,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FailureEnvelope'
-  /flows/replay:
+  /api/v1/flows/replay:
     post:
+      tags:
+        - Flows
       summary: Replay a flow
       description: Replays a persisted run under the declared acceptability threshold and reports contractual mismatches in the response envelope.
       operationId: replayFlow
@@ -128,6 +180,24 @@ components:
       schema:
         type: string
   schemas:
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+    ReadyResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - ready
+      properties:
+        ready:
+          type: boolean
     FlowRunRequest:
       type: object
       additionalProperties: false
