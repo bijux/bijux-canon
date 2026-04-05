@@ -11,8 +11,8 @@ permissions:
   id-token: write
 
 jobs:
-  build:
-    uses: ./.github/workflows/build-release-artifacts.yml
+  publish:
+    uses: ./.github/workflows/publish-package.yml
     with:
       package_slug: bijux-canon-reason
       package_dir: packages/bijux-canon-reason
@@ -24,22 +24,3 @@ jobs:
       upload_paths: |
         artifacts/bijux-canon-reason/build/*
         artifacts/bijux-canon-reason/sbom/*
-
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - name: Download publish artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: bijux-canon-reason-pypi-dist
-          path: .github/tmp/bijux-canon-reason-dist
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: .github/tmp/bijux-canon-reason-dist
-          skip-existing: true
