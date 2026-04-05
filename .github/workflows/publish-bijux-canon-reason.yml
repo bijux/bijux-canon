@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   build:
@@ -32,7 +31,6 @@ jobs:
       name: pypi
     permissions:
       contents: read
-      id-token: write
     steps:
       - name: Download publish artifacts
         uses: actions/download-artifact@v5
@@ -43,5 +41,6 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
           packages-dir: .github/tmp/bijux-canon-reason-dist
           skip-existing: true

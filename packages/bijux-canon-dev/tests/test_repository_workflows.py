@@ -58,21 +58,34 @@ def test_publish_jobs_keep_trusted_publishing_contract() -> None:
         publish_job = jobs.get("publish", {})
         job_permissions = publish_job.get("permissions", {})
         steps = publish_job.get("steps", [])
+        publish_step = next(
+            (
+                step
+                for step in steps
+                if isinstance(step, dict)
+                and step.get("uses") == "pypa/gh-action-pypi-publish@release/v1"
+            ),
+            None,
+        )
 
-        if permissions.get("id-token") != "write":
-            failures.append(f"{path.name}: workflow should request id-token write")
-        if job_permissions.get("id-token") != "write":
-            failures.append(f"{path.name}: publish job should request id-token write")
-        if not any(
-            step.get("uses") == "pypa/gh-action-pypi-publish@release/v1"
-            for step in steps
-            if isinstance(step, dict)
-        ):
+        if permissions != {"contents": "read"}:
+            failures.append(f"{path.name}: workflow permissions should stay contents: read")
+        if job_permissions != {"contents": "read"}:
             failures.append(
-                f"{path.name}: publish job should still publish via PyPI trusted publishing"
+                f"{path.name}: publish job permissions should stay contents: read"
+            )
+        if not isinstance(publish_step, dict):
+            failures.append(
+                f"{path.name}: publish job should still publish via PyPI action"
+            )
+            continue
+
+        password = publish_step.get("with", {}).get("password")
+        if password != "${{ secrets.PYPI_API_TOKEN }}":
+            failures.append(
+                f"{path.name}: publish job should use secrets.PYPI_API_TOKEN"
             )
 
     assert not failures, (
-        "publish workflow trusted-publishing contract drifted:\n"
-        + "\n".join(failures)
+        "publish workflow auth contract drifted:\n" + "\n".join(failures)
     )
