@@ -36,10 +36,10 @@ CLI_HELP = """
 │ bench                                                                        │
 │ metrics                                                                      │
 │ debug-bundle                                                                 │
-│ vdb             Vector DB utilities                                          │
-│ nd              ND utilities                                                 │
-│ config          Configuration utilities                                      │
-│ artifact        Artifact bundle utilities                                    │
+│ vdb              Vector DB utilities                                         │
+│ nd               ND utilities                                                │
+│ config           Configuration utilities                                     │
+│ artifact         Artifact bundle utilities                                   │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
 """
@@ -47,9 +47,20 @@ CLI_HELP = """
 
 def test_cli_help_is_frozen():
     repo_root = Path(__file__).resolve().parents[3]
-    env = {**os.environ, "PYTHONPATH": str(repo_root / "src")}
+    env = {
+        **os.environ,
+        "NO_COLOR": "1",
+        "PYTHONPATH": str(repo_root / "src"),
+        "TERM": "dumb",
+    }
     out = subprocess.check_output(
-        [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app", "--help"],
+        [
+            sys.executable,
+            "-m",
+            "bijux_canon_index.interfaces.cli.app",
+            "--no-color",
+            "--help",
+        ],
         text=True,
         env=env,
     )
