@@ -19,7 +19,7 @@ from bijux_canon_index.core.invariants import ALLOWED_METRICS
 from bijux_canon_index.core.types import ExecutionArtifact
 from bijux_canon_index.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
 from tests.e2e.api_smoke.test_openapi_freeze import EXPECTED_OPENAPI_FINGERPRINT
-from tests.e2e.cli_workflows.test_cli_contract_freeze import CLI_HELP
+from tests.e2e.cli_workflows.test_cli_contract_freeze import CLI_HELP, _normalize_cli_help
 
 
 def test_v1_release_gate():
@@ -44,10 +44,21 @@ def test_v1_release_gate():
             ensure_excluded(feature)
 
     repo_root = Path(__file__).resolve().parents[1]
-    env = {**os.environ, "PYTHONPATH": str(repo_root / "src")}
+    env = {
+        **os.environ,
+        "NO_COLOR": "1",
+        "PYTHONPATH": str(repo_root / "src"),
+        "TERM": "dumb",
+    }
     help_text = subprocess.check_output(
-        [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app", "--help"],
+        [
+            sys.executable,
+            "-m",
+            "bijux_canon_index.interfaces.cli.app",
+            "--no-color",
+            "--help",
+        ],
         text=True,
         env=env,
     )
-    assert help_text == CLI_HELP
+    assert _normalize_cli_help(help_text) == _normalize_cli_help(CLI_HELP)
