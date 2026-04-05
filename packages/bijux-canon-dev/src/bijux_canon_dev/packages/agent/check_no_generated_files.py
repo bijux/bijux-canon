@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
-
+import shutil
+import subprocess
 
 PATTERNS = ("__pycache__", ".pyc", ".coverage", ".mypy_cache", ".ruff_cache")
 
@@ -11,15 +11,26 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[6]
 
 
+def git_executable() -> str:
+    resolved = shutil.which("git")
+    if resolved is None:
+        raise SystemExit("git executable not found")
+    return resolved
+
+
 def main() -> int:
     result = subprocess.run(
-        ["git", "ls-files"],
+        [git_executable(), "ls-files"],
         capture_output=True,
         text=True,
         check=False,
         cwd=repo_root(),
     )
-    offenders = [path for path in result.stdout.splitlines() if any(pattern in path for pattern in PATTERNS)]
+    offenders = [
+        path
+        for path in result.stdout.splitlines()
+        if any(pattern in path for pattern in PATTERNS)
+    ]
     if offenders:
         print("error: generated artifacts are tracked in git:")
         for path in offenders:

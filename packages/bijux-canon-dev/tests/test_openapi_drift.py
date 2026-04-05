@@ -6,7 +6,6 @@ from types import ModuleType
 
 import yaml
 
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from bijux_canon_dev.api.openapi_drift import canonicalize, load_target, write_schema

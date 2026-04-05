@@ -2,9 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 MAX_LINES = 600
-EXCLUDED_DIRS = {"artifacts", ".venv", "htmlcov", "build", "dist", "node_modules", ".tox"}
+EXCLUDED_DIRS = {
+    "artifacts",
+    ".venv",
+    "htmlcov",
+    "build",
+    "dist",
+    "node_modules",
+    ".tox",
+}
 EXEMPT_PATHS = {
     "src/bijux_canon_agent/agents/critique/core.py",
     "src/bijux_canon_agent/agents/file_reader/agent.py",

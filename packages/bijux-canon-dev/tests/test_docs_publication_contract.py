@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 import tomllib
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BIJUX_CANON_DOCS_URL = "https://bijux.io/bijux-canon/"
 
@@ -65,6 +64,10 @@ def test_root_readme_package_map_advertises_resolvable_docs_pages() -> None:
             continue
         docs_path = _docs_source_path(docs_url)
         if not docs_path.exists():
-            failures.append(f"{package_name}: README points at missing docs page {docs_url}")
+            failures.append(
+                f"{package_name}: README points at missing docs page {docs_url}"
+            )
 
-    assert not failures, "README docs publication contract failed:\n" + "\n".join(failures)
+    assert not failures, "README docs publication contract failed:\n" + "\n".join(
+        failures
+    )

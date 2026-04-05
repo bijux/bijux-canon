@@ -38,7 +38,9 @@ def _rewrite_config(
         if in_watch_block:
             if line.startswith("  - "):
                 watch_path = line.removeprefix("  - ")
-                rewritten.append(f"  - {_rewrite_watch_path(watch_path, source_root=source_root)}")
+                rewritten.append(
+                    f"  - {_rewrite_watch_path(watch_path, source_root=source_root)}"
+                )
                 continue
             if stripped and not line.startswith(" "):
                 in_watch_block = False
@@ -99,16 +101,22 @@ def render_serve_config(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Rewrite MkDocs config files for repository workflows.")
+    parser = argparse.ArgumentParser(
+        description="Rewrite MkDocs config files for repository workflows."
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    prepare = subparsers.add_parser("prepare-source", help="Rewrite docs_dir for a copied docs source tree.")
+    prepare = subparsers.add_parser(
+        "prepare-source", help="Rewrite docs_dir for a copied docs source tree."
+    )
     prepare.add_argument("--source-config", type=Path, required=True)
     prepare.add_argument("--output-config", type=Path, required=True)
     prepare.add_argument("--docs-source-dir", type=Path, required=True)
     prepare.set_defaults(func=prepare_source)
 
-    render = subparsers.add_parser("render-serve-config", help="Rewrite serve-specific MkDocs settings.")
+    render = subparsers.add_parser(
+        "render-serve-config", help="Rewrite serve-specific MkDocs settings."
+    )
     render.add_argument("--source-config", type=Path, required=True)
     render.add_argument("--output-config", type=Path, required=True)
     render.add_argument("--docs-dir", type=Path, required=True)

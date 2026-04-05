@@ -8,7 +8,6 @@ import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[5]
 DOCS_ROOT = ROOT / "docs"
 LAST_REVIEWED = "2026-04-04"
@@ -134,11 +133,20 @@ PRODUCT_PACKAGES = {
         ),
         modules=(
             ("src/bijux_canon_ingest/processing", "deterministic document transforms"),
-            ("src/bijux_canon_ingest/retrieval", "retrieval-oriented models and assembly"),
+            (
+                "src/bijux_canon_ingest/retrieval",
+                "retrieval-oriented models and assembly",
+            ),
             ("src/bijux_canon_ingest/application", "package workflows"),
-            ("src/bijux_canon_ingest/infra", "local adapters and infrastructure helpers"),
+            (
+                "src/bijux_canon_ingest/infra",
+                "local adapters and infrastructure helpers",
+            ),
             ("src/bijux_canon_ingest/interfaces", "CLI and HTTP boundaries"),
-            ("src/bijux_canon_ingest/safeguards", "protective rules for ingest behavior"),
+            (
+                "src/bijux_canon_ingest/safeguards",
+                "protective rules for ingest behavior",
+            ),
         ),
         tests=(
             "tests/unit for module-level behavior across processing, retrieval, and interfaces",
@@ -195,9 +203,15 @@ PRODUCT_PACKAGES = {
             "repository maintenance automation",
         ),
         modules=(
-            ("src/bijux_canon_index/domain", "execution, provenance, and request semantics"),
+            (
+                "src/bijux_canon_index/domain",
+                "execution, provenance, and request semantics",
+            ),
             ("src/bijux_canon_index/application", "workflow coordination"),
-            ("src/bijux_canon_index/infra", "backends, adapters, and runtime environment helpers"),
+            (
+                "src/bijux_canon_index/infra",
+                "backends, adapters, and runtime environment helpers",
+            ),
             ("src/bijux_canon_index/interfaces", "CLI and operator-facing edges"),
             ("src/bijux_canon_index/api", "HTTP application surfaces"),
             ("src/bijux_canon_index/contracts", "stable contract definitions"),
@@ -257,7 +271,10 @@ PRODUCT_PACKAGES = {
             "repository tooling and release automation",
         ),
         modules=(
-            ("src/bijux_canon_reason/planning", "plan construction and intermediate representation"),
+            (
+                "src/bijux_canon_reason/planning",
+                "plan construction and intermediate representation",
+            ),
             ("src/bijux_canon_reason/reasoning", "claim and reasoning semantics"),
             ("src/bijux_canon_reason/execution", "step execution and tool dispatch"),
             ("src/bijux_canon_reason/verification", "checks and validation outcomes"),
@@ -324,7 +341,10 @@ PRODUCT_PACKAGES = {
             ("src/bijux_canon_agent/application", "workflow policy and graph logic"),
             ("src/bijux_canon_agent/llm", "LLM runtime integration support"),
             ("src/bijux_canon_agent/interfaces", "CLI boundaries and operator helpers"),
-            ("src/bijux_canon_agent/traces", "trace-facing models and persistence helpers"),
+            (
+                "src/bijux_canon_agent/traces",
+                "trace-facing models and persistence helpers",
+            ),
         ),
         tests=(
             "tests/unit for local behavior and utility coverage",
@@ -391,9 +411,18 @@ PRODUCT_PACKAGES = {
         ),
         modules=(
             ("src/bijux_canon_runtime/model", "durable runtime models"),
-            ("src/bijux_canon_runtime/runtime", "execution engines and lifecycle logic"),
-            ("src/bijux_canon_runtime/application", "orchestration and replay coordination"),
-            ("src/bijux_canon_runtime/verification", "runtime-level validation support"),
+            (
+                "src/bijux_canon_runtime/runtime",
+                "execution engines and lifecycle logic",
+            ),
+            (
+                "src/bijux_canon_runtime/application",
+                "orchestration and replay coordination",
+            ),
+            (
+                "src/bijux_canon_runtime/verification",
+                "runtime-level validation support",
+            ),
             ("src/bijux_canon_runtime/interfaces", "CLI surfaces and manifest loading"),
             ("src/bijux_canon_runtime/api", "HTTP application surfaces"),
         ),
@@ -638,9 +667,15 @@ def render_route_diagram(
 ) -> str:
     seed = stable_seed(scope_title, section_title, page_title)
     orientation = ("LR", "TB", "RL", "BT")[seed % 4]
-    question_titles = rotate_items(tuple(mermaid_text(title) for title in questions), seed)
-    outcome_titles = rotate_items(tuple(mermaid_text(title) for title in destination_titles), seed // 2)
-    next_titles = rotate_items(tuple(mermaid_text(text) for text in next_checks), seed // 3)
+    question_titles = rotate_items(
+        tuple(mermaid_text(title) for title in questions), seed
+    )
+    outcome_titles = rotate_items(
+        tuple(mermaid_text(title) for title in destination_titles), seed // 2
+    )
+    next_titles = rotate_items(
+        tuple(mermaid_text(text) for text in next_checks), seed // 3
+    )
     context_label = mermaid_text(f"{scope_title} / {section_title} / {page_title}")
     lines = [
         f"flowchart {orientation}",
@@ -663,30 +698,40 @@ def render_route_diagram(
         for index in range(1, len(outcome_titles) + 1):
             lines.append(f"    page --> out{index}")
         for index in range(1, len(next_titles) + 1):
-            anchor = f"out{((index - 1) % len(outcome_titles)) + 1}" if outcome_titles else "page"
+            anchor = (
+                f"out{((index - 1) % len(outcome_titles)) + 1}"
+                if outcome_titles
+                else "page"
+            )
             lines.append(f"    {anchor} --> next{index}")
     elif variant == 1:
         for index in range(1, len(question_titles) + 1):
-            anchor = "page" if index == 1 else f"q{index-1}"
+            anchor = "page" if index == 1 else f"q{index - 1}"
             lines.append(f"    {anchor} --> q{index}")
         if question_titles:
             lines.append(f"    q{len(question_titles)} --> page")
         for index in range(1, len(outcome_titles) + 1):
-            anchor = "page" if index == 1 else f"out{index-1}"
+            anchor = "page" if index == 1 else f"out{index - 1}"
             lines.append(f"    {anchor} --> out{index}")
         for index in range(1, len(next_titles) + 1):
             anchor = f"out{len(outcome_titles)}" if outcome_titles else "page"
             lines.append(f"    {anchor} --> next{index}")
     else:
         for index in range(1, len(question_titles) + 1):
-            anchor = f"next{((index - 1) % len(next_titles)) + 1}" if next_titles else "page"
+            anchor = (
+                f"next{((index - 1) % len(next_titles)) + 1}" if next_titles else "page"
+            )
             lines.append(f"    q{index} --> page")
             if next_titles:
                 lines.append(f"    {anchor} -.keeps the page actionable.-> page")
         for index in range(1, len(outcome_titles) + 1):
             lines.append(f"    page --> out{index}")
         for index in range(1, len(next_titles) + 1):
-            anchor = f"out{((index - 1) % len(outcome_titles)) + 1}" if outcome_titles else "page"
+            anchor = (
+                f"out{((index - 1) % len(outcome_titles)) + 1}"
+                if outcome_titles
+                else "page"
+            )
             lines.append(f"    {anchor} --> next{index}")
     lines.extend(
         [
@@ -716,9 +761,32 @@ def render_route_diagram(
 
 def diagram_focus_role(section_title: str, index: int) -> tuple[str, str]:
     title = section_title.lower()
-    if any(token in title for token in ("not ", "does not", "out of scope", "risk", "pressure", "limit", "anti-")):
+    if any(
+        token in title
+        for token in (
+            "not ",
+            "does not",
+            "out of scope",
+            "risk",
+            "pressure",
+            "limit",
+            "anti-",
+        )
+    ):
         return ("constraint", "-.keeps the page honest.->")
-    if any(token in title for token in ("proof", "anchor", "evidence", "surface", "workflow", "read in code", "next", "outcome")):
+    if any(
+        token in title
+        for token in (
+            "proof",
+            "anchor",
+            "evidence",
+            "surface",
+            "workflow",
+            "read in code",
+            "next",
+            "outcome",
+        )
+    ):
         return ("ground", "-->")
     if index == 2:
         return ("constraint", "-.sharpens the decision.->")
@@ -754,9 +822,20 @@ def render_focus_diagram(
         "    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;",
     ]
     if family == "foundation":
-        owned = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Owned here", ())), seed)
-        not_owned = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Not owned here", ())), seed // 2)
-        anchors = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Proof anchors", ())), seed // 3)
+        owned = rotate_items(
+            tuple(mermaid_text(item) for item in focus_groups.get("Owned here", ())),
+            seed,
+        )
+        not_owned = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Not owned here", ())
+            ),
+            seed // 2,
+        )
+        anchors = rotate_items(
+            tuple(mermaid_text(item) for item in focus_groups.get("Proof anchors", ())),
+            seed // 3,
+        )
         for index, title in enumerate(owned, start=1):
             lines.append(f'    own{index}["{title}"]')
             lines.append(f"    own{index} --> page")
@@ -768,16 +847,39 @@ def render_focus_diagram(
             lines.append(f"    page --> anchor{index}")
         lines.append("    class page page;")
         if owned:
-            lines.append("    class " + ",".join(f"own{index}" for index in range(1, len(owned) + 1)) + " positive;")
+            lines.append(
+                "    class "
+                + ",".join(f"own{index}" for index in range(1, len(owned) + 1))
+                + " positive;"
+            )
         if not_owned:
-            lines.append("    class " + ",".join(f"limit{index}" for index in range(1, len(not_owned) + 1)) + " caution;")
+            lines.append(
+                "    class "
+                + ",".join(f"limit{index}" for index in range(1, len(not_owned) + 1))
+                + " caution;"
+            )
         if anchors:
-            lines.append("    class " + ",".join(f"anchor{index}" for index in range(1, len(anchors) + 1)) + " anchor;")
+            lines.append(
+                "    class "
+                + ",".join(f"anchor{index}" for index in range(1, len(anchors) + 1))
+                + " anchor;"
+            )
         return mermaid_block("\n".join(lines))
     if family == "architecture":
-        modules = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Module groups", ())), seed)
-        code_paths = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Read in code", ())), seed // 2)
-        pressure = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Design pressure", ())), seed // 3)
+        modules = rotate_items(
+            tuple(mermaid_text(item) for item in focus_groups.get("Module groups", ())),
+            seed,
+        )
+        code_paths = rotate_items(
+            tuple(mermaid_text(item) for item in focus_groups.get("Read in code", ())),
+            seed // 2,
+        )
+        pressure = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Design pressure", ())
+            ),
+            seed // 3,
+        )
         for index, title in enumerate(modules, start=1):
             lines.append(f'    module{index}["{title}"]')
             lines.append(f"    module{index} --> page")
@@ -786,19 +888,48 @@ def render_focus_diagram(
             lines.append(f"    page --> code{index}")
         for index, title in enumerate(pressure, start=1):
             lines.append(f'    pressure{index}["{title}"]')
-            lines.append(f"    pressure{index} -.tests whether this structure still holds.-> page")
+            lines.append(
+                f"    pressure{index} -.tests whether this structure still holds.-> page"
+            )
         lines.append("    class page page;")
         if modules:
-            lines.append("    class " + ",".join(f"module{index}" for index in range(1, len(modules) + 1)) + " positive;")
+            lines.append(
+                "    class "
+                + ",".join(f"module{index}" for index in range(1, len(modules) + 1))
+                + " positive;"
+            )
         if code_paths:
-            lines.append("    class " + ",".join(f"code{index}" for index in range(1, len(code_paths) + 1)) + " anchor;")
+            lines.append(
+                "    class "
+                + ",".join(f"code{index}" for index in range(1, len(code_paths) + 1))
+                + " anchor;"
+            )
         if pressure:
-            lines.append("    class " + ",".join(f"pressure{index}" for index in range(1, len(pressure) + 1)) + " caution;")
+            lines.append(
+                "    class "
+                + ",".join(f"pressure{index}" for index in range(1, len(pressure) + 1))
+                + " caution;"
+            )
         return mermaid_block("\n".join(lines))
     if family == "interfaces":
-        surfaces = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Caller surfaces", ())), seed)
-        evidence = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Contract evidence", ())), seed // 2)
-        review_pressure = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Review pressure", ())), seed // 3)
+        surfaces = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Caller surfaces", ())
+            ),
+            seed,
+        )
+        evidence = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Contract evidence", ())
+            ),
+            seed // 2,
+        )
+        review_pressure = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Review pressure", ())
+            ),
+            seed // 3,
+        )
         for index, title in enumerate(surfaces, start=1):
             lines.append(f'    surface{index}["{title}"]')
             lines.append(f"    surface{index} --> page")
@@ -807,19 +938,51 @@ def render_focus_diagram(
             lines.append(f"    page --> proof{index}")
         for index, title in enumerate(review_pressure, start=1):
             lines.append(f'    review{index}["{title}"]')
-            lines.append(f"    review{index} -.raises compatibility pressure on.-> page")
+            lines.append(
+                f"    review{index} -.raises compatibility pressure on.-> page"
+            )
         lines.append("    class page page;")
         if surfaces:
-            lines.append("    class " + ",".join(f"surface{index}" for index in range(1, len(surfaces) + 1)) + " positive;")
+            lines.append(
+                "    class "
+                + ",".join(f"surface{index}" for index in range(1, len(surfaces) + 1))
+                + " positive;"
+            )
         if evidence:
-            lines.append("    class " + ",".join(f"proof{index}" for index in range(1, len(evidence) + 1)) + " anchor;")
+            lines.append(
+                "    class "
+                + ",".join(f"proof{index}" for index in range(1, len(evidence) + 1))
+                + " anchor;"
+            )
         if review_pressure:
-            lines.append("    class " + ",".join(f"review{index}" for index in range(1, len(review_pressure) + 1)) + " caution;")
+            lines.append(
+                "    class "
+                + ",".join(
+                    f"review{index}" for index in range(1, len(review_pressure) + 1)
+                )
+                + " caution;"
+            )
         return mermaid_block("\n".join(lines))
     if family == "operations":
-        workflow = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Workflow anchors", ())), seed)
-        evidence = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Operational evidence", ())), seed // 2)
-        release = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Release pressure", ())), seed // 3)
+        workflow = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Workflow anchors", ())
+            ),
+            seed,
+        )
+        evidence = rotate_items(
+            tuple(
+                mermaid_text(item)
+                for item in focus_groups.get("Operational evidence", ())
+            ),
+            seed // 2,
+        )
+        release = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Release pressure", ())
+            ),
+            seed // 3,
+        )
         for index, title in enumerate(workflow, start=1):
             lines.append(f'    step{index}["{title}"]')
             lines.append(f"    step{index} --> page")
@@ -828,19 +991,44 @@ def render_focus_diagram(
             lines.append(f"    page --> run{index}")
         for index, title in enumerate(release, start=1):
             lines.append(f'    release{index}["{title}"]')
-            lines.append(f"    run{((index - 1) % len(evidence)) + 1 if evidence else 'page'} --> release{index}")
+            lines.append(
+                f"    run{((index - 1) % len(evidence)) + 1 if evidence else 'page'} --> release{index}"
+            )
         lines.append("    class page page;")
         if workflow:
-            lines.append("    class " + ",".join(f"step{index}" for index in range(1, len(workflow) + 1)) + " positive;")
+            lines.append(
+                "    class "
+                + ",".join(f"step{index}" for index in range(1, len(workflow) + 1))
+                + " positive;"
+            )
         if evidence:
-            lines.append("    class " + ",".join(f"run{index}" for index in range(1, len(evidence) + 1)) + " anchor;")
+            lines.append(
+                "    class "
+                + ",".join(f"run{index}" for index in range(1, len(evidence) + 1))
+                + " anchor;"
+            )
         if release:
-            lines.append("    class " + ",".join(f"release{index}" for index in range(1, len(release) + 1)) + " action;")
+            lines.append(
+                "    class "
+                + ",".join(f"release{index}" for index in range(1, len(release) + 1))
+                + " action;"
+            )
         return mermaid_block("\n".join(lines))
     if family == "quality":
-        proof = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Proof surfaces", ())), seed)
-        risk = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Risk anchors", ())), seed // 2)
-        review_bar = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Review bar", ())), seed // 3)
+        proof = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Proof surfaces", ())
+            ),
+            seed,
+        )
+        risk = rotate_items(
+            tuple(mermaid_text(item) for item in focus_groups.get("Risk anchors", ())),
+            seed // 2,
+        )
+        review_bar = rotate_items(
+            tuple(mermaid_text(item) for item in focus_groups.get("Review bar", ())),
+            seed // 3,
+        )
         for index, title in enumerate(proof, start=1):
             lines.append(f'    proof{index}["{title}"]')
             lines.append(f"    proof{index} --> page")
@@ -852,16 +1040,43 @@ def render_focus_diagram(
             lines.append(f"    page --> bar{index}")
         lines.append("    class page page;")
         if proof:
-            lines.append("    class " + ",".join(f"proof{index}" for index in range(1, len(proof) + 1)) + " positive;")
+            lines.append(
+                "    class "
+                + ",".join(f"proof{index}" for index in range(1, len(proof) + 1))
+                + " positive;"
+            )
         if risk:
-            lines.append("    class " + ",".join(f"risk{index}" for index in range(1, len(risk) + 1)) + " caution;")
+            lines.append(
+                "    class "
+                + ",".join(f"risk{index}" for index in range(1, len(risk) + 1))
+                + " caution;"
+            )
         if review_bar:
-            lines.append("    class " + ",".join(f"bar{index}" for index in range(1, len(review_bar) + 1)) + " action;")
+            lines.append(
+                "    class "
+                + ",".join(f"bar{index}" for index in range(1, len(review_bar) + 1))
+                + " action;"
+            )
         return mermaid_block("\n".join(lines))
     if family == "compatibility handbook":
-        legacy = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Legacy surface", ())), seed)
-        canonical = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Canonical target", ())), seed // 2)
-        pressure = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Decision pressure", ())), seed // 3)
+        legacy = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Legacy surface", ())
+            ),
+            seed,
+        )
+        canonical = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Canonical target", ())
+            ),
+            seed // 2,
+        )
+        pressure = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Decision pressure", ())
+            ),
+            seed // 3,
+        )
         for index, title in enumerate(legacy, start=1):
             lines.append(f'    legacy{index}["{title}"]')
             lines.append(f"    legacy{index} --> page")
@@ -873,16 +1088,44 @@ def render_focus_diagram(
             lines.append(f"    pressure{index} -.should shorten the life of.-> page")
         lines.append("    class page page;")
         if legacy:
-            lines.append("    class " + ",".join(f"legacy{index}" for index in range(1, len(legacy) + 1)) + " caution;")
+            lines.append(
+                "    class "
+                + ",".join(f"legacy{index}" for index in range(1, len(legacy) + 1))
+                + " caution;"
+            )
         if canonical:
-            lines.append("    class " + ",".join(f"canon{index}" for index in range(1, len(canonical) + 1)) + " positive;")
+            lines.append(
+                "    class "
+                + ",".join(f"canon{index}" for index in range(1, len(canonical) + 1))
+                + " positive;"
+            )
         if pressure:
-            lines.append("    class " + ",".join(f"pressure{index}" for index in range(1, len(pressure) + 1)) + " action;")
+            lines.append(
+                "    class "
+                + ",".join(f"pressure{index}" for index in range(1, len(pressure) + 1))
+                + " action;"
+            )
         return mermaid_block("\n".join(lines))
     if family == "maintainer handbook":
-        role = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Maintainer role", ())), seed)
-        health = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Repository health", ())), seed // 2)
-        outcome = rotate_items(tuple(mermaid_text(item) for item in focus_groups.get("Operational outcome", ())), seed // 3)
+        role = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Maintainer role", ())
+            ),
+            seed,
+        )
+        health = rotate_items(
+            tuple(
+                mermaid_text(item) for item in focus_groups.get("Repository health", ())
+            ),
+            seed // 2,
+        )
+        outcome = rotate_items(
+            tuple(
+                mermaid_text(item)
+                for item in focus_groups.get("Operational outcome", ())
+            ),
+            seed // 3,
+        )
         for index, title in enumerate(role, start=1):
             lines.append(f'    role{index}["{title}"]')
             lines.append(f"    role{index} --> page")
@@ -891,18 +1134,37 @@ def render_focus_diagram(
             lines.append(f"    page --> health{index}")
         for index, title in enumerate(outcome, start=1):
             lines.append(f'    outcome{index}["{title}"]')
-            lines.append(f"    health{((index - 1) % len(health)) + 1 if health else 'page'} --> outcome{index}")
+            lines.append(
+                f"    health{((index - 1) % len(health)) + 1 if health else 'page'} --> outcome{index}"
+            )
         lines.append("    class page page;")
         if role:
-            lines.append("    class " + ",".join(f"role{index}" for index in range(1, len(role) + 1)) + " positive;")
+            lines.append(
+                "    class "
+                + ",".join(f"role{index}" for index in range(1, len(role) + 1))
+                + " positive;"
+            )
         if health:
-            lines.append("    class " + ",".join(f"health{index}" for index in range(1, len(health) + 1)) + " anchor;")
+            lines.append(
+                "    class "
+                + ",".join(f"health{index}" for index in range(1, len(health) + 1))
+                + " anchor;"
+            )
         if outcome:
-            lines.append("    class " + ",".join(f"outcome{index}" for index in range(1, len(outcome) + 1)) + " action;")
+            lines.append(
+                "    class "
+                + ",".join(f"outcome{index}" for index in range(1, len(outcome) + 1))
+                + " action;"
+            )
         return mermaid_block("\n".join(lines))
     if family in {"root site", "repository handbook"}:
-        focus_details = rotate_items(tuple(mermaid_text(item) for item in flatten_focus_details(focus_sections)), seed)
-        next_steps = rotate_items(tuple(compact_step_label(item) for item in next_checks), seed // 2)
+        focus_details = rotate_items(
+            tuple(mermaid_text(item) for item in flatten_focus_details(focus_sections)),
+            seed,
+        )
+        next_steps = rotate_items(
+            tuple(compact_step_label(item) for item in next_checks), seed // 2
+        )
         for index, title in enumerate(focus_details, start=1):
             lines.append(f'    detail{index}["{title}"]')
             edge = "-->" if index % 2 else "-.gives the reader orientation.->"
@@ -912,12 +1174,27 @@ def render_focus_diagram(
             lines.append(f"    page --> next{index}")
         lines.append("    class page page;")
         if focus_details:
-            lines.append("    class " + ",".join(f"detail{index}" for index in range(1, len(focus_details) + 1)) + " anchor;")
+            lines.append(
+                "    class "
+                + ",".join(
+                    f"detail{index}" for index in range(1, len(focus_details) + 1)
+                )
+                + " anchor;"
+            )
         if next_steps:
-            lines.append("    class " + ",".join(f"next{index}" for index in range(1, len(next_steps) + 1)) + " action;")
+            lines.append(
+                "    class "
+                + ",".join(f"next{index}" for index in range(1, len(next_steps) + 1))
+                + " action;"
+            )
         return mermaid_block("\n".join(lines))
-    focus_details = rotate_items(tuple(mermaid_text(item) for item in flatten_focus_details(focus_sections)), seed)
-    next_titles = rotate_items(tuple(mermaid_text(item) for item in next_checks), seed // 2)
+    focus_details = rotate_items(
+        tuple(mermaid_text(item) for item in flatten_focus_details(focus_sections)),
+        seed,
+    )
+    next_titles = rotate_items(
+        tuple(mermaid_text(item) for item in next_checks), seed // 2
+    )
     for index, title in enumerate(focus_details, start=1):
         lines.append(f'    detail{index}["{title}"]')
         lines.append(f"    detail{index} --> page")
@@ -926,9 +1203,17 @@ def render_focus_diagram(
         lines.append(f"    page --> next{index}")
     lines.append("    class page page;")
     if focus_details:
-        lines.append("    class " + ",".join(f"detail{index}" for index in range(1, len(focus_details) + 1)) + " anchor;")
+        lines.append(
+            "    class "
+            + ",".join(f"detail{index}" for index in range(1, len(focus_details) + 1))
+            + " anchor;"
+        )
     if next_titles:
-        lines.append("    class " + ",".join(f"next{index}" for index in range(1, len(next_titles) + 1)) + " action;")
+        lines.append(
+            "    class "
+            + ",".join(f"next{index}" for index in range(1, len(next_titles) + 1))
+            + " action;"
+        )
     return mermaid_block("\n".join(lines))
 
 
@@ -1274,7 +1559,10 @@ def package_source_of_truth(package: PackageInfo, category: str) -> tuple[str, .
         ),
         "interfaces": (
             f"`{package.package_dir}/src/{package.import_name}` for the implemented interface boundary",
-            *(f"`{item}` as tracked contract evidence for caller-facing behavior" for item in package.api_specs[:1]),
+            *(
+                f"`{item}` as tracked contract evidence for caller-facing behavior"
+                for item in package.api_specs[:1]
+            ),
             f"`{package.package_dir}/tests` for compatibility and behavior proof",
         ),
         "operations": (
@@ -1441,7 +1729,9 @@ def package_decision_rule(package: PackageInfo, category: str, title: str) -> st
     return rule_map[category]
 
 
-def package_what_good_looks_like(package: PackageInfo, category: str, title: str) -> tuple[str, ...]:
+def package_what_good_looks_like(
+    package: PackageInfo, category: str, title: str
+) -> tuple[str, ...]:
     good_map = {
         "foundation": (
             f"`{title}` leaves a reviewer able to explain `{package.title}` in one clean sentence without hand-waving",
@@ -1472,7 +1762,9 @@ def package_what_good_looks_like(package: PackageInfo, category: str, title: str
     return good_map[category]
 
 
-def package_failure_signals(package: PackageInfo, category: str, title: str) -> tuple[str, ...]:
+def package_failure_signals(
+    package: PackageInfo, category: str, title: str
+) -> tuple[str, ...]:
     signal_map = {
         "foundation": (
             f"`{title}` needs repeated exceptions before the package role makes sense",
@@ -1548,7 +1840,10 @@ def package_evidence_checklist(package: PackageInfo, category: str) -> tuple[str
         ),
         "interfaces": (
             f"inspect the implemented interface modules under `{package.package_dir}/src/{package.import_name}`",
-            *(f"review `{item}` as tracked contract evidence" for item in package.api_specs[:1]),
+            *(
+                f"review `{item}` as tracked contract evidence"
+                for item in package.api_specs[:1]
+            ),
             f"run through `{package.package_dir}/tests` or equivalent proofs that protect the surface",
         ),
         "operations": (
@@ -1976,92 +2271,299 @@ def add_approval_questions(body: str, bullets: tuple[str, ...]) -> str:
 
 def home_map_focus_sections() -> tuple[tuple[str, tuple[str, ...]], ...]:
     return (
-        ("System idea", ("why the split exists", "where each package takes authority", "why the split protects clarity")),
-        ("Reading paths", ("repository handbook", "one product handbook", "the fastest credible next section")),
-        ("Special cases", ("maintainer work", "legacy-name migration", "questions that do not belong on the landing page")),
+        (
+            "System idea",
+            (
+                "why the split exists",
+                "where each package takes authority",
+                "why the split protects clarity",
+            ),
+        ),
+        (
+            "Reading paths",
+            (
+                "repository handbook",
+                "one product handbook",
+                "the fastest credible next section",
+            ),
+        ),
+        (
+            "Special cases",
+            (
+                "maintainer work",
+                "legacy-name migration",
+                "questions that do not belong on the landing page",
+            ),
+        ),
     )
 
 
-def root_page_map(slug: str, title: str) -> tuple[tuple[str, ...], tuple[tuple[str, tuple[str, ...]], ...]]:
+def root_page_map(
+    slug: str, title: str
+) -> tuple[tuple[str, ...], tuple[tuple[str, tuple[str, ...]], ...]]:
     configs = {
         "index": (
-            ("see the whole system", "find the right root page", "move to package docs"),
             (
-                ("Repository role", ("coordination layer", "shared rules only", "no shadow owner above packages")),
-                ("Package family", ("five canonical packages", "one accountable flow", "clear ownership instead of overlap")),
-                ("Reader outcome", ("choose the right handbook", "avoid boundary confusion", "start from the right proof surface")),
+                "see the whole system",
+                "find the right root page",
+                "move to package docs",
+            ),
+            (
+                (
+                    "Repository role",
+                    (
+                        "coordination layer",
+                        "shared rules only",
+                        "no shadow owner above packages",
+                    ),
+                ),
+                (
+                    "Package family",
+                    (
+                        "five canonical packages",
+                        "one accountable flow",
+                        "clear ownership instead of overlap",
+                    ),
+                ),
+                (
+                    "Reader outcome",
+                    (
+                        "choose the right handbook",
+                        "avoid boundary confusion",
+                        "start from the right proof surface",
+                    ),
+                ),
             ),
         ),
         "platform-overview": (
             ("see system flow", "understand package split", "place each package"),
             (
                 ("Flow order", ("ingest", "index", "reason")),
-                ("Orchestration layer", ("agent", "role-local behavior", "trace-backed runs")),
-                ("Governance layer", ("runtime", "replay authority", "repository coordination")),
+                (
+                    "Orchestration layer",
+                    ("agent", "role-local behavior", "trace-backed runs"),
+                ),
+                (
+                    "Governance layer",
+                    ("runtime", "replay authority", "repository coordination"),
+                ),
             ),
         ),
         "repository-scope": (
             ("see root authority", "see root limits", "send work back down"),
             (
-                ("Root owns", ("shared workflows", "shared schemas", "workspace governance")),
-                ("Root does not own", ("package-local behavior", "shadow implementation", "hidden override paths")),
-                ("Review test", ("cross-package concern", "one-package concern", "does this belong back in a package?")),
+                (
+                    "Root owns",
+                    ("shared workflows", "shared schemas", "workspace governance"),
+                ),
+                (
+                    "Root does not own",
+                    (
+                        "package-local behavior",
+                        "shadow implementation",
+                        "hidden override paths",
+                    ),
+                ),
+                (
+                    "Review test",
+                    (
+                        "cross-package concern",
+                        "one-package concern",
+                        "does this belong back in a package?",
+                    ),
+                ),
             ),
         ),
         "workspace-layout": (
-            ("see directory intent", "place work quickly", "separate root from package"),
+            (
+                "see directory intent",
+                "place work quickly",
+                "separate root from package",
+            ),
             (
                 ("Product roots", ("packages/", "apis/", "publishable package seams")),
-                ("Repository roots", ("docs/", "Makefile and makes/", "shared workspace automation")),
-                ("Review outcome", ("place the concern", "avoid root sprawl", "keep ownership visible in the tree")),
+                (
+                    "Repository roots",
+                    ("docs/", "Makefile and makes/", "shared workspace automation"),
+                ),
+                (
+                    "Review outcome",
+                    (
+                        "place the concern",
+                        "avoid root sprawl",
+                        "keep ownership visible in the tree",
+                    ),
+                ),
             ),
         ),
         "package-map": (
-            ("see package sequence", "compare package roles", "spot non-product sections"),
             (
-                ("Product flow", ("ingest to runtime", "distinct responsibilities", "one accountable chain")),
-                ("Support layers", ("bijux-canon-dev", "compatibility packages", "non-product work that still needs documentation")),
-                ("Reader outcome", ("choose the owning package", "avoid overlap", "see where authority changes hands")),
+                "see package sequence",
+                "compare package roles",
+                "spot non-product sections",
+            ),
+            (
+                (
+                    "Product flow",
+                    (
+                        "ingest to runtime",
+                        "distinct responsibilities",
+                        "one accountable chain",
+                    ),
+                ),
+                (
+                    "Support layers",
+                    (
+                        "bijux-canon-dev",
+                        "compatibility packages",
+                        "non-product work that still needs documentation",
+                    ),
+                ),
+                (
+                    "Reader outcome",
+                    (
+                        "choose the owning package",
+                        "avoid overlap",
+                        "see where authority changes hands",
+                    ),
+                ),
             ),
         ),
         "api-and-schema-governance": (
             ("see schema assets", "see drift pressure", "review contract changes"),
             (
-                ("Tracked assets", ("apis/", "schema hashes", "OpenAPI and pinned artifacts")),
-                ("Owning checks", ("drift tooling", "package tests", "repository validation paths")),
-                ("Reader outcome", ("see contract movement", "avoid schema folklore", "tie prose back to tracked contract files")),
+                (
+                    "Tracked assets",
+                    ("apis/", "schema hashes", "OpenAPI and pinned artifacts"),
+                ),
+                (
+                    "Owning checks",
+                    ("drift tooling", "package tests", "repository validation paths"),
+                ),
+                (
+                    "Reader outcome",
+                    (
+                        "see contract movement",
+                        "avoid schema folklore",
+                        "tie prose back to tracked contract files",
+                    ),
+                ),
             ),
         ),
         "local-development": (
             ("see local posture", "see cross-package trigger", "connect work to proof"),
             (
-                ("Local work", ("owning package directory", "package tests and docs", "package-local proof first")),
-                ("Root help", ("cross-package automation", "workspace commands", "shared safety rails")),
-                ("Reader outcome", ("change locally first", "escalate only when needed", "use root only for real cross-package pressure")),
+                (
+                    "Local work",
+                    (
+                        "owning package directory",
+                        "package tests and docs",
+                        "package-local proof first",
+                    ),
+                ),
+                (
+                    "Root help",
+                    (
+                        "cross-package automation",
+                        "workspace commands",
+                        "shared safety rails",
+                    ),
+                ),
+                (
+                    "Reader outcome",
+                    (
+                        "change locally first",
+                        "escalate only when needed",
+                        "use root only for real cross-package pressure",
+                    ),
+                ),
             ),
         ),
         "testing-and-validation": (
-            ("see proof layers", "separate package from repository", "trace trust backstops"),
             (
-                ("Package proof", ("unit to invariants", "package-local contracts", "behavior defended where it lives")),
-                ("Repository proof", ("schema drift", "CI workflows", "workspace-level regression backstops")),
-                ("Reader outcome", ("trust locally first", "then trust the full fit", "see where proof should start and where it should escalate")),
+                "see proof layers",
+                "separate package from repository",
+                "trace trust backstops",
+            ),
+            (
+                (
+                    "Package proof",
+                    (
+                        "unit to invariants",
+                        "package-local contracts",
+                        "behavior defended where it lives",
+                    ),
+                ),
+                (
+                    "Repository proof",
+                    (
+                        "schema drift",
+                        "CI workflows",
+                        "workspace-level regression backstops",
+                    ),
+                ),
+                (
+                    "Reader outcome",
+                    (
+                        "trust locally first",
+                        "then trust the full fit",
+                        "see where proof should start and where it should escalate",
+                    ),
+                ),
             ),
         ),
         "release-and-versioning": (
-            ("see release mechanics", "see package-version link", "understand commit history role"),
             (
-                ("Repository rules", ("commitizen", "tag conventions", "durable commit intent")),
-                ("Package mechanics", ("_version.py", "package metadata", "release artifacts move with code")),
-                ("Reader outcome", ("understand version movement", "read durable intent", "see what changed at package versus workspace level")),
+                "see release mechanics",
+                "see package-version link",
+                "understand commit history role",
+            ),
+            (
+                (
+                    "Repository rules",
+                    ("commitizen", "tag conventions", "durable commit intent"),
+                ),
+                (
+                    "Package mechanics",
+                    (
+                        "_version.py",
+                        "package metadata",
+                        "release artifacts move with code",
+                    ),
+                ),
+                (
+                    "Reader outcome",
+                    (
+                        "understand version movement",
+                        "read durable intent",
+                        "see what changed at package versus workspace level",
+                    ),
+                ),
             ),
         ),
         "documentation-system": (
             ("see handbook layout", "see honesty rule", "understand reader promise"),
             (
-                ("Structure", ("root index", "section indexes", "topic pages that carry proof")),
-                ("References", ("bijux-pollenomics", "bijux-masterclass", "shared Bijux docs language")),
-                ("Reader outcome", ("self-sufficient docs", "less meeting debt", "diagrams and prose that actually orient readers")),
+                (
+                    "Structure",
+                    ("root index", "section indexes", "topic pages that carry proof"),
+                ),
+                (
+                    "References",
+                    (
+                        "bijux-pollenomics",
+                        "bijux-masterclass",
+                        "shared Bijux docs language",
+                    ),
+                ),
+                (
+                    "Reader outcome",
+                    (
+                        "self-sufficient docs",
+                        "less meeting debt",
+                        "diagrams and prose that actually orient readers",
+                    ),
+                ),
             ),
         ),
     }
@@ -2082,16 +2584,22 @@ def render_home(
         sections.append("compatibility packages")
     quicklinks = []
     if "platform" in targets:
-        quicklinks.append('<a class="md-button md-button--primary" href="bijux-canon/">Open the repository handbook</a>')
+        quicklinks.append(
+            '<a class="md-button md-button--primary" href="bijux-canon/">Open the repository handbook</a>'
+        )
     for target in ("ingest", "index", "reason", "agent", "runtime"):
         if target in targets and "foundation" in categories_by_package.get(target, ()):
             quicklinks.append(
                 f'<a class="md-button" href="{PRODUCT_PACKAGES[target].slug}/foundation/">{PRODUCT_PACKAGES[target].title}</a>'
             )
     if "dev" in targets:
-        quicklinks.append('<a class="md-button" href="bijux-canon-dev/">Open maintainer docs</a>')
+        quicklinks.append(
+            '<a class="md-button" href="bijux-canon-dev/">Open maintainer docs</a>'
+        )
     if "compat" in targets:
-        quicklinks.append('<a class="md-button" href="compat-packages/">Open compatibility docs</a>')
+        quicklinks.append(
+            '<a class="md-button" href="compat-packages/">Open compatibility docs</a>'
+        )
     package_rows = "\n".join(
         [
             "| Package | Owns | Open It When |",
@@ -2143,8 +2651,12 @@ def render_home(
             "",
             "- open [bijux-canon](bijux-canon/index.md) when the question crosses package boundaries or touches shared governance",
             "- open one product package when you need ownership, interfaces, operations, or proof for one package",
-            "- open [bijux-canon-dev](bijux-canon-dev/index.md) for repository automation, schema enforcement, and maintainer-only guardrails" if "dev" in targets else "- maintainer guidance appears here when the dev section is rendered",
-            "- open [compatibility packages](compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem" if "compat" in targets else "- compatibility guidance appears here when the compatibility section is rendered",
+            "- open [bijux-canon-dev](bijux-canon-dev/index.md) for repository automation, schema enforcement, and maintainer-only guardrails"
+            if "dev" in targets
+            else "- maintainer guidance appears here when the dev section is rendered",
+            "- open [compatibility packages](compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem"
+            if "compat" in targets
+            else "- compatibility guidance appears here when the compatibility section is rendered",
             "",
             "## Package Flow",
             "",
@@ -2708,7 +3220,9 @@ def render_root_page(
     )
     return "\n".join(
         [
-            front_matter(title, "bijux-canon-docs", "index" if slug == "index" else "explanation"),
+            front_matter(
+                title, "bijux-canon-docs", "index" if slug == "index" else "explanation"
+            ),
             body,
         ]
     )
@@ -3014,8 +3528,18 @@ def render_dev_page(slug: str, title: str) -> str:
         ("explain automation", "see repository-health scope", "review package impact"),
         (
             ("Maintainer role", ("quality gates", "security gates", "release support")),
-            ("Repository health", ("schema integrity", "supply-chain visibility", "package-aware automation")),
-            ("Operational outcome", ("release clarity", "package consistency", "less CI archaeology")),
+            (
+                "Repository health",
+                (
+                    "schema integrity",
+                    "supply-chain visibility",
+                    "package-aware automation",
+                ),
+            ),
+            (
+                "Operational outcome",
+                ("release clarity", "package consistency", "less CI archaeology"),
+            ),
         ),
         dev_next_checks,
     )
@@ -3065,7 +3589,11 @@ def render_dev_page(slug: str, title: str) -> str:
     )
     return "\n".join(
         [
-            front_matter(title, "bijux-canon-dev-docs", "index" if slug == "index" else "explanation"),
+            front_matter(
+                title,
+                "bijux-canon-dev-docs",
+                "index" if slug == "index" else "explanation",
+            ),
             body,
         ]
     )
@@ -3079,9 +3607,12 @@ def render_compat_page(slug: str, title: str) -> str:
         ("bijux-rar", "bijux-canon-reason"),
         ("bijux-vex", "bijux-canon-index"),
     ]
-    mapping_lines = "\n".join(f"- `{legacy}` maps to `{canonical}`" for legacy, canonical in mappings)
+    mapping_lines = "\n".join(
+        f"- `{legacy}` maps to `{canonical}`" for legacy, canonical in mappings
+    )
     compat_page_links = "\n".join(
-        f"- [{page_title}]({page_slug}.md)" for page_slug, page_title in COMPAT_PAGES[1:]
+        f"- [{page_title}]({page_slug}.md)"
+        for page_slug, page_title in COMPAT_PAGES[1:]
     )
     bodies = {
         "index": textwrap.dedent(
@@ -3358,8 +3889,18 @@ def render_compat_page(slug: str, title: str) -> str:
         ("map old names", "choose migration", "judge retirement"),
         (
             ("Legacy surface", ("distribution names", "import names", "command names")),
-            ("Canonical target", ("current packages", "new work", "current handbook surfaces")),
-            ("Decision pressure", ("migration pressure", "retirement readiness", "do not normalize the old name")),
+            (
+                "Canonical target",
+                ("current packages", "new work", "current handbook surfaces"),
+            ),
+            (
+                "Decision pressure",
+                (
+                    "migration pressure",
+                    "retirement readiness",
+                    "do not normalize the old name",
+                ),
+            ),
         ),
         compat_next_checks,
     )
@@ -3409,7 +3950,11 @@ def render_compat_page(slug: str, title: str) -> str:
     )
     return "\n".join(
         [
-            front_matter(title, "bijux-canon-compat-docs", "index" if slug == "index" else "explanation"),
+            front_matter(
+                title,
+                "bijux-canon-compat-docs",
+                "index" if slug == "index" else "explanation",
+            ),
             body,
         ]
     )
@@ -3448,7 +3993,7 @@ def package_section_summary(category: str, package: PackageInfo) -> str:
 def package_section_orientation(category: str, package: PackageInfo) -> str:
     orientations = {
         "foundation": (
-            f"Read this section first when you need the durable package story before"
+            "Read this section first when you need the durable package story before"
             " code detail. A quick skim should make the role, the boundary, and the"
             " neighboring seams legible."
         ),
@@ -3476,7 +4021,9 @@ def package_section_orientation(category: str, package: PackageInfo) -> str:
     return orientations[category]
 
 
-def related_links(package: PackageInfo, category: str, active_categories: tuple[str, ...]) -> str:
+def related_links(
+    package: PackageInfo, category: str, active_categories: tuple[str, ...]
+) -> str:
     reasons = {
         "foundation": "when you need the package boundary and ownership story first",
         "architecture": "when the question becomes structural, modular, or execution-oriented",
@@ -3488,15 +4035,25 @@ def related_links(package: PackageInfo, category: str, active_categories: tuple[
     for other in active_categories:
         if other == category:
             continue
-        section_links.append(f"- [{other.title()}](../{other}/index.md) {reasons[other]}")
+        section_links.append(
+            f"- [{other.title()}](../{other}/index.md) {reasons[other]}"
+        )
     return "\n".join(section_links)
 
 
 def package_map_destinations(category: str) -> tuple[str, ...]:
     destination_map = {
         "foundation": ("own the right work", "name the boundary", "compare neighbors"),
-        "architecture": ("trace execution", "spot dependency pressure", "judge structural drift"),
-        "interfaces": ("identify contracts", "see caller impact", "review compatibility"),
+        "architecture": (
+            "trace execution",
+            "spot dependency pressure",
+            "judge structural drift",
+        ),
+        "interfaces": (
+            "identify contracts",
+            "see caller impact",
+            "review compatibility",
+        ),
         "operations": ("repeat workflows", "find diagnostics", "release safely"),
         "quality": ("see proof", "see limitations", "judge done-ness"),
     }
@@ -3510,7 +4067,14 @@ def package_map_focus_sections(
         "foundation": (
             ("Owned here", first_items(package.owns)),
             ("Not owned here", first_items(package.not_owns)),
-            ("Proof anchors", (package.package_dir, f"{package.package_dir}/src/{package.import_name}", f"{package.package_dir}/tests")),
+            (
+                "Proof anchors",
+                (
+                    package.package_dir,
+                    f"{package.package_dir}/src/{package.import_name}",
+                    f"{package.package_dir}/tests",
+                ),
+            ),
         ),
         "architecture": (
             ("Module groups", tuple(meaning for _, meaning in package.modules[:3])),
@@ -3523,14 +4087,27 @@ def package_map_focus_sections(
             ("Review pressure", first_items(package.tests)),
         ),
         "operations": (
-            ("Workflow anchors", (package.package_dir + "/pyproject.toml", *first_items(package.interfaces, 2))),
+            (
+                "Workflow anchors",
+                (
+                    package.package_dir + "/pyproject.toml",
+                    *first_items(package.interfaces, 2),
+                ),
+            ),
             ("Operational evidence", first_items(package.tests + package.artifacts)),
             ("Release pressure", first_items(package.release_notes + package.examples)),
         ),
         "quality": (
             ("Proof surfaces", first_items(package.tests)),
             ("Risk anchors", first_items(package.release_notes + package.artifacts)),
-            ("Review bar", ("package trust after change", "proof before confidence", "done means defended behavior")),
+            (
+                "Review bar",
+                (
+                    "package trust after change",
+                    "proof before confidence",
+                    "done means defended behavior",
+                ),
+            ),
         ),
     }
     return focus_map[category]
@@ -3589,22 +4166,42 @@ def render_package_page(
         package_map_focus_sections(package, category, title),
         page_next_checks,
     )
-    body = add_working_interpretation(body, package_working_interpretation(package, category))
+    body = add_working_interpretation(
+        body, package_working_interpretation(package, category)
+    )
     body = add_reader_fit_section(body, package_page_reader_fit(package, category))
     body = add_decision_rule(body, package_decision_rule(package, category, title))
-    if category in {"foundation", "architecture", "interfaces", "operations", "quality"}:
+    if category in {
+        "foundation",
+        "architecture",
+        "interfaces",
+        "operations",
+        "quality",
+    }:
         body = add_question_section(body, page_questions)
-        body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
+        body = add_reviewer_lens_section(
+            body, package_page_reviewer_lens(package, category)
+        )
         body = add_honesty_boundary(body, package_honesty_boundary(package, category))
         body = add_anchor_section(body, package_anchor_bullets(package, category))
         body = add_next_checks(body, page_next_checks)
     else:
-        body = add_what_good_looks_like(body, package_what_good_looks_like(package, category, title))
-        body = add_failure_signals(body, package_failure_signals(package, category, title))
-        body = add_cross_implications(body, package_cross_implications(package, category))
+        body = add_what_good_looks_like(
+            body, package_what_good_looks_like(package, category, title)
+        )
+        body = add_failure_signals(
+            body, package_failure_signals(package, category, title)
+        )
+        body = add_cross_implications(
+            body, package_cross_implications(package, category)
+        )
         body = add_tradeoffs(body, package_tradeoffs(package, category))
-        body = add_approval_questions(body, package_approval_questions(package, category, title))
-        body = add_evidence_checklist(body, package_evidence_checklist(package, category))
+        body = add_approval_questions(
+            body, package_approval_questions(package, category, title)
+        )
+        body = add_evidence_checklist(
+            body, package_evidence_checklist(package, category)
+        )
         body = add_antipatterns(body, package_antipatterns(package, category))
         body = add_escalate_when(body, package_escalate_when(package, category))
         body = add_core_claim(body, package_core_claim(package, category))
@@ -3612,12 +4209,16 @@ def render_package_page(
         body = add_if_it_drifts(body, package_if_it_drifts(package, category))
         body = add_representative_scenario(body, package_scenario(package, category))
         body = add_source_of_truth(body, package_source_of_truth(package, category))
-        body = add_common_misreadings(body, package_common_misreadings(package, category))
+        body = add_common_misreadings(
+            body, package_common_misreadings(package, category)
+        )
         body = add_anchor_section(body, package_anchor_bullets(package, category))
         body = add_next_checks(body, page_next_checks)
         body = add_update_triggers(body, package_update_triggers(package, category))
         body = add_question_section(body, page_questions)
-        body = add_reviewer_lens_section(body, package_page_reviewer_lens(package, category))
+        body = add_reviewer_lens_section(
+            body, package_page_reviewer_lens(package, category)
+        )
         body = add_honesty_boundary(body, package_honesty_boundary(package, category))
         if slug == "index":
             body = add_section_contract(
@@ -3638,7 +4239,9 @@ def render_package_page(
             )
     return "\n".join(
         [
-            front_matter(title, package.owner, "index" if slug == "index" else "explanation"),
+            front_matter(
+                title, package.owner, "index" if slug == "index" else "explanation"
+            ),
             body,
         ]
     )
@@ -4900,12 +5503,18 @@ def validate_rendered_docs() -> None:
                 failures.append(f"{path}: heading {heading} has no narrative lead-in")
                 continue
             if lines[probe].startswith("- ") or lines[probe].startswith("## "):
-                failures.append(f"{path}: heading {heading} is missing a narrative lead-in")
+                failures.append(
+                    f"{path}: heading {heading} is missing a narrative lead-in"
+                )
         if text.count("- ") < 10:
-            failures.append(f"{path}: too few bullet points for current handbook depth standard")
+            failures.append(
+                f"{path}: too few bullet points for current handbook depth standard"
+            )
         word_count = len(text.split())
         if word_count < 250:
-            failures.append(f"{path}: too few words for current handbook depth standard ({word_count})")
+            failures.append(
+                f"{path}: too few words for current handbook depth standard ({word_count})"
+            )
     if failures:
         joined = "\n".join(failures[:50])
         raise RuntimeError(f"Rendered docs validation failed:\n{joined}")
@@ -4947,7 +5556,9 @@ def parse_category_overrides(values: list[str]) -> dict[str, tuple[str, ...]]:
         package_key, raw_categories = value.split("=", 1)
         if package_key not in PRODUCT_PACKAGES:
             raise ValueError(f"Unknown product package '{package_key}'.")
-        categories = tuple(item.strip() for item in raw_categories.split(",") if item.strip())
+        categories = tuple(
+            item.strip() for item in raw_categories.split(",") if item.strip()
+        )
         invalid = [item for item in categories if item not in PACKAGE_CATEGORY_ORDER]
         if invalid:
             raise ValueError(
@@ -4961,7 +5572,9 @@ def parse_targets(values: list[str]) -> set[str]:
     invalid = [value for value in values if value not in TARGET_ORDER]
     if invalid:
         choices = ", ".join(TARGET_ORDER)
-        raise ValueError(f"Invalid targets: {', '.join(invalid)}. Expected any of: {choices}.")
+        raise ValueError(
+            f"Invalid targets: {', '.join(invalid)}. Expected any of: {choices}."
+        )
     return set(values or TARGET_ORDER)
 
 
@@ -4971,8 +5584,7 @@ def main() -> None:
     product_categories = tuple(args.product_categories)
     category_overrides = parse_category_overrides(args.categories_for)
     categories_by_package = {
-        key: category_overrides.get(key, product_categories)
-        for key in PRODUCT_PACKAGES
+        key: category_overrides.get(key, product_categories) for key in PRODUCT_PACKAGES
     }
     clean_docs_root()
     if "platform" in targets:

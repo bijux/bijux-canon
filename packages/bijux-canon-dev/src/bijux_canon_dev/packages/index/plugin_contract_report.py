@@ -34,19 +34,27 @@ def render_table(report: dict[str, object]) -> str:
         "--- | --- | --- | --- | ---",
     ]
     groups = report["groups"]
-    assert isinstance(groups, dict)
+    if not isinstance(groups, dict):
+        raise TypeError("report groups must be a dictionary")
     for group, entries in groups.items():
-        assert isinstance(entries, list)
-        for entry in entries:
-            lines.append(
+        if not isinstance(entries, list):
+            raise TypeError(f"report group {group!r} must contain a list of entries")
+        lines.extend(
+            [
                 f"{group} | {entry.get('name')} | {entry.get('status')} | {entry.get('determinism')} | {entry.get('warning', '')}"
-            )
+                for entry in entries
+            ]
+        )
     return "\n".join(lines)
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Validate bijux-canon-index plugin contracts.")
-    parser.add_argument("--format", choices=("json", "table"), default="json", help="Output format.")
+    parser = argparse.ArgumentParser(
+        description="Validate bijux-canon-index plugin contracts."
+    )
+    parser.add_argument(
+        "--format", choices=("json", "table"), default="json", help="Output format."
+    )
     return parser.parse_args()
 
 

@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from bijux_canon_dev.docs.mkdocs_config import _rewrite_config

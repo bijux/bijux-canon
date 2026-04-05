@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
+import subprocess
 import sys
-
 
 MONOREPO_ROOT = Path(__file__).resolve().parents[6]
 PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "bijux-canon-runtime"
@@ -18,7 +17,9 @@ def read_allowlist(path: Path) -> set[str]:
 
 
 def main() -> int:
-    allowlist_path = MONOREPO_ROOT / "configs" / "bijux-canon-runtime" / "dependency_allowlist.txt"
+    allowlist_path = (
+        MONOREPO_ROOT / "configs" / "bijux-canon-runtime" / "dependency_allowlist.txt"
+    )
     if not allowlist_path.exists():
         print("No dependency allowlist found; skipping")
         return 0
@@ -35,7 +36,9 @@ def main() -> int:
         text=True,
         cwd=PACKAGE_ROOT,
     )
-    installed = {line.split("==")[0] for line in result.stdout.splitlines() if "==" in line}
+    installed = {
+        line.split("==")[0] for line in result.stdout.splitlines() if "==" in line
+    }
     extras = sorted(installed - allowlist)
     if extras:
         print("Dependencies not in allowlist:")
