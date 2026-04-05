@@ -6,13 +6,7 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
-## Unreleased
-
-- Release publish checks now resolve the same effective version Hatch builds,
-  refuse accidental prerelease uploads by default, and verify built artifact
-  versions before upload.
-
-## 0.3.0 - 2026-04-04
+## 0.3.0 - 2026-04-05
 
 ### Added
 
@@ -25,3 +19,22 @@ governance.
 
 - Repository-owned tooling is now described as a publishable package with its
   own release story, rather than as anonymous root-only scripts.
+- Release publish checks now resolve the same effective version Hatch builds,
+  refuse accidental prerelease uploads by default, and verify built artifact
+  versions before upload.
+- The developer tooling lint target now honors the package-level decision to
+  skip mypy in lint runs, instead of accidentally invoking the repository-wide
+  strict type sweep for internal maintenance helpers.
+
+### Fixed
+
+- The developer tooling test environment now declares `hatch` explicitly
+  because release-version validation executes Hatch inside tox environments.
+- The developer tooling lint environment now declares `pydantic` explicitly so
+  the repository-wide mypy plugin contract loads consistently inside tox.
+- The developer tooling lint environment now declares `codespell` explicitly so
+  the enabled lint toolchain is fully present inside tox runs.
+- The dev package quality contract now treats intentional cross-package helper
+  imports as repository-internal tooling instead of missing product
+  dependencies, and the package files were reformatted to match the enforced
+  Ruff baseline.

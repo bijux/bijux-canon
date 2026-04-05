@@ -5,23 +5,7 @@ All notable changes to `bijux-canon-agent` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
-## Unreleased
-
-- PyPI metadata, keywords, and project URLs now make the canonical agent
-  package easier to discover from package indexes and Bijux-owned docs.
-- The package README now uses PyPI-safe badge and link targets, and it points
-  legacy `bijux-agent` users to the canonical migration path and retired
-  repository guidance.
-- The published wheel now ships the `py.typed` marker that matches the typed
-  package classifier.
-- Package-local PyPI publication guidance is now checked in and shipped with
-  the source distribution so release expectations stay attached to the package.
-- Release artifacts now ship the repository `LICENSE` file so downstream
-  consumers receive the license text with the published package.
-- Source distributions now publish package-local ignore rules instead of a
-  generic repo-level `.gitignore`.
-
-## 0.3.0 - 2026-04-04
+## 0.3.0 - 2026-04-05
 
 ### Added
 
@@ -39,12 +23,27 @@ tagged release.
   runtime support, and trace handling.
 - Core support code was clarified around `contracts/`, `core/`, `llm/`, and
   `traces/` so ownership is easier to follow and maintain.
+- PyPI metadata, keywords, and project URLs now make the canonical agent
+  package easier to discover from package indexes and Bijux-owned docs.
+- The package README now uses PyPI-safe badge and link targets, and it points
+  previous `bijux-agent` users to the canonical migration path and retired
+  repository guidance.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so release expectations stay attached to the package.
+- Source distributions now publish package-local ignore rules instead of a
+  generic repo-level `.gitignore`.
 
 ### Fixed
 
 - CLI helper compatibility exports were restored after the module split work.
 - Root package quality gates and documentation snapshot checks were repaired
   after the refactor series.
+- The published wheel now ships the `py.typed` marker that matches the typed
+  package classifier.
+- Release artifacts now ship the repository `LICENSE` file so downstream
+  consumers receive the license text with the published package.
+- The focused mypy regression test now selects an interpreter that actually has
+  `mypy` installed, so tox runs do not depend on a package-local `.venv`.
 
 ## v0.1.0 (first public release)
 
