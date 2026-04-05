@@ -50,11 +50,15 @@ def _normalize_cli_help(text: str) -> str:
     text = re.sub(r"\x1b\[[0-9;]*m", "", text)
     normalized_lines: list[str] = []
     for line in text.splitlines():
-        if line.startswith("│") and line.endswith("│"):
-            inner = re.sub(r" {2,}", " ", line[1:-1].strip())
-            normalized_lines.append(f"│ {inner} │")
+        stripped = line.strip()
+        if not stripped:
+            normalized_lines.append("")
             continue
-        normalized_lines.append(line.rstrip())
+        if stripped.startswith(("╭", "╰")) and stripped.endswith(("╮", "╯")):
+            continue
+        if stripped.startswith("│") and stripped.endswith("│"):
+            stripped = stripped[1:-1].strip()
+        normalized_lines.append(re.sub(r"\s+", " ", stripped))
     return "\n".join(normalized_lines).strip() + "\n"
 
 
