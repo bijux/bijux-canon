@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 from typing import Any
-
 
 REPORT_PATH = os.getenv("PIPA_JSON", "")
 IGNORE_IDS = set(filter(None, os.getenv("SECURITY_IGNORE_IDS", "").split()))
@@ -13,13 +11,13 @@ IS_STRICT = os.getenv("SECURITY_STRICT", "1") == "1"
 
 def load_report(path: str) -> list[dict[str, Any]]:
     try:
-        with open(path, "r", encoding="utf-8") as handle:
+        with open(path, encoding="utf-8") as handle:
             data = json.load(handle)
     except (FileNotFoundError, json.JSONDecodeError) as exc:
         message = f"ERROR: pip-audit JSON missing or unreadable at '{path}': {exc!s}"
         if IS_STRICT:
             print(message)
-            raise SystemExit(2)
+            raise SystemExit(2) from None
         print(message + " (non-strict: continuing with empty report)")
         return []
 
@@ -63,7 +61,9 @@ def format_table(rows: list[tuple[str, str, str, str]]) -> str:
             widths[index] = max(widths[index], len(cell))
 
     def format_row(columns: tuple[str, ...]) -> str:
-        return "  ".join(column.ljust(widths[index]) for index, column in enumerate(columns))
+        return "  ".join(
+            column.ljust(widths[index]) for index, column in enumerate(columns)
+        )
 
     lines = [format_row(header), "  ".join("-" * width for width in widths)]
     lines.extend(format_row(row) for row in rows)
@@ -97,22 +97,33 @@ def main() -> int:
             if not isinstance(fix_versions, list):
                 fix_versions = []
             remaining.append(
-                (name, version, primary_id(ids), ", ".join(fix_versions) if fix_versions else "-")
+                (
+                    name,
+                    version,
+                    primary_id(ids),
+                    ", ".join(fix_versions) if fix_versions else "-",
+                )
             )
 
     if ignored_count:
-        print(f"INFO: {ignored_count} vulnerability instance(s) matched ignore list and were skipped.")
+        print(
+            f"INFO: {ignored_count} vulnerability instance(s) matched ignore list and were skipped."
+        )
 
     if not remaining:
         print("OK: 0 vulnerabilities remain after ignores.")
         return 0
 
     remaining.sort(key=lambda row: (row[0], row[2], row[1]))
-    print(f"FAIL: {len(remaining)} vulnerability instance(s) remain after ignores.\n{format_table(remaining)}")
+    print(
+        f"FAIL: {len(remaining)} vulnerability instance(s) remain after ignores.\n{format_table(remaining)}"
+    )
     if IS_STRICT:
         print(f"STRICT: failing due to remaining vulnerabilities. See {REPORT_PATH}")
         return 1
-    print(f"NON-STRICT: not failing despite remaining vulnerabilities. See {REPORT_PATH}")
+    print(
+        f"NON-STRICT: not failing despite remaining vulnerabilities. See {REPORT_PATH}"
+    )
     return 0
 
 

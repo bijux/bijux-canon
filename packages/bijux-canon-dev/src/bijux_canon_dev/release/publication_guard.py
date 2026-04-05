@@ -81,7 +81,8 @@ def assert_artifacts_match_version(dist_dir: Path, version: str) -> None:
     }
     if mismatched:
         details = ", ".join(
-            f"{name}={artifact_version}" for name, artifact_version in sorted(mismatched.items())
+            f"{name}={artifact_version}"
+            for name, artifact_version in sorted(mismatched.items())
         )
         raise ValueError(
             f"artifact versions do not match resolved version {version}: {details}"

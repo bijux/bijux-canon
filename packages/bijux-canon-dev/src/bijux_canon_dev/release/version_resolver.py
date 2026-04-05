@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
+import shutil
 import subprocess
 import sys
-from pathlib import Path
 
 try:
     import tomllib
@@ -25,7 +26,7 @@ def _pyproject_data(pyproject_path: Path) -> dict[str, object]:
 
 
 def _resolve_hatch_version(pyproject_path: Path) -> str | None:
-    result = subprocess.run(
+    result = subprocess.run(  # noqa: S603 - invokes the package-local Hatch CLI
         [sys.executable, "-m", "hatch", "version"],
         capture_output=True,
         check=False,
@@ -50,6 +51,13 @@ def _tag_glob(pyproject: dict[str, object], package_name: str) -> str:
     return f"{package_name}/v*"
 
 
+def _git_executable() -> str:
+    resolved = shutil.which("git")
+    if resolved is None:
+        raise SystemExit("git executable not found")
+    return resolved
+
+
 def resolve_version(pyproject_path: Path, package_name: str) -> str:
     pyproject = _pyproject_data(pyproject_path)
     project = pyproject.get("project", {})
@@ -62,7 +70,13 @@ def resolve_version(pyproject_path: Path, package_name: str) -> str:
         return hatch_version
 
     tag_process = subprocess.run(
-        ["git", "tag", "--sort=v:refname", "--list", _tag_glob(pyproject, package_name)],
+        [
+            _git_executable(),
+            "tag",
+            "--sort=v:refname",
+            "--list",
+            _tag_glob(pyproject, package_name),
+        ],
         capture_output=True,
         check=False,
         text=True,

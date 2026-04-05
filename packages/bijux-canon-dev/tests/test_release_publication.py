@@ -16,7 +16,6 @@ from bijux_canon_dev.release.publication_guard import (
 )
 from bijux_canon_dev.release.version_resolver import resolve_version
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -47,7 +46,7 @@ def test_assert_publishable_version_enforces_release_policy(
     should_raise: bool,
 ) -> None:
     if should_raise:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="version|prerelease|local build marker"):
             assert_publishable_version(
                 version,
                 allow_prerelease=allow_prerelease,
@@ -74,7 +73,9 @@ def test_artifact_versions_parse_wheel_and_sdist_names(tmp_path: Path) -> None:
     assert_artifacts_match_version(tmp_path, "0.3.0")
 
 
-def test_assert_artifacts_match_version_rejects_mismatched_files(tmp_path: Path) -> None:
+def test_assert_artifacts_match_version_rejects_mismatched_files(
+    tmp_path: Path,
+) -> None:
     sdist = tmp_path / "bijux-canon-runtime-0.3.1.dev1.tar.gz"
     sdist.write_text("", encoding="utf-8")
 
@@ -100,12 +101,18 @@ def test_public_release_packages_resolve_same_version_as_hatch() -> None:
             text=True,
         )
         if hatch.returncode != 0:
-            failures.append(f"{package_name}: hatch version failed: {hatch.stderr.strip()}")
+            failures.append(
+                f"{package_name}: hatch version failed: {hatch.stderr.strip()}"
+            )
             continue
 
         resolved = resolve_version(pyproject_path, distribution_name)
         hatch_version = hatch.stdout.strip()
         if resolved != hatch_version:
-            failures.append(f"{package_name}: resolver={resolved!r} hatch={hatch_version!r}")
+            failures.append(
+                f"{package_name}: resolver={resolved!r} hatch={hatch_version!r}"
+            )
 
-    assert not failures, "public package version resolution drifted:\n" + "\n".join(failures)
+    assert not failures, "public package version resolution drifted:\n" + "\n".join(
+        failures
+    )

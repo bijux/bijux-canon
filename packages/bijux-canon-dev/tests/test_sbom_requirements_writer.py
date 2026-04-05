@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from bijux_canon_dev.sbom.requirements_writer import render_local_requirement
@@ -19,5 +18,5 @@ def test_render_local_requirement_rewrites_workspace_dependency(tmp_path) -> Non
     )
 
     assert rendered == (
-        f"bijux-canon-runtime[api] @ {package_dir.as_uri()}; python_version >= \"3.11\""
+        f'bijux-canon-runtime[api] @ {package_dir.as_uri()}; python_version >= "3.11"'
     )

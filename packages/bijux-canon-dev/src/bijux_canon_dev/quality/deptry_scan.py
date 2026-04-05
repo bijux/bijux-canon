@@ -3,11 +3,11 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from pathlib import Path
 import shlex
 import shutil
 import subprocess
 import tempfile
-from pathlib import Path
 
 try:
     import tomllib
@@ -19,10 +19,23 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run deptry with repository-owned config merged into a package pyproject.toml.",
     )
-    parser.add_argument("--config", required=True, help="Path to the repo-owned deptry TOML file.")
-    parser.add_argument("--project-dir", required=True, help="Path to the package root containing pyproject.toml.")
-    parser.add_argument("--deptry-bin", default="deptry", help="Deptry executable to invoke.")
-    parser.add_argument("roots", nargs="*", default=["."], help="Roots to scan, relative to the project dir.")
+    parser.add_argument(
+        "--config", required=True, help="Path to the repo-owned deptry TOML file."
+    )
+    parser.add_argument(
+        "--project-dir",
+        required=True,
+        help="Path to the package root containing pyproject.toml.",
+    )
+    parser.add_argument(
+        "--deptry-bin", default="deptry", help="Deptry executable to invoke."
+    )
+    parser.add_argument(
+        "roots",
+        nargs="*",
+        default=["."],
+        help="Roots to scan, relative to the project dir.",
+    )
     return parser.parse_args()
 
 
@@ -46,7 +59,9 @@ def resolve_deptry_command(deptry_bin: str) -> list[str]:
 def merge_deptry_config(config_path: Path, package_slug: str) -> dict[str, object]:
     root_config = tomllib.loads(config_path.read_text(encoding="utf-8"))
     base_config = root_config.get("tool", {}).get("deptry", {})
-    package_configs = root_config.get("tool", {}).get("repo_deptry", {}).get("packages", {})
+    package_configs = (
+        root_config.get("tool", {}).get("repo_deptry", {}).get("packages", {})
+    )
     package_override = package_configs.get(package_slug, {})
 
     merged_config: dict[str, object] = dict(base_config)
@@ -86,7 +101,9 @@ def render_toml_value(value: object) -> str:
     if isinstance(value, list):
         return "[" + ", ".join(render_toml_value(item) for item in value) + "]"
     if isinstance(value, dict):
-        items = ", ".join(f"{key} = {render_toml_value(item)}" for key, item in value.items())
+        items = ", ".join(
+            f"{key} = {render_toml_value(item)}" for key, item in value.items()
+        )
         return "{ " + items + " }"
     return str(value)
 
@@ -104,7 +121,9 @@ def main() -> int:
 
     deptry_command = resolve_deptry_command(args.deptry_bin)
     pyproject_text = pyproject_path.read_text(encoding="utf-8").rstrip()
-    config_text = render_deptry_config(merge_deptry_config(config_path, project_dir.name))
+    config_text = render_deptry_config(
+        merge_deptry_config(config_path, project_dir.name)
+    )
     merged_text = f"{pyproject_text}\n\n{config_text}\n"
 
     with tempfile.TemporaryDirectory(prefix="deptry-") as tmpdir:

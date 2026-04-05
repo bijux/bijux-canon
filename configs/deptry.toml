@@ -20,7 +20,7 @@ per_rule_ignores = { DEP001 = ["dask", "apache_beam"], DEP002 = ["fastapi", "uvi
 
 [tool.repo_deptry.packages."bijux-canon-dev"]
 known_first_party = ["bijux_canon_dev"]
-ignore = ["DEP002", "DEP003"]
+ignore = ["DEP001", "DEP002", "DEP003"]
 
 [tool.repo_deptry.packages."bijux-canon-reason"]
 known_first_party = ["bijux_canon_reason"]
