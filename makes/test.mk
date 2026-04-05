@@ -28,6 +28,7 @@ TEST_SYNTAX_PATHS         ?=
 TEST_PYCACHE_PREFIX       ?=
 TEST_COVERAGE_TARGETS     ?=
 TEST_COVERAGE_FAIL_UNDER  ?= 90
+TEST_COVERAGE_SOURCE      ?= $(TEST_SOURCE_PATH)
 TEST_SOURCE_PATH          ?= src
 TEST_CLEAN_PATHS          ?= .hypothesis .benchmarks
 
@@ -52,6 +53,7 @@ TEST_PATHS_REGRESSION_ABS := $(abspath $(TEST_PATHS_REGRESSION))
 TEST_PATHS_EVALUATION_ABS := $(abspath $(TEST_PATHS_EVALUATION))
 TEST_REAL_LOCAL_ABS       := $(abspath $(TEST_REAL_LOCAL_PATH))
 TEST_SOURCE_PATH_ABS      := $(abspath $(TEST_SOURCE_PATH))
+TEST_COVERAGE_SOURCE_ABS  := $(foreach path,$(TEST_COVERAGE_SOURCE),$(abspath $(path)))
 JUNIT_XML_ABS             := $(abspath $(JUNIT_XML))
 TMP_DIR_ABS               := $(abspath $(TMP_DIR))
 HYPOTHESIS_DB_ABS         := $(abspath $(HYPOTHESIS_DB_DIR))
@@ -59,9 +61,12 @@ BENCHMARK_DIR_ABS         := $(abspath $(BENCHMARK_DIR))
 TEST_PYCACHE_PREFIX_ABS   := $(abspath $(TEST_PYCACHE_PREFIX))
 TEST_PYCACHE_ENV          := $(if $(strip $(TEST_PYCACHE_PREFIX)),PYTHONPYCACHEPREFIX="$(TEST_PYCACHE_PREFIX_ABS)",)
 
+PYTEST_COV_FLAGS = $(foreach path,$(TEST_COVERAGE_SOURCE_ABS),--cov="$(path)")
+
 PYTEST_FLAGS = \
   --junitxml "$(JUNIT_XML_ABS)" \
   --basetemp "$(TMP_DIR_ABS)" \
+  $(PYTEST_COV_FLAGS) \
   --cov-config "$(COVCFG_ABS)" \
   --cov-report=html:"$(COV_HTML_ABS)" \
   --cov-report=xml:"$(COV_XML_ABS)" \
