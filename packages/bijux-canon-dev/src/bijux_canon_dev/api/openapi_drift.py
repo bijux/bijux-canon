@@ -44,6 +44,8 @@ def load_target(entrypoint: str) -> Any:
         )
     module = importlib.import_module(module_name)
     target = getattr(module, attribute_name)
+    if hasattr(target, "openapi") and not isinstance(target, type):
+        return target
     return target() if callable(target) else target
 
 

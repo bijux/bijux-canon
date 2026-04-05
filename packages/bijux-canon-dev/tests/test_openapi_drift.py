@@ -15,6 +15,9 @@ class _FakeApp:
     def openapi(self) -> dict[str, object]:
         return {"openapi": "3.1.0", "info": {"title": "fake", "version": "v1"}}
 
+    def __call__(self, scope: object, receive: object, send: object) -> None:
+        raise AssertionError("app instances must not be called as factories")
+
 
 def test_load_target_calls_factory(monkeypatch) -> None:
     module = ModuleType("test_fake_app")
@@ -24,6 +27,16 @@ def test_load_target_calls_factory(monkeypatch) -> None:
     app = load_target("test_fake_app:create_app")
 
     assert isinstance(app, _FakeApp)
+
+
+def test_load_target_returns_app_instance(monkeypatch) -> None:
+    module = ModuleType("test_fake_app_instance")
+    module.app = _FakeApp()
+    monkeypatch.setitem(sys.modules, "test_fake_app_instance", module)
+
+    app = load_target("test_fake_app_instance:app")
+
+    assert app is module.app
 
 
 def test_write_schema_supports_yaml(tmp_path) -> None:
