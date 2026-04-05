@@ -3,7 +3,7 @@ name: publish-bijux-rar
 on:
   push:
     tags:
-      - "bijux-canon-reason/v*"
+      - "v*"
   workflow_dispatch:
 
 permissions:

@@ -3,7 +3,7 @@ name: publish-bijux-vex
 on:
   push:
     tags:
-      - "bijux-canon-index/v*"
+      - "v*"
   workflow_dispatch:
 
 permissions:

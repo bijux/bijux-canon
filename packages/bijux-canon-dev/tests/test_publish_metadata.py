@@ -187,6 +187,32 @@ def test_public_release_packages_are_aligned_to_v0_3_0() -> None:
     )
 
 
+def test_workspace_packages_use_shared_repository_release_tags() -> None:
+    workspace = _workspace_metadata()
+    package_dirs = workspace["package_dirs"]
+
+    mismatches: list[str] = []
+    for package_name, package_dir in sorted(package_dirs.items()):
+        pyproject_path = REPO_ROOT / package_dir / "pyproject.toml"
+        with pyproject_path.open("rb") as handle:
+            data = tomllib.load(handle)
+        version_config = data.get("tool", {}).get("hatch", {}).get("version", {})
+        if version_config.get("tag-pattern") != "^v(?P<version>.*)$":
+            mismatches.append(
+                f"{package_name}: tag-pattern={version_config.get('tag-pattern')!r}"
+            )
+        raw_options = version_config.get("raw-options", {})
+        describe_command = raw_options.get("git_describe_command")
+        if describe_command != "git describe --dirty --tags --long --match 'v*'":
+            mismatches.append(
+                f"{package_name}: git_describe_command={describe_command!r}"
+            )
+
+    assert not mismatches, (
+        "workspace release tag configuration failed:\n" + "\n".join(mismatches)
+    )
+
+
 def test_public_release_packages_share_required_project_urls() -> None:
     workspace = _workspace_metadata()
     public_packages = set(workspace["public_release_packages"])
@@ -448,7 +474,7 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
                 f"{package_name}: overview should document the retired repository"
             )
         tag_pattern = tool["hatch"]["version"]["tag-pattern"]
-        if tag_pattern != f"^{canonical}/v(?P<version>.*)$":
+        if tag_pattern != "^v(?P<version>.*)$":
             failures.append(f"{package_name}: unexpected tag-pattern {tag_pattern!r}")
         hook_canonical = tool["hatch"]["metadata"]["hooks"]["custom"]["canonical-name"]
         if hook_canonical != canonical:

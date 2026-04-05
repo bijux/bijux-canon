@@ -57,8 +57,8 @@ bijux-rar = "bijux_canon_reason.interfaces.cli:app"
 
 [tool.hatch.version]
 source = "vcs"
-tag-pattern = "^bijux-canon-reason/v(?P<version>.*)$"
-raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'bijux-canon-reason/v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+tag-pattern = "^v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 fallback-version = "0.3.0"
 
 [tool.hatch.metadata.hooks.custom]

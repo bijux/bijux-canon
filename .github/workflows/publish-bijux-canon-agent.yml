@@ -3,7 +3,7 @@ name: publish-bijux-canon-agent
 on:
   push:
     tags:
-      - "bijux-canon-agent/v*"
+      - "v*"
   workflow_dispatch:
 
 permissions:
