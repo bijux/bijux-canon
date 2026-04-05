@@ -16,6 +16,7 @@ QUALITY_VULTURE_MIN_CONFIDENCE := 80
 SECURITY_PATHS    := src/bijux_canon_reason
 SECURITY_IGNORE_IDS := PYSEC-2022-42969
 API_MODE := contract
+API_BASE_PATH :=
 API_MODULE := bijux_canon_reason.api.v1.app
 API_INSTALL_EDITABLE := 1
 API_NODE_BOOTSTRAP_MODE := npm-ci-sandbox

@@ -29,7 +29,9 @@ SECURITY_IGNORE_IDS := PYSEC-2022-42969 CVE-2025-68463
 SECURITY_BANDIT_SKIP_IDS := B311
 SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/runtime/check_dependency_allowlist.py
 API_MODE := contract
-API_BASE_PATH := /api/v1
+# The checked-in schema already includes the /api/v1 prefix in each path.
+# Leave the schemathesis base URL at the API root to avoid duplicating it.
+API_BASE_PATH :=
 API_MODULE := bijux_canon_runtime.api.v1.app
 API_DYNAMIC_PORT := 1
 OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@7.14.0

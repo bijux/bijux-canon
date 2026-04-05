@@ -158,7 +158,11 @@ api-test: | $(VENV)
 	    echo 'PORT="$(API_PORT)"' >> "$$script"; \
 	  fi; \
 	  echo 'echo "→ Starting API server"' >> "$$script"; \
-	  printf 'API_HOST="%s" API_PORT="$$PORT" %s >"%s" 2>&1 & PID=$$!\n' "$(API_HOST)" "$(API_SERVER_CMD)" "$(abspath $(API_LOG))" >> "$$script"; \
+	  if [ -n "$(API_FACTORY)" ]; then \
+	    printf '%s\n' 'API_HOST="$(API_HOST)" API_PORT="$$PORT" PYTHONPATH="$(APP_DIR)$${PYTHONPATH:+:$$PYTHONPATH}" "$(VENV_PYTHON)" -c '"'"'import sys, importlib, uvicorn, os; sys.path.insert(0,"$(APP_DIR)"); m=importlib.import_module("$(API_MODULE)"); app=getattr(m,"$(API_FACTORY)")(); uvicorn.run(app, host=os.environ["API_HOST"], port=int(os.environ["API_PORT"]))'"'"' >"$(abspath $(API_LOG))" 2>&1 & PID=$$!' >> "$$script"; \
+	  else \
+	    printf '%s\n' 'PYTHONPATH="$(APP_DIR)$${PYTHONPATH:+:$$PYTHONPATH}" "$(VENV_PYTHON)" -m uvicorn --app-dir "$(APP_DIR)" "$(API_MODULE):$(API_APP)" --host "$(API_HOST)" --port "$$PORT" >"$(abspath $(API_LOG))" 2>&1 & PID=$$!' >> "$$script"; \
+	  fi; \
 	  echo 'echo $$PID >"$(API_ARTIFACTS_DIR_ABS)/server.pid"' >> "$$script"; \
 	  echo 'cleanup(){ kill $$PID >/dev/null 2>&1 || true; wait $$PID >/dev/null 2>&1 || true; }' >> "$$script"; \
 	  echo 'trap cleanup EXIT INT TERM' >> "$$script"; \
