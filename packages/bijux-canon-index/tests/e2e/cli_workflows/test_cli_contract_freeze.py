@@ -36,10 +36,10 @@ CLI_HELP = """
 │ bench                                                                        │
 │ metrics                                                                      │
 │ debug-bundle                                                                 │
-│ vdb              Vector DB utilities                                         │
-│ nd               ND utilities                                                │
-│ config           Configuration utilities                                     │
-│ artifact         Artifact bundle utilities                                   │
+│ vdb             Vector DB utilities                                          │
+│ nd              ND utilities                                                 │
+│ config          Configuration utilities                                      │
+│ artifact        Artifact bundle utilities                                    │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
 """
