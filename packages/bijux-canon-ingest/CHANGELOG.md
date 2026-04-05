@@ -5,22 +5,7 @@ All notable changes to `bijux-canon-ingest` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
-## [Unreleased]
-
-- PyPI metadata, search keywords, and project URLs now make the canonical
-  ingest package easier to discover from package indexes and Bijux-owned docs.
-- The package README now uses PyPI-safe badge and link targets, and it points
-  legacy `bijux-rag` users to the canonical migration path and retired
-  repository guidance.
-- Package-local PyPI publication guidance is now checked in and shipped with
-  the source distribution so ingest release expectations stay attached to the
-  package.
-- Release artifacts now ship the repository `LICENSE` file so downstream
-  consumers receive the license text with the published package.
-- Build-time version metadata now writes to a generated module so packaging
-  commands stop dirtying the tracked source tree.
-
-## [0.3.0] - 2026-04-04
+## [0.3.0] - 2026-04-05
 
 ### Added
 
@@ -43,6 +28,16 @@ tagged release, including legacy distribution naming where applicable.
 - Domain and adapter boundaries were tightened around embedder selection,
   serialization envelopes, stored-index access, observability payloads, and
   shell-backed document I/O.
+- PyPI metadata, search keywords, and project URLs now make the canonical
+  ingest package easier to discover from package indexes and Bijux-owned docs.
+- The package README now uses PyPI-safe badge and link targets, and it points
+  legacy `bijux-rag` users to the canonical migration path and retired
+  repository guidance.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so ingest release expectations stay attached to the
+  package.
+- Build-time version metadata now writes to a generated module so packaging
+  commands stop dirtying the tracked source tree.
 
 ### Fixed
 
@@ -50,6 +45,10 @@ tagged release, including legacy distribution naming where applicable.
   behavior were aligned for the current `0.3.0` line.
 - CLI boundary wiring, HTTP request mapping, UTC clock adapter behavior, and
   source-tree cache hygiene were tightened during the refactor series.
+- Release artifacts now ship the repository `LICENSE` file so downstream
+  consumers receive the license text with the published package.
+- HTTP app tests now assert the canonical OpenAPI title string that matches the
+  checked-in v1 contract artifacts.
 
 ## [0.1.0] – 2025-12-26
 

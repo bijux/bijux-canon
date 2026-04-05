@@ -5,29 +5,7 @@ All notable changes to `bijux-canon-index` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
-## Unreleased
-
-- PyPI metadata, search keywords, and project URLs now make the canonical
-  index package easier to discover from package indexes and Bijux-owned docs.
-- The package README now uses PyPI-safe badge and link targets, and it points
-  legacy `bijux-vex` users to the canonical migration path and retired
-  repository guidance.
-- Package-local PyPI publication guidance is now checked in and shipped with
-  the source distribution so index release expectations stay attached to the
-  package.
-- Source distributions now include the full `src/bijux_canon_index` tree
-  instead of publishing only the typed marker file.
-- Release artifacts now ship the repository `LICENSE` file so downstream
-  consumers receive the license text with the published package.
-- Build-time version metadata now writes to a generated module so packaging
-  commands stop dirtying the tracked source tree.
-- Package-local ignore rules now cover Python package metadata directories so
-  unpacked release artifacts stay cleaner during local validation.
-- OpenAPI freeze artifacts and release-gate expectations were refreshed to
-  match the current FastAPI-generated validation schema and 422 response
-  wording.
-
-## 0.3.0 - 2026-04-04
+## 0.3.0 - 2026-04-05
 
 ### Added
 
@@ -47,6 +25,21 @@ tagged release, including legacy distribution naming where applicable.
 - Backend and orchestration support code was separated into smaller helpers for
   embedding preparation, ingest persistence, capability reporting, execution
   tracking, non-deterministic guard state, and artifact materialization.
+- PyPI metadata, search keywords, and project URLs now make the canonical
+  index package easier to discover from package indexes and Bijux-owned docs.
+- The package README now uses PyPI-safe badge and link targets, and it points
+  legacy `bijux-vex` users to the canonical migration path and retired
+  repository guidance.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so index release expectations stay attached to the
+  package.
+- Build-time version metadata now writes to a generated module so packaging
+  commands stop dirtying the tracked source tree.
+- Package-local ignore rules now cover Python package metadata directories so
+  unpacked release artifacts stay cleaner during local validation.
+- OpenAPI freeze artifacts and release-gate expectations were refreshed to
+  match the current FastAPI-generated validation schema and 422 response
+  wording.
 
 ### Fixed
 
@@ -54,6 +47,14 @@ tagged release, including legacy distribution naming where applicable.
   reorganization.
 - Runtime state and generated artifacts were moved under the artifacts root so
   package trees stay cleaner during checks.
+- Source distributions now include the full `src/bijux_canon_index` tree
+  instead of publishing only the typed marker file.
+- Release artifacts now ship the repository `LICENSE` file so downstream
+  consumers receive the license text with the published package.
+- The checked-in YAML and JSON OpenAPI artifacts are back in sync so
+  repository-level API contract checks validate the same v1 surface.
+- The checked-in v1 schema now includes the current FastAPI validation error
+  shape so API drift checks match the live application contract.
 
 ## 0.2.0 – 2026-02-03
 

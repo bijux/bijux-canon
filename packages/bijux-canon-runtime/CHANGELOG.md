@@ -6,25 +6,8 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
-<a id="unreleased"></a>  
-## [Unreleased]  
-
-<!-- unreleased start -->
-- PyPI metadata, search keywords, and project URLs now make the canonical
-  runtime package easier to discover from package indexes and Bijux-owned docs.
-- The package README now uses PyPI-safe badge and link targets, and it points
-  legacy `agentic-flows` users to the canonical migration path and retired
-  repository guidance.
-- Package-local PyPI publication guidance is now checked in and shipped with
-  the source distribution so runtime release expectations stay durable.
-- Release artifacts now ship the repository `LICENSE` file so downstream
-  consumers receive the license text with the published package.
-- Source distributions now publish package-local ignore rules instead of a
-  generic repo-level `.gitignore`.
-<!-- unreleased end -->  
-
 <a id="v0-3-0"></a>  
-## [0.3.0] - 2026-04-04  
+## [0.3.0] - 2026-04-05  
 
 <!-- release-v0-3-0 start -->
 ### Added
@@ -48,6 +31,15 @@ tagged release, including legacy distribution naming where applicable.
 * Flow preparation, execution recording, replay analysis, tool-event recording,
   verification arbitration, and persistence support were split into smaller
   modules so runtime behavior is easier to reason about and maintain.
+* PyPI metadata, search keywords, and project URLs now make the canonical
+  runtime package easier to discover from package indexes and Bijux-owned docs.
+* The package README now uses PyPI-safe badge and link targets, and it points
+  legacy `agentic-flows` users to the canonical migration path and retired
+  repository guidance.
+* Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so runtime release expectations stay durable.
+* Source distributions now publish package-local ignore rules instead of a
+  generic repo-level `.gitignore`.
 
 ### Fixed
 * Duplicate dependency declarations are now rejected during planning.
@@ -56,6 +48,8 @@ tagged release, including legacy distribution naming where applicable.
 * Root package quality gates were repaired after the refactor series.
 * Replay and storage typing, readiness responses, and verification-policy
   override handling were tightened during the runtime refactor series.
+* Release artifacts now ship the repository `LICENSE` file so downstream
+  consumers receive the license text with the published package.
 <!-- release-v0-3-0 end -->  
 
 ---  

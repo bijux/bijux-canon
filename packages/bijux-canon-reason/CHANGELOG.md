@@ -6,25 +6,7 @@ All notable changes to `bijux-canon-reason` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
-## Unreleased
-
-- PyPI metadata, search keywords, and project URLs now make the canonical
-  reasoning package easier to discover from package indexes and Bijux-owned
-  docs.
-- The package README now uses PyPI-safe badge and link targets, and it points
-  legacy `bijux-rar` users to the canonical migration path and retired
-  repository guidance.
-- Package-local PyPI publication guidance is now checked in and shipped with
-  the source distribution so reasoning release expectations stay attached to
-  the package.
-- Release artifacts now ship the repository `LICENSE` file so downstream
-  consumers receive the license text with the published package.
-- Build-time version metadata now writes to a generated module so packaging
-  commands stop dirtying the tracked source tree.
-- Package-local ignore rules now cover Python package metadata directories so
-  unpacked release artifacts stay cleaner during local validation.
-
-## 0.3.0 - 2026-04-04
+## 0.3.0 - 2026-04-05
 
 ### Added
 
@@ -42,6 +24,19 @@ tagged release.
   orchestration, and invariant validation.
 - Package entrypoints and storage helpers were simplified so reasoning flows are
   easier to follow and internal dependencies are less tangled.
+- PyPI metadata, search keywords, and project URLs now make the canonical
+  reasoning package easier to discover from package indexes and Bijux-owned
+  docs.
+- The package README now uses PyPI-safe badge and link targets, and it points
+  legacy `bijux-rar` users to the canonical migration path and retired
+  repository guidance.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so reasoning release expectations stay attached to
+  the package.
+- Build-time version metadata now writes to a generated module so packaging
+  commands stop dirtying the tracked source tree.
+- Package-local ignore rules now cover Python package metadata directories so
+  unpacked release artifacts stay cleaner during local validation.
 
 ### Fixed
 
@@ -49,6 +44,10 @@ tagged release.
   the refactor series.
 - Fixture, benchmark-hygiene, and package-entrypoint regressions were cleaned up
   during the package reorganization.
+- Release artifacts now ship the repository `LICENSE` file so downstream
+  consumers receive the license text with the published package.
+- API route modules now match the enforced Ruff formatting baseline so package
+  lint checks stay reproducible in tox.
 
 ## v0.1.0 — Initial public release
 
