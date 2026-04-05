@@ -285,6 +285,13 @@
       },
       "ValidationError": {
         "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
           "loc": {
             "items": {
               "anyOf": [
@@ -348,6 +355,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDetail"
+                }
+              }
+            },
+            "description": "The health request could not be interpreted."
           }
         },
         "summary": "Report API health",
@@ -1241,9 +1258,20 @@
           },
           "404": {
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorDetail"
+                  "properties": {
+                    "detail": {
+                      "description": "Human-readable explanation for the API failure.",
+                      "title": "Detail",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "detail"
+                  ],
+                  "title": "ErrorDetail",
+                  "type": "object"
                 }
               }
             },
@@ -1392,6 +1420,7 @@
       }
     }
   },
+  "security": [],
   "servers": [
     {
       "url": "/"

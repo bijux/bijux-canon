@@ -45,6 +45,9 @@ def configure_item_store(artifacts_dir: Path) -> Path:
             )
             """
         )
+        conn.execute(
+            "UPDATE items SET description = '' WHERE description IS NULL"
+        )
         conn.commit()
     return db_path
 
@@ -261,7 +264,7 @@ def register_item_routes(
         guard_request(request)
         _validate_item_id(item_id)
         item_name = payload.name or f"item-{item_id}"
-        description = payload.description
+        description = payload.description or ""
         with closing(_connect_item_store(db_path)) as conn:
             try:
                 item = _upsert_item(
@@ -347,13 +350,13 @@ def _upsert_item(
     *,
     item_id: int,
     item_name: str,
-    description: str | None,
+    description: str,
 ) -> dict[str, object]:
     row = _read_item_row(conn, item_id=item_id)
     if row is None:
         conn.execute(
             "INSERT INTO items (id, name, description, deleted) VALUES (?, ?, ?, 0)",
-            (item_id, item_name, description or ""),
+            (item_id, item_name, description),
         )
         return _read_active_item(conn, item_id=item_id)
     if row["deleted"]:
@@ -370,7 +373,7 @@ def _row_to_item(row: sqlite3.Row) -> dict[str, object]:
     return {
         "id": row["id"],
         "name": row["name"],
-        "description": row["description"],
+        "description": row["description"] or "",
     }
 
 

@@ -165,7 +165,11 @@ def register_run_routes(
             **guard_responses,
             404: {
                 "description": "The requested trace was not found.",
-                "model": ErrorDetail,
+                "content": {
+                    "application/json": {
+                        "schema": ErrorDetail.model_json_schema(),
+                    }
+                },
             },
         },
     )
@@ -238,7 +242,11 @@ def register_run_routes(
 
 
 def _run_dir(artifacts_dir: Path, run_id: str) -> Path:
-    return artifacts_dir / "runs" / sanitize_run_id(run_id)
+    try:
+        sanitized_run_id = sanitize_run_id(run_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="run not found") from exc
+    return artifacts_dir / "runs" / sanitized_run_id
 
 
 def _load_run_document(

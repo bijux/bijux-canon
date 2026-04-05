@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.openapi.utils import get_openapi
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 
@@ -25,7 +26,7 @@ from bijux_canon_reason.api.v1.item_routes import (
     configure_item_store,
     register_item_routes,
 )
-from bijux_canon_reason.api.v1.openapi_models import HealthResponse
+from bijux_canon_reason.api.v1.openapi_models import ErrorDetail, HealthResponse
 from bijux_canon_reason.api.v1.run_routes import register_run_routes
 
 RequestGuard = Callable[[Request], None]
@@ -87,6 +88,12 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
         summary="Report API health",
         description="Return a lightweight liveness signal for the reasoning API.",
         operation_id="getReasonHealth",
+        responses={
+            400: {
+                "description": "The health request could not be interpreted.",
+                "model": ErrorDetail,
+            },
+        },
     )
     def health() -> dict[str, str]:
         return {"status": "ok"}
@@ -104,6 +111,7 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
         guard_request=request_guard,
         max_request_bytes=MAX_REQUEST_BYTES,
     )
+    _install_openapi_schema(app)
     return app
 
 
@@ -155,6 +163,30 @@ def _install_validation_handler(app: FastAPI) -> None:
     ) -> JSONResponse:
         del request, exc
         return JSONResponse(status_code=422, content={"detail": "invalid request"})
+
+
+def _install_openapi_schema(app: FastAPI) -> None:
+    def _openapi() -> dict[str, object]:
+        if app.openapi_schema is not None:
+            return app.openapi_schema
+
+        schema = get_openapi(
+            title=app.title,
+            version=app.version,
+            openapi_version=app.openapi_version,
+            summary=app.summary,
+            description=app.description,
+            routes=app.routes,
+            tags=app.openapi_tags,
+            servers=app.servers,
+            contact=app.contact,
+            license_info=app.license_info,
+        )
+        schema["security"] = []
+        app.openapi_schema = schema
+        return schema
+
+    app.openapi = _openapi
 
 
 app = create_app()

@@ -193,6 +193,11 @@ components:
       type: object
     ValidationError:
       properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
         loc:
           items:
             anyOf:
@@ -240,6 +245,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
           description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+          description: The health request could not be interpreted.
       summary: Report API health
       tags:
       - Health
@@ -802,9 +813,17 @@ paths:
           description: Authentication failed for the requested endpoint.
         '404':
           content:
-            text/plain:
+            application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDetail'
+                properties:
+                  detail:
+                    description: Human-readable explanation for the API failure.
+                    title: Detail
+                    type: string
+                required:
+                - detail
+                title: ErrorDetail
+                type: object
           description: The requested trace was not found.
         '413':
           content:
@@ -893,6 +912,7 @@ paths:
       summary: Verify a run
       tags:
       - Runs
+security: []
 servers:
 - url: /
 tags:
