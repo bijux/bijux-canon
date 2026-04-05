@@ -54,11 +54,11 @@ security-audit:
 	  echo "! pip-audit invocation failed (rc=$$RC)"; \
 	  if [ "$(SECURITY_STRICT)" = "1" ]; then exit $$RC; fi; \
 	fi
-	@set -o pipefail; \
-	PIPA_JSON="$(PIPA_JSON)" \
+	@PIPA_JSON="$(PIPA_JSON)" \
 	SECURITY_STRICT="$(SECURITY_STRICT)" \
 	SECURITY_IGNORE_IDS="$(SECURITY_IGNORE_IDS)" \
-	"$(VENV_PYTHON)" $(SECURITY_PIP_AUDIT_GATE) | tee "$(PIPA_TXT)"
+	"$(VENV_PYTHON)" $(SECURITY_PIP_AUDIT_GATE) >"$(PIPA_TXT)"
+	@cat "$(PIPA_TXT)"
 
 security-deps:
 	@if [ -n "$(SECURITY_EXTRA_CHECKS)" ]; then \

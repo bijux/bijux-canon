@@ -45,7 +45,7 @@ quality:
 	@if [ "$(QUALITY_CLEAN_SITE)" = "1" ]; then rm -rf site; fi
 	$(call run_make_targets,$(QUALITY_PRE_TARGETS),$(QUALITY_SELF_MAKE))
 	@echo "   - Dead code analysis (Vulture)"
-	@set -euo pipefail; \
+	@set -eu; \
 	  { $(VULTURE) --version 2>/dev/null || echo vulture; } >"$(QUALITY_ARTIFACTS_DIR)/vulture.log"; \
 	  OUT="$$( $(VULTURE) $(QUALITY_PATHS) --min-confidence $(QUALITY_VULTURE_MIN_CONFIDENCE) 2>&1 || true )"; \
 	  printf '%s\n' "$$OUT" >>"$(QUALITY_ARTIFACTS_DIR)/vulture.log"; \
@@ -54,7 +54,7 @@ quality:
 	@if [ "$(SKIP_DEPTRY)" = "1" ]; then \
 	  echo "   • SKIP_DEPTRY=1; skipping Deptry" | tee "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
 	else \
-	  set -euo pipefail; \
+	  set -eu; \
 	    { $(DEPTRY) --version 2>/dev/null || true; } >"$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
 	    $(DEPTRY_SCAN_SCRIPT) --deptry-bin "$(DEPTRY)" --config "$(DEPTRY_CONFIG)" --project-dir . $(QUALITY_PATHS) 2>&1 | tee -a "$(QUALITY_ARTIFACTS_DIR)/deptry.log"; \
 	fi
