@@ -19,4 +19,4 @@ jobs:
       cache_dependency_path: |
         packages/compat-bijux-vex/pyproject.toml
         pyproject.toml
-      build_command: make PACKAGE=compat-bijux-vex build
+      build_targets: build

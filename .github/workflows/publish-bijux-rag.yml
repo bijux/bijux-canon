@@ -19,4 +19,4 @@ jobs:
       cache_dependency_path: |
         packages/compat-bijux-rag/pyproject.toml
         pyproject.toml
-      build_command: make PACKAGE=compat-bijux-rag build
+      build_targets: build

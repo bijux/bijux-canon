@@ -19,4 +19,4 @@ jobs:
       cache_dependency_path: |
         packages/compat-bijux-agent/pyproject.toml
         pyproject.toml
-      build_command: make PACKAGE=compat-bijux-agent build
+      build_targets: build

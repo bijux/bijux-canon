@@ -15,9 +15,10 @@ on:
       cache_dependency_path:
         required: true
         type: string
-      build_command:
-        required: true
+      build_targets:
+        required: false
         type: string
+        default: "build"
       dist_subdir:
         required: false
         type: string
@@ -51,9 +52,21 @@ jobs:
           cache: pip
           cache-dependency-path: ${{ inputs.cache_dependency_path }}
 
+      - name: Install package toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          makefile="${GITHUB_WORKSPACE}/makes/packages/$(basename '${{ inputs.package_dir }}').mk"
+          make -f "$makefile" -C "${{ inputs.package_dir }}" install
+
       - name: Build release artifacts
         shell: bash
-        run: ${{ inputs.build_command }}
+        run: |
+          set -euo pipefail
+          makefile="${GITHUB_WORKSPACE}/makes/packages/$(basename '${{ inputs.package_dir }}').mk"
+          for target in ${{ inputs.build_targets }}; do
+            make -f "$makefile" -C "${{ inputs.package_dir }}" "$target"
+          done
 
       - name: Stage publish artifacts
         shell: bash

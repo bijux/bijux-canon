@@ -19,4 +19,4 @@ jobs:
       cache_dependency_path: |
         packages/compat-agentic-flows/pyproject.toml
         pyproject.toml
-      build_command: make PACKAGE=compat-agentic-flows build
+      build_targets: build

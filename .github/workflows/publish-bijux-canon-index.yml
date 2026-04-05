@@ -19,5 +19,5 @@ jobs:
       cache_dependency_path: |
         packages/bijux-canon-index/pyproject.toml
         pyproject.toml
-      build_command: make -C packages/bijux-canon-index build
+      build_targets: build
       dist_subdir: release

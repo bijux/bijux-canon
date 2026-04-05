@@ -19,9 +19,7 @@ jobs:
       cache_dependency_path: |
         packages/bijux-canon-runtime/pyproject.toml
         pyproject.toml
-      build_command: |
-        make -C packages/bijux-canon-runtime build
-        make -C packages/bijux-canon-runtime sbom
+      build_targets: "build sbom"
       upload_paths: |
         artifacts/bijux-canon-runtime/build/*
         artifacts/bijux-canon-runtime/sbom/*
