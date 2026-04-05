@@ -4,7 +4,6 @@ from pathlib import Path
 import sys
 import tomllib
 
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 
@@ -24,7 +23,9 @@ REQUIRED_PUBLIC_URLS = {
 BIJUX_SITE_URL = "https://bijux.io/"
 BIJUX_CANON_DOCS_URL = "https://bijux.io/bijux-canon/"
 PACKAGE_MAP_URL = "https://bijux.io/bijux-canon/package-map/"
-COMPATIBILITY_GUIDE_URL = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+COMPATIBILITY_GUIDE_URL = (
+    "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+)
 LEGACY_NAME_MAP_URL = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
 README_BADGE_MARKER = "https://img.shields.io"
 EXPECTED_BADGE_COUNT = 19
@@ -135,7 +136,9 @@ def test_project_changelog_urls_point_to_checked_in_files() -> None:
         project = _project_table(pyproject_path)
         changelog_url = str(project.get("urls", {}).get("Changelog", ""))
         if not changelog_url.startswith(CHANGELOG_URL_PREFIX):
-            broken.append(f"{pyproject_path.parent.name}: missing or invalid Changelog URL")
+            broken.append(
+                f"{pyproject_path.parent.name}: missing or invalid Changelog URL"
+            )
             continue
         relative_path = changelog_url.removeprefix(CHANGELOG_URL_PREFIX)
         if not (REPO_ROOT / relative_path).exists():
@@ -179,7 +182,9 @@ def test_public_release_packages_are_aligned_to_v0_3_0() -> None:
         fallback = version_config.get("fallback-version")
         if fallback != PUBLIC_RELEASE_VERSION:
             misaligned.append(f"{package_name}: fallback-version={fallback!r}")
-    assert not misaligned, "public release version alignment failed:\n" + "\n".join(misaligned)
+    assert not misaligned, "public release version alignment failed:\n" + "\n".join(
+        misaligned
+    )
 
 
 def test_public_release_packages_share_required_project_urls() -> None:
@@ -209,7 +214,9 @@ def test_public_release_packages_prioritize_bijux_site_urls() -> None:
             value = str(urls.get(key, ""))
             if not value.startswith(BIJUX_SITE_URL):
                 failures.append(f"{package_name}: {key} should point to bijux.io")
-    assert not failures, "public package URLs should prioritize bijux.io:\n" + "\n".join(failures)
+    assert not failures, (
+        "public package URLs should prioritize bijux.io:\n" + "\n".join(failures)
+    )
 
 
 def test_public_release_packages_use_shared_handbook_paths_for_docs() -> None:
@@ -218,15 +225,21 @@ def test_public_release_packages_use_shared_handbook_paths_for_docs() -> None:
 
     failures: list[str] = []
     for package_name in sorted(public_packages):
-        urls = _project_table(_package_path(package_name) / "pyproject.toml").get("urls", {})
+        urls = _project_table(_package_path(package_name) / "pyproject.toml").get(
+            "urls", {}
+        )
         if package_name in CANONICAL_PACKAGES:
             expected_docs_url = _shared_docs_url(package_name)
         else:
-            expected_docs_url = _compat_docs_url(COMPATIBILITY_PACKAGES[package_name]["distribution"])
+            expected_docs_url = _compat_docs_url(
+                COMPATIBILITY_PACKAGES[package_name]["distribution"]
+            )
 
         for key in ("Homepage", "Documentation"):
             if urls.get(key) != expected_docs_url:
-                failures.append(f"{package_name}: {key} should point to {expected_docs_url}")
+                failures.extend(
+                    [f"{package_name}: {key} should point to {expected_docs_url}"]
+                )
 
     assert not failures, "public package docs URLs failed:\n" + "\n".join(failures)
 
@@ -237,18 +250,30 @@ def test_public_release_packages_publish_family_navigation_urls() -> None:
 
     failures: list[str] = []
     for package_name in sorted(public_packages):
-        urls = _project_table(_package_path(package_name) / "pyproject.toml").get("urls", {})
+        urls = _project_table(_package_path(package_name) / "pyproject.toml").get(
+            "urls", {}
+        )
         if package_name in CANONICAL_PACKAGES:
             if urls.get("PackageMap") != PACKAGE_MAP_URL:
-                failures.append(f"{package_name}: PackageMap should point to the shared package map")
+                failures.append(
+                    f"{package_name}: PackageMap should point to the shared package map"
+                )
             if urls.get("CompatibilityGuide") != COMPATIBILITY_GUIDE_URL:
-                failures.append(f"{package_name}: CompatibilityGuide should point to the shared migration guide")
+                failures.append(
+                    f"{package_name}: CompatibilityGuide should point to the shared migration guide"
+                )
         else:
             if urls.get("MigrationGuide") != COMPATIBILITY_GUIDE_URL:
-                failures.append(f"{package_name}: MigrationGuide should point to the shared migration guide")
+                failures.append(
+                    f"{package_name}: MigrationGuide should point to the shared migration guide"
+                )
             if urls.get("LegacyNameMap") != LEGACY_NAME_MAP_URL:
-                failures.append(f"{package_name}: LegacyNameMap should point to the shared legacy name map")
-    assert not failures, "public package family navigation URLs failed:\n" + "\n".join(failures)
+                failures.append(
+                    f"{package_name}: LegacyNameMap should point to the shared legacy name map"
+                )
+    assert not failures, "public package family navigation URLs failed:\n" + "\n".join(
+        failures
+    )
 
 
 def test_public_release_packages_have_authors_maintainers_and_keywords() -> None:
@@ -277,8 +302,12 @@ def test_public_release_packages_have_authors_maintainers_and_keywords() -> None
             for entry in group:
                 email = str(entry.get("email", ""))
                 if not email.endswith("@bijux.io"):
-                    failures.append(f"{package_name}: {group_name} should use @bijux.io emails")
-    assert not failures, "public package people/keyword metadata failed:\n" + "\n".join(failures)
+                    failures.append(
+                        f"{package_name}: {group_name} should use @bijux.io emails"
+                    )
+    assert not failures, "public package people/keyword metadata failed:\n" + "\n".join(
+        failures
+    )
 
 
 def test_public_release_package_readmes_link_changelog_and_entrypoint() -> None:
@@ -305,14 +334,27 @@ def test_public_release_package_readmes_publish_badges_and_absolute_links() -> N
     for package_name in sorted(public_packages):
         readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
         if readme.count(README_BADGE_MARKER) < EXPECTED_BADGE_COUNT:
-            failures.append(f"{package_name}: expected at least {EXPECTED_BADGE_COUNT} badges")
+            failures.append(
+                f"{package_name}: expected at least {EXPECTED_BADGE_COUNT} badges"
+            )
         if "https://pypi.org/project/bijux-canon-runtime/" not in readme:
-            failures.append(f"{package_name}: README should advertise the canonical package family")
-        if "https://bijux.io/bijux-canon/compat-packages/migration-guidance/" not in readme:
-            failures.append(f"{package_name}: README should link the shared migration guide")
+            failures.append(
+                f"{package_name}: README should advertise the canonical package family"
+            )
+        if (
+            "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+            not in readme
+        ):
+            failures.append(
+                f"{package_name}: README should link the shared migration guide"
+            )
         if "](docs/" in readme or "](src/" in readme or "](tests)" in readme:
-            failures.append(f"{package_name}: README should avoid PyPI-broken relative links")
-    assert not failures, "public package README badge/link contract failed:\n" + "\n".join(failures)
+            failures.append(
+                f"{package_name}: README should avoid PyPI-broken relative links"
+            )
+    assert not failures, (
+        "public package README badge/link contract failed:\n" + "\n".join(failures)
+    )
 
 
 def test_canonical_package_readmes_publish_legacy_continuity() -> None:
@@ -322,13 +364,16 @@ def test_canonical_package_readmes_publish_legacy_continuity() -> None:
         compatibility_package = expectation["compatibility_package"]
         retired_repo = expectation["retired_repo"]
 
-        if "## Legacy continuity" not in readme:
-            failures.append(f"{package_name}: missing legacy continuity section")
+        if (
+            "## Legacy continuity" not in readme
+            and "## Package continuity" not in readme
+        ):
+            failures.append(f"{package_name}: missing package continuity section")
         if f"https://pypi.org/project/{compatibility_package}/" not in readme:
             failures.append(f"{package_name}: missing compatibility package link")
         if retired_repo not in readme:
             failures.append(f"{package_name}: missing retired repository guidance")
-    assert not failures, "canonical package legacy continuity failed:\n" + "\n".join(failures)
+    assert not failures, "canonical package continuity failed:\n" + "\n".join(failures)
 
 
 def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
@@ -349,45 +394,81 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
 
         description = str(project.get("description", ""))
         if project.get("name") != distribution:
-            failures.append(f"{package_name}: project.name should stay {distribution!r}")
+            failures.append(
+                f"{package_name}: project.name should stay {distribution!r}"
+            )
         if f"{distribution} PyPI package" not in description:
-            failures.append(f"{package_name}: description should mention the legacy PyPI package")
+            failures.append(
+                f"{package_name}: description should mention the legacy PyPI package"
+            )
         if canonical not in description:
-            failures.append(f"{package_name}: description should mention canonical {canonical}")
+            failures.append(
+                f"{package_name}: description should mention canonical {canonical}"
+            )
         if "Preserves installs, imports" not in description:
-            failures.append(f"{package_name}: description should explain legacy compatibility")
-        if "continuation of the published" not in readme or f"`{distribution}`" not in readme:
-            failures.append(f"{package_name}: README should state the PyPI continuation")
+            failures.append(
+                f"{package_name}: description should explain legacy compatibility"
+            )
+        if (
+            "continuation of the published" not in readme
+            or f"`{distribution}`" not in readme
+        ):
+            failures.append(
+                f"{package_name}: README should state the PyPI continuation"
+            )
         if "## Migration note" not in readme:
             failures.append(f"{package_name}: README should include a migration note")
         if f"`{canonical}==<same version>`" not in readme:
-            failures.append(f"{package_name}: README should document the same-version dependency")
+            failures.append(
+                f"{package_name}: README should document the same-version dependency"
+            )
         if f"console script: `{script}`" not in readme:
-            failures.append(f"{package_name}: README should document the legacy console script")
+            failures.append(
+                f"{package_name}: README should document the legacy console script"
+            )
         legacy_handbook = _compat_docs_url(distribution)
         if legacy_handbook not in readme:
-            failures.append(f"{package_name}: README should link the legacy package handbook")
+            failures.append(
+                f"{package_name}: README should link the legacy package handbook"
+            )
         if legacy_handbook not in overview:
-            failures.append(f"{package_name}: overview should link the legacy package handbook")
+            failures.append(
+                f"{package_name}: overview should link the legacy package handbook"
+            )
         if retired_repo not in readme:
-            failures.append(f"{package_name}: README should document the retired repository")
+            failures.append(
+                f"{package_name}: README should document the retired repository"
+            )
         if f"installs `{canonical}` at the same version" not in overview:
-            failures.append(f"{package_name}: overview should explain the same-version install")
+            failures.append(
+                f"{package_name}: overview should explain the same-version install"
+            )
         if retired_repo not in overview:
-            failures.append(f"{package_name}: overview should document the retired repository")
+            failures.append(
+                f"{package_name}: overview should document the retired repository"
+            )
         tag_pattern = tool["hatch"]["version"]["tag-pattern"]
         if tag_pattern != f"^{canonical}/v(?P<version>.*)$":
             failures.append(f"{package_name}: unexpected tag-pattern {tag_pattern!r}")
         hook_canonical = tool["hatch"]["metadata"]["hooks"]["custom"]["canonical-name"]
         if hook_canonical != canonical:
             failures.append(f"{package_name}: canonical-name should be {canonical!r}")
-        if 'metadata["dependencies"] = [f"{canonical_name}=={version}"]' not in build_hook:
-            failures.append(f"{package_name}: build hook must pin the canonical package to the same version")
+        if (
+            'metadata["dependencies"] = [f"{canonical_name}=={version}"]'
+            not in build_hook
+        ):
+            failures.append(
+                f"{package_name}: build hook must pin the canonical package to the same version"
+            )
         scripts = project.get("scripts", {})
         if script not in scripts:
-            failures.append(f"{package_name}: legacy console script should be declared in project.scripts")
+            failures.append(
+                f"{package_name}: legacy console script should be declared in project.scripts"
+            )
 
-    assert not failures, "compatibility publication contract failed:\n" + "\n".join(failures)
+    assert not failures, "compatibility publication contract failed:\n" + "\n".join(
+        failures
+    )
 
 
 def test_public_release_packages_ship_package_local_publication_guides() -> None:
@@ -404,9 +485,13 @@ def test_public_release_packages_ship_package_local_publication_guides() -> None
 
         pyproject_text = (package_root / "pyproject.toml").read_text(encoding="utf-8")
         if "docs/maintainer/pypi.md" not in pyproject_text:
-            failures.append(f"{package_name}: pyproject should ship docs/maintainer/pypi.md")
+            failures.append(
+                f"{package_name}: pyproject should ship docs/maintainer/pypi.md"
+            )
 
-    assert not failures, "public package publication guides failed:\n" + "\n".join(failures)
+    assert not failures, "public package publication guides failed:\n" + "\n".join(
+        failures
+    )
 
 
 def test_public_release_package_publication_guides_publish_family_badges() -> None:
@@ -415,30 +500,47 @@ def test_public_release_package_publication_guides_publish_family_badges() -> No
 
     failures: list[str] = []
     for package_name in sorted(public_packages):
-        guide = (_package_path(package_name) / "docs" / "maintainer" / "pypi.md").read_text(
-            encoding="utf-8"
-        )
+        guide = (
+            _package_path(package_name) / "docs" / "maintainer" / "pypi.md"
+        ).read_text(encoding="utf-8")
         if guide.count(README_BADGE_MARKER) < EXPECTED_PYPI_GUIDE_BADGE_COUNT:
             failures.append(
                 f"{package_name}: expected at least {EXPECTED_PYPI_GUIDE_BADGE_COUNT} badges in pypi.md"
             )
         if "https://pypi.org/project/bijux-canon-runtime/" not in guide:
-            failures.append(f"{package_name}: pypi.md should advertise the canonical package family")
+            failures.append(
+                f"{package_name}: pypi.md should advertise the canonical package family"
+            )
         if "https://pypi.org/project/bijux-vex/" not in guide:
-            failures.append(f"{package_name}: pypi.md should advertise the compatibility package family")
+            failures.append(
+                f"{package_name}: pypi.md should advertise the compatibility package family"
+            )
         for ci_slug in ("runtime", "agent", "ingest", "reason", "index"):
             ci_url = f"https://github.com/bijux/bijux-canon/actions/workflows/ci-bijux-canon-{ci_slug}.yml"
             if ci_url not in guide:
-                failures.append(f"{package_name}: pypi.md should advertise {ci_slug} CI coverage")
+                failures.append(
+                    f"{package_name}: pypi.md should advertise {ci_slug} CI coverage"
+                )
         if _shared_docs_url("bijux-canon-runtime") not in guide:
-            failures.append(f"{package_name}: pypi.md should link shared handbook package docs")
+            failures.append(
+                f"{package_name}: pypi.md should link shared handbook package docs"
+            )
 
-    assert not failures, "public package publication guide badges failed:\n" + "\n".join(failures)
+    assert not failures, (
+        "public package publication guide badges failed:\n" + "\n".join(failures)
+    )
 
 
 def test_repository_docs_links_avoid_standalone_package_sites() -> None:
     failures: list[str] = []
-    excluded_roots = {".git", ".tox", ".venv", "__pycache__", "artifacts", "node_modules"}
+    excluded_roots = {
+        ".git",
+        ".tox",
+        ".venv",
+        "__pycache__",
+        "artifacts",
+        "node_modules",
+    }
 
     for path in REPO_ROOT.rglob("*"):
         if not path.is_file():
@@ -450,6 +552,8 @@ def test_repository_docs_links_avoid_standalone_package_sites() -> None:
         text = path.read_text(encoding="utf-8")
         for forbidden_url in FORBIDDEN_STANDALONE_DOC_URLS:
             if forbidden_url in text:
-                failures.append(f"{path.relative_to(REPO_ROOT)}: contains {forbidden_url}")
+                failures.extend(
+                    [f"{path.relative_to(REPO_ROOT)}: contains {forbidden_url}"]
+                )
 
     assert not failures, "repository docs URLs failed:\n" + "\n".join(failures)

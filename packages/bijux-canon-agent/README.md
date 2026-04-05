@@ -34,11 +34,11 @@ is produced, or where agent-facing CLI and HTTP behavior lives, start here. If
 you need replay governance, runtime persistence, or cross-package execution
 authority, you are probably looking for `bijux-canon-runtime` instead.
 
-## Legacy continuity
+## Package continuity
 
 - compatibility package: [`bijux-agent`](https://pypi.org/project/bijux-agent/)
-- legacy import root: `bijux_agent`
-- legacy command: `bijux-agent`
+- previous import root: `bijux_agent`
+- previous command: `bijux-agent`
 - canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-agent>
 

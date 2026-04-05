@@ -43,7 +43,7 @@ family.
 - run `make PACKAGE=bijux-canon-agent test`
 - confirm `README.md`, `CHANGELOG.md`, and package metadata still describe the
   canonical `bijux-canon-agent` distribution
-- confirm the compatibility guidance still points legacy `bijux-agent` users to
+- confirm the compatibility guidance still points previous `bijux-agent` users to
   the right migration path
 
 ## Artifacts to review
