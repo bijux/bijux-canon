@@ -1,121 +1,34 @@
 {
   "components": {
-    "parameters": {
-      "XAgenticGate": {
-        "in": "header",
-        "name": "X-Agentic-Gate",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "XDeterminismLevel": {
-        "in": "header",
-        "name": "X-Determinism-Level",
-        "required": true,
-        "schema": {
-          "$ref": "#/components/schemas/DeterminismLevel"
-        }
-      },
-      "XPolicyFingerprint": {
-        "in": "header",
-        "name": "X-Policy-Fingerprint",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      }
-    },
     "schemas": {
-      "DeterminismClass": {
-        "enum": [
-          "structural",
-          "environmental",
-          "stochastic",
-          "human",
-          "external"
-        ],
-        "type": "string"
-      },
-      "DeterminismLevel": {
-        "enum": [
-          "strict",
-          "bounded",
-          "probabilistic",
-          "unconstrained"
-        ],
-        "type": "string"
-      },
-      "FailureClass": {
-        "enum": [
-          "structural",
-          "semantic",
-          "environmental",
-          "authority"
-        ],
-        "type": "string"
-      },
-      "FailureEnvelope": {
-        "additionalProperties": false,
-        "properties": {
-          "determinism_impact": {
-            "$ref": "#/components/schemas/DeterminismClass",
-            "description": "Determinism class impacted by the failure."
-          },
-          "evidence_ids": {
-            "description": "Evidence identifiers relevant to the failure analysis.",
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "failure_class": {
-            "$ref": "#/components/schemas/FailureClass",
-            "description": "Classification of the failure category returned by the API."
-          },
-          "reason_code": {
-            "$ref": "#/components/schemas/ReasonCode",
-            "description": "Stable reason code describing the contractual failure cause."
-          },
-          "violated_contract": {
-            "description": "Identifier of the contract or invariant that was violated.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "failure_class",
-          "reason_code",
-          "violated_contract",
-          "evidence_ids",
-          "determinism_impact"
-        ],
-        "type": "object"
-      },
       "FlowRunRequest": {
         "additionalProperties": false,
+        "description": "Flow run request; misuse breaks API contract.",
         "properties": {
           "dataset_id": {
+            "title": "Dataset Id",
             "type": "string"
           },
           "flow_manifest": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "format": "uri",
-                "type": "string"
-              }
-            ]
+            "title": "Flow Manifest",
+            "type": "string"
           },
           "inputs_fingerprint": {
+            "title": "Inputs Fingerprint",
             "type": "string"
           },
           "policy_fingerprint": {
+            "title": "Policy Fingerprint",
             "type": "string"
           },
           "run_mode": {
-            "$ref": "#/components/schemas/RunMode"
+            "enum": [
+              "live",
+              "dry",
+              "observer"
+            ],
+            "title": "Run Mode",
+            "type": "string"
           }
         },
         "required": [
@@ -125,110 +38,45 @@
           "dataset_id",
           "policy_fingerprint"
         ],
+        "title": "FlowRunRequest",
         "type": "object"
       },
-      "FlowRunResponse": {
-        "additionalProperties": false,
+      "HTTPValidationError": {
         "properties": {
-          "artifact_count": {
-            "minimum": 0,
-            "type": "integer"
-          },
-          "determinism_class": {
-            "$ref": "#/components/schemas/DeterminismClass"
-          },
-          "environment_fingerprint": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "flow_id": {
-            "type": "string"
-          },
-          "replay_acceptability": {
-            "$ref": "#/components/schemas/ReplayAcceptability"
-          },
-          "run_id": {
-            "type": "string"
-          },
-          "status": {
-            "$ref": "#/components/schemas/FlowRunStatus"
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
           }
         },
-        "required": [
-          "run_id",
-          "flow_id",
-          "status",
-          "determinism_class",
-          "environment_fingerprint",
-          "replay_acceptability",
-          "artifact_count"
-        ],
+        "title": "HTTPValidationError",
         "type": "object"
-      },
-      "FlowRunStatus": {
-        "enum": [
-          "completed",
-          "failed",
-          "cancelled"
-        ],
-        "type": "string"
-      },
-      "HealthResponse": {
-        "additionalProperties": false,
-        "properties": {
-          "status": {
-            "enum": [
-              "ok"
-            ],
-            "type": "string"
-          }
-        },
-        "required": [
-          "status"
-        ],
-        "type": "object"
-      },
-      "ReadyResponse": {
-        "additionalProperties": false,
-        "properties": {
-          "ready": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "ready"
-        ],
-        "type": "object"
-      },
-      "ReasonCode": {
-        "enum": [
-          "contradiction_detected"
-        ],
-        "type": "string"
-      },
-      "ReplayAcceptability": {
-        "enum": [
-          "exact_match",
-          "invariant_preserving",
-          "statistically_bounded"
-        ],
-        "type": "string"
       },
       "ReplayRequest": {
         "additionalProperties": false,
+        "description": "Replay request; misuse breaks API contract.",
         "properties": {
           "acceptability_threshold": {
-            "$ref": "#/components/schemas/ReplayAcceptability"
+            "enum": [
+              "exact_match",
+              "invariant_preserving",
+              "statistically_bounded"
+            ],
+            "title": "Acceptability Threshold",
+            "type": "string"
           },
           "expected_plan_hash": {
+            "title": "Expected Plan Hash",
             "type": "string"
           },
           "observer_mode": {
+            "title": "Observer Mode",
             "type": "boolean"
           },
           "run_id": {
+            "title": "Run Id",
             "type": "string"
           }
         },
@@ -238,15 +86,48 @@
           "acceptability_threshold",
           "observer_mode"
         ],
+        "title": "ReplayRequest",
         "type": "object"
       },
-      "RunMode": {
-        "enum": [
-          "live",
-          "dry",
-          "observer"
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
         ],
-        "type": "string"
+        "title": "ValidationError",
+        "type": "object"
       }
     }
   },
@@ -255,7 +136,7 @@
       "name": "Bijux",
       "url": "https://github.com/bijux/bijux-canon"
     },
-    "description": "The bijux-canon-runtime HTTP API exposes the v1 execution and replay surface for flow contracts. It treats required headers, request envelopes, and replay acceptability as first-class API concerns so callers can tell exactly which contract failed when a request is rejected.\n",
+    "description": "The bijux-canon-runtime HTTP API exposes the v1 execution and replay surface for flow contracts. It keeps required headers, request envelopes, and replay acceptability visible at the boundary so failures are reviewable rather than implicit.",
     "license": {
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0"
@@ -268,17 +149,56 @@
   "paths": {
     "/api/v1/flows/replay": {
       "post": {
-        "description": "Replays a persisted run under the declared acceptability threshold and reports contractual mismatches in the response envelope.",
-        "operationId": "replayFlow",
+        "description": "Preconditions: required headers are present, determinism level is valid, and the replay request is well-formed; acceptable replay means differences stay within the declared acceptability threshold; mismatches return FailureEnvelope with failure_class set to authority.",
+        "operationId": "replay_flow_api_v1_flows_replay_post",
         "parameters": [
           {
-            "$ref": "#/components/parameters/XAgenticGate"
+            "in": "header",
+            "name": "X-Agentic-Gate",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agentic-Gate"
+            }
           },
           {
-            "$ref": "#/components/parameters/XDeterminismLevel"
+            "in": "header",
+            "name": "X-Determinism-Level",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Determinism-Level"
+            }
           },
           {
-            "$ref": "#/components/parameters/XPolicyFingerprint"
+            "in": "header",
+            "name": "X-Policy-Fingerprint",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Policy-Fingerprint"
+            }
           }
         ],
         "requestBody": {
@@ -295,78 +215,77 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FlowRunResponse"
-                }
+                "schema": {}
               }
             },
-            "description": "Replay completed."
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FailureEnvelope"
-                }
-              },
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Invalid request body."
-          },
-          "406": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FailureEnvelope"
-                }
-              }
-            },
-            "description": "Missing or invalid required headers."
+            "description": "Successful Response"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FailureEnvelope"
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             },
-            "description": "Request validation failed."
-          },
-          "501": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FailureEnvelope"
-                }
-              }
-            },
-            "description": "Replay not implemented."
+            "description": "Validation Error"
           }
         },
-        "summary": "Replay a flow",
-        "tags": [
-          "Flows"
-        ]
+        "summary": "Replay Flow"
       }
     },
     "/api/v1/flows/run": {
       "post": {
-        "description": "Executes a flow only when the declared policy, dataset, and headers satisfy the execution contract, otherwise returns a FailureEnvelope.",
-        "operationId": "runFlow",
+        "description": "Deterministic guarantees cover declared contracts and persisted envelopes only; runtime environment, external tools, and policy omissions are explicitly not guaranteed; replay equivalence is expected to fail when headers, policy fingerprints, or dataset identity diverge from the declared contract.",
+        "operationId": "run_flow_api_v1_flows_run_post",
         "parameters": [
           {
-            "$ref": "#/components/parameters/XAgenticGate"
+            "in": "header",
+            "name": "X-Agentic-Gate",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agentic-Gate"
+            }
           },
           {
-            "$ref": "#/components/parameters/XDeterminismLevel"
+            "in": "header",
+            "name": "X-Determinism-Level",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Determinism-Level"
+            }
           },
           {
-            "$ref": "#/components/parameters/XPolicyFingerprint"
+            "in": "header",
+            "name": "X-Policy-Fingerprint",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Policy-Fingerprint"
+            }
           }
         ],
         "requestBody": {
@@ -383,121 +302,106 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FlowRunResponse"
-                }
+                "schema": {}
               }
             },
-            "description": "Flow run completed."
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FailureEnvelope"
-                }
-              },
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Invalid request body."
-          },
-          "406": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FailureEnvelope"
-                }
-              }
-            },
-            "description": "Missing or invalid required headers."
+            "description": "Successful Response"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FailureEnvelope"
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             },
-            "description": "Request validation failed."
-          },
-          "501": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FailureEnvelope"
-                }
-              }
-            },
-            "description": "Flow run not implemented."
+            "description": "Validation Error"
           }
         },
-        "summary": "Run a flow",
-        "tags": [
-          "Flows"
-        ]
+        "summary": "Run Flow"
       }
     },
     "/api/v1/health": {
       "get": {
-        "description": "Return a lightweight liveness signal for the runtime API process.",
-        "operationId": "getRuntimeHealth",
+        "description": "Provide a lightweight liveness signal for health checks.",
+        "operationId": "health_api_v1_health_get",
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Api V1 Health Get",
+                  "type": "object"
                 }
               }
             },
-            "description": "Health check completed."
+            "description": "Successful Response"
           }
         },
-        "summary": "Report API health",
-        "tags": [
-          "Health"
-        ]
+        "summary": "Health"
       }
     },
     "/api/v1/ready": {
       "get": {
-        "description": "Report whether the runtime can reach its configured execution store.",
-        "operationId": "getRuntimeReadiness",
+        "description": "Provide a readiness signal without performing deep dependency checks.",
+        "operationId": "ready_api_v1_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready"
+      }
+    },
+    "/health": {
+      "get": {
+        "description": "Provide a lightweight liveness signal for health checks.",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ReadyResponse"
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Health Get",
+                  "type": "object"
                 }
               }
             },
-            "description": "Readiness check completed."
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReadyResponse"
-                }
-              }
-            },
-            "description": "Runtime dependencies are not ready for execution."
+            "description": "Successful Response"
           }
         },
-        "summary": "Report runtime readiness",
-        "tags": [
-          "Health"
-        ]
+        "summary": "Health"
+      }
+    },
+    "/ready": {
+      "get": {
+        "description": "Provide a readiness signal without performing deep dependency checks.",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready"
       }
     }
   },
-  "security": [],
   "servers": [
     {
       "url": "/"

@@ -35,7 +35,7 @@ API_BASE_PATH :=
 API_MODULE := bijux_canon_runtime.api.v1.app
 API_DYNAMIC_PORT := 1
 OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@7.14.0
-API_OPENAPI_DRIFT_COMMAND := $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_runtime.api.v1.app:app --schema "$(API_DIR)/v1/schema.yaml" --out "$(API_ARTIFACTS_DIR)/openapi.generated.json"
+API_OPENAPI_DRIFT_COMMAND = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_runtime.api.v1.app:app --schema "$(API_DIR)/v1/schema.yaml" --out "$(API_ARTIFACTS_DIR)/openapi.generated.json"
 SCHEMATHESIS_OPTS = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --exclude-checks=positive_data_acceptance,not_a_server_error --suppress-health-check=filter_too_much
 BUILD_CHECK_DISTS := 0
 BUILD_TEMP_CLEAN_PATHS := $(COMMON_BUILD_CLEAN_PATHS) src/*.egg-info
