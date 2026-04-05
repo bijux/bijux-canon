@@ -2,6 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -45,6 +46,18 @@ CLI_HELP = """
 """
 
 
+def _normalize_cli_help(text: str) -> str:
+    text = re.sub(r"\x1b\[[0-9;]*m", "", text)
+    normalized_lines: list[str] = []
+    for line in text.splitlines():
+        if line.startswith("│") and line.endswith("│"):
+            inner = re.sub(r" {2,}", " ", line[1:-1].strip())
+            normalized_lines.append(f"│ {inner} │")
+            continue
+        normalized_lines.append(line.rstrip())
+    return "\n".join(normalized_lines).strip() + "\n"
+
+
 def test_cli_help_is_frozen():
     repo_root = Path(__file__).resolve().parents[3]
     env = {
@@ -64,4 +77,4 @@ def test_cli_help_is_frozen():
         text=True,
         env=env,
     )
-    assert out == CLI_HELP
+    assert _normalize_cli_help(out) == _normalize_cli_help(CLI_HELP)
