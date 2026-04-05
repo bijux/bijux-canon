@@ -11,8 +11,8 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
-    uses: ./.github/workflows/publish-package.yml
+  build:
+    uses: ./.github/workflows/build-release-artifacts.yml
     with:
       package_slug: agentic-flows
       package_dir: packages/compat-agentic-flows
@@ -21,3 +21,24 @@ jobs:
         packages/compat-agentic-flows/pyproject.toml
         pyproject.toml
       build_targets: build
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download publish artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: agentic-flows-pypi-dist
+          path: .github/tmp/agentic-flows-dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: .github/tmp/agentic-flows-dist
+          skip-existing: true
