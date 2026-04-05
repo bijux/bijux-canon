@@ -61,8 +61,19 @@ jobs:
           cache: pip
           cache-dependency-path: ${{ inputs.cache_dependency_path }}
 
+      - name: Install package toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          makefile="${GITHUB_WORKSPACE}/makes/packages/$(basename '${{ inputs.package_dir }}').mk"
+          make -f "$makefile" -C "${{ inputs.package_dir }}" install
+
       - name: Run tests
-        run: make -C ${{ inputs.package_dir }} test
+        shell: bash
+        run: |
+          set -euo pipefail
+          makefile="${GITHUB_WORKSPACE}/makes/packages/$(basename '${{ inputs.package_dir }}').mk"
+          make -f "$makefile" -C "${{ inputs.package_dir }}" test
 
       - name: Run post-test validation
         if: ${{ inputs.post_test_command != '' }}
@@ -105,8 +116,19 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Install package toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          makefile="${GITHUB_WORKSPACE}/makes/packages/$(basename '${{ inputs.package_dir }}').mk"
+          make -f "$makefile" -C "${{ inputs.package_dir }}" install
+
       - name: Run ${{ matrix.target }}
-        run: make -C ${{ inputs.package_dir }} ${{ matrix.target }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          makefile="${GITHUB_WORKSPACE}/makes/packages/$(basename '${{ inputs.package_dir }}').mk"
+          make -f "$makefile" -C "${{ inputs.package_dir }}" ${{ matrix.target }}
 
       - name: Upload artifacts
         if: ${{ always() && hashFiles(format('{0}/{1}/**', env.ARTIFACTS_DIR, matrix.target)) != '' }}
@@ -130,8 +152,19 @@ jobs:
           cache: pip
           cache-dependency-path: ${{ inputs.cache_dependency_path }}
 
+      - name: Install package toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          makefile="${GITHUB_WORKSPACE}/makes/packages/$(basename '${{ inputs.package_dir }}').mk"
+          make -f "$makefile" -C "${{ inputs.package_dir }}" install
+
       - name: Run lint
-        run: make -C ${{ inputs.package_dir }} lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          makefile="${GITHUB_WORKSPACE}/makes/packages/$(basename '${{ inputs.package_dir }}').mk"
+          make -f "$makefile" -C "${{ inputs.package_dir }}" lint
 
       - name: Upload lint artifacts
         if: ${{ always() }}
