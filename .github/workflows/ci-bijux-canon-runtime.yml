@@ -49,22 +49,23 @@ jobs:
       api_toolchain_targets: '["api", "openapi-drift"]'
       post_test_command: |
         set -euo pipefail
+        venv_python="${ARTIFACTS_DIR}/venv/bin/python"
         if compgen -G "packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*" > /dev/null; then
-          python -m coverage report \
+          "${venv_python}" -m coverage report \
             --rcfile configs/coveragerc.ini \
             --data-file "${ARTIFACTS_DIR}/test/.coverage" \
             --include "packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*" \
             --fail-under=65
         fi
         if [ -f "packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py" ]; then
-          python -m coverage report \
+          "${venv_python}" -m coverage report \
             --rcfile configs/coveragerc.ini \
             --data-file "${ARTIFACTS_DIR}/test/.coverage" \
             --include "packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py" \
             --fail-under=60
         fi
         if compgen -G "packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*" > /dev/null; then
-          python -m coverage report \
+          "${venv_python}" -m coverage report \
             --rcfile configs/coveragerc.ini \
             --data-file "${ARTIFACTS_DIR}/test/.coverage" \
             --include "packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*" \
