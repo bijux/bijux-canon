@@ -58,7 +58,7 @@ on migration-specific guidance before moving to the canonical index handbook.
 
 ## Publish notes
 
-- tag with the `bijux-canon-index/v*` pattern because this compatibility
-  package inherits the canonical index version line
+- tag the repository with the shared `v*` release pattern because this
+  compatibility package now resolves the same version as the canonical family
 - publish only after compatibility messaging and the canonical migration links
   are aligned

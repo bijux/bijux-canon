@@ -55,8 +55,8 @@ document independently.
 
 ## Publish notes
 
-- tag with the `bijux-canon-index/v*` pattern so Hatch VCS resolves the
-  package version correctly
+- tag the repository with the shared `v*` release pattern so every package,
+  including `bijux-canon-index`, resolves the same version
 - keep `README.md`, `CHANGELOG.md`, and package metadata aligned before upload
 - if public API, replay, or vector-store contracts changed, update the
   canonical docs before publishing artifacts

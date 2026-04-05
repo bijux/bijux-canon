@@ -55,8 +55,8 @@ versioned distribution.
 
 ## Publish notes
 
-- tag with the `bijux-canon-runtime/v*` pattern so Hatch VCS resolves the
-  package version correctly
+- tag the repository with the shared `v*` release pattern so every package,
+  including `bijux-canon-runtime`, resolves the same version
 - publish only after changelog entries, runtime docs, and package metadata are
   aligned
 - if execution or replay contracts changed, verify the canonical docs before

@@ -55,8 +55,8 @@ family.
 
 ## Publish notes
 
-- tag with the `bijux-canon-agent/v*` pattern so Hatch VCS resolves the
-  package version correctly
+- tag the repository with the shared `v*` release pattern so every package,
+  including `bijux-canon-agent`, resolves the same version
 - publish only after the package changelog explains the user-visible change
 - if a release changes a public boundary, update the canonical docs before
   uploading artifacts
