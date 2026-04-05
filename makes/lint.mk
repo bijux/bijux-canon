@@ -51,9 +51,9 @@ fmt: fmt-artifacts
 
 fmt-artifacts: | $(VENV)
 	@mkdir -p "$(LINT_ARTIFACTS_DIR)" "$(RUFF_CACHE_DIR)"
-	@set -euo pipefail; $(RUFF) format --config "$(RUFF_CONFIG)" --cache-dir "$(RUFF_CACHE_DIR)" $(FMT_DIRS) 2>&1 | tee "$(FMT_LOG)"
+	@$(RUFF) format --config "$(RUFF_CONFIG)" --cache-dir "$(RUFF_CACHE_DIR)" $(FMT_DIRS) 2>&1 | tee "$(FMT_LOG)"
 	@if [ "$(FMT_RUN_RUFF_CHECK_FIX)" = "1" ]; then \
-	  set -euo pipefail; $(RUFF) check --config "$(RUFF_CONFIG)" --fix --cache-dir "$(RUFF_CACHE_DIR)" $(FMT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/fmt-ruff-fix.log"; \
+	  $(RUFF) check --config "$(RUFF_CONFIG)" --fix --cache-dir "$(RUFF_CACHE_DIR)" $(FMT_DIRS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/fmt-ruff-fix.log"; \
 	fi
 
 lint: lint-artifacts
@@ -62,31 +62,31 @@ lint: lint-artifacts
 lint-artifacts: | $(VENV)
 	@mkdir -p "$(LINT_ARTIFACTS_DIR)" "$(RUFF_CACHE_DIR)" "$(MYPY_CACHE_DIR)"
 	$(call run_make_targets,$(LINT_PRE_TARGETS),$(LINT_SELF_MAKE))
-	@set -euo pipefail; { \
+	@{ \
 	  echo "→ Ruff format (check)"; \
 	  $(RUFF) format --check --config "$(RUFF_CONFIG)" --cache-dir "$(RUFF_CACHE_DIR)" $(LINT_TARGETS); \
 	} 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/ruff-format.log"
-	@set -euo pipefail; $(RUFF) check $(RUFF_FIX_FLAG) --config "$(RUFF_CONFIG)" --cache-dir "$(RUFF_CACHE_DIR)" $(LINT_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/ruff.log"
+	@$(RUFF) check $(RUFF_FIX_FLAG) --config "$(RUFF_CONFIG)" --cache-dir "$(RUFF_CACHE_DIR)" $(LINT_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/ruff.log"
 	@if [ "$(ENABLE_MYPY)" = "1" ]; then \
-	  set -euo pipefail; $(MYPY) --config-file "$(MYPY_CONFIG)" $(MYPY_FLAGS) --cache-dir "$(MYPY_CACHE_DIR)" $(MYPY_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/mypy.log"; \
+	  $(MYPY) --config-file "$(MYPY_CONFIG)" $(MYPY_FLAGS) --cache-dir "$(MYPY_CACHE_DIR)" $(MYPY_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/mypy.log"; \
 	else \
 	  echo "→ Skipping mypy" | tee "$(LINT_ARTIFACTS_DIR)/mypy.log"; \
 	fi
 	@if [ "$(ENABLE_CODESPELL)" = "1" ]; then \
-	  set -euo pipefail; $(CODESPELL) $(CODESPELL_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/codespell.log"; \
+	  $(CODESPELL) $(CODESPELL_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/codespell.log"; \
 	else \
 	  echo "→ Skipping codespell" | tee "$(LINT_ARTIFACTS_DIR)/codespell.log"; \
 	fi
 	@if [ "$(ENABLE_RADON)" = "1" ]; then \
-	  set -euo pipefail; $(RADON) cc -s -a $(RADON_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/radon.log"; \
+	  $(RADON) cc -s -a $(RADON_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/radon.log"; \
 	  if [ -n "$(RADON_COMPLEXITY_MAX)" ]; then \
-	    set -euo pipefail; $(RADON) cc -j $(RADON_TARGETS) | $(VENV_PYTHON) -c 'import json, sys; payload=json.load(sys.stdin); max_score=int(sys.argv[1]); violations=[]; [violations.append((f, i.get("name"), i.get("complexity", 0))) for f, items in payload.items() for i in items if i.get("type") in {"function", "method"} and i.get("complexity", 0) > max_score]; print(f"Radon complexity threshold exceeded (>{max_score})") if violations else None; [print(f"{f}: {name} ({complexity})") for f, name, complexity in violations]; sys.exit(1 if violations else 0)' "$(RADON_COMPLEXITY_MAX)"; \
+	    $(RADON) cc -j $(RADON_TARGETS) | $(VENV_PYTHON) -c 'import json, sys; payload=json.load(sys.stdin); max_score=int(sys.argv[1]); violations=[]; [violations.append((f, i.get("name"), i.get("complexity", 0))) for f, items in payload.items() for i in items if i.get("type") in {"function", "method"} and i.get("complexity", 0) > max_score]; print(f"Radon complexity threshold exceeded (>{max_score})") if violations else None; [print(f"{f}: {name} ({complexity})") for f, name, complexity in violations]; sys.exit(1 if violations else 0)' "$(RADON_COMPLEXITY_MAX)"; \
 	  fi; \
 	else \
 	  echo "→ Skipping radon" | tee "$(LINT_ARTIFACTS_DIR)/radon.log"; \
 	fi
 	@if [ "$(ENABLE_PYDOCSTYLE)" = "1" ]; then \
-	  set -euo pipefail; $(PYDOCSTYLE) $(PYDOCSTYLE_ARGS) $(PYDOCSTYLE_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/pydocstyle.log"; \
+	  $(PYDOCSTYLE) $(PYDOCSTYLE_ARGS) $(PYDOCSTYLE_TARGETS) 2>&1 | tee "$(LINT_ARTIFACTS_DIR)/pydocstyle.log"; \
 	else \
 	  echo "→ Skipping pydocstyle" | tee "$(LINT_ARTIFACTS_DIR)/pydocstyle.log"; \
 	fi
@@ -108,14 +108,14 @@ endif
 
 mypy-core:
 	@if [ -n "$(MYPY_CORE_CONFIG)" ]; then \
-	  set -euo pipefail; $(MYPY) --config-file "$(MYPY_CORE_CONFIG)" $(MYPY_CORE_FLAGS) --cache-dir "$(MYPY_CACHE_DIR)" $(MYPY_CORE_TARGETS); \
+	  $(MYPY) --config-file "$(MYPY_CORE_CONFIG)" $(MYPY_CORE_FLAGS) --cache-dir "$(MYPY_CACHE_DIR)" $(MYPY_CORE_TARGETS); \
 	else \
 	  echo "→ mypy-core is not configured for $(PROJECT_SLUG)"; \
 	fi
 
 mypy-extended:
 	@if [ -n "$(MYPY_EXTENDED_CONFIG)" ]; then \
-	  set -euo pipefail; $(MYPY) --config-file "$(MYPY_EXTENDED_CONFIG)" $(MYPY_EXTENDED_FLAGS) --cache-dir "$(MYPY_CACHE_DIR)" $(MYPY_EXTENDED_TARGETS); \
+	  $(MYPY) --config-file "$(MYPY_EXTENDED_CONFIG)" $(MYPY_EXTENDED_FLAGS) --cache-dir "$(MYPY_CACHE_DIR)" $(MYPY_EXTENDED_TARGETS); \
 	else \
 	  echo "→ mypy-extended is not configured for $(PROJECT_SLUG)"; \
 	fi

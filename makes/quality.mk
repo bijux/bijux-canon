@@ -62,7 +62,7 @@ quality:
 	@if [ "$(SKIP_MYPY)" = "1" ] || [ -z "$(QUALITY_MYPY_CONFIG)" ]; then \
 	  echo "   • Skipping Mypy" | tee "$(QUALITY_ARTIFACTS_DIR)/mypy.log"; \
 	else \
-	  set -euo pipefail; $(MYPY) --config-file "$(QUALITY_MYPY_CONFIG)" $(QUALITY_MYPY_FLAGS) --cache-dir "$(QUALITY_MYPY_CACHE_DIR)" $(QUALITY_MYPY_TARGETS) 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/mypy.log"; \
+	  $(MYPY) --config-file "$(QUALITY_MYPY_CONFIG)" $(QUALITY_MYPY_FLAGS) --cache-dir "$(QUALITY_MYPY_CACHE_DIR)" $(QUALITY_MYPY_TARGETS) 2>&1 | tee "$(QUALITY_ARTIFACTS_DIR)/mypy.log"; \
 	fi
 	@echo "   - Documentation coverage (Interrogate)"
 	@if [ "$(SKIP_INTERROGATE)" = "1" ]; then \

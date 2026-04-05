@@ -30,8 +30,22 @@ api-lint:
 api-test:
 	@if [ ! -x "$(API_UVICORN)" ]; then echo "uvicorn not found; install dev extras"; exit 1; fi
 	@mkdir -p "$(API_ARTIFACTS_DIR_ABS)"
-	@API_HOST="$(API_HOST)" API_PORT="$(API_PORT)" $(VENV_PYTHON) -c $$'import os, socket\nhost = os.environ.get("API_HOST", "127.0.0.1")\npreferred = int(os.environ.get("API_PORT", "8000"))\nbusy = False\nwith socket.socket() as sock:\n    try:\n        sock.bind((host, preferred))\n        port = preferred\n    except OSError:\n        busy = True\n        sock.bind((host, 0))\n        port = sock.getsockname()[1]\nprint(port)\nprint(int(busy))' >"$(API_ARTIFACTS_DIR_ABS)/port.meta"
-	@set -euo pipefail; \
+	@printf '%s\n' \
+	  'import os, socket' \
+	  'host = os.environ.get("API_HOST", "127.0.0.1")' \
+	  'preferred = int(os.environ.get("API_PORT", "8000"))' \
+	  'busy = False' \
+	  'with socket.socket() as sock:' \
+	  '    try:' \
+	  '        sock.bind((host, preferred))' \
+	  '        port = preferred' \
+	  '    except OSError:' \
+	  '        busy = True' \
+	  '        sock.bind((host, 0))' \
+	  '        port = sock.getsockname()[1]' \
+	  'print(port)' \
+	  'print(int(busy))' | API_HOST="$(API_HOST)" API_PORT="$(API_PORT)" "$(VENV_PYTHON)" - >"$(API_ARTIFACTS_DIR_ABS)/port.meta"
+	@set -eu; \
 	  PORT="$$(sed -n '1p' "$(API_ARTIFACTS_DIR_ABS)/port.meta")"; \
 	  FALLBACK="$$(sed -n '2p' "$(API_ARTIFACTS_DIR_ABS)/port.meta")"; \
 	  if [ "$$FALLBACK" -eq 1 ]; then echo "→ Port $(API_PORT) busy; using $$PORT"; fi; \
@@ -40,7 +54,7 @@ api-test:
 	  $(API_UVICORN) "$(API_SERVER_IMPORT)" --host $(API_HOST) --port $$PORT --factory >"$(API_SERVER_LOG)" 2>&1 & echo $$! >"$(API_ARTIFACTS_DIR_ABS)/server.pid"; \
 	  sleep 2; \
 	  echo "→ Running schemathesis against live server"
-	@set -euo pipefail; \
+	@set -eu; \
 	  BASE_FLAG=$$($(SCHEMATHESIS) run -h 2>&1 | grep -q " --url " && echo --url || echo --base-url); \
 	  EXTRA_FLAG=$$(PYTHONPATH=""; "$(VENV_PYTHON)" -c "import yaml; v=yaml.safe_load(open('$(API_SCHEMA)', 'r', encoding='utf-8')).get('openapi',''); print('--experimental=openapi-3.1' if str(v).startswith('3.1') else '')"); \
 	  PORT="$$(cat "$(API_ARTIFACTS_DIR_ABS)/port")"; \
