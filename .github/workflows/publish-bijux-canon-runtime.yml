@@ -11,8 +11,8 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
-    uses: ./.github/workflows/publish-package.yml
+  build:
+    uses: ./.github/workflows/build-release-artifacts.yml
     with:
       package_slug: bijux-canon-runtime
       package_dir: packages/bijux-canon-runtime
@@ -24,3 +24,22 @@ jobs:
       upload_paths: |
         artifacts/bijux-canon-runtime/build/*
         artifacts/bijux-canon-runtime/sbom/*
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download publish artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: bijux-canon-runtime-pypi-dist
+          path: .github/tmp/bijux-canon-runtime-dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: .github/tmp/bijux-canon-runtime-dist
+          skip-existing: true
