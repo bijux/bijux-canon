@@ -9,22 +9,7 @@ Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed. Releases that shipped without a
 changelog update are reconstructed from tag annotations and release diffs.
 
-## Unreleased
-
-- PyPI metadata now points legacy `agentic-flows` readers at the canonical
-  `bijux-canon-runtime` docs, migration guide, and Bijux-owned package family.
-- The package README and overview now document the retired standalone
-  repository and use PyPI-safe badge and link targets.
-- Package-local PyPI publication guidance is now checked in and shipped with
-  the source distribution so legacy runtime release expectations stay attached
-  to the compatibility package.
-- The published docs URL for `agentic-flows` now has its own migration landing
-  page inside the shared handbook instead of sending legacy readers directly to
-  canonical runtime docs without context.
-- Release artifacts now ship the repository license and exclude stray
-  `.gitignore` content from the published source distribution.
-
-## 0.3.0 - 2026-04-04
+## 0.3.0 - 2026-04-05
 
 ### Added
 
@@ -36,6 +21,21 @@ changelog update are reconstructed from tag annotations and release diffs.
 - Compatibility messaging now consistently points new work to
   `bijux-canon-runtime` while preserving the legacy distribution, import, and
   command names.
+- PyPI metadata now points legacy `agentic-flows` readers at the canonical
+  `bijux-canon-runtime` docs, migration guide, and Bijux-owned package family.
+- The package README and overview now document the retired standalone
+  repository and use PyPI-safe badge and link targets.
+- Package-local PyPI publication guidance is now checked in and shipped with
+  the source distribution so legacy runtime release expectations stay attached
+  to the compatibility package.
+- The published docs URL for `agentic-flows` now has its own migration landing
+  page inside the shared handbook instead of sending legacy readers directly to
+  canonical runtime docs without context.
+
+### Fixed
+
+- Release artifacts now ship the repository license and exclude stray
+  `.gitignore` content from the published source distribution.
 
 ## 0.1.1 - 2026-01-21
 
