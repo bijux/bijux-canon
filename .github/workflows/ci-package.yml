@@ -54,13 +54,13 @@ jobs:
         python-version: ${{ fromJson(inputs.test_python_versions) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Prepare pip cache directory
         shell: bash
         run: mkdir -p "${PIP_CACHE_DIR}"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload test artifacts
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.package_slug }}-test-py${{ matrix.python-version }}
           path: ${{ env.ARTIFACTS_DIR }}/test
@@ -102,24 +102,24 @@ jobs:
         target: ${{ fromJson(inputs.check_targets) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Prepare pip cache directory
         shell: bash
         run: mkdir -p "${PIP_CACHE_DIR}"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: ${{ inputs.cache_dependency_path }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: ${{ contains(fromJson(inputs.api_toolchain_targets), matrix.target) }}
         with:
           node-version: "20"
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         if: ${{ contains(fromJson(inputs.api_toolchain_targets), matrix.target) }}
         with:
           distribution: temurin
@@ -141,7 +141,7 @@ jobs:
 
       - name: Upload artifacts
         if: ${{ always() && hashFiles(format('{0}/{1}/**', env.ARTIFACTS_DIR, matrix.target)) != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.package_slug }}-${{ matrix.target }}
           path: ${{ env.ARTIFACTS_DIR }}/${{ matrix.target }}
@@ -152,13 +152,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Prepare pip cache directory
         shell: bash
         run: mkdir -p "${PIP_CACHE_DIR}"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: pip
@@ -180,7 +180,7 @@ jobs:
 
       - name: Upload lint artifacts
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.package_slug }}-lint
           path: ${{ env.ARTIFACTS_DIR }}/lint

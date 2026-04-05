@@ -43,7 +43,7 @@ jobs:
       PIP_CACHE_DIR: ${{ github.workspace }}/.github/.cache/pip
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -51,7 +51,7 @@ jobs:
         shell: bash
         run: mkdir -p "${PIP_CACHE_DIR}"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: pip
@@ -90,7 +90,7 @@ jobs:
           skip-existing: true
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.package_slug }}-release
           path: ${{ inputs.upload_paths != '' && inputs.upload_paths || format('{0}/{1}/*', env.ARTIFACTS_DIR, inputs.dist_subdir) }}
