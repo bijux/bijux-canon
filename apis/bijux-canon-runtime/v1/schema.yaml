@@ -1,5 +1,46 @@
 components:
   schemas:
+    FailureEnvelope:
+      additionalProperties: false
+      description: Failure envelope; misuse breaks error contract.
+      properties:
+        determinism_impact:
+          enum:
+          - structural
+          - environmental
+          - stochastic
+          - human
+          - external
+          title: Determinism Impact
+          type: string
+        evidence_ids:
+          items:
+            type: string
+          title: Evidence Ids
+          type: array
+        failure_class:
+          enum:
+          - structural
+          - semantic
+          - environmental
+          - authority
+          title: Failure Class
+          type: string
+        reason_code:
+          const: contradiction_detected
+          title: Reason Code
+          type: string
+        violated_contract:
+          title: Violated Contract
+          type: string
+      required:
+      - failure_class
+      - reason_code
+      - violated_contract
+      - evidence_ids
+      - determinism_impact
+      title: FailureEnvelope
+      type: object
     FlowRunRequest:
       additionalProperties: false
       description: Flow run request; misuse breaks API contract.
@@ -31,14 +72,75 @@ components:
       - policy_fingerprint
       title: FlowRunRequest
       type: object
-    HTTPValidationError:
+    FlowRunResponse:
+      additionalProperties: false
+      description: Flow run response; misuse breaks API contract.
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          title: Detail
-          type: array
-      title: HTTPValidationError
+        artifact_count:
+          title: Artifact Count
+          type: integer
+        determinism_class:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Determinism class classification when available.
+          title: Determinism Class
+        environment_fingerprint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Environment fingerprint when available.
+          title: Environment Fingerprint
+        flow_id:
+          title: Flow Id
+          type: string
+        replay_acceptability:
+          enum:
+          - exact_match
+          - invariant_preserving
+          - statistically_bounded
+          title: Replay Acceptability
+          type: string
+        run_id:
+          title: Run Id
+          type: string
+        status:
+          enum:
+          - completed
+          - failed
+          - cancelled
+          title: Status
+          type: string
+      required:
+      - run_id
+      - flow_id
+      - status
+      - replay_acceptability
+      - artifact_count
+      title: FlowRunResponse
+      type: object
+    HealthResponse:
+      additionalProperties: false
+      description: Health response; misuse breaks API contract.
+      properties:
+        status:
+          const: ok
+          title: Status
+          type: string
+      required:
+      - status
+      title: HealthResponse
+      type: object
+    ReadyResponse:
+      additionalProperties: false
+      description: Readiness response; misuse breaks API contract.
+      properties:
+        ready:
+          title: Ready
+          type: boolean
+      required:
+      - ready
+      title: ReadyResponse
       type: object
     ReplayRequest:
       additionalProperties: false
@@ -66,32 +168,6 @@ components:
       - acceptability_threshold
       - observer_mode
       title: ReplayRequest
-      type: object
-    ValidationError:
-      properties:
-        ctx:
-          title: Context
-          type: object
-        input:
-          title: Input
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          title: Location
-          type: array
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
       type: object
 info:
   contact:
@@ -151,15 +227,36 @@ paths:
         '200':
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/FlowRunResponse'
           description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+          description: Request body could not be parsed.
+        '406':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+          description: Required runtime headers are missing or invalid.
         '422':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
+                $ref: '#/components/schemas/FailureEnvelope'
+          description: Request validation failed.
+        '501':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+          description: Flow execution or replay is not implemented yet.
       summary: Replay Flow
+      tags:
+      - Flows
   /api/v1/flows/run:
     post:
       description: Deterministic guarantees cover declared contracts and persisted
@@ -203,15 +300,36 @@ paths:
         '200':
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/FlowRunResponse'
           description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+          description: Request body could not be parsed.
+        '406':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+          description: Required runtime headers are missing or invalid.
         '422':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
+                $ref: '#/components/schemas/FailureEnvelope'
+          description: Request validation failed.
+        '501':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureEnvelope'
+          description: Flow execution or replay is not implemented yet.
       summary: Run Flow
+      tags:
+      - Flows
   /api/v1/health:
     get:
       description: Provide a lightweight liveness signal for health checks.
@@ -221,12 +339,11 @@ paths:
           content:
             application/json:
               schema:
-                additionalProperties:
-                  type: string
-                title: Response Health Api V1 Health Get
-                type: object
+                $ref: '#/components/schemas/HealthResponse'
           description: Successful Response
       summary: Health
+      tags:
+      - Health
   /api/v1/ready:
     get:
       description: Provide a readiness signal without performing deep dependency checks.
@@ -235,9 +352,18 @@ paths:
         '200':
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
           description: Successful Response
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+          description: Runtime storage is unavailable.
       summary: Ready
+      tags:
+      - Health
   /health:
     get:
       description: Provide a lightweight liveness signal for health checks.
@@ -247,12 +373,11 @@ paths:
           content:
             application/json:
               schema:
-                additionalProperties:
-                  type: string
-                title: Response Health Health Get
-                type: object
+                $ref: '#/components/schemas/HealthResponse'
           description: Successful Response
       summary: Health
+      tags:
+      - Health
   /ready:
     get:
       description: Provide a readiness signal without performing deep dependency checks.
@@ -261,9 +386,19 @@ paths:
         '200':
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
           description: Successful Response
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+          description: Runtime storage is unavailable.
       summary: Ready
+      tags:
+      - Health
+security: []
 servers:
 - url: /
 tags:

@@ -77,3 +77,19 @@ class FailureEnvelope(BaseModel):
         "human",
         "external",
     ]
+
+
+class HealthResponse(BaseModel):
+    """Health response; misuse breaks API contract."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    status: Literal["ok"]
+
+
+class ReadyResponse(BaseModel):
+    """Readiness response; misuse breaks API contract."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    ready: StrictBool

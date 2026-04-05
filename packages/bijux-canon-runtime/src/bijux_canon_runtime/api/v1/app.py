@@ -18,6 +18,7 @@ from typing import Annotated
 
 from fastapi import Body, FastAPI, Header, Request, status
 from fastapi.exceptions import RequestValidationError
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import Response
@@ -28,7 +29,11 @@ from bijux_canon_runtime.api.v1.http_contracts import (
     validate_runtime_headers,
 )
 from bijux_canon_runtime.api.v1.schemas import (
+    FailureEnvelope,
     FlowRunRequest,
+    FlowRunResponse,
+    HealthResponse,
+    ReadyResponse,
     ReplayRequest,
 )
 from bijux_canon_runtime.observability.storage.execution_store import (
@@ -63,6 +68,50 @@ app = FastAPI(
         },
     ],
 )
+
+
+def _openapi() -> dict[str, object]:
+    if app.openapi_schema is not None:
+        return app.openapi_schema
+
+    schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        openapi_version=app.openapi_version,
+        summary=app.summary,
+        description=app.description,
+        routes=app.routes,
+        tags=app.openapi_tags,
+        servers=app.servers,
+        contact=app.contact,
+        license_info=app.license_info,
+    )
+    schema["security"] = []
+    app.openapi_schema = schema
+    return schema
+
+
+app.openapi = _openapi
+
+
+FAILURE_RESPONSES = {
+    status.HTTP_400_BAD_REQUEST: {
+        "description": "Request body could not be parsed.",
+        "model": FailureEnvelope,
+    },
+    status.HTTP_406_NOT_ACCEPTABLE: {
+        "description": "Required runtime headers are missing or invalid.",
+        "model": FailureEnvelope,
+    },
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        "description": "Request validation failed.",
+        "model": FailureEnvelope,
+    },
+    status.HTTP_501_NOT_IMPLEMENTED: {
+        "description": "Flow execution or replay is not implemented yet.",
+        "model": FailureEnvelope,
+    },
+}
 
 
 @app.middleware("http")
@@ -119,16 +168,36 @@ def handle_starlette_http_exception(
     )
 
 
-@app.get("/health")
-@app.get("/api/v1/health")
-def health() -> dict[str, str]:
+@app.get("/health", response_model=HealthResponse, tags=["Health"])
+@app.get("/api/v1/health", response_model=HealthResponse, tags=["Health"])
+def health() -> HealthResponse:
     """Provide a lightweight liveness signal for health checks."""
     # /health = process alive; /ready = storage writable.
-    return {"status": "ok"}
+    return HealthResponse(status="ok")
 
 
-@app.get("/ready")
-@app.get("/api/v1/ready")
+@app.get(
+    "/ready",
+    response_model=ReadyResponse,
+    responses={
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "description": "Runtime storage is unavailable.",
+            "model": ReadyResponse,
+        }
+    },
+    tags=["Health"],
+)
+@app.get(
+    "/api/v1/ready",
+    response_model=ReadyResponse,
+    responses={
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "description": "Runtime storage is unavailable.",
+            "model": ReadyResponse,
+        }
+    },
+    tags=["Health"],
+)
 def ready() -> JSONResponse:
     """Provide a readiness signal without performing deep dependency checks."""
     db_path = os.environ.get("AGENTIC_FLOWS_DB_PATH")
@@ -142,7 +211,12 @@ def ready() -> JSONResponse:
     return JSONResponse(content={"ready": True})
 
 
-@app.post("/api/v1/flows/run")
+@app.post(
+    "/api/v1/flows/run",
+    response_model=FlowRunResponse,
+    responses=FAILURE_RESPONSES,
+    tags=["Flows"],
+)
 def run_flow(
     _: Annotated[FlowRunRequest, Body(...)],
     x_agentic_gate: str | None = Header(None, alias="X-Agentic-Gate"),
@@ -160,7 +234,12 @@ def run_flow(
     raise StarletteHTTPException(status_code=501, detail="Not implemented")
 
 
-@app.post("/api/v1/flows/replay")
+@app.post(
+    "/api/v1/flows/replay",
+    response_model=FlowRunResponse,
+    responses=FAILURE_RESPONSES,
+    tags=["Flows"],
+)
 def replay_flow(
     _: Annotated[ReplayRequest, Body(...)],
     x_agentic_gate: str | None = Header(None, alias="X-Agentic-Gate"),
