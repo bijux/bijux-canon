@@ -130,8 +130,14 @@ def register_item_routes(
         operation_id="getReasonItem",
         responses={
             **guard_responses,
-            404: {"description": "The requested item does not exist.", "model": ErrorDetail},
-            422: {"description": "Validation failed for the requested item id.", "model": ErrorDetail},
+            404: {
+                "description": "The requested item does not exist.",
+                "model": ErrorDetail,
+            },
+            422: {
+                "description": "Validation failed for the requested item id.",
+                "model": ErrorDetail,
+            },
         },
     )
     def get_item(
@@ -153,8 +159,14 @@ def register_item_routes(
         operation_id="deleteReasonItem",
         responses={
             **guard_responses,
-            404: {"description": "The requested item does not exist.", "model": ErrorDetail},
-            422: {"description": "Validation failed for the requested item id.", "model": ErrorDetail},
+            404: {
+                "description": "The requested item does not exist.",
+                "model": ErrorDetail,
+            },
+            422: {
+                "description": "Validation failed for the requested item id.",
+                "model": ErrorDetail,
+            },
         },
     )
     def delete_item(
@@ -186,8 +198,14 @@ def register_item_routes(
         operation_id="createReasonItem",
         responses={
             **guard_responses,
-            409: {"description": "The submitted name conflicts with another item.", "model": ErrorDetail},
-            422: {"description": "Validation failed for the submitted payload.", "model": ErrorDetail},
+            409: {
+                "description": "The submitted name conflicts with another item.",
+                "model": ErrorDetail,
+            },
+            422: {
+                "description": "Validation failed for the submitted payload.",
+                "model": ErrorDetail,
+            },
         },
     )
     def create_item(request: Request, payload: ItemCreate) -> dict[str, object]:
@@ -221,9 +239,18 @@ def register_item_routes(
         operation_id="updateReasonItem",
         responses={
             **guard_responses,
-            404: {"description": "The requested item is deleted or unavailable.", "model": ErrorDetail},
-            409: {"description": "The submitted name conflicts with another item.", "model": ErrorDetail},
-            422: {"description": "Validation failed for the submitted payload or item id.", "model": ErrorDetail},
+            404: {
+                "description": "The requested item is deleted or unavailable.",
+                "model": ErrorDetail,
+            },
+            409: {
+                "description": "The submitted name conflicts with another item.",
+                "model": ErrorDetail,
+            },
+            422: {
+                "description": "Validation failed for the submitted payload or item id.",
+                "model": ErrorDetail,
+            },
         },
     )
     def update_item(

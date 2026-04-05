@@ -1,666 +1,102 @@
-openapi: 3.1.0
-info:
-  title: bijux-canon-index API
-  summary: Contract-driven vector execution and replayable retrieval.
-  description: The bijux-canon-index HTTP API exposes the v1 surface for deterministic
-    and bounded vector execution. It separates capability discovery, artifact materialization,
-    and query execution so operators can review the contract they are invoking before
-    they ship it.
-  contact:
-    name: Bijux
-    url: https://github.com/bijux/bijux-canon
-  license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0
-  version: v1
-servers:
-- url: /
-paths:
-  /capabilities:
-    get:
-      tags:
-      - Discovery
-      summary: Describe backend capabilities
-      description: Report the active execution backend, supported contracts, storage
-        backends, vector store capabilities, and ANN readiness in one envelope.
-      operationId: describeBackendCapabilities
-      parameters:
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      responses:
-        '200':
-          description: Capability report returned successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackendCapabilitiesReport'
-              examples:
-                capabilities:
-                  value:
-                    backend: sqlite
-                    contracts:
-                    - deterministic
-                    - non_deterministic
-                    deterministic_query: true
-                    supports_ann: false
-                    replayable: true
-                    metrics:
-                    - l2
-                    - cosine
-                    max_vector_size: 4096
-                    isolation_level: read_committed
-                    execution_modes:
-                    - strict
-                    - bounded
-                    - exploratory
-                    ann_status: unavailable
-                    storage_backends: []
-                    vector_stores: []
-                    plugins: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /artifacts:
-    get:
-      tags:
-      - Discovery
-      summary: List execution artifacts
-      description: Return artifact identifiers known to the current backend so operators
-        can inspect or reuse previously materialized execution state.
-      operationId: listExecutionArtifacts
-      parameters:
-      - name: limit
-        in: query
-        required: false
-        schema:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Limit
-      - name: offset
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 0
-          title: Offset
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      responses:
-        '200':
-          description: Artifact inventory returned successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListArtifactsResponse'
-              examples:
-                artifacts:
-                  value:
-                    artifacts:
-                    - art-1
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /runs:
-    get:
-      tags:
-      - Discovery
-      summary: List execution runs
-      description: Return recorded run identifiers from the run store for audit, replay,
-        or support workflows.
-      operationId: listExecutionRuns
-      parameters:
-      - name: limit
-        in: query
-        required: false
-        schema:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Limit
-      - name: offset
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 0
-          title: Offset
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      responses:
-        '200':
-          description: Run inventory returned successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListRunsResponse'
-              examples:
-                runs:
-                  value:
-                    runs:
-                    - run-1
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /create:
-    post:
-      tags:
-      - Materialization
-      summary: Reserve a logical corpus name
-      description: Create a logical corpus entry before ingestion. The endpoint is
-        intentionally small so teams can separate naming and governance from later
-        content writes.
-      operationId: createCorpus
-      parameters:
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateRequest'
-            examples:
-              create:
-                value:
-                  name: my-corpus
-      responses:
-        '200':
-          description: Corpus name reserved successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateResponse'
-              examples:
-                created:
-                  value:
-                    name: my-corpus
-                    status: created
-        '400':
-          content:
-            application/json:
-              examples:
-                refusal:
-                  value:
-                    error:
-                      reason: determinism_violation
-                      message: '[INV-000] Deterministic execution requires a deterministic
-                        vector store'
-                      remediation: Use deterministic inputs or switch to non_deterministic
-                        contract with declared randomness.
-          description: Bad Request
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /ingest:
-    post:
-      tags:
-      - Materialization
-      summary: Ingest documents and vectors
-      description: Persist documents and either supplied vectors or embedding-derived
-        vectors, then return the ingest count and resolved correlation identifier.
-      operationId: ingestDocuments
-      parameters:
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      - name: Idempotency-Key
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Idempotency-Key
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IngestRequest'
-            examples:
-              ingest:
-                value:
-                  documents:
-                  - hello
-                  vectors:
-                  - - 0.0
-                    - 1.0
-                    - 0.0
-                  vector_store: faiss
-                  vector_store_uri: index.faiss
-      responses:
-        '200':
-          description: Documents ingested successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IngestResponse'
-              examples:
-                ingested:
-                  value:
-                    ingested: 1
-                    correlation_id: req-example
-        '400':
-          content:
-            application/json:
-              examples:
-                refusal:
-                  value:
-                    error:
-                      reason: determinism_violation
-                      message: '[INV-000] Deterministic execution requires a deterministic
-                        vector store'
-                      remediation: Use deterministic inputs or switch to non_deterministic
-                        contract with declared randomness.
-          description: Bad Request
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /artifact:
-    post:
-      tags:
-      - Materialization
-      summary: Materialize an execution artifact
-      description: Freeze the current corpus and vector state into an execution artifact
-        with a declared contract so later executions can be audited and replayed.
-      operationId: materializeExecutionArtifact
-      parameters:
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExecutionArtifactRequest'
-            examples:
-              artifact:
-                value:
-                  execution_contract: deterministic
-      responses:
-        '200':
-          description: Execution artifact materialized successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArtifactResponse'
-              examples:
-                artifact:
-                  value:
-                    artifact_id: art-1
-                    execution_contract: deterministic
-                    execution_contract_status: stable
-                    replayable: true
-        '400':
-          content:
-            application/json:
-              examples:
-                refusal:
-                  value:
-                    error:
-                      reason: determinism_violation
-                      message: '[INV-000] Deterministic execution requires a deterministic
-                        vector store'
-                      remediation: Use deterministic inputs or switch to non_deterministic
-                        contract with declared randomness.
-          description: Bad Request
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /execute:
-    post:
-      tags:
-      - Execution
-      summary: Execute a vector query
-      description: Execute a deterministic or bounded retrieval request against a
-        materialized artifact and return the result identifiers plus replay metadata.
-      operationId: executeVectorQuery
-      parameters:
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExecutionRequestPayload'
-            examples:
-              execute:
-                value:
-                  artifact_id: art-1
-                  vector:
-                  - 0.0
-                  - 1.0
-                  - 0.0
-                  top_k: 3
-                  execution_contract: deterministic
-                  execution_intent: exact_validation
-                  execution_mode: strict
-      responses:
-        '200':
-          description: Execution completed successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExecuteResponse'
-              examples:
-                execute:
-                  value:
-                    results:
-                    - vec-1
-                    correlation_id: req-example
-                    execution_contract: deterministic
-                    execution_contract_status: stable
-                    replayable: true
-                    execution_id: exec-1
-        '422':
-          content:
-            application/json:
-              examples:
-                refusal:
-                  value:
-                    error:
-                      reason: determinism_violation
-                      message: '[INV-000] Deterministic execution requires a deterministic
-                        vector store'
-                      remediation: Use deterministic inputs or switch to non_deterministic
-                        contract with declared randomness.
-          description: Unprocessable Content
-  /explain:
-    post:
-      tags:
-      - Execution
-      summary: Explain a result
-      description: Resolve a result identifier back to the document, chunk, vector,
-        and execution context that produced it.
-      operationId: explainExecutionResult
-      parameters:
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExplainRequest'
-            examples:
-              explain:
-                value:
-                  result_id: res-1
-      responses:
-        '200':
-          description: Result explanation returned successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExplainResponse'
-              examples:
-                explain:
-                  value:
-                    document_id: doc-1
-                    chunk_id: chunk-1
-                    vector_id: res-1
-                    artifact_id: art-1
-                    metric: l2
-                    score: 0.99
-                    correlation_id: req-example
-                    execution_contract: deterministic
-                    execution_contract_status: stable
-                    replayable: true
-                    execution_id: exec-1
-        '400':
-          content:
-            application/json:
-              examples:
-                refusal:
-                  value:
-                    error:
-                      reason: determinism_violation
-                      message: '[INV-000] Deterministic execution requires a deterministic
-                        vector store'
-                      remediation: Use deterministic inputs or switch to non_deterministic
-                        contract with declared randomness.
-          description: Bad Request
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /replay:
-    post:
-      tags:
-      - Execution
-      summary: Replay an execution outcome
-      description: Replay a prior execution contract against the currently available
-        artifact and report whether the replay stayed within the declared equivalence
-        boundary.
-      operationId: replayExecutionOutcome
-      parameters:
-      - name: X-Correlation-Id
-        in: header
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: X-Correlation-Id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExecutionRequestPayload'
-            examples:
-              replay:
-                value:
-                  artifact_id: art-1
-                  request_text: hello
-      responses:
-        '200':
-          description: Replay completed successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReplayResponse'
-              examples:
-                replay:
-                  value:
-                    matches: true
-                    original_fingerprint: orig-fp
-                    replay_fingerprint: replay-fp
-                    details:
-                      status: matched
-                    nondeterministic_sources: []
-                    execution_contract: deterministic
-                    execution_contract_status: stable
-                    replayable: true
-                    execution_id: exec-1
-        '400':
-          content:
-            application/json:
-              examples:
-                refusal:
-                  value:
-                    error:
-                      reason: determinism_violation
-                      message: '[INV-000] Deterministic execution requires a deterministic
-                        vector store'
-                      remediation: Use deterministic inputs or switch to non_deterministic
-                        contract with declared randomness.
-          description: Bad Request
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     ArtifactResponse:
+      additionalProperties: false
       properties:
         artifact_id:
-          type: string
-          title: Artifact Id
           description: Identifier of the execution artifact materialized by the API.
+          title: Artifact Id
+          type: string
         execution_contract:
-          type: string
-          title: Execution Contract
           description: Execution contract currently attached to the artifact.
-        execution_contract_status:
+          title: Execution Contract
           type: string
-          title: Execution Contract Status
+        execution_contract_status:
           description: Human-readable stability marker for the chosen contract.
+          title: Execution Contract Status
+          type: string
         replayable:
-          type: boolean
-          title: Replayable
           description: Whether the artifact can be replayed under its declared contract.
-      additionalProperties: false
-      type: object
+          title: Replayable
+          type: boolean
       required:
       - artifact_id
       - execution_contract
       - execution_contract_status
       - replayable
       title: ArtifactResponse
+      type: object
     BackendCapabilitiesReport:
+      additionalProperties: false
       properties:
-        backend:
+        ann_status:
+          title: Ann Status
           type: string
+        backend:
           title: Backend
+          type: string
         contracts:
           items:
             type: string
-          type: array
           title: Contracts
+          type: array
         deterministic_query:
           anyOf:
           - type: boolean
           - type: 'null'
           title: Deterministic Query
-        supports_ann:
-          type: boolean
-          title: Supports Ann
-        replayable:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Replayable
-        metrics:
+        execution_modes:
           items:
             type: string
+          title: Execution Modes
           type: array
-          title: Metrics
-        max_vector_size:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Max Vector Size
         isolation_level:
           anyOf:
           - type: string
           - type: 'null'
           title: Isolation Level
-        execution_modes:
+        max_vector_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Vector Size
+        metrics:
           items:
             type: string
+          title: Metrics
           type: array
-          title: Execution Modes
-        ann_status:
-          type: string
-          title: Ann Status
-        storage_backends:
-          items:
-            $ref: '#/components/schemas/StorageBackendDescriptor'
-          type: array
-          title: Storage Backends
-        vector_stores:
-          items:
-            $ref: '#/components/schemas/VectorStoreDescriptor'
-          type: array
-          title: Vector Stores
-        plugins:
-          additionalProperties:
-            items:
-              additionalProperties: true
-              type: object
-            type: array
-          type: object
-          title: Plugins
         nd:
           anyOf:
           - additionalProperties: true
             type: object
           - type: 'null'
           title: Nd
-      additionalProperties: false
-      type: object
+        plugins:
+          additionalProperties:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+          title: Plugins
+          type: object
+        replayable:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Replayable
+        storage_backends:
+          items:
+            $ref: '#/components/schemas/StorageBackendDescriptor'
+          title: Storage Backends
+          type: array
+        supports_ann:
+          title: Supports Ann
+          type: boolean
+        vector_stores:
+          items:
+            $ref: '#/components/schemas/VectorStoreDescriptor'
+          title: Vector Stores
+          type: array
       required:
       - backend
       - contracts
@@ -676,63 +112,63 @@ components:
       - vector_stores
       - plugins
       title: BackendCapabilitiesReport
+      type: object
     CreateRequest:
+      additionalProperties: false
       properties:
         name:
-          type: string
           minLength: 1
           title: Name
-      additionalProperties: false
-      type: object
+          type: string
       required:
       - name
       title: CreateRequest
+      type: object
     CreateResponse:
+      additionalProperties: false
       properties:
         name:
-          type: string
-          title: Name
           description: Logical corpus name reserved by the API.
-        status:
+          title: Name
           type: string
-          title: Status
+        status:
           description: Lifecycle state returned after the create request.
-      additionalProperties: false
-      type: object
+          title: Status
+          type: string
       required:
       - name
       - status
       title: CreateResponse
+      type: object
     ExecuteResponse:
+      additionalProperties: false
       properties:
+        correlation_id:
+          description: Correlation identifier attached to the execution lifecycle.
+          title: Correlation Id
+          type: string
+        execution_contract:
+          description: Execution contract used to evaluate the query.
+          title: Execution Contract
+          type: string
+        execution_contract_status:
+          description: Human-readable stability marker for the chosen contract.
+          title: Execution Contract Status
+          type: string
+        execution_id:
+          description: Stable execution record identifier written by the run store.
+          title: Execution Id
+          type: string
+        replayable:
+          description: Whether the execution result can be replayed faithfully.
+          title: Replayable
+          type: boolean
         results:
+          description: Ordered vector identifiers returned by the execution request.
           items:
             type: string
-          type: array
           title: Results
-          description: Ordered vector identifiers returned by the execution request.
-        correlation_id:
-          type: string
-          title: Correlation Id
-          description: Correlation identifier attached to the execution lifecycle.
-        execution_contract:
-          type: string
-          title: Execution Contract
-          description: Execution contract used to evaluate the query.
-        execution_contract_status:
-          type: string
-          title: Execution Contract Status
-          description: Human-readable stability marker for the chosen contract.
-        replayable:
-          type: boolean
-          title: Replayable
-          description: Whether the execution result can be replayed faithfully.
-        execution_id:
-          type: string
-          title: Execution Id
-          description: Stable execution record identifier written by the run store.
-      additionalProperties: false
-      type: object
+          type: array
       required:
       - results
       - correlation_id
@@ -741,7 +177,9 @@ components:
       - replayable
       - execution_id
       title: ExecuteResponse
+      type: object
     ExecutionArtifactRequest:
+      additionalProperties: false
       properties:
         execution_contract:
           $ref: '#/components/schemas/ExecutionContract'
@@ -755,11 +193,6 @@ components:
           - type: string
           - type: 'null'
           title: Vector Store
-        vector_store_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Vector Store Uri
         vector_store_options:
           anyOf:
           - additionalProperties:
@@ -767,13 +200,23 @@ components:
             type: object
           - type: 'null'
           title: Vector Store Options
-      additionalProperties: false
-      type: object
+        vector_store_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store Uri
       required:
       - execution_contract
       title: ExecutionArtifactRequest
+      type: object
     ExecutionBudgetPayload:
+      additionalProperties: false
       properties:
+        max_error:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Max Error
         max_latency_ms:
           anyOf:
           - type: integer
@@ -784,59 +227,46 @@ components:
           - type: integer
           - type: 'null'
           title: Max Memory Mb
-        max_error:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Max Error
-      additionalProperties: false
-      type: object
       title: ExecutionBudgetPayload
+      type: object
     ExecutionContract:
-      type: string
       enum:
       - deterministic
       - non_deterministic
       title: ExecutionContract
-    ExecutionIntent:
       type: string
+    ExecutionIntent:
       enum:
       - exact_validation
       - reproducible_research
       - exploratory_search
       - production_retrieval
       title: ExecutionIntent
-    ExecutionMode:
       type: string
+    ExecutionMode:
       enum:
       - strict
       - bounded
       - exploratory
       title: ExecutionMode
+      type: string
     ExecutionRequestPayload:
+      additionalProperties: false
       properties:
         artifact_id:
           anyOf:
           - type: string
           - type: 'null'
           title: Artifact Id
-        request_text:
+        correlation_id:
           anyOf:
           - type: string
           - type: 'null'
-          title: Request Text
-        vector:
+          title: Correlation Id
+        execution_budget:
           anyOf:
-          - items:
-              type: number
-            type: array
+          - $ref: '#/components/schemas/ExecutionBudgetPayload'
           - type: 'null'
-          title: Vector
-        top_k:
-          type: integer
-          exclusiveMinimum: 0.0
-          title: Top K
-          default: 5
         execution_contract:
           $ref: '#/components/schemas/ExecutionContract'
         execution_intent:
@@ -844,48 +274,14 @@ components:
         execution_mode:
           $ref: '#/components/schemas/ExecutionMode'
           default: strict
-        execution_budget:
-          anyOf:
-          - $ref: '#/components/schemas/ExecutionBudgetPayload'
-          - type: 'null'
-        randomness_profile:
-          anyOf:
-          - $ref: '#/components/schemas/RandomnessProfilePayload'
-          - type: 'null'
-        nd_profile:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Nd Profile
-        nd_target_recall:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Nd Target Recall
-        nd_latency_budget_ms:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Nd Latency Budget Ms
-        nd_witness_rate:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Nd Witness Rate
-        nd_witness_sample_k:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Nd Witness Sample K
-        nd_witness_mode:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Nd Witness Mode
-        nd_build_on_demand:
-          type: boolean
-          title: Nd Build On Demand
+        nd_adaptive_k:
           default: false
+          title: Nd Adaptive K
+          type: boolean
+        nd_build_on_demand:
+          default: false
+          title: Nd Build On Demand
+          type: boolean
         nd_candidate_k:
           anyOf:
           - type: integer
@@ -896,65 +292,6 @@ components:
           - type: number
           - type: 'null'
           title: Nd Diversity Lambda
-        nd_normalize_vectors:
-          type: boolean
-          title: Nd Normalize Vectors
-          default: false
-        nd_normalize_query:
-          type: boolean
-          title: Nd Normalize Query
-          default: false
-        nd_outlier_threshold:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Nd Outlier Threshold
-        nd_low_signal_margin:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Nd Low Signal Margin
-        nd_adaptive_k:
-          type: boolean
-          title: Nd Adaptive K
-          default: false
-        nd_low_signal_refuse:
-          type: boolean
-          title: Nd Low Signal Refuse
-          default: false
-        nd_replay_strict:
-          type: boolean
-          title: Nd Replay Strict
-          default: false
-        nd_warmup_queries:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Nd Warmup Queries
-        nd_incremental_index:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Nd Incremental Index
-        nd_max_candidates:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Nd Max Candidates
-        nd_max_index_memory_mb:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Nd Max Index Memory Mb
-        nd_two_stage:
-          type: boolean
-          title: Nd Two Stage
-          default: true
-        nd_m:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Nd M
         nd_ef_construction:
           anyOf:
           - type: integer
@@ -965,31 +302,127 @@ components:
           - type: integer
           - type: 'null'
           title: Nd Ef Search
+        nd_incremental_index:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Nd Incremental Index
+        nd_latency_budget_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Latency Budget Ms
+        nd_low_signal_margin:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Low Signal Margin
+        nd_low_signal_refuse:
+          default: false
+          title: Nd Low Signal Refuse
+          type: boolean
+        nd_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd M
+        nd_max_candidates:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Max Candidates
         nd_max_ef_search:
           anyOf:
           - type: integer
           - type: 'null'
           title: Nd Max Ef Search
+        nd_max_index_memory_mb:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Max Index Memory Mb
+        nd_normalize_query:
+          default: false
+          title: Nd Normalize Query
+          type: boolean
+        nd_normalize_vectors:
+          default: false
+          title: Nd Normalize Vectors
+          type: boolean
+        nd_outlier_threshold:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Outlier Threshold
+        nd_profile:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nd Profile
+        nd_replay_strict:
+          default: false
+          title: Nd Replay Strict
+          type: boolean
         nd_space:
           anyOf:
           - type: string
           - type: 'null'
           title: Nd Space
-        correlation_id:
+        nd_target_recall:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Target Recall
+        nd_two_stage:
+          default: true
+          title: Nd Two Stage
+          type: boolean
+        nd_warmup_queries:
           anyOf:
           - type: string
           - type: 'null'
-          title: Correlation Id
+          title: Nd Warmup Queries
+        nd_witness_mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nd Witness Mode
+        nd_witness_rate:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nd Witness Rate
+        nd_witness_sample_k:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Nd Witness Sample K
+        randomness_profile:
+          anyOf:
+          - $ref: '#/components/schemas/RandomnessProfilePayload'
+          - type: 'null'
+        request_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Text
+        top_k:
+          default: 5
+          exclusiveMinimum: 0.0
+          title: Top K
+          type: integer
+        vector:
+          anyOf:
+          - items:
+              type: number
+            type: array
+          - type: 'null'
+          title: Vector
         vector_store:
           anyOf:
           - type: string
           - type: 'null'
           title: Vector Store
-        vector_store_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Vector Store Uri
         vector_store_options:
           anyOf:
           - additionalProperties:
@@ -997,76 +430,79 @@ components:
             type: object
           - type: 'null'
           title: Vector Store Options
-      additionalProperties: false
-      type: object
+        vector_store_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store Uri
       required:
       - execution_contract
       - execution_intent
       title: ExecutionRequestPayload
+      type: object
     ExplainRequest:
+      additionalProperties: false
       properties:
-        result_id:
-          type: string
-          minLength: 1
-          title: Result Id
         artifact_id:
           anyOf:
           - type: string
           - type: 'null'
           title: Artifact Id
-      additionalProperties: false
-      type: object
+        result_id:
+          minLength: 1
+          title: Result Id
+          type: string
       required:
       - result_id
       title: ExplainRequest
-    ExplainResponse:
-      properties:
-        document_id:
-          type: string
-          title: Document Id
-          description: Document that produced the requested result.
-        chunk_id:
-          type: string
-          title: Chunk Id
-          description: Chunk that contributed the requested result.
-        vector_id:
-          type: string
-          title: Vector Id
-          description: Vector identifier for the explained result.
-        artifact_id:
-          type: string
-          title: Artifact Id
-          description: Execution artifact used to resolve the result.
-        metric:
-          type: string
-          title: Metric
-          description: Similarity metric used by the artifact.
-        score:
-          type: number
-          title: Score
-          description: Score assigned to the result.
-        correlation_id:
-          type: string
-          title: Correlation Id
-          description: Correlation identifier of the execution that produced the result.
-        execution_contract:
-          type: string
-          title: Execution Contract
-          description: Execution contract used by the originating execution.
-        execution_contract_status:
-          type: string
-          title: Execution Contract Status
-          description: Human-readable stability marker for the chosen contract.
-        replayable:
-          type: boolean
-          title: Replayable
-          description: Whether the explained result belongs to a replayable artifact.
-        execution_id:
-          type: string
-          title: Execution Id
-          description: Execution record identifier associated with the explained result.
-      additionalProperties: false
       type: object
+    ExplainResponse:
+      additionalProperties: false
+      properties:
+        artifact_id:
+          description: Execution artifact used to resolve the result.
+          title: Artifact Id
+          type: string
+        chunk_id:
+          description: Chunk that contributed the requested result.
+          title: Chunk Id
+          type: string
+        correlation_id:
+          description: Correlation identifier of the execution that produced the result.
+          title: Correlation Id
+          type: string
+        document_id:
+          description: Document that produced the requested result.
+          title: Document Id
+          type: string
+        execution_contract:
+          description: Execution contract used by the originating execution.
+          title: Execution Contract
+          type: string
+        execution_contract_status:
+          description: Human-readable stability marker for the chosen contract.
+          title: Execution Contract Status
+          type: string
+        execution_id:
+          description: Execution record identifier associated with the explained result.
+          title: Execution Id
+          type: string
+        metric:
+          description: Similarity metric used by the artifact.
+          title: Metric
+          type: string
+        replayable:
+          description: Whether the explained result belongs to a replayable artifact.
+          title: Replayable
+          type: boolean
+        score:
+          description: Score assigned to the result.
+          title: Score
+          type: number
+        vector_id:
+          description: Vector identifier for the explained result.
+          title: Vector Id
+          type: string
       required:
       - document_id
       - chunk_id
@@ -1080,41 +516,19 @@ components:
       - replayable
       - execution_id
       title: ExplainResponse
+      type: object
     HTTPValidationError:
       properties:
         detail:
           items:
             $ref: '#/components/schemas/ValidationError'
-          type: array
           title: Detail
-      type: object
-      title: HTTPValidationError
-    IngestRequest:
-      properties:
-        documents:
-          items:
-            type: string
           type: array
-          title: Documents
-        vectors:
-          anyOf:
-          - items:
-              items:
-                type: number
-              type: array
-            type: array
-          - type: 'null'
-          title: Vectors
-        embed_provider:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Embed Provider
-        embed_model:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Embed Model
+      title: HTTPValidationError
+      type: object
+    IngestRequest:
+      additionalProperties: false
+      properties:
         cache_embeddings:
           anyOf:
           - type: string
@@ -1125,6 +539,21 @@ components:
           - type: string
           - type: 'null'
           title: Correlation Id
+        documents:
+          items:
+            type: string
+          title: Documents
+          type: array
+        embed_model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Embed Model
+        embed_provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Embed Provider
         idempotency_key:
           anyOf:
           - type: string
@@ -1135,11 +564,6 @@ components:
           - type: string
           - type: 'null'
           title: Vector Store
-        vector_store_uri:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Vector Store Uri
         vector_store_options:
           anyOf:
           - additionalProperties:
@@ -1147,56 +571,78 @@ components:
             type: object
           - type: 'null'
           title: Vector Store Options
-      additionalProperties: false
-      type: object
+        vector_store_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vector Store Uri
+        vectors:
+          anyOf:
+          - items:
+              items:
+                type: number
+              type: array
+            type: array
+          - type: 'null'
+          title: Vectors
       required:
       - documents
       title: IngestRequest
+      type: object
     IngestResponse:
+      additionalProperties: false
       properties:
+        correlation_id:
+          description: Correlation identifier attached to the ingest transaction.
+          title: Correlation Id
+          type: string
         ingested:
-          type: integer
+          description: Number of documents accepted into the backend during this call.
           minimum: 0.0
           title: Ingested
-          description: Number of documents accepted into the backend during this call.
-        correlation_id:
-          type: string
-          title: Correlation Id
-          description: Correlation identifier attached to the ingest transaction.
-      additionalProperties: false
-      type: object
+          type: integer
       required:
       - ingested
       - correlation_id
       title: IngestResponse
+      type: object
     ListArtifactsResponse:
+      additionalProperties: false
       properties:
         artifacts:
+          description: Execution artifact identifiers available in the active backend.
           items:
             type: string
-          type: array
           title: Artifacts
-          description: Execution artifact identifiers available in the active backend.
-      additionalProperties: false
-      type: object
+          type: array
       required:
       - artifacts
       title: ListArtifactsResponse
+      type: object
     ListRunsResponse:
+      additionalProperties: false
       properties:
         runs:
+          description: Recorded execution run identifiers available for inspection.
           items:
             type: string
-          type: array
           title: Runs
-          description: Recorded execution run identifiers available for inspection.
-      additionalProperties: false
-      type: object
+          type: array
       required:
       - runs
       title: ListRunsResponse
+      type: object
     RandomnessProfilePayload:
+      additionalProperties: false
       properties:
+        bounded:
+          default: false
+          title: Bounded
+          type: boolean
+        non_replayable:
+          default: false
+          title: Non Replayable
+          type: boolean
         seed:
           anyOf:
           - type: integer
@@ -1209,61 +655,51 @@ components:
             type: array
           - type: 'null'
           title: Sources
-        bounded:
-          type: boolean
-          title: Bounded
-          default: false
-        non_replayable:
-          type: boolean
-          title: Non Replayable
-          default: false
-      additionalProperties: false
-      type: object
       title: RandomnessProfilePayload
+      type: object
     ReplayResponse:
+      additionalProperties: false
       properties:
-        matches:
-          type: boolean
-          title: Matches
-          description: Whether the replay satisfied the declared equivalence expectation.
-        original_fingerprint:
-          type: string
-          title: Original Fingerprint
-          description: Fingerprint recorded for the original execution result.
-        replay_fingerprint:
-          type: string
-          title: Replay Fingerprint
-          description: Fingerprint computed for the replayed execution result.
         details:
           additionalProperties: true
-          type: object
-          title: Details
           description: Structured replay diagnostics describing mismatches or checks.
+          title: Details
+          type: object
+        execution_contract:
+          description: Execution contract enforced during replay.
+          title: Execution Contract
+          type: string
+        execution_contract_status:
+          description: Human-readable stability marker for the chosen contract.
+          title: Execution Contract Status
+          type: string
+        execution_id:
+          description: Execution record identifier associated with the replay.
+          title: Execution Id
+          type: string
+        matches:
+          description: Whether the replay satisfied the declared equivalence expectation.
+          title: Matches
+          type: boolean
         nondeterministic_sources:
-          items:
-            type: string
-          type: array
-          title: Nondeterministic Sources
           description: Declared or observed non-deterministic sources involved in
             replay.
-        execution_contract:
+          items:
+            type: string
+          title: Nondeterministic Sources
+          type: array
+        original_fingerprint:
+          description: Fingerprint recorded for the original execution result.
+          title: Original Fingerprint
           type: string
-          title: Execution Contract
-          description: Execution contract enforced during replay.
-        execution_contract_status:
+        replay_fingerprint:
+          description: Fingerprint computed for the replayed execution result.
+          title: Replay Fingerprint
           type: string
-          title: Execution Contract Status
-          description: Human-readable stability marker for the chosen contract.
         replayable:
-          type: boolean
-          title: Replayable
           description: Whether the original artifact was declared replayable.
-        execution_id:
-          type: string
-          title: Execution Id
-          description: Execution record identifier associated with the replay.
-      additionalProperties: false
-      type: object
+          title: Replayable
+          type: boolean
       required:
       - matches
       - original_fingerprint
@@ -1275,99 +711,99 @@ components:
       - replayable
       - execution_id
       title: ReplayResponse
+      type: object
     StorageBackendDescriptor:
+      additionalProperties: false
       properties:
         name:
-          type: string
           title: Name
-        status:
           type: string
-          title: Status
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
         persistence:
           anyOf:
           - type: string
           - type: 'null'
           title: Persistence
-        notes:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Notes
-      additionalProperties: false
-      type: object
+        status:
+          title: Status
+          type: string
       required:
       - name
       - status
       title: StorageBackendDescriptor
+      type: object
     ValidationError:
       properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
         loc:
           items:
             anyOf:
             - type: string
             - type: integer
-          type: array
           title: Location
+          type: array
         msg:
-          type: string
           title: Message
-        type:
           type: string
+        type:
           title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
+          type: string
       required:
       - loc
       - msg
       - type
       title: ValidationError
+      type: object
     VectorStoreDescriptor:
+      additionalProperties: false
       properties:
-        name:
-          type: string
-          title: Name
         available:
-          type: boolean
           title: Available
-        supports_exact:
           type: boolean
-          title: Supports Exact
-        supports_ann:
-          type: boolean
-          title: Supports Ann
-        delete_supported:
-          type: boolean
-          title: Delete Supported
-        filtering_supported:
-          type: boolean
-          title: Filtering Supported
-        deterministic_exact:
-          type: boolean
-          title: Deterministic Exact
-        experimental:
-          type: boolean
-          title: Experimental
         consistency:
           anyOf:
           - type: string
           - type: 'null'
           title: Consistency
-        version:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Version
+        delete_supported:
+          title: Delete Supported
+          type: boolean
+        deterministic_exact:
+          title: Deterministic Exact
+          type: boolean
+        experimental:
+          title: Experimental
+          type: boolean
+        filtering_supported:
+          title: Filtering Supported
+          type: boolean
+        name:
+          title: Name
+          type: string
         notes:
           anyOf:
           - type: string
           - type: 'null'
           title: Notes
-      additionalProperties: false
-      type: object
+        supports_ann:
+          title: Supports Ann
+          type: boolean
+        supports_exact:
+          title: Supports Exact
+          type: boolean
+        version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version
       required:
       - name
       - available
@@ -1378,10 +814,574 @@ components:
       - deterministic_exact
       - experimental
       title: VectorStoreDescriptor
+      type: object
+info:
+  contact:
+    name: Bijux
+    url: https://github.com/bijux/bijux-canon
+  description: The bijux-canon-index HTTP API exposes the v1 surface for deterministic
+    and bounded vector execution. It separates capability discovery, artifact materialization,
+    and query execution so operators can review the contract they are invoking before
+    they ship it.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  summary: Contract-driven vector execution and replayable retrieval.
+  title: bijux-canon-index API
+  version: v1
+openapi: 3.1.0
+paths:
+  /artifact:
+    post:
+      description: Freeze the current corpus and vector state into an execution artifact
+        with a declared contract so later executions can be audited and replayed.
+      operationId: materializeExecutionArtifact
+      parameters:
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        content:
+          application/json:
+            examples:
+              artifact:
+                value:
+                  execution_contract: deterministic
+            schema:
+              $ref: '#/components/schemas/ExecutionArtifactRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                artifact:
+                  value:
+                    artifact_id: art-1
+                    execution_contract: deterministic
+                    execution_contract_status: stable
+                    replayable: true
+              schema:
+                $ref: '#/components/schemas/ArtifactResponse'
+          description: Execution artifact materialized successfully.
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      reason: determinism_violation
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Materialize an execution artifact
+      tags:
+      - Materialization
+  /artifacts:
+    get:
+      description: Return artifact identifiers known to the current backend so operators
+        can inspect or reuse previously materialized execution state.
+      operationId: listExecutionArtifacts
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Limit
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          title: Offset
+          type: integer
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                artifacts:
+                  value:
+                    artifacts:
+                    - art-1
+              schema:
+                $ref: '#/components/schemas/ListArtifactsResponse'
+          description: Artifact inventory returned successfully.
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: List execution artifacts
+      tags:
+      - Discovery
+  /capabilities:
+    get:
+      description: Report the active execution backend, supported contracts, storage
+        backends, vector store capabilities, and ANN readiness in one envelope.
+      operationId: describeBackendCapabilities
+      parameters:
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                capabilities:
+                  value:
+                    ann_status: unavailable
+                    backend: sqlite
+                    contracts:
+                    - deterministic
+                    - non_deterministic
+                    deterministic_query: true
+                    execution_modes:
+                    - strict
+                    - bounded
+                    - exploratory
+                    isolation_level: read_committed
+                    max_vector_size: 4096
+                    metrics:
+                    - l2
+                    - cosine
+                    plugins: {}
+                    replayable: true
+                    storage_backends: []
+                    supports_ann: false
+                    vector_stores: []
+              schema:
+                $ref: '#/components/schemas/BackendCapabilitiesReport'
+          description: Capability report returned successfully.
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Describe backend capabilities
+      tags:
+      - Discovery
+  /create:
+    post:
+      description: Create a logical corpus entry before ingestion. The endpoint is
+        intentionally small so teams can separate naming and governance from later
+        content writes.
+      operationId: createCorpus
+      parameters:
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        content:
+          application/json:
+            examples:
+              create:
+                value:
+                  name: my-corpus
+            schema:
+              $ref: '#/components/schemas/CreateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                created:
+                  value:
+                    name: my-corpus
+                    status: created
+              schema:
+                $ref: '#/components/schemas/CreateResponse'
+          description: Corpus name reserved successfully.
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      reason: determinism_violation
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Reserve a logical corpus name
+      tags:
+      - Materialization
+  /execute:
+    post:
+      description: Execute a deterministic or bounded retrieval request against a
+        materialized artifact and return the result identifiers plus replay metadata.
+      operationId: executeVectorQuery
+      parameters:
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        content:
+          application/json:
+            examples:
+              execute:
+                value:
+                  artifact_id: art-1
+                  execution_contract: deterministic
+                  execution_intent: exact_validation
+                  execution_mode: strict
+                  top_k: 3
+                  vector:
+                  - 0.0
+                  - 1.0
+                  - 0.0
+            schema:
+              $ref: '#/components/schemas/ExecutionRequestPayload'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                execute:
+                  value:
+                    correlation_id: req-example
+                    execution_contract: deterministic
+                    execution_contract_status: stable
+                    execution_id: exec-1
+                    replayable: true
+                    results:
+                    - vec-1
+              schema:
+                $ref: '#/components/schemas/ExecuteResponse'
+          description: Execution completed successfully.
+        '422':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      reason: determinism_violation
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Unprocessable Entity
+      summary: Execute a vector query
+      tags:
+      - Execution
+  /explain:
+    post:
+      description: Resolve a result identifier back to the document, chunk, vector,
+        and execution context that produced it.
+      operationId: explainExecutionResult
+      parameters:
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        content:
+          application/json:
+            examples:
+              explain:
+                value:
+                  result_id: res-1
+            schema:
+              $ref: '#/components/schemas/ExplainRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                explain:
+                  value:
+                    artifact_id: art-1
+                    chunk_id: chunk-1
+                    correlation_id: req-example
+                    document_id: doc-1
+                    execution_contract: deterministic
+                    execution_contract_status: stable
+                    execution_id: exec-1
+                    metric: l2
+                    replayable: true
+                    score: 0.99
+                    vector_id: res-1
+              schema:
+                $ref: '#/components/schemas/ExplainResponse'
+          description: Result explanation returned successfully.
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      reason: determinism_violation
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Explain a result
+      tags:
+      - Execution
+  /ingest:
+    post:
+      description: Persist documents and either supplied vectors or embedding-derived
+        vectors, then return the ingest count and resolved correlation identifier.
+      operationId: ingestDocuments
+      parameters:
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      - in: header
+        name: Idempotency-Key
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency-Key
+      requestBody:
+        content:
+          application/json:
+            examples:
+              ingest:
+                value:
+                  documents:
+                  - hello
+                  vector_store: faiss
+                  vector_store_uri: index.faiss
+                  vectors:
+                  - - 0.0
+                    - 1.0
+                    - 0.0
+            schema:
+              $ref: '#/components/schemas/IngestRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                ingested:
+                  value:
+                    correlation_id: req-example
+                    ingested: 1
+              schema:
+                $ref: '#/components/schemas/IngestResponse'
+          description: Documents ingested successfully.
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      reason: determinism_violation
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Ingest documents and vectors
+      tags:
+      - Materialization
+  /replay:
+    post:
+      description: Replay a prior execution contract against the currently available
+        artifact and report whether the replay stayed within the declared equivalence
+        boundary.
+      operationId: replayExecutionOutcome
+      parameters:
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      requestBody:
+        content:
+          application/json:
+            examples:
+              replay:
+                value:
+                  artifact_id: art-1
+                  request_text: hello
+            schema:
+              $ref: '#/components/schemas/ExecutionRequestPayload'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                replay:
+                  value:
+                    details:
+                      status: matched
+                    execution_contract: deterministic
+                    execution_contract_status: stable
+                    execution_id: exec-1
+                    matches: true
+                    nondeterministic_sources: []
+                    original_fingerprint: orig-fp
+                    replay_fingerprint: replay-fp
+                    replayable: true
+              schema:
+                $ref: '#/components/schemas/ReplayResponse'
+          description: Replay completed successfully.
+        '400':
+          content:
+            application/json:
+              examples:
+                refusal:
+                  value:
+                    error:
+                      message: '[INV-000] Deterministic execution requires a deterministic
+                        vector store'
+                      reason: determinism_violation
+                      remediation: Use deterministic inputs or switch to non_deterministic
+                        contract with declared randomness.
+          description: Bad Request
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Replay an execution outcome
+      tags:
+      - Execution
+  /runs:
+    get:
+      description: Return recorded run identifiers from the run store for audit, replay,
+        or support workflows.
+      operationId: listExecutionRuns
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Limit
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          title: Offset
+          type: integer
+      - in: header
+        name: X-Correlation-Id
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Correlation-Id
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                runs:
+                  value:
+                    runs:
+                    - run-1
+              schema:
+                $ref: '#/components/schemas/ListRunsResponse'
+          description: Run inventory returned successfully.
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: List execution runs
+      tags:
+      - Discovery
+servers:
+- url: /
 tags:
-- name: Discovery
-  description: Read-only endpoints that describe backend capabilities and inventory.
-- name: Materialization
-  description: Endpoints that ingest data or materialize reusable execution artifacts.
-- name: Execution
-  description: Endpoints that execute queries, explain results, or replay prior outcomes.
+- description: Read-only endpoints that describe backend capabilities and inventory.
+  name: Discovery
+- description: Endpoints that ingest data or materialize reusable execution artifacts.
+  name: Materialization
+- description: Endpoints that execute queries, explain results, or replay prior outcomes.
+  name: Execution

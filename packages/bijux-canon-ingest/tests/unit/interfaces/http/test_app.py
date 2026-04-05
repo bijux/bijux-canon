@@ -33,7 +33,7 @@ def test_openapi_reports_package_title() -> None:
     response = client.get("/openapi.json")
 
     assert response.status_code == 200
-    assert response.json()["info"]["title"] == "bijux-canon-ingest"
+    assert response.json()["info"]["title"] == "bijux-canon-ingest API"
 
 
 def test_ask_endpoint_returns_grounded_payload_shape() -> None:

@@ -151,14 +151,11 @@
         "title": "ItemUpdate",
         "type": "object"
       },
-      "JsonValue": {},
       "ProblemSpec": {
         "additionalProperties": false,
         "properties": {
           "constraints": {
-            "additionalProperties": {
-              "$ref": "#/components/schemas/JsonValue"
-            },
+            "additionalProperties": true,
             "title": "Constraints",
             "type": "object"
           },
@@ -169,9 +166,7 @@
           "expected": {
             "anyOf": [
               {
-                "additionalProperties": {
-                  "$ref": "#/components/schemas/JsonValue"
-                },
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -290,13 +285,6 @@
       },
       "ValidationError": {
         "properties": {
-          "ctx": {
-            "title": "Context",
-            "type": "object"
-          },
-          "input": {
-            "title": "Input"
-          },
           "loc": {
             "items": {
               "anyOf": [

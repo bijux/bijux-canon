@@ -13,9 +13,9 @@ from bijux_canon_reason.core.models.base import JsonValue, StableModel
 class ProblemSpec(StableModel):
     id: str = ""
     description: str
-    constraints: dict[str, JsonValue] = Field(default_factory=dict)
+    constraints: dict[str, object] = Field(default_factory=dict)
     expected_output_type: str = "Claim"
-    expected: dict[str, JsonValue] | None = None
+    expected: dict[str, object] | None = None
     version: int | None = None
 
     def with_content_id(self) -> ProblemSpec:

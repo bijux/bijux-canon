@@ -86,7 +86,10 @@ def register_run_routes(
         operation_id="createReasonRun",
         responses={
             **guard_responses,
-            422: {"description": "Validation failed for the run creation payload.", "model": ErrorDetail},
+            422: {
+                "description": "Validation failed for the run creation payload.",
+                "model": ErrorDetail,
+            },
         },
     )
     def create_run(req: RunCreateRequest, request: Request) -> RunCreateResponse:
@@ -112,7 +115,10 @@ def register_run_routes(
         operation_id="getReasonRun",
         responses={
             **guard_responses,
-            404: {"description": "The requested run was not found.", "model": ErrorDetail},
+            404: {
+                "description": "The requested run was not found.",
+                "model": ErrorDetail,
+            },
         },
     )
     def get_run(run_id: str, request: Request) -> JsonDocument:
@@ -133,7 +139,10 @@ def register_run_routes(
         operation_id="getReasonRunManifest",
         responses={
             **guard_responses,
-            404: {"description": "The requested manifest was not found.", "model": ErrorDetail},
+            404: {
+                "description": "The requested manifest was not found.",
+                "model": ErrorDetail,
+            },
         },
     )
     def get_manifest(run_id: str, request: Request) -> JsonDocument:
@@ -154,7 +163,10 @@ def register_run_routes(
         operation_id="getReasonRunTrace",
         responses={
             **guard_responses,
-            404: {"description": "The requested trace was not found.", "model": ErrorDetail},
+            404: {
+                "description": "The requested trace was not found.",
+                "model": ErrorDetail,
+            },
         },
     )
     def fetch_trace(run_id: str, request: Request) -> str:
@@ -173,7 +185,10 @@ def register_run_routes(
         operation_id="verifyReasonRun",
         responses={
             **guard_responses,
-            404: {"description": "Required run artifacts were not found.", "model": ErrorDetail},
+            404: {
+                "description": "Required run artifacts were not found.",
+                "model": ErrorDetail,
+            },
         },
     )
     def verify_run(run_id: str, request: Request) -> dict[str, object]:
@@ -202,7 +217,10 @@ def register_run_routes(
         operation_id="replayReasonRun",
         responses={
             **guard_responses,
-            404: {"description": "The requested trace was not found.", "model": ErrorDetail},
+            404: {
+                "description": "The requested trace was not found.",
+                "model": ErrorDetail,
+            },
         },
     )
     def replay_run(run_id: str, request: Request) -> RunReplayResponse:

@@ -1,18 +1,16 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 import sys
 from typing import Any
-import hashlib
 
 import yaml
-
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from bijux_canon_dev.api.openapi_drift import canonicalize
-
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PACKAGE_CONTRACT_TITLES = {
@@ -75,7 +73,10 @@ def test_repository_api_contract_pairs_stay_in_sync() -> None:
 def test_repository_api_contract_trees_are_symmetrical() -> None:
     for package_name in PACKAGE_CONTRACT_TITLES:
         package_dir = REPO_ROOT / "apis" / package_name / "v1"
-        assert tuple(sorted(path.name for path in package_dir.iterdir())) == EXPECTED_ARTIFACTS
+        assert (
+            tuple(sorted(path.name for path in package_dir.iterdir()))
+            == EXPECTED_ARTIFACTS
+        )
 
 
 def test_repository_api_schema_hashes_match_yaml_contracts() -> None:
@@ -84,7 +85,9 @@ def test_repository_api_schema_hashes_match_yaml_contracts() -> None:
         schema_text = (package_dir / "schema.yaml").read_text(encoding="utf-8")
         stored = _extract_hash_file(package_dir / "schema.hash")
         assert stored["version"] == "v1"
-        assert stored["sha256"] == hashlib.sha256(schema_text.encode("utf-8")).hexdigest()
+        assert (
+            stored["sha256"] == hashlib.sha256(schema_text.encode("utf-8")).hexdigest()
+        )
 
 
 def test_repository_api_contracts_do_not_carry_legacy_labels() -> None:
@@ -93,4 +96,6 @@ def test_repository_api_contracts_do_not_carry_legacy_labels() -> None:
             relative_path = f"apis/{package_name}/v1/{artifact_name}"
             text = (REPO_ROOT / relative_path).read_text(encoding="utf-8").lower()
             for marker in LEGACY_MARKERS:
-                assert marker not in text, f"{relative_path} still contains legacy marker {marker!r}"
+                assert marker not in text, (
+                    f"{relative_path} still contains legacy marker {marker!r}"
+                )
