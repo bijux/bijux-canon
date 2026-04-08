@@ -14,8 +14,6 @@ DEFAULT_GOAL := help
 	help list list-all install lock lock-check lint quality security test docs docs-check docs-serve api build sbom clean all \
 	clean-root-artifacts root-check-env
 
-install: root-check-env
-
 ROOT_FORBIDDEN_ARTIFACTS ?= \
 	"$(CURDIR)/.hypothesis" \
 	"$(CURDIR)/.pytest_cache" \
@@ -30,22 +28,11 @@ ROOT_FORBIDDEN_ARTIFACTS ?= \
 	"$(CURDIR)/configs/.mypy_cache" \
 	"$(CURDIR)/configs/.hypothesis"
 
-root-check-env: pyproject.toml uv.lock $(ROOT_CHECK_STAMP)
-
 $(ROOT_CHECK_STAMP): pyproject.toml uv.lock
 	@mkdir -p "$(ROOT_ARTIFACTS_DIR)"
 	@rm -rf "$(ROOT_CHECK_VENV)"
 	@$(UV_SYNC)
 	@touch "$(ROOT_CHECK_STAMP)"
-
-clean-root-artifacts:
-	@rm -rf $(ROOT_FORBIDDEN_ARTIFACTS) || true
-
-lock:
-	@$(UV) lock --python "$(PYTHON)"
-
-lock-check:
-	@$(UV) lock --check --python "$(PYTHON)"
 
 list:
 	@printf "%s\n" $(PRIMARY_PACKAGES)
@@ -53,7 +40,12 @@ list:
 list-all:
 	@printf "%s\n" $(ALL_PACKAGES)
 
-all: test lint quality security docs api build sbom
+ROOT_INSTALL_PREREQS := root-check-env
+ROOT_CHECK_ENV_PREREQS := pyproject.toml uv.lock $(ROOT_CHECK_STAMP)
+ROOT_CLEAN_ROOT_ARTIFACTS_COMMAND := @rm -rf $(ROOT_FORBIDDEN_ARTIFACTS) || true
+ROOT_ALL_TARGETS := test lint quality security docs api build sbom
+
+include $(ROOT_MAKEFILE_DIR)/bijux-py/root-lifecycle.mk
 
 HELP_WIDTH := 26
 include $(ROOT_MAKEFILE_DIR)/bijux-py/help.mk
