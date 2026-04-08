@@ -8,11 +8,12 @@ include $(ROOT_MAKEFILE_DIR)/root/packages.mk
 
 include $(ROOT_MAKEFILE_DIR)/root/dispatch.mk
 include $(ROOT_MAKEFILE_DIR)/root/docs.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/standard.mk
 
 DEFAULT_GOAL := help
 .PHONY: \
 	help list list-all install lock lock-check lint quality security test docs docs-check docs-serve api build sbom clean all \
-	clean-root-artifacts root-check-env
+	clean-root-artifacts root-check-env standard-bijux-py
 
 ROOT_FORBIDDEN_ARTIFACTS ?= \
 	"$(CURDIR)/.hypothesis" \
