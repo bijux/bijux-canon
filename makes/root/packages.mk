@@ -3,25 +3,9 @@
 
 ROOT_PACKAGE_PROFILE_DIR ?= $(ROOT_MAKEFILE_DIR)/packages
 PACKAGE_MAKE_DIR ?= $(ROOT_PACKAGE_PROFILE_DIR)
-
-PRIMARY_PACKAGES := \
-	bijux-canon-dev \
-	bijux-canon-runtime \
-	bijux-canon-agent \
-	bijux-canon-ingest \
-	bijux-canon-reason \
-	bijux-canon-index
-
-COMPAT_PACKAGES := \
-	compat-agentic-flows \
-	compat-bijux-agent \
-	compat-bijux-rag \
-	compat-bijux-rar \
-	compat-bijux-vex
-
-ALL_PACKAGES := $(PRIMARY_PACKAGES) $(COMPAT_PACKAGES)
-CHECK_PACKAGES := $(ALL_PACKAGES)
 PACKAGE ?=
+PACKAGE_FIELD_SEPARATOR := |
+PACKAGE_GROUP_SEPARATOR := ,
 
 PACKAGE_ALIASES := \
 	agentic-flows=bijux-canon-runtime \
@@ -30,29 +14,32 @@ PACKAGE_ALIASES := \
 	bijux-rar=bijux-canon-reason \
 	bijux-vex=bijux-canon-index
 
-PACKAGE_GROUPS_bijux-canon-dev := primary check buildable sbom test api_profile_off
-PACKAGE_GROUPS_bijux-canon-runtime := primary check buildable sbom test api
-PACKAGE_GROUPS_bijux-canon-agent := primary check buildable sbom test api
-PACKAGE_GROUPS_bijux-canon-ingest := primary check buildable sbom test api
-PACKAGE_GROUPS_bijux-canon-reason := primary check buildable sbom test api
-PACKAGE_GROUPS_bijux-canon-index := primary check buildable sbom test api
-PACKAGE_GROUPS_compat-agentic-flows := compat check
-PACKAGE_GROUPS_compat-bijux-agent := compat check
-PACKAGE_GROUPS_compat-bijux-rag := compat check
-PACKAGE_GROUPS_compat-bijux-rar := compat check
-PACKAGE_GROUPS_compat-bijux-vex := compat check
+PRIMARY_PACKAGE_RECORDS := \
+	bijux-canon-dev|primary,check,buildable,sbom,test,api_profile_off|bijux-canon-dev.mk \
+	bijux-canon-runtime|primary,check,buildable,sbom,test,api|bijux-canon-runtime.mk \
+	bijux-canon-agent|primary,check,buildable,sbom,test,api|bijux-canon-agent.mk \
+	bijux-canon-ingest|primary,check,buildable,sbom,test,api|bijux-canon-ingest.mk \
+	bijux-canon-reason|primary,check,buildable,sbom,test,api|bijux-canon-reason.mk \
+	bijux-canon-index|primary,check,buildable,sbom,test,api|bijux-canon-index.mk
 
-PACKAGE_PROFILE_bijux-canon-dev := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-dev.mk
-PACKAGE_PROFILE_bijux-canon-runtime := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-runtime.mk
-PACKAGE_PROFILE_bijux-canon-agent := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-agent.mk
-PACKAGE_PROFILE_bijux-canon-ingest := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-ingest.mk
-PACKAGE_PROFILE_bijux-canon-reason := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-reason.mk
-PACKAGE_PROFILE_bijux-canon-index := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-index.mk
-PACKAGE_PROFILE_compat-agentic-flows := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
-PACKAGE_PROFILE_compat-bijux-agent := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
-PACKAGE_PROFILE_compat-bijux-rag := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
-PACKAGE_PROFILE_compat-bijux-rar := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
-PACKAGE_PROFILE_compat-bijux-vex := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
+COMPAT_PACKAGE_RECORDS := \
+	compat-agentic-flows|compat,check|compat-package.mk \
+	compat-bijux-agent|compat,check|compat-package.mk \
+	compat-bijux-rag|compat,check|compat-package.mk \
+	compat-bijux-rar|compat,check|compat-package.mk \
+	compat-bijux-vex|compat,check|compat-package.mk
+
+define register_package_record
+PACKAGE_GROUPS_$(word 1,$(subst $(PACKAGE_FIELD_SEPARATOR), ,$(1))) := $(subst $(PACKAGE_GROUP_SEPARATOR), ,$(word 2,$(subst $(PACKAGE_FIELD_SEPARATOR), ,$(1))))
+PACKAGE_PROFILE_$(word 1,$(subst $(PACKAGE_FIELD_SEPARATOR), ,$(1))) := $(ROOT_PACKAGE_PROFILE_DIR)/$(word 3,$(subst $(PACKAGE_FIELD_SEPARATOR), ,$(1)))
+endef
+
+$(foreach record,$(PRIMARY_PACKAGE_RECORDS) $(COMPAT_PACKAGE_RECORDS),$(eval $(call register_package_record,$(record))))
+
+PRIMARY_PACKAGES := $(foreach record,$(PRIMARY_PACKAGE_RECORDS),$(word 1,$(subst $(PACKAGE_FIELD_SEPARATOR), ,$(record))))
+COMPAT_PACKAGES := $(foreach record,$(COMPAT_PACKAGE_RECORDS),$(word 1,$(subst $(PACKAGE_FIELD_SEPARATOR), ,$(record))))
+ALL_PACKAGES := $(PRIMARY_PACKAGES) $(COMPAT_PACKAGES)
+CHECK_PACKAGES := $(ALL_PACKAGES)
 
 ROOT_PACKAGE_TARGETS := test lint quality security api build sbom clean
 ROOT_TARGET_GROUPS_test := test
