@@ -3,6 +3,7 @@
 
 include $(ROOT_MAKE_DIR)/package/canon-python.mk
 
+PYTHON ?= python3.11
 ENABLE_CODESPELL ?= 1
 ENABLE_RADON ?= 1
 ENABLE_PYDOCSTYLE ?= 0
