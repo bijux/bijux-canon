@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import sys
@@ -69,8 +70,22 @@ def run(repo_root: Path) -> int:
     return 0
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Validate checked-in API freeze contracts for a repository root."
+    )
+    parser.add_argument(
+        "--repo-root",
+        type=Path,
+        default=Path.cwd(),
+        help="Repository root that contains the apis/ contract tree.",
+    )
+    return parser.parse_args()
+
+
 def main() -> int:
-    return run(Path.cwd())
+    args = parse_args()
+    return run(args.repo_root.resolve())
 
 
 if __name__ == "__main__":

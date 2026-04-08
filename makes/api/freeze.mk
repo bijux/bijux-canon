@@ -2,7 +2,7 @@ PRANCE ?= $(if $(ACT),$(ACT)/prance,prance)
 OPENAPI_SPEC_VALIDATOR ?= $(if $(ACT),$(ACT)/openapi-spec-validator,openapi-spec-validator)
 ALL_API_SCHEMAS := $(shell if [ -d "$(API_DIR)" ]; then find "$(API_DIR)" -type f -path '*/v1/schema.yaml'; fi)
 API_LINT_DIR_ABS := $(abspath $(API_LINT_DIR))
-API_FREEZE_COMMAND ?= $(VENV_PYTHON) -m bijux_canon_dev.api.freeze_contracts
+API_FREEZE_COMMAND ?= $(VENV_PYTHON) -m bijux_canon_dev.api.freeze_contracts --repo-root "$(MONOREPO_ROOT)"
 API_OPENAPI_DRIFT_COMMAND ?=
 API_NO_SCHEMA_MESSAGE ?= ✘ No OpenAPI schemas found under $(API_DIR)/*/v1/schema.yaml
 

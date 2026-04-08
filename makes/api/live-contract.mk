@@ -1,7 +1,7 @@
 API_SCHEMA                ?= $(API_DIR)/v1/schema.yaml
 API_SERVER_LOG            ?= $(API_ARTIFACTS_DIR)/server.log
 API_DRIFT_OUT             ?= $(API_ARTIFACTS_DIR)/openapi.generated.json
-API_DRIFT_COMMAND         ?=
+API_OPENAPI_DRIFT_COMMAND ?=
 API_UVICORN               ?= $(ACT)/uvicorn
 PRANCE                    ?= $(ACT)/prance
 OPENAPI_SPEC_VALIDATOR    ?= $(ACT)/openapi-spec-validator
@@ -9,9 +9,9 @@ SCHEMATHESIS              ?= $(ACT)/schemathesis
 API_SCHEMATHESIS_ARGS     ?= --workers=1 --max-failures=1 --checks=not_a_server_error,response_schema_conformance,content_type_conformance,response_headers_conformance --hypothesis-max-examples=5 --request-timeout=30000 --max-response-time=500 --hypothesis-suppress-health-check=filter_too_much
 API_SERVER_IMPORT         ?=
 
-.PHONY: api api-install api-lint api-test api-clean api-drift
+.PHONY: api api-install api-lint api-test api-clean openapi-drift api-drift
 
-api: api-lint api-drift api-test
+api: api-lint openapi-drift api-test
 
 api-install:
 	@echo "→ API tooling is managed by the package install target"
@@ -61,10 +61,12 @@ api-test:
 	  wait $$(cat "$(API_ARTIFACTS_DIR_ABS)/server.pid") >/dev/null 2>&1 || true; \
 	  exit $$RC
 
-api-drift:
+openapi-drift:
 	@mkdir -p "$(API_ARTIFACTS_DIR_ABS)"
 	@echo "→ Checking OpenAPI drift"
-	@$(API_DRIFT_COMMAND)
+	@$(API_OPENAPI_DRIFT_COMMAND)
+
+api-drift: openapi-drift
 
 api-clean:
 	@rm -rf "$(API_ARTIFACTS_DIR_ABS)"
@@ -73,6 +75,6 @@ api-clean:
 api:         ## Lint the OpenAPI schema, check drift, and run schemathesis
 api-install: ## Report how API tooling is provided for this package
 api-lint:    ## Validate the checked-in OpenAPI schema
-api-drift:   ## Compare generated OpenAPI with the checked-in schema
+openapi-drift: ## Compare generated OpenAPI with the checked-in schema
 api-test:    ## Start the local API server and run schemathesis
 api-clean:   ## Remove API artifacts

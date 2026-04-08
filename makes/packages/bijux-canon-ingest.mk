@@ -22,7 +22,7 @@ API_MODE                       := live-contract
 API_SCHEMA                     := $(API_DIR)/v1/schema.yaml
 API_SERVER_IMPORT              := bijux_canon_ingest.interfaces.http.app:create_app
 API_DRIFT_OUT                  = $(API_ARTIFACTS_DIR)/openapi.generated.json
-API_DRIFT_COMMAND              = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_ingest.interfaces.http.app:create_app --schema "$(API_SCHEMA)" --out "$(API_DRIFT_OUT)"
+API_OPENAPI_DRIFT_COMMAND      = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_ingest.interfaces.http.app:create_app --schema "$(API_SCHEMA)" --out "$(API_DRIFT_OUT)"
 BUILD_CHECK_DISTS              := 1
 PACKAGE_INSTALL_TARGETS := \
   test lint fmt quality security api build sbom \
