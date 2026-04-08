@@ -31,6 +31,15 @@ QUALITY_DEPTRY_COMMAND ?= $(DEPTRY_SCAN_SCRIPT) --deptry-bin "$(DEPTRY)" --confi
 SECURITY_PIP_AUDIT_TEXT_COMMAND ?= "$(VENV_PYTHON)" -m bijux_canon_dev.security.pip_audit_gate
 SBOM_VERSION_RESOLVER ?= -m bijux_canon_dev.release.version_resolver
 SBOM_REQUIREMENTS_WRITER ?= -m bijux_canon_dev.sbom.requirements_writer
+COMMON_BUILD_CLEAN_PATHS := build dist *.egg-info
+COMMON_PYTHON_CLEAN_PATHS := \
+	.pytest_cache htmlcov coverage.xml \
+	$(COMMON_BUILD_CLEAN_PATHS) \
+	.tox .nox .ruff_cache .mypy_cache .hypothesis \
+	.coverage.* .coverage .benchmarks .cache
+COMMON_API_TEMP_CLEAN_PATHS := spec.json openapitools.json node_modules site
+COMMON_ARTIFACT_CLEAN_PATHS := artifacts "$(PROJECT_ARTIFACTS_DIR)"
+COMMON_CONFIG_CACHE_CLEAN_PATHS := "$(CONFIG_DIR)/.ruff_cache"
 
 ifneq ($(strip $(PACKAGE_PROFILE_MAKEFILE)),)
 MAKEFLAGS += -f $(PACKAGE_PROFILE_MAKEFILE)

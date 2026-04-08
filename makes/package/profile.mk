@@ -7,4 +7,3 @@ PROJECT_DIR ?= $(CURDIR)
 PROJECT_SLUG ?= $(notdir $(abspath $(PROJECT_DIR)))
 
 include $(PACKAGE_MAKEFILE_DIR)/../env.mk
-include $(ROOT_MAKE_DIR)/package/path-sets.mk
