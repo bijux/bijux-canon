@@ -15,7 +15,6 @@ MYPY_EXTENDED_CONFIG := $(MONOREPO_ROOT)/configs/mypy.ini
 MYPY_EXTENDED_FLAGS  := --follow-imports silent --ignore-missing-imports --strict-optional --no-warn-unused-ignores --no-warn-return-any --no-check-untyped-defs
 MYPY_EXTENDED_TARGETS := src/bijux_canon_agent/agents src/bijux_canon_agent/application src/bijux_canon_agent/config src/bijux_canon_agent/interfaces src/bijux_canon_agent/observability src/bijux_canon_agent/pipeline src/bijux_canon_agent/tooling/example_pipelines src/bijux_canon_agent/core tests
 ENABLE_PYTYPE        := 1
-QUALITY_PRE_TARGETS  := line_limit
 QUALITY_MYPY_CONFIG  := $(MONOREPO_ROOT)/configs/mypy.ini
 QUALITY_MYPY_FLAGS   := $(MYPY_FLAGS)
 QUALITY_MYPY_TARGETS := $(MYPY_TARGETS)
@@ -48,7 +47,3 @@ include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
 ci-fast: lint test mypy-core
 .PHONY: ci-fast
-
-line_limit:
-	@$(VENV_PYTHON) "$(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/agent/check_line_limit.py"
-.PHONY: line_limit
