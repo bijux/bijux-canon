@@ -70,19 +70,16 @@ include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 ensure-venv: $(VENV) ## Ensure venv exists and deps are installed
 	@set -e; \
 	echo "→ Ensuring dependencies in $(VENV) ..."; \
-	PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 \
-	"$(VENV_PYTHON)" -m pip install --upgrade pip setuptools wheel; \
+	$(UV) pip install --python "$(VENV_PYTHON)" --upgrade pip setuptools wheel; \
 	echo "→ Installing workspace runtime dependencies"; \
 	"$(VENV_PYTHON)" -c 'from packaging.requirements import Requirement; from pathlib import Path; import tomllib; root = Path("$(MONOREPO_ROOT)"); workspace = tomllib.loads((root / "pyproject.toml").read_text()); package = tomllib.loads(Path("pyproject.toml").read_text()); package_dirs = workspace.get("tool", {}).get("bijux_canon", {}).get("package_dirs", {}); dependencies = package.get("project", {}).get("dependencies", []); current_name = package.get("project", {}).get("name"); [print(root / package_dirs[name]) for dep in dependencies if (name := Requirement(dep).name) != current_name and name in package_dirs]' | while IFS= read -r package_dir; do \
 	  [ -n "$$package_dir" ] || continue; \
-	  PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 \
-	  "$(VENV_PYTHON)" -m pip install -e "$$package_dir"; \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --editable "$$package_dir"; \
 	done; \
 	EXTRAS="$${EXTRAS:-dev}"; \
 	if [ -n "$$EXTRAS" ]; then SPEC=".[$$EXTRAS]"; else SPEC="."; fi; \
 	echo "→ Installing: $$SPEC"; \
-	PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 \
-	"$(VENV_PYTHON)" -m pip install -e "$$SPEC"
+	$(UV) pip install --python "$(VENV_PYTHON)" --editable "$$SPEC"
 
 install: ensure-venv ## Install project into .venv (dev)
 	@true

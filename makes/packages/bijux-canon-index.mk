@@ -60,7 +60,7 @@ build-release-metadata:
 	@echo "[INFO] Generating SBOM"
 	@if ! command -v $(PIP_AUDIT) >/dev/null 2>&1; then \
 	  echo "→ Installing pip-audit into $(VENV)"; \
-	  $(VENV_PYTHON) -m pip install --upgrade pip-audit >/dev/null; \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --upgrade pip-audit >/dev/null; \
 	fi
 	@$(PIP_AUDIT) $(PIP_AUDIT_FLAGS) --output "$(PROJECT_ARTIFACTS_DIR)/release/sbom.json" || true
 	@echo "[INFO] Refreshing pinned OpenAPI v1"
