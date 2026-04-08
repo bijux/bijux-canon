@@ -33,7 +33,7 @@ list-all:
 all: test lint quality security docs api build sbom
 
 HELP_WIDTH := 26
-include $(ROOT_MAKEFILE_DIR)/help.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/help.mk
 
 ##@ Repository
 help: ## Show generated repository commands from included make modules

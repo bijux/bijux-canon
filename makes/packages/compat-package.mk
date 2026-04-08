@@ -38,10 +38,10 @@ PACKAGE_INSTALL_TARGETS := \
   lint-artifacts quality security-bandit security-audit security-deps \
   build publish publish-test release-dry
 
-include $(ROOT_MAKE_DIR)/lint.mk
-include $(ROOT_MAKE_DIR)/quality.mk
-include $(ROOT_MAKE_DIR)/security.mk
-include $(ROOT_MAKE_DIR)/build.mk
+include $(ROOT_MAKE_DIR)/bijux-py/lint.mk
+include $(ROOT_MAKE_DIR)/bijux-py/quality.mk
+include $(ROOT_MAKE_DIR)/bijux-py/security.mk
+include $(ROOT_MAKE_DIR)/bijux-py/build.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk

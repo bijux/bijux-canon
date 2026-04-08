@@ -24,6 +24,13 @@ VENV_PYTHON ?= $(VENV)/bin/python
 ACT ?= $(VENV)/bin
 SELF_MAKE ?= $(if $(PACKAGE_PROFILE_MAKEFILE),$(MAKE) -f "$(PACKAGE_PROFILE_MAKEFILE)",$(MAKE))
 override RM := rm -rf
+DOCS_CONFIG_CLI ?= -m bijux_canon_dev.docs.mkdocs_config
+DEPTRY_SCAN_SCRIPT ?= $(VENV_PYTHON) -m bijux_canon_dev.quality.deptry_scan
+DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
+QUALITY_DEPTRY_COMMAND ?= $(DEPTRY_SCAN_SCRIPT) --deptry-bin "$(DEPTRY)" --config "$(DEPTRY_CONFIG)" --project-dir . $(QUALITY_PATHS)
+SECURITY_PIP_AUDIT_TEXT_COMMAND ?= "$(VENV_PYTHON)" -m bijux_canon_dev.security.pip_audit_gate
+SBOM_VERSION_RESOLVER ?= -m bijux_canon_dev.release.version_resolver
+SBOM_REQUIREMENTS_WRITER ?= -m bijux_canon_dev.sbom.requirements_writer
 
 ifneq ($(strip $(PACKAGE_PROFILE_MAKEFILE)),)
 MAKEFLAGS += -f $(PACKAGE_PROFILE_MAKEFILE)

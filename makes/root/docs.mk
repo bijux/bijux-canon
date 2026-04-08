@@ -15,6 +15,7 @@ DOCS_BASE_CONFIG_FILE := $(CURDIR)/mkdocs.yml
 DOCS_SHARED_CONFIG_FILE := $(CURDIR)/mkdocs.shared.yml
 DOCS_RENDERED_DOCS_DIR := $(CURDIR)/docs
 DOCS_RENDER_SERVE_CONFIG := 1
+DOCS_CONFIG_CLI := -m bijux_canon_dev.docs.mkdocs_config
 DOCS_BUILD_BOOTSTRAP_TARGETS := root-check-env
 DOCS_CHECK_BOOTSTRAP_TARGETS := root-check-env
 DOCS_SERVE_BOOTSTRAP_TARGETS := root-check-env
@@ -34,4 +35,4 @@ DOCS_CHECK_SITE_URL := http://$(ROOT_DOCS_DEV_ADDR)/
 DOCS_SERVE_SITE_URL := http://$(ROOT_DOCS_DEV_ADDR)/
 DOCS_EXTRA_CLEAN_PATHS := "$(ROOT_DOCS_SERVE_CFG)" "$(CURDIR)/site" "$(CURDIR)/.cache"
 
-include $(CURDIR)/makes/docs.mk
+include $(CURDIR)/makes/bijux-py/docs.mk
