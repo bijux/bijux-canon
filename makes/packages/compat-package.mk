@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
+
 LINT_DIRS := src hatch_build.py
 LINT_TARGETS := src hatch_build.py
 MYPY_TARGETS :=

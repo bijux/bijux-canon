@@ -23,7 +23,10 @@ define run_root_package_target
 	fi; \
 	failures=""; \
 	for package in $$package_list; do \
-	  profile_path="$(PACKAGE_MAKE_DIR)/$$package.mk"; \
+	  profile_path="$$(printf '%s\n' $(PACKAGE_PROFILE_MAPPINGS) | awk -F= -v pkg="$$package" '$$1 == pkg { print $$2 }')"; \
+	  if [ -z "$$profile_path" ]; then \
+	    profile_path="$(PACKAGE_MAKE_DIR)/$$package.mk"; \
+	  fi; \
 	  if [ ! -f "$$profile_path" ]; then \
 	    echo "Missing package profile: $$profile_path"; \
 	    failures="$$failures $$package"; \
@@ -32,11 +35,12 @@ define run_root_package_target
 	  echo "==> $$package: $(1)"; \
 	  if [ "$(3)" = "1" ]; then \
 	    if ! $(MAKE) -C "packages/$$package" -f "$$profile_path" \
+	      PROJECT_SLUG="$$package" \
 	      $(ROOT_SHARED_CHECK_OVERRIDES) \
 	      $(1); then \
 	      failures="$$failures $$package"; \
 	    fi; \
-	  elif ! $(MAKE) -C "packages/$$package" -f "$$profile_path" $(1); then \
+	  elif ! $(MAKE) -C "packages/$$package" -f "$$profile_path" PROJECT_SLUG="$$package" $(1); then \
 	    failures="$$failures $$package"; \
 	  fi; \
 	done; \

@@ -48,11 +48,11 @@ PACKAGE_PROFILE_bijux-canon-agent := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-age
 PACKAGE_PROFILE_bijux-canon-ingest := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-ingest.mk
 PACKAGE_PROFILE_bijux-canon-reason := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-reason.mk
 PACKAGE_PROFILE_bijux-canon-index := $(ROOT_PACKAGE_PROFILE_DIR)/bijux-canon-index.mk
-PACKAGE_PROFILE_compat-agentic-flows := $(ROOT_PACKAGE_PROFILE_DIR)/compat-agentic-flows.mk
-PACKAGE_PROFILE_compat-bijux-agent := $(ROOT_PACKAGE_PROFILE_DIR)/compat-bijux-agent.mk
-PACKAGE_PROFILE_compat-bijux-rag := $(ROOT_PACKAGE_PROFILE_DIR)/compat-bijux-rag.mk
-PACKAGE_PROFILE_compat-bijux-rar := $(ROOT_PACKAGE_PROFILE_DIR)/compat-bijux-rar.mk
-PACKAGE_PROFILE_compat-bijux-vex := $(ROOT_PACKAGE_PROFILE_DIR)/compat-bijux-vex.mk
+PACKAGE_PROFILE_compat-agentic-flows := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
+PACKAGE_PROFILE_compat-bijux-agent := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
+PACKAGE_PROFILE_compat-bijux-rag := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
+PACKAGE_PROFILE_compat-bijux-rar := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
+PACKAGE_PROFILE_compat-bijux-vex := $(ROOT_PACKAGE_PROFILE_DIR)/compat-package.mk
 
 ROOT_PACKAGE_TARGETS := test lint quality security api build sbom clean
 ROOT_TARGET_GROUPS_test := test
@@ -101,6 +101,10 @@ $(foreach mapping,$(PACKAGE_ALIASES), \
 $(if $(filter $(1),$(word 1,$(subst =, ,$(mapping)))),$(word 2,$(subst =, ,$(mapping)))))))
 endef
 
+define resolve_package_profile
+$(strip $(or $(PACKAGE_PROFILE_$(1)),$(PACKAGE_MAKE_DIR)/$(1).mk))
+endef
+
 define assert_package
 	@if [ -n "$(PACKAGE)" ] && [ -z "$(call resolve_package,$(PACKAGE))" ]; then \
 	  echo "Unknown package '$(PACKAGE)'."; \
@@ -115,3 +119,4 @@ $(strip $(foreach package,$(ALL_PACKAGES),$(if $(filter $(1),$(PACKAGE_GROUPS_$(
 endef
 
 $(foreach target,$(ROOT_PACKAGE_TARGETS),$(eval ROOT_TARGET_PACKAGES_$(target) := $(call packages_in_group,$(ROOT_TARGET_GROUPS_$(target)))))
+PACKAGE_PROFILE_MAPPINGS := $(foreach package,$(ALL_PACKAGES),$(package)=$(call resolve_package_profile,$(package)))
