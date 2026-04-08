@@ -18,7 +18,7 @@ in favor of `https://github.com/bijux/bijux-canon`.
 ## Preferred install for new environments
 
 ```bash
-pip install bijux-canon-index
+uv add bijux-canon-index
 ```
 
 ## Migration guidance

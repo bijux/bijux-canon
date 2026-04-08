@@ -35,7 +35,7 @@ entrypoint for new work. Its package handbook lives at
 
 ## Migration note
 
-- new installs should use `pip install bijux-canon-runtime`
+- new installs should use `uv add bijux-canon-runtime`
 - existing automation can stay on `agentic-flows` while you update imports and commands
 - canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
 - retired repository target: <https://github.com/bijux/agentic-flows>

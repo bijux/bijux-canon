@@ -16,9 +16,7 @@ jobs:
       package_slug: bijux-canon-reason
       package_dir: packages/bijux-canon-reason
       artifacts_dir: artifacts/bijux-canon-reason
-      cache_dependency_path: |
-        packages/bijux-canon-reason/pyproject.toml
-        pyproject.toml
+      cache_dependency_path: uv.lock
       build_targets: "build sbom"
       upload_paths: |
         artifacts/bijux-canon-reason/build/*

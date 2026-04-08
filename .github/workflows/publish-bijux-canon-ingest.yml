@@ -16,9 +16,7 @@ jobs:
       package_slug: bijux-canon-ingest
       package_dir: packages/bijux-canon-ingest
       artifacts_dir: artifacts/bijux-canon-ingest
-      cache_dependency_path: |
-        packages/bijux-canon-ingest/pyproject.toml
-        pyproject.toml
+      cache_dependency_path: uv.lock
       build_targets: "build sbom"
       upload_paths: |
         artifacts/bijux-canon-ingest/build/*

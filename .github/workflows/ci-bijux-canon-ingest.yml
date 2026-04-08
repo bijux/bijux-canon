@@ -38,8 +38,5 @@ jobs:
       package_slug: bijux-canon-ingest
       package_dir: packages/bijux-canon-ingest
       artifacts_dir: artifacts/bijux-canon-ingest
-      cache_dependency_path: |
-        packages/bijux-canon-ingest/pyproject.toml
-        pyproject.toml
-        tox.ini
+      cache_dependency_path: uv.lock
       test_python_versions: '["3.11", "3.12", "3.13"]'

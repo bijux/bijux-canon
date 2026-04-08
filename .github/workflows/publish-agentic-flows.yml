@@ -16,9 +16,7 @@ jobs:
       package_slug: agentic-flows
       package_dir: packages/compat-agentic-flows
       artifacts_dir: artifacts/compat-agentic-flows
-      cache_dependency_path: |
-        packages/compat-agentic-flows/pyproject.toml
-        pyproject.toml
+      cache_dependency_path: uv.lock
       build_targets: build
 
   publish:

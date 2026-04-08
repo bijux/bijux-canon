@@ -41,10 +41,7 @@ jobs:
       package_slug: bijux-canon-runtime
       package_dir: packages/bijux-canon-runtime
       artifacts_dir: artifacts/bijux-canon-runtime
-      cache_dependency_path: |
-        packages/bijux-canon-runtime/pyproject.toml
-        pyproject.toml
-        tox.ini
+      cache_dependency_path: uv.lock
       check_targets: '["quality", "security", "docs", "build", "sbom", "api", "openapi-drift"]'
       api_toolchain_targets: '["api", "openapi-drift"]'
       post_test_command: |

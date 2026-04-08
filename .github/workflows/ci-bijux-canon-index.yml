@@ -38,8 +38,5 @@ jobs:
       package_slug: bijux-canon-index
       package_dir: packages/bijux-canon-index
       artifacts_dir: artifacts/bijux-canon-index
-      cache_dependency_path: |
-        packages/bijux-canon-index/pyproject.toml
-        pyproject.toml
-        tox.ini
+      cache_dependency_path: uv.lock
       check_targets: '["quality", "security", "docs", "api", "build", "sbom"]'

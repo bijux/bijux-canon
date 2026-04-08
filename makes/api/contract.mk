@@ -112,10 +112,10 @@ api-install: | $(VENV)
 	@command -v curl >/dev/null || { echo "✘ curl not found"; exit 1; }
 	@command -v java >/dev/null || { echo "✘ java not found"; exit 1; }
 	@if [ -n "$(strip $(API_INSTALL_PYTHON_PACKAGES))" ]; then \
-	  $(VENV_PYTHON) -m pip install --quiet --upgrade $(API_INSTALL_PYTHON_PACKAGES); \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --quiet --upgrade $(API_INSTALL_PYTHON_PACKAGES); \
 	fi
 	@if [ "$(API_INSTALL_EDITABLE)" = "1" ]; then \
-	  $(VENV_PYTHON) -m pip install --quiet -e .; \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --quiet --editable .; \
 	fi
 	@echo "✔ API toolchain ready."
 

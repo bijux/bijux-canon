@@ -18,7 +18,7 @@ in favor of `https://github.com/bijux/bijux-canon`.
 ## Preferred install for new environments
 
 ```bash
-python -m pip install bijux-canon-agent
+uv add bijux-canon-agent
 ```
 
 ## Migration guidance

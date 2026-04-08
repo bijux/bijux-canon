@@ -33,7 +33,7 @@ PACKAGE_INSTALL_TARGETS ?=
 ifeq ($(PACKAGE_DEFINE_VENV),1)
 $(VENV):
 	@echo "$(PACKAGE_VENV_CREATE_MESSAGE)"
-	@$(PYTHON) -m venv "$(VENV)"
+	@$(UV) venv --python "$(PYTHON)" "$(VENV)"
 endif
 
 ifeq ($(PACKAGE_DEFINE_INSTALL),1)
@@ -42,13 +42,13 @@ $(PACKAGE_INSTALL_STAMP): $(VENV)
 	@echo "$(PACKAGE_INSTALL_MESSAGE)"
 	@mkdir -p "$(PROJECT_ARTIFACTS_DIR)"
 	@if [ -n "$(strip $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES))" ]; then \
-	  $(VENV_PYTHON) -m pip install --upgrade $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES); \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --upgrade $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES); \
 	fi
 	@if [ -n "$(strip $(PACKAGE_INSTALL_PYTHON_PACKAGES))" ]; then \
-	  $(VENV_PYTHON) -m pip install --upgrade $(PACKAGE_INSTALL_PYTHON_PACKAGES); \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --upgrade $(PACKAGE_INSTALL_PYTHON_PACKAGES); \
 	fi
 	@if [ "$(PACKAGE_INSTALL_EDITABLE)" = "1" ] && [ -n "$(strip $(PACKAGE_INSTALL_SPEC))" ]; then \
-	  $(VENV_PYTHON) -m pip install -e "$(PACKAGE_INSTALL_SPEC)"; \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --editable "$(PACKAGE_INSTALL_SPEC)"; \
 	fi
 	@touch "$(PACKAGE_INSTALL_STAMP)"
 
@@ -57,13 +57,13 @@ else
 install: $(VENV)
 	@echo "$(PACKAGE_INSTALL_MESSAGE)"
 	@if [ -n "$(strip $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES))" ]; then \
-	  $(VENV_PYTHON) -m pip install --upgrade $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES); \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --upgrade $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES); \
 	fi
 	@if [ -n "$(strip $(PACKAGE_INSTALL_PYTHON_PACKAGES))" ]; then \
-	  $(VENV_PYTHON) -m pip install --upgrade $(PACKAGE_INSTALL_PYTHON_PACKAGES); \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --upgrade $(PACKAGE_INSTALL_PYTHON_PACKAGES); \
 	fi
 	@if [ "$(PACKAGE_INSTALL_EDITABLE)" = "1" ] && [ -n "$(strip $(PACKAGE_INSTALL_SPEC))" ]; then \
-	  $(VENV_PYTHON) -m pip install -e "$(PACKAGE_INSTALL_SPEC)"; \
+	  $(UV) pip install --python "$(VENV_PYTHON)" --editable "$(PACKAGE_INSTALL_SPEC)"; \
 	fi
 endif
 .PHONY: install

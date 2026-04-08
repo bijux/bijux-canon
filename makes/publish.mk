@@ -85,9 +85,8 @@ verify-test-install:
 	fi
 	@echo "→ Verifying installation from TestPyPI"
 	@tmp=$$(mktemp -d); \
-	"$(PUBLISH_PYTHON)" -m venv $$tmp/venv; \
-	PATH="$$tmp/venv/bin:$$PATH" $$tmp/venv/bin/pip install -U pip; \
-	PATH="$$tmp/venv/bin:$$PATH" $$tmp/venv/bin/pip install -i https://test.pypi.org/simple --extra-index-url https://pypi.org/simple "$(PUBLISH_PACKAGE_NAME)==$(PKG_VERSION)"; \
+	$(UV) venv --python "$(PUBLISH_PYTHON)" "$$tmp/venv"; \
+	$(UV) pip install --python "$$tmp/venv/bin/python" -i https://test.pypi.org/simple --extra-index-url https://pypi.org/simple "$(PUBLISH_PACKAGE_NAME)==$(PKG_VERSION)"; \
 	PATH="$$tmp/venv/bin:$$PATH" VIRTUAL_ENV="$$tmp/venv" sh -c '$(PUBLISH_VERIFY_INSTALL_CMD)'; \
 	echo "✔ TestPyPI install OK"; \
 	echo "Temp venv at $$tmp (delete when done)"

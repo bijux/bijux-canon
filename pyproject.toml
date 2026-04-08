@@ -1,3 +1,34 @@
+[project]
+name = "bijux-canon-repository"
+version = "0.1.0"
+description = "Repository workspace for bijux-canon."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.urls]
+Documentation = "https://bijux.io/bijux-canon/"
+Repository = "https://github.com/bijux/bijux-canon"
+Issues = "https://github.com/bijux/bijux-canon/issues"
+
+[dependency-groups]
+dev = [
+  "bijux-canon-dev[dev]",
+  "mkdocs>=1.6.1,<2.0",
+  "mkdocs-click>=0.9.0,<1.0",
+  "mkdocs-gen-files>=0.5.0,<1.0",
+  "mkdocs-git-revision-date-localized-plugin>=1.4.0,<2.0",
+  "mkdocs-glightbox>=0.4.0,<1.0",
+  "mkdocs-include-markdown-plugin>=7.0.0,<8.0",
+  "mkdocs-literate-nav>=0.6.0,<1.0",
+  "mkdocs-material>=9.5.39,<10.0",
+  "mkdocs-minify-plugin>=0.8.0,<1.0",
+  "mkdocs-redirects>=1.2.1,<2.0",
+  "mkdocs-section-index>=0.3.10,<1.0",
+  "mkdocstrings>=0.27.0,<2.0",
+  "types-requests>=2.32.0,<3.0",
+]
+
 [tool.commitizen]
 name = "cz_conventional_commits"
 major_version_zero = true
@@ -65,3 +96,6 @@ make_dir = "makes"
 "compat-bijux-rag" = "packages/compat-bijux-rag"
 "compat-bijux-rar" = "packages/compat-bijux-rar"
 "compat-bijux-vex" = "packages/compat-bijux-vex"
+
+[tool.uv.sources]
+bijux-canon-dev = { path = "packages/bijux-canon-dev", editable = true }

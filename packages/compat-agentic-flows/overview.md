@@ -18,7 +18,7 @@ retirement in favor of `https://github.com/bijux/bijux-canon`.
 ## Preferred install for new environments
 
 ```bash
-pip install bijux-canon-runtime
+uv add bijux-canon-runtime
 ```
 
 ## Migration guidance

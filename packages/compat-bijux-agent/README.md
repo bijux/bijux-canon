@@ -33,7 +33,7 @@ Its package handbook lives at
 
 ## Migration note
 
-- new installs should use `python -m pip install bijux-canon-agent`
+- new installs should use `uv add bijux-canon-agent`
 - existing automation can stay on `bijux-agent` while you update imports and commands
 - canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-agent>

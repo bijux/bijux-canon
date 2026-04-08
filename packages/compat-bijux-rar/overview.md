@@ -18,7 +18,7 @@ in favor of `https://github.com/bijux/bijux-canon`.
 ## Preferred install for new environments
 
 ```bash
-pip install bijux-canon-reason
+uv add bijux-canon-reason
 ```
 
 ## Migration guidance

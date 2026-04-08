@@ -3023,7 +3023,7 @@ def render_root_page(
 
             ## Shared Inputs
 
-            - `pyproject.toml` for commitizen and workspace metadata
+            - `pyproject.toml` for uv workspace metadata and commit conventions
             - `tox.ini` for root validation environments
             - `Makefile` and `makes/` for common workflows
 

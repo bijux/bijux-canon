@@ -20,7 +20,7 @@ def load_config(config_path: str, logger: Any) -> dict[str, Any]:
         import yaml
     except ImportError:
         logger.error(
-            "PyYAML required to load config file. Install with: pip install pyyaml"
+            "PyYAML required to load config file. Install with: uv add pyyaml"
         )
         sys.exit(1)
 

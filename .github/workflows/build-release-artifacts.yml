@@ -40,22 +40,20 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ARTIFACTS_DIR: ${{ inputs.artifacts_dir }}
-      PIP_CACHE_DIR: ${{ github.workspace }}/.github/.cache/pip
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Prepare pip cache directory
-        shell: bash
-        run: mkdir -p "${PIP_CACHE_DIR}"
-
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-          cache: pip
-          cache-dependency-path: ${{ inputs.cache_dependency_path }}
+
+      - uses: astral-sh/setup-uv@v8
+        with:
+          enable-cache: true
+          cache-dependency-glob: ${{ inputs.cache_dependency_path }}
 
       - name: Install package toolchain
         shell: bash

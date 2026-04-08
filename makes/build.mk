@@ -25,8 +25,7 @@ TWINE                     ?= $(BUILD_PYTHON) -m twine
 
 build-tools: | $(VENV)
 	@echo "→ Ensuring build toolchain..."
-	@$(BUILD_PYTHON) -m pip install -U pip
-	@$(BUILD_PYTHON) -m pip install --upgrade build twine
+	@$(UV) pip install --python "$(BUILD_PYTHON)" --upgrade build twine
 
 build: build-tools
 	@if [ "$(BUILD_REQUIRE_PYPROJECT)" = "1" ] && [ ! -f "$(PYPROJECT_ABS)" ]; then echo "✘ pyproject.toml not found"; exit 1; fi

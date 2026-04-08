@@ -38,7 +38,4 @@ jobs:
       package_slug: bijux-canon-reason
       package_dir: packages/bijux-canon-reason
       artifacts_dir: artifacts/bijux-canon-reason
-      cache_dependency_path: |
-        packages/bijux-canon-reason/pyproject.toml
-        pyproject.toml
-        tox.ini
+      cache_dependency_path: uv.lock

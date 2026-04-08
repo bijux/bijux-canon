@@ -16,9 +16,7 @@ jobs:
       package_slug: bijux-canon-agent
       package_dir: packages/bijux-canon-agent
       artifacts_dir: artifacts/bijux-canon-agent
-      cache_dependency_path: |
-        packages/bijux-canon-agent/pyproject.toml
-        pyproject.toml
+      cache_dependency_path: uv.lock
       build_targets: "build sbom"
       upload_paths: |
         artifacts/bijux-canon-agent/build/*

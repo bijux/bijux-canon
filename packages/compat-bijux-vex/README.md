@@ -33,7 +33,7 @@ Its package handbook lives at
 
 ## Migration note
 
-- new installs should use `pip install bijux-canon-index`
+- new installs should use `uv add bijux-canon-index`
 - existing automation can stay on `bijux-vex` while you update imports and commands
 - canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-vex>

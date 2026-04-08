@@ -213,6 +213,24 @@ def test_workspace_packages_use_shared_repository_release_tags() -> None:
     )
 
 
+def test_workspace_manifest_declares_root_uv_contract() -> None:
+    with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
+        manifest = tomllib.load(handle)
+
+    workspace = manifest["tool"]["bijux_canon"]
+    dependency_groups = manifest["dependency-groups"]
+    uv_sources = manifest["tool"]["uv"]["sources"]
+
+    dev_group = set(dependency_groups["dev"])
+    assert "bijux-canon-dev[dev]" in dev_group
+    assert "mkdocs-material>=9.5.39,<10.0" in dev_group
+    assert uv_sources["bijux-canon-dev"] == {
+        "path": "packages/bijux-canon-dev",
+        "editable": True,
+    }
+    assert set(workspace["package_dirs"]) == set(workspace["packages"])
+
+
 def test_public_release_packages_share_required_project_urls() -> None:
     workspace = _workspace_metadata()
     public_packages = set(workspace["public_release_packages"])
