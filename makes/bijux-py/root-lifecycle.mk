@@ -9,19 +9,19 @@ ROOT_CHECK_ENV_PREREQS ?=
 ROOT_CHECK_ENV_COMMAND ?= @true
 ROOT_CLEAN_ROOT_ARTIFACTS_COMMAND ?= @true
 
-install: $(ROOT_INSTALL_PREREQS)
+install: $(ROOT_INSTALL_PREREQS) ## Install or sync repository dependencies
 	$(ROOT_INSTALL_COMMAND)
 
-lock:
+lock: ## Refresh uv.lock from pyproject inputs
 	@$(UV) lock $(ROOT_LOCK_FLAGS)
 
-lock-check:
+lock-check: ## Verify uv.lock matches current pyproject inputs
 	@$(UV) lock $(ROOT_LOCK_CHECK_FLAGS)
 
-all: $(ROOT_ALL_TARGETS)
+all: $(ROOT_ALL_TARGETS) ## Run the repository pipeline
 
-root-check-env: $(ROOT_CHECK_ENV_PREREQS)
+root-check-env: $(ROOT_CHECK_ENV_PREREQS) ## Validate required root environment inputs
 	$(ROOT_CHECK_ENV_COMMAND)
 
-clean-root-artifacts:
+clean-root-artifacts: ## Remove forbidden root-level artifacts
 	$(ROOT_CLEAN_ROOT_ARTIFACTS_COMMAND)

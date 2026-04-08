@@ -28,8 +28,9 @@ TEST_SYNTAX_PATHS         ?=
 TEST_PYCACHE_PREFIX       ?=
 TEST_COVERAGE_TARGETS     ?=
 TEST_COVERAGE_FAIL_UNDER  ?= 90
-TEST_COVERAGE_SOURCE      ?= $(TEST_SOURCE_PATH)
 TEST_SOURCE_PATH          ?= src
+TEST_SOURCE_PATHS         ?= $(TEST_SOURCE_PATH)
+TEST_COVERAGE_SOURCE      ?= $(TEST_SOURCE_PATHS)
 TEST_CLEAN_PATHS          ?= .hypothesis .benchmarks
 
 TEST_PYTHON               ?= $(if $(wildcard $(VENV_PYTHON)),$(abspath $(VENV_PYTHON)),$(if $(wildcard $(VENV)/bin/python),$(abspath $(VENV)/bin/python),$(PYTHON)))
@@ -39,6 +40,9 @@ COVERAGE_CONFIG           ?= $(MONOREPO_ROOT)/configs/coveragerc.ini
 TEST_SELF_MAKE            ?= $(SELF_MAKE)
 
 include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/util.mk
+
+empty :=
+space := $(empty) $(empty)
 
 PYTEST_INI_ABS            := $(abspath $(PYTEST_CONFIG))
 COVCFG_ABS                := $(abspath $(COVERAGE_CONFIG))
@@ -52,7 +56,7 @@ TEST_PATHS_E2E_ABS        := $(abspath $(TEST_PATHS_E2E))
 TEST_PATHS_REGRESSION_ABS := $(abspath $(TEST_PATHS_REGRESSION))
 TEST_PATHS_EVALUATION_ABS := $(abspath $(TEST_PATHS_EVALUATION))
 TEST_REAL_LOCAL_ABS       := $(abspath $(TEST_REAL_LOCAL_PATH))
-TEST_SOURCE_PATH_ABS      := $(abspath $(TEST_SOURCE_PATH))
+TEST_SOURCE_PATH_ABS      := $(subst $(space),:,$(foreach path,$(TEST_SOURCE_PATHS),$(abspath $(path))))
 TEST_COVERAGE_SOURCE_ABS  := $(foreach path,$(TEST_COVERAGE_SOURCE),$(abspath $(path)))
 JUNIT_XML_ABS             := $(abspath $(JUNIT_XML))
 TMP_DIR_ABS               := $(abspath $(TMP_DIR))
@@ -60,6 +64,7 @@ HYPOTHESIS_DB_ABS         := $(abspath $(HYPOTHESIS_DB_DIR))
 BENCHMARK_DIR_ABS         := $(abspath $(BENCHMARK_DIR))
 TEST_PYCACHE_PREFIX_ABS   := $(abspath $(TEST_PYCACHE_PREFIX))
 TEST_PYCACHE_ENV          := $(if $(strip $(TEST_PYCACHE_PREFIX)),PYTHONPYCACHEPREFIX="$(TEST_PYCACHE_PREFIX_ABS)",)
+TEST_PATH_ARGS            := $(foreach path,$(TEST_PATHS_ABS),"$(path)")
 
 PYTEST_COV_FLAGS = $(foreach path,$(TEST_COVERAGE_SOURCE_ABS),--cov="$(path)")
 
@@ -100,7 +105,7 @@ test:
 	  COVERAGE_FILE="$(COV_DATA_ABS)" \
 	  HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	  $(TEST_PYCACHE_ENV) \
-	  sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" $(TEST_MAIN_ARGS) $(PYTEST_FLAGS) '"$$BENCH_FLAGS" )
+	  sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" $(TEST_PATH_ARGS) $(TEST_MAIN_ARGS) $(PYTEST_FLAGS) '"$$BENCH_FLAGS" )
 	@rm -rf $(TEST_CLEAN_PATHS) || true
 	@rm -rf .pytest_cache || true
 
@@ -139,7 +144,7 @@ test-unit:
 	    COVERAGE_FILE="$(COV_DATA_ABS)" \
 	    HYPOTHESIS_DATABASE_DIRECTORY="$(HYPOTHESIS_DB_ABS)" \
 	    $(TEST_PYCACHE_ENV) \
-	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" "$(TEST_PATHS_ABS)" $(TEST_UNIT_FALLBACK_ARGS) $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
+	    sh -c '$(PYTEST) -c "$(PYTEST_INI_ABS)" $(TEST_PATH_ARGS) $(TEST_UNIT_FALLBACK_ARGS) $(PYTEST_FLAGS) '"$$BENCH_FLAGS" ); \
 	fi
 	@rm -rf $(TEST_CLEAN_PATHS) || true
 	@rm -rf .pytest_cache || true
