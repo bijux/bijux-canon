@@ -7,8 +7,6 @@ include $(ROOT_MAKEFILE_DIR)/root/env.mk
 include $(ROOT_MAKEFILE_DIR)/root/packages.mk
 
 include $(ROOT_MAKEFILE_DIR)/root/dispatch.mk
-include $(ROOT_MAKEFILE_DIR)/root/toolchain.mk
-include $(ROOT_MAKEFILE_DIR)/root/cleanup.mk
 include $(ROOT_MAKEFILE_DIR)/root/docs.mk
 
 DEFAULT_GOAL := help
@@ -17,6 +15,31 @@ DEFAULT_GOAL := help
 	clean-root-artifacts root-check-env
 
 install: root-check-env
+
+ROOT_FORBIDDEN_ARTIFACTS ?= \
+	"$(CURDIR)/.hypothesis" \
+	"$(CURDIR)/.pytest_cache" \
+	"$(CURDIR)/.ruff_cache" \
+	"$(CURDIR)/.mypy_cache" \
+	"$(CURDIR)/.coverage" \
+	"$(CURDIR)/.coverage."* \
+	"$(CURDIR)/.benchmarks" \
+	"$(CURDIR)/htmlcov" \
+	"$(CURDIR)/configs/.pytest_cache" \
+	"$(CURDIR)/configs/.ruff_cache" \
+	"$(CURDIR)/configs/.mypy_cache" \
+	"$(CURDIR)/configs/.hypothesis"
+
+root-check-env: pyproject.toml uv.lock $(ROOT_CHECK_STAMP)
+
+$(ROOT_CHECK_STAMP): pyproject.toml uv.lock
+	@mkdir -p "$(ROOT_ARTIFACTS_DIR)"
+	@rm -rf "$(ROOT_CHECK_VENV)"
+	@$(UV_SYNC)
+	@touch "$(ROOT_CHECK_STAMP)"
+
+clean-root-artifacts:
+	@rm -rf $(ROOT_FORBIDDEN_ARTIFACTS) || true
 
 lock:
 	@$(UV) lock --python "$(PYTHON)"
@@ -43,3 +66,5 @@ install: ## Sync the shared root uv environment from pyproject.toml and uv.lock
 lock: ## Refresh uv.lock from pyproject.toml
 lock-check: ## Verify uv.lock matches pyproject.toml
 all: ## Run the repository test, lint, quality, security, docs, api, build, and sbom flows
+root-check-env: ## Create or refresh the shared root check environment
+clean-root-artifacts: ## Remove stray root-level caches outside artifacts
