@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/root-env.mk
+
 ARTIFACTS_ROOT := $(CURDIR)/artifacts
-PYTHON ?= python3.11
-UV ?= uv
 ROOT_ARTIFACTS_DIR := $(ARTIFACTS_ROOT)/root
 ROOT_CHECK_VENV := $(ROOT_ARTIFACTS_DIR)/check-venv
 ROOT_CHECK_PYTHON := $(ROOT_CHECK_VENV)/bin/python
