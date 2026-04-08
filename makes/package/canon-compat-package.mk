@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
 LINT_DIRS ?= src hatch_build.py
 LINT_TARGETS ?= src hatch_build.py
 MYPY_TARGETS ?=

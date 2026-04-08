@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
 API_SCHEMA                ?= $(API_DIR)/v1/schema.yaml
 API_SERVER_LOG            ?= $(API_ARTIFACTS_DIR)/server.log
 API_DRIFT_OUT             ?= $(API_ARTIFACTS_DIR)/openapi.generated.json

@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
 ROOT_PACKAGE_PROFILE_DIR ?= $(ROOT_MAKEFILE_DIR)/packages
 PACKAGE_MAKE_DIR ?= $(ROOT_PACKAGE_PROFILE_DIR)
 PACKAGE ?=

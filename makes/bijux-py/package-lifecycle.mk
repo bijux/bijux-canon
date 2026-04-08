@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
 PACKAGE_DEFINE_VENV ?= 1
 PACKAGE_DEFINE_INSTALL ?= 1
 PACKAGE_DEFINE_BOOTSTRAP ?= 1

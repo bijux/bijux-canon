@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
 ROOT_SHARED_CHECK_OVERRIDES := \
 	VENV="$(ROOT_CHECK_VENV)" \
 	VENV_PYTHON="$(ROOT_CHECK_PYTHON)" \

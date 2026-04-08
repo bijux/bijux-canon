@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
 APP_DIR                         ?= src
 API_BASE_PATH                   ?= /v1
 API_APP                         ?= app

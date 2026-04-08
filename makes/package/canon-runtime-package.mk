@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
 include $(ROOT_MAKE_DIR)/package/canon-python.mk
 
 PYTHON ?= python3.11

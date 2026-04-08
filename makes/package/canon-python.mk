@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright © 2026 Bijan Mousavi
-
 PACKAGE_IMPORT_NAME ?=
 PACKAGE_SOURCE_DIR ?= $(if $(strip $(PACKAGE_IMPORT_NAME)),src/$(PACKAGE_IMPORT_NAME),src)
 PACKAGE_TEST_DIRS ?= tests
