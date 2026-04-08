@@ -54,7 +54,7 @@ PACKAGE_DEFINE_CLEAN := 0
 PACKAGE_ALL_TARGETS := clean install test lint quality security sbom build api
 PACKAGE_HELP_WIDTH := 22
 
-include $(ROOT_MAKE_DIR)/package/primary.mk
+include $(ROOT_MAKE_DIR)/package/gates.mk
 
 -include .env
 export

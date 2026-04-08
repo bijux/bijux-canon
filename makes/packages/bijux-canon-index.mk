@@ -49,7 +49,7 @@ PACKAGE_CLEAN_PATHS := \
 PACKAGE_ALL_TARGETS := clean install fmt lint test quality api security sbom
 PACKAGE_ALL_MESSAGE := [OK] All targets completed
 
-include $(ROOT_MAKE_DIR)/package/primary.mk
+include $(ROOT_MAKE_DIR)/package/gates.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
@@ -72,4 +72,3 @@ release: build
 	@echo "[OK] build target completed (alias for make release)"
 .PHONY: build-release-metadata release
 
-include $(ROOT_MAKE_DIR)/package/core-help.mk

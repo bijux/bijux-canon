@@ -22,8 +22,7 @@ PACKAGE_CLEAN_PATHS := \
   $(COMMON_ARTIFACT_CLEAN_PATHS)
 PACKAGE_ALL_TARGETS := clean install test lint quality security build sbom
 
-include $(ROOT_MAKE_DIR)/package/primary.mk
+include $(ROOT_MAKE_DIR)/package/gates.mk
 
 include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
 
-include $(ROOT_MAKE_DIR)/package/core-help.mk
