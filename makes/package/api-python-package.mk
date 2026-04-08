@@ -1,4 +1,4 @@
-include $(ROOT_MAKE_DIR)/package/canon-python.mk
+include $(ROOT_MAKE_DIR)/package/python-package.mk
 
 PYTHON ?= python3.11
 ENABLE_CODESPELL ?= 1

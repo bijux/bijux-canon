@@ -1,5 +1,5 @@
 include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
-include $(ROOT_MAKE_DIR)/package/canon-python.mk
+include $(ROOT_MAKE_DIR)/package/python-package.mk
 
 PACKAGE_IMPORT_NAME := bijux_canon_dev
 SECURITY_IGNORE_IDS := PYSEC-2022-42969

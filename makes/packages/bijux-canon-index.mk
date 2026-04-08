@@ -1,7 +1,7 @@
 # Testing policy: gates (lint/quality/security/typing) intentionally run on lowest supported Python (3.11); full matrix via tox.
 
 include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
-include $(ROOT_MAKE_DIR)/package/canon-api-package.mk
+include $(ROOT_MAKE_DIR)/package/api-python-package.mk
 
 PACKAGE_IMPORT_NAME := bijux_canon_index
 API_MODE := freeze

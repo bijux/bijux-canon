@@ -1,4 +1,4 @@
-include $(ROOT_MAKE_DIR)/package/canon-python.mk
+include $(ROOT_MAKE_DIR)/package/python-package.mk
 
 PYTHON ?= python3.11
 ACT ?= $(if $(wildcard $(VENV)/bin/activate),$(VENV)/bin,$(ACT))

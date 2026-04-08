@@ -1,7 +1,7 @@
 include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
 PACKAGE_IMPORT_NAME := bijux_canon_runtime
 
-include $(ROOT_MAKE_DIR)/package/canon-runtime-package.mk
+include $(ROOT_MAKE_DIR)/package/workspace-python-package.mk
 
 SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/runtime/check_dependency_allowlist.py
 # The checked-in schema already includes the /api/v1 prefix in each path.
