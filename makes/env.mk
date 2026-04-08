@@ -10,5 +10,3 @@ SBOM_VERSION_RESOLVER ?= -m bijux_canon_dev.release.version_resolver
 SBOM_REQUIREMENTS_WRITER ?= -m bijux_canon_dev.sbom.requirements_writer
 
 include $(ROOT_MAKE_DIR)/bijux-py/repository-env.mk
-
-export PYTHONPATH := $(MONOREPO_ROOT)/packages/bijux-canon-dev/src$(if $(PYTHONPATH),:$(PYTHONPATH))
