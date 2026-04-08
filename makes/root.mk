@@ -21,12 +21,12 @@ export PYTHONPATH := $(CURDIR)/packages/bijux-canon-dev/src$(if $(PYTHONPATH),:$
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root-package-dispatch.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root-docs.mk
-include $(ROOT_MAKEFILE_DIR)/bijux-py/standard.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/shared-bijux-py.mk
 
 DEFAULT_GOAL := help
 .PHONY: \
 	help list list-all install lock lock-check lint quality security test docs docs-check docs-serve api build sbom clean all \
-	clean-root-artifacts root-check-env standard-bijux-py
+	clean-root-artifacts root-check-env check-shared-bijux-py
 
 ROOT_FORBIDDEN_ARTIFACTS ?= \
 	"$(CURDIR)/.hypothesis" \
@@ -75,3 +75,4 @@ lock-check: ## Verify uv.lock matches pyproject.toml
 all: ## Run the repository test, lint, quality, security, docs, api, build, and sbom flows
 root-check-env: ## Create or refresh the shared root check environment
 clean-root-artifacts: ## Remove stray root-level caches outside artifacts
+check-shared-bijux-py: ## Verify shared bijux-py make modules match across sibling repositories
