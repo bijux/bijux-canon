@@ -4,7 +4,6 @@
 include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/root-env.mk
 
 ARTIFACTS_ROOT := $(CURDIR)/artifacts
-ROOT_ARTIFACTS_DIR := $(ARTIFACTS_ROOT)/root
 ROOT_CHECK_VENV := $(ROOT_ARTIFACTS_DIR)/check-venv
 ROOT_CHECK_PYTHON := $(ROOT_CHECK_VENV)/bin/python
 ROOT_CHECK_STAMP := $(ROOT_ARTIFACTS_DIR)/.check-tools.stamp
@@ -17,9 +16,4 @@ ROOT_DOCS_SERVE_CFG := $(ROOT_DOCS_ARTIFACTS_DIR)/mkdocs.serve.yml
 ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
 UV_SYNC := UV_PROJECT_ENVIRONMENT="$(ROOT_CHECK_VENV)" $(UV) sync --frozen --group dev --python "$(PYTHON)"
 
-export PYTHONDONTWRITEBYTECODE := 1
-export PYTHONPYCACHEPREFIX := $(ROOT_ARTIFACTS_DIR)/pycache
-export XDG_CACHE_HOME := $(ROOT_ARTIFACTS_DIR)/xdg_cache
-export HYPOTHESIS_STORAGE_DIRECTORY := $(ROOT_ARTIFACTS_DIR)/hypothesis
-export UV_CACHE_DIR := $(ROOT_ARTIFACTS_DIR)/uv_cache
 export PYTHONPATH := $(CURDIR)/packages/bijux-canon-dev/src$(if $(PYTHONPATH),:$(PYTHONPATH))
