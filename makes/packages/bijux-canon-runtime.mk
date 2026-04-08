@@ -16,4 +16,3 @@ include $(ROOT_MAKE_DIR)/package/gates.mk
 
 -include .env
 export
-include $(PACKAGE_MAKEFILE_DIR)/../packages.mk

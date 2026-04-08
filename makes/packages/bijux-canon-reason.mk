@@ -16,5 +16,3 @@ TEST_MAIN_ARGS := --maxfail=1
 ENABLE_BENCH := 0
 
 include $(ROOT_MAKE_DIR)/package/gates.mk
-
-include $(PACKAGE_MAKEFILE_DIR)/../packages.mk

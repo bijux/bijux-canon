@@ -1,7 +1,7 @@
 ROOT_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root-env.mk
-include $(ROOT_MAKEFILE_DIR)/root/packages.mk
+include $(ROOT_MAKEFILE_DIR)/packages.mk
 
 ARTIFACTS_ROOT := $(CURDIR)/artifacts
 ROOT_CHECK_VENV := $(ROOT_ARTIFACTS_DIR)/check-venv

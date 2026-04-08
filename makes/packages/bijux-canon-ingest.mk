@@ -30,5 +30,3 @@ PACKAGE_INSTALL_TARGETS := \
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
 include $(ROOT_MAKE_DIR)/package/gates.mk
-
-include $(PACKAGE_MAKEFILE_DIR)/../packages.mk

@@ -6,6 +6,7 @@ include $(ROOT_MAKE_DIR)/bijux-py/build.mk
 include $(ROOT_MAKE_DIR)/bijux-py/sbom.mk
 include $(ROOT_MAKE_DIR)/api.mk
 include $(ROOT_MAKE_DIR)/publish.mk
+include $(ROOT_MAKE_DIR)/bijux-py/package-lifecycle.mk
 
 PACKAGE_DEFINE_ALL_PARALLEL ?= 0
 PACKAGE_ALL_PARALLEL_PRE_TARGETS ?= clean install

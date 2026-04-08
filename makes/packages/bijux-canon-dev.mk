@@ -12,5 +12,3 @@ BUILD_CHECK_DISTS := 1
 PACKAGE_ALL_TARGETS := clean install test lint quality security build sbom
 
 include $(ROOT_MAKE_DIR)/package/gates.mk
-
-include $(PACKAGE_MAKEFILE_DIR)/../packages.mk

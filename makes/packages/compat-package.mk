@@ -7,8 +7,6 @@ include $(ROOT_MAKE_DIR)/bijux-py/security.mk
 include $(ROOT_MAKE_DIR)/bijux-py/build.mk
 include $(ROOT_MAKE_DIR)/publish.mk
 
-include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
-
 ##@ Core
 clean: ## Remove virtualenv plus compatibility package artifacts
 clean-soft: ## Remove build artifacts but keep .venv

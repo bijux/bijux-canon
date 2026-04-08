@@ -33,8 +33,6 @@ PACKAGE_ALL_MESSAGE := [OK] All targets completed
 
 include $(ROOT_MAKE_DIR)/package/gates.mk
 
-include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
-
 # Run independent checks in parallel
 .NOTPARALLEL:
 

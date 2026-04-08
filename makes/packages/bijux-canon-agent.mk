@@ -40,7 +40,5 @@ TEST_PRE_TARGETS     := bootstrap
 
 include $(ROOT_MAKE_DIR)/package/gates.mk
 
-include $(PACKAGE_MAKEFILE_DIR)/../packages.mk
-
 ci-fast: lint test mypy-core
 .PHONY: ci-fast
