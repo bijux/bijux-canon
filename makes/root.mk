@@ -44,6 +44,7 @@ ROOT_INSTALL_PREREQS := root-check-env
 ROOT_CHECK_ENV_PREREQS := pyproject.toml uv.lock $(ROOT_CHECK_STAMP)
 ROOT_CLEAN_ROOT_ARTIFACTS_COMMAND := @rm -rf $(ROOT_FORBIDDEN_ARTIFACTS) || true
 ROOT_ALL_TARGETS := test lint quality security docs api build sbom
+ROOT_DEFINE_CLEAN := 0
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root-lifecycle.mk
 
