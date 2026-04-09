@@ -138,14 +138,25 @@ def test_product_package_detail_tabs_follow_authored_order(
     assert page.active_detail_tabs == ["Home"]
 
 
-def test_package_overview_sidebar_expands_all_section_groups(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "bijux-canon-index/index.html")
+@pytest.mark.parametrize(
+    "relative_path",
+    [
+        "index.html",
+        "bijux-canon/index.html",
+        "bijux-canon-index/index.html",
+        "bijux-canon-agent/index.html",
+        "compat-packages/index.html",
+    ],
+)
+def test_overview_pages_hide_primary_sidebar(
+    rendered_docs: Path,
+    relative_path: str,
+) -> None:
+    text = _page_text(rendered_docs, relative_path)
+    page = _parse_navigation(rendered_docs, relative_path)
 
-    assert 'id="__nav_2" checked' in text
-    assert 'id="__nav_3" checked' in text
-    assert 'id="__nav_4" checked' in text
-    assert 'id="__nav_5" checked' in text
-    assert 'id="__nav_6" checked' in text
+    assert 'data-bijux-nav-empty="true"' in text
+    assert page.sidebar_links == []
 
 
 def test_repository_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
@@ -205,7 +216,6 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
     assert page.active_detail_tabs == ["Architecture"]
     assert page.sidebar_title == "Architecture"
     assert page.sidebar_links == [
-        "Architecture",
         "Module Map",
         "Dependency Direction",
         "Execution Model",
@@ -226,7 +236,6 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
             ["Interfaces"],
             "Interfaces",
             [
-                "Interfaces",
                 "CLI Surface",
                 "API Surface",
                 "Configuration Surface",
@@ -243,7 +252,6 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
             ["Interfaces"],
             "Interfaces",
             [
-                "Interfaces",
                 "CLI Surface",
                 "API Surface",
                 "Configuration Surface",
@@ -260,7 +268,6 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
             ["Operations"],
             "Operations",
             [
-                "Operations",
                 "Installation and Setup",
                 "Local Development",
                 "Common Workflows",
