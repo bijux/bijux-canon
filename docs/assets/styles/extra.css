@@ -163,6 +163,32 @@ button {
   flex: 1 1 auto;
   min-width: 0;
   overflow-x: auto;
+  position: relative;
+  scrollbar-width: none;
+}
+
+.bijux-hub-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.bijux-hub-strip::before,
+.bijux-hub-strip::after {
+  content: "";
+  inset-block: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1.15rem;
+  z-index: 1;
+}
+
+.bijux-hub-strip::before {
+  background: linear-gradient(90deg, var(--bijux-hub-bg), rgba(30, 40, 82, 0));
+  inset-inline-start: 0;
+}
+
+.bijux-hub-strip::after {
+  background: linear-gradient(270deg, var(--bijux-hub-bg), rgba(30, 40, 82, 0));
+  inset-inline-end: 0;
 }
 
 .bijux-header-tools {
@@ -210,6 +236,7 @@ button {
   padding: 0.55rem 0;
   overflow-x: auto;
   scroll-padding-inline: 1.25rem;
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
   white-space: nowrap;
 }
@@ -221,6 +248,7 @@ button {
 .bijux-tabs__item {
   margin: 0;
   flex: 0 0 auto;
+  scroll-snap-align: center;
 }
 
 .bijux-tabs__link {
