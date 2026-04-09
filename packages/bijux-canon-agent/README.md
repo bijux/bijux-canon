@@ -39,7 +39,7 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 - compatibility package: [`bijux-agent`](https://pypi.org/project/bijux-agent/)
 - previous import root: `bijux_agent`
 - previous command: `bijux-agent`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-agent>
 
 ## What this package owns

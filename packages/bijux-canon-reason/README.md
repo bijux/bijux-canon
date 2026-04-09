@@ -38,7 +38,7 @@ you are outside this package's boundary.
 - compatibility package: [`bijux-rar`](https://pypi.org/project/bijux-rar/)
 - legacy import root: `bijux_rar`
 - legacy command: `bijux-rar`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-rar>
 
 ## What this package owns

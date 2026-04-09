@@ -38,7 +38,7 @@ here.
 - compatibility package: [`agentic-flows`](https://pypi.org/project/agentic-flows/)
 - legacy import root: `agentic_flows`
 - legacy command: `agentic-flows`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/agentic-flows>
 
 ## What this package owns

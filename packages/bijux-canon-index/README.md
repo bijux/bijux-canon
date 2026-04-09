@@ -39,7 +39,7 @@ tooling, you are outside this package's boundary.
 - compatibility package: [`bijux-vex`](https://pypi.org/project/bijux-vex/)
 - legacy import root: `bijux_vex`
 - legacy command: `bijux-vex`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-vex>
 
 ## What this package owns

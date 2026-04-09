@@ -108,8 +108,8 @@ Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
-PackageMap = "https://bijux.io/bijux-canon/package-map/"
-CompatibilityGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+PackageMap = "https://bijux.io/bijux-canon/bijux-canon/foundation/package-map/"
+CompatibilityGuide = "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
 
 [tool.hatch.version]
 source = "vcs"

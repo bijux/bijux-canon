@@ -23,11 +23,11 @@ REQUIRED_PUBLIC_URLS = {
 }
 BIJUX_SITE_URL = "https://bijux.io/"
 BIJUX_CANON_DOCS_URL = "https://bijux.io/bijux-canon/"
-PACKAGE_MAP_URL = "https://bijux.io/bijux-canon/package-map/"
+PACKAGE_MAP_URL = "https://bijux.io/bijux-canon/bijux-canon/foundation/package-map/"
 COMPATIBILITY_GUIDE_URL = (
-    "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+    "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
 )
-LEGACY_NAME_MAP_URL = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
+LEGACY_NAME_MAP_URL = "https://bijux.io/bijux-canon/compat-packages/catalog/legacy-name-map/"
 README_BADGE_MARKER = "https://img.shields.io"
 EXPECTED_BADGE_COUNT = 19
 EXPECTED_PYPI_GUIDE_BADGE_COUNT = 17
@@ -122,7 +122,7 @@ def _shared_docs_url(package_name: str) -> str:
 
 
 def _compat_docs_url(distribution_name: str) -> str:
-    return f"{BIJUX_CANON_DOCS_URL}compat-packages/{distribution_name}/"
+    return f"{BIJUX_CANON_DOCS_URL}compat-packages/catalog/{distribution_name}/"
 
 
 def test_all_packages_have_package_local_changelogs() -> None:
@@ -390,7 +390,7 @@ def test_public_release_package_readmes_publish_badges_and_absolute_links() -> N
                 f"{package_name}: README should advertise the canonical package family"
             )
         if (
-            "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
+            "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
             not in readme
         ):
             failures.append(

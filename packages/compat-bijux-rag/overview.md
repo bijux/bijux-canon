@@ -27,6 +27,6 @@ When updating callers, move to:
 
 - distribution: `bijux-canon-ingest`
 - Python import: `bijux_canon_ingest`
-- legacy package handbook: `https://bijux.io/bijux-canon/compat-packages/bijux-rag/`
+- legacy package handbook: `https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rag/`
 - docs entrypoint: `https://bijux.io/bijux-canon/bijux-canon-ingest/`
-- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`
+- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/`

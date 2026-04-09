@@ -29,13 +29,13 @@ PyPI. Each release keeps the legacy distribution, import, and command surfaces
 available while installing `bijux-canon-ingest` at the same version.
 
 Its package handbook lives at
-<https://bijux.io/bijux-canon/compat-packages/bijux-rag/>.
+<https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rag/>.
 
 ## Migration note
 
 - new installs should use `uv add bijux-canon-ingest`
 - existing automation can stay on `bijux-rag` while you update imports and commands
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-rag>
 
 ## Publication status
@@ -61,9 +61,9 @@ Its package handbook lives at
 Use `bijux-canon-ingest` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest>
-- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/bijux-rag/>
+- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rag/>
 - package docs: <https://bijux.io/bijux-canon/bijux-canon-ingest/>
-- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md>
 
 ## Primary entrypoint

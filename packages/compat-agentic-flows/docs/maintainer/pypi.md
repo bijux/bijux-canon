@@ -38,7 +38,7 @@ canonical `bijux-canon-runtime` version with the same install, import, and
 command continuity guarantees.
 
 The published package docs URL for this legacy name is
-<https://bijux.io/bijux-canon/compat-packages/agentic-flows/> so PyPI readers
+<https://bijux.io/bijux-canon/compat-packages/catalog/agentic-flows/> so PyPI readers
 land on migration-specific guidance before moving to the canonical runtime
 handbook.
 

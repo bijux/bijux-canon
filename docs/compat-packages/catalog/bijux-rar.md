@@ -34,7 +34,7 @@ installations should start with `bijux-canon-reason`.
 - keep `bijux-rar` only while existing automation still depends on the legacy
   name
 - use the shared migration handbook for rename planning and retirement review:
-  <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+  <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 
 ## Repository transition
 

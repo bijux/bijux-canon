@@ -44,11 +44,11 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/bijux-canon/compat-packages/agentic-flows/"
+Homepage = "https://bijux.io/bijux-canon/compat-packages/catalog/agentic-flows/"
 Website = "https://bijux.io/"
-Documentation = "https://bijux.io/bijux-canon/compat-packages/agentic-flows/"
-MigrationGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
-LegacyNameMap = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
+Documentation = "https://bijux.io/bijux-canon/compat-packages/catalog/agentic-flows/"
+MigrationGuide = "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
+LegacyNameMap = "https://bijux.io/bijux-canon/compat-packages/catalog/legacy-name-map/"
 Repository = "https://github.com/bijux/bijux-canon"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md"

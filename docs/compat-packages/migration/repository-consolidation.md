@@ -25,7 +25,7 @@ The consolidated source of truth for all of them is now:
 
 - repository: `https://github.com/bijux/bijux-canon`
 - repository handbook: `https://bijux.io/bijux-canon/`
-- shared migration guide: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`
+- shared migration guide: `https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/`
 
 ## What Should Change
 

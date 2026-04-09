@@ -40,16 +40,16 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/bijux-canon/compat-packages/bijux-rag/"
+Homepage = "https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rag/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
-Documentation = "https://bijux.io/bijux-canon/compat-packages/bijux-rag/"
+Documentation = "https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rag/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
-MigrationGuide = "https://bijux.io/bijux-canon/compat-packages/migration-guidance/"
-LegacyNameMap = "https://bijux.io/bijux-canon/compat-packages/legacy-name-map/"
+MigrationGuide = "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
+LegacyNameMap = "https://bijux.io/bijux-canon/compat-packages/catalog/legacy-name-map/"
 
 [project.scripts]
 bijux-rag = "bijux_canon_ingest.interfaces.cli.entrypoint:main"

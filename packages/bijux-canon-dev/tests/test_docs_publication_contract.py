@@ -75,3 +75,54 @@ def test_root_readme_package_map_advertises_resolvable_docs_pages() -> None:
     assert not failures, "README docs publication contract failed:\n" + "\n".join(
         failures
     )
+
+
+def _handbook_layout(section_root: Path) -> tuple[list[str], list[str], dict[str, int]]:
+    root_markdown = sorted(path.name for path in section_root.glob("*.md"))
+    section_dirs = sorted(path.name for path in section_root.iterdir() if path.is_dir())
+    section_counts = {
+        path.name: len(list(path.glob("*.md")))
+        for path in section_root.iterdir()
+        if path.is_dir()
+    }
+    return root_markdown, section_dirs, section_counts
+
+
+def test_repository_handbook_layout_is_sectioned() -> None:
+    root_markdown, section_dirs, section_counts = _handbook_layout(
+        REPO_ROOT / "docs" / "bijux-canon"
+    )
+
+    assert root_markdown == ["index.md"]
+    assert section_dirs == ["foundation", "operations"]
+    assert section_counts == {
+        "foundation": 10,
+        "operations": 10,
+    }
+
+
+def test_compatibility_handbook_layout_is_sectioned() -> None:
+    root_markdown, section_dirs, section_counts = _handbook_layout(
+        REPO_ROOT / "docs" / "compat-packages"
+    )
+
+    assert root_markdown == ["index.md"]
+    assert section_dirs == ["catalog", "migration"]
+    assert section_counts == {
+        "catalog": 10,
+        "migration": 10,
+    }
+
+
+def test_maintenance_handbook_layout_is_sectioned() -> None:
+    root_markdown, section_dirs, section_counts = _handbook_layout(
+        REPO_ROOT / "docs" / "bijux-canon-maintain"
+    )
+
+    assert root_markdown == ["index.md"]
+    assert section_dirs == ["bijux-canon-dev", "gh-workflows", "makes"]
+    assert section_counts == {
+        "bijux-canon-dev": 10,
+        "gh-workflows": 5,
+        "makes": 10,
+    }

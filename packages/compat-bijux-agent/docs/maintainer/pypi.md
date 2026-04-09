@@ -38,7 +38,7 @@ tracking `bijux-canon-agent` with the same install, import, and command
 continuity guarantees.
 
 The published package docs URL for this legacy name is
-<https://bijux.io/bijux-canon/compat-packages/bijux-agent/> so PyPI readers
+<https://bijux.io/bijux-canon/compat-packages/catalog/bijux-agent/> so PyPI readers
 land on migration-specific guidance before moving to the canonical agent
 handbook.
 

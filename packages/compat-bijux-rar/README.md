@@ -29,13 +29,13 @@ PyPI. Each release keeps the legacy distribution, import, and command surfaces
 available while installing `bijux-canon-reason` at the same version.
 
 Its package handbook lives at
-<https://bijux.io/bijux-canon/compat-packages/bijux-rar/>.
+<https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rar/>.
 
 ## Migration note
 
 - new installs should use `uv add bijux-canon-reason`
 - existing automation can stay on `bijux-rar` while you update imports and commands
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-rar>
 
 ## Publication status
@@ -61,9 +61,9 @@ Its package handbook lives at
 Use `bijux-canon-reason` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason>
-- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/bijux-rar/>
+- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rar/>
 - package docs: <https://bijux.io/bijux-canon/bijux-canon-reason/>
-- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md>
 
 ## Primary entrypoint

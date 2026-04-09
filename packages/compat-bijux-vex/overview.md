@@ -27,6 +27,6 @@ When updating callers, move to:
 
 - distribution: `bijux-canon-index`
 - Python import: `bijux_canon_index`
-- legacy package handbook: `https://bijux.io/bijux-canon/compat-packages/bijux-vex/`
+- legacy package handbook: `https://bijux.io/bijux-canon/compat-packages/catalog/bijux-vex/`
 - docs entrypoint: `https://bijux.io/bijux-canon/bijux-canon-index/`
-- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration-guidance/`
+- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/`

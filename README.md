@@ -55,8 +55,8 @@ to evolve without losing the plot.
 The package family now ships from a single repository:
 
 - canonical repository: <https://github.com/bijux/bijux-canon>
-- migration handbook: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
-- repository consolidation notes: <https://bijux.io/bijux-canon/compat-packages/repository-consolidation/>
+- migration handbook: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- repository consolidation notes: <https://bijux.io/bijux-canon/compat-packages/migration/repository-consolidation/>
 
 The following standalone repositories are being retired in favor of the
 consolidated `bijux-canon` source of truth:
@@ -91,11 +91,11 @@ The 10 publishable packages in this repository are:
 | `bijux-canon-ingest` | Deterministic ingest, chunking, indexing, and retrieval preparation | <https://pypi.org/project/bijux-canon-ingest/> | <https://bijux.io/bijux-canon/bijux-canon-ingest/> | [`packages/bijux-canon-ingest`](packages/bijux-canon-ingest) |
 | `bijux-canon-reason` | Contract-driven reasoning runtime and run artifacts | <https://pypi.org/project/bijux-canon-reason/> | <https://bijux.io/bijux-canon/bijux-canon-reason/> | [`packages/bijux-canon-reason`](packages/bijux-canon-reason) |
 | `bijux-canon-index` | Contract-driven vector execution and audited retrieval | <https://pypi.org/project/bijux-canon-index/> | <https://bijux.io/bijux-canon/bijux-canon-index/> | [`packages/bijux-canon-index`](packages/bijux-canon-index) |
-| `agentic-flows` | Compatibility package for `bijux-canon-runtime` | <https://pypi.org/project/agentic-flows/> | <https://bijux.io/bijux-canon/compat-packages/agentic-flows/> | [`packages/compat-agentic-flows`](packages/compat-agentic-flows) |
-| `bijux-agent` | Compatibility package for `bijux-canon-agent` | <https://pypi.org/project/bijux-agent/> | <https://bijux.io/bijux-canon/compat-packages/bijux-agent/> | [`packages/compat-bijux-agent`](packages/compat-bijux-agent) |
-| `bijux-rag` | Compatibility package for `bijux-canon-ingest` | <https://pypi.org/project/bijux-rag/> | <https://bijux.io/bijux-canon/compat-packages/bijux-rag/> | [`packages/compat-bijux-rag`](packages/compat-bijux-rag) |
-| `bijux-rar` | Compatibility package for `bijux-canon-reason` | <https://pypi.org/project/bijux-rar/> | <https://bijux.io/bijux-canon/compat-packages/bijux-rar/> | [`packages/compat-bijux-rar`](packages/compat-bijux-rar) |
-| `bijux-vex` | Compatibility package for `bijux-canon-index` | <https://pypi.org/project/bijux-vex/> | <https://bijux.io/bijux-canon/compat-packages/bijux-vex/> | [`packages/compat-bijux-vex`](packages/compat-bijux-vex) |
+| `agentic-flows` | Compatibility package for `bijux-canon-runtime` | <https://pypi.org/project/agentic-flows/> | <https://bijux.io/bijux-canon/compat-packages/catalog/agentic-flows/> | [`packages/compat-agentic-flows`](packages/compat-agentic-flows) |
+| `bijux-agent` | Compatibility package for `bijux-canon-agent` | <https://pypi.org/project/bijux-agent/> | <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-agent/> | [`packages/compat-bijux-agent`](packages/compat-bijux-agent) |
+| `bijux-rag` | Compatibility package for `bijux-canon-ingest` | <https://pypi.org/project/bijux-rag/> | <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rag/> | [`packages/compat-bijux-rag`](packages/compat-bijux-rag) |
+| `bijux-rar` | Compatibility package for `bijux-canon-reason` | <https://pypi.org/project/bijux-rar/> | <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rar/> | [`packages/compat-bijux-rar`](packages/compat-bijux-rar) |
+| `bijux-vex` | Compatibility package for `bijux-canon-index` | <https://pypi.org/project/bijux-vex/> | <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-vex/> | [`packages/compat-bijux-vex`](packages/compat-bijux-vex) |
 
 Repository-owned developer tooling also lives here in
 [`packages/bijux-canon-dev`](packages/bijux-canon-dev), but it is for

@@ -39,7 +39,7 @@ This package should help a maintainer answer practical questions such as:
 - compatibility package: [`bijux-rag`](https://pypi.org/project/bijux-rag/)
 - legacy import root: `bijux_rag`
 - legacy command: `bijux-rag`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-rag>
 
 ## What this package owns

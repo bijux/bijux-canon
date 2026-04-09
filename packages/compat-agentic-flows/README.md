@@ -31,13 +31,13 @@ version.
 
 This package exists to reduce migration breakage, not to become the preferred
 entrypoint for new work. Its package handbook lives at
-<https://bijux.io/bijux-canon/compat-packages/agentic-flows/>.
+<https://bijux.io/bijux-canon/compat-packages/catalog/agentic-flows/>.
 
 ## Migration note
 
 - new installs should use `uv add bijux-canon-runtime`
 - existing automation can stay on `agentic-flows` while you update imports and commands
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/agentic-flows>
 
 ## Publication status
@@ -63,9 +63,9 @@ entrypoint for new work. Its package handbook lives at
 Depend on `bijux-canon-runtime` directly and read the canonical docs there:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime>
-- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/agentic-flows/>
+- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/catalog/agentic-flows/>
 - package docs: <https://bijux.io/bijux-canon/bijux-canon-runtime/>
-- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration-guidance/>
+- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md>
 
 ## Primary entrypoint
