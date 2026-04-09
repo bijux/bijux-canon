@@ -4,61 +4,23 @@
 from __future__ import annotations
 
 import multiprocessing
-import os
 from pathlib import Path
-import signal
 
-import bijux_canon_index
-import bijux_canon_reason
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
-from bijux_canon_runtime.application.planner import ExecutionPlanner
-from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
-from bijux_canon_runtime.ontology.ids import AgentID, BundleID, RunID, TenantID
+from bijux_canon_runtime.testing.crash_recovery import run_with_crash
+from bijux_canon_runtime.ontology.ids import RunID, TenantID
 import duckdb
 import pytest
 
 pytestmark = pytest.mark.regression
-
-
-def _run_with_crash(db_path: str, resolved_flow, verification_policy) -> None:
-    os.environ["AF_CRASH_AT_STEP"] = "0"
-    resolved_flow = ExecutionPlanner().resolve(resolved_flow.manifest)
-    bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
-    bijux_canon_reason.reason = lambda **_kwargs: ReasoningBundle(
-        spec_version="v1",
-        bundle_id=BundleID("bundle-crash"),
-        claims=(),
-        steps=(),
-        evidence_ids=(),
-        producer_agent_id=AgentID("agent-a"),
-    )
-    execution_store = DuckDBExecutionWriteStore(Path(db_path))
-    result = execute_flow(
-        resolved_flow=resolved_flow,
-        config=ExecutionConfig(
-            mode=RunMode.LIVE,
-            determinism_level=resolved_flow.manifest.determinism_level,
-            execution_store=execution_store,
-            verification_policy=verification_policy,
-        ),
-    )
-    if result.run_id is not None and result.trace is not None:
-        last_step = max(event.step_index for event in result.trace.events)
-        execution_store.save_checkpoint(
-            run_id=result.run_id,
-            tenant_id=result.trace.tenant_id,
-            step_index=last_step,
-            event_index=result.trace.events[-1].event_index,
-        )
-    os.kill(os.getpid(), signal.SIGKILL)
 
 
 def test_crash_recovery_resume(
@@ -69,7 +31,7 @@ def test_crash_recovery_resume(
     db_path = tmp_path / "crash.duckdb"
     context = multiprocessing.get_context("spawn")
     process = context.Process(
-        target=_run_with_crash,
+        target=run_with_crash,
         args=(str(db_path), resolved_flow, baseline_policy),
     )
     process.start()

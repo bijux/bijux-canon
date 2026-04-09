@@ -103,7 +103,7 @@ FAILURE_RESPONSES = {
         "description": "Required runtime headers are missing or invalid.",
         "model": FailureEnvelope,
     },
-    status.HTTP_422_UNPROCESSABLE_ENTITY: {
+    status.HTTP_422_UNPROCESSABLE_CONTENT: {
         "description": "Request validation failed.",
         "model": FailureEnvelope,
     },
@@ -145,7 +145,7 @@ async def method_guard(
 def handle_validation_error(_: Request, __: RequestValidationError) -> JSONResponse:
     """Return a structural failure envelope for request validation errors."""
     return structural_failure_response(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         violated_contract="request_validation",
     )
 
