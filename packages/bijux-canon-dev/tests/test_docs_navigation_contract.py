@@ -207,3 +207,73 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
         "Code Navigation",
         "Architecture Risks",
     ]
+
+
+@pytest.mark.parametrize(
+    ("relative_path", "expected_active_detail", "expected_sidebar_title", "expected_sidebar_links"),
+    [
+        (
+            "bijux-canon-index/interfaces/index.html",
+            ["Interfaces"],
+            "Interfaces",
+            [
+                "Interfaces",
+                "CLI Surface",
+                "API Surface",
+                "Configuration Surface",
+                "Data Contracts",
+                "Artifact Contracts",
+                "Entrypoints and Examples",
+                "Operator Workflows",
+                "Public Imports",
+                "Compatibility Commitments",
+            ],
+        ),
+        (
+            "bijux-canon-index/interfaces/api-surface/index.html",
+            ["Interfaces"],
+            "Interfaces",
+            [
+                "Interfaces",
+                "CLI Surface",
+                "API Surface",
+                "Configuration Surface",
+                "Data Contracts",
+                "Artifact Contracts",
+                "Entrypoints and Examples",
+                "Operator Workflows",
+                "Public Imports",
+                "Compatibility Commitments",
+            ],
+        ),
+        (
+            "bijux-canon-ingest/operations/index.html",
+            ["Operations"],
+            "Operations",
+            [
+                "Operations",
+                "Installation and Setup",
+                "Local Development",
+                "Common Workflows",
+                "Observability and Diagnostics",
+                "Performance and Scaling",
+                "Failure Recovery",
+                "Release and Versioning",
+                "Security and Safety",
+                "Deployment Boundaries",
+            ],
+        ),
+    ],
+)
+def test_section_pages_keep_sidebar_scoped_to_current_third_row(
+    rendered_docs: Path,
+    relative_path: str,
+    expected_active_detail: list[str],
+    expected_sidebar_title: str,
+    expected_sidebar_links: list[str],
+) -> None:
+    page = _parse_navigation(rendered_docs, relative_path)
+
+    assert page.active_detail_tabs == expected_active_detail
+    assert page.sidebar_title == expected_sidebar_title
+    assert page.sidebar_links == expected_sidebar_links
