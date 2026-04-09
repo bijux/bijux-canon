@@ -3,13 +3,14 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import shutil
-import subprocess
 import sys
 
 try:
     import tomllib
 except ModuleNotFoundError:  # pragma: no cover
     import tomli as tomllib
+
+from bijux_canon_dev.trusted_process import run_text
 
 
 def parse_args() -> argparse.Namespace:
@@ -26,12 +27,11 @@ def _pyproject_data(pyproject_path: Path) -> dict[str, object]:
 
 
 def _resolve_hatch_version(pyproject_path: Path) -> str | None:
-    result = subprocess.run(  # noqa: S603 - invokes the package-local Hatch CLI
+    result = run_text(
         [sys.executable, "-m", "hatch", "version"],
         capture_output=True,
         check=False,
         cwd=pyproject_path.parent,
-        text=True,
     )
     if result.returncode != 0:
         return None
@@ -69,7 +69,7 @@ def resolve_version(pyproject_path: Path, package_name: str) -> str:
     if hatch_version:
         return hatch_version
 
-    tag_process = subprocess.run(
+    tag_process = run_text(
         [
             _git_executable(),
             "tag",
@@ -79,7 +79,6 @@ def resolve_version(pyproject_path: Path, package_name: str) -> str:
         ],
         capture_output=True,
         check=False,
-        text=True,
     )
     tags = [line.strip() for line in tag_process.stdout.splitlines() if line.strip()]
     if tags:

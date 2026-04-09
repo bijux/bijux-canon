@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-import subprocess
 import sys
+
+from bijux_canon_dev.trusted_process import run_text
 
 MONOREPO_ROOT = Path(__file__).resolve().parents[6]
 PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "bijux-canon-runtime"
@@ -29,11 +30,10 @@ def main() -> int:
         print("Dependency allowlist is empty; skipping")
         return 0
 
-    result = subprocess.run(
+    result = run_text(
         [sys.executable, "-m", "pip", "freeze"],
         check=False,
         capture_output=True,
-        text=True,
         cwd=PACKAGE_ROOT,
     )
     installed = {

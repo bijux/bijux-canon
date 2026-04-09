@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 import shutil
-import subprocess
+
+from bijux_canon_dev.trusted_process import run_text
 
 
 def package_root() -> Path:
@@ -17,7 +18,7 @@ def git_executable() -> str:
 
 
 def main() -> int:
-    result = subprocess.run(
+    result = run_text(
         [
             git_executable(),
             "ls-files",
@@ -26,7 +27,6 @@ def main() -> int:
             "--exclude-standard",
         ],
         capture_output=True,
-        text=True,
         check=False,
         cwd=package_root(),
     )

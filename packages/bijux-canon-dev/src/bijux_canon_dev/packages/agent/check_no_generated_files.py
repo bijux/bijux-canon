@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 import shutil
-import subprocess
+
+from bijux_canon_dev.trusted_process import run_text
 
 PATTERNS = ("__pycache__", ".pyc", ".coverage", ".mypy_cache", ".ruff_cache")
 
@@ -19,10 +20,9 @@ def git_executable() -> str:
 
 
 def main() -> int:
-    result = subprocess.run(
+    result = run_text(
         [git_executable(), "ls-files"],
         capture_output=True,
-        text=True,
         check=False,
         cwd=repo_root(),
     )
