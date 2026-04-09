@@ -375,18 +375,22 @@ nav:
       - Operating Guidelines: bijux-canon-maintain/operating-guidelines.md
   - Compatibility Packages:
       - Compatibility Packages: compat-packages/index.md
-      - agentic-flows: compat-packages/agentic-flows/index.md
-      - bijux-agent: compat-packages/bijux-agent/index.md
-      - bijux-rag: compat-packages/bijux-rag/index.md
-      - bijux-rar: compat-packages/bijux-rar/index.md
-      - bijux-vex: compat-packages/bijux-vex/index.md
-      - Compatibility Overview: compat-packages/compatibility-overview.md
-      - Legacy Name Map: compat-packages/legacy-name-map.md
-      - Migration Guidance: compat-packages/migration-guidance.md
-      - Repository Consolidation: compat-packages/repository-consolidation.md
-      - Package Behavior: compat-packages/package-behavior.md
-      - Import Surfaces: compat-packages/import-surfaces.md
-      - Command Surfaces: compat-packages/command-surfaces.md
-      - Release Policy: compat-packages/release-policy.md
-      - Validation Strategy: compat-packages/validation-strategy.md
-      - Retirement Conditions: compat-packages/retirement-conditions.md
+      - Catalog:
+          - Catalog: compat-packages/catalog/index.md
+          - agentic-flows: compat-packages/catalog/agentic-flows.md
+          - bijux-agent: compat-packages/catalog/bijux-agent.md
+          - bijux-rag: compat-packages/catalog/bijux-rag.md
+          - bijux-rar: compat-packages/catalog/bijux-rar.md
+          - bijux-vex: compat-packages/catalog/bijux-vex.md
+          - Legacy Name Map: compat-packages/catalog/legacy-name-map.md
+          - Package Behavior: compat-packages/catalog/package-behavior.md
+          - Import Surfaces: compat-packages/catalog/import-surfaces.md
+          - Command Surfaces: compat-packages/catalog/command-surfaces.md
+      - Migration:
+          - Migration: compat-packages/migration-guidance.md
+          - Compatibility Overview: compat-packages/compatibility-overview.md
+          - Migration Guidance: compat-packages/migration-guidance.md
+          - Repository Consolidation: compat-packages/repository-consolidation.md
+          - Release Policy: compat-packages/release-policy.md
+          - Validation Strategy: compat-packages/validation-strategy.md
+          - Retirement Conditions: compat-packages/retirement-conditions.md

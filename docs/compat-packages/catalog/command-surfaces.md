@@ -1,45 +1,44 @@
 ---
-title: Compatibility Packages
+title: Command Surfaces
 audience: mixed
-type: index
+type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
 last_reviewed: 2026-04-04
 ---
 
-# Compatibility Packages
+# Command Surfaces
 
-The compatibility packages preserve older distribution names, import names,
-and command names while the canonical package family now lives under the
-`bijux-canon-*` naming system.
+Some compatibility packages also preserve historic command names so migration
+does not break operator scripts immediately.
 
-They should be easy to understand but hard to romanticize. Their job is to
-reduce migration pain, not to compete with the canonical package family for
-new work.
+This page should keep those commands in context. A preserved command should
+feel like a safety rail on the way to the canonical package, not like a new
+invitation to stay on the old name forever.
 
 These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Compatibility Packages<br/>clarifies: map old names | choose migration | judge retirement"]
+flowchart TB
+    page["Command Surfaces<br/>clarifies: map old names | choose migration | judge retirement"]
     classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
     classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    legacy1["command names"]
+    legacy1["distribution names"]
     legacy1 --> page
-    legacy2["distribution names"]
+    legacy2["import names"]
     legacy2 --> page
-    legacy3["import names"]
+    legacy3["command names"]
     legacy3 --> page
-    canon1["current handbook surfaces"]
+    canon1["new work"]
     page --> canon1
-    canon2["current packages"]
+    canon2["current handbook surfaces"]
     page --> canon2
-    canon3["new work"]
+    canon3["current packages"]
     page --> canon3
     pressure1["migration pressure"]
     pressure1 -.should shorten the life of.-> page
@@ -53,42 +52,10 @@ flowchart RL
     class pressure1,pressure2,pressure3 action;
 ```
 
-## Sections
+## Command Rule
 
-- [Catalog](catalog/index.md) for legacy package entries, preserved names, and
-  the concrete surfaces each compatibility package still carries
-- [Migration](migration-guidance.md) for rename planning, release posture,
-  validation, and retirement decisions while the migration section is being
-  expanded into its own directory
-
-## Pages In Catalog
-
-- [agentic-flows](catalog/agentic-flows.md)
-- [bijux-agent](catalog/bijux-agent.md)
-- [bijux-rag](catalog/bijux-rag.md)
-- [bijux-rar](catalog/bijux-rar.md)
-- [bijux-vex](catalog/bijux-vex.md)
-- [Legacy Name Map](catalog/legacy-name-map.md)
-- [Package Behavior](catalog/package-behavior.md)
-- [Import Surfaces](catalog/import-surfaces.md)
-- [Command Surfaces](catalog/command-surfaces.md)
-
-## Current Migration Pages
-
-- [Compatibility Overview](compatibility-overview.md)
-- [Migration Guidance](migration-guidance.md)
-- [Repository Consolidation](repository-consolidation.md)
-- [Release Policy](release-policy.md)
-- [Validation Strategy](validation-strategy.md)
-- [Retirement Conditions](retirement-conditions.md)
-
-## Retired Standalone Repositories
-
-- `https://github.com/bijux/agentic-flows`
-- `https://github.com/bijux/bijux-agent`
-- `https://github.com/bijux/bijux-rag`
-- `https://github.com/bijux/bijux-rar`
-- `https://github.com/bijux/bijux-vex`
+A compatibility command should only exist when the canonical package still
+provides a meaningful route behind it.
 
 ## Concrete Anchors
 
@@ -104,7 +71,7 @@ flowchart RL
 
 ## Decision Rule
 
-Use `Compatibility Packages` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
+Use `Command Surfaces` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
 
 ## What This Page Answers
 
@@ -130,8 +97,8 @@ This section documents preserved legacy surfaces, but it does not claim those le
 
 ## Purpose
 
-This page explains the role of the compatibility handbooks without encouraging new work to start there.
+This page records the intent behind legacy command preservation.
 
 ## Stability
 
-Keep it aligned with the legacy packages that still ship from `packages/compat-*`.
+Keep it aligned with the command declarations in compatibility package metadata.

@@ -252,21 +252,31 @@ def test_compatibility_detail_tabs_keep_package_names(rendered_docs: Path) -> No
 
     assert page.detail_tabs == [
         "Home",
+        "Catalog",
+        "Migration",
+    ]
+
+
+def test_compatibility_catalog_leaf_pages_keep_section_sidebar(
+    rendered_docs: Path,
+) -> None:
+    page = _parse_navigation(
+        rendered_docs,
+        "compat-packages/catalog/bijux-agent/index.html",
+    )
+
+    assert page.active_detail_tabs == ["Catalog"]
+    assert page.sidebar_title == "Catalog"
+    assert page.sidebar_links == [
         "agentic-flows",
         "bijux-agent",
         "bijux-rag",
         "bijux-rar",
         "bijux-vex",
-        "Compatibility Overview",
         "Legacy Name Map",
-        "Migration Guidance",
-        "Repository Consolidation",
         "Package Behavior",
         "Import Surfaces",
         "Command Surfaces",
-        "Release Policy",
-        "Validation Strategy",
-        "Retirement Conditions",
     ]
 
 

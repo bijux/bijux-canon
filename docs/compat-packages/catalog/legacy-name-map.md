@@ -1,21 +1,19 @@
 ---
-title: Compatibility Packages
+title: Legacy Name Map
 audience: mixed
-type: index
+type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
 last_reviewed: 2026-04-04
 ---
 
-# Compatibility Packages
+# Legacy Name Map
 
-The compatibility packages preserve older distribution names, import names,
-and command names while the canonical package family now lives under the
-`bijux-canon-*` naming system.
-
-They should be easy to understand but hard to romanticize. Their job is to
-reduce migration pain, not to compete with the canonical package family for
-new work.
+- `agentic-flows` maps to `bijux-canon-runtime`
+- `bijux-agent` maps to `bijux-canon-agent`
+- `bijux-rag` maps to `bijux-canon-ingest`
+- `bijux-rar` maps to `bijux-canon-reason`
+- `bijux-vex` maps to `bijux-canon-index`
 
 These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
@@ -23,7 +21,7 @@ These compatibility pages should make legacy names understandable without romant
 
 ```mermaid
 flowchart RL
-    page["Compatibility Packages<br/>clarifies: map old names | choose migration | judge retirement"]
+    page["Legacy Name Map<br/>clarifies: map old names | choose migration | judge retirement"]
     classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
     classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
@@ -41,54 +39,17 @@ flowchart RL
     page --> canon2
     canon3["new work"]
     page --> canon3
-    pressure1["migration pressure"]
+    pressure1["retirement readiness"]
     pressure1 -.should shorten the life of.-> page
-    pressure2["retirement readiness"]
+    pressure2["do not normalize the old name"]
     pressure2 -.should shorten the life of.-> page
-    pressure3["do not normalize the old name"]
+    pressure3["migration pressure"]
     pressure3 -.should shorten the life of.-> page
     class page page;
     class legacy1,legacy2,legacy3 caution;
     class canon1,canon2,canon3 positive;
     class pressure1,pressure2,pressure3 action;
 ```
-
-## Sections
-
-- [Catalog](catalog/index.md) for legacy package entries, preserved names, and
-  the concrete surfaces each compatibility package still carries
-- [Migration](migration-guidance.md) for rename planning, release posture,
-  validation, and retirement decisions while the migration section is being
-  expanded into its own directory
-
-## Pages In Catalog
-
-- [agentic-flows](catalog/agentic-flows.md)
-- [bijux-agent](catalog/bijux-agent.md)
-- [bijux-rag](catalog/bijux-rag.md)
-- [bijux-rar](catalog/bijux-rar.md)
-- [bijux-vex](catalog/bijux-vex.md)
-- [Legacy Name Map](catalog/legacy-name-map.md)
-- [Package Behavior](catalog/package-behavior.md)
-- [Import Surfaces](catalog/import-surfaces.md)
-- [Command Surfaces](catalog/command-surfaces.md)
-
-## Current Migration Pages
-
-- [Compatibility Overview](compatibility-overview.md)
-- [Migration Guidance](migration-guidance.md)
-- [Repository Consolidation](repository-consolidation.md)
-- [Release Policy](release-policy.md)
-- [Validation Strategy](validation-strategy.md)
-- [Retirement Conditions](retirement-conditions.md)
-
-## Retired Standalone Repositories
-
-- `https://github.com/bijux/agentic-flows`
-- `https://github.com/bijux/bijux-agent`
-- `https://github.com/bijux/bijux-rag`
-- `https://github.com/bijux/bijux-rar`
-- `https://github.com/bijux/bijux-vex`
 
 ## Concrete Anchors
 
@@ -104,7 +65,7 @@ flowchart RL
 
 ## Decision Rule
 
-Use `Compatibility Packages` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
+Use `Legacy Name Map` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
 
 ## What This Page Answers
 
@@ -130,8 +91,8 @@ This section documents preserved legacy surfaces, but it does not claim those le
 
 ## Purpose
 
-This page explains the role of the compatibility handbooks without encouraging new work to start there.
+This page provides the exact mapping between retired public names and current canonical names.
 
 ## Stability
 
-Keep it aligned with the legacy packages that still ship from `packages/compat-*`.
+Update it only when a compatibility package is added or retired.
