@@ -207,6 +207,8 @@ def test_markdown_workflow_links_track_checked_in_workflow_tree() -> None:
                 )
 
     root_readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-    root_workflows = {match.group("workflow") for match in WORKFLOW_URL_RE.finditer(root_readme)}
+    root_workflows = {
+        match.group("workflow") for match in WORKFLOW_URL_RE.finditer(root_readme)
+    }
     assert {"verify.yml", "publish.yml", "deploy-docs.yml"} <= root_workflows
     assert not failures, "workflow doc links failed:\n" + "\n".join(failures)
