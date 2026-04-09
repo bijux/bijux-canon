@@ -3,21 +3,35 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import bijux_canon_agent
 import bijux_canon_index
 import bijux_canon_reason
+import bijux_rag
+import pytest
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
+from bijux_canon_runtime.model.artifact.artifact import Artifact
+from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.artifact.reasoning_claim import ReasoningClaim
+from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.datasets.retrieval_request import RetrievalRequest
+from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
+from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.reasoning.step import ReasoningStep
+from bijux_canon_runtime.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.observability.storage.execution_store import (
+    DuckDBExecutionWriteStore,
+)
 from bijux_canon_runtime.ontology import (
     ArtifactType,
     DeterminismLevel,
@@ -44,8 +58,6 @@ from bijux_canon_runtime.ontology.public import (
     ReplayAcceptability,
 )
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
-import bijux_rag
-import pytest
 
 from tests.helpers import build_claim_statement
 
@@ -53,8 +65,11 @@ pytestmark = pytest.mark.regression
 
 
 def _resolved_flow_for_budget(
-    resolved_flow_factory, entropy_budget, replay_envelope, dataset_descriptor
-):
+    resolved_flow_factory: Callable[..., ExecutionPlan],
+    entropy_budget: EntropyBudget,
+    replay_envelope: ReplayEnvelope,
+    dataset_descriptor: DatasetDescriptor,
+) -> ExecutionPlan:
     request = RetrievalRequest(
         spec_version="v1",
         request_id=RequestID("req-1"),
@@ -102,12 +117,12 @@ def _resolved_flow_for_budget(
 
 
 def test_step_budget_halts_flow(
-    baseline_policy,
-    resolved_flow_factory,
-    entropy_budget,
-    replay_envelope,
-    dataset_descriptor,
-    execution_store,
+    baseline_policy: VerificationPolicy,
+    resolved_flow_factory: Callable[..., ExecutionPlan],
+    entropy_budget: EntropyBudget,
+    replay_envelope: ReplayEnvelope,
+    dataset_descriptor: DatasetDescriptor,
+    execution_store: DuckDBExecutionWriteStore,
 ) -> None:
     bijux_canon_agent.run = lambda **_kwargs: [
         {
@@ -159,16 +174,17 @@ def test_step_budget_halts_flow(
         ),
     )
 
+    assert result.trace is not None
     assert result.trace.events[-1].event_type == EventType.STEP_FAILED
 
 
 def test_token_budget_failure_is_deterministic(
-    baseline_policy,
-    resolved_flow_factory,
-    entropy_budget,
-    replay_envelope,
-    dataset_descriptor,
-    execution_store,
+    baseline_policy: VerificationPolicy,
+    resolved_flow_factory: Callable[..., ExecutionPlan],
+    entropy_budget: EntropyBudget,
+    replay_envelope: ReplayEnvelope,
+    dataset_descriptor: DatasetDescriptor,
+    execution_store: DuckDBExecutionWriteStore,
 ) -> None:
     bijux_canon_agent.run = lambda **_kwargs: [
         {
@@ -190,7 +206,11 @@ def test_token_budget_failure_is_deterministic(
     ]
     bijux_canon_index.enforce_contract = lambda *_args, **_kwargs: True
 
-    def _reason(agent_outputs, evidence, seed):
+    def _reason(
+        agent_outputs: list[Artifact],
+        evidence: list[RetrievedEvidence],
+        seed: int,
+    ) -> ReasoningBundle:
         statement = build_claim_statement(agent_outputs, evidence)
         return ReasoningBundle(
             spec_version="v1",
@@ -241,6 +261,7 @@ def test_token_budget_failure_is_deterministic(
         ),
     )
 
+    assert result.trace is not None
     assert any(
         event.event_type == EventType.REASONING_FAILED for event in result.trace.events
     )
@@ -251,12 +272,12 @@ def test_token_budget_failure_is_deterministic(
 
 
 def test_artifact_step_budget_halts_flow(
-    baseline_policy,
-    resolved_flow_factory,
-    entropy_budget,
-    replay_envelope,
-    dataset_descriptor,
-    execution_store,
+    baseline_policy: VerificationPolicy,
+    resolved_flow_factory: Callable[..., ExecutionPlan],
+    entropy_budget: EntropyBudget,
+    replay_envelope: ReplayEnvelope,
+    dataset_descriptor: DatasetDescriptor,
+    execution_store: DuckDBExecutionWriteStore,
 ) -> None:
     bijux_canon_agent.run = lambda **_kwargs: [
         {
@@ -308,16 +329,17 @@ def test_artifact_step_budget_halts_flow(
         ),
     )
 
+    assert result.trace is not None
     assert result.trace.events[-1].event_type == EventType.STEP_FAILED
 
 
 def test_evidence_budget_halts_flow(
-    baseline_policy,
-    resolved_flow_factory,
-    entropy_budget,
-    replay_envelope,
-    dataset_descriptor,
-    execution_store,
+    baseline_policy: VerificationPolicy,
+    resolved_flow_factory: Callable[..., ExecutionPlan],
+    entropy_budget: EntropyBudget,
+    replay_envelope: ReplayEnvelope,
+    dataset_descriptor: DatasetDescriptor,
+    execution_store: DuckDBExecutionWriteStore,
 ) -> None:
     bijux_canon_agent.run = lambda **_kwargs: [
         {
@@ -369,4 +391,5 @@ def test_evidence_budget_halts_flow(
         ),
     )
 
+    assert result.trace is not None
     assert result.trace.events[-1].event_type == EventType.RETRIEVAL_FAILED

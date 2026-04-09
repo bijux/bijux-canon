@@ -3,22 +3,29 @@
 
 from __future__ import annotations
 
+import pytest
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
+from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.observability.analysis.drift import (
     entropy_drift,
     outcome_drift,
 )
 from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summary
-import pytest
+from bijux_canon_runtime.observability.storage.execution_store import (
+    DuckDBExecutionWriteStore,
+)
 
 pytestmark = pytest.mark.regression
 
 
-def test_temporal_drift_is_within_bounds(resolved_flow, execution_store) -> None:
+def test_temporal_drift_is_within_bounds(
+    resolved_flow: ExecutionPlan,
+    execution_store: DuckDBExecutionWriteStore,
+) -> None:
     first = execute_flow(
         resolved_flow=resolved_flow,
         config=ExecutionConfig(
@@ -27,6 +34,7 @@ def test_temporal_drift_is_within_bounds(resolved_flow, execution_store) -> None
             execution_store=execution_store,
         ),
     )
+    assert first.trace is not None
     first_summary = entropy_summary(first.trace.entropy_usage)
     first_outcome = {
         "claim_count": len(first.trace.claim_ids),
@@ -41,6 +49,7 @@ def test_temporal_drift_is_within_bounds(resolved_flow, execution_store) -> None
             execution_store=execution_store,
         ),
     )
+    assert second.trace is not None
     drift = entropy_drift(
         first_summary,
         entropy_summary(second.trace.entropy_usage),

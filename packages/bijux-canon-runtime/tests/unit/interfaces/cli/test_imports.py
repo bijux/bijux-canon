@@ -16,10 +16,10 @@ pytestmark = pytest.mark.unit
 
 
 def test_imports() -> None:
-    assert execute_flow
-    assert ExecutionConfig
-    assert RunMode
-    assert FlowManifest
+    assert callable(execute_flow)
+    assert ExecutionConfig.__name__ == "ExecutionConfig"
+    assert RunMode.__name__ == "RunMode"
+    assert FlowManifest.__name__ == "FlowManifest"
     assert set(bijux_canon_runtime.__all__) == {
         "FlowManifest",
         "RunMode",
