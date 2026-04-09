@@ -115,26 +115,13 @@
       <div class="md-grid">
         <ul class="bijux-tabs__list bijux-tabs__list--detail">
           {% for child in active_section.item.children %}
-            {% if child.title == "Overview" %}
-              {% set item_class = "bijux-tabs__item" %}
-              {% if child.active %}
-                {% set item_class = item_class ~ " bijux-tabs__item--active" %}
-              {% endif %}
-              <li class="{{ item_class }}">
-                <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ bijux_nav.detail_label(child) }}</a>
-              </li>
+            {% set item_class = "bijux-tabs__item" %}
+            {% if child.active %}
+              {% set item_class = item_class ~ " bijux-tabs__item--active" %}
             {% endif %}
-          {% endfor %}
-          {% for child in active_section.item.children | sort(attribute="title") %}
-            {% if child.title != "Overview" %}
-              {% set item_class = "bijux-tabs__item" %}
-              {% if child.active %}
-                {% set item_class = item_class ~ " bijux-tabs__item--active" %}
-              {% endif %}
-              <li class="{{ item_class }}">
-                <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ bijux_nav.detail_label(child) }}</a>
-              </li>
-            {% endif %}
+            <li class="{{ item_class }}">
+              <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ bijux_nav.detail_label(child) }}</a>
+            </li>
           {% endfor %}
         </ul>
       </div>
