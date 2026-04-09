@@ -386,6 +386,12 @@ nav:
           - Package Contracts: bijux-canon-maintain/makes/package-contracts.md
           - Release Surfaces: bijux-canon-maintain/makes/release-surfaces.md
           - Authoring Rules: bijux-canon-maintain/makes/authoring-rules.md
+      - gh-workflows:
+          - gh-workflows: bijux-canon-maintain/gh-workflows/index.md
+          - verify: bijux-canon-maintain/gh-workflows/verify.md
+          - reusable-workflows: bijux-canon-maintain/gh-workflows/reusable-workflows.md
+          - deploy-docs: bijux-canon-maintain/gh-workflows/deploy-docs.md
+          - publish: bijux-canon-maintain/gh-workflows/publish.md
   - Compatibility Packages:
       - Compatibility Packages: compat-packages/index.md
       - Catalog:

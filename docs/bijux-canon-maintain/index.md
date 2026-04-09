@@ -56,6 +56,8 @@ flowchart LR
   guardrails
 - [makes](makes/index.md) for the shared make entrypoints, package dispatch,
   CI target families, and release-facing command surfaces
+- [gh-workflows](gh-workflows/index.md) for GitHub Actions verification,
+  publication, docs deployment, and reusable workflow contracts
 
 ## Shared Maintenance Anchors
 

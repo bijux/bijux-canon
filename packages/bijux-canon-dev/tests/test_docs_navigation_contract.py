@@ -311,6 +311,7 @@ def test_maintenance_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
         "Home",
         "bijux-canon-dev",
         "makes",
+        "gh-workflows",
     ]
     assert page.active_detail_tabs == ["Home"]
 
@@ -358,6 +359,24 @@ def test_maintenance_make_leaf_pages_keep_section_sidebar(
         "Package Contracts",
         "Release Surfaces",
         "Authoring Rules",
+    ]
+
+
+def test_maintenance_workflow_leaf_pages_keep_section_sidebar(
+    rendered_docs: Path,
+) -> None:
+    page = _parse_navigation(
+        rendered_docs,
+        "bijux-canon-maintain/gh-workflows/publish/index.html",
+    )
+
+    assert page.active_detail_tabs == ["gh-workflows"]
+    assert page.sidebar_title == "gh-workflows"
+    assert page.sidebar_links == [
+        "verify",
+        "reusable-workflows",
+        "deploy-docs",
+        "publish",
     ]
 
 
