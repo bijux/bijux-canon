@@ -1,6 +1,6 @@
 MONOREPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 ROOT_MAKE_DIR := $(MONOREPO_ROOT)/makes
-CONFIG_DIR := $(MONOREPO_ROOT)/configs/$(PROJECT_SLUG)
+CONFIG_DIR := $(MONOREPO_ROOT)/configs
 DOCS_CONFIG_CLI ?= -m bijux_canon_dev.docs.mkdocs_config
 DEPTRY_SCAN_SCRIPT ?= $(VENV_PYTHON) -m bijux_canon_dev.quality.deptry_scan
 DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
