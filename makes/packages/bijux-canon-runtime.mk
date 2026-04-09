@@ -1,5 +1,6 @@
 PACKAGE_KIND := workspace-python
 PACKAGE_IMPORT_NAME := bijux_canon_runtime
+MYPY_TARGETS := $(if $(LINT_SCOPE),$(LINT_SCOPE),src/bijux_canon_runtime)
 
 SECURITY_EXTRA_CHECKS := $(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/runtime/check_dependency_allowlist.py
 # The checked-in schema already includes the /api/v1 prefix in each path.

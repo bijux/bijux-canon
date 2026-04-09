@@ -22,8 +22,10 @@ __all__ = [name for name in _impl_all if hasattr(_impl, name)]
 
 
 def __getattr__(name: str) -> object:
+    """Proxy unresolved attributes to the canonical ingest package."""
     return getattr(_impl, name)
 
 
 def __dir__() -> list[str]:
+    """Expose merged module attributes for interactive discovery."""
     return sorted({*globals(), *dir(_impl), *__all__})

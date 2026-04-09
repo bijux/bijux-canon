@@ -31,3 +31,23 @@ per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama",
 known_first_party = ["bijux_canon_index"]
 ignore = ["DEP001"]
 per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom", "faiss-cpu"], DEP003 = ["bijux_canon_index"] }
+
+[tool.repo_deptry.packages."compat-agentic-flows"]
+known_first_party = ["agentic_flows"]
+per_rule_ignores = { DEP001 = ["bijux_canon_runtime"] }
+
+[tool.repo_deptry.packages."compat-bijux-agent"]
+known_first_party = ["bijux_agent"]
+per_rule_ignores = { DEP001 = ["bijux_canon_agent"] }
+
+[tool.repo_deptry.packages."compat-bijux-rag"]
+known_first_party = ["bijux_rag"]
+per_rule_ignores = { DEP001 = ["bijux_canon_ingest"] }
+
+[tool.repo_deptry.packages."compat-bijux-rar"]
+known_first_party = ["bijux_rar"]
+per_rule_ignores = { DEP001 = ["bijux_canon_reason"] }
+
+[tool.repo_deptry.packages."compat-bijux-vex"]
+known_first_party = ["bijux_vex"]
+per_rule_ignores = { DEP001 = ["bijux_canon_index"] }
