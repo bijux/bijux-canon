@@ -1,7 +1,7 @@
 # Testing policy: gates (lint/quality/security/typing) intentionally run on lowest supported Python (3.11); full matrix via tox.
 
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
-include $(ROOT_MAKE_DIR)/package/api-python-package.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package-profile.mk
+include $(ROOT_MAKE_DIR)/bijux-py/package-api-python.mk
 
 PACKAGE_IMPORT_NAME := bijux_canon_index
 API_MODE := freeze
@@ -31,7 +31,7 @@ PACKAGE_CLEAN_SOFT_MESSAGE := [INFO] Cleaning (no .venv) ...
 PACKAGE_ALL_TARGETS := clean install fmt lint test quality api security sbom
 PACKAGE_ALL_MESSAGE := [OK] All targets completed
 
-include $(ROOT_MAKE_DIR)/package/gates.mk
+include $(ROOT_MAKE_DIR)/bijux-py/package-gates.mk
 
 # Run independent checks in parallel
 .NOTPARALLEL:

@@ -1,4 +1,4 @@
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../package/profile.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package-profile.mk
 
 LINT_DIRS ?= src hatch_build.py
 LINT_TARGETS ?= src hatch_build.py
