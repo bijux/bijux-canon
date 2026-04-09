@@ -10,7 +10,7 @@ from dataclasses import dataclass
 import json
 from typing import TYPE_CHECKING, Any, BinaryIO, TypeVar, cast
 
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 
 T = TypeVar("T")
 

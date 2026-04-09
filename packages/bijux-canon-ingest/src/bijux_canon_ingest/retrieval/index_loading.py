@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 
 from bijux_canon_ingest.retrieval.dense_index import NumpyCosineIndex
 from bijux_canon_ingest.retrieval.lexical_index import BM25Index

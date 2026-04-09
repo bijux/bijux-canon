@@ -10,7 +10,7 @@ from dataclasses import dataclass
 import math
 from typing import Any
 
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 import numpy as np
 from numpy.typing import NDArray
 
