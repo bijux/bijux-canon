@@ -134,6 +134,18 @@ def test_product_package_detail_tabs_follow_authored_order(
     assert page.active_detail_tabs == ["Home"]
 
 
+def test_package_overview_sidebar_expands_all_section_groups(rendered_docs: Path) -> None:
+    text = (
+        rendered_docs / "bijux-canon-index/index.html"
+    ).read_text(encoding="utf-8")
+
+    assert 'id="__nav_2" checked' in text
+    assert 'id="__nav_3" checked' in text
+    assert 'id="__nav_4" checked' in text
+    assert 'id="__nav_5" checked' in text
+    assert 'id="__nav_6" checked' in text
+
+
 def test_repository_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
     page = _parse_navigation(rendered_docs, "bijux-canon/index.html")
 

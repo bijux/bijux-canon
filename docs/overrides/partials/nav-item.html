@@ -75,7 +75,8 @@
     {% endif %}
     <li class="{{ class }} md-nav__item--nested">
       {% if not is_pruned %}
-        {% set checked = "checked" if nav_item.active %}
+        {% set force_checked = bijux_expand_scoped_groups and level == 1 %}
+        {% set checked = "checked" if nav_item.active or force_checked %}
         {% if "navigation.expand" in features and not checked %}
           {% set indeterminate = "md-toggle--indeterminate" %}
         {% endif %}
