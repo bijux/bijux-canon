@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Execution diff helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -11,6 +13,7 @@ from bijux_canon_index.core.types import Result
 
 @dataclass(frozen=True)
 class VectorExecutionDiff:
+    """Represents vector execution diff."""
     execution_a: ExecutionResult
     execution_b: ExecutionResult
     overlap_ratio: float
@@ -24,6 +27,7 @@ def compare_executions(
     execution_b: ExecutionResult,
     results_b: Iterable[Result],
 ) -> VectorExecutionDiff:
+    """Compare executions."""
     list_a = list(results_a)
     list_b = list(results_b)
     ids_a = [r.vector_id for r in list_a]
@@ -47,6 +51,7 @@ def compare_executions(
 
 
 def _rank_instability(ids_a: list[str], ids_b: list[str], overlap: set[str]) -> float:
+    """Handle rank instability."""
     if not overlap:
         return 1.0 if ids_a or ids_b else 0.0
     total = 0

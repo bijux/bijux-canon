@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Orchestrator helpers for application workflows."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -92,6 +94,7 @@ from bijux_canon_index.interfaces.schemas.requests import (
 class Orchestrator:
     # This module is allowed to be “ugly but bounded”: wiring/glue only.
     # Domain rules belong in domain/core; do not reintroduce policy here.
+    """Represents orchestrator."""
     def __init__(
         self,
         backend: Any | None = None,
@@ -99,6 +102,7 @@ class Orchestrator:
         state_path: str | Path | None = None,
         config: ExecutionConfig | None = None,
     ) -> None:
+        """Initialize the instance."""
         self.config = config or ExecutionConfig()
         runtime = bootstrap_runtime(
             backend=backend,
@@ -126,21 +130,25 @@ class Orchestrator:
         )
 
     def _tx(self) -> Tx:
+        """Handle tx."""
         return cast(Tx, self.backend.tx_factory())
 
     def _guard_mutation(self, action: str) -> None:
+        """Handle guard mutation."""
         if self.read_only:
             raise AuthzDeniedError(
                 message=f"Mutation '{action}' disallowed in read-only mode"
             )
 
     def _require_artifact(self, artifact_id: str) -> ExecutionArtifact:
+        """Require artifact."""
         artifact = self.stores.ledger.get_artifact(artifact_id)
         if artifact is None:
             raise NotFoundError(message=f"Execution artifact {artifact_id} not found")
         return cast(ExecutionArtifact, artifact)
 
     def _artifact_build_params(self) -> tuple[tuple[str, str], ...]:
+        """Handle artifact build params."""
         return artifact_build_params(
             vector_store_enabled=self.vector_store_enabled,
             stores=self.stores,
@@ -150,11 +158,13 @@ class Orchestrator:
     def _metadata_tuple(
         meta: dict[str, str | None],
     ) -> tuple[tuple[str, str], ...] | None:
+        """Handle metadata tuple."""
         return metadata_tuple(meta)
 
     def list_artifacts(
         self, *, limit: int | None = None, offset: int = 0
     ) -> dict[str, Any]:
+        """List artifacts."""
         artifacts = [a.artifact_id for a in self.stores.ledger.list_artifacts()]
         if offset:
             artifacts = artifacts[offset:]
@@ -163,11 +173,13 @@ class Orchestrator:
         return {"artifacts": artifacts}
 
     def _validate_execute_limits(self, req: ExecutionRequestPayload) -> None:
+        """Validate execute limits."""
         validate_execute_limits(self.config, req)
 
     def _resolve_execution_artifact(
         self, req: ExecutionRequestPayload
     ) -> ExecutionArtifact:
+        """Resolve execution artifact."""
         return resolve_execution_artifact(
             req,
             default_artifact_id=self.default_artifact_id,
@@ -176,6 +188,7 @@ class Orchestrator:
         )
 
     def _enforce_nd_circuit(self, req: ExecutionRequestPayload) -> None:
+        """Enforce ND circuit."""
         if req.execution_contract is not ExecutionContract.NON_DETERMINISTIC:
             return
         self._nd_guard.enforce()
@@ -183,6 +196,7 @@ class Orchestrator:
     def _build_randomness_profile(
         self, req: ExecutionRequestPayload
     ) -> RandomnessProfile | None:
+        """Build randomness profile."""
         return build_randomness_profile(req)
 
     def _build_execution_request(
@@ -191,6 +205,7 @@ class Orchestrator:
         correlation_id: str,
         nd_settings: NDSettings | None,
     ) -> ExecutionRequest:
+        """Build execution request."""
         return build_execution_request(req, correlation_id, nd_settings)
 
     def _build_run_metadata(
@@ -204,6 +219,7 @@ class Orchestrator:
         determinism_fp: str,
         correlation_id: str,
     ) -> dict[str, object]:
+        """Build run metadata."""
         return build_run_metadata(
             req,
             artifact=artifact,
@@ -217,6 +233,7 @@ class Orchestrator:
         )
 
     def capabilities(self) -> dict[str, Any]:
+        """Handle capabilities."""
         caps = getattr(self.stores, "capabilities", None)
         supports_ann = False
         ann_runner = getattr(self.backend, "ann", None)
@@ -244,10 +261,12 @@ class Orchestrator:
         )
 
     def create(self, req: CreateRequest) -> dict[str, Any]:
+        """Create req."""
         self._guard_mutation("create")
         return {"name": req.name, "status": "created"}
 
     def ingest(self, req: IngestRequest) -> dict[str, Any]:
+        """Handle ingest."""
         self._guard_mutation("ingest")
         limits = self.config.resource_limits
         if (
@@ -295,6 +314,7 @@ class Orchestrator:
         return result
 
     def materialize(self, req: ExecutionArtifactRequest) -> dict[str, Any]:
+        """Handle materialize."""
         self._guard_mutation("materialize")
         index_mode = (req.index_mode or "exact").lower()
         if index_mode not in {"exact", "ann"}:
@@ -339,6 +359,7 @@ class Orchestrator:
         return materialization_response(artifact)
 
     def execute(self, req: ExecutionRequestPayload) -> dict[str, Any]:
+        """Handle execute."""
         (
             correlation_id,
             run_id,
@@ -410,6 +431,7 @@ class Orchestrator:
         NonDeterministicExecutionModel,
         ExecutionRequest,
     ]:
+        """Normalize execute request."""
         normalized = normalize_execute_request(
             req,
             config=self.config,
@@ -439,6 +461,7 @@ class Orchestrator:
         randomness_profile: RandomnessProfile | None,
         nd_model: NonDeterministicExecutionModel,
     ) -> tuple[Any, Any]:
+        """Handle dispatch execution."""
         return dispatch_execution(
             req,
             artifact=artifact,
@@ -457,6 +480,7 @@ class Orchestrator:
         run_id: str,
         correlation_id: str,
     ) -> dict[str, Any]:
+        """Handle finalize execution."""
         return finalize_execution(
             tx_factory=self._tx,
             stores=self.stores,
@@ -469,6 +493,7 @@ class Orchestrator:
         )
 
     def explain(self, req: ExplainRequest) -> dict[str, Any]:
+        """Explain req."""
         return build_explain_response(
             req,
             stores=self.stores,
@@ -483,6 +508,7 @@ class Orchestrator:
         randomness_profile: RandomnessProfile | None = None,
         execution_budget: ExecutionBudget | None = None,
     ) -> dict[str, Any]:
+        """Handle replay."""
         return build_replay_response(
             request_text,
             expected_contract=expected_contract,
@@ -500,6 +526,7 @@ class Orchestrator:
         artifact_a_id: str | None = None,
         artifact_b_id: str | None = None,
     ) -> dict[str, object]:
+        """Compare req."""
         return build_compare_response(
             req,
             artifact_a_id=artifact_a_id,

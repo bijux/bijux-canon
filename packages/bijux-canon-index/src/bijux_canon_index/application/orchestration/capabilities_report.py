@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Capabilities report helpers for application workflows."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -19,6 +21,7 @@ def build_capabilities_response(
     nd_health: dict[str, object],
     nd_notes: tuple[str, ...],
 ) -> dict[str, Any]:
+    """Build capabilities response."""
     ann_status = "experimental" if supports_ann else "unavailable"
     execution_modes = [mode.value for mode in ExecutionMode]
     response: dict[str, Any] = {
@@ -60,6 +63,7 @@ def build_capabilities_response(
 
 
 def build_storage_backends() -> list[dict[str, str]]:
+    """Build storage backends."""
     return [
         {
             "name": "memory",
@@ -86,6 +90,7 @@ def build_storage_backends() -> list[dict[str, str]]:
 
 
 def build_vector_store_reports() -> list[dict[str, object]]:
+    """Build vector store reports."""
     return [
         {
             "name": desc.name,
@@ -105,6 +110,7 @@ def build_vector_store_reports() -> list[dict[str, object]]:
 
 
 def build_plugin_reports() -> dict[str, list[dict[str, object]]]:
+    """Build plugin reports."""
     return {
         "vectorstores": VECTOR_STORES.plugin_reports(),
         "embeddings": EMBEDDING_PROVIDERS.plugin_reports(),

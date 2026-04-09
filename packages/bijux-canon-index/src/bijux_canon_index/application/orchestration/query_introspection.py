@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Query introspection helpers for application workflows."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -42,6 +44,7 @@ def build_explain_response(
     stores: Any,
     require_artifact: Callable[[str], ExecutionArtifact],
 ) -> dict[str, Any]:
+    """Build explain response."""
     art_id = req.artifact_id
     if art_id is None:
         artifacts = tuple(stores.ledger.list_artifacts())
@@ -91,6 +94,7 @@ def build_replay_response(
     ann_runner: Any,
     require_artifact: Callable[[str], ExecutionArtifact],
 ) -> dict[str, Any]:
+    """Build replay response."""
     chosen_artifact_id = artifact_id
     if chosen_artifact_id is None:
         artifacts = tuple(stores.ledger.list_artifacts())
@@ -172,6 +176,7 @@ def build_compare_response(
     ann_runner: Any,
     require_artifact: Callable[[str], ExecutionArtifact],
 ) -> dict[str, object]:
+    """Build compare response."""
     if req.vector is None:
         raise ValidationError(message="execution vector required for comparison")
     art_a = require_artifact(artifact_a_id or default_artifact_id)
@@ -179,6 +184,7 @@ def build_compare_response(
     vector_values = tuple(req.vector)
 
     def as_request(artifact: ExecutionArtifact) -> ExecutionRequest:
+        """Coerce to request."""
         return ExecutionRequest(
             request_id=f"compare-{artifact.artifact_id}",
             text=req.request_text,

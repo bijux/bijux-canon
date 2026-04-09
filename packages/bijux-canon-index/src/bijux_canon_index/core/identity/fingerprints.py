@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+"""Fingerprints helpers for core logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -25,6 +27,7 @@ def determinism_fingerprint(
     algorithm: str | None,
     extra: Iterable[tuple[str, str]] | None = None,
 ) -> str:
+    """Handle determinism fingerprint."""
     payload = {
         "vectors": vector_fingerprint,
         "config": config_fingerprint,

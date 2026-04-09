@@ -1,17 +1,21 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Execution contract contract helpers."""
+
 from __future__ import annotations
 
 from enum import Enum
 
 
 class ExecutionContract(Enum):
+    """Enumeration of execution contract."""
     DETERMINISTIC = "deterministic"
     NON_DETERMINISTIC = "non_deterministic"
 
     @property
     def maturity(self) -> str:
         # Explicit surface lock: deterministic is supported, ND is experimental
+        """Handle maturity."""
         return (
             "SUPPORTED" if self is ExecutionContract.DETERMINISTIC else "EXPERIMENTAL"
         )

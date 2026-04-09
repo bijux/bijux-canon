@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Determinism helpers for core logic."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -18,6 +20,7 @@ from bijux_canon_index.infra.logging import log_event
 
 @dataclass(frozen=True)
 class DeterminismClassification:
+    """Represents determinism classification."""
     label: str
     randomness_sources: tuple[str, ...]
     reasons: tuple[str, ...]
@@ -31,6 +34,7 @@ def classify_execution(
     vector_store: VectorStoreDescriptor | None,
     require_randomness: bool = True,
 ) -> DeterminismClassification:
+    """Classify execution."""
     if contract is ExecutionContract.DETERMINISTIC:
         if randomness is not None:
             raise DeterminismViolationError(

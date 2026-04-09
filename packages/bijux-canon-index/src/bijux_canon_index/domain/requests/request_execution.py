@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Request execution helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -44,6 +46,7 @@ def start_execution_session(
     randomness: RandomnessProfile | None = None,
     ann_runner: AnnExecutionRequestRunner | None = None,
 ) -> ExecutionSession:
+    """Handle start execution session."""
     return start_session(
         artifact=artifact,
         request=request,
@@ -59,6 +62,7 @@ def execute_request(
     ann_runner: AnnExecutionRequestRunner | None = None,
     decision_trace: NDDecisionTrace | None = None,
 ) -> tuple[ExecutionResult, Iterable[Result]]:
+    """Handle execute request."""
     require_randomness(session, ann_runner)
     results_buffer, status, failure_reason, approximation = collect_results(
         session, resources, ann_runner
@@ -137,6 +141,7 @@ __all__ = ["start_execution_session", "execute_request", "ExecutionSession"]
 
 @dataclass(frozen=True)
 class ExecutionOutcome:
+    """Represents execution outcome."""
     result: ExecutionResult | None
     failure: BijuxError | None
 
@@ -146,6 +151,7 @@ def execute_request_outcome(
     resources: ExecutionResources,
     ann_runner: AnnExecutionRequestRunner | None = None,
 ) -> ExecutionOutcome:
+    """Handle execute request outcome."""
     try:
         result, results = execute_request(session, resources, ann_runner=ann_runner)
         return ExecutionOutcome(result=result, failure=None)

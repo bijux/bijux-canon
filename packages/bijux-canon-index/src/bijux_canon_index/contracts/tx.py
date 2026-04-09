@@ -30,6 +30,7 @@ class Tx(ABC):
         """Abort and roll back any staged mutations."""
 
     def __enter__(self) -> Tx:
+        """Enter the managed context."""
         return self
 
     def __exit__(
@@ -38,6 +39,7 @@ class Tx(ABC):
         exc: BaseException | None,
         tb: TracebackType | None,
     ) -> bool | None:
+        """Exit the managed context."""
         if exc:
             self.abort()
             return False

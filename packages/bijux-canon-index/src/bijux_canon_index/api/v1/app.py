@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""App helpers for API support."""
+
 from __future__ import annotations
 
 from fastapi import FastAPI
@@ -25,6 +27,7 @@ OPENAPI_TAGS = [
 
 
 def build_app() -> FastAPI:
+    """Build app."""
     app = FastAPI(
         title="bijux-canon-index API",
         summary="Contract-driven vector execution and replayable retrieval.",

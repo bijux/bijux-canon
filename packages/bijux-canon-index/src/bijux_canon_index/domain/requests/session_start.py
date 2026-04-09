@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Session start helpers for domain logic."""
+
 from __future__ import annotations
 
 import secrets
@@ -26,6 +28,7 @@ def start_session(
     randomness: RandomnessProfile | None = None,
     ann_runner: AnnExecutionRequestRunner | None = None,
 ) -> ExecutionSession:
+    """Handle start session."""
     if (
         randomness is None
         and request.execution_contract is not ExecutionContract.DETERMINISTIC

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Materialization helpers for application workflows."""
+
 from __future__ import annotations
 
 from dataclasses import replace
@@ -31,6 +33,7 @@ def build_materialized_artifact(
     build_params: tuple[tuple[str, str], ...],
     backend_name: str,
 ) -> ExecutionArtifact:
+    """Build materialized artifact."""
     artifact = ExecutionArtifact(
         artifact_id=artifact_id,
         corpus_fingerprint=corpus_fingerprint,
@@ -91,6 +94,7 @@ def attach_ann_index(
     ann_runner: Any,
     vectors: list[Any],
 ) -> ExecutionArtifact:
+    """Handle attach ANN index."""
     index_info = ann_runner.build_index(
         artifact.artifact_id, vectors, artifact.metric, None
     )
@@ -110,6 +114,7 @@ def attach_ann_index(
 
 
 def materialization_response(artifact: ExecutionArtifact) -> dict[str, object]:
+    """Handle materialization response."""
     return {
         "artifact_id": artifact.artifact_id,
         "execution_contract": artifact.execution_contract.value,

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Base helpers for domain logic."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -12,6 +14,7 @@ from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, Re
 
 
 class VectorExecutionAlgorithm(ABC):
+    """Represents vector execution algorithm."""
     name: str
     supported_contracts: set[ExecutionContract]
 
@@ -21,7 +24,10 @@ class VectorExecutionAlgorithm(ABC):
         artifact: ExecutionArtifact,
         request: ExecutionRequest,
         backend_id: str,
-    ) -> VectorExecution: ...
+    ) -> VectorExecution:
+        """Plan vector execution for the request."""
+
+        ...
 
     @abstractmethod
     def execute(
@@ -29,23 +35,29 @@ class VectorExecutionAlgorithm(ABC):
         execution: VectorExecution,
         artifact: ExecutionArtifact,
         vectors: VectorSource,
-    ) -> Iterable[Result]: ...
+    ) -> Iterable[Result]:
+        """Execute the planned vector retrieval."""
+
+        ...
 
 
 _REGISTRY: dict[str, VectorExecutionAlgorithm] = {}
 
 
 def register_algorithm(algorithm: VectorExecutionAlgorithm) -> None:
+    """Register algorithm."""
     _REGISTRY[algorithm.name] = algorithm
 
 
 def get_algorithm(name: str) -> VectorExecutionAlgorithm:
+    """Return algorithm."""
     if name not in _REGISTRY:
         raise KeyError(f"Unknown execution algorithm '{name}'")
     return _REGISTRY[name]
 
 
 def list_algorithms() -> set[str]:
+    """List algorithms."""
     return set(_REGISTRY)
 
 

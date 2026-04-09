@@ -23,6 +23,7 @@ CANON_VERSION = "v1"
 
 
 def _normalize(obj: Any) -> Any:
+    """Normalize obj."""
     if is_dataclass(obj):
         return _normalize(asdict(obj))  # type: ignore[arg-type]
     if isinstance(obj, Mapping):

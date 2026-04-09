@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Lineage helpers for domain logic."""
+
 from __future__ import annotations
 
 from bijux_canon_index.contracts.resources import ExecutionResources
@@ -10,6 +12,7 @@ from bijux_canon_index.core.types import Result
 
 
 def explain_result(result: Result, stores: ExecutionResources) -> dict[str, object]:
+    """Explain result."""
     document = stores.vectors.get_document(result.document_id)
     if document is None:
         raise NotFoundError(

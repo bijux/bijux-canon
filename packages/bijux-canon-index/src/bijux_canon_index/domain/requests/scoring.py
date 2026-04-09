@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Scoring helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -10,12 +12,14 @@ from bijux_canon_index.core.types import Result
 
 
 def _normalize_float(value: float) -> float:
+    """Normalize float."""
     if not math.isfinite(value):
         raise ValidationError(message="Non-finite float detected in scoring")
     return float(value)
 
 
 def l2_distance(query_vec: Iterable[float], target_vec: Iterable[float]) -> float:
+    """Handle l2 distance."""
     total = 0.0
     for q, t in zip(query_vec, target_vec, strict=True):
         diff = q - t
@@ -24,6 +28,7 @@ def l2_distance(query_vec: Iterable[float], target_vec: Iterable[float]) -> floa
 
 
 def cosine_similarity(query_vec: Iterable[float], target_vec: Iterable[float]) -> float:
+    """Handle cosine similarity."""
     num = 0.0
     q_norm = 0.0
     t_norm = 0.0
@@ -40,6 +45,7 @@ def cosine_similarity(query_vec: Iterable[float], target_vec: Iterable[float]) -
 def score(
     metric: str, query_vec: tuple[float, ...], target_vec: tuple[float, ...]
 ) -> float:
+    """Handle score."""
     if metric == "l2":
         return l2_distance(query_vec, target_vec)
     if metric == "cosine":
@@ -53,6 +59,7 @@ def score(
 
 
 def tie_break_key(result: Result) -> tuple[float, str, str, str]:
+    """Handle tie break key."""
     return (
         _normalize_float(result.score),
         result.vector_id,

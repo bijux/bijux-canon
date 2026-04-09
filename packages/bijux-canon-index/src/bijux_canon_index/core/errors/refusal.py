@@ -1,11 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
+"""Refusal helpers for core logic."""
+
 from __future__ import annotations
 
 from bijux_canon_index.core import errors
 
 
 def is_refusal(exc: Exception) -> bool:
+    """Return whether refusal."""
     return isinstance(
         exc,
         (
@@ -19,6 +22,7 @@ def is_refusal(exc: Exception) -> bool:
 
 
 def refusal_payload(exc: Exception) -> dict[str, object]:
+    """Handle refusal payload."""
     if isinstance(exc, errors.DeterminismViolationError):
         return {
             "reason": "determinism_violation",

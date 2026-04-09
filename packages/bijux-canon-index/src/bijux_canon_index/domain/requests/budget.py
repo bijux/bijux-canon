@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Budget helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -28,6 +30,7 @@ def ann_budget_to_params(budget: ExecutionRequest | None) -> dict[str, int | flo
 
 
 def default_budget(request: ExecutionRequest) -> dict[str, int | float]:
+    """Return the default budget."""
     return normalize_budget(request.execution_budget)
 
 
@@ -59,6 +62,7 @@ def check_budget(
     counters: dict[str, int],
     partial_results: Iterable[Result],
 ) -> None:
+    """Handle check budget."""
     if not budget:
         return
     if budget.get("max_vectors") is not None and counters["vectors"] > int(
@@ -111,6 +115,7 @@ def apply_budget_outcomes(
     status: ExecutionStatus,
     failure_reason: str | None,
 ) -> tuple[ExecutionStatus, str | None]:
+    """Handle apply budget outcomes."""
     if not request.execution_budget:
         return status, failure_reason
     if (

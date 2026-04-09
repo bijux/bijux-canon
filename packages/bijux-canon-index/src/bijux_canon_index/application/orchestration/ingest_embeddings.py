@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Ingest embeddings helpers for application workflows."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -19,6 +21,7 @@ from bijux_canon_index.interfaces.schemas.requests import IngestRequest
 
 @dataclass(frozen=True)
 class PreparedIngestVectors:
+    """Represents prepared ingest vectors."""
     vectors: list[list[float]]
     embedding_meta_by_index: dict[int, dict[str, str | None]]
     embedding_model: str | None
@@ -27,6 +30,7 @@ class PreparedIngestVectors:
 def prepare_ingest_vectors(
     req: IngestRequest, config: ExecutionConfig
 ) -> PreparedIngestVectors:
+    """Handle prepare ingest vectors."""
     vectors_input = list(req.vectors or [])
     if vectors_input:
         return PreparedIngestVectors(

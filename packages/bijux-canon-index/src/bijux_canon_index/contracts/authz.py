@@ -43,6 +43,7 @@ class AllowAllAuthz(Authz):
         actor: str | None = None,
         context: Any | None = None,
     ) -> None:
+        """Handle check."""
         return None
 
 
@@ -58,6 +59,7 @@ class DenyAllAuthz(Authz):
         actor: str | None = None,
         context: Any | None = None,
     ) -> None:
+        """Handle check."""
         readish = action.startswith(("get", "list", "query", "read"))
         if not readish:
             from bijux_canon_index.core.errors import AuthzDeniedError

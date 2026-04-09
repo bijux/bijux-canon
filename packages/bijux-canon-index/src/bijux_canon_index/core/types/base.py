@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Base helpers for core logic."""
+
 
 from __future__ import annotations
 
@@ -19,6 +21,7 @@ if _TYPE_CHECKING:  # pragma: no cover
 
 @dataclass(frozen=True)
 class Document:
+    """Represents document."""
     document_id: str
     text: str
     source: str | None = None
@@ -27,6 +30,7 @@ class Document:
 
 @dataclass(frozen=True)
 class Chunk:
+    """Represents chunk."""
     chunk_id: str
     document_id: str
     text: str
@@ -37,6 +41,7 @@ class Chunk:
 
 @dataclass(frozen=True)
 class Vector:
+    """Represents vector."""
     vector_id: str
     chunk_id: str
     values: tuple[float, ...]
@@ -45,6 +50,7 @@ class Vector:
     metadata: tuple[tuple[str, str], ...] | dict[str, str] | None = None
 
     def __post_init__(self) -> None:
+        """Finalize initialization after dataclass construction."""
         if self.dimension <= 0:
             raise InvariantError(message="vector dimension must be positive")
         object.__setattr__(self, "values", tuple(self.values))
@@ -62,6 +68,7 @@ class Vector:
 
 @dataclass(frozen=True)
 class ModelSpec:
+    """Represents model spec."""
     model_id: str
     dimension: int
     vendor: str | None = None
@@ -70,6 +77,7 @@ class ModelSpec:
 
 @dataclass(frozen=True)
 class ExecutionBudget:
+    """Represents execution budget."""
     max_latency_ms: int | None = None
     max_memory_mb: int | None = None
     max_error: float | None = None
@@ -80,6 +88,7 @@ class ExecutionBudget:
 
 @dataclass(frozen=True)
 class NDSettings:
+    """Represents ndsettings."""
     profile: str | None = None
     target_recall: float | None = None
     latency_budget_ms: int | None = None
@@ -110,6 +119,7 @@ class NDSettings:
 
 @dataclass(frozen=True)
 class ExecutionRequest:
+    """Represents execution request."""
     request_id: str
     text: str | None
     vector: tuple[float, ...] | None
@@ -122,6 +132,7 @@ class ExecutionRequest:
     model: ModelSpec | None = None
 
     def __post_init__(self) -> None:
+        """Finalize initialization after dataclass construction."""
         if not isinstance(self.execution_contract, ExecutionContract):
             raise InvariantError(
                 message="execution_contract is required for ExecutionRequest construction"
@@ -259,6 +270,7 @@ class ExecutionRequest:
 
 @dataclass(frozen=True)
 class Result:
+    """Represents result."""
     request_id: str
     document_id: str
     chunk_id: str
@@ -270,6 +282,7 @@ class Result:
 
 @dataclass(frozen=True)
 class ExecutionArtifact:
+    """Represents execution artifact."""
     artifact_id: str
     corpus_fingerprint: str
     vector_fingerprint: str
@@ -291,6 +304,7 @@ class ExecutionArtifact:
     determinism_report: DeterminismReport | None = None
 
     def __post_init__(self) -> None:
+        """Finalize initialization after dataclass construction."""
         object.__setattr__(
             self, "build_params", tuple(tuple(p) for p in self.build_params)
         )

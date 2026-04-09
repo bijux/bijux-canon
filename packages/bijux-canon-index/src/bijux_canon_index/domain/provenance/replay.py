@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Replay helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -21,6 +23,7 @@ from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 
 @dataclass(frozen=True)
 class ReplayOutcome:
+    """Represents replay outcome."""
     execution_contract: ExecutionContract
     execution_id: str
     original_fingerprint: str
@@ -31,10 +34,12 @@ class ReplayOutcome:
 
     @property
     def matches(self) -> bool:
+        """Handle matches."""
         return self.original_fingerprint == self.replay_fingerprint
 
 
 def _results_fingerprint(results: Iterable[Result]) -> str:
+    """Handle results fingerprint."""
     payload = [canon(r).decode("utf-8") for r in results]
     return fingerprint(payload)
 
@@ -47,6 +52,7 @@ def replay(
     randomness: RandomnessProfile | None = None,
     baseline_fingerprint: str | None = None,
 ) -> ReplayOutcome:
+    """Handle replay."""
     if request.execution_contract is not artifact.execution_contract:
         raise InvariantError(
             message="Execution contract does not match artifact execution contract",

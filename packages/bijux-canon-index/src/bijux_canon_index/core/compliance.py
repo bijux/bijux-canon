@@ -12,11 +12,13 @@ from bijux_canon_index.domain.requests.execution_diff import VectorExecutionDiff
 
 @dataclass(frozen=True)
 class ComparisonPolicy:
+    """Represents comparison policy."""
     min_recall: float = 0.0
     max_rank_instability: float = 1.0
 
 
 def enforce_policy(diff: VectorExecutionDiff, policy: ComparisonPolicy) -> None:
+    """Enforce policy."""
     if diff.recall_delta < (policy.min_recall - 1):
         raise InvariantError(message="Comparison policy violated: recall below minimum")
     if diff.rank_instability > policy.max_rank_instability:

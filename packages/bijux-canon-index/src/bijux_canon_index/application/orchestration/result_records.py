@@ -15,6 +15,7 @@ from bijux_canon_index.core.types import ExecutionArtifact
 def artifact_build_params(
     *, vector_store_enabled: bool, stores: Any
 ) -> tuple[tuple[str, str], ...]:
+    """Handle artifact build params."""
     if not vector_store_enabled:
         return ()
     metadata = getattr(stores.vectors, "vector_store_metadata", None)
@@ -36,6 +37,7 @@ def artifact_build_params(
 def metadata_tuple(
     meta: dict[str, str | None],
 ) -> tuple[tuple[str, str], ...] | None:
+    """Handle metadata tuple."""
     items = tuple((key, value) for key, value in meta.items() if value is not None)
     return items or None
 
@@ -52,6 +54,7 @@ def build_run_metadata(
     determinism_fingerprint: str,
     correlation_id: str,
 ) -> dict[str, object]:
+    """Build run metadata."""
     return {
         "execution_id": correlation_id,
         "artifact_id": artifact.artifact_id,
@@ -111,6 +114,7 @@ def finalize_execution(
     run_id: str,
     correlation_id: str,
 ) -> dict[str, Any]:
+    """Handle finalize execution."""
     with tx_factory() as tx:
         tx = tx  # help type checkers keep the protocol visible
         stores.ledger.put_execution_result(tx, execution_result)

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Build helpers for domain logic."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,12 +15,14 @@ from bijux_canon_index.core.types import ExecutionArtifact
 
 @dataclass(frozen=True)
 class BuildPlan:
+    """Represents build plan."""
     artifact: ExecutionArtifact
     plan_fingerprint: str
     index_config_fingerprint: str
 
 
 def make_build_plan(artifact: ExecutionArtifact) -> BuildPlan:
+    """Handle make build plan."""
     return BuildPlan(
         artifact=artifact,
         plan_fingerprint=fingerprint(artifact),
@@ -28,6 +32,7 @@ def make_build_plan(artifact: ExecutionArtifact) -> BuildPlan:
 
 
 def materialize(plan: BuildPlan, tx: Tx | None, stores: ExecutionResources) -> None:
+    """Handle materialize."""
     if tx is None or not isinstance(tx, Tx):
         raise InvariantError(message="materialize requires an active Tx")
     existing = stores.ledger.get_artifact(plan.artifact.artifact_id)

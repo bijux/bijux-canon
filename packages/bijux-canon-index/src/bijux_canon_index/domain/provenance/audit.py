@@ -13,6 +13,7 @@ from bijux_canon_index.core.identity.ids import fingerprint
 
 @dataclass(frozen=True)
 class AuditRecord:
+    """Represents audit record."""
     record_id: str
     tx_id: str
     action: str
@@ -24,6 +25,7 @@ class AuditRecord:
     record_hash: str | None = None
 
     def __post_init__(self) -> None:
+        """Finalize initialization after dataclass construction."""
         object.__setattr__(self, "details", tuple(tuple(p) for p in self.details))
         if self.record_hash is None:
             object.__setattr__(self, "record_hash", chain_hash(self))

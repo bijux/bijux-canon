@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Execution tracking helpers for application workflows."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,6 +15,7 @@ from bijux_canon_index.core.types import ExecutionArtifact
 
 @dataclass(frozen=True)
 class ExecutionTrackingContext:
+    """Represents execution tracking context."""
     ann_index_info: dict[str, object] | None
     vector_store_consistency: str | None
     vector_store_index_params: object | None
@@ -27,6 +30,7 @@ def build_execution_tracking_context(
     stores: Any,
     vector_store_resolution: Any,
 ) -> ExecutionTrackingContext:
+    """Build execution tracking context."""
     vector_store_meta = getattr(stores.vectors, "vector_store_metadata", None)
     vector_store_index_params = None
     vector_store_consistency = None

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""ND guard helpers for application workflows."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -11,6 +13,7 @@ from bijux_canon_index.infra.logging import log_event
 
 @dataclass
 class NDExecutionGuard:
+    """Represents ndexecution guard."""
     rate_limit: int
     rate_window_seconds: int
     max_failures: int
@@ -21,6 +24,7 @@ class NDExecutionGuard:
     _open_until: float = 0.0
 
     def enforce(self) -> None:
+        """Enforce the value."""
         now = time.time()
         if now < self._open_until:
             raise BackendUnavailableError(
@@ -36,9 +40,11 @@ class NDExecutionGuard:
             raise BudgetExceededError(message="ND rate limit exceeded for this node")
 
     def record_success(self) -> None:
+        """Record success."""
         self._failures = 0
 
     def record_failure(self) -> None:
+        """Record failure."""
         self._failures += 1
         if self._failures < self.max_failures:
             return
@@ -50,6 +56,7 @@ class NDExecutionGuard:
         )
 
     def health_report(self) -> dict[str, object]:
+        """Handle health report."""
         return {
             "status": "open" if time.time() < self._open_until else "closed",
             "failures": self._failures,

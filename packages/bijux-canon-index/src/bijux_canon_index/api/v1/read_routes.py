@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Read routes helpers for API support."""
+
 from __future__ import annotations
 
 from typing import cast
@@ -18,6 +20,8 @@ from bijux_canon_index.interfaces.schemas.reports import (
 
 
 def register_read_routes(app: FastAPI) -> None:
+    """Register read routes."""
+
     @app.get(
         "/capabilities",
         tags=["Discovery"],
@@ -65,6 +69,7 @@ def register_read_routes(app: FastAPI) -> None:
         response: Response,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> BackendCapabilitiesReport:
+        """Handle capabilities."""
         engine = VectorExecutionEngine()
         if correlation_id:
             response.headers["X-Correlation-Id"] = correlation_id
@@ -100,6 +105,7 @@ def register_read_routes(app: FastAPI) -> None:
         offset: int = 0,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> dict[str, object]:
+        """List artifacts."""
         if correlation_id:
             response.headers["X-Correlation-Id"] = correlation_id
         engine = VectorExecutionEngine()
@@ -132,6 +138,7 @@ def register_read_routes(app: FastAPI) -> None:
         offset: int = 0,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> dict[str, object]:
+        """List runs."""
         if correlation_id:
             response.headers["X-Correlation-Id"] = correlation_id
         runs = RunStore().list_runs(limit=limit, offset=offset)

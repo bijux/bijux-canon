@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Engine helpers for application workflows."""
+
 from __future__ import annotations
 
 from bijux_canon_index.application.orchestrator import Orchestrator
@@ -13,9 +15,11 @@ class VectorExecutionEngine(Orchestrator):
     def list_artifacts(
         self, *, limit: int | None = None, offset: int = 0
     ) -> dict[str, object]:
+        """List artifacts."""
         return super().list_artifacts(limit=limit, offset=offset)
 
     def capabilities(self) -> dict[str, object]:
+        """Handle capabilities."""
         return super().capabilities()
 
 

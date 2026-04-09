@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Algorithms helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -28,6 +30,7 @@ from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 
 
 class ExactVectorExecutionAlgorithm(VectorExecutionAlgorithm):
+    """Represents exact vector execution algorithm."""
     name = "exact_vector_execution"
     supported_contracts = {ExecutionContract.DETERMINISTIC}
 
@@ -37,6 +40,7 @@ class ExactVectorExecutionAlgorithm(VectorExecutionAlgorithm):
         request: ExecutionRequest,
         backend_id: str,
     ) -> VectorExecution:
+        """Handle plan."""
         if artifact.execution_contract is not request.execution_contract:
             raise InvariantError(
                 message="Execution contract does not match artifact execution contract",
@@ -57,6 +61,7 @@ class ExactVectorExecutionAlgorithm(VectorExecutionAlgorithm):
         artifact: ExecutionArtifact,
         vectors: VectorSource,
     ) -> Iterable[Result]:
+        """Handle execute."""
         request = execution.request
         if request.vector is None:
             raise ValidationError(
@@ -98,10 +103,12 @@ class ExactVectorExecutionAlgorithm(VectorExecutionAlgorithm):
 
 
 class ApproximateAnnAlgorithm(VectorExecutionAlgorithm):
+    """Represents approximate ANN algorithm."""
     name = "ann_approximate"
     supported_contracts = {ExecutionContract.NON_DETERMINISTIC}
 
     def __init__(self, runner: AnnExecutionRequestRunner):
+        """Initialize the instance."""
         self.runner = runner
 
     def plan(
@@ -110,6 +117,7 @@ class ApproximateAnnAlgorithm(VectorExecutionAlgorithm):
         request: ExecutionRequest,
         backend_id: str,
     ) -> VectorExecution:
+        """Handle plan."""
         if artifact.execution_contract is not request.execution_contract:
             raise InvariantError(
                 message="Execution contract does not match artifact execution contract",
@@ -135,6 +143,7 @@ class ApproximateAnnAlgorithm(VectorExecutionAlgorithm):
         artifact: ExecutionArtifact,
         vectors: VectorSource,
     ) -> Iterable[Result]:
+        """Handle execute."""
         if getattr(self.runner, "force_fallback", False):
             return self.runner.deterministic_fallback(
                 artifact.artifact_id, execution.request
@@ -234,16 +243,19 @@ class ApproximateAnnAlgorithm(VectorExecutionAlgorithm):
 
 
 def build_ann_algorithm(runner: AnnExecutionRequestRunner) -> ApproximateAnnAlgorithm:
+    """Build ANN algorithm."""
     algo = ApproximateAnnAlgorithm(runner)
     register_algorithm(algo)
     return algo
 
 
 def register_algorithms() -> None:
+    """Register algorithms."""
     register_algorithm(ExactVectorExecutionAlgorithm())
 
 
 def _ensure_tuple(vector: Vector) -> Vector:
+    """Ensure tuple."""
     if isinstance(vector.values, tuple):
         return vector
     return Vector(
@@ -256,6 +268,7 @@ def _ensure_tuple(vector: Vector) -> Vector:
 
 
 def _maybe_normalize(vec: tuple[float, ...], enabled: bool) -> tuple[float, ...]:
+    """Handle maybe normalize."""
     if not enabled:
         return vec
     norm = math.sqrt(sum(v * v for v in vec))
@@ -272,6 +285,7 @@ def _mmr_rerank(
     diversity_lambda: float,
     k: int,
 ) -> list[Result]:
+    """Handle mmr rerank."""
     if not results:
         return results
     diversity_lambda = min(1.0, max(0.0, diversity_lambda))
@@ -310,6 +324,7 @@ def _mmr_rerank(
 
 
 def _cosine_similarity(a: tuple[float, ...], b: tuple[float, ...]) -> float:
+    """Handle cosine similarity."""
     denom = math.sqrt(sum(x * x for x in a)) * math.sqrt(sum(x * x for x in b))
     if denom == 0:
         return 0.0

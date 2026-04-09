@@ -11,11 +11,13 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class BijuxError(Exception):
+    """Raised when bijux error."""
     message: str
     invariant_id: str = "INV-000"
     retryable: bool = False
 
     def __str__(self) -> str:
+        """Return the string representation."""
         if self.invariant_id:
             return f"[{self.invariant_id}] {self.message}"
         return self.message
@@ -32,6 +34,7 @@ class InvariantError(BijuxError):
     def __init__(
         self, message: str, *, invariant_id: str = "INV-000", retryable: bool = False
     ) -> None:
+        """Initialize the instance."""
         super().__init__(
             message=message, invariant_id=invariant_id, retryable=retryable
         )
@@ -91,6 +94,7 @@ class BudgetExceededError(BijuxError):
         dimension: str | None = None,
         partial_results: tuple[object, ...] = (),
     ) -> None:
+        """Initialize the instance."""
         super().__init__(
             message=message, invariant_id=invariant_id, retryable=retryable
         )
@@ -116,6 +120,7 @@ class NDExecutionUnavailableError(BijuxError):
         capability: str | None = None,
         retryable: bool = False,
     ) -> None:
+        """Initialize the instance."""
         super().__init__(message=message, retryable=retryable)
         self.capability = capability or "ann_support"
 

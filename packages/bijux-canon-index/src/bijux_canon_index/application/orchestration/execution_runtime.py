@@ -37,6 +37,7 @@ from bijux_canon_index.interfaces.schemas.requests import ExecutionRequestPayloa
 
 @dataclass(frozen=True)
 class NormalizedExecutionRequest:
+    """Represents normalized execution request."""
     correlation_id: str
     run_id: str
     artifact: ExecutionArtifact
@@ -46,12 +47,14 @@ class NormalizedExecutionRequest:
 
 
 def resolve_correlation_id(raw: str | None) -> str:
+    """Resolve correlation ID."""
     return raw or "req-1"
 
 
 def validate_execute_limits(
     config: ExecutionConfig, req: ExecutionRequestPayload
 ) -> None:
+    """Validate execute limits."""
     if req.vector is None:
         raise ValidationError(message="execution vector required")
     limits = config.resource_limits
@@ -73,6 +76,7 @@ def resolve_execution_artifact(
     stores: Any,
     require_artifact: Callable[[str], ExecutionArtifact],
 ) -> ExecutionArtifact:
+    """Resolve execution artifact."""
     artifact_id = req.artifact_id
     if artifact_id is None:
         available = tuple(stores.ledger.list_artifacts())
@@ -91,6 +95,7 @@ def resolve_execution_artifact(
 def build_randomness_profile(
     req: ExecutionRequestPayload,
 ) -> RandomnessProfile | None:
+    """Build randomness profile."""
     randomness_budget = None
     if req.execution_budget:
         randomness_budget = {
@@ -123,6 +128,7 @@ def build_execution_request(
     correlation_id: str,
     nd_settings: NDSettings | None,
 ) -> ExecutionRequest:
+    """Build execution request."""
     return ExecutionRequest(
         request_id=correlation_id,
         text=req.request_text,
@@ -155,6 +161,7 @@ def normalize_execute_request(
     tx_factory: Callable[[], Tx],
     ann_runner: Any,
 ) -> NormalizedExecutionRequest:
+    """Normalize execute request."""
     validate_execute_limits(config, req)
     correlation_id = resolve_correlation_id(req.correlation_id)
     artifact = resolve_execution_artifact(
@@ -192,6 +199,7 @@ def dispatch_execution(
     stores: Any,
     ann_runner: Any,
 ) -> tuple[Any, Any]:
+    """Handle dispatch execution."""
     if req.execution_contract is ExecutionContract.NON_DETERMINISTIC:
         return nd_model.execute(
             artifact,

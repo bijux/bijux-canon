@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Execution session helpers for core logic."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -16,6 +18,7 @@ from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
 
 
 class ExecutionState(StrEnum):
+    """Enumeration of execution state."""
     CREATED = "created"
     PLANNED = "planned"
     RUNNING = "running"
@@ -23,6 +26,7 @@ class ExecutionState(StrEnum):
     FINALIZED = "finalized"
 
     def can_transition_to(self, target: ExecutionState) -> bool:
+        """Handle can transition to."""
         allowed = {
             ExecutionState.CREATED: {ExecutionState.PLANNED},
             ExecutionState.PLANNED: {ExecutionState.RUNNING},
@@ -39,6 +43,7 @@ class ExecutionState(StrEnum):
 def enforce_transition(
     current: ExecutionState, target: ExecutionState
 ) -> ExecutionState:
+    """Enforce transition."""
     if not current.can_transition_to(target):
         raise InvariantError(
             message=f"Illegal execution state transition {current.value} -> {target.value}"
@@ -69,6 +74,7 @@ def derive_session_id(
     budget: dict[str, int | float],
     state: ExecutionState = ExecutionState.CREATED,
 ) -> str:
+    """Derive session ID."""
     payload = {
         "artifact": artifact.artifact_id,
         "execution_id": execution.execution_id,

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""V1 exclusions helpers for core logic."""
+
 from __future__ import annotations
 
 V1_EXCLUSIONS: dict[str, str] = {
@@ -11,6 +13,7 @@ V1_EXCLUSIONS: dict[str, str] = {
 
 
 def ensure_excluded(feature: str) -> None:
+    """Ensure excluded."""
     if feature not in V1_EXCLUSIONS:
         raise KeyError(f"Unknown feature flag: {feature}")
     raise NotImplementedError(V1_EXCLUSIONS[feature])

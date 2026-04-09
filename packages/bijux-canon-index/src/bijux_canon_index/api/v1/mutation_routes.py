@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Mutation routes helpers for API support."""
+
 from __future__ import annotations
 
 from fastapi import FastAPI, Header, HTTPException, Response
@@ -24,6 +26,8 @@ from bijux_canon_index.interfaces.schemas.requests import (
 
 
 def register_mutation_routes(app: FastAPI) -> None:
+    """Register mutation routes."""
+
     @app.post(
         "/create",
         tags=["Materialization"],
@@ -70,6 +74,7 @@ def register_mutation_routes(app: FastAPI) -> None:
         response: Response,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> dict[str, object]:
+        """Create req."""
         try:
             if correlation_id:
                 response.headers["X-Correlation-Id"] = correlation_id
@@ -138,6 +143,7 @@ def register_mutation_routes(app: FastAPI) -> None:
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
         idempotency_key: str | None = Header(None, alias="Idempotency-Key"),
     ) -> dict[str, object]:
+        """Handle ingest."""
         try:
             if correlation_id and req.correlation_id is None:
                 req = req.model_copy(update={"correlation_id": correlation_id})
@@ -216,6 +222,7 @@ def register_mutation_routes(app: FastAPI) -> None:
         response: Response,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> dict[str, object]:
+        """Handle artifact."""
         try:
             if correlation_id:
                 response.headers["X-Correlation-Id"] = correlation_id

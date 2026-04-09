@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Query routes helpers for API support."""
+
 from __future__ import annotations
 
 from fastapi import FastAPI, Header, HTTPException, Response
@@ -24,6 +26,8 @@ from bijux_canon_index.interfaces.schemas.requests import (
 
 
 def register_query_routes(app: FastAPI) -> None:
+    """Register query routes."""
+
     @app.post(
         "/execute",
         tags=["Execution"],
@@ -88,6 +92,7 @@ def register_query_routes(app: FastAPI) -> None:
         response: Response,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> dict[str, object]:
+        """Handle execute."""
         try:
             if correlation_id and req.correlation_id is None:
                 req = req.model_copy(update={"correlation_id": correlation_id})
@@ -162,6 +167,7 @@ def register_query_routes(app: FastAPI) -> None:
         response: Response,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> dict[str, object]:
+        """Explain req."""
         try:
             result = VectorExecutionEngine().explain(req)
             if correlation_id:
@@ -235,6 +241,7 @@ def register_query_routes(app: FastAPI) -> None:
         response: Response,
         correlation_id: str | None = Header(None, alias="X-Correlation-Id"),
     ) -> dict[str, object]:
+        """Handle replay."""
         try:
             if correlation_id:
                 response.headers["X-Correlation-Id"] = correlation_id

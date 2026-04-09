@@ -11,6 +11,7 @@ DEPRECATION_POLICY = (
 
 
 def assert_supported_version(version: str) -> None:
+    """Handle assert supported version."""
     if not version.startswith(PUBLIC_API_VERSION.split(".")[0]):
         raise ValueError("Unsupported API version")
 

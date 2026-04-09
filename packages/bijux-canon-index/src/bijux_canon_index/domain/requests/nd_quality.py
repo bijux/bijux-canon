@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""ND quality helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -16,12 +18,14 @@ from bijux_canon_index.domain.requests.scoring import tie_break_key
 
 @dataclass(frozen=True)
 class NDQualityMetrics:
+    """Represents ndquality metrics."""
     rank_instability: float
     distance_margin: float
     similarity_entropy: float
 
 
 def _sorted_results(results: Iterable[Result]) -> list[Result]:
+    """Handle sorted results."""
     ordered = list(results)
     if all(res.rank for res in ordered):
         ordered.sort(key=lambda res: res.rank)
@@ -31,6 +35,7 @@ def _sorted_results(results: Iterable[Result]) -> list[Result]:
 
 
 def compute_distance_margin(results: Iterable[Result]) -> float:
+    """Compute distance margin."""
     ordered = _sorted_results(results)
     if len(ordered) < 2:
         return 0.0
@@ -42,6 +47,7 @@ def compute_distance_margin(results: Iterable[Result]) -> float:
 
 
 def compute_similarity_entropy(results: Iterable[Result]) -> float:
+    """Compute similarity entropy."""
     ordered = _sorted_results(results)
     if len(ordered) <= 1:
         return 0.0
@@ -59,6 +65,7 @@ def compute_similarity_entropy(results: Iterable[Result]) -> float:
 def compute_rank_instability(
     results: Iterable[Result], exact_results: Iterable[Result] | None
 ) -> float:
+    """Compute rank instability."""
     ordered = _sorted_results(results)
     if exact_results is None:
         return 0.0
@@ -74,6 +81,7 @@ def build_witness_report(
     exact_results: Iterable[Result],
     sample_k: int,
 ) -> WitnessReport:
+    """Build witness report."""
     ordered_nd = _sorted_results(nd_results)
     ordered_exact = _sorted_results(exact_results)
     ids_nd = [res.vector_id for res in ordered_nd]
@@ -91,6 +99,7 @@ def build_witness_report(
 
 
 def should_run_witness(rate: float, seed: int | None) -> bool:
+    """Return whether run witness."""
     if rate <= 0:
         return False
     if rate >= 1:
@@ -100,6 +109,7 @@ def should_run_witness(rate: float, seed: int | None) -> bool:
 
 
 def similarity_from_score(metric: str, score: float) -> float:
+    """Handle similarity from score."""
     if metric in {"l2", "cosine"}:
         return -score
     if metric == "dot":
@@ -113,6 +123,7 @@ def adaptive_filter_results(
     threshold: float | None,
     adaptive_k: bool,
 ) -> tuple[list[Result], bool, bool]:
+    """Handle adaptive filter results."""
     if threshold is None:
         return results, False, False
     filtered: list[Result] = []
@@ -128,6 +139,7 @@ def adaptive_filter_results(
 def calibrate_scores(
     metric: str, results: Iterable[Result]
 ) -> tuple[float | None, float | None, str | None]:
+    """Handle calibrate scores."""
     ordered = _sorted_results(results)
     if not ordered:
         return None, None, None
@@ -142,6 +154,7 @@ def calibrate_scores(
 
 
 def stability_signature(metric: str, results: Iterable[Result]) -> str:
+    """Handle stability signature."""
     ordered = _sorted_results(results)
     payload = {
         "metric": metric,

@@ -29,6 +29,7 @@ _BACKEND_LOCK = threading.Lock()
 
 @dataclass(frozen=True)
 class OrchestratorRuntimeBootstrap:
+    """Represents orchestrator runtime bootstrap."""
     backend: Any
     authz: Authz
     stores: Any
@@ -44,6 +45,7 @@ class OrchestratorRuntimeBootstrap:
 
 
 def resolve_backend(backend_env: str, chosen_path: Path) -> Any:
+    """Resolve backend."""
     if backend_env == "memory":
         from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
@@ -78,6 +80,7 @@ def bootstrap_runtime(
     state_path: str | Path | None,
     config: ExecutionConfig,
 ) -> OrchestratorRuntimeBootstrap:
+    """Handle bootstrap runtime."""
     runtime_backend = backend or _resolve_backend_from_env(state_path)
     vector_store_enabled = config.vector_store is not None
     vector_store_cfg = config.vector_store or VectorStoreConfig(backend="memory")
@@ -132,6 +135,7 @@ def bootstrap_runtime(
 
 
 def _resolve_backend_from_env(state_path: str | Path | None) -> Any:
+    """Resolve backend from env."""
     backend_env = (
         read_env(
             "BIJUX_CANON_INDEX_BACKEND",
@@ -153,6 +157,7 @@ def _resolve_backend_from_env(state_path: str | Path | None) -> Any:
 
 
 def _resolve_authz_from_env() -> Authz:
+    """Resolve authz from env."""
     auth_mode = (
         read_env(
             "BIJUX_CANON_INDEX_AUTHZ_MODE",
@@ -165,6 +170,7 @@ def _resolve_authz_from_env() -> Authz:
 
 
 def _resolve_read_only_from_env() -> bool:
+    """Resolve read only from env."""
     read_only = (
         read_env(
             "BIJUX_CANON_INDEX_READ_ONLY",
@@ -177,6 +183,7 @@ def _resolve_read_only_from_env() -> bool:
 
 
 def _read_int_env(name: str, *, legacy: str, default: str) -> int:
+    """Read int env."""
     return int(read_env(name, legacy=legacy, default=default) or default)
 
 

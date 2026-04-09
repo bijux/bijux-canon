@@ -1,3 +1,5 @@
+"""Version helpers."""
+
 from __future__ import annotations
 
 from importlib.metadata import PackageNotFoundError
@@ -31,12 +33,14 @@ try:
 except ImportError:
 
     def _fallback_version() -> str:
+        """Handle fallback version."""
         try:
             return package_version("bijux-canon-index")
         except PackageNotFoundError:
             return "0.3.0"
 
     def _version_parts(value: str) -> tuple[int | str, ...]:
+        """Handle version parts."""
         tokens = value.replace("+", ".").replace("-", ".").split(".")
         return tuple(
             int(token) if token.isdigit() else token for token in tokens if token

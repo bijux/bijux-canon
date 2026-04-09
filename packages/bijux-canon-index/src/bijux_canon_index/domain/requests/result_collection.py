@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Result collection helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -30,6 +32,7 @@ def collect_results(
     resources: ExecutionResources,
     ann_runner: AnnExecutionRequestRunner | None,
 ) -> tuple[list[Result], ExecutionStatus, str | None, ApproximationReport | None]:
+    """Handle collect results."""
     enforce_transition(session.state, ExecutionState.RUNNING)
     counters = {"vectors": 0, "distance": 0, "ann_probes": 0}
     results_buffer: list[Result] = []
@@ -167,6 +170,7 @@ def collect_results(
 
 
 def _preflight_budget(budget: dict[str, int | float] | None) -> None:
+    """Handle preflight budget."""
     if not budget:
         return
     if budget.get("max_vectors") is not None and int(budget["max_vectors"]) <= 0:
@@ -205,6 +209,7 @@ def _preflight_budget(budget: dict[str, int | float] | None) -> None:
 
 
 def _budget_failure_reason(exc: Exception) -> str | None:
+    """Handle budget failure reason."""
     if hasattr(exc, "dimension"):
         return f"budget_exhausted_{exc.dimension}"
     return None
@@ -213,6 +218,7 @@ def _budget_failure_reason(exc: Exception) -> str | None:
 def estimate_cost(
     request: ExecutionRequest, results_buffer: Iterable[Result]
 ) -> ExecutionCost:
+    """Handle estimate cost."""
     result_list = list(results_buffer)
     vector_ops = len(result_list) * (len(request.vector) if request.vector else 1)
     return ExecutionCost(

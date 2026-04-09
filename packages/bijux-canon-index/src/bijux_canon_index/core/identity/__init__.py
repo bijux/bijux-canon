@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+"""Package exports for identity."""
+
 from __future__ import annotations
 
 from bijux_canon_index.core.identity.fingerprints import (

@@ -19,12 +19,14 @@ T = TypeVar("T")
 
 
 class FailureKind(Enum):
+    """Enumeration of failure kind."""
     RETRYABLE = "retryable"
     TERMINAL = "terminal"
     DIVERGENCE = "divergence"
 
 
 def classify_failure(error: Exception) -> FailureKind:
+    """Classify failure."""
     if isinstance(error, InvariantError):
         return FailureKind.TERMINAL
     if isinstance(error, BijuxError) and error.retryable:
@@ -37,6 +39,7 @@ def retry_with_policy(
     attempts: int = 3,
     contract: ExecutionContract | None = None,
 ) -> T:
+    """Handle retry with policy."""
     last_error: Exception | None = None
     allowed_attempts = retry_budget(contract, attempts)
     for _ in range(allowed_attempts):

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Postprocess helpers for domain logic."""
+
 from __future__ import annotations
 
 from dataclasses import replace
@@ -37,6 +39,7 @@ def randomness_audit(
 ) -> tuple[
     tuple[str, ...], tuple[tuple[str, int | float], ...], tuple[tuple[str, float], ...]
 ]:
+    """Handle randomness audit."""
     randomness_sources: tuple[str, ...] = ()
     randomness_budget: tuple[tuple[str, int | float], ...] = ()
     randomness_envelopes: tuple[tuple[str, float], ...] = ()
@@ -54,6 +57,7 @@ def guard_nd_randomness(
     randomness_envelopes: tuple[tuple[str, float], ...],
     approximation: ApproximationReport | None,
 ) -> None:
+    """Handle guard ND randomness."""
     if session.request.execution_contract is not ExecutionContract.NON_DETERMINISTIC:
         return
     if (
@@ -74,6 +78,7 @@ def apply_budget_results(
     status: ExecutionStatus,
     failure_reason: str | None,
 ) -> tuple[ExecutionStatus, str | None]:
+    """Handle apply budget results."""
     return apply_budget_outcomes(
         session.request,
         approximation,
@@ -97,6 +102,7 @@ def build_execution_result(
     witness_results: tuple[Result, ...] | None = None,
     decision_trace: NDDecisionTrace | None = None,
 ) -> ExecutionResult:
+    """Build execution result."""
     signature = execution_signature(
         plan=session.plan,
         corpus_fingerprint=session.artifact.corpus_fingerprint,

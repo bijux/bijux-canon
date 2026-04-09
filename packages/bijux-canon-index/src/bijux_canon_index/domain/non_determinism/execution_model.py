@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
+"""Execution model helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -38,6 +40,7 @@ from bijux_canon_index.infra.logging import log_event
 
 @dataclass(frozen=True)
 class NonDeterministicPlan:
+    """Represents non deterministic plan."""
     runner: AnnExecutionRequestRunner
     settings: NDSettings | None
     budget: ExecutionBudget | None
@@ -56,12 +59,14 @@ class NonDeterministicExecutionModel:
         latest_vector_fingerprint: str | None = None,
         tx_factory: Callable[[], Any] | None = None,
     ) -> None:
+        """Initialize the instance."""
         self._stores = stores
         self._ann_runner = ann_runner
         self._latest_vector_fingerprint = latest_vector_fingerprint
         self._tx_factory = tx_factory
 
     def build_settings(self, req: object) -> NDSettings | None:
+        """Build settings."""
         nd_settings = NDSettings(
             profile=getattr(req, "nd_profile", None),
             target_recall=getattr(req, "nd_target_recall", None),
@@ -132,6 +137,7 @@ class NonDeterministicExecutionModel:
         request: ExecutionRequest,
         randomness: RandomnessProfile | None,
     ) -> NonDeterministicPlan:
+        """Handle plan."""
         if artifact.execution_contract is not ExecutionContract.NON_DETERMINISTIC:
             raise InvariantError(
                 message="ND execution requires non_deterministic artifact"
@@ -174,6 +180,7 @@ class NonDeterministicExecutionModel:
         nd_settings: NDSettings | None,
         build_on_demand: bool,
     ) -> ExecutionArtifact:
+        """Ensure index."""
         ann_runner = self._ann_runner
         if ann_runner is None:
             raise NDExecutionUnavailableError(
@@ -218,6 +225,7 @@ class NonDeterministicExecutionModel:
         return artifact
 
     def validate_index_invariants(self, artifact: ExecutionArtifact) -> None:
+        """Validate index invariants."""
         if artifact.execution_contract is not ExecutionContract.NON_DETERMINISTIC:
             return
         if artifact.index_state != "ready":
@@ -260,6 +268,7 @@ class NonDeterministicExecutionModel:
     def warmup(
         self, artifact: ExecutionArtifact, nd_settings: NDSettings | None
     ) -> None:
+        """Handle warmup."""
         if nd_settings is None or nd_settings.warmup_queries is None:
             return
         ann_runner = self._ann_runner
@@ -286,6 +295,7 @@ class NonDeterministicExecutionModel:
         randomness: RandomnessProfile | None,
         build_on_demand: bool,
     ) -> tuple[Any, Iterable[Any]]:
+        """Handle execute."""
         session = self._stage_plan(
             artifact, request, randomness, build_on_demand=build_on_demand
         )
@@ -311,6 +321,7 @@ class NonDeterministicExecutionModel:
         *,
         build_on_demand: bool,
     ) -> Any:
+        """Handle stage plan."""
         session = start_execution_session(
             artifact, request, self._stores, randomness, self._ann_runner
         )
@@ -323,6 +334,7 @@ class NonDeterministicExecutionModel:
     def _stage_execute(
         self, session: Any, decision_trace: NDDecisionTrace
     ) -> tuple[Any, Iterable[Any]]:
+        """Handle stage execute."""
         return execute_request(
             session,
             self._stores,
@@ -333,11 +345,13 @@ class NonDeterministicExecutionModel:
     def _stage_verify(
         self, execution_outcome: tuple[Any, Iterable[Any]]
     ) -> tuple[Any, Iterable[Any]]:
+        """Handle stage verify."""
         return execution_outcome
 
     def _stage_postprocess(
         self, execution_result: Any, decision_trace: NDDecisionTrace
     ) -> Any:
+        """Handle stage postprocess."""
         if execution_result.nd_result is None:
             return execution_result
         return replace(
@@ -350,6 +364,7 @@ class NonDeterministicExecutionModel:
     def decision_trace_from_request(
         self, request: ExecutionRequest, refusal: str | None = None
     ) -> NDDecisionTrace:
+        """Handle decision trace from request."""
         params: dict[str, object] = {"top_k": request.top_k}
         if request.nd_settings:
             params.update(
@@ -370,6 +385,7 @@ class NonDeterministicExecutionModel:
 
 
 def _budget_items(budget: ExecutionBudget | None) -> Iterable[tuple[str, object]]:
+    """Handle budget items."""
     if budget is None:
         return ()
     values = {

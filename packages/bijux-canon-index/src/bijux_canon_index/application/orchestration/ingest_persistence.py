@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Ingest persistence helpers for application workflows."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -28,6 +30,7 @@ def persist_ingest_documents(
         [dict[str, str | None]], tuple[tuple[str, str], ...] | None
     ],
 ) -> None:
+    """Handle persist ingest documents."""
     with tx_factory() as tx:
         for idx, doc_text in enumerate(documents):
             doc_id = id_policy.document_id(doc_text)
@@ -62,6 +65,7 @@ def invalidate_ann_artifact_if_needed(
     stores: ExecutionResources,
     artifact_id: str,
 ) -> None:
+    """Handle invalidate ANN artifact if needed."""
     existing_artifact = stores.ledger.get_artifact(artifact_id)
     if (
         existing_artifact

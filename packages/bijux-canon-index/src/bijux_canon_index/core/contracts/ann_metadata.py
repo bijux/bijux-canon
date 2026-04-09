@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+"""ANN metadata contract helpers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -8,6 +10,7 @@ from bijux_canon_index.core.execution_result import ApproximationReport
 
 @dataclass(frozen=True)
 class ANNResultMetadata:
+    """Represents annresult metadata."""
     algorithm: str
     index_params: tuple[tuple[str, str | int | float], ...]
     query_params: tuple[tuple[str, str | int | float], ...]
@@ -20,6 +23,7 @@ class ANNResultMetadata:
 
 
 def derive_metadata(report: ApproximationReport) -> ANNResultMetadata:
+    """Derive metadata."""
     return ANNResultMetadata(
         algorithm=report.algorithm,
         index_params=tuple(report.index_parameters),

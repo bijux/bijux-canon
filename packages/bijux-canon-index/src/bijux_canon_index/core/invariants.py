@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Invariants helpers for core logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -13,11 +15,13 @@ ALLOWED_METRICS = {"l2", "cosine", "dot"}
 
 
 def _require(condition: bool, message: str) -> None:
+    """Handle require."""
     if not condition:
         raise InvariantError(message=message)
 
 
 def _is_json_safe(params: Iterable[tuple[str, str]]) -> bool:
+    """Return whether JSON safe."""
     try:
         json.dumps(list(params), ensure_ascii=True)
     except Exception:
@@ -26,6 +30,7 @@ def _is_json_safe(params: Iterable[tuple[str, str]]) -> bool:
 
 
 def validate_execution_artifact(artifact: ExecutionArtifact) -> None:
+    """Validate execution artifact."""
     _require(artifact.schema_version == "v1", "Unsupported ExecutionArtifact version")
     _require(
         isinstance(artifact.execution_contract, ExecutionContract),

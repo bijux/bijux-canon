@@ -18,6 +18,7 @@ EXPECTED_FINGERPRINT = (
 
 
 def _field_signature(cls: type[Any]) -> tuple[tuple[str, Any, Any], ...]:
+    """Handle field signature."""
     sig = []
     for f in fields(cls):
         default = f.default if f.default is not MISSING else None
@@ -31,6 +32,7 @@ def _field_signature(cls: type[Any]) -> tuple[tuple[str, Any, Any], ...]:
 
 
 def execution_abi_payload() -> dict[str, object]:
+    """Handle execution abi payload."""
     return {
         "abi_version": EXECUTION_ABI_VERSION,
         "execution_request_fields": _field_signature(ExecutionRequest),
@@ -40,10 +42,12 @@ def execution_abi_payload() -> dict[str, object]:
 
 
 def execution_abi_fingerprint() -> str:
+    """Handle execution abi fingerprint."""
     return fingerprint(execution_abi_payload())
 
 
 def assert_execution_abi() -> None:
+    """Handle assert execution abi."""
     if execution_abi_fingerprint() != EXPECTED_FINGERPRINT:
         raise RuntimeError(
             "Execution ABI drift detected; bump version and migrate artifacts"

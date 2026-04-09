@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+"""Invariants contract helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -10,18 +12,21 @@ from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
 
 @dataclass(frozen=True)
 class Invariant:
+    """Represents invariant."""
     invariant_id: str
     description: str
     predicate: Callable[[], bool]
 
 
 def _always_true() -> bool:
+    """Handle always true."""
     return True
 
 
 def invariant_execution_contract_match(
     artifact: ExecutionArtifact, request: ExecutionRequest
 ) -> Invariant:
+    """Handle invariant execution contract match."""
     return Invariant(
         invariant_id="INV-010",
         description="Artifact and request execution contracts must align",
@@ -30,6 +35,7 @@ def invariant_execution_contract_match(
 
 
 def invariant_randomness_required(request: ExecutionRequest) -> Invariant:
+    """Handle invariant randomness required."""
     return Invariant(
         invariant_id="INV-020",
         description="Non-deterministic execution requires declared randomness",
@@ -41,6 +47,7 @@ def invariant_randomness_required(request: ExecutionRequest) -> Invariant:
 
 
 def invariant_provenance_required(artifact: ExecutionArtifact) -> Invariant:
+    """Handle invariant provenance required."""
     return Invariant(
         invariant_id="INV-040",
         description="Replay requires stored provenance for artifact",
@@ -49,6 +56,7 @@ def invariant_provenance_required(artifact: ExecutionArtifact) -> Invariant:
 
 
 def assert_invariants(invariants: Iterable[Invariant]) -> None:
+    """Handle assert invariants."""
     failed = [inv for inv in invariants if not inv.predicate()]
     if failed:
         ids = ", ".join(inv.invariant_id for inv in failed)

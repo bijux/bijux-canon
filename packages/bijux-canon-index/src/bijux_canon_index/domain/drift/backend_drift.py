@@ -25,6 +25,7 @@ def detect_backend_drift(
     ann_runner_b: AnnExecutionRequestRunner | None = None,
     recall_floor: float = 0.5,
 ) -> None:
+    """Handle detect backend drift."""
     artifact_a = resources_a.ledger.get_artifact(artifact_id)
     artifact_b = resources_b.ledger.get_artifact(artifact_id)
     if artifact_a is None or artifact_b is None:

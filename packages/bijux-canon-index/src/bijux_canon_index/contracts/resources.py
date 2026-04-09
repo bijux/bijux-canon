@@ -20,6 +20,7 @@ from bijux_canon_index.core.types import (
 
 
 class BackendCapabilities(NamedTuple):
+    """Represents backend capabilities."""
     contracts: set[object] | None = None
     max_vector_size: int | None = None
     metrics: set[str] | None = None
@@ -31,6 +32,7 @@ class BackendCapabilities(NamedTuple):
 
 
 class ExecutionResources(NamedTuple):
+    """Represents execution resources."""
     name: str
     vectors: VectorSource
     ledger: ExecutionLedger

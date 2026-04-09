@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Runtime helpers for API support."""
+
 from __future__ import annotations
 
 from typing import NoReturn
@@ -34,6 +36,7 @@ REFUSAL_EXAMPLE = {
 
 
 def raise_http_error(exc: BijuxError, correlation_id: str | None = None) -> NoReturn:
+    """Raise HTTP error."""
     record_failure(exc)
     detail: object
     if is_refusal(exc):
@@ -55,6 +58,7 @@ def config_from_payload(
     embed_model: str | None = None,
     cache_embeddings: str | None = None,
 ) -> ExecutionConfig:
+    """Handle config from payload."""
     vs_cfg = None
     if vector_store:
         vs_cfg = VectorStoreConfig(
@@ -86,6 +90,7 @@ def engine_from_payload(
     embed_model: str | None = None,
     cache_embeddings: str | None = None,
 ) -> VectorExecutionEngine:
+    """Handle engine from payload."""
     return VectorExecutionEngine(
         config=config_from_payload(
             vector_store=vector_store,
@@ -101,6 +106,7 @@ def engine_from_payload(
 def replay_inputs_from_request(
     req: ExecutionRequestPayload,
 ) -> tuple[str, RandomnessProfile | None, ExecutionBudget | None]:
+    """Handle replay inputs from request."""
     randomness_profile = None
     if req.randomness_profile is not None:
         randomness_profile = RandomnessProfile(

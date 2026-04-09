@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Vector execution helpers for core logic."""
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -14,6 +16,7 @@ from bijux_canon_index.core.types import ExecutionRequest
 
 @dataclass(frozen=True)
 class RandomnessProfile:
+    """Represents randomness profile."""
     seed: int | None = None
     sources: tuple[str, ...] = field(default_factory=tuple)
     bounded: bool = False
@@ -24,6 +27,7 @@ class RandomnessProfile:
 
 @dataclass(frozen=True)
 class VectorExecution:
+    """Represents vector execution."""
     request: ExecutionRequest
     contract: ExecutionContract
     backend_id: str
@@ -34,6 +38,7 @@ class VectorExecution:
     execution_id: str = field(init=False)
 
     def __post_init__(self) -> None:
+        """Finalize initialization after dataclass construction."""
         if (
             self.contract is ExecutionContract.NON_DETERMINISTIC
             and self.randomness is None
@@ -69,6 +74,7 @@ def derive_execution_id(
     randomness: RandomnessProfile | None = None,
     plan: ExecutionPlan | None = None,
 ) -> str:
+    """Derive execution ID."""
     if (
         randomness is None
         and request.execution_contract is ExecutionContract.NON_DETERMINISTIC
@@ -94,6 +100,7 @@ def execution_signature(
     vector_fingerprint: str,
     randomness: RandomnessProfile | None,
 ) -> str:
+    """Handle execution signature."""
     payload = {
         "plan": canon(plan).decode("utf-8"),
         "corpus_fingerprint": corpus_fingerprint,
@@ -107,6 +114,7 @@ def execution_signature(
 
 
 def _canonical_request_payload(request: ExecutionRequest) -> str:
+    """Handle canonical request payload."""
     payload = asdict(request)
     if payload.get("nd_settings") is None:
         payload.pop("nd_settings", None)

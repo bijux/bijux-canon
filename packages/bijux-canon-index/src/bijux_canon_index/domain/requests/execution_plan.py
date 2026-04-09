@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Execution plan helpers for domain logic."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -34,6 +36,7 @@ def build_execution_plan(
     randomness: RandomnessProfile | None = None,
     ann_runner: AnnExecutionRequestRunner | None = None,
 ) -> tuple[ExecutionPlan, VectorExecution]:
+    """Build execution plan."""
     _validate_contract_alignment(artifact, request)
     _validate_capabilities(artifact, request, resources)
     classify_execution(
@@ -67,6 +70,7 @@ def run_plan(
     ann_runner: AnnExecutionRequestRunner | None = None,
     budget: dict[str, int | float] | None = None,
 ) -> Iterable[Result]:
+    """Handle run plan."""
     if plan is None or execution is None:  # pragma: no cover - defensive
         raise InvariantError(
             message="run_plan requires an execution plan and execution context"
@@ -125,6 +129,7 @@ __all__ = ["ExecutionPlan", "build_execution_plan", "run_plan"]
 def _validate_contract_alignment(
     artifact: ExecutionArtifact, request: ExecutionRequest
 ) -> None:
+    """Validate contract alignment."""
     if request.execution_contract is not artifact.execution_contract:
         raise ValidationError(
             message="Backend resources reject mismatched execution contract",
@@ -137,6 +142,7 @@ def _validate_capabilities(
     request: ExecutionRequest,
     resources: ExecutionResources,
 ) -> None:
+    """Validate capabilities."""
     caps = resources.capabilities
     if not caps:
         return
@@ -183,6 +189,7 @@ def _validate_capabilities(
 def _build_deterministic_plan(
     artifact: ExecutionArtifact, request: ExecutionRequest
 ) -> tuple[ExecutionPlan, str, RandomnessProfile | None]:
+    """Build deterministic plan."""
     randomness_sources: tuple[RandomnessSource, ...] = ()
     reproducibility = "bit-identical"
     steps = ("plan_deterministic", "score_exact")
@@ -204,6 +211,7 @@ def _build_nd_plan(
     ann_runner: AnnExecutionRequestRunner | None,
     randomness: RandomnessProfile | None,
 ) -> tuple[ExecutionPlan, str, RandomnessProfile | None]:
+    """Build ND plan."""
     if ann_runner is None:
         raise NDExecutionUnavailableError(
             message="ANN runner required for non-deterministic execution"
@@ -240,6 +248,7 @@ def _nd_reproducibility_bounds(
     randomness: RandomnessProfile | None,
     ann_runner: AnnExecutionRequestRunner,
 ) -> str:
+    """Handle ND reproducibility bounds."""
     seed = randomness.seed if randomness else None
     non_replayable = randomness.non_replayable if randomness else False
     bounds = [
