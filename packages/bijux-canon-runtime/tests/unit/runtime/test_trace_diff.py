@@ -52,7 +52,7 @@ def test_semantic_trace_diff_ignores_timestamps() -> None:
         min_claim_overlap=1.0,
         max_contradiction_delta=0,
     )
-    event_payload = {"event_type": EventType.STEP_START.value}
+    event_payload: dict[str, object] = {"event_type": EventType.STEP_START.value}
     event_one = ExecutionEvent(
         spec_version="v1",
         event_index=0,
@@ -139,7 +139,9 @@ def test_non_determinism_report_includes_class_taxonomy() -> None:
         min_claim_overlap=1.0,
         max_contradiction_delta=0,
     )
-    event_payload = {"event_type": EventType.HUMAN_INTERVENTION.value}
+    event_payload: dict[str, object] = {
+        "event_type": EventType.HUMAN_INTERVENTION.value
+    }
     event = ExecutionEvent(
         spec_version="v1",
         event_index=0,
@@ -201,6 +203,11 @@ def test_non_determinism_report_includes_class_taxonomy() -> None:
         trace,
         acceptability=ReplayAcceptability.STATISTICALLY_BOUNDED,
     )
-    report = diff["non_determinism_report"]["determinism_classes"]
+    non_determinism_report = diff.get("non_determinism_report")
+    assert isinstance(non_determinism_report, dict)
+    report = non_determinism_report.get("determinism_classes")
+    assert isinstance(report, dict)
+    expected = report.get("expected")
+    assert isinstance(expected, list)
     for label in ("structural", "environmental", "stochastic", "human", "external"):
-        assert label in report["expected"]
+        assert label in expected

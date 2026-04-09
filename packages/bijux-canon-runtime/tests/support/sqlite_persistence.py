@@ -25,7 +25,9 @@ from bijux_canon_runtime.ontology import (
     CausalityTag,
     DatasetState,
     DeterminismLevel,
+    EntropyExhaustionAction,
     EntropyMagnitude,
+    FlowState,
 )
 from bijux_canon_runtime.ontology.ids import (
     ArtifactID,
@@ -45,8 +47,10 @@ from bijux_canon_runtime.ontology.public import (
     EntropySource,
     EventType,
     ReplayAcceptability,
+    ReplayMode,
 )
 from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
+from bijux_canon_runtime.runtime.artifact_store import ArtifactProducer
 
 
 class SqliteMigrator:
@@ -83,13 +87,15 @@ _MIGRATIONS = (
         1,
         """
         CREATE TABLE IF NOT EXISTS artifact (
-            artifact_id TEXT PRIMARY KEY,
+            tenant_id TEXT NOT NULL,
+            artifact_id TEXT NOT NULL,
             spec_version TEXT NOT NULL,
             artifact_type TEXT NOT NULL,
             producer TEXT NOT NULL,
             parent_artifacts TEXT NOT NULL,
             content_hash TEXT NOT NULL,
-            scope TEXT NOT NULL
+            scope TEXT NOT NULL,
+            PRIMARY KEY (tenant_id, artifact_id)
         );
         CREATE TABLE IF NOT EXISTS traces (
             flow_id TEXT PRIMARY KEY,
@@ -124,8 +130,9 @@ class SqliteArtifactStore(ArtifactStore):
         *,
         spec_version: str,
         artifact_id: ArtifactID,
+        tenant_id: TenantID,
         artifact_type: ArtifactType,
-        producer: str,
+        producer: ArtifactProducer,
         parent_artifacts: tuple[ArtifactID, ...],
         content_hash: ContentHash,
         scope: ArtifactScope,
@@ -133,6 +140,7 @@ class SqliteArtifactStore(ArtifactStore):
         artifact = Artifact(
             spec_version=spec_version,
             artifact_id=artifact_id,
+            tenant_id=tenant_id,
             artifact_type=artifact_type,
             producer=producer,
             parent_artifacts=parent_artifacts,
@@ -144,6 +152,7 @@ class SqliteArtifactStore(ArtifactStore):
 
     def save(self, artifact: Artifact) -> None:
         payload = (
+            str(artifact.tenant_id),
             str(artifact.artifact_id),
             artifact.spec_version,
             artifact.artifact_type.value,
@@ -153,14 +162,15 @@ class SqliteArtifactStore(ArtifactStore):
             artifact.scope.value,
         )
         cursor = self._connection.execute(
-            "SELECT 1 FROM artifact WHERE artifact_id = ?",
-            (str(artifact.artifact_id),),
+            "SELECT 1 FROM artifact WHERE tenant_id = ? AND artifact_id = ?",
+            (str(artifact.tenant_id), str(artifact.artifact_id)),
         )
         if cursor.fetchone() is not None:
             raise ValueError("Artifact IDs must be unique per run")
         self._connection.execute(
             """
             INSERT INTO artifact (
+                tenant_id,
                 artifact_id,
                 spec_version,
                 artifact_type,
@@ -168,20 +178,20 @@ class SqliteArtifactStore(ArtifactStore):
                 parent_artifacts,
                 content_hash,
                 scope
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             payload,
         )
         self._connection.commit()
 
-    def load(self, artifact_id: ArtifactID) -> Artifact:
+    def load(self, artifact_id: ArtifactID, *, tenant_id: TenantID) -> Artifact:
         cursor = self._connection.execute(
             """
             SELECT spec_version, artifact_type, producer, parent_artifacts,
                    content_hash, scope
-            FROM artifact WHERE artifact_id = ?
+            FROM artifact WHERE tenant_id = ? AND artifact_id = ?
             """,
-            (str(artifact_id),),
+            (str(tenant_id), str(artifact_id)),
         )
         row = cursor.fetchone()
         if row is None:
@@ -190,6 +200,7 @@ class SqliteArtifactStore(ArtifactStore):
         return Artifact(
             spec_version=row[0],
             artifact_id=artifact_id,
+            tenant_id=tenant_id,
             artifact_type=ArtifactType(row[1]),
             producer=row[2],
             parent_artifacts=parent_artifacts,
@@ -354,14 +365,17 @@ def _decode_trace(payload: dict[str, Any]) -> ExecutionTrace:
     return ExecutionTrace(
         spec_version=payload["spec_version"],
         flow_id=FlowID(payload["flow_id"]),
+        tenant_id=TenantID(payload["tenant_id"]),
         parent_flow_id=FlowID(payload["parent_flow_id"])
         if payload["parent_flow_id"] is not None
         else None,
         child_flow_ids=tuple(FlowID(item) for item in payload["child_flow_ids"]),
+        flow_state=FlowState(payload["flow_state"]),
         determinism_level=DeterminismLevel(payload["determinism_level"]),
         replay_acceptability=ReplayAcceptability(payload["replay_acceptability"]),
         dataset=_decode_dataset(payload["dataset"]),
         replay_envelope=_decode_envelope(payload["replay_envelope"]),
+        allow_deprecated_datasets=bool(payload["allow_deprecated_datasets"]),
         environment_fingerprint=EnvironmentFingerprint(
             payload["environment_fingerprint"]
         ),
@@ -383,6 +397,14 @@ def _decode_trace(payload: dict[str, Any]) -> ExecutionTrace:
         contradiction_count=payload["contradiction_count"],
         arbitration_decision=payload["arbitration_decision"],
         finalized=bool(payload["finalized"]),
+        replay_mode=ReplayMode(payload.get("replay_mode", ReplayMode.STRICT.value)),
+        entropy_exhausted=bool(payload.get("entropy_exhausted", False)),
+        entropy_exhaustion_action=(
+            EntropyExhaustionAction(payload["entropy_exhaustion_action"])
+            if payload.get("entropy_exhaustion_action") is not None
+            else None
+        ),
+        non_certifiable=bool(payload.get("non_certifiable", False)),
     )
 
 

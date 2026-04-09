@@ -15,15 +15,12 @@ import pytest
 def test_distribution_version_uses_first_installed_distribution(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    versions = {
+    versions: dict[str, str] = {
         "bijux-canon-agent": "0.3.0",
     }
 
     def fake_version(name: str) -> str:
-        result = versions[name]
-        if result is metadata.PackageNotFoundError:
-            raise metadata.PackageNotFoundError(name)
-        return result
+        return versions[name]
 
     monkeypatch.setattr(metadata, "version", fake_version)
 
@@ -53,10 +50,10 @@ def test_runtime_dependency_versions_use_canonical_keys(
     }
 
     def fake_version(name: str) -> str:
-        result = values.get(name, metadata.PackageNotFoundError)
-        if result is metadata.PackageNotFoundError:
+        version = values.get(name)
+        if version is None:
             raise metadata.PackageNotFoundError(name)
-        return result
+        return version
 
     monkeypatch.setattr(metadata, "version", fake_version)
 

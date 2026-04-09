@@ -6,6 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 import types
+from typing import Callable
 
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
@@ -60,28 +61,30 @@ from bijux_canon_runtime.ontology.public import (
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
 import pytest
 
+PlanHashFactory = Callable[..., PlanHash]
+
 
 def pytest_configure() -> None:
     if "bijux_cli" not in sys.modules:
         stub = types.ModuleType("bijux_cli")
-        stub.__version__ = "0.3.3"
+        setattr(stub, "__version__", "0.3.3")
         sys.modules["bijux_cli"] = stub
     if "bijux_canon_agent" not in sys.modules:
         stub = types.ModuleType("bijux_canon_agent")
-        stub.__version__ = "0.3.0"
-        stub.run = lambda **_kwargs: []
+        setattr(stub, "__version__", "0.3.0")
+        setattr(stub, "run", lambda **_kwargs: [])
         sys.modules["bijux_canon_agent"] = stub
     if "bijux_rag" not in sys.modules:
         stub = types.ModuleType("bijux_rag")
-        stub.retrieve = lambda **_kwargs: []
+        setattr(stub, "retrieve", lambda **_kwargs: [])
         sys.modules["bijux_rag"] = stub
     if "bijux_canon_index" not in sys.modules:
         stub = types.ModuleType("bijux_canon_index")
-        stub.enforce_contract = lambda *_args, **_kwargs: True
+        setattr(stub, "enforce_contract", lambda *_args, **_kwargs: True)
         sys.modules["bijux_canon_index"] = stub
     if "bijux_canon_reason" not in sys.modules:
         stub = types.ModuleType("bijux_canon_reason")
-        stub.reason = lambda **_kwargs: None
+        setattr(stub, "reason", lambda **_kwargs: None)
         sys.modules["bijux_canon_reason"] = stub
 
 
@@ -191,7 +194,7 @@ def execution_read_store(tmp_path: Path) -> DuckDBExecutionReadStore:
 
 
 @pytest.fixture
-def plan_hash_for():
+def plan_hash_for() -> PlanHashFactory:
     def _plan_hash_for(
         flow_id: str,
         tenant_id: str,
@@ -203,7 +206,7 @@ def plan_hash_for():
         replay_acceptability: ReplayAcceptability,
         entropy_budget: EntropyBudget,
         replay_envelope: ReplayEnvelope,
-        dataset,
+        dataset: object,
         allow_deprecated_datasets: bool,
         replay_mode: ReplayMode = ReplayMode.STRICT,
         allowed_variance_class: EntropyMagnitude | None = None,
@@ -306,12 +309,12 @@ def plan_hash_for():
 
 @pytest.fixture
 def resolved_flow(
-    deterministic_environment,
-    plan_hash_for,
-    entropy_budget,
-    replay_envelope,
-    dataset_descriptor,
-    tenant_id,
+    deterministic_environment: EnvironmentFingerprint,
+    plan_hash_for: PlanHashFactory,
+    entropy_budget: EntropyBudget,
+    replay_envelope: ReplayEnvelope,
+    dataset_descriptor: DatasetDescriptor,
+    tenant_id: TenantID,
 ) -> ExecutionPlan:
     step = ResolvedStep(
         spec_version="v1",
@@ -380,7 +383,10 @@ def resolved_flow(
 
 
 @pytest.fixture
-def resolved_flow_factory(plan_hash_for, entropy_budget):
+def resolved_flow_factory(
+    plan_hash_for: PlanHashFactory,
+    entropy_budget: EntropyBudget,
+) -> Callable[..., ExecutionPlan]:
     def _factory(
         manifest: FlowManifest,
         steps: tuple[ResolvedStep, ...],

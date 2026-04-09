@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import dataclasses
+from typing import Any, cast
 
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
@@ -31,6 +32,10 @@ from bijux_canon_runtime.ontology.public import (
 import pytest
 
 pytestmark = pytest.mark.unit
+
+
+def _set_attr(target: object, name: str, value: object) -> None:
+    setattr(target, name, value)
 
 
 def _build_trace() -> ExecutionTrace:
@@ -90,10 +95,10 @@ def test_trace_is_immutable() -> None:
     trace.finalize()
 
     with pytest.raises(dataclasses.FrozenInstanceError):
-        trace.flow_id = "mutated"
+        _set_attr(trace, "flow_id", FlowID("mutated"))
 
     with pytest.raises(TypeError):
-        trace.events[0] = ExecutionEvent(
+        cast(Any, trace.events)[0] = ExecutionEvent(
             spec_version="v1",
             event_index=999,
             step_index=0,
@@ -105,11 +110,11 @@ def test_trace_is_immutable() -> None:
         )
 
     with pytest.raises(AttributeError):
-        trace.events.pop()
+        cast(Any, trace.events).pop()
 
     original_first = trace.events[0]
     with pytest.raises(AttributeError):
-        trace.events.append(
+        cast(Any, trace.events).append(
             ExecutionEvent(
                 spec_version="v1",
                 event_index=999,
@@ -128,11 +133,11 @@ def test_trace_mutation_after_finalize_raises() -> None:
     trace = _build_trace()
     trace.finalize()
     with pytest.raises(dataclasses.FrozenInstanceError):
-        trace.events = ()
+        _set_attr(trace, "events", ())
 
 
 def test_trace_mutation_after_finalize_attribute_raises() -> None:
     trace = _build_trace()
     trace.finalize()
     with pytest.raises(dataclasses.FrozenInstanceError):
-        trace.arbitration_decision = "mutated"
+        _set_attr(trace, "arbitration_decision", "mutated")

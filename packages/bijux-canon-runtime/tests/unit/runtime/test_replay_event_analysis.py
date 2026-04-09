@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
+from typing import cast
 
 from bijux_canon_runtime.application.replay_event_analysis import (
     failed_steps,
     first_divergent_step,
     human_intervention_events,
 )
+from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.ontology import CausalityTag
 from bijux_canon_runtime.ontology.public import (
@@ -49,7 +51,7 @@ def test_human_intervention_events_returns_event_indexes() -> None:
 def test_first_divergent_step_prefers_smallest_failure_candidate() -> None:
     assert (
         first_divergent_step(
-            SimpleNamespace(steps=[SimpleNamespace(step_index=9)]),
+            cast(ExecutionSteps, SimpleNamespace(steps=[SimpleNamespace(step_index=9)])),
             {"failed_steps": [4, 2], "missing_step_end": [5]},
         )
         == 2

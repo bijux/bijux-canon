@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import dataclasses
+from typing import Any, Callable, cast
 
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
@@ -24,6 +25,7 @@ from bijux_canon_runtime.ontology.ids import (
     EnvironmentFingerprint,
     FlowID,
     InputsFingerprint,
+    PlanHash,
     ResolverID,
     TenantID,
     VersionID,
@@ -35,6 +37,10 @@ from bijux_canon_runtime.ontology.public import (
 import pytest
 
 pytestmark = pytest.mark.unit
+
+
+def _set_attr(target: object, name: str, value: object) -> None:
+    setattr(target, name, value)
 
 
 def _make_step(index: int) -> ResolvedStep:
@@ -59,7 +65,9 @@ def _make_step(index: int) -> ResolvedStep:
     )
 
 
-def test_plan_is_structurally_immutable(plan_hash_for) -> None:
+def test_plan_is_structurally_immutable(
+    plan_hash_for: Callable[..., PlanHash],
+) -> None:
     step = _make_step(0)
     entropy_budget = EntropyBudget(
         spec_version="v1",
@@ -113,10 +121,10 @@ def test_plan_is_structurally_immutable(plan_hash_for) -> None:
     assert isinstance(plan.steps[0].declared_dependencies, tuple)
 
     with pytest.raises(dataclasses.FrozenInstanceError):
-        plan.steps = ()
+        _set_attr(plan, "steps", ())
 
     with pytest.raises(AttributeError):
-        plan.steps.append(step)
+        cast(Any, plan.steps).append(step)
 
     with pytest.raises(AttributeError):
-        plan.steps[0].declared_dependencies.append(AgentID("agent-x"))
+        cast(Any, plan.steps[0].declared_dependencies).append(AgentID("agent-x"))
