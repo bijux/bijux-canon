@@ -57,9 +57,8 @@ flowchart RL
 
 - [Catalog](catalog/index.md) for legacy package entries, preserved names, and
   the concrete surfaces each compatibility package still carries
-- [Migration](migration-guidance.md) for rename planning, release posture,
-  validation, and retirement decisions while the migration section is being
-  expanded into its own directory
+- [Migration](migration/index.md) for rename planning, dependency continuity,
+  validation, release posture, and retirement decisions
 
 ## Pages In Catalog
 
@@ -73,14 +72,17 @@ flowchart RL
 - [Import Surfaces](catalog/import-surfaces.md)
 - [Command Surfaces](catalog/command-surfaces.md)
 
-## Current Migration Pages
+## Pages In Migration
 
-- [Compatibility Overview](compatibility-overview.md)
-- [Migration Guidance](migration-guidance.md)
-- [Repository Consolidation](repository-consolidation.md)
-- [Release Policy](release-policy.md)
-- [Validation Strategy](validation-strategy.md)
-- [Retirement Conditions](retirement-conditions.md)
+- [Compatibility Overview](migration/compatibility-overview.md)
+- [Migration Guidance](migration/migration-guidance.md)
+- [Repository Consolidation](migration/repository-consolidation.md)
+- [Canonical Targets](migration/canonical-targets.md)
+- [Dependency Continuity](migration/dependency-continuity.md)
+- [Release Policy](migration/release-policy.md)
+- [Validation Strategy](migration/validation-strategy.md)
+- [Retirement Conditions](migration/retirement-conditions.md)
+- [Retirement Playbook](migration/retirement-playbook.md)
 
 ## Retired Standalone Repositories
 

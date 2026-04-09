@@ -387,10 +387,13 @@ nav:
           - Import Surfaces: compat-packages/catalog/import-surfaces.md
           - Command Surfaces: compat-packages/catalog/command-surfaces.md
       - Migration:
-          - Migration: compat-packages/migration-guidance.md
-          - Compatibility Overview: compat-packages/compatibility-overview.md
-          - Migration Guidance: compat-packages/migration-guidance.md
-          - Repository Consolidation: compat-packages/repository-consolidation.md
-          - Release Policy: compat-packages/release-policy.md
-          - Validation Strategy: compat-packages/validation-strategy.md
-          - Retirement Conditions: compat-packages/retirement-conditions.md
+          - Migration: compat-packages/migration/index.md
+          - Compatibility Overview: compat-packages/migration/compatibility-overview.md
+          - Migration Guidance: compat-packages/migration/migration-guidance.md
+          - Repository Consolidation: compat-packages/migration/repository-consolidation.md
+          - Canonical Targets: compat-packages/migration/canonical-targets.md
+          - Dependency Continuity: compat-packages/migration/dependency-continuity.md
+          - Release Policy: compat-packages/migration/release-policy.md
+          - Validation Strategy: compat-packages/migration/validation-strategy.md
+          - Retirement Conditions: compat-packages/migration/retirement-conditions.md
+          - Retirement Playbook: compat-packages/migration/retirement-playbook.md

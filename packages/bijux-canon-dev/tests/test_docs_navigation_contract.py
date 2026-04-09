@@ -280,6 +280,29 @@ def test_compatibility_catalog_leaf_pages_keep_section_sidebar(
     ]
 
 
+def test_compatibility_migration_leaf_pages_keep_section_sidebar(
+    rendered_docs: Path,
+) -> None:
+    page = _parse_navigation(
+        rendered_docs,
+        "compat-packages/migration/retirement-playbook/index.html",
+    )
+
+    assert page.active_detail_tabs == ["Migration"]
+    assert page.sidebar_title == "Migration"
+    assert page.sidebar_links == [
+        "Compatibility Overview",
+        "Migration Guidance",
+        "Repository Consolidation",
+        "Canonical Targets",
+        "Dependency Continuity",
+        "Release Policy",
+        "Validation Strategy",
+        "Retirement Conditions",
+        "Retirement Playbook",
+    ]
+
+
 def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) -> None:
     page = _parse_navigation(
         rendered_docs,
