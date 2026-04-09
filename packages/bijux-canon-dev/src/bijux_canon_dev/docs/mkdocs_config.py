@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import cast
 
 
-def _rewrite_watch_path(path_text: str, *, source_root: Path) -> str:
-    """Handle rewrite watch path."""
+def _rewrite_relative_path(path_text: str, *, source_root: Path) -> str:
+    """Rewrite a relative filesystem path against the source config root."""
     stripped = path_text.strip()
     if not stripped:
         return path_text
@@ -36,6 +36,7 @@ def _rewrite_config(
     wrote_site_url = False
     wrote_inherit = False
     in_watch_block = False
+    in_theme_block = False
     source_root = source_config.resolve().parent
 
     for line in lines:
@@ -45,15 +46,30 @@ def _rewrite_config(
             if line.startswith("  - "):
                 watch_path = line.removeprefix("  - ")
                 rewritten.append(
-                    f"  - {_rewrite_watch_path(watch_path, source_root=source_root)}"
+                    f"  - {_rewrite_relative_path(watch_path, source_root=source_root)}"
                 )
                 continue
             if stripped and not line.startswith(" ") or not stripped:
                 in_watch_block = False
 
+        if in_theme_block:
+            if stripped and not line.startswith(" "):
+                in_theme_block = False
+            elif stripped.startswith("custom_dir:"):
+                indent = line[: len(line) - len(line.lstrip())]
+                custom_dir = stripped.removeprefix("custom_dir:").strip()
+                rewritten.append(
+                    f"{indent}custom_dir: "
+                    f"{_rewrite_relative_path(custom_dir, source_root=source_root)}"
+                )
+                continue
+
         if line.startswith("watch:"):
             rewritten.append(line)
             in_watch_block = True
+        elif line.startswith("theme:"):
+            rewritten.append(line)
+            in_theme_block = True
         elif line.startswith("INHERIT:") and inherit_config is not None:
             rewritten.append(f"INHERIT: {inherit_config.resolve()}")
             wrote_inherit = True

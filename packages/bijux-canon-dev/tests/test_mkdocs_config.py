@@ -53,3 +53,35 @@ def test_rendered_serve_config_rewrites_relative_watch_paths(tmp_path: Path) -> 
     assert f"  - {(source_root / 'docs/assets').resolve()}" in rendered
     assert f"  - {(source_root / 'mkdocs.yml').resolve()}" in rendered
     assert "  - https://example.invalid/keep-me" in rendered
+
+
+def test_rendered_serve_config_rewrites_theme_custom_dir(tmp_path: Path) -> None:
+    source_root = tmp_path / "repo"
+    source_root.mkdir()
+    source_config = source_root / "mkdocs.yml"
+    output_config = tmp_path / "artifacts" / "mkdocs.serve.yml"
+    docs_dir = source_root / "docs"
+
+    docs_dir.mkdir()
+    source_config.write_text(
+        "\n".join(
+            [
+                "theme:",
+                "  name: material",
+                "  custom_dir: docs/overrides",
+                "docs_dir: docs",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    _rewrite_config(
+        source_config=source_config,
+        output_config=output_config,
+        docs_dir=docs_dir,
+    )
+
+    rendered = output_config.read_text(encoding="utf-8")
+
+    assert f"  custom_dir: {(source_root / 'docs/overrides').resolve()}" in rendered
