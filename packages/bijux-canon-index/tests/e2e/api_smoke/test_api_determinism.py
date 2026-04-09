@@ -9,10 +9,13 @@ from pathlib import Path
 
 from bijux_canon_index.api.v1.app import build_app
 from bijux_canon_index.core.identity.ids import fingerprint
+import pytest
 from starlette.testclient import TestClient
 
 
-def test_api_responses_are_deterministic(tmp_path: Path, monkeypatch):
+def test_api_responses_are_deterministic(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     db_path = tmp_path / "api.sqlite"
     monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", str(db_path))
     app = build_app()
@@ -22,16 +25,14 @@ def test_api_responses_are_deterministic(tmp_path: Path, monkeypatch):
     client.post("/ingest", json={"documents": ["hi"], "vectors": [[0.0, 0.0]]})
     client.post("/artifact", json={"execution_contract": "deterministic"})
 
-    payload = {
-        "json": {
-            "vector": [0.0, 0.0],
-            "top_k": 1,
-            "execution_contract": "deterministic",
-            "execution_intent": "exact_validation",
-        }
+    payload_json: dict[str, object] = {
+        "vector": [0.0, 0.0],
+        "top_k": 1,
+        "execution_contract": "deterministic",
+        "execution_intent": "exact_validation",
     }
-    resp1 = client.post("/execute", **payload)
-    resp2 = client.post("/execute", **payload)
+    resp1 = client.post("/execute", json=payload_json)
+    resp2 = client.post("/execute", json=payload_json)
 
     assert resp1.status_code == 200
     assert resp2.status_code == 200

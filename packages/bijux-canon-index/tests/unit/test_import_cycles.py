@@ -69,7 +69,7 @@ _IGNORED = {
 }
 
 
-def test_core_imports_are_acyclic():
+def test_core_imports_are_acyclic() -> None:
     graph = _core_import_graph()
     sorter = TopologicalSorter(graph)
     try:
