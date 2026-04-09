@@ -8,18 +8,7 @@
 {% set hub_links = bijux.hub_links if bijux and bijux.hub_links else [] %}
 {% set active_repository = bijux.repository if bijux and bijux.repository else "" %}
 {% set active_section = namespace(item=None) %}
-{% macro target_url(nav_item) -%}
-  {% if nav_item.children -%}
-    {% set first = nav_item.children | first -%}
-    {% if first.children -%}
-      {{ (first.children | first).url | url }}
-    {%- else -%}
-      {{ first.url | url }}
-    {%- endif %}
-  {%- else -%}
-    {{ nav_item.url | url }}
-  {%- endif %}
-{%- endmacro %}
+{% import "partials/bijux-nav.html" as bijux_nav with context %}
 {% macro site_label(title) -%}
   {% if title == "Repository Handbook" -%}
     Repository
@@ -31,13 +20,6 @@
     {{ title | replace("bijux-canon-", "") | title }}
   {%- else -%}
     {{ title }}
-  {%- endif %}
-{%- endmacro %}
-{% macro detail_label(nav_item) -%}
-  {% if nav_item.title == "Overview" -%}
-    Home
-  {%- else -%}
-    {{ nav_item.title }}
   {%- endif %}
 {%- endmacro %}
 {% for nav_item in nav %}
@@ -120,7 +102,7 @@
             {% set item_class = item_class ~ " md-tabs__item--active bijux-tabs__item--active" %}
           {% endif %}
           <li class="{{ item_class }}">
-            <a href="{{ target_url(nav_item) }}" class="md-tabs__link bijux-tabs__link bijux-tabs__link--site">
+            <a href="{{ bijux_nav.first_page_url(nav_item) }}" class="md-tabs__link bijux-tabs__link bijux-tabs__link--site">
               {{ site_label(nav_item.title) }}
             </a>
           </li>
@@ -139,7 +121,7 @@
                 {% set item_class = item_class ~ " bijux-tabs__item--active" %}
               {% endif %}
               <li class="{{ item_class }}">
-                <a href="{{ target_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ detail_label(child) }}</a>
+                <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ bijux_nav.detail_label(child) }}</a>
               </li>
             {% endif %}
           {% endfor %}
@@ -150,7 +132,7 @@
                 {% set item_class = item_class ~ " bijux-tabs__item--active" %}
               {% endif %}
               <li class="{{ item_class }}">
-                <a href="{{ target_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ detail_label(child) }}</a>
+                <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ bijux_nav.detail_label(child) }}</a>
               </li>
             {% endif %}
           {% endfor %}

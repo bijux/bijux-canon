@@ -1,0 +1,15 @@
+{% macro first_page_url(nav_item) -%}
+  {% if nav_item.children -%}
+    {{ first_page_url(nav_item.children | first) }}
+  {%- else -%}
+    {{ nav_item.url | url }}
+  {%- endif %}
+{%- endmacro %}
+
+{% macro detail_label(nav_item) -%}
+  {% if nav_item.title == "Overview" -%}
+    Home
+  {%- else -%}
+    {{ nav_item.title }}
+  {%- endif %}
+{%- endmacro %}
