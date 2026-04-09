@@ -152,6 +152,7 @@ button {
 
 .bijux-site-tabs,
 .bijux-detail-tabs {
+  backdrop-filter: blur(14px);
   border-top: 1px solid var(--bijux-hub-border);
 }
 
@@ -177,8 +178,10 @@ button {
   gap: 0.45rem 0.55rem;
   list-style: none;
   margin: 0;
+  padding-inline: 0.1rem;
   padding: 0.55rem 0;
   overflow-x: auto;
+  scroll-padding-inline: 1.25rem;
   scrollbar-width: none;
   white-space: nowrap;
 }
@@ -238,6 +241,76 @@ button {
   background: var(--bijux-detail-link-active-bg);
   border-color: var(--bijux-detail-border);
   color: var(--bijux-ink);
+}
+
+.bijux-site-tabs .md-grid,
+.bijux-detail-tabs .md-grid {
+  position: relative;
+}
+
+.bijux-site-tabs .md-grid::before,
+.bijux-site-tabs .md-grid::after,
+.bijux-detail-tabs .md-grid::before,
+.bijux-detail-tabs .md-grid::after {
+  content: "";
+  inset-block: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1.5rem;
+  z-index: 1;
+}
+
+.bijux-site-tabs .md-grid::before,
+.bijux-detail-tabs .md-grid::before {
+  inset-inline-start: 0;
+}
+
+.bijux-site-tabs .md-grid::after,
+.bijux-detail-tabs .md-grid::after {
+  inset-inline-end: 0;
+}
+
+.bijux-site-tabs .md-grid::before {
+  background: linear-gradient(90deg, rgba(40, 53, 123, 0.98), rgba(40, 53, 123, 0));
+}
+
+.bijux-site-tabs .md-grid::after {
+  background: linear-gradient(270deg, rgba(40, 53, 123, 0.98), rgba(40, 53, 123, 0));
+}
+
+.bijux-detail-tabs .md-grid::before {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0));
+}
+
+.bijux-detail-tabs .md-grid::after {
+  background: linear-gradient(270deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0));
+}
+
+.md-sidebar--primary .md-nav {
+  padding-right: 0.2rem;
+}
+
+.md-sidebar--primary .md-nav__title {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.md-sidebar--primary .md-nav__link,
+.md-sidebar--primary .md-nav__container > .md-nav__link {
+  border-radius: 0.75rem;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.md-sidebar--primary .md-nav__link:hover,
+.md-sidebar--primary .md-nav__container > .md-nav__link:hover {
+  background: rgba(79, 70, 229, 0.08);
+}
+
+.md-sidebar--primary .md-nav__item--active > .md-nav__container > .md-nav__link,
+.md-sidebar--primary .md-nav__link--active {
+  background: rgba(79, 70, 229, 0.12);
+  color: var(--bijux-ink);
+  font-weight: 700;
 }
 
 .md-tabs__list {
