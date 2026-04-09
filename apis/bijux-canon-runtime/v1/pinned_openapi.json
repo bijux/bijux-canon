@@ -258,6 +258,7 @@
             "schema": {
               "anyOf": [
                 {
+                  "pattern": "^[A-Za-z0-9._:-]+$",
                   "type": "string"
                 },
                 {
@@ -274,6 +275,7 @@
             "schema": {
               "anyOf": [
                 {
+                  "pattern": "^[A-Za-z0-9._:-]+$",
                   "type": "string"
                 },
                 {
@@ -290,6 +292,7 @@
             "schema": {
               "anyOf": [
                 {
+                  "pattern": "^[A-Za-z0-9._:-]+$",
                   "type": "string"
                 },
                 {
@@ -380,6 +383,7 @@
             "schema": {
               "anyOf": [
                 {
+                  "pattern": "^[A-Za-z0-9._:-]+$",
                   "type": "string"
                 },
                 {
@@ -396,6 +400,7 @@
             "schema": {
               "anyOf": [
                 {
+                  "pattern": "^[A-Za-z0-9._:-]+$",
                   "type": "string"
                 },
                 {
@@ -412,6 +417,7 @@
             "schema": {
               "anyOf": [
                 {
+                  "pattern": "^[A-Za-z0-9._:-]+$",
                   "type": "string"
                 },
                 {

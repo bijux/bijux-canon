@@ -40,6 +40,8 @@ from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionStore,
 )
 
+HTTP_HEADER_VALUE_PATTERN = r"^[A-Za-z0-9._:-]+$"
+
 app = FastAPI(
     title="bijux-canon-runtime API",
     summary="Contract-enforced execution and replay for the runtime layer.",
@@ -220,9 +222,21 @@ def ready() -> JSONResponse:
 )
 def run_flow(
     _: Annotated[FlowRunRequest, Body(...)],
-    x_agentic_gate: str | None = Header(None, alias="X-Agentic-Gate"),
-    x_determinism_level: str | None = Header(None, alias="X-Determinism-Level"),
-    x_policy_fingerprint: str | None = Header(None, alias="X-Policy-Fingerprint"),
+    x_agentic_gate: str | None = Header(
+        default=None,
+        alias="X-Agentic-Gate",
+        pattern=HTTP_HEADER_VALUE_PATTERN,
+    ),
+    x_determinism_level: str | None = Header(
+        default=None,
+        alias="X-Determinism-Level",
+        pattern=HTTP_HEADER_VALUE_PATTERN,
+    ),
+    x_policy_fingerprint: str | None = Header(
+        default=None,
+        alias="X-Policy-Fingerprint",
+        pattern=HTTP_HEADER_VALUE_PATTERN,
+    ),
 ) -> JSONResponse:
     """Deterministic guarantees cover declared contracts and persisted envelopes only; runtime environment, external tools, and policy omissions are explicitly not guaranteed; replay equivalence is expected to fail when headers, policy fingerprints, or dataset identity diverge from the declared contract."""
     failure = validate_runtime_headers(
@@ -243,9 +257,21 @@ def run_flow(
 )
 def replay_flow(
     _: Annotated[ReplayRequest, Body(...)],
-    x_agentic_gate: str | None = Header(None, alias="X-Agentic-Gate"),
-    x_determinism_level: str | None = Header(None, alias="X-Determinism-Level"),
-    x_policy_fingerprint: str | None = Header(None, alias="X-Policy-Fingerprint"),
+    x_agentic_gate: str | None = Header(
+        default=None,
+        alias="X-Agentic-Gate",
+        pattern=HTTP_HEADER_VALUE_PATTERN,
+    ),
+    x_determinism_level: str | None = Header(
+        default=None,
+        alias="X-Determinism-Level",
+        pattern=HTTP_HEADER_VALUE_PATTERN,
+    ),
+    x_policy_fingerprint: str | None = Header(
+        default=None,
+        alias="X-Policy-Fingerprint",
+        pattern=HTTP_HEADER_VALUE_PATTERN,
+    ),
 ) -> JSONResponse:
     """Preconditions: required headers are present, determinism level is valid, and the replay request is well-formed; acceptable replay means differences stay within the declared acceptability threshold; mismatches return FailureEnvelope with failure_class set to authority."""
     failure = validate_runtime_headers(
