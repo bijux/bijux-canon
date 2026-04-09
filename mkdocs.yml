@@ -13,9 +13,40 @@ site_dir: artifacts/root/docs/site
 watch:
   - docs
   - docs/assets
+  - docs/overrides
   - mkdocs.yml
   - mkdocs.shared.yml
   - packages/bijux-canon-dev/src/bijux_canon_dev/docs
+
+theme:
+  custom_dir: docs/overrides
+
+extra:
+  bijux:
+    repository: bijux-canon
+    docs_package: bijux-canon-dev
+    hub_links:
+      - key: core
+        label: Core
+        url: https://bijux.io/
+      - key: bijux-canon
+        label: Canon
+        url: https://bijux.io/bijux-canon/
+      - key: bijux-atlas
+        label: Atlas
+        url: https://bijux.io/bijux-atlas/
+      - key: bijux-genomics
+        label: Genomics
+        url: https://bijux.io/bijux-genomics/
+      - key: bijux-proteomics
+        label: Proteomics
+        url: https://bijux.io/bijux-proteomics/
+      - key: bijux-pollenomics
+        label: Pollenomics
+        url: https://bijux.io/bijux-pollenomics/
+      - key: bijux-masterclass
+        label: Masterclass
+        url: https://bijux.io/bijux-masterclass/
 
 nav:
   - Home: index.md
