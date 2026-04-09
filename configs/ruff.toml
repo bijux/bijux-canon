@@ -1,8 +1,25 @@
 target-version = "py311"
 line-length = 88
 respect-gitignore = true
-
-src = ["src", "tests"]
+src = [
+  "packages/bijux-canon-agent/src",
+  "packages/bijux-canon-agent/tests",
+  "packages/bijux-canon-dev/src",
+  "packages/bijux-canon-dev/tests",
+  "packages/bijux-canon-index/src",
+  "packages/bijux-canon-index/tests",
+  "packages/bijux-canon-ingest/src",
+  "packages/bijux-canon-ingest/tests",
+  "packages/bijux-canon-reason/src",
+  "packages/bijux-canon-reason/tests",
+  "packages/bijux-canon-runtime/src",
+  "packages/bijux-canon-runtime/tests",
+  "packages/compat-agentic-flows/src",
+  "packages/compat-bijux-agent/src",
+  "packages/compat-bijux-rag/src",
+  "packages/compat-bijux-rar/src",
+  "packages/compat-bijux-vex/src",
+]
 exclude = [
   ".git",
   ".hg",
@@ -11,23 +28,25 @@ exclude = [
   ".ruff_cache",
   ".tox",
   ".venv",
+  "artifacts",
   "build",
   "dist",
-  "docs",
+  "docs/report",
   "htmlcov",
   "__pycache__",
   "migrations",
+  "node_modules",
   "*.egg-info",
+  "site",
 ]
-extend-exclude = ["artifacts", "node_modules", "src/**/_version.py"]
+extend-exclude = ["src/**/_version.py"]
 
 [lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "PT", "N", "A", "C4", "S", "TID", "PERF"]
 ignore = ["E501", "E203"]
 
 [lint.per-file-ignores]
-"tests/**" = ["S101"]
-"**/tests/**" = ["S101"]
+"packages/*/tests/**" = ["S101"]
 "__init__.py" = ["F401"]
 "src/bijux_canon_agent/schema/models.py" = ["PT011"]
 "src/bijux_canon_agent/models/contract.py" = ["PT011"]
