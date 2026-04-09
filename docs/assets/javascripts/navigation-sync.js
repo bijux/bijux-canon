@@ -4,14 +4,7 @@ function bijuxNormalizePath(target) {
   return path || "/";
 }
 
-function bijuxActiveSitePath() {
-  const activeLink = document.querySelector(
-    ".bijux-site-tabs .bijux-tabs__item--active [data-bijux-site-target]"
-  );
-  if (activeLink) {
-    return bijuxNormalizePath(activeLink.getAttribute("data-bijux-site-target"));
-  }
-
+function bijuxBestSitePath() {
   const currentPath = bijuxNormalizePath(window.location.pathname);
   const siteLinks = document.querySelectorAll(
     ".bijux-site-tabs [data-bijux-site-target]"
@@ -35,8 +28,36 @@ function bijuxActiveSitePath() {
   return bestMatch;
 }
 
+function bijuxSyncSiteTabActiveState() {
+  const activeSitePath = bijuxBestSitePath();
+
+  for (const item of document.querySelectorAll(".bijux-site-tabs .bijux-tabs__item")) {
+    item.classList.remove("md-tabs__item--active", "bijux-tabs__item--active");
+  }
+
+  if (!activeSitePath) {
+    return null;
+  }
+
+  for (const link of document.querySelectorAll(
+    ".bijux-site-tabs [data-bijux-site-target]"
+  )) {
+    const linkPath = bijuxNormalizePath(
+      link.getAttribute("data-bijux-site-target") || "/"
+    );
+    if (linkPath === activeSitePath) {
+      link.closest(".bijux-tabs__item")?.classList.add(
+        "md-tabs__item--active",
+        "bijux-tabs__item--active"
+      );
+    }
+  }
+
+  return activeSitePath;
+}
+
 function bijuxSyncDetailStripVisibility() {
-  const activeSitePath = bijuxActiveSitePath();
+  const activeSitePath = bijuxSyncSiteTabActiveState();
   const strips = document.querySelectorAll("[data-bijux-detail-strip]");
 
   for (const strip of strips) {
@@ -82,6 +103,9 @@ function bijuxSyncDetailStripActiveState() {
 }
 
 function bijuxRevealActiveNavigationTarget() {
+  const activeSiteLink = document.querySelector(
+    ".bijux-site-tabs .bijux-tabs__item--active a"
+  );
   const activeDetailLink = document.querySelector(
     "[data-bijux-detail-strip]:not([hidden]) .bijux-tabs__item--active a"
   );
@@ -89,6 +113,10 @@ function bijuxRevealActiveNavigationTarget() {
     ".md-sidebar--primary .md-nav__link--active"
   );
 
+  activeSiteLink?.scrollIntoView({
+    block: "nearest",
+    inline: "center",
+  });
   activeDetailLink?.scrollIntoView({
     block: "nearest",
     inline: "center",
