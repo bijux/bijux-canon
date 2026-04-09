@@ -18,6 +18,7 @@ from bijux_canon_index.core.types import ExecutionArtifact
 from bijux_canon_index.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
 from fastapi.encoders import jsonable_encoder
 import pytest
+
 from tests.e2e.api_smoke.test_openapi_freeze import EXPECTED_OPENAPI_FINGERPRINT
 from tests.e2e.cli_workflows.test_cli_contract_freeze import (
     CLI_HELP,
@@ -27,7 +28,7 @@ from tests.e2e.cli_workflows.test_cli_contract_freeze import (
 
 def test_v1_release_gate():
     assert CANON_VERSION == "v1"
-    assert ALLOWED_METRICS == {"l2", "cosine", "dot"}
+    assert {"l2", "cosine", "dot"} == ALLOWED_METRICS
     art = ExecutionArtifact(
         artifact_id="art",
         corpus_fingerprint="c",
