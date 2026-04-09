@@ -10,6 +10,7 @@ import json
 
 import numpy as np
 from numpy.typing import NDArray
+from typing import cast
 
 SCHEMA_VERSION = 1
 
@@ -33,7 +34,7 @@ def canonical_json_dumps(obj: object) -> bytes:
 def l2_normalize(x: NDArray[np.float32]) -> NDArray[np.float32]:
     denom = np.linalg.norm(x, axis=1, keepdims=True)
     denom = np.maximum(denom, np.float32(1e-12))
-    return x / denom
+    return cast(NDArray[np.float32], x / denom)
 
 
 __all__ = [

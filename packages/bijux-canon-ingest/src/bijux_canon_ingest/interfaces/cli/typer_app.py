@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import importlib
 from pathlib import Path
-from typing import Any
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
 
 from bijux_canon_ingest.interfaces.cli.entrypoint import main
 from bijux_canon_ingest.interfaces.cli.typer_argv import (
@@ -17,6 +18,14 @@ from bijux_canon_ingest.interfaces.cli.typer_argv import (
     build_retrieve_argv,
 )
 
+if TYPE_CHECKING:
+    _Fn = TypeVar("_Fn", bound=Callable[..., object])
+
+    class _TyperApp(Protocol):
+        def command(
+            self, name: str | None = None, /, *args: Any, **kwargs: Any
+        ) -> Callable[[_Fn], _Fn]: ...
+
 
 def build_app() -> Any:
     typer = importlib.import_module("typer")
@@ -24,8 +33,9 @@ def build_app() -> Any:
         add_completion=False,
         help="Optional Typer shell over the ingest package CLI entrypoint.",
     )
+    typed_app = cast(_TyperApp, app)
 
-    @app.command()
+    @typed_app.command()
     def pipeline(
         input_csv: Path,
         config: Path,
@@ -41,7 +51,7 @@ def build_app() -> Any:
             )
         )
 
-    @app.command("index-build")
+    @typed_app.command("index-build")
     def index_build(
         input: Path,
         out: Path,
@@ -75,7 +85,7 @@ def build_app() -> Any:
             ]
         )
 
-    @app.command()
+    @typed_app.command()
     def retrieve(
         index: Path,
         query: str,
@@ -95,7 +105,7 @@ def build_app() -> Any:
             )
         )
 
-    @app.command()
+    @typed_app.command()
     def ask(
         index: Path,
         query: str,
@@ -117,7 +127,7 @@ def build_app() -> Any:
             )
         )
 
-    @app.command("eval")
+    @typed_app.command("eval")
     def evaluate(
         index: Path,
         suite: Path,

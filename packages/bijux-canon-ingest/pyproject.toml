@@ -157,6 +157,10 @@ mypy_path = ["src", "stubs"]
 namespace_packages = false
 warn_unused_configs = true
 
+[[tool.mypy.overrides]]
+module = ["msgpack"]
+ignore_missing_imports = true
+
 [tool.hatch.build]
 include = [
   "src/bijux_canon_ingest/**",

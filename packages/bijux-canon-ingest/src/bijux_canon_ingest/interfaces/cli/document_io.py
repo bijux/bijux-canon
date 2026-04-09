@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from bijux_canon_ingest.core.types import Chunk
+from bijux_canon_ingest.core.types import Chunk, RawDoc
 from bijux_canon_ingest.infra.adapters.file_storage import FileStorage
 from bijux_canon_ingest.interfaces.cli.document_pipeline import DocumentChunkShell
 from bijux_canon_ingest.interfaces.cli.document_pipeline_io import (
@@ -40,9 +40,9 @@ def read_docs_csv(
 
 
 class CsvDocumentReader:
-    def read_docs(self, path: str) -> Result[list, str]:
+    def read_docs(self, path: str) -> Result[list[RawDoc], str]:
         storage = FileStorage()
-        docs: list = []
+        docs: list[RawDoc] = []
         errors: list[str] = []
         for result in storage.read_docs(path):
             if isinstance(result, Ok):

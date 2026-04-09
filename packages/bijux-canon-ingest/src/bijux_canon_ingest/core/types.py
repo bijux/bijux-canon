@@ -11,7 +11,7 @@ All types are frozen dataclasses → instances are values:
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from hashlib import sha256
 from types import MappingProxyType
@@ -58,7 +58,7 @@ class EmbeddingSpec:
         return cls(model="hash16", dim=16, metric="cosine", normalized=True)
 
     def validate_embedding(
-        self, embedding: tuple[float, ...] | tuple | list | None
+        self, embedding: Sequence[float] | None
     ) -> Result[None, str]:
         """Validate an embedding against this spec."""
 
@@ -187,17 +187,24 @@ class Chunk(ChunkWithoutEmbedding):
             Ok(None) if start >= 0 else Err("start must be non-negative"),
             Ok(None) if end >= 0 else Err("end must be non-negative"),
             embedding_spec.validate_embedding(
-                tuple(embedding) if embedding is not None else None
+                tuple(embedding)
+                if embedding is not None and not isinstance(embedding, Mapping)
+                else None
             )
             if embedding_spec is not None
+            else Ok(None),
+            Err("embedding mapping inputs are not supported")
+            if isinstance(embedding, Mapping)
             else Ok(None),
         ]
         for check in checks:
             if isinstance(check, Err):
                 return Err(check.error)
 
-        emb_tuple: tuple[float, ...] | tuple = (
-            tuple(embedding) if embedding is not None else ()
+        emb_tuple: tuple[float, ...] = (
+            tuple(embedding)
+            if embedding is not None and not isinstance(embedding, Mapping)
+            else ()
         )
         return Ok(
             cls(

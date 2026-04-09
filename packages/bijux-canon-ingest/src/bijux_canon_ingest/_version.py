@@ -20,7 +20,7 @@ commit_id: str | None
 __commit_id__: str | None
 
 try:
-    from ._build_version import (  # type: ignore[attr-defined]
+    from ._build_version import (
         __commit_id__,
         __version__,
         __version_tuple__,

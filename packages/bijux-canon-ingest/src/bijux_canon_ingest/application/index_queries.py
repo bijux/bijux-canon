@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-import msgpack  # type: ignore[import-untyped]
+import msgpack
 
 from bijux_canon_ingest.application.index_runtime import IndexBackend, StoredIndex
 from bijux_canon_ingest.result.types import Err, Ok, Result
