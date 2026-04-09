@@ -5,9 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from typer.testing import CliRunner
-
 from bijux_canon_reason.interfaces.cli import app as root_app
+from typer.testing import CliRunner
 
 runner = CliRunner()
 
@@ -76,9 +75,10 @@ def test_run_verify_replay_json(tmp_path: Path) -> None:
     )
     assert res_rep.exit_code == 0
     rep_payload = json.loads(res_rep.stdout)
-    assert rep_payload["original_trace_fingerprint"] == rep_payload[
-        "replayed_trace_fingerprint"
-    ]
+    assert (
+        rep_payload["original_trace_fingerprint"]
+        == rep_payload["replayed_trace_fingerprint"]
+    )
 
 
 def test_eval_json_output(tmp_path: Path) -> None:

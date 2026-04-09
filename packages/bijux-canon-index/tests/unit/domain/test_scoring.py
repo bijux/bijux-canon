@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import math
 
-import pytest
+import math
 
 from bijux_canon_index.core.errors import ValidationError
 from bijux_canon_index.core.types import Result
 from bijux_canon_index.domain.requests import scoring
+import pytest
 
 
 def test_l2_distance_deterministic():

@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import json
-import warnings
 from pathlib import Path
+import warnings
 
 
 def test_benchmark_baseline_matrix_present() -> None:
@@ -32,4 +32,5 @@ def test_benchmark_baseline_matrix_present() -> None:
         warnings.warn(
             f"Benchmarks unavailable for: {sorted(unavailable)}",
             RuntimeWarning,
+            stacklevel=2,
         )

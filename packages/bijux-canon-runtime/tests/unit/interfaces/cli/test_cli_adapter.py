@@ -3,19 +3,17 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import importlib
 import json
-from dataclasses import dataclass
 from pathlib import Path
 
-import pytest
-
-from bijux_canon_runtime.interfaces.cli import main as cli_main
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     FlowRunResult,
     RunMode,
 )
+from bijux_canon_runtime.interfaces.cli import main as cli_main
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
@@ -42,6 +40,7 @@ from bijux_canon_runtime.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )
+import pytest
 
 pytestmark = pytest.mark.unit
 
@@ -172,7 +171,9 @@ def test_cli_delegates_to_api_run_flow(tmp_path: Path, monkeypatch) -> None:
             run_id=None,
         )
 
-    cli_main_module = importlib.import_module("bijux_canon_runtime.interfaces.cli.entrypoint")
+    cli_main_module = importlib.import_module(
+        "bijux_canon_runtime.interfaces.cli.entrypoint"
+    )
     monkeypatch.setattr(cli_main_module, "execute_flow", _fake_run_flow)
     monkeypatch.setattr("sys.argv", ["bijux-canon-runtime", "plan", str(manifest_path)])
 
@@ -281,7 +282,9 @@ def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
             steps=(),
             environment_fingerprint=EnvironmentFingerprint("env"),
             plan_hash=PlanHash("plan"),
-            resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
+            resolution_metadata=(
+                ("resolver_id", ResolverID("bijux-canon-runtime:v1")),
+            ),
         )
         trace = ExecutionTrace(
             spec_version="v1",
@@ -323,7 +326,9 @@ def test_cli_sets_strict_determinism_flag(tmp_path: Path, monkeypatch) -> None:
             run_id=None,
         )
 
-    cli_main_module = importlib.import_module("bijux_canon_runtime.interfaces.cli.entrypoint")
+    cli_main_module = importlib.import_module(
+        "bijux_canon_runtime.interfaces.cli.entrypoint"
+    )
     monkeypatch.setattr(cli_main_module, "execute_flow", _fake_run_flow)
     monkeypatch.setattr(
         "sys.argv",
@@ -383,6 +388,8 @@ def test_cli_replay_envelope_requires_fields(tmp_path: Path, missing_key: str) -
     payload["replay_envelope"].pop(missing_key)
     manifest_path.write_text(json.dumps(payload), encoding="utf-8")
 
-    cli_main_module = importlib.import_module("bijux_canon_runtime.interfaces.cli.entrypoint")
+    cli_main_module = importlib.import_module(
+        "bijux_canon_runtime.interfaces.cli.entrypoint"
+    )
     with pytest.raises(KeyError):
         cli_main_module._load_manifest(manifest_path)

@@ -3,15 +3,13 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_runtime.core.authority import enforce_runtime_semantics, finalize_trace
 from bijux_canon_runtime.core.errors import SemanticViolationError
-from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
 from bijux_canon_runtime.ontology import (
     CausalityTag,
     DatasetState,
@@ -30,6 +28,7 @@ from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
 )
+import pytest
 
 pytestmark = pytest.mark.unit
 

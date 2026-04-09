@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from bijux_canon_reason.core.types import JsonValue, Plan, ProblemSpec, TraceEventKind
 from bijux_canon_reason.execution.executor import ExecutionPolicy, execute_plan
 from bijux_canon_reason.execution.runtime import Runtime
 from bijux_canon_reason.execution.tool_runtime import FakeTool, ToolRegistry
 from bijux_canon_reason.planning.planner import plan_problem
+import pytest
 
 
 class ExplodingTool:

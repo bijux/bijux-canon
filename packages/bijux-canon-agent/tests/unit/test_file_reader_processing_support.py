@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from bijux_canon_agent.agents.file_reader.capabilities.processing_support import (
     enrich_read_result,
     validate_read_target,
 )
+import pytest
 
 
 async def _audit_stub(path: str | Path) -> dict[str, object]:

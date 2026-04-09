@@ -3,23 +3,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 import sys
 import types
-from pathlib import Path
 
-import pytest
-
-from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
-from bijux_canon_runtime.observability.capture.environment import (
-    compute_environment_fingerprint,
-)
-from bijux_canon_runtime.observability.classification.fingerprint import (
-    fingerprint_inputs,
-)
-from bijux_canon_runtime.observability.storage.execution_store import (
-    DuckDBExecutionReadStore,
-    DuckDBExecutionWriteStore,
-)
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
@@ -33,6 +20,16 @@ from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.model.verification.arbitration_policy import ArbitrationPolicy
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.observability.capture.environment import (
+    compute_environment_fingerprint,
+)
+from bijux_canon_runtime.observability.classification.fingerprint import (
+    fingerprint_inputs,
+)
+from bijux_canon_runtime.observability.storage.execution_store import (
+    DuckDBExecutionReadStore,
+    DuckDBExecutionWriteStore,
+)
 from bijux_canon_runtime.ontology import (
     ArbitrationRule,
     DatasetState,
@@ -60,6 +57,8 @@ from bijux_canon_runtime.ontology.public import (
     ReplayAcceptability,
     ReplayMode,
 )
+from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
+import pytest
 
 
 def pytest_configure() -> None:
@@ -419,7 +418,9 @@ def resolved_flow_factory(plan_hash_for, entropy_budget):
                 dataset=manifest.dataset,
                 allow_deprecated_datasets=manifest.allow_deprecated_datasets,
             ),
-            resolution_metadata=(("resolver_id", ResolverID("bijux-canon-runtime:v1")),),
+            resolution_metadata=(
+                ("resolver_id", ResolverID("bijux-canon-runtime:v1")),
+            ),
         )
         return ExecutionPlan(spec_version="v1", manifest=manifest, plan=plan)
 

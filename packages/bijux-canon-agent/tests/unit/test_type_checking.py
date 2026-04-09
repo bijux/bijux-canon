@@ -9,7 +9,11 @@ import pytest
 
 def _python_has_mypy(python_executable: str) -> bool:
     completed = subprocess.run(
-        [python_executable, "-c", "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('mypy') else 1)"],
+        [
+            python_executable,
+            "-c",
+            "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('mypy') else 1)",
+        ],
         capture_output=True,
         text=True,
         check=False,

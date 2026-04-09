@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from bijux_canon_reason.retrieval.corpus import (
+    load_corpus_jsonl,
+    load_corpus_jsonl_stream,
+)
 import pytest
-
-from bijux_canon_reason.retrieval.corpus import load_corpus_jsonl, load_corpus_jsonl_stream
 
 
 def test_load_corpus_jsonl_roundtrip(tmp_path: Path) -> None:

@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.interfaces.serialization.json_file import read_json_file, write_json_file
+from bijux_canon_reason.interfaces.serialization.json_file import (
+    read_json_file,
+    write_json_file,
+)
 
 
 def test_atomic_write_and_read(tmp_path: Path) -> None:

@@ -4,17 +4,8 @@
 from __future__ import annotations
 
 import bijux_canon_agent
-import bijux_rag
-import bijux_canon_reason
 import bijux_canon_index
-import pytest
-
-from bijux_canon_runtime.core.authority import authority_token
-from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
-from bijux_canon_runtime.runtime.budget import BudgetState
-from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
-from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
-from bijux_canon_runtime.observability.classification.entropy import EntropyLedger
+import bijux_canon_reason
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     execute_flow,
@@ -22,6 +13,7 @@ from bijux_canon_runtime.application.execute_flow import (
 from bijux_canon_runtime.application.execute_flow import (
     RunMode as FlowRunMode,
 )
+from bijux_canon_runtime.core.authority import authority_token
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.artifact.reasoning_claim import ReasoningClaim
@@ -33,6 +25,8 @@ from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.model.reasoning.step import ReasoningStep
 from bijux_canon_runtime.model.verification.arbitration_policy import ArbitrationPolicy
 from bijux_canon_runtime.model.verification.verification import VerificationPolicy
+from bijux_canon_runtime.observability.capture.trace_recorder import TraceRecorder
+from bijux_canon_runtime.observability.classification.entropy import EntropyLedger
 from bijux_canon_runtime.ontology import (
     ArbitrationRule,
     ArtifactScope,
@@ -66,6 +60,11 @@ from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
 )
+from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
+from bijux_canon_runtime.runtime.budget import BudgetState
+from bijux_canon_runtime.runtime.context import ExecutionContext, RunMode
+import bijux_rag
+import pytest
 from tests.helpers import build_claim_statement
 
 pytestmark = pytest.mark.regression

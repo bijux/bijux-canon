@@ -2,9 +2,13 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from bijux_canon_reason.interfaces.access_guards import (
+    rate_limit_per_key,
+    rate_limit_stateful,
+    require_api_key,
+    sanitize_run_id,
+)
 import pytest
-
-from bijux_canon_reason.interfaces.access_guards import rate_limit_per_key, rate_limit_stateful, require_api_key, sanitize_run_id
 
 
 def test_sanitize_run_id_accepts_safe_ids() -> None:

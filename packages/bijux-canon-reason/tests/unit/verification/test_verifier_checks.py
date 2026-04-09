@@ -174,8 +174,8 @@ def test_verifier_passes_on_valid_trace_with_plan() -> None:
             kind=TraceEventKind.step_finished,
             step_id=finalize_id,
             output=FinalizeOutput(kind="finalize", final_claim_ids=[claim_id]),
-            ),
-        ]
+        ),
+    ]
 
     trace = Trace(
         spec_id=spec_id,

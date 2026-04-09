@@ -2,14 +2,7 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
-import pytest
-
-from bijux_canon_index.interfaces.errors import refusal_payload
-from bijux_canon_index.interfaces.schemas.models import (
-    ExecutionBudgetPayload,
-    ExecutionRequestPayload,
-    RandomnessProfilePayload,
-)
+from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BackendUnavailableError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -17,7 +10,13 @@ from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.types import Chunk, Document, ExecutionArtifact, Vector
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.interfaces.errors import refusal_payload
+from bijux_canon_index.interfaces.schemas.models import (
+    ExecutionBudgetPayload,
+    ExecutionRequestPayload,
+    RandomnessProfilePayload,
+)
+import pytest
 
 
 class FailingAnn(AnnExecutionRequestRunner):

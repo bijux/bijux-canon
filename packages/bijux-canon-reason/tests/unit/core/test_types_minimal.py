@@ -2,7 +2,14 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.core.types import Claim, ClaimStatus, ClaimType, ProblemSpec, SupportKind, SupportRef
+from bijux_canon_reason.core.types import (
+    Claim,
+    ClaimStatus,
+    ClaimType,
+    ProblemSpec,
+    SupportKind,
+    SupportRef,
+)
 
 
 def test_problem_spec_with_content_id() -> None:

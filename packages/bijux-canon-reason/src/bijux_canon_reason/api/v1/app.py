@@ -10,8 +10,8 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.openapi.utils import get_openapi
 from fastapi.exceptions import RequestValidationError
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse, Response
 
 from bijux_canon_reason.api.v1.http_guards import (

@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from starlette.testclient import TestClient
-
 from bijux_canon_index.api.v1.app import build_app
+from starlette.testclient import TestClient
 
 
 def test_list_artifacts_and_runs(tmp_path: Path, monkeypatch) -> None:

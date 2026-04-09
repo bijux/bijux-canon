@@ -2,7 +2,6 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
-import pytest
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
@@ -21,7 +20,7 @@ from bijux_canon_index.domain.requests.request_execution import (
 )
 from bijux_canon_index.infra.adapters.ann_hnsw import HnswAnnRunner
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-
+import pytest
 
 pytest.importorskip("hnswlib")
 

@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_agent.agents.stage_runner.stage_execution import execute_stage
+import pytest
 
 
 class _AgentStub:

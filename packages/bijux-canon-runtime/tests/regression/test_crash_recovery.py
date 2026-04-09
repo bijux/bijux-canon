@@ -5,18 +5,11 @@ from __future__ import annotations
 
 import multiprocessing
 import os
-import signal
 from pathlib import Path
+import signal
 
 import bijux_canon_index
 import bijux_canon_reason
-import duckdb
-import pytest
-
-from bijux_canon_runtime.observability.storage.execution_store import (
-    DuckDBExecutionReadStore,
-    DuckDBExecutionWriteStore,
-)
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -24,7 +17,13 @@ from bijux_canon_runtime.application.execute_flow import (
 )
 from bijux_canon_runtime.application.planner import ExecutionPlanner
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
+from bijux_canon_runtime.observability.storage.execution_store import (
+    DuckDBExecutionReadStore,
+    DuckDBExecutionWriteStore,
+)
 from bijux_canon_runtime.ontology.ids import AgentID, BundleID, RunID, TenantID
+import duckdb
+import pytest
 
 pytestmark = pytest.mark.regression
 

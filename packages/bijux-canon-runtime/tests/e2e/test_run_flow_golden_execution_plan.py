@@ -3,12 +3,10 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import asdict
 from enum import Enum
+import json
 from pathlib import Path
-
-import pytest
 
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
@@ -28,6 +26,7 @@ from bijux_canon_runtime.ontology.ids import (
     TenantID,
 )
 from bijux_canon_runtime.ontology.public import ReplayAcceptability
+import pytest
 
 pytestmark = pytest.mark.e2e
 

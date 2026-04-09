@@ -4,9 +4,9 @@
 # Copyright © 2026 Bijan Mousavi
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
-import pytest
 
 from bijux_canon_index.core.types import Document
+import pytest
 from tests.conformance.suite import default_backends, parametrize_backends
 
 

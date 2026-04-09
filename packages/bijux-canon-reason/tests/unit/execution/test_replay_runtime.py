@@ -16,8 +16,6 @@ def test_frozen_tool_registry_missing_call_raises() -> None:
 
 def test_frozen_tool_registry_returns_recorded_results() -> None:
     result = ToolResult(call_id="c1", success=True, result={"ok": True})
-    registry = FrozenToolRegistry(
-        recorded={"c1": result}, descriptors=[]
-    )
+    registry = FrozenToolRegistry(recorded={"c1": result}, descriptors=[])
     out = registry.invoke(call=type("obj", (), {"id": "c1"}), seed=0)
     assert out == result

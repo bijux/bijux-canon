@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
+
 import json
 from pathlib import Path
 
-from starlette.testclient import TestClient
-
 from bijux_canon_index.api.v1.app import build_app
 from bijux_canon_index.core.identity.ids import fingerprint
+from starlette.testclient import TestClient
 
 
 def test_api_responses_are_deterministic(tmp_path: Path, monkeypatch):

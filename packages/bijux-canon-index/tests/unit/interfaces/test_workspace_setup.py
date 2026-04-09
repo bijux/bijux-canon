@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from bijux_canon_index.core.errors import ValidationError
 from bijux_canon_index.interfaces.cli.workspace_setup import initialize_workspace
+import pytest
 
 
 def test_initialize_workspace_creates_config_artifacts_and_gitignore(

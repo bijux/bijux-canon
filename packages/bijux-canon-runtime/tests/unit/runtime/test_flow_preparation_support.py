@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_runtime.application.flow_execution_models import ExecutionConfig
 from bijux_canon_runtime.application.flow_preparation_support import (
     effective_execution_config,
 )
 from bijux_canon_runtime.runtime.context import RunMode
+import pytest
 
 
 def test_effective_execution_config_enables_strict_mode_from_runtime_env(

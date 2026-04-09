@@ -3,10 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import pytest
 
-from bijux_canon_index.core.failures import classify_failure, FailureKind
 from bijux_canon_index.core.errors import InvariantError, mark_retryable
+from bijux_canon_index.core.failures import FailureKind, classify_failure
 
 
 def test_invariant_retry_annotation_is_ignored():

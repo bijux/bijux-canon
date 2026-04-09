@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.types import ExecutionArtifact
+import pytest
 
 
 def test_execution_artifact_validates_required_fields() -> None:

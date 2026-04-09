@@ -3,14 +3,13 @@
 
 from __future__ import annotations
 
-import pytest
-
-from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
 from bijux_canon_runtime.ontology import (
     ArtifactScope,
     ArtifactType,
 )
 from bijux_canon_runtime.ontology.ids import ArtifactID, ContentHash, TenantID
+from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
+import pytest
 
 pytestmark = pytest.mark.unit
 

@@ -35,6 +35,7 @@ from bijux_canon_reason.core import (
 )
 
 __all__ = [
+    "__version__",
     "Claim",
     "ClaimStatus",
     "ClaimType",

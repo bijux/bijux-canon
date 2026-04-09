@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import pytest
-from tests.utils.trace_helpers import default_model_metadata
-
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.traces import ReplayMetadata
@@ -11,6 +8,8 @@ from bijux_canon_agent.traces.replayability import (
     has_required_replay_metadata,
     resolve_contract_version,
 )
+import pytest
+from tests.utils.trace_helpers import default_model_metadata
 
 
 def test_resolve_contract_version_defaults_when_metadata_missing() -> None:

@@ -15,8 +15,6 @@ try:  # pragma: no cover - optional dependency
 except Exception:  # pragma: no cover - optional dependency
     faiss = None
 
-import numpy as np
-
 from bijux_canon_index.core.errors import (
     BackendCapabilityError,
     BackendUnavailableError,
@@ -26,6 +24,7 @@ from bijux_canon_index.core.errors import (
     ValidationError,
 )
 from bijux_canon_index.infra.adapters.vectorstore import VectorStoreAdapter
+import numpy as np
 
 INDEX_VERSION = 1
 EXACT_INDEX_TYPE = "IndexFlatL2"

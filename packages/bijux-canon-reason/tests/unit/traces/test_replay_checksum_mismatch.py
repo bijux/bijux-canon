@@ -5,11 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
-from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
+from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.traces.replay import replay_from_artifacts
+import pytest
 
 
 def test_replay_checksum_mismatch_fails(tmp_path: Path) -> None:

@@ -2,12 +2,11 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-import pytest
-
 from time import perf_counter
 
 from bijux_canon_reason.retrieval.bm25 import BM25Index
 from bijux_canon_reason.retrieval.corpus import CorpusDoc
+import pytest
 
 
 @pytest.mark.benchmark(group="retrieval")

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
@@ -12,12 +13,11 @@ from bijux_canon_index.core.runtime.execution_session import (
     ExecutionState,
     derive_session_id,
 )
+from bijux_canon_index.core.runtime.vector_execution import VectorExecution
 from bijux_canon_index.core.types import (
     ExecutionArtifact,
-    ExecutionBudget,
     ExecutionRequest,
 )
-from bijux_canon_index.core.runtime.vector_execution import VectorExecution
 
 
 def test_session_id_is_deterministic():

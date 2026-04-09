@@ -25,6 +25,8 @@ def _event(event_index: int, step_index: int, event_type: EventType) -> Executio
         payload={"event_type": event_type.value},
         payload_hash="hash",
     )
+
+
 def test_failed_steps_collects_all_failure_event_indexes() -> None:
     events = [
         _event(0, 1, EventType.STEP_FAILED),

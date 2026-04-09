@@ -2,13 +2,12 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_index.core.errors import ValidationError
 from bijux_canon_index.infra.adapters.metadata_migrations import (
     CURRENT_VECTOR_METADATA_VERSION,
     migrate_vector_metadata,
 )
+import pytest
 
 
 def test_migrate_vector_metadata_adds_schema_version() -> None:

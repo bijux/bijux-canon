@@ -6,8 +6,6 @@ import os
 from pathlib import Path
 from typing import Any
 
-import pytest
-
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION
 from bijux_canon_agent.core.hashing import prompt_hash
 from bijux_canon_agent.llm.adapter_factory import build_adapter
@@ -19,6 +17,7 @@ from bijux_canon_agent.traces import (
     TraceEntry,
     TraceRecorder,
 )
+import pytest
 
 
 @pytest.mark.live

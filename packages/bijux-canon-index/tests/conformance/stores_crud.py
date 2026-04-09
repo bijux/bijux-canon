@@ -4,7 +4,6 @@
 # Copyright © 2026 Bijan Mousavi
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
-import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.types import Chunk, Document, ExecutionArtifact, Vector

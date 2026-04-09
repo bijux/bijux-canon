@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import cast
 
-import pytest
-
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.pipeline.results.failure import (
     FailureArtifact,
@@ -12,6 +10,7 @@ from bijux_canon_agent.pipeline.results.failure import (
     failure_profile_for,
     validate_failure_artifact,
 )
+import pytest
 
 
 def test_failure_profiles_cover_all_classes() -> None:

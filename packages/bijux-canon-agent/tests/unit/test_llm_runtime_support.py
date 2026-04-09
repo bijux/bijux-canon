@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from aiohttp import ClientTimeout
-import pytest
-
 from bijux_canon_agent.llm.llm_runtime import LLMBackend, LLMResponse
 from bijux_canon_agent.llm.runtime_support import (
     execute_backend_attempt,
     retry_backoff,
 )
+import pytest
 
 
 class _BackendStub(LLMBackend):

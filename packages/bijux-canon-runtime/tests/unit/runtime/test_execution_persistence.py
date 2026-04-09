@@ -5,10 +5,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_runtime.application.execution_persistence import persist_run
-from bijux_canon_runtime.application.execution_persistence import resolve_read_store
-from bijux_canon_runtime.application.flow_execution_models import ExecutionConfig
-from bijux_canon_runtime.application.flow_execution_models import FlowRunResult
+from bijux_canon_runtime.application.execution_persistence import (
+    persist_run,
+    resolve_read_store,
+)
+from bijux_canon_runtime.application.flow_execution_models import (
+    ExecutionConfig,
+    FlowRunResult,
+)
 from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,

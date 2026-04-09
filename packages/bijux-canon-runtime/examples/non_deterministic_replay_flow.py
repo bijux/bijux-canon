@@ -5,10 +5,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_runtime.observability.analysis.trace_diff import (
-    render_semantic_diff,
-    semantic_trace_diff,
-)
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
+
 from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
@@ -17,10 +15,13 @@ from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.policy.non_determinism_policy import (
     NonDeterminismPolicy,
+)
+from bijux_canon_runtime.observability.analysis.trace_diff import (
+    render_semantic_diff,
+    semantic_trace_diff,
 )
 from bijux_canon_runtime.ontology import (
     CausalityTag,
@@ -50,7 +51,9 @@ from bijux_canon_runtime.ontology.public import (
 
 
 def build_manifest() -> FlowManifest:
-    dataset_path = Path(__file__).resolve().parent / "datasets" / "retrieval_corpus.jsonl"
+    dataset_path = (
+        Path(__file__).resolve().parent / "datasets" / "retrieval_corpus.jsonl"
+    )
     dataset = DatasetDescriptor(
         spec_version="v1",
         dataset_id=DatasetID("retrieval_corpus"),

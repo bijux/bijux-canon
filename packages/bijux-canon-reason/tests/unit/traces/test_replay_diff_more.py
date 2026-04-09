@@ -17,12 +17,8 @@ def test_diff_traces_identical_short_circuit() -> None:
 def test_diff_traces_reports_length_mismatch() -> None:
     from bijux_canon_reason.core.types import StepStartedEvent, TraceEventKind
 
-    ev_a = StepStartedEvent(
-        idx=0, kind=TraceEventKind.step_started, step_id="step-A"
-    )
-    ev_b = StepStartedEvent(
-        idx=0, kind=TraceEventKind.step_started, step_id="step-B"
-    )
+    ev_a = StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id="step-A")
+    ev_b = StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id="step-B")
     t1 = Trace(spec_id="s", plan_id="p", events=[ev_a], metadata={})
     t2 = Trace(spec_id="s", plan_id="p", events=[ev_b], metadata={})
     diff = diff_traces(t1, t2)

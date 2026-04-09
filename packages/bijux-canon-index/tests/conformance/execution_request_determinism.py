@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.types import (
     Chunk,
     Document,
@@ -73,7 +72,6 @@ def test_tie_break_order_is_stable(backend_case):
 
 @parametrize_backends(default_backends())
 def test_insertion_order_does_not_affect_ranking(backend_case):
-    fixture = backend_case.factory()
     doc = Document(document_id="doc-q2", text="text")
     chunk_a = Chunk(
         chunk_id="chunk-a2", document_id=doc.document_id, text="a", ordinal=0

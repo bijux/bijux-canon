@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
+
 import os
+from pathlib import Path
 import re
 import subprocess
 import sys
-from pathlib import Path
 
 CLI_HELP = """                                                                                
  Usage: python -m bijux_canon_index.interfaces.cli.app [OPTIONS] COMMAND        

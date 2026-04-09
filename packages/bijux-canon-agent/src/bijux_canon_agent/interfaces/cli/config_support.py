@@ -19,9 +19,7 @@ def load_config(config_path: str, logger: Any) -> dict[str, Any]:
     try:
         import yaml
     except ImportError:
-        logger.error(
-            "PyYAML required to load config file. Install with: uv add pyyaml"
-        )
+        logger.error("PyYAML required to load config file. Install with: uv add pyyaml")
         sys.exit(1)
 
     path = Path(config_path)

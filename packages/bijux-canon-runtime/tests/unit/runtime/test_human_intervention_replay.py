@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_runtime.application.determinism_guard import validate_replay
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
@@ -32,6 +30,7 @@ from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
 )
+import pytest
 
 
 def test_human_intervention_event_breaks_replay() -> None:

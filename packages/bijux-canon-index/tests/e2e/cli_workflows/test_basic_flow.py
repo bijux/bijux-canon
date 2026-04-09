@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
+
 import json
 import os
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
-
 
 CLI = [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app"]
 

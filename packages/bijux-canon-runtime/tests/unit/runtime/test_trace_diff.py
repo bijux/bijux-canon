@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
@@ -13,6 +12,7 @@ from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.identifiers.tool_invocation import ToolInvocation
+from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
 from bijux_canon_runtime.ontology import (
     CausalityTag,
     DatasetState,

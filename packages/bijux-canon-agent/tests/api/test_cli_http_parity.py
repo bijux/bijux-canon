@@ -18,14 +18,13 @@ from typing import Any
 import uuid
 
 from _pytest.monkeypatch import MonkeyPatch
-from tests.utils.trace_helpers import default_model_metadata
-import yaml
-
 from bijux_canon_agent.api import create_app
 from bijux_canon_agent.config.defaults import MINIMAL_REFERENCE_CONFIG
 from bijux_canon_agent.enums import DecisionOutcome
 import bijux_canon_agent.interfaces.cli.entrypoint as cli_main
 from bijux_canon_agent.interfaces.cli.helpers import build_trace_from_result
+from tests.utils.trace_helpers import default_model_metadata
+import yaml
 
 DEFAULT_HTTP_AGENTS = [
     "file_reader",

@@ -3,9 +3,6 @@
 
 from __future__ import annotations
 
-import pytest
-
-from bijux_canon_runtime.runtime.budget import ExecutionBudget
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -32,6 +29,8 @@ from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
 )
+from bijux_canon_runtime.runtime.budget import ExecutionBudget
+import pytest
 
 pytestmark = pytest.mark.regression
 

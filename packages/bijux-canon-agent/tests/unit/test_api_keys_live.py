@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import os
 
+from bijux_canon_agent.config.env import KEY_REGISTRY, APIKeySpec, load_environment
 import pytest
 import requests
-
-from bijux_canon_agent.config.env import KEY_REGISTRY, APIKeySpec, load_environment
 
 RUN_LIVE_KEY_TESTS = os.getenv("RUN_LIVE_KEY_TESTS") == "1"
 ENDPOINTS = {

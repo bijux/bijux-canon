@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
 
 
 def test_plugin_contracts_report_json():

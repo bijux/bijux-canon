@@ -6,6 +6,7 @@ import pytest
 
 pytest.importorskip("faiss")
 
+from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -15,7 +16,6 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExecutionRequestPayload,
     IngestRequest,
 )
-from bijux_canon_index.application.engine import VectorExecutionEngine
 
 
 def _ingest(engine: VectorExecutionEngine) -> None:

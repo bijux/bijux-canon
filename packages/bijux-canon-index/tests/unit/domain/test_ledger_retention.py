@@ -62,7 +62,7 @@ def test_memory_ledger_enforces_result_retention_limit():
         with fixture.tx_factory() as tx:
             try:
                 ledger.put_execution_result(tx, _fake_result("r3"))
-                assert False, "expected retention failure"
+                raise AssertionError("expected retention failure")
             except InvariantError:
                 pass
     finally:

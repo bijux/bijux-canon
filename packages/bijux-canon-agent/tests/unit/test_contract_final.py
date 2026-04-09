@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult
+import pytest
 
 
 def test_agent_output_schema_is_final() -> None:

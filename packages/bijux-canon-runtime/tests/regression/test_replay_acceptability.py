@@ -3,13 +3,11 @@
 
 from __future__ import annotations
 
-import pytest
-
-from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
+from bijux_canon_runtime.observability.analysis.trace_diff import semantic_trace_diff
 from bijux_canon_runtime.ontology import (
     CausalityTag,
     DatasetState,
@@ -28,6 +26,7 @@ from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
 )
+import pytest
 
 pytestmark = pytest.mark.regression
 

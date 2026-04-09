@@ -1,12 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-
-import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BackendDivergenceError
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.identity.ids import fingerprint
 from bijux_canon_index.core.types import (
     Chunk,
@@ -15,7 +13,7 @@ from bijux_canon_index.core.types import (
     ExecutionRequest,
     Vector,
 )
-from tests.conformance.suite import default_backends, parametrize_backends
+from tests.conformance.suite import default_backends
 
 
 def _seed(backend):

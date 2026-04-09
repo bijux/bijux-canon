@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
-
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.agents.kernel.lifecycle import LifecyclePhase
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.enums import FailureMode
+import pytest
 
 
 class _LifecycleProbeAgent(BaseAgent[dict[str, Any], AgentOutputSchema]):

@@ -45,9 +45,7 @@ def test_extractive_reasoner_is_deterministic_with_multiple_evidence() -> None:
 
 
 def test_extractive_reasoner_handles_no_evidence() -> None:
-    deriv = derive_extractive_answer(
-        question="anything", evidence=[], max_citations=2
-    )
+    deriv = derive_extractive_answer(question="anything", evidence=[], max_citations=2)
     assert deriv.citations == []
     assert "No evidence retrieved" in deriv.statement
     assert deriv.raw_reasoner and deriv.raw_reasoner.get("reason") == "no_evidence"

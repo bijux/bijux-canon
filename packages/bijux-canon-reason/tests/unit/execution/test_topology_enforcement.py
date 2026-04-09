@@ -2,15 +2,18 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_reason.core.types import Plan, PlanNode, StepSpec
 from bijux_canon_reason.execution.executor import _topo
+import pytest
 
 
 def test_cycle_detected_fail_fast() -> None:
-    n1 = PlanNode(id="n1", kind="gather", dependencies=["n2"], step=StepSpec(kind="gather"))
-    n2 = PlanNode(id="n2", kind="derive", dependencies=["n1"], step=StepSpec(kind="derive"))
+    n1 = PlanNode(
+        id="n1", kind="gather", dependencies=["n2"], step=StepSpec(kind="gather")
+    )
+    n2 = PlanNode(
+        id="n2", kind="derive", dependencies=["n1"], step=StepSpec(kind="derive")
+    )
     plan = Plan(spec_id="spec", nodes=[n1, n2], edges=[("n1", "n2"), ("n2", "n1")])
     with pytest.raises(RuntimeError) as exc:
         _topo(plan)
@@ -19,7 +22,9 @@ def test_cycle_detected_fail_fast() -> None:
 
 def test_missing_dependency_edge_fail_fast() -> None:
     n1 = PlanNode(id="n1", kind="gather", dependencies=[], step=StepSpec(kind="gather"))
-    n2 = PlanNode(id="n2", kind="derive", dependencies=["n1"], step=StepSpec(kind="derive"))
+    n2 = PlanNode(
+        id="n2", kind="derive", dependencies=["n1"], step=StepSpec(kind="derive")
+    )
     # Edge list is optional; should not raise if dependencies are consistent.
     plan = Plan(spec_id="spec", nodes=[n1, n2], edges=[])
     ordering = _topo(plan)

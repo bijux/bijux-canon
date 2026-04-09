@@ -4,14 +4,12 @@
 from __future__ import annotations
 
 import bijux_canon_agent
-import pytest
-
-from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
+from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
@@ -47,6 +45,7 @@ from bijux_canon_runtime.ontology.public import (
     NonDeterminismIntentSource,
     ReplayAcceptability,
 )
+import pytest
 
 
 @pytest.mark.unit

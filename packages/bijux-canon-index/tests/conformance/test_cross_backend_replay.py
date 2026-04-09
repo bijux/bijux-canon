@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_canon_index.core.execution_intent import ExecutionIntent
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.types import (
     Chunk,
     Document,
@@ -56,12 +56,11 @@ def _seed_backend(
 def test_replay_matches_across_backends(tmp_path):
     mem = memory_backend()
     mem_art, query = _seed_backend(mem, "m-")
+    from bijux_canon_index.domain.provenance.replay import _results_fingerprint
     from bijux_canon_index.domain.requests.request_execution import (
         execute_request,
         start_execution_session,
     )
-
-    from bijux_canon_index.domain.provenance.replay import _results_fingerprint
 
     mem_session = start_execution_session(mem_art, query, mem.stores)
     mem_result, _ = execute_request(mem_session, mem.stores)

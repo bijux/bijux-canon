@@ -9,7 +9,7 @@ from bijux_canon_reason.retrieval.chunked_bm25 import build_or_load_index
 
 def _write_corpus(path: Path) -> None:
     path.write_text(
-        '\n'.join(
+        "\n".join(
             [
                 '{"doc_id": "d1", "text": "alpha beta gamma"}',
                 '{"doc_id": "d2", "text": "beta gamma delta"}',
@@ -61,7 +61,8 @@ def test_chunked_bm25_rebuilds_on_corpus_change(tmp_path: Path) -> None:
 
     # mutate corpus -> hash must change, index must rebuild
     corpus.write_text(
-        corpus.read_text(encoding="utf-8") + '\n{"doc_id": "d3", "text": "alpha alpha"}',
+        corpus.read_text(encoding="utf-8")
+        + '\n{"doc_id": "d3", "text": "alpha alpha"}',
         encoding="utf-8",
     )
 

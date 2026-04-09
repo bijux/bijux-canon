@@ -5,11 +5,10 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-import pytest
-
 from bijux_canon_runtime.core.authority import evaluate_verification
 from bijux_canon_runtime.model.reasoning.bundle import ReasoningBundle
 from bijux_canon_runtime.ontology.ids import AgentID, BundleID, RuleID
+import pytest
 
 pytestmark = pytest.mark.unit
 

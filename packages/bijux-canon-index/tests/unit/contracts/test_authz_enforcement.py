@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import pytest
 
 from bijux_canon_index.contracts.authz import AllowAllAuthz, DenyAllAuthz
 from bijux_canon_index.core.errors import AuthzDeniedError
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+import pytest
 
 
 def test_deny_all_blocks_mutations() -> None:

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_runtime.application.flow_execution_models import ExecutionConfig
 from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.runtime.context import RunMode as ContextRunMode
+import pytest
 
 
 @pytest.mark.parametrize(

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
+from bijux_canon_reason.core.fingerprints import fingerprint_obj
+from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
     fingerprint_trace_file,
     read_trace_jsonl,
 )
-from bijux_canon_reason.core.fingerprints import fingerprint_obj
-from bijux_canon_reason.core.types import ProblemSpec
-from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
 
 
 def test_run_artifacts_are_versioned_and_fingerprinted(tmp_path: Path) -> None:

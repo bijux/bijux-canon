@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 import bijux_canon_runtime
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
@@ -12,6 +10,7 @@ from bijux_canon_runtime.application.execute_flow import (
     execute_flow,
 )
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
+import pytest
 
 pytestmark = pytest.mark.unit
 
@@ -21,4 +20,8 @@ def test_imports() -> None:
     assert ExecutionConfig
     assert RunMode
     assert FlowManifest
-    assert set(bijux_canon_runtime.__all__) == {"FlowManifest", "RunMode", "execute_flow"}
+    assert set(bijux_canon_runtime.__all__) == {
+        "FlowManifest",
+        "RunMode",
+        "execute_flow",
+    }

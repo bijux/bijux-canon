@@ -5,28 +5,28 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.interfaces.serialization.trace_jsonl import write_trace_jsonl
 from bijux_canon_reason.core.invariants import validate_trace
 from bijux_canon_reason.core.types import (
     Claim,
+    ClaimEmittedEvent,
     ClaimStatus,
     ClaimType,
     EvidenceRef,
-    ClaimEmittedEvent,
     EvidenceRegisteredEvent,
     Plan,
     PlanNode,
     StepFinishedEvent,
-    StepStartedEvent,
     StepSpec,
+    StepStartedEvent,
     SupportKind,
     SupportRef,
     ToolCall,
-    ToolResult,
-    Trace,
     ToolCalledEvent,
+    ToolResult,
     ToolReturnedEvent,
+    Trace,
 )
+from bijux_canon_reason.interfaces.serialization.trace_jsonl import write_trace_jsonl
 from bijux_canon_reason.verification.verifier import verify_trace
 
 
@@ -59,7 +59,14 @@ def _fake_trace(schema_version: int = 1) -> tuple[Trace, Plan]:
         statement="bad [evidence:ev1:0-1:ffff]",
         status=ClaimStatus.proposed,
         confidence=1.0,
-        supports=[SupportRef(kind=SupportKind.evidence, ref_id=ev.id, span=(0, 1), snippet_sha256="0" * 64)],
+        supports=[
+            SupportRef(
+                kind=SupportKind.evidence,
+                ref_id=ev.id,
+                span=(0, 1),
+                snippet_sha256="0" * 64,
+            )
+        ],
         claim_type=ClaimType.derived,
     )
     events = [
@@ -68,7 +75,9 @@ def _fake_trace(schema_version: int = 1) -> tuple[Trace, Plan]:
         ToolReturnedEvent(idx=2, step_id="s1", result=res),
         EvidenceRegisteredEvent(idx=3, step_id="s1", evidence=ev),
         ClaimEmittedEvent(idx=4, step_id="s1", claim=claim),
-        StepFinishedEvent(idx=5, step_id="s1", output={"kind": "derive", "claim_ids": ["c1"]}),
+        StepFinishedEvent(
+            idx=5, step_id="s1", output={"kind": "derive", "claim_ids": ["c1"]}
+        ),
     ]
     return Trace(
         id="t1",

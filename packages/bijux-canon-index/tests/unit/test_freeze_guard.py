@@ -1,9 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
-from pathlib import Path
 
-import pytest
+from pathlib import Path
 
 
 def test_core_has_no_todo_fixme():

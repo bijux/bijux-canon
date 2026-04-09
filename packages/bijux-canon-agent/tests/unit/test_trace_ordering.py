@@ -2,18 +2,17 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
+from bijux_canon_agent.enums import AgentType
+from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
+from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
+from bijux_canon_agent.pipeline.trace_validation.trace_validator import TraceValidator
+from bijux_canon_agent.traces.trace import TraceEntry
 import pytest
 from tests.utils.trace_helpers import (
     build_replay_metadata,
     build_run_fingerprint,
     build_trace_header,
 )
-
-from bijux_canon_agent.enums import AgentType
-from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
-from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
-from bijux_canon_agent.pipeline.trace_validation.trace_validator import TraceValidator
-from bijux_canon_agent.traces.trace import TraceEntry
 
 
 def _base_entry(

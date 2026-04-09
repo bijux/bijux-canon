@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import inspect
+from pathlib import Path
 import shutil
 import textwrap
-from dataclasses import dataclass
-from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[5]
 DOCS_ROOT = ROOT / "docs"

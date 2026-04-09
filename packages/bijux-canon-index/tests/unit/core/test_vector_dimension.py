@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import pytest
 
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.types import Vector
+import pytest
 
 
 def test_vector_dimension_must_match_values():

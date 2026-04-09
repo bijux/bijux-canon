@@ -3,8 +3,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from bijux_canon_agent.agents.file_reader.capabilities.binary import BinaryExtractor
 from bijux_canon_agent.agents.file_reader.capabilities.dispatch import (
     ExtractionHandlers,
@@ -19,6 +17,7 @@ from bijux_canon_agent.agents.file_reader.capabilities.structured import (
     StructuredExtractor,
 )
 from bijux_canon_agent.agents.file_reader.capabilities.text import TextExtractor
+import pytest
 
 
 async def _audit_stub(path: str | Path) -> dict[str, str]:

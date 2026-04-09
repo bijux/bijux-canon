@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import importlib
-import pytest
 
+import importlib
+
+import pytest
 
 ALLOWED_ECOSYSTEM_MODULES = {
     "bijux_canon_index.core.types",

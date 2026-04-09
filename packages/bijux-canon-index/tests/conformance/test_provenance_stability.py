@@ -4,21 +4,21 @@ from __future__ import annotations
 
 import json
 
-from bijux_canon_index.interfaces.schemas.models import (
-    ExecutionArtifactRequest,
-    IngestRequest,
-)
+from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.types import ExecutionRequest
+from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.domain.requests.request_execution import (
     execute_request,
     start_execution_session,
 )
-from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.interfaces.schemas.models import (
+    ExecutionArtifactRequest,
+    IngestRequest,
+)
 
 
 def test_explain_provenance_key_order_is_stable() -> None:

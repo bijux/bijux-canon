@@ -6,10 +6,7 @@ from bijux_canon_index.contracts.resources import (
     BackendCapabilities,
     ExecutionLedger,
     ExecutionResources,
-    VectorSource,
 )
-from bijux_canon_index.contracts.tx import Tx
-from bijux_canon_index.contracts.authz import AllowAllAuthz
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import NDExecutionUnavailableError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -96,7 +93,7 @@ def test_backend_claims_ann_support_but_runner_missing():
     )
     try:
         next(iter(run_plan(plan, execution, artifact, resources, ann_runner=None)))
-        assert False, "run_plan should have failed without ANN runner"
+        raise AssertionError("run_plan should have failed without ANN runner")
     except NDExecutionUnavailableError as exc:
         assert exc.capability == "supports_ann"
         assert exc.retryable is False

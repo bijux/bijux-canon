@@ -4,7 +4,6 @@ from pathlib import Path
 
 import yaml
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
 CI_WORKFLOWS = sorted(WORKFLOWS_DIR.glob("ci-*.yml"))
@@ -70,7 +69,9 @@ def test_publish_jobs_keep_trusted_publishing_contract() -> None:
         )
 
         if permissions != {"contents": "read"}:
-            failures.append(f"{path.name}: workflow permissions should stay contents: read")
+            failures.append(
+                f"{path.name}: workflow permissions should stay contents: read"
+            )
         if job_permissions != {"contents": "read"}:
             failures.append(
                 f"{path.name}: publish job permissions should stay contents: read"
@@ -87,8 +88,8 @@ def test_publish_jobs_keep_trusted_publishing_contract() -> None:
                 f"{path.name}: publish job should use secrets.PYPI_API_TOKEN"
             )
 
-    assert not failures, (
-        "publish workflow auth contract drifted:\n" + "\n".join(failures)
+    assert not failures, "publish workflow auth contract drifted:\n" + "\n".join(
+        failures
     )
 
 

@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-from fastapi.testclient import TestClient
-
 from bijux_canon_reason.api.v1.app import create_app
+from fastapi.testclient import TestClient
+import pytest
 
 
 @pytest.mark.e2e

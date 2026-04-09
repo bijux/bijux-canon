@@ -5,6 +5,12 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from typing import Any, cast
 
+from bijux_canon_agent.enums import DecisionOutcome
+from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
+from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
+from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
+from bijux_canon_agent.traces import RunTrace, TraceEntry
+from bijux_canon_agent.traces.trace import ModelMetadata
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from pydantic import ValidationError
@@ -14,13 +20,6 @@ from tests.utils.trace_helpers import (
     build_run_fingerprint,
     build_trace_header,
 )
-
-from bijux_canon_agent.enums import DecisionOutcome
-from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
-from bijux_canon_agent.pipeline.epistemic import EpistemicVerdict
-from bijux_canon_agent.pipeline.results.outcome import PipelineResult, PipelineStatus
-from bijux_canon_agent.traces import RunTrace, TraceEntry
-from bijux_canon_agent.traces.trace import ModelMetadata
 
 
 def _validate_pipeline_result(data: dict[str, Any]) -> PipelineResult:

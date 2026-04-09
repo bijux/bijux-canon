@@ -86,10 +86,21 @@ def _build_trace_with_evidence(run_dir: Path, plan_id: str) -> Trace:
     )
     events = [
         StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id="s1"),
-        ToolCalledEvent(idx=1, kind=TraceEventKind.tool_called, step_id="s1", call=call),
-        ToolReturnedEvent(idx=2, kind=TraceEventKind.tool_returned, step_id="s1", result=res),
-        EvidenceRegisteredEvent(idx=3, kind=TraceEventKind.evidence_registered, step_id="s1", evidence=ev_ref),
-        ClaimEmittedEvent(idx=4, kind=TraceEventKind.claim_emitted, step_id="s1", claim=claim),
+        ToolCalledEvent(
+            idx=1, kind=TraceEventKind.tool_called, step_id="s1", call=call
+        ),
+        ToolReturnedEvent(
+            idx=2, kind=TraceEventKind.tool_returned, step_id="s1", result=res
+        ),
+        EvidenceRegisteredEvent(
+            idx=3,
+            kind=TraceEventKind.evidence_registered,
+            step_id="s1",
+            evidence=ev_ref,
+        ),
+        ClaimEmittedEvent(
+            idx=4, kind=TraceEventKind.claim_emitted, step_id="s1", claim=claim
+        ),
         StepFinishedEvent(
             idx=5,
             kind=TraceEventKind.step_finished,
@@ -116,4 +127,6 @@ def test_forged_evidence_hash_fails(tmp_path: Path) -> None:
         policy=VerificationPolicyMode.strict,
     )
     messages = {f.invariant_id for f in report.failures}
-    assert "INV-EVD-001" in messages, f"expected evidence invariant failure, got {messages}"
+    assert "INV-EVD-001" in messages, (
+        f"expected evidence invariant failure, got {messages}"
+    )

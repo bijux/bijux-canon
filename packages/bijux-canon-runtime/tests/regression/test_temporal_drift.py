@@ -3,18 +3,17 @@
 
 from __future__ import annotations
 
-import pytest
-
-from bijux_canon_runtime.observability.analysis.drift import (
-    entropy_drift,
-    outcome_drift,
-)
-from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summary
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
+from bijux_canon_runtime.observability.analysis.drift import (
+    entropy_drift,
+    outcome_drift,
+)
+from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summary
+import pytest
 
 pytestmark = pytest.mark.regression
 

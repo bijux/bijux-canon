@@ -2,18 +2,18 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_index.interfaces.schemas.models import (
-    ExecutionArtifactRequest,
-    ExecutionRequestPayload,
-    IngestRequest,
-)
+from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.types import ExecutionRequest
 from bijux_canon_index.domain.provenance.lineage import explain_result
 from bijux_canon_index.infra.adapters.vectorstore_registry import _redact_uri
-from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.interfaces.schemas.models import (
+    ExecutionArtifactRequest,
+    ExecutionRequestPayload,
+    IngestRequest,
+)
 
 
 def test_redact_uri_masks_password() -> None:
@@ -36,7 +36,7 @@ def test_provenance_does_not_leak_vector_store_secrets() -> None:
     engine.materialize(
         ExecutionArtifactRequest(execution_contract=ExecutionContract.DETERMINISTIC)
     )
-    result = engine.execute(
+    engine.execute(
         ExecutionRequestPayload(
             request_text=None,
             vector=(0.0, 0.0),
@@ -45,7 +45,6 @@ def test_provenance_does_not_leak_vector_store_secrets() -> None:
             execution_intent=ExecutionIntent.EXACT_VALIDATION,
         )
     )
-    vector_id = result["results"][0]
     obj = next(
         iter(
             engine.stores.vectors.query(

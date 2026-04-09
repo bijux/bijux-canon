@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from unittest.mock import Mock
 
-import pytest
-
 from bijux_canon_agent.llm.batch_support import (
     collect_batch_responses,
     execute_batch_requests,
 )
+import pytest
 
 
 @pytest.mark.asyncio

@@ -28,9 +28,7 @@ def test_executor_emits_claims_with_grounded_supports(tmp_path: Path) -> None:
         },
     )
     plan = plan_problem(spec=spec, preset="rar")
-    runtime = Runtime.local_bm25(
-        seed=0, corpus_path=corpus, artifacts_dir=tmp_path
-    )
+    runtime = Runtime.local_bm25(seed=0, corpus_path=corpus, artifacts_dir=tmp_path)
 
     result = execute_plan(
         spec=spec,

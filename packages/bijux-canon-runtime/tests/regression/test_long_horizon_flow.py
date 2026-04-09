@@ -4,11 +4,8 @@
 from __future__ import annotations
 
 import bijux_canon_agent
-import bijux_rag
-import bijux_canon_reason
 import bijux_canon_index
-import pytest
-
+import bijux_canon_reason
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -41,6 +38,8 @@ from bijux_canon_runtime.ontology.ids import (
     VersionID,
 )
 from bijux_canon_runtime.ontology.public import ReplayAcceptability
+import bijux_rag
+import pytest
 
 pytestmark = pytest.mark.regression
 

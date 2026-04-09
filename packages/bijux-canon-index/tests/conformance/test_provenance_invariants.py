@@ -2,18 +2,18 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_index.interfaces.schemas.models import (
-    ExecutionArtifactRequest,
-    ExecutionRequestPayload,
-    IngestRequest,
-)
+from bijux_canon_index.application.orchestrator import Orchestrator
 from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.types import ExecutionRequest
 from bijux_canon_index.domain.provenance.lineage import explain_result
-from bijux_canon_index.application.orchestrator import Orchestrator
+from bijux_canon_index.interfaces.schemas.models import (
+    ExecutionArtifactRequest,
+    ExecutionRequestPayload,
+    IngestRequest,
+)
 
 
 def _setup_engine() -> Orchestrator:
@@ -49,7 +49,7 @@ def test_vector_store_usage_recorded_when_enabled():
         execution_intent=ExecutionIntent.EXACT_VALIDATION,
         execution_mode=ExecutionMode.STRICT,
     )
-    result = engine.execute(req)
+    engine.execute(req)
     request = ExecutionRequest(
         request_id="probe",
         text=None,

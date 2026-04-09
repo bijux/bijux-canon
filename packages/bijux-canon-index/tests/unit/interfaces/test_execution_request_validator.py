@@ -4,14 +4,13 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-import pytest
-
-from bijux_canon_index.interfaces.schemas.validators import (
-    validate_execution_request_payload,
-)
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.interfaces.schemas.validators import (
+    validate_execution_request_payload,
+)
+import pytest
 
 
 def _payload(**overrides):

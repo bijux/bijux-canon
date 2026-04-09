@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from importlib.metadata import PackageNotFoundError, version as package_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as package_version
 
 __all__ = [
     "__version__",
@@ -28,17 +29,18 @@ try:
         version_tuple,
     )
 except ImportError:
+
     def _fallback_version() -> str:
         try:
             return package_version("bijux-canon-reason")
         except PackageNotFoundError:
             return "0.3.0"
 
-
     def _version_parts(value: str) -> tuple[int | str, ...]:
         tokens = value.replace("+", ".").replace("-", ".").split(".")
-        return tuple(int(token) if token.isdigit() else token for token in tokens if token)
-
+        return tuple(
+            int(token) if token.isdigit() else token for token in tokens if token
+        )
 
     __version__ = version = _fallback_version()
     __version_tuple__ = version_tuple = _version_parts(__version__)

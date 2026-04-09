@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import pytest
 
 from bijux_canon_index.core.errors import AtomicityViolationError
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
+import pytest
 
 
 @pytest.fixture(params=["memory", "sqlite"])

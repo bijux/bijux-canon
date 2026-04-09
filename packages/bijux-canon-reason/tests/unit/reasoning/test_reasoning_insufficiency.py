@@ -23,19 +23,33 @@ from bijux_canon_reason.verification.verifier import verify_trace
 def test_insufficient_evidence_allowed() -> None:
     spec = ProblemSpec(description="q", constraints={}, expected={})
     n_understand = PlanNode(kind="understand", dependencies=[], parameters={})
-    n_gather = PlanNode(kind="gather", dependencies=[n_understand.id], step=StepSpec(kind="gather"))
-    n_derive = PlanNode(kind="derive", dependencies=[n_gather.id], step=StepSpec(kind="derive"))
-    n_verify = PlanNode(kind="verify", dependencies=[n_derive.id], step=StepSpec(kind="verify"))
-    n_finalize = PlanNode(kind="finalize", dependencies=[n_verify.id], step=StepSpec(kind="finalize"))
-    plan = Plan(spec_id=spec.id, nodes=[n_understand, n_gather, n_derive, n_verify, n_finalize]).with_content_id()
+    n_gather = PlanNode(
+        kind="gather", dependencies=[n_understand.id], step=StepSpec(kind="gather")
+    )
+    n_derive = PlanNode(
+        kind="derive", dependencies=[n_gather.id], step=StepSpec(kind="derive")
+    )
+    n_verify = PlanNode(
+        kind="verify", dependencies=[n_derive.id], step=StepSpec(kind="verify")
+    )
+    n_finalize = PlanNode(
+        kind="finalize", dependencies=[n_verify.id], step=StepSpec(kind="finalize")
+    )
+    plan = Plan(
+        spec_id=spec.id, nodes=[n_understand, n_gather, n_derive, n_verify, n_finalize]
+    ).with_content_id()
 
     events = [
-        StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=n_understand.id),
+        StepStartedEvent(
+            idx=0, kind=TraceEventKind.step_started, step_id=n_understand.id
+        ),
         StepFinishedEvent(
             idx=1,
             kind=TraceEventKind.step_finished,
             step_id=n_understand.id,
-            output=UnderstandOutput(normalized_question=spec.description, assumptions=[]),
+            output=UnderstandOutput(
+                normalized_question=spec.description, assumptions=[]
+            ),
         ),
         StepStartedEvent(idx=2, kind=TraceEventKind.step_started, step_id=n_gather.id),
         StepFinishedEvent(
@@ -57,15 +71,21 @@ def test_insufficient_evidence_allowed() -> None:
             kind=TraceEventKind.step_finished,
             step_id=n_verify.id,
             output=VerifyOutput(
-                validated_claim_ids=[], rejected_claim_ids=[], missing_support_claim_ids=[]
+                validated_claim_ids=[],
+                rejected_claim_ids=[],
+                missing_support_claim_ids=[],
             ),
         ),
-        StepStartedEvent(idx=8, kind=TraceEventKind.step_started, step_id=n_finalize.id),
+        StepStartedEvent(
+            idx=8, kind=TraceEventKind.step_started, step_id=n_finalize.id
+        ),
         StepFinishedEvent(
             idx=9,
             kind=TraceEventKind.step_finished,
             step_id=n_finalize.id,
-            output=FinalizeOutput(final_claim_ids=[], final_answer=None, uncertainty="No validated claim"),
+            output=FinalizeOutput(
+                final_claim_ids=[], final_answer=None, uncertainty="No validated claim"
+            ),
         ),
     ]
 

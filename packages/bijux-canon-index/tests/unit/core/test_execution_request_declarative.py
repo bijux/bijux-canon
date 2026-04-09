@@ -1,17 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_canon_index.core.execution_mode import ExecutionMode
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-
-import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
-from bijux_canon_index.core.types import ExecutionRequest, ExecutionBudget
+from bijux_canon_index.core.errors import InvariantError
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
+from bijux_canon_index.core.types import (
+    ExecutionArtifact,
+    ExecutionRequest,
+)
 from bijux_canon_index.domain.requests.request_execution import start_execution_session
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-from bijux_canon_index.core.types import ExecutionArtifact
-from bijux_canon_index.core.errors import InvariantError
+import pytest
 
 
 def test_execution_request_cannot_execute_directly():

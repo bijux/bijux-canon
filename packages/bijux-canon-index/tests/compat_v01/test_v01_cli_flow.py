@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
-
 
 CLI = [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app"]
 

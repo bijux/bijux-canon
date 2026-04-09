@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_agent.enums import DecisionOutcome
 from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceConfig,
@@ -9,6 +7,7 @@ from bijux_canon_agent.pipeline.convergence.monitor import (
     ConvergenceReason,
     default_convergence_config,
 )
+import pytest
 
 
 def test_convergence_detects_stable_scores() -> None:

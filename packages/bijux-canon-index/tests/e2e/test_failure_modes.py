@@ -1,33 +1,31 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_canon_index.core.execution_mode import ExecutionMode
-from bijux_canon_index.core.execution_intent import ExecutionIntent
 
-import pytest
-from typer.testing import CliRunner
-
-from bijux_canon_index.interfaces.cli import app as cli_app
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
-    BackendDivergenceError,
     InvariantError,
     NDExecutionUnavailableError,
     ValidationError,
 )
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.failures import retry_with_policy
 from bijux_canon_index.core.types import (
     ExecutionArtifact,
     ExecutionBudget,
     ExecutionRequest,
 )
+from bijux_canon_index.domain.drift.backend_drift import detect_backend_drift
+from bijux_canon_index.domain.provenance.replay import replay
 from bijux_canon_index.domain.requests.request_execution import (
     execute_request,
     start_execution_session,
 )
-from bijux_canon_index.domain.drift.backend_drift import detect_backend_drift
-from bijux_canon_index.domain.provenance.replay import replay
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+from bijux_canon_index.interfaces.cli import app as cli_app
+import pytest
+from typer.testing import CliRunner
 
 
 def test_cli_help_snapshot():

@@ -5,10 +5,11 @@ from __future__ import annotations
 
 from importlib import metadata
 
+from bijux_canon_runtime.core.package_versions import (
+    distribution_version,
+    runtime_dependency_versions,
+)
 import pytest
-
-from bijux_canon_runtime.core.package_versions import distribution_version
-from bijux_canon_runtime.core.package_versions import runtime_dependency_versions
 
 
 def test_distribution_version_uses_first_installed_distribution(

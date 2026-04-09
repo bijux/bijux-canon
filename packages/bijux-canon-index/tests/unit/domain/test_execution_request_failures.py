@@ -3,28 +3,28 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import pytest
 
+from bijux_canon_index.contracts.resources import (
+    BackendCapabilities,
+    ExecutionResources,
+)
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.errors import (
     BackendCapabilityError,
     InvariantError,
     NotFoundError,
     ValidationError,
 )
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.types import (
     ExecutionArtifact,
-    ExecutionRequest,
     ExecutionBudget,
-)
-from bijux_canon_index.contracts.resources import (
-    BackendCapabilities,
-    ExecutionResources,
+    ExecutionRequest,
 )
 from bijux_canon_index.domain.requests.execution_plan import build_execution_plan
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
+import pytest
 
 
 def _prepare_artifact(backend):

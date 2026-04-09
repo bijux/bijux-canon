@@ -1,12 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
-from bijux_canon_index.core.execution_mode import ExecutionMode
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-
-import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
+from bijux_canon_index.core.execution_mode import ExecutionMode
 from bijux_canon_index.core.types import (
     Chunk,
     Document,

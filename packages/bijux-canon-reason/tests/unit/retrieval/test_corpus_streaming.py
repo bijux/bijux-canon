@@ -4,16 +4,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
-from bijux_canon_reason.retrieval.corpus import load_corpus_jsonl, load_corpus_jsonl_stream
 from bijux_canon_reason.retrieval.chunked_bm25 import build_or_load_index
+from bijux_canon_reason.retrieval.corpus import (
+    load_corpus_jsonl,
+    load_corpus_jsonl_stream,
+)
+import pytest
 
 
 def test_streaming_matches_full(tmp_path: Path) -> None:
     corpus = tmp_path / "corpus.jsonl"
     corpus.write_text(
-        '\n'.join(
+        "\n".join(
             [
                 '{"doc_id":"d1","text":"hello world"}',
                 '{"doc_id":"d2","text":"another doc"}',

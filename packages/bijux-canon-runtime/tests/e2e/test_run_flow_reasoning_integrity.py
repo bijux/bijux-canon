@@ -5,8 +5,6 @@ from __future__ import annotations
 
 import bijux_canon_agent
 import bijux_canon_reason
-import pytest
-
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -41,6 +39,7 @@ from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
 )
+import pytest
 
 pytestmark = pytest.mark.e2e
 

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_agent.agents.critique.advanced_checks import (
     CritiqueCheckState,
     run_advanced_checks,
 )
+import pytest
 
 
 @pytest.mark.asyncio

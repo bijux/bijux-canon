@@ -1,22 +1,20 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-
-import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.errors import BackendDivergenceError
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.types import (
     Chunk,
     Document,
     ExecutionArtifact,
     ExecutionRequest,
     Vector,
-    ExecutionBudget,
 )
 from bijux_canon_index.domain.drift.backend_drift import detect_backend_drift
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-from bijux_canon_index.core.errors import BackendDivergenceError
+import pytest
 
 
 def _seed(backend, suffix: str, values=(0.0,)) -> ExecutionArtifact:

@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_trace import ExecutionTrace
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
@@ -22,6 +20,7 @@ from bijux_canon_runtime.ontology.ids import (
     TenantID,
 )
 from bijux_canon_runtime.ontology.public import ReplayAcceptability
+import pytest
 
 pytestmark = pytest.mark.unit
 

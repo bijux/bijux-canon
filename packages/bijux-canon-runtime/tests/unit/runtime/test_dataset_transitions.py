@@ -3,13 +3,12 @@
 
 from __future__ import annotations
 
-import duckdb
-import pytest
-
+from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
-from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
+import duckdb
+import pytest
 
 pytestmark = pytest.mark.unit
 

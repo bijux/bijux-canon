@@ -8,12 +8,8 @@ from bijux_canon_reason.retrieval.chunking import chunk_document
 def test_chunk_document_uses_utf8_byte_spans_and_stable_ids() -> None:
     text = "Café naïve π"  # multi-byte characters
 
-    chunks_a = chunk_document(
-        doc_id="d1", text=text, chunk_chars=5, overlap_chars=1
-    )
-    chunks_b = chunk_document(
-        doc_id="d1", text=text, chunk_chars=5, overlap_chars=1
-    )
+    chunks_a = chunk_document(doc_id="d1", text=text, chunk_chars=5, overlap_chars=1)
+    chunks_b = chunk_document(doc_id="d1", text=text, chunk_chars=5, overlap_chars=1)
 
     assert len(chunks_a) == len(chunks_b) > 1
     # stable chunk IDs and identical byte spans

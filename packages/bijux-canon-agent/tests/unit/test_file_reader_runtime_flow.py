@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_agent.agents.file_reader.runtime_flow import (
     calculate_backoff,
     load_cached_result,
@@ -9,6 +7,7 @@ from bijux_canon_agent.agents.file_reader.runtime_flow import (
     resolve_file_path,
     store_cached_result,
 )
+import pytest
 
 
 def test_resolve_file_path_reads_context_value(logger_manager) -> None:

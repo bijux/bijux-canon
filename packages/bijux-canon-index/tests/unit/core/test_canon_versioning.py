@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
+
 from bijux_canon_index.core.canon import CANON_VERSION, canon
 from bijux_canon_index.core.identity.ids import fingerprint
 

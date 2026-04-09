@@ -4,15 +4,14 @@ from __future__ import annotations
 
 from typing import Any, cast
 
-from pydantic import ValidationError
-import pytest
-
 from bijux_canon_reason.core.types import (
     EvidenceRef,
     StepStartedEvent,
     ToolCalledEvent,
     ToolReturnedEvent,
 )
+from pydantic import ValidationError
+import pytest
 
 
 def test_trace_event_requires_fields() -> None:

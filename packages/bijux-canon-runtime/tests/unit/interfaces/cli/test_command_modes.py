@@ -3,16 +3,17 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_runtime.interfaces.cli.parser import build_parser
-from bijux_canon_runtime.model.execution.command_modes import DRY_RUN_COMMAND
-from bijux_canon_runtime.model.execution.command_modes import OBSERVE_COMMAND
-from bijux_canon_runtime.model.execution.command_modes import PLAN_COMMAND
-from bijux_canon_runtime.model.execution.command_modes import RUN_COMMAND
-from bijux_canon_runtime.model.execution.command_modes import UNSAFE_RUN_COMMAND
-from bijux_canon_runtime.model.execution.command_modes import run_mode_for_command
+from bijux_canon_runtime.model.execution.command_modes import (
+    DRY_RUN_COMMAND,
+    OBSERVE_COMMAND,
+    PLAN_COMMAND,
+    RUN_COMMAND,
+    UNSAFE_RUN_COMMAND,
+    run_mode_for_command,
+)
 from bijux_canon_runtime.model.execution.run_mode import RunMode
+import pytest
 
 
 @pytest.mark.parametrize(

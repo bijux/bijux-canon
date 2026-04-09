@@ -4,15 +4,14 @@
 from __future__ import annotations
 
 from importlib import metadata
+from pathlib import Path
 import re
 import tomllib
-from pathlib import Path
-
-import typer.main
 
 from bijux_canon_reason import __version__
-from bijux_canon_reason.interfaces.cli.main import app
 from bijux_canon_reason.core.types import Claim, EvidenceRef, ProblemSpec, SupportRef
+from bijux_canon_reason.interfaces.cli.main import app
+import typer.main
 
 
 def test_version_matches_pyproject() -> None:

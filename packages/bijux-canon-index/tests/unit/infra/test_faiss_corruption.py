@@ -4,17 +4,20 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-
-import pytest
+from typing import TYPE_CHECKING
 
 from bijux_canon_index.core.errors import CorruptArtifactError
+import pytest
 
 faiss = pytest.importorskip("faiss")
 
-from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
+if TYPE_CHECKING:
+    from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
 
 
 def _make_adapter(path: Path) -> FaissVectorStoreAdapter:
+    from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
+
     adapter = FaissVectorStoreAdapter(uri=str(path), options={"index_type": "exact"})
     adapter.connect()
     return adapter

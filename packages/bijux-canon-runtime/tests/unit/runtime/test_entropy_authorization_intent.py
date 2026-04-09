@@ -4,23 +4,21 @@
 from __future__ import annotations
 
 import bijux_canon_agent
-import pytest
-
-from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
     execute_flow,
 )
+from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
 )
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
 from bijux_canon_runtime.model.datasets.retrieval_request import RetrievalRequest
-from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
+from bijux_canon_runtime.model.execution.resolved_step import ResolvedStep
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.agent_invocation import AgentInvocation
 from bijux_canon_runtime.ontology import (
@@ -47,6 +45,7 @@ from bijux_canon_runtime.ontology.public import (
     NonDeterminismIntentSource,
     ReplayAcceptability,
 )
+import pytest
 
 
 @pytest.mark.unit

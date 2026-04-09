@@ -5,9 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from fastapi.testclient import TestClient
-
 from bijux_canon_index.api.v1.app import build_app
+from fastapi.testclient import TestClient
 
 
 def _assert_expected_subset(actual: object, expected: object) -> None:

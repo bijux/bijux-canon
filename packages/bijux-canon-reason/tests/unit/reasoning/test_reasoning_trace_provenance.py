@@ -2,8 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from pathlib import Path
 import hashlib
+from pathlib import Path
 
 from bijux_canon_reason.core.types import (
     Claim,
@@ -44,15 +44,33 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
 
     spec = ProblemSpec(description="q", constraints={}, expected={})
     plan_nodes = [
-        PlanNode(kind="understand", dependencies=[], parameters={}, step=StepSpec(kind="understand")),
-        PlanNode(kind="gather", dependencies=[], parameters={}, step=StepSpec(kind="gather")),
-        PlanNode(kind="derive", dependencies=[], parameters={}, step=StepSpec(kind="derive")),
-        PlanNode(kind="verify", dependencies=[], parameters={}, step=StepSpec(kind="verify")),
-        PlanNode(kind="finalize", dependencies=[], parameters={}, step=StepSpec(kind="finalize")),
+        PlanNode(
+            kind="understand",
+            dependencies=[],
+            parameters={},
+            step=StepSpec(kind="understand"),
+        ),
+        PlanNode(
+            kind="gather", dependencies=[], parameters={}, step=StepSpec(kind="gather")
+        ),
+        PlanNode(
+            kind="derive", dependencies=[], parameters={}, step=StepSpec(kind="derive")
+        ),
+        PlanNode(
+            kind="verify", dependencies=[], parameters={}, step=StepSpec(kind="verify")
+        ),
+        PlanNode(
+            kind="finalize",
+            dependencies=[],
+            parameters={},
+            step=StepSpec(kind="finalize"),
+        ),
     ]
     plan = Plan(spec_id=spec.id, nodes=plan_nodes)
 
-    call = ToolCall(step_id=plan_nodes[1].id, call_idx=0, tool_name="retrieve", arguments={})
+    call = ToolCall(
+        step_id=plan_nodes[1].id, call_idx=0, tool_name="retrieve", arguments={}
+    )
     tres = ToolResult(call_id=call.id, success=True, result={"ok": True}, error=None)
     ev_ref = EvidenceRef(
         uri="mem://ev1",
@@ -77,22 +95,37 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
     )
 
     events = [
-        StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=plan_nodes[0].id),
+        StepStartedEvent(
+            idx=0, kind=TraceEventKind.step_started, step_id=plan_nodes[0].id
+        ),
         StepFinishedEvent(
             idx=1,
             kind=TraceEventKind.step_finished,
             step_id=plan_nodes[0].id,
-            output=UnderstandOutput(kind="understand", normalized_question="q", assumptions=[]),
+            output=UnderstandOutput(
+                kind="understand", normalized_question="q", assumptions=[]
+            ),
         ),
-        StepStartedEvent(idx=2, kind=TraceEventKind.step_started, step_id=plan_nodes[1].id),
+        StepStartedEvent(
+            idx=2, kind=TraceEventKind.step_started, step_id=plan_nodes[1].id
+        ),
         ToolCalledEvent(
-            idx=3, kind=TraceEventKind.tool_called, step_id=plan_nodes[1].id, tool_call=call
+            idx=3,
+            kind=TraceEventKind.tool_called,
+            step_id=plan_nodes[1].id,
+            tool_call=call,
         ),
         ToolReturnedEvent(
-            idx=4, kind=TraceEventKind.tool_returned, step_id=plan_nodes[1].id, tool_result=tres
+            idx=4,
+            kind=TraceEventKind.tool_returned,
+            step_id=plan_nodes[1].id,
+            tool_result=tres,
         ),
         EvidenceRegisteredEvent(
-            idx=5, kind=TraceEventKind.evidence_registered, step_id=plan_nodes[1].id, evidence=ev_ref
+            idx=5,
+            kind=TraceEventKind.evidence_registered,
+            step_id=plan_nodes[1].id,
+            evidence=ev_ref,
         ),
         StepFinishedEvent(
             idx=6,
@@ -100,7 +133,9 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
             step_id=plan_nodes[1].id,
             output=GatherOutput(kind="gather", evidence_refs=[ev_ref.id]),
         ),
-        StepStartedEvent(idx=7, kind=TraceEventKind.step_started, step_id=plan_nodes[2].id),
+        StepStartedEvent(
+            idx=7, kind=TraceEventKind.step_started, step_id=plan_nodes[2].id
+        ),
         ClaimEmittedEvent(idx=8, kind=TraceEventKind.claim_emitted, claim=claim),
         StepFinishedEvent(
             idx=9,
@@ -108,16 +143,23 @@ def test_reasoning_trace_hash_mismatch_fails(tmp_path: Path) -> None:
             step_id=plan_nodes[2].id,
             output=DeriveOutput(kind="derive", emitted_claim_ids=[claim.id]),
         ),
-        StepStartedEvent(idx=10, kind=TraceEventKind.step_started, step_id=plan_nodes[3].id),
+        StepStartedEvent(
+            idx=10, kind=TraceEventKind.step_started, step_id=plan_nodes[3].id
+        ),
         StepFinishedEvent(
             idx=11,
             kind=TraceEventKind.step_finished,
             step_id=plan_nodes[3].id,
             output=VerifyOutput(
-                kind="verify", validated_claim_ids=[], rejected_claim_ids=[], insufficient_support=[]
+                kind="verify",
+                validated_claim_ids=[],
+                rejected_claim_ids=[],
+                insufficient_support=[],
             ),
         ),
-        StepStartedEvent(idx=12, kind=TraceEventKind.step_started, step_id=plan_nodes[4].id),
+        StepStartedEvent(
+            idx=12, kind=TraceEventKind.step_started, step_id=plan_nodes[4].id
+        ),
         StepFinishedEvent(
             idx=13,
             kind=TraceEventKind.step_finished,

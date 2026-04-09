@@ -3,19 +3,19 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import pytest
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
-from bijux_canon_index.core.failures import (
-    FailureKind,
-    classify_failure,
-    retry_with_policy,
-)
 from bijux_canon_index.core.errors import (
     InvariantError,
     ValidationError,
     mark_retryable,
 )
+from bijux_canon_index.core.failures import (
+    FailureKind,
+    classify_failure,
+    retry_with_policy,
+)
+import pytest
 
 
 def test_invariant_is_terminal():

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
+from bijux_canon_index.application.engine import VectorExecutionEngine
+from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.infra.embeddings.cache import embedding_config_hash
 from bijux_canon_index.infra.embeddings.registry import (
     EMBEDDING_PROVIDERS,
@@ -20,10 +22,7 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExplainRequest,
     IngestRequest,
 )
-from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
-from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
-from bijux_canon_index.core.execution_intent import ExecutionIntent
-from bijux_canon_index.application.engine import VectorExecutionEngine
+import pytest
 
 pytest.importorskip("faiss")
 
@@ -87,7 +86,7 @@ def test_production_realism_flow(tmp_path: Path) -> None:
         execution_contract=ExecutionContract.DETERMINISTIC,
         execution_intent=ExecutionIntent.EXACT_VALIDATION,
     )
-    first = engine.execute(request)
+    engine.execute(request)
     restarted = VectorExecutionEngine(state_path=db_path, config=config)
     with restarted._tx() as tx:  # pylint: disable=protected-access
         vectors = list(restarted.stores.vectors.list_vectors())

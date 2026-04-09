@@ -8,7 +8,6 @@ from pathlib import Path
 import sys
 
 import pytest
-
 from tests.e2e._helpers import run_cli, write_spec
 
 
@@ -19,7 +18,9 @@ def test_replay_works_after_corpus_deleted(tmp_path: Path) -> None:
 
     # create a temporary corpus
     corpus = tmp_path / "corpus.jsonl"
-    corpus.write_text('{"doc_id":"d1","text":"deterministic corpus text"}\n', encoding="utf-8")
+    corpus.write_text(
+        '{"doc_id":"d1","text":"deterministic corpus text"}\n', encoding="utf-8"
+    )
 
     spec_path = tmp_path / "spec.json"
     write_spec(

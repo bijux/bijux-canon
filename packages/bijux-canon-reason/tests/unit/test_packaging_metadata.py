@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-import tomllib
 from pathlib import Path
+import tomllib
 
 
 def test_packaging_metadata_hardened() -> None:

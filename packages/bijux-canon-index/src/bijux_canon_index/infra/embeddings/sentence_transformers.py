@@ -11,14 +11,13 @@ except Exception:  # pragma: no cover - optional dependency
     sentence_transformers = None
     SentenceTransformer = None
 
-import numpy as np
-
 from bijux_canon_index.infra.embeddings.cache import embedding_config_hash
 from bijux_canon_index.infra.embeddings.registry import (
     EmbeddingBatch,
     EmbeddingMetadata,
     EmbeddingProvider,
 )
+import numpy as np
 
 
 class SentenceTransformersProvider(EmbeddingProvider):

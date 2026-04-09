@@ -6,11 +6,9 @@ import json
 from pathlib import Path
 from typing import Any
 
+from bijux_canon_index.interfaces.cli import app as cli_app
 import click
 from typer.main import get_command
-
-from bijux_canon_index.interfaces.cli import app as cli_app
-
 
 SNAPSHOT_PATH = Path(__file__).with_name("cli_flags_snapshot.json")
 

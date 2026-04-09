@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
+
 from bijux_canon_index.core.contracts.execution_abi import (
     EXECUTION_ABI_VERSION,
     execution_abi_fingerprint,
     execution_abi_payload,
 )
-
 
 EXPECTED_ABI_FINGERPRINT = (
     "02c5e96fdd875cd6732ed26c0c0eb99dd186e70e3c0e6fd1535339bad3d939c6"

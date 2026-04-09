@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock
 
-import pytest
-
 from bijux_canon_agent.agents.summarizer.strategy_execution import run_summary_strategy
+import pytest
 
 
 class _Logger:

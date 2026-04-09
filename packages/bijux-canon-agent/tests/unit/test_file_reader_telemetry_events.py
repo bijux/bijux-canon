@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from unittest.mock import Mock
 
-import pytest
-
 from bijux_canon_agent.agents.file_reader.telemetry_events import (
     emit_cache_key_metric,
     flush_agent_logs,
     get_agent_telemetry,
     reset_agent_telemetry,
 )
+import pytest
 
 
 def test_emit_cache_key_metric_records_generation() -> None:

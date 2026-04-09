@@ -3,13 +3,12 @@
 
 from __future__ import annotations
 
-import json
-import sqlite3
 from dataclasses import asdict
+import json
 from pathlib import Path
+import sqlite3
 from typing import Any
 
-from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
@@ -47,6 +46,7 @@ from bijux_canon_runtime.ontology.public import (
     EventType,
     ReplayAcceptability,
 )
+from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
 
 
 class SqliteMigrator:

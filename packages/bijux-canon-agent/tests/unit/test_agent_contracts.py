@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import math
 
-from pydantic import ValidationError
-import pytest
-
 from bijux_canon_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
+from pydantic import ValidationError
+import pytest
 
 
 def make_logger(tmp_path):

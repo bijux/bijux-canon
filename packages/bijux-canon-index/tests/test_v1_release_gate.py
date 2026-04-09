@@ -3,13 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
-import os
-import sys
-import subprocess
-from pathlib import Path
 
-import pytest
-from fastapi.encoders import jsonable_encoder
+import os
+from pathlib import Path
+import subprocess
+import sys
 
 from bijux_canon_index.api.v1.app import build_app
 from bijux_canon_index.core.canon import CANON_VERSION, canon
@@ -18,6 +16,8 @@ from bijux_canon_index.core.identity.ids import fingerprint
 from bijux_canon_index.core.invariants import ALLOWED_METRICS
 from bijux_canon_index.core.types import ExecutionArtifact
 from bijux_canon_index.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
+from fastapi.encoders import jsonable_encoder
+import pytest
 from tests.e2e.api_smoke.test_openapi_freeze import EXPECTED_OPENAPI_FINGERPRINT
 from tests.e2e.cli_workflows.test_cli_contract_freeze import (
     CLI_HELP,

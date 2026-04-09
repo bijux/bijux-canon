@@ -3,11 +3,10 @@
 
 from __future__ import annotations
 
-import pytest
-
-from bijux_canon_runtime.runtime.execution.event_causality import event_causality_tag
 from bijux_canon_runtime.ontology import CausalityTag
 from bijux_canon_runtime.ontology.public import EventType
+from bijux_canon_runtime.runtime.execution.event_causality import event_causality_tag
+import pytest
 
 pytestmark = pytest.mark.unit
 

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 import bijux_canon_agent.traces.schema_versioning as schema_versioning
 from bijux_canon_agent.traces.schema_versioning import (
     TRACE_SCHEMA_VERSION,
@@ -10,6 +8,7 @@ from bijux_canon_agent.traces.schema_versioning import (
     upgrade_trace,
     validate_trace_payload,
 )
+import pytest
 
 
 def test_upgrade_trace_adds_schema_version() -> None:

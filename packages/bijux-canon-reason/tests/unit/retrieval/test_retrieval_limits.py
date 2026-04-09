@@ -4,16 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from bijux_canon_reason.retrieval.chunked_bm25 import ChunkedBM25Index
 from bijux_canon_reason.retrieval.corpus import CorpusDoc, load_corpus_jsonl_stream
+import pytest
 
 
 def test_load_corpus_respects_max_docs(tmp_path: Path) -> None:
     corpus = tmp_path / "c.jsonl"
     corpus.write_text(
-        '\n'.join(
+        "\n".join(
             [
                 '{"doc_id":"d1","text":"a"}',
                 '{"doc_id":"d2","text":"b"}',

@@ -1,23 +1,22 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
-import pytest
 
+from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.contracts.invariants import (
     assert_invariants,
     invariant_execution_contract_match,
     invariant_provenance_required,
-    invariant_randomness_required,
 )
-from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
+from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
-from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.types import (
     ExecutionArtifact,
     ExecutionBudget,
     ExecutionRequest,
 )
+import pytest
 
 
 @pytest.fixture()

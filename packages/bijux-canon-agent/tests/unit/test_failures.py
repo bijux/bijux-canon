@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import ValidationError
-import pytest
-
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import FailureMode
 from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
+from pydantic import ValidationError
+import pytest
 
 
 class MalformedAgent(BaseAgent):

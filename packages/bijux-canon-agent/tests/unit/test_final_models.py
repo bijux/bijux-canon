@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
-
 from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.pipeline.results.decision import DecisionArtifact
 from bijux_canon_agent.pipeline.results.failure import FailureArtifact
 from bijux_canon_agent.pipeline.results.outcome import PipelineResult
+import pytest
 
 
 def _assert_cannot_subclass(cls: type[Any]) -> None:

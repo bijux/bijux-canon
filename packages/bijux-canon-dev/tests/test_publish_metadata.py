@@ -208,8 +208,8 @@ def test_workspace_packages_use_shared_repository_release_tags() -> None:
                 f"{package_name}: git_describe_command={describe_command!r}"
             )
 
-    assert not mismatches, (
-        "workspace release tag configuration failed:\n" + "\n".join(mismatches)
+    assert not mismatches, "workspace release tag configuration failed:\n" + "\n".join(
+        mismatches
     )
 
 

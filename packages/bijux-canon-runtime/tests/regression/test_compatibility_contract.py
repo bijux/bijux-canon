@@ -3,13 +3,12 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_runtime.contracts.compatibility_contract import (
     allowed_to_evolve,
     breaks_determinism,
     breaks_replay,
 )
+import pytest
 
 pytestmark = pytest.mark.regression
 

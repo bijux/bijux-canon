@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-
 from bijux_canon_reason.core.types import (
     Claim,
     ClaimEmittedEvent,
@@ -64,7 +63,9 @@ def test_verifier_fails_on_hash_mismatch(tmp_path: Path) -> None:
         ],
     )
     events = [
-        StepStartedEvent(idx=0, kind=TraceEventKind.step_started, step_id=plan.nodes[0].id),
+        StepStartedEvent(
+            idx=0, kind=TraceEventKind.step_started, step_id=plan.nodes[0].id
+        ),
         EvidenceRegisteredEvent(
             idx=1,
             kind=TraceEventKind.evidence_registered,

@@ -7,10 +7,10 @@ import pytest
 np = pytest.importorskip("numpy")
 pytest.importorskip("faiss")
 
-from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
-
 
 def test_faiss_large_ingest_and_query(tmp_path) -> None:
+    from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
+
     dimension = 16
     vector_count = 100_000
     query_count = 1_000

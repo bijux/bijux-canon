@@ -4,9 +4,6 @@ import os
 from typing import Any
 from urllib import error as urllib_error
 
-import pytest
-import requests
-
 from bijux_canon_agent.llm.adapter_factory import build_adapter
 from bijux_canon_agent.llm.llm_adapter import (
     AdapterConfig,
@@ -18,6 +15,8 @@ from bijux_canon_agent.pipeline.results.failure import (
     FailureCategory,
     FailureClass,
 )
+import pytest
+import requests
 
 SKIP_DOTENV_ENV = "BIJUX_AGENT_SKIP_DOTENV"
 

@@ -2,11 +2,11 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+import json
+
 # SPDX-FileCopyrightText: © 2025 Bijan Mousavi <bijan@bijux.io>
 # SPDX-License-Identifier: Apache-2.0
-
 from pathlib import Path
-import json
 import subprocess
 import sys
 

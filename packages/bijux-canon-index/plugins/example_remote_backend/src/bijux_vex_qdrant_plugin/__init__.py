@@ -22,9 +22,7 @@ def register(registry) -> None:
             consistency="eventual",
             notes="Example external-style plugin wrapping Qdrant adapter.",
         ),
-        factory=lambda uri, options: QdrantVectorStoreAdapter(
-            uri=uri, options=options
-        ),
+        factory=lambda uri, options: QdrantVectorStoreAdapter(uri=uri, options=options),
         contract=PluginContract(
             determinism="model_dependent",
             randomness_sources=("remote_latency",),

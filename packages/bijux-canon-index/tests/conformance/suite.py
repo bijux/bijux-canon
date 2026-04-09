@@ -4,6 +4,7 @@
 # Copyright © 2026 Bijan Mousavi
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
+
 from typing import Callable, Iterable, NamedTuple
 
 from bijux_canon_index.contracts.authz import Authz

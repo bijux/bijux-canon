@@ -45,9 +45,7 @@ def configure_item_store(artifacts_dir: Path) -> Path:
             )
             """
         )
-        conn.execute(
-            "UPDATE items SET description = '' WHERE description IS NULL"
-        )
+        conn.execute("UPDATE items SET description = '' WHERE description IS NULL")
         conn.commit()
     return db_path
 

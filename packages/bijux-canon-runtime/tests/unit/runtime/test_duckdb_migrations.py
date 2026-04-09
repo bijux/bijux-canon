@@ -5,9 +5,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import duckdb
-import pytest
-
 from bijux_canon_runtime.observability.storage.execution_store import (
     MIGRATIONS_DIR,
     SCHEMA_CONTRACT_PATH,
@@ -15,6 +12,8 @@ from bijux_canon_runtime.observability.storage.execution_store import (
     SCHEMA_VERSION,
     DuckDBExecutionWriteStore,
 )
+import duckdb
+import pytest
 
 pytestmark = pytest.mark.unit
 
@@ -37,9 +36,7 @@ def test_duckdb_migrations_apply(tmp_path: Path) -> None:
         )
     )
     expected_slices = DuckDBExecutionWriteStore._hash_payload(
-        (MIGRATIONS_DIR / "003_entropy_budget_slices.sql").read_text(
-            encoding="utf-8"
-        )
+        (MIGRATIONS_DIR / "003_entropy_budget_slices.sql").read_text(encoding="utf-8")
     )
     assert rows[0][1] == expected_init
     assert rows[1][1] == expected_update
