@@ -13,6 +13,7 @@ include $(ROOT_MAKEFILE_DIR)/bijux-py/repository-root.mk
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root-package-dispatch.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root-docs.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/repository-config-layout.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository-make-layout.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-py/shared-bijux-py.mk
 
@@ -30,4 +31,5 @@ all: ## Run the repository test, lint, quality, security, docs, api, build, and 
 root-check-env: ## Create or refresh the shared root check environment
 clean-root-artifacts: ## Remove stray root-level caches outside artifacts
 check-shared-bijux-py: ## Verify shared bijux-py make modules match across sibling repositories
+check-config-layout: ## Validate the repository config tree shape and required tool configs
 check-make-layout: ## Validate the repository make tree shape and required entrypoints
