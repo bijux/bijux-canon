@@ -13,6 +13,7 @@ from bijux_canon_reason.core.models.base import JsonValue, StableModel
 
 class VerificationSeverity(StrEnum):
     """Enumeration of verification severity."""
+
     info = "info"
     warning = "warning"
     error = "error"
@@ -20,6 +21,7 @@ class VerificationSeverity(StrEnum):
 
 class VerificationPolicyMode(StrEnum):
     """Enumeration of verification policy mode."""
+
     strict = "strict"
     audit = "audit"
     permissive = "permissive"
@@ -27,6 +29,7 @@ class VerificationPolicyMode(StrEnum):
 
 class VerificationFailure(StableModel):
     """Raised when verification failure."""
+
     severity: VerificationSeverity
     message: str
     invariant_id: str | None = None
@@ -41,6 +44,7 @@ class VerificationFailure(StableModel):
 
 class VerificationCheck(StableModel):
     """Represents verification check."""
+
     name: str
     passed: bool
     details: str | None = None
@@ -49,6 +53,7 @@ class VerificationCheck(StableModel):
 
 class VerificationReport(StableModel):
     """Represents verification report."""
+
     id: str | None = None
     checks: list[VerificationCheck] = Field(default_factory=list)
     failures: list[VerificationFailure] = Field(default_factory=list)
@@ -81,6 +86,7 @@ class VerificationReport(StableModel):
 
 class ReplayResult(StableModel):
     """Represents replay result."""
+
     original_trace_fingerprint: str
     replayed_trace_fingerprint: str
     diff_summary: dict[str, JsonValue] = Field(default_factory=dict)

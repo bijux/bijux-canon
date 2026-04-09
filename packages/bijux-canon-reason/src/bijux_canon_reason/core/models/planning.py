@@ -14,6 +14,7 @@ from bijux_canon_reason.core.models.base import JsonValue, StableModel
 
 class ProblemSpec(StableModel):
     """Represents problem spec."""
+
     id: str = ""
     description: str
     constraints: dict[str, object] = Field(default_factory=dict)
@@ -61,12 +62,14 @@ StepKind = Literal["understand", "gather", "derive", "verify", "finalize"]
 
 class ToolRequest(StableModel):
     """Represents tool request."""
+
     tool_name: str
     arguments: dict[str, JsonValue] = Field(default_factory=dict)
 
 
 class StepSpec(StableModel):
     """Represents step spec."""
+
     kind: StepKind
     notes: str = ""
     tool_requests: list[ToolRequest] = Field(default_factory=list)
@@ -74,6 +77,7 @@ class StepSpec(StableModel):
 
 class PlanNode(StableModel):
     """Represents plan node."""
+
     id: str = ""
     kind: StepKind
     dependencies: list[str] = Field(default_factory=list)
@@ -111,6 +115,7 @@ class PlanNode(StableModel):
 
 class Plan(StableModel):
     """Represents plan."""
+
     id: str = ""
     problem: str = ""
     spec_id: str

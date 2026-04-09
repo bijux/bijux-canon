@@ -13,6 +13,7 @@ JsonValue = PydanticJsonValue
 class StableModel(BaseModel):
     # validate_default enforces validators even for generated defaults
     """Represents stable model."""
+
     model_config = ConfigDict(
         frozen=True, extra="forbid", validate_default=True, populate_by_name=True
     )

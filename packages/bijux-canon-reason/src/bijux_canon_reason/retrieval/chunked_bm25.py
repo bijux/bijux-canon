@@ -36,6 +36,7 @@ def _sha256_path(p: Path) -> str:
 @dataclass(frozen=True)
 class ChunkedBM25Index:
     """Represents chunked BM25 index."""
+
     corpus_sha256: str
     chunk_chars: int
     overlap_chars: int

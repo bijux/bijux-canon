@@ -33,6 +33,7 @@ from bijux_canon_reason.execution.trace_metadata import build_trace_result
 @dataclass(frozen=True)
 class ExecutionPolicy:
     """Represents execution policy."""
+
     fail_fast: bool = True
     min_supports_per_claim: int = 2
 
@@ -40,6 +41,7 @@ class ExecutionPolicy:
 @dataclass(frozen=True)
 class ExecutionResult:
     """Represents execution result."""
+
     trace: Trace
 
     def model_dump(self, mode: str = "json") -> dict[str, object]:
@@ -50,6 +52,7 @@ class ExecutionResult:
 @dataclass
 class _EventLog:
     """Represents event log."""
+
     adapter: TypeAdapter[TraceEvent]
     events: list[TraceEvent]
     next_idx: int = 0

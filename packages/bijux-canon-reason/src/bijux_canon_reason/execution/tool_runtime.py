@@ -30,6 +30,7 @@ from bijux_canon_reason.retrieval.corpus import CorpusDoc, load_corpus_jsonl
 
 class Tool(Protocol):
     """Represents tool."""
+
     def invoke(self, *, arguments: dict[str, JsonValue], seed: int) -> JsonValue:
         """Invoke the tool with the provided arguments."""
 
@@ -39,6 +40,7 @@ class Tool(Protocol):
 @dataclass(frozen=True)
 class ToolRegistry:
     """Represents tool registry."""
+
     tools: Mapping[str, Tool]
 
     def describe(self) -> list[ToolDescriptor]:
@@ -86,6 +88,7 @@ class FrozenToolRegistry:
 @dataclass(frozen=True)
 class FakeTool:
     """Represents fake tool."""
+
     name: str
     version: str = "0.0.0"
 
@@ -123,6 +126,7 @@ class FakeTool:
 @dataclass(frozen=True)
 class _ProvenancePaths:
     """Represents provenance paths."""
+
     root: Path
     corpus_path: Path
     index_path: Path

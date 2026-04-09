@@ -23,6 +23,7 @@ from bijux_canon_reason.api.v1.openapi_models import (
 
 class ItemCreate(BaseModel):
     """Represents item create."""
+
     model_config = {"extra": "allow"}
     name: str | None = None
     description: str | None = None
@@ -30,6 +31,7 @@ class ItemCreate(BaseModel):
 
 class ItemUpdate(BaseModel):
     """Represents item update."""
+
     model_config = {"extra": "allow"}
     name: str | None = None
     description: str | None = None

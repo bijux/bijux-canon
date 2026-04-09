@@ -20,6 +20,7 @@ from bijux_canon_reason.verification.types import Severity
 @dataclass(frozen=True)
 class EvalResult:
     """Represents eval result."""
+
     suite: str
     total: int
     passed: int
@@ -40,6 +41,7 @@ class EvalResult:
 @dataclass(frozen=True)
 class EvalCaseMetrics:
     """Represents eval case metrics."""
+
     run_dir: str
     spec_path: str
     evidence_count: int
@@ -80,6 +82,7 @@ class EvalCaseMetrics:
 @dataclass(frozen=True)
 class EvalSummaryMetrics:
     """Represents eval summary metrics."""
+
     recall_at_k: float
     mrr: float
     alignment_rate: float

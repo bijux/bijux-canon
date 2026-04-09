@@ -16,6 +16,7 @@ from bijux_canon_reason.core.models.claims import Claim, EvidenceRef
 
 class ToolDescriptor(StableModel):
     """Represents tool descriptor."""
+
     name: str
     version: str
     config_fingerprint: str
@@ -23,6 +24,7 @@ class ToolDescriptor(StableModel):
 
 class RuntimeDescriptor(StableModel):
     """Represents runtime descriptor."""
+
     kind: str
     mode: Literal["live", "frozen"]
     tools: list[ToolDescriptor]
@@ -30,6 +32,7 @@ class RuntimeDescriptor(StableModel):
 
 class ToolCall(StableModel):
     """Represents tool call."""
+
     id: str = ""
     tool_name: str
     arguments: dict[str, JsonValue] = Field(default_factory=dict)
@@ -59,6 +62,7 @@ class ToolCall(StableModel):
 
 class ToolResult(StableModel):
     """Represents tool result."""
+
     call_id: str
     success: bool
     result: JsonValue | None = None
@@ -80,6 +84,7 @@ class ToolResult(StableModel):
 
 class UnderstandOutput(StableModel):
     """Represents understand output."""
+
     type: Literal["understand"] = Field(default="understand", alias="kind")
     normalized_question: str
     assumptions: list[str] = Field(default_factory=list)
@@ -88,6 +93,7 @@ class UnderstandOutput(StableModel):
 
 class GatherOutput(StableModel):
     """Represents gather output."""
+
     type: Literal["gather"] = Field(default="gather", alias="kind")
     evidence_ids: list[str] = Field(default_factory=list)
     retrieval_queries: list[str] = Field(default_factory=list)
@@ -108,6 +114,7 @@ class GatherOutput(StableModel):
 
 class DeriveOutput(StableModel):
     """Represents derive output."""
+
     type: Literal["derive"] = Field(default="derive", alias="kind")
     claim_ids: list[str] = Field(default_factory=list)
 
@@ -126,6 +133,7 @@ class DeriveOutput(StableModel):
 
 class VerifyOutput(StableModel):
     """Represents verify output."""
+
     type: Literal["verify"] = Field(default="verify", alias="kind")
     validated_claim_ids: list[str] = Field(default_factory=list)
     rejected_claim_ids: list[str] = Field(default_factory=list)
@@ -146,6 +154,7 @@ class VerifyOutput(StableModel):
 
 class FinalizeOutput(StableModel):
     """Represents finalize output."""
+
     type: Literal["finalize"] = Field(default="finalize", alias="kind")
     final_claim_ids: list[str] = Field(default_factory=list)
     final_answer: str | None = None
@@ -154,6 +163,7 @@ class FinalizeOutput(StableModel):
 
 class InsufficientEvidenceOutput(StableModel):
     """Represents insufficient evidence output."""
+
     type: Literal["insufficient_evidence"] = Field(
         default="insufficient_evidence",
         alias="kind",
@@ -176,6 +186,7 @@ StepOutput = Annotated[
 
 class TraceEventKind(StrEnum):
     """Enumeration of trace event kind."""
+
     step_started = "step_started"
     step_finished = "step_finished"
     tool_called = "tool_called"
@@ -186,6 +197,7 @@ class TraceEventKind(StrEnum):
 
 class StepStartedEvent(StableModel):
     """Represents step started event."""
+
     kind: Literal[TraceEventKind.step_started] = TraceEventKind.step_started
     step_id: str = Field(min_length=1)
     idx: int | None = None
@@ -216,6 +228,7 @@ class StepStartedEvent(StableModel):
 
 class StepFinishedEvent(StableModel):
     """Represents step finished event."""
+
     kind: Literal[TraceEventKind.step_finished] = TraceEventKind.step_finished
     step_id: str
     output: StepOutput
@@ -224,6 +237,7 @@ class StepFinishedEvent(StableModel):
 
 class ToolCalledEvent(StableModel):
     """Represents tool called event."""
+
     kind: Literal[TraceEventKind.tool_called] = TraceEventKind.tool_called
     step_id: str = Field(min_length=1)
     call: ToolCall
@@ -257,6 +271,7 @@ class ToolCalledEvent(StableModel):
 
 class ToolReturnedEvent(StableModel):
     """Represents tool returned event."""
+
     kind: Literal[TraceEventKind.tool_returned] = TraceEventKind.tool_returned
     step_id: str = Field(min_length=1)
     result: ToolResult
@@ -290,6 +305,7 @@ class ToolReturnedEvent(StableModel):
 
 class EvidenceRegisteredEvent(StableModel):
     """Represents evidence registered event."""
+
     kind: Literal[TraceEventKind.evidence_registered] = (
         TraceEventKind.evidence_registered
     )
@@ -300,6 +316,7 @@ class EvidenceRegisteredEvent(StableModel):
 
 class ClaimEmittedEvent(StableModel):
     """Represents claim emitted event."""
+
     kind: Literal[TraceEventKind.claim_emitted] = TraceEventKind.claim_emitted
     step_id: str = Field(default="")
     claim: Claim
@@ -319,6 +336,7 @@ TraceEvent = Annotated[
 
 class Trace(StableModel):
     """Represents trace."""
+
     id: str = ""
     runtime_protocol_version: int = 1
     schema_version: int = 1

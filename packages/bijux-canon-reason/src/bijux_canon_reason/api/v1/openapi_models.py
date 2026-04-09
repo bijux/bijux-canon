@@ -9,16 +9,19 @@ from pydantic import BaseModel, Field
 
 class HealthResponse(BaseModel):
     """Represents health response."""
+
     status: str = Field(description="Liveness indicator returned by the API.")
 
 
 class ErrorDetail(BaseModel):
     """Represents error detail."""
+
     detail: str = Field(description="Human-readable explanation for the API failure.")
 
 
 class ItemResponse(BaseModel):
     """Represents item response."""
+
     id: int = Field(ge=1, description="Stable item identifier.")
     name: str = Field(description="Reader-facing item name.")
     description: str = Field(description="Free-form item description.")
@@ -26,6 +29,7 @@ class ItemResponse(BaseModel):
 
 class ItemListResponse(BaseModel):
     """Represents item list response."""
+
     items: list[ItemResponse] = Field(
         description="Ordered page of active items returned by the API."
     )

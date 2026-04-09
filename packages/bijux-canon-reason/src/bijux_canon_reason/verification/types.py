@@ -12,11 +12,13 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class VModel(BaseModel):
     """Represents vmodel."""
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
 
 class Severity(StrEnum):
     """Enumeration of severity."""
+
     error = "error"
     warning = "warning"
     info = "info"
@@ -24,6 +26,7 @@ class Severity(StrEnum):
 
 class CheckResult(VModel):
     """Represents check result."""
+
     name: str
     passed: bool
     severity: Severity = Severity.error

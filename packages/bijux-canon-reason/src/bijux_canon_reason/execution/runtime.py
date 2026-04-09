@@ -25,6 +25,7 @@ from bijux_canon_reason.execution.tool_runtime import (
 
 class ToolExecutor(Protocol):
     """Represents tool executor."""
+
     def describe(self) -> list[ToolDescriptor]:
         """Describe the available tools."""
 
@@ -38,6 +39,7 @@ class ToolExecutor(Protocol):
 
 class ExecutionRuntime(Protocol):
     """Represents execution runtime."""
+
     seed: int
     tools: ToolExecutor
     runtime_kind: str
@@ -54,6 +56,7 @@ class ExecutionRuntime(Protocol):
 @dataclass(frozen=True)
 class Runtime:
     """Represents runtime."""
+
     seed: int
     tools: ToolRegistry | FrozenToolRegistry
     runtime_kind: str

@@ -27,6 +27,7 @@ INV_TLK_001 = "INV-TLK-001"
 @dataclass(frozen=True)
 class _TraceStructure:
     """Represents trace structure."""
+
     claim_ids: set[str]
     evidence_ids: set[str]
     tool_call_ids: set[str]

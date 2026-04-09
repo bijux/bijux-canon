@@ -24,6 +24,7 @@ from bijux_canon_reason.verification.verifier import verify_trace
 @dataclass(frozen=True)
 class RunWorkflowResult:
     """Represents run workflow result."""
+
     spec: ProblemSpec
     plan: Plan
     trace: Trace

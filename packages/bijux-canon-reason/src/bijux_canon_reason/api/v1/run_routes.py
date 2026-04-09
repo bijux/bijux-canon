@@ -32,6 +32,7 @@ JsonDocument: TypeAlias = (
 
 class RunCreateRequest(BaseModel):
     """Represents run create request."""
+
     spec: ProblemSpec
     preset: str = Field(default="default")
     seed: int = Field(default=0, ge=0)
@@ -39,6 +40,7 @@ class RunCreateRequest(BaseModel):
 
 class RunCreateResponse(BaseModel):
     """Represents run create response."""
+
     run_id: str
     run_dir: str
     trace_id: str
@@ -47,6 +49,7 @@ class RunCreateResponse(BaseModel):
 
 class RunReplayResponse(BaseModel):
     """Represents run replay response."""
+
     original_trace_fingerprint: str
     replayed_trace_fingerprint: str
     diff_summary: dict[str, object]

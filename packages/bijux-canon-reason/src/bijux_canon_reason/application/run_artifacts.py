@@ -60,6 +60,7 @@ def _dir_size(root: Path) -> int:
 @dataclass(frozen=True)
 class RunInputs:
     """Represents run inputs."""
+
     spec: ProblemSpec
     preset: str
     seed: int
@@ -68,6 +69,7 @@ class RunInputs:
 @dataclass(frozen=True)
 class RunArtifacts:
     """Represents run artifacts."""
+
     run_id: str
     run_dir: Path
 
@@ -88,6 +90,7 @@ class RunArtifacts:
 @dataclass(frozen=True)
 class RunRuntimeConfig:
     """Represents run runtime config."""
+
     needs_retrieval: bool
     corpus_path: Path | None
     chunk_chars: int

@@ -100,6 +100,7 @@ def _cycle_errors(plan: Plan, nodes_by_id: dict[str, object]) -> list[str]:
 
 class _TraceValidationState:
     """Represents trace validation state."""
+
     def __init__(self, *, plan_nodes: set[str]) -> None:
         """Initialize the instance."""
         self.plan_nodes = plan_nodes

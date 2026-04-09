@@ -16,6 +16,7 @@ from bijux_canon_reason.execution.runtime import ExecutionRuntime
 @dataclass(frozen=True)
 class RetrievedEvidenceRecord:
     """Represents retrieved evidence record."""
+
     reference: EvidenceRef
     content: bytes
 
@@ -23,6 +24,7 @@ class RetrievedEvidenceRecord:
 @dataclass(frozen=True)
 class ToolDispatchResult:
     """Represents tool dispatch result."""
+
     retrieval_provenance: dict[str, JsonValue] = field(default_factory=dict)
     evidences: list[RetrievedEvidenceRecord] = field(default_factory=list)
     failures: list[ToolResult] = field(default_factory=list)

@@ -18,12 +18,14 @@ from bijux_canon_reason.core.types import (
 @dataclass(frozen=True)
 class RecordedCall:
     """Represents recorded call."""
+
     call_id: str
     result: ToolResult
 
 
 class ReplayToolRegistry:
     """Represents replay tool registry."""
+
     def __init__(self, recordings: Mapping[str, RecordedCall]):
         """Initialize the instance."""
         self.recordings = recordings
@@ -41,6 +43,7 @@ class ReplayToolRegistry:
 @dataclass(frozen=True)
 class ReplayRuntime:
     """Represents replay runtime."""
+
     recordings: Mapping[str, RecordedCall]
     seed: int
     runtime_kind: str = "ReplayRuntime"

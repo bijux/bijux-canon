@@ -13,6 +13,7 @@ from bijux_canon_reason.core.types import Plan, Trace
 @dataclass(frozen=True)
 class VerificationContext:
     """Represents verification context."""
+
     trace: Trace
     plan: Plan
     artifacts_dir: Path | None

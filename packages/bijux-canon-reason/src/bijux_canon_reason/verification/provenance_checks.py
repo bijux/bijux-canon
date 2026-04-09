@@ -32,6 +32,7 @@ EVIDENCE_MARKER_RE = re.compile(
 @dataclass(frozen=True)
 class _ChunkManifest:
     """Represents chunk manifest."""
+
     spans: dict[str, tuple[int, int]]
     hashes: dict[str, str]
 
@@ -39,6 +40,7 @@ class _ChunkManifest:
 @dataclass(frozen=True)
 class _EvidenceArtifact:
     """Represents evidence artifact."""
+
     bytes_: bytes
     span: tuple[int, int]
 

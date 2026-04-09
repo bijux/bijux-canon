@@ -16,6 +16,7 @@ import hashlib
 @dataclass(frozen=True)
 class Chunk:
     """Represents chunk."""
+
     doc_id: str
     doc_sha256: str
     chunk_id: str

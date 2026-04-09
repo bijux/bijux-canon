@@ -29,6 +29,7 @@ def tokenize(text: str) -> list[str]:
 @dataclass(frozen=True)
 class BM25Index:
     """Represents BM25 index."""
+
     docs: tuple[CorpusDoc, ...]
     doc_tokens: tuple[tuple[str, ...], ...]
     doc_tf: tuple[Counter[str], ...]

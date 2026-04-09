@@ -17,6 +17,7 @@ from bijux_canon_reason.core.models.base import JsonValue, StableModel
 
 class SupportKind(StrEnum):
     """Enumeration of support kind."""
+
     claim = "claim"
     evidence = "evidence"
     tool_call = "tool_call"
@@ -53,6 +54,7 @@ class SupportRef(StableModel):
 
 class ClaimStatus(StrEnum):
     """Enumeration of claim status."""
+
     proposed = "proposed"
     validated = "validated"
     rejected = "rejected"
@@ -60,6 +62,7 @@ class ClaimStatus(StrEnum):
 
 class ClaimType(StrEnum):
     """Enumeration of claim type."""
+
     derived = "derived"
     observed = "observed"
     assumed = "assumed"
@@ -67,6 +70,7 @@ class ClaimType(StrEnum):
 
 class Claim(StableModel):
     """Represents claim."""
+
     id: str = ""
     statement: str
     status: ClaimStatus = ClaimStatus.proposed
@@ -140,6 +144,7 @@ class Claim(StableModel):
 
 class EvidenceRef(StableModel):
     """Represents evidence ref."""
+
     id: str = ""
     uri: str
     sha256: str

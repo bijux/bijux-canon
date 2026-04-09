@@ -35,6 +35,7 @@ from bijux_canon_reason.traces.diff import diff_traces
 @dataclass(frozen=True)
 class ReplayPaths:
     """Represents replay paths."""
+
     trace_path: Path
     run_dir: Path
     spec_path: Path
@@ -50,6 +51,7 @@ class ReplayPaths:
 @dataclass(frozen=True)
 class ReplayInputs:
     """Represents replay inputs."""
+
     paths: ReplayPaths
     preset: str
     seed: int

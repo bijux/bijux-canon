@@ -133,6 +133,7 @@ def _build_request_guard(
     rate_limit_state: dict[str, object],
 ) -> RequestGuard:
     """Build request guard."""
+
     def _guard(request: Request) -> None:
         """Handle guard."""
         guard_request(
@@ -178,6 +179,7 @@ def _install_validation_handler(app: FastAPI) -> None:
 
 def _install_openapi_schema(app: FastAPI) -> None:
     """Install OpenAPI schema."""
+
     def _openapi() -> dict[str, object]:
         """Handle OpenAPI."""
         if app.openapi_schema is not None:

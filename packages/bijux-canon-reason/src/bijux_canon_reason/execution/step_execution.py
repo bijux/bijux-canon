@@ -31,6 +31,7 @@ from bijux_canon_reason.reasoning.extractive import Derivation
 @dataclass
 class ExecutionState:
     """Represents execution state."""
+
     claims: dict[str, Claim] = field(default_factory=dict)
     evidence_ids: list[str] = field(default_factory=list)
     evidence_bytes: dict[str, bytes] = field(default_factory=dict)
