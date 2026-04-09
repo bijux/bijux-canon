@@ -1,3 +1,5 @@
+"""Run deptry with repository-owned configuration merged into a package scan."""
+
 from __future__ import annotations
 
 import argparse
