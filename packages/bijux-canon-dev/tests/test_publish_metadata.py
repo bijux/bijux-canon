@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 import tomllib
+from typing import Any, cast
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -98,19 +99,22 @@ def _package_pyprojects() -> list[Path]:
     return sorted(PACKAGE_ROOT.glob("*/pyproject.toml"))
 
 
-def _project_table(pyproject_path: Path) -> dict[str, object]:
+def _project_table(pyproject_path: Path) -> dict[str, Any]:
     with pyproject_path.open("rb") as handle:
-        return tomllib.load(handle)["project"]
+        data = tomllib.load(handle)
+    return cast(dict[str, Any], data["project"])
 
 
-def _workspace_metadata() -> dict[str, object]:
+def _workspace_metadata() -> dict[str, Any]:
     with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
-        return tomllib.load(handle)["tool"]["bijux_canon"]
+        data = tomllib.load(handle)
+    return cast(dict[str, Any], data["tool"]["bijux_canon"])
 
 
 def _package_path(package_name: str) -> Path:
     workspace = _workspace_metadata()
-    return REPO_ROOT / workspace["package_dirs"][package_name]
+    package_dirs = cast(dict[str, str], workspace["package_dirs"])
+    return REPO_ROOT / package_dirs[package_name]
 
 
 def _shared_docs_url(package_name: str) -> str:

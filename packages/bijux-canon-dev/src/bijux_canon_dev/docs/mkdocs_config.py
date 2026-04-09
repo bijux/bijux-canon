@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable
 from pathlib import Path
+from typing import cast
 
 
 def _rewrite_watch_path(path_text: str, *, source_root: Path) -> str:
@@ -137,7 +139,8 @@ def main() -> int:
     """Run the command-line entry point."""
     parser = build_parser()
     args = parser.parse_args()
-    return args.func(args)
+    handler = cast(Callable[[argparse.Namespace], int], args.func)
+    return handler(args)
 
 
 if __name__ == "__main__":

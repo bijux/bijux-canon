@@ -6,11 +6,8 @@ import argparse
 from pathlib import Path
 import shutil
 import sys
-
-try:
-    import tomllib
-except ModuleNotFoundError:  # pragma: no cover
-    import tomli as tomllib
+import tomllib
+from typing import Any, cast
 
 from bijux_canon_dev.trusted_process import run_text
 
@@ -27,7 +24,10 @@ def parse_args() -> argparse.Namespace:
 
 def _pyproject_data(pyproject_path: Path) -> dict[str, object]:
     """Handle pyproject data."""
-    return tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
+    data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise SystemExit(f"invalid pyproject table in {pyproject_path}")
+    return cast(dict[str, object], data)
 
 
 def _resolve_hatch_version(pyproject_path: Path) -> str | None:
@@ -46,7 +46,9 @@ def _resolve_hatch_version(pyproject_path: Path) -> str | None:
 
 def _tag_glob(pyproject: dict[str, object], package_name: str) -> str:
     """Handle tag glob."""
-    hatch_version = pyproject.get("tool", {}).get("hatch", {}).get("version", {})
+    tool_table = cast(dict[str, Any], pyproject.get("tool", {}))
+    hatch_table = cast(dict[str, Any], tool_table.get("hatch", {}))
+    hatch_version = cast(dict[str, Any], hatch_table.get("version", {}))
     tag_pattern = hatch_version.get("tag-pattern")
     if isinstance(tag_pattern, str):
         marker = "(?P<version>"
@@ -68,7 +70,7 @@ def _git_executable() -> str:
 def resolve_version(pyproject_path: Path, package_name: str) -> str:
     """Resolve version."""
     pyproject = _pyproject_data(pyproject_path)
-    project = pyproject.get("project", {})
+    project = cast(dict[str, Any], pyproject.get("project", {}))
     version = project.get("version")
     if isinstance(version, str) and version:
         return version

@@ -56,7 +56,7 @@ def _matrix_include(job: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _workflow_call_inputs(workflow: dict[str, Any]) -> dict[str, Any]:
-    on_block = workflow.get("on", workflow.get(True, {}))
+    on_block = workflow.get("on", {})
     if not isinstance(on_block, dict):
         return {}
     workflow_call = on_block.get("workflow_call", {})

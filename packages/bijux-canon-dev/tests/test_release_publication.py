@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tomllib
+from typing import Any, cast
 
 import pytest
 
@@ -19,14 +20,16 @@ from bijux_canon_dev.release.version_resolver import resolve_version
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
-def _workspace_metadata() -> dict[str, object]:
+def _workspace_metadata() -> dict[str, Any]:
     with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
-        return tomllib.load(handle)["tool"]["bijux_canon"]
+        data = tomllib.load(handle)
+    return cast(dict[str, Any], data["tool"]["bijux_canon"])
 
 
 def _package_path(package_name: str) -> Path:
     workspace = _workspace_metadata()
-    return REPO_ROOT / workspace["package_dirs"][package_name]
+    package_dirs = cast(dict[str, str], workspace["package_dirs"])
+    return REPO_ROOT / package_dirs[package_name]
 
 
 @pytest.mark.parametrize(

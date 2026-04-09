@@ -2,24 +2,28 @@ from __future__ import annotations
 
 from pathlib import Path
 import tomllib
+from typing import Any, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BIJUX_CANON_DOCS_URL = "https://bijux.io/bijux-canon/"
 
 
-def _workspace_metadata() -> dict[str, object]:
+def _workspace_metadata() -> dict[str, Any]:
     with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
-        return tomllib.load(handle)["tool"]["bijux_canon"]
+        data = tomllib.load(handle)
+    return cast(dict[str, Any], data["tool"]["bijux_canon"])
 
 
 def _package_path(package_name: str) -> Path:
     workspace = _workspace_metadata()
-    return REPO_ROOT / workspace["package_dirs"][package_name]
+    package_dirs = cast(dict[str, str], workspace["package_dirs"])
+    return REPO_ROOT / package_dirs[package_name]
 
 
-def _package_project(package_name: str) -> dict[str, object]:
+def _package_project(package_name: str) -> dict[str, Any]:
     with (_package_path(package_name) / "pyproject.toml").open("rb") as handle:
-        return tomllib.load(handle)["project"]
+        data = tomllib.load(handle)
+    return cast(dict[str, Any], data["project"])
 
 
 def _public_package_docs_urls() -> dict[str, str]:

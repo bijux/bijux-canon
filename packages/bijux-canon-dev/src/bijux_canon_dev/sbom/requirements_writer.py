@@ -4,13 +4,10 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import tomllib
+from typing import Any, cast
 
 from packaging.requirements import Requirement
-
-try:
-    import tomllib
-except ModuleNotFoundError:  # pragma: no cover
-    import tomli as tomllib
 
 
 def repo_root_for(pyproject_path: Path) -> Path:
@@ -23,9 +20,8 @@ def local_package_map(pyproject_path: Path) -> dict[str, Path]:
     packages_dir = repo_root_for(pyproject_path) / "packages"
     package_map: dict[str, Path] = {}
     for candidate in packages_dir.glob("*/pyproject.toml"):
-        project = tomllib.loads(candidate.read_text(encoding="utf-8")).get(
-            "project", {}
-        )
+        data = tomllib.loads(candidate.read_text(encoding="utf-8"))
+        project = cast(dict[str, Any], cast(dict[str, object], data).get("project", {}))
         name = project.get("name")
         if isinstance(name, str):
             package_map[name] = candidate.parent.resolve()
@@ -66,7 +62,7 @@ def dedupe(items: list[str]) -> list[str]:
 def load_project(pyproject_path: Path) -> dict[str, object]:
     """Load project."""
     data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
-    return data.get("project", {})
+    return cast(dict[str, object], data.get("project", {}))
 
 
 def write_requirements(
@@ -76,9 +72,9 @@ def write_requirements(
     optional_group: str,
 ) -> int:
     """Write requirements."""
-    project = load_project(pyproject_path)
-    dependencies = list(project.get("dependencies", []))
-    optional = project.get("optional-dependencies", {})
+    project = cast(dict[str, Any], load_project(pyproject_path))
+    dependencies = list(cast(list[str], project.get("dependencies", [])))
+    optional = cast(dict[str, list[str]], project.get("optional-dependencies", {}))
     package_map = local_package_map(pyproject_path)
 
     if group == "dev":

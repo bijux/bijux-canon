@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from bijux_canon_dev.docs.mkdocs_config import _rewrite_config
 
 
-def test_rendered_serve_config_rewrites_relative_watch_paths(tmp_path) -> None:
+def test_rendered_serve_config_rewrites_relative_watch_paths(tmp_path: Path) -> None:
     source_root = tmp_path / "repo"
     source_root.mkdir()
     source_config = source_root / "mkdocs.yml"

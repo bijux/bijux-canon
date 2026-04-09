@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from bijux_canon_dev.sbom.requirements_writer import render_local_requirement
 
 
-def test_render_local_requirement_rewrites_workspace_dependency(tmp_path) -> None:
+def test_render_local_requirement_rewrites_workspace_dependency(tmp_path: Path) -> None:
     package_dir = tmp_path / "packages" / "bijux-canon-runtime"
     package_dir.mkdir(parents=True)
 
