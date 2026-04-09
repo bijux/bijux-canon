@@ -64,28 +64,30 @@ import pytest
 PlanHashFactory = Callable[..., PlanHash]
 
 
+def _register_stub(name: str, **attributes: object) -> None:
+    stub = types.ModuleType(name)
+    stub.__dict__.update(attributes)
+    sys.modules[name] = stub
+
+
 def pytest_configure() -> None:
     if "bijux_cli" not in sys.modules:
-        stub = types.ModuleType("bijux_cli")
-        setattr(stub, "__version__", "0.3.3")
-        sys.modules["bijux_cli"] = stub
+        _register_stub("bijux_cli", __version__="0.3.3")
     if "bijux_canon_agent" not in sys.modules:
-        stub = types.ModuleType("bijux_canon_agent")
-        setattr(stub, "__version__", "0.3.0")
-        setattr(stub, "run", lambda **_kwargs: [])
-        sys.modules["bijux_canon_agent"] = stub
+        _register_stub(
+            "bijux_canon_agent",
+            __version__="0.3.0",
+            run=lambda **_kwargs: [],
+        )
     if "bijux_rag" not in sys.modules:
-        stub = types.ModuleType("bijux_rag")
-        setattr(stub, "retrieve", lambda **_kwargs: [])
-        sys.modules["bijux_rag"] = stub
+        _register_stub("bijux_rag", retrieve=lambda **_kwargs: [])
     if "bijux_canon_index" not in sys.modules:
-        stub = types.ModuleType("bijux_canon_index")
-        setattr(stub, "enforce_contract", lambda *_args, **_kwargs: True)
-        sys.modules["bijux_canon_index"] = stub
+        _register_stub(
+            "bijux_canon_index",
+            enforce_contract=lambda *_args, **_kwargs: True,
+        )
     if "bijux_canon_reason" not in sys.modules:
-        stub = types.ModuleType("bijux_canon_reason")
-        setattr(stub, "reason", lambda **_kwargs: None)
-        sys.modules["bijux_canon_reason"] = stub
+        _register_stub("bijux_canon_reason", reason=lambda **_kwargs: None)
 
 
 @pytest.fixture(autouse=True)

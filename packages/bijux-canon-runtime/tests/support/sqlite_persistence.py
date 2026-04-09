@@ -49,8 +49,10 @@ from bijux_canon_runtime.ontology.public import (
     ReplayAcceptability,
     ReplayMode,
 )
-from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
-from bijux_canon_runtime.runtime.artifact_store import ArtifactProducer
+from bijux_canon_runtime.runtime.artifact_store import (
+    ArtifactProducer,
+    ArtifactStore,
+)
 
 
 class SqliteMigrator:

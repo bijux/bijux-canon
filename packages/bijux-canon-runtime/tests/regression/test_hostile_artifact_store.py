@@ -46,6 +46,7 @@ from bijux_canon_runtime.ontology.public import (
 from bijux_canon_runtime.runtime.artifact_store import HostileArtifactStore
 import bijux_rag
 import pytest
+
 from tests.helpers import build_claim_statement
 
 pytestmark = pytest.mark.regression
