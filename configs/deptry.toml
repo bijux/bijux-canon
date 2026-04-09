@@ -1,8 +1,8 @@
 [tool.deptry]
-pep621_dev_dependency_groups = ["dev"]
+optional_dependencies_dev_groups = ["dev"]
 ignore = ["DEP003"]
 extend_exclude = ["docs", "apis", "artifacts", "site"]
-package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-agent" = "bijux_agent", "bijux-canon-runtime" = "bijux_canon_runtime", "bijux-canon-agent" = "bijux_canon_agent", "bijux-canon-ingest" = "bijux_canon_ingest", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "bijux-canon-dev" = "bijux_canon_dev", "bijux-rag" = "bijux_rag", "bijux-rar" = "bijux_rar", "bijux-vex" = "bijux_vex", "faiss-cpu" = "faiss", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
+package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-agent" = "bijux_agent", "bijux-canon-runtime" = "bijux_canon_runtime", "bijux-canon-agent" = "bijux_canon_agent", "bijux-canon-ingest" = "bijux_canon_ingest", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "bijux-canon-dev" = "bijux_canon_dev", "bijux-rag" = "bijux_rag", "bijux-rar" = "bijux_rar", "bijux-vex" = "bijux_vex", "faiss-cpu" = "faiss", "pyfakefs" = "pyfakefs", "pytest-mock" = "pytest_mock", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
 
 [tool.repo_deptry.packages."bijux-canon-runtime"]
 known_first_party = ["bijux_canon_runtime"]
@@ -15,7 +15,7 @@ ignore = ["DEP001", "DEP002", "DEP003"]
 
 [tool.repo_deptry.packages."bijux-canon-ingest"]
 known_first_party = ["bijux_canon_ingest"]
-pep621_dev_dependency_groups = ["dev", "docs"]
+optional_dependencies_dev_groups = ["dev", "docs"]
 per_rule_ignores = { DEP001 = ["dask", "apache_beam"], DEP002 = ["fastapi", "uvicorn", "PyYAML", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "hypothesis", "schemathesis", "ruff", "mypy", "vulture", "deptry", "interrogate", "bandit", "pip-audit", "twine", "prance", "openapi-spec-validator", "types-PyYAML", "build", "mkdocs", "mkdocs-material", "pymdown-extensions", "mkdocs-git-revision-date-localized-plugin", "mkdocs-minify-plugin", "mkdocs-redirects", "mkdocs-include-markdown-plugin", "mkdocstrings", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-section-index", "mkdocs-click", "mkdocs-glightbox"], DEP003 = ["bijux_canon_ingest"] }
 
 [tool.repo_deptry.packages."bijux-canon-dev"]

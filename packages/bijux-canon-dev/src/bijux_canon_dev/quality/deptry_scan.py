@@ -7,6 +7,7 @@ from pathlib import Path
 import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 
 try:
@@ -28,7 +29,7 @@ def parse_args() -> argparse.Namespace:
         help="Path to the package root containing pyproject.toml.",
     )
     parser.add_argument(
-        "--deptry-bin", default="deptry", help="Deptry executable to invoke."
+        "--deptry-bin", default="", help="Deptry executable to invoke."
     )
     parser.add_argument(
         "roots",
@@ -42,7 +43,7 @@ def parse_args() -> argparse.Namespace:
 def resolve_deptry_command(deptry_bin: str) -> list[str]:
     deptry_command = shlex.split(deptry_bin)
     if not deptry_command:
-        raise SystemExit("deptry executable not found: empty command")
+        return [sys.executable, "-m", "deptry"]
 
     deptry_bin_arg = Path(deptry_command[0]).expanduser()
     if deptry_bin_arg.is_absolute() or len(deptry_bin_arg.parts) > 1:
@@ -56,7 +57,9 @@ def resolve_deptry_command(deptry_bin: str) -> list[str]:
     return [resolved_deptry, *deptry_command[1:]]
 
 
-def merge_deptry_config(config_path: Path, package_slug: str) -> dict[str, object]:
+def merge_deptry_config(
+    config_path: Path, package_slug: str, package_pyproject: dict[str, object]
+) -> dict[str, object]:
     root_config = tomllib.loads(config_path.read_text(encoding="utf-8"))
     base_config = root_config.get("tool", {}).get("deptry", {})
     package_configs = (
@@ -76,6 +79,17 @@ def merge_deptry_config(config_path: Path, package_slug: str) -> dict[str, objec
 
     if "known_first_party" not in merged_config:
         merged_config["known_first_party"] = [package_slug.replace("-", "_")]
+    optional_dependencies = (
+        package_pyproject.get("project", {}).get("optional-dependencies", {})
+    )
+    available_groups = set(optional_dependencies)
+    dev_groups = merged_config.get("optional_dependencies_dev_groups")
+    if isinstance(dev_groups, list):
+        filtered_groups = [group for group in dev_groups if group in available_groups]
+        if filtered_groups:
+            merged_config["optional_dependencies_dev_groups"] = filtered_groups
+        else:
+            merged_config.pop("optional_dependencies_dev_groups", None)
     return merged_config
 
 
@@ -121,8 +135,9 @@ def main() -> int:
 
     deptry_command = resolve_deptry_command(args.deptry_bin)
     pyproject_text = pyproject_path.read_text(encoding="utf-8").rstrip()
+    package_pyproject = tomllib.loads(pyproject_text)
     config_text = render_deptry_config(
-        merge_deptry_config(config_path, project_dir.name)
+        merge_deptry_config(config_path, project_dir.name, package_pyproject)
     )
     merged_text = f"{pyproject_text}\n\n{config_text}\n"
 
