@@ -102,7 +102,7 @@
             {% set item_class = item_class ~ " md-tabs__item--active bijux-tabs__item--active" %}
           {% endif %}
           <li class="{{ item_class }}">
-            <a href="{{ bijux_nav.first_page_url(nav_item) }}" class="md-tabs__link bijux-tabs__link bijux-tabs__link--site">
+            <a href="{{ bijux_nav.first_page_url(nav_item) }}" class="md-tabs__link bijux-tabs__link bijux-tabs__link--site" data-bijux-site-target="{{ bijux_nav.first_page_url(nav_item) }}">
               {{ site_label(nav_item.title) }}
             </a>
           </li>
@@ -110,21 +110,24 @@
       </ul>
     </div>
   </nav>
-  {% if active_section.item and active_section.item.children %}
-    <nav class="bijux-detail-tabs" aria-label="{{ active_section.item.title }} sections">
-      <div class="md-grid">
-        <ul class="bijux-tabs__list bijux-tabs__list--detail">
-          {% for child in active_section.item.children %}
-            {% set item_class = "bijux-tabs__item" %}
-            {% if child.active %}
-              {% set item_class = item_class ~ " bijux-tabs__item--active" %}
-            {% endif %}
-            <li class="{{ item_class }}">
-              <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ bijux_nav.detail_label(child) }}</a>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </nav>
-  {% endif %}
+  {% for nav_item in nav %}
+    {% if nav_item.children %}
+      {% set is_hidden = "" if nav_item.active else "hidden" %}
+      <nav class="bijux-detail-tabs" aria-label="{{ nav_item.title }} sections" data-bijux-detail-strip data-bijux-detail-root="{{ bijux_nav.first_page_url(nav_item) }}" {{ is_hidden }}>
+        <div class="md-grid">
+          <ul class="bijux-tabs__list bijux-tabs__list--detail">
+            {% for child in nav_item.children %}
+              {% set item_class = "bijux-tabs__item" %}
+              {% if nav_item == active_section.item and child.active %}
+                {% set item_class = item_class ~ " bijux-tabs__item--active" %}
+              {% endif %}
+              <li class="{{ item_class }}">
+                <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail" data-bijux-detail-target="{{ bijux_nav.first_page_url(child) }}">{{ bijux_nav.detail_label(child) }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </nav>
+    {% endif %}
+  {% endfor %}
 </header>

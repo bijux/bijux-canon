@@ -33,7 +33,7 @@ class _RenderedNavigationParser(HTMLParser):
         self._stack.append((tag, classes))
         depth = len(self._stack)
 
-        if "bijux-detail-tabs" in classes:
+        if "bijux-detail-tabs" in classes and "hidden" not in attr_map:
             self._detail_depth = depth
         if "md-sidebar--primary" in classes:
             self._primary_sidebar_depth = depth
