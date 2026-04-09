@@ -12,9 +12,6 @@ on:
       artifacts_dir:
         required: true
         type: string
-      cache_dependency_path:
-        required: true
-        type: string
       test_python_versions:
         required: false
         type: string
@@ -61,7 +58,7 @@ jobs:
       - uses: astral-sh/setup-uv@v8
         with:
           enable-cache: true
-          cache-dependency-glob: ${{ inputs.cache_dependency_path }}
+          cache-dependency-glob: uv.lock
 
       - name: Install package toolchain
         shell: bash
@@ -108,7 +105,7 @@ jobs:
       - uses: astral-sh/setup-uv@v8
         with:
           enable-cache: true
-          cache-dependency-glob: ${{ inputs.cache_dependency_path }}
+          cache-dependency-glob: uv.lock
 
       - uses: actions/setup-node@v5
         if: ${{ contains(fromJson(inputs.api_toolchain_targets), matrix.target) }}
@@ -157,7 +154,7 @@ jobs:
       - uses: astral-sh/setup-uv@v8
         with:
           enable-cache: true
-          cache-dependency-glob: ${{ inputs.cache_dependency_path }}
+          cache-dependency-glob: uv.lock
 
       - name: Install package toolchain
         shell: bash

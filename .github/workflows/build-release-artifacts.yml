@@ -12,9 +12,6 @@ on:
       artifacts_dir:
         required: true
         type: string
-      cache_dependency_path:
-        required: true
-        type: string
       build_targets:
         required: false
         type: string
@@ -23,10 +20,6 @@ on:
         required: false
         type: string
         default: build
-      upload_paths:
-        required: false
-        type: string
-        default: ""
 
 permissions:
   contents: read
@@ -53,7 +46,7 @@ jobs:
       - uses: astral-sh/setup-uv@v8
         with:
           enable-cache: true
-          cache-dependency-glob: ${{ inputs.cache_dependency_path }}
+          cache-dependency-glob: uv.lock
 
       - name: Install package toolchain
         shell: bash
@@ -92,6 +85,6 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.package_slug }}-release
-          path: ${{ inputs.upload_paths != '' && inputs.upload_paths || format('{0}/{1}/*', env.ARTIFACTS_DIR, inputs.dist_subdir) }}
+          path: ${{ env.ARTIFACTS_DIR }}
           if-no-files-found: ignore
           retention-days: 14

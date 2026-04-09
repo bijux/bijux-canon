@@ -559,12 +559,11 @@ def test_public_release_package_publication_guides_publish_family_badges() -> No
             failures.append(
                 f"{package_name}: pypi.md should advertise the compatibility package family"
             )
-        for ci_slug in ("runtime", "agent", "ingest", "reason", "index"):
-            ci_url = f"https://github.com/bijux/bijux-canon/actions/workflows/ci-bijux-canon-{ci_slug}.yml"
-            if ci_url not in guide:
-                failures.append(
-                    f"{package_name}: pypi.md should advertise {ci_slug} CI coverage"
-                )
+        verify_url = "https://github.com/bijux/bijux-canon/actions/workflows/verify.yml"
+        if verify_url not in guide:
+            failures.append(
+                f"{package_name}: pypi.md should advertise repository verification"
+            )
         if _shared_docs_url("bijux-canon-runtime") not in guide:
             failures.append(
                 f"{package_name}: pypi.md should link shared handbook package docs"

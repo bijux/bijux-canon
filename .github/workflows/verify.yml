@@ -1,0 +1,116 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+      - "apis/**"
+      - "configs/**"
+      - "docs/**"
+      - "makes/**"
+      - "packages/**"
+      - "Makefile"
+      - "mkdocs.shared.yml"
+      - "mkdocs.yml"
+      - "pyproject.toml"
+      - "tox.ini"
+      - "uv.lock"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+      - "apis/**"
+      - "configs/**"
+      - "docs/**"
+      - "makes/**"
+      - "packages/**"
+      - "Makefile"
+      - "mkdocs.shared.yml"
+      - "mkdocs.yml"
+      - "pyproject.toml"
+      - "tox.ini"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository:
+    name: repository-contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - uses: astral-sh/setup-uv@v8
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Verify repository automation contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          make check-shared-bijux-py check-config-layout check-make-layout help
+
+  package:
+    name: ${{ matrix.package_slug }}
+    needs: repository
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package_slug: bijux-canon-runtime
+            package_dir: packages/bijux-canon-runtime
+            artifacts_dir: artifacts/bijux-canon-runtime
+            check_targets: '["quality", "security", "docs", "build", "sbom", "api", "openapi-drift"]'
+            api_toolchain_targets: '["api", "openapi-drift"]'
+            post_test_command: >-
+              set -euo pipefail &&
+              venv_python="${ARTIFACTS_DIR}/venv/bin/python" &&
+              if compgen -G "packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*" > /dev/null; then
+                "${venv_python}" -m coverage report --rcfile configs/coveragerc.ini --data-file "${ARTIFACTS_DIR}/test/.coverage" --include "packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*" --fail-under=65;
+              fi &&
+              if [ -f "packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py" ]; then
+                "${venv_python}" -m coverage report --rcfile configs/coveragerc.ini --data-file "${ARTIFACTS_DIR}/test/.coverage" --include "packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py" --fail-under=60;
+              fi &&
+              if compgen -G "packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*" > /dev/null; then
+                "${venv_python}" -m coverage report --rcfile configs/coveragerc.ini --data-file "${ARTIFACTS_DIR}/test/.coverage" --include "packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*" --fail-under=75;
+              fi
+          - package_slug: bijux-canon-agent
+            package_dir: packages/bijux-canon-agent
+            artifacts_dir: artifacts/bijux-canon-agent
+          - package_slug: bijux-canon-ingest
+            package_dir: packages/bijux-canon-ingest
+            artifacts_dir: artifacts/bijux-canon-ingest
+            test_python_versions: '["3.11", "3.12", "3.13"]'
+          - package_slug: bijux-canon-reason
+            package_dir: packages/bijux-canon-reason
+            artifacts_dir: artifacts/bijux-canon-reason
+          - package_slug: bijux-canon-index
+            package_dir: packages/bijux-canon-index
+            artifacts_dir: artifacts/bijux-canon-index
+          - package_slug: bijux-canon-dev
+            package_dir: packages/bijux-canon-dev
+            artifacts_dir: artifacts/bijux-canon-dev
+            check_targets: '["quality", "security", "build", "sbom"]'
+    uses: ./.github/workflows/ci-package.yml
+    with:
+      package_slug: ${{ matrix.package_slug }}
+      package_dir: ${{ matrix.package_dir }}
+      artifacts_dir: ${{ matrix.artifacts_dir }}
+      test_python_versions: ${{ matrix.test_python_versions || '["3.11"]' }}
+      check_targets: ${{ matrix.check_targets || '["quality", "security", "docs", "api", "build", "sbom"]' }}
+      api_toolchain_targets: ${{ matrix.api_toolchain_targets || '["api"]' }}
+      post_test_command: ${{ matrix.post_test_command || '' }}

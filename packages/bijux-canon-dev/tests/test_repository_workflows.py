@@ -1,96 +1,146 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
-CI_WORKFLOWS = sorted(WORKFLOWS_DIR.glob("ci-*.yml"))
-PUBLISH_WORKFLOWS = sorted(WORKFLOWS_DIR.glob("publish-*.yml"))
+EXPECTED_WORKFLOWS = {
+    "build-release-artifacts.yml",
+    "ci-package.yml",
+    "deploy-docs.yml",
+    "publish.yml",
+    "verify.yml",
+}
+EXPECTED_VERIFY_PACKAGES = {
+    "bijux-canon-runtime",
+    "bijux-canon-agent",
+    "bijux-canon-ingest",
+    "bijux-canon-reason",
+    "bijux-canon-index",
+    "bijux-canon-dev",
+}
+EXPECTED_PUBLISH_PACKAGES = {
+    "bijux-canon-runtime",
+    "bijux-canon-agent",
+    "bijux-canon-ingest",
+    "bijux-canon-reason",
+    "bijux-canon-index",
+    "agentic-flows",
+    "bijux-agent",
+    "bijux-rag",
+    "bijux-rar",
+    "bijux-vex",
+}
 
 
-def _workflow(path: Path) -> dict[str, object]:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+def _workflow(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as handle:
+        data = yaml.safe_load(handle)
+    assert isinstance(data, dict)
+    return data
 
 
-def test_publish_workflows_use_direct_jobs_with_publish_environment() -> None:
-    failures: list[str] = []
-
-    for path in PUBLISH_WORKFLOWS:
-        workflow = _workflow(path)
-        jobs = workflow.get("jobs", {})
-        build_job = jobs.get("build")
-        publish_job = jobs.get("publish")
-
-        if path.name == "publish-package.yml":
-            failures.append(f"{path.name}: reusable publish workflow should not exist")
-            continue
-
-        if not isinstance(build_job, dict):
-            failures.append(f"{path.name}: missing build job")
-
-        if not isinstance(publish_job, dict):
-            failures.append(f"{path.name}: missing publish job")
-            continue
-
-        build_uses = build_job.get("uses") if isinstance(build_job, dict) else None
-        if build_uses != "./.github/workflows/build-release-artifacts.yml":
-            failures.append(
-                f"{path.name}: build job should reuse ./.github/workflows/build-release-artifacts.yml"
-            )
-        if publish_job.get("needs") != "build":
-            failures.append(f"{path.name}: publish job should depend on build")
-        environment = publish_job.get("environment", {})
-        if environment.get("name") != "pypi":
-            failures.append(f"{path.name}: publish job should target environment pypi")
-
-    assert not failures, "publish workflows drifted:\n" + "\n".join(failures)
+def _matrix_include(job: dict[str, Any]) -> list[dict[str, Any]]:
+    strategy = job.get("strategy", {})
+    matrix = strategy.get("matrix", {})
+    include = matrix.get("include", [])
+    return include if isinstance(include, list) else []
 
 
-def test_publish_jobs_keep_trusted_publishing_contract() -> None:
-    failures: list[str] = []
+def _workflow_call_inputs(workflow: dict[str, Any]) -> dict[str, Any]:
+    on_block = workflow.get("on", workflow.get(True, {}))
+    if not isinstance(on_block, dict):
+        return {}
+    workflow_call = on_block.get("workflow_call", {})
+    return workflow_call.get("inputs", {}) if isinstance(workflow_call, dict) else {}
 
-    for path in PUBLISH_WORKFLOWS:
-        workflow = _workflow(path)
-        permissions = workflow.get("permissions", {})
-        jobs = workflow.get("jobs", {})
-        publish_job = jobs.get("publish", {})
-        job_permissions = publish_job.get("permissions", {})
-        steps = publish_job.get("steps", [])
-        publish_step = next(
-            (
-                step
-                for step in steps
-                if isinstance(step, dict)
-                and step.get("uses") == "pypa/gh-action-pypi-publish@release/v1"
-            ),
-            None,
-        )
 
-        if permissions != {"contents": "read"}:
-            failures.append(
-                f"{path.name}: workflow permissions should stay contents: read"
-            )
-        if job_permissions != {"contents": "read"}:
-            failures.append(
-                f"{path.name}: publish job permissions should stay contents: read"
-            )
-        if not isinstance(publish_step, dict):
-            failures.append(
-                f"{path.name}: publish job should still publish via PyPI action"
-            )
-            continue
+def test_workflow_tree_is_standardized() -> None:
+    found = {path.name for path in WORKFLOWS_DIR.glob("*.yml")}
+    assert found == EXPECTED_WORKFLOWS
 
-        password = publish_step.get("with", {}).get("password")
-        if password != "${{ secrets.PYPI_API_TOKEN }}":
-            failures.append(
-                f"{path.name}: publish job should use secrets.PYPI_API_TOKEN"
-            )
 
-    assert not failures, "publish workflow auth contract drifted:\n" + "\n".join(
-        failures
+def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
+    workflow = _workflow(WORKFLOWS_DIR / "verify.yml")
+    jobs = workflow.get("jobs", {})
+    repository = jobs.get("repository", {})
+    package = jobs.get("package", {})
+
+    assert repository.get("name") == "repository-contracts"
+    repository_steps = repository.get("steps", [])
+    assert any(
+        isinstance(step, dict)
+        and step.get("uses") == "astral-sh/setup-uv@v8"
+        and step.get("with", {}).get("cache-dependency-glob") == "uv.lock"
+        for step in repository_steps
     )
+    assert any(
+        isinstance(step, dict)
+        and step.get("name") == "Verify repository automation contracts"
+        and "check-shared-bijux-py" in step.get("run", "")
+        and "check-config-layout" in step.get("run", "")
+        and "check-make-layout" in step.get("run", "")
+        for step in repository_steps
+    )
+    assert package.get("needs") == "repository"
+    assert package.get("uses") == "./.github/workflows/ci-package.yml"
+
+    include = _matrix_include(package)
+    found = {entry["package_slug"] for entry in include}
+    assert found == EXPECTED_VERIFY_PACKAGES
+
+    runtime = next(
+        entry for entry in include if entry["package_slug"] == "bijux-canon-runtime"
+    )
+    assert runtime["check_targets"] == (
+        '["quality", "security", "docs", "build", "sbom", "api", "openapi-drift"]'
+    )
+    assert runtime["api_toolchain_targets"] == '["api", "openapi-drift"]'
+
+    ingest = next(
+        entry for entry in include if entry["package_slug"] == "bijux-canon-ingest"
+    )
+    assert ingest["test_python_versions"] == '["3.11", "3.12", "3.13"]'
+
+    dev = next(entry for entry in include if entry["package_slug"] == "bijux-canon-dev")
+    assert dev["check_targets"] == '["quality", "security", "build", "sbom"]'
+
+
+def test_publish_workflow_uses_matrix_release_contract() -> None:
+    workflow = _workflow(WORKFLOWS_DIR / "publish.yml")
+    jobs = workflow.get("jobs", {})
+    build = jobs.get("build", {})
+    publish = jobs.get("publish", {})
+
+    assert build.get("uses") == "./.github/workflows/build-release-artifacts.yml"
+    assert publish.get("needs") == "build"
+    assert publish.get("environment", {}).get("name") == "pypi"
+    assert publish.get("permissions") == {"contents": "read"}
+
+    publish_steps = publish.get("steps", [])
+    assert any(
+        isinstance(step, dict)
+        and step.get("uses") == "pypa/gh-action-pypi-publish@release/v1"
+        and step.get("with", {}).get("password") == "${{ secrets.PYPI_API_TOKEN }}"
+        for step in publish_steps
+    )
+
+    build_include = _matrix_include(build)
+    publish_include = _matrix_include(publish)
+    build_packages = {entry["package_slug"] for entry in build_include}
+    publish_packages = {entry["package_slug"] for entry in publish_include}
+
+    assert build_packages == EXPECTED_PUBLISH_PACKAGES
+    assert publish_packages == EXPECTED_PUBLISH_PACKAGES
+    assert all(entry.get("build_targets") == "build sbom" for entry in build_include)
+
+    index = next(
+        entry for entry in build_include if entry["package_slug"] == "bijux-canon-index"
+    )
+    assert index["dist_subdir"] == "release"
 
 
 def test_reusable_workflows_use_uv_cache_contract() -> None:
@@ -109,29 +159,14 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     for job in reusable_jobs:
         steps = job.get("steps", [])
         assert any(
-            isinstance(step, dict) and step.get("uses") == "astral-sh/setup-uv@v8"
+            isinstance(step, dict)
+            and step.get("uses") == "astral-sh/setup-uv@v8"
+            and step.get("with", {}).get("cache-dependency-glob") == "uv.lock"
             for step in steps
         ), "reusable workflow job is missing setup-uv"
-        assert not any(
-            isinstance(step, dict) and step.get("name") == "Prepare pip cache directory"
-            for step in steps
-        ), "reusable workflow job should not prepare a pip cache"
 
-    assert "PIP_CACHE_DIR" not in ci_workflow.get("env", {})
-    assert "PIP_DISABLE_PIP_VERSION_CHECK" not in ci_workflow.get("env", {})
-
-
-def test_wrapper_workflows_cache_against_repository_lockfile() -> None:
-    failures: list[str] = []
-
-    for path in [*CI_WORKFLOWS, *PUBLISH_WORKFLOWS]:
-        if path.name in {"ci-package.yml", "build-release-artifacts.yml"}:
-            continue
-
-        workflow = _workflow(path)
-        job = next(iter(workflow.get("jobs", {}).values()), {})
-        cache_dependency_path = job.get("with", {}).get("cache_dependency_path")
-        if cache_dependency_path != "uv.lock":
-            failures.append(f"{path.name}: cache_dependency_path should be uv.lock")
-
-    assert not failures, "workflow cache contract drifted:\n" + "\n".join(failures)
+    inputs = _workflow_call_inputs(ci_workflow)
+    assert "cache_dependency_path" not in inputs
+    build_inputs = _workflow_call_inputs(build_workflow)
+    assert "cache_dependency_path" not in build_inputs
+    assert "upload_paths" not in build_inputs
