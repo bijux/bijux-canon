@@ -303,6 +303,7 @@ class ReplayDiffError(ValueError):
     """Replay diff error; misuse breaks deterministic replay."""
 
     def __init__(self, *, step_id: int, reason_code: str, diffs: dict[str, object]):
+        """Initialize the instance."""
         super().__init__(f"replay diff at step {step_id}: {reason_code}")
         self.step_id = step_id
         self.reason_code = reason_code

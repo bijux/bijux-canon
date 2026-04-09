@@ -76,6 +76,7 @@ def _failure_response(
     failure_class: Literal["structural", "semantic", "environmental", "authority"],
     violated_contract: str,
 ) -> JSONResponse:
+    """Handle failure response."""
     payload = FailureEnvelope(
         failure_class=failure_class,
         reason_code="contradiction_detected",

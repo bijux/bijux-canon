@@ -44,6 +44,7 @@ class FlowPreparation:
         resolved_flow: ExecutionPlan | None,
         config: ExecutionConfig,
     ) -> None:
+        """Initialize the instance."""
         self._manifest = manifest
         self._resolved_flow = resolved_flow
         self._config = config
@@ -106,6 +107,7 @@ class FlowExecution:
     """Execute a prepared flow."""
 
     def __init__(self, *, prepared: PreparedFlow) -> None:
+        """Initialize the instance."""
         self._prepared = prepared
 
     def run(self) -> FlowRunResult:
@@ -129,6 +131,7 @@ class FlowFinalization:
     """Finalize flow execution and persistence."""
 
     def __init__(self, *, prepared: PreparedFlow) -> None:
+        """Initialize the instance."""
         self._prepared = prepared
 
     def run(self, result: FlowRunResult) -> FlowRunResult:

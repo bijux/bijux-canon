@@ -28,6 +28,7 @@ _MAGNITUDE_ORDER = {
 
 
 class _EntropySummary(TypedDict):
+    """Represents entropy summary."""
     sources: list[str]
     count: int
     max_magnitude: str | None

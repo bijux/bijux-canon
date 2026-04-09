@@ -133,6 +133,7 @@ class EntropyLedger:
     def _assert_intent(
         self, *, source: EntropySource, magnitude: EntropyMagnitude
     ) -> None:
+        """Handle assert intent."""
         intent_source = _intent_source_for_entropy(source)
         for intent in self._intents:
             if intent.source is not intent_source:
@@ -153,6 +154,7 @@ class EntropyLedger:
         )
 
     def _budget_slice(self, source: EntropySource) -> EntropyBudgetSlice | None:
+        """Handle budget slice."""
         if not self._budget:
             return None
         for entry in self._budget.per_source:
@@ -162,6 +164,7 @@ class EntropyLedger:
 
 
 def _intent_source_for_entropy(source: EntropySource) -> NonDeterminismIntentSource:
+    """Handle intent source for entropy."""
     mapping = {
         EntropySource.SEEDED_RNG: NonDeterminismIntentSource.LLM,
         EntropySource.DATA: NonDeterminismIntentSource.RETRIEVAL,

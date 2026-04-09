@@ -11,6 +11,7 @@ __all__ = ["FlowRunResult", "RunMode", "execute_flow"]
 
 
 def __getattr__(name: str) -> Any:
+    """Lazily resolve exported attributes."""
     if name in {"FlowRunResult", "RunMode", "execute_flow"}:
         from bijux_canon_runtime.application.execute_flow import (
             FlowRunResult,

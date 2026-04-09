@@ -71,6 +71,7 @@ app = FastAPI(
 
 
 def _openapi() -> dict[str, object]:
+    """Handle OpenAPI."""
     if app.openapi_schema is not None:
         return app.openapi_schema
 

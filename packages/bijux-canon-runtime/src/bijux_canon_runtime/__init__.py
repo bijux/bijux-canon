@@ -17,6 +17,7 @@ __all__ = [
 
 
 def __getattr__(name: str) -> Any:
+    """Lazily resolve exported attributes."""
     if name == "FlowManifest":
         return FlowManifest
     if name in {"RunMode", "execute_flow"}:

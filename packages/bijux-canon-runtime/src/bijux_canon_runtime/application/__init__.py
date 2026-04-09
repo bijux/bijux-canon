@@ -21,6 +21,7 @@ __all__ = [
 
 
 def __getattr__(name: str) -> Any:
+    """Lazily resolve exported attributes."""
     if name == "ExecutionPlanner":
         return ExecutionPlanner
     if name == "enforce_flow_boundary":
