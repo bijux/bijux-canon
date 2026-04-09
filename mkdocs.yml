@@ -67,11 +67,16 @@ nav:
           - Change Principles: bijux-canon/foundation/change-principles.md
           - Decision Rules: bijux-canon/foundation/decision-rules.md
       - Operations:
-          - Operations: bijux-canon/local-development.md
-          - Local Development: bijux-canon/local-development.md
-          - Testing and Validation: bijux-canon/testing-and-validation.md
-          - Release and Versioning: bijux-canon/release-and-versioning.md
-          - API and Schema Governance: bijux-canon/api-and-schema-governance.md
+          - Operations: bijux-canon/operations/index.md
+          - Local Development: bijux-canon/operations/local-development.md
+          - Testing and Validation: bijux-canon/operations/testing-and-validation.md
+          - Release and Versioning: bijux-canon/operations/release-and-versioning.md
+          - API and Schema Governance: bijux-canon/operations/api-and-schema-governance.md
+          - Contributor Workflows: bijux-canon/operations/contributor-workflows.md
+          - Automation Surfaces: bijux-canon/operations/automation-surfaces.md
+          - Artifact Governance: bijux-canon/operations/artifact-governance.md
+          - Review Expectations: bijux-canon/operations/review-expectations.md
+          - Change Management: bijux-canon/operations/change-management.md
   - bijux-canon-ingest:
       - Overview: bijux-canon-ingest/index.md
       - Foundation:

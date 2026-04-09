@@ -193,6 +193,29 @@ def test_repository_foundation_leaf_pages_keep_section_sidebar(
     ]
 
 
+def test_repository_operations_leaf_pages_keep_section_sidebar(
+    rendered_docs: Path,
+) -> None:
+    page = _parse_navigation(
+        rendered_docs,
+        "bijux-canon/operations/review-expectations/index.html",
+    )
+
+    assert page.active_detail_tabs == ["Operations"]
+    assert page.sidebar_title == "Operations"
+    assert page.sidebar_links == [
+        "Local Development",
+        "Testing and Validation",
+        "Release and Versioning",
+        "API and Schema Governance",
+        "Contributor Workflows",
+        "Automation Surfaces",
+        "Artifact Governance",
+        "Review Expectations",
+        "Change Management",
+    ]
+
+
 def test_primary_sidebar_does_not_use_lifted_nav_mode(rendered_docs: Path) -> None:
     text = _page_text(rendered_docs, "bijux-canon-reason/interfaces/index.html")
 

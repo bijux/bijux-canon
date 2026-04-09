@@ -77,9 +77,8 @@ flowchart TB
 
 - [Foundation](foundation/index.md) for the repository split, ownership model,
   shared language, and design rules that should stay stable over time
-- [Operations](local-development.md) for the currently published workflow,
-  validation, release, and schema-governance guidance while the operations
-  section is being expanded into its own directory
+- [Operations](operations/index.md) for contributor workflows, validation,
+  release, automation, artifact handling, and shared review posture
 
 ## Pages In Foundation
 
@@ -93,12 +92,17 @@ flowchart TB
 - [Change Principles](foundation/change-principles.md)
 - [Decision Rules](foundation/decision-rules.md)
 
-## Current Operations Pages
+## Pages In Operations
 
-- [API and Schema Governance](api-and-schema-governance.md)
-- [Local Development](local-development.md)
-- [Testing and Validation](testing-and-validation.md)
-- [Release and Versioning](release-and-versioning.md)
+- [Local Development](operations/local-development.md)
+- [Testing and Validation](operations/testing-and-validation.md)
+- [Release and Versioning](operations/release-and-versioning.md)
+- [API and Schema Governance](operations/api-and-schema-governance.md)
+- [Contributor Workflows](operations/contributor-workflows.md)
+- [Automation Surfaces](operations/automation-surfaces.md)
+- [Artifact Governance](operations/artifact-governance.md)
+- [Review Expectations](operations/review-expectations.md)
+- [Change Management](operations/change-management.md)
 
 ## Shared Package Map
 
