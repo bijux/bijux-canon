@@ -1,0 +1,197 @@
+from __future__ import annotations
+
+from html.parser import HTMLParser
+from pathlib import Path
+import subprocess
+import sys
+
+import pytest
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+class _RenderedNavigationParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self._stack: list[tuple[str, set[str]]] = []
+        self._capture: str | None = None
+        self._buffer: list[str] = []
+        self._detail_depth: int | None = None
+        self._primary_sidebar_depth: int | None = None
+        self.detail_tabs: list[str] = []
+        self.active_detail_tabs: list[str] = []
+        self.sidebar_links: list[str] = []
+        self.sidebar_title: str | None = None
+
+    def handle_starttag(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]],
+    ) -> None:
+        attr_map = {name: value or "" for name, value in attrs}
+        classes = set(attr_map.get("class", "").split())
+        self._stack.append((tag, classes))
+        depth = len(self._stack)
+
+        if "bijux-detail-tabs" in classes:
+            self._detail_depth = depth
+        if "md-sidebar--primary" in classes:
+            self._primary_sidebar_depth = depth
+
+        if tag == "a":
+            if self._detail_depth is not None:
+                self._capture = "active_detail_tabs" if self._inside(
+                    "bijux-tabs__item--active"
+                ) else "detail_tabs"
+                self._buffer = []
+            elif (
+                self._primary_sidebar_depth is not None
+                and self._inside("md-nav__list")
+                and not self._inside("md-sidebar--secondary")
+            ):
+                self._capture = "sidebar_links"
+                self._buffer = []
+        elif (
+            tag == "label"
+            and "md-nav__title" in classes
+            and self._primary_sidebar_depth is not None
+        ):
+            self._capture = "sidebar_title"
+            self._buffer = []
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._capture and self._stack and self._stack[-1][0] == tag:
+            text = " ".join(" ".join(self._buffer).split())
+            if text:
+                if self._capture == "detail_tabs":
+                    self.detail_tabs.append(text)
+                elif self._capture == "active_detail_tabs":
+                    self.detail_tabs.append(text)
+                    self.active_detail_tabs.append(text)
+                elif self._capture == "sidebar_links":
+                    self.sidebar_links.append(text)
+                elif self._capture == "sidebar_title":
+                    self.sidebar_title = text
+            self._capture = None
+            self._buffer = []
+
+        if self._detail_depth == len(self._stack):
+            self._detail_depth = None
+        if self._primary_sidebar_depth == len(self._stack):
+            self._primary_sidebar_depth = None
+
+        if self._stack:
+            self._stack.pop()
+
+    def handle_data(self, data: str) -> None:
+        if self._capture:
+            self._buffer.append(data)
+
+    def _inside(self, class_name: str) -> bool:
+        return any(class_name in classes for _, classes in self._stack)
+
+
+@pytest.fixture(scope="session")
+def rendered_docs(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    site_dir = tmp_path_factory.mktemp("docs-site")
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "mkdocs",
+            "build",
+            "--quiet",
+            "--config-file",
+            str(REPO_ROOT / "mkdocs.yml"),
+            "--site-dir",
+            str(site_dir),
+        ],
+        cwd=REPO_ROOT,
+        check=True,
+    )
+    return site_dir
+
+
+def _parse_navigation(site_dir: Path, relative_path: str) -> _RenderedNavigationParser:
+    parser = _RenderedNavigationParser()
+    parser.feed((site_dir / relative_path).read_text(encoding="utf-8"))
+    return parser
+
+
+def test_product_package_detail_tabs_follow_authored_order(
+    rendered_docs: Path,
+) -> None:
+    page = _parse_navigation(rendered_docs, "bijux-canon-index/index.html")
+
+    assert page.detail_tabs == [
+        "Home",
+        "Foundation",
+        "Architecture",
+        "Interfaces",
+        "Operations",
+        "Quality",
+    ]
+    assert page.active_detail_tabs == ["Home"]
+
+
+def test_repository_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
+    page = _parse_navigation(rendered_docs, "bijux-canon/index.html")
+
+    assert page.detail_tabs == [
+        "Home",
+        "Platform Overview",
+        "Repository Scope",
+        "Workspace Layout",
+        "Package Map",
+        "API and Schema Governance",
+        "Local Development",
+        "Testing and Validation",
+        "Release and Versioning",
+        "Documentation System",
+    ]
+    assert page.active_detail_tabs == ["Home"]
+
+
+def test_compatibility_detail_tabs_keep_package_names(rendered_docs: Path) -> None:
+    page = _parse_navigation(rendered_docs, "compat-packages/index.html")
+
+    assert page.detail_tabs == [
+        "Home",
+        "agentic-flows",
+        "bijux-agent",
+        "bijux-rag",
+        "bijux-rar",
+        "bijux-vex",
+        "Compatibility Overview",
+        "Legacy Name Map",
+        "Migration Guidance",
+        "Repository Consolidation",
+        "Package Behavior",
+        "Import Surfaces",
+        "Command Surfaces",
+        "Release Policy",
+        "Validation Strategy",
+        "Retirement Conditions",
+    ]
+
+
+def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) -> None:
+    page = _parse_navigation(
+        rendered_docs,
+        "bijux-canon-index/architecture/code-navigation/index.html",
+    )
+
+    assert page.active_detail_tabs == ["Architecture"]
+    assert page.sidebar_title == "Architecture"
+    assert page.sidebar_links == [
+        "Architecture",
+        "Module Map",
+        "Dependency Direction",
+        "Execution Model",
+        "State and Persistence",
+        "Integration Seams",
+        "Error Model",
+        "Extensibility Model",
+        "Code Navigation",
+        "Architecture Risks",
+    ]
