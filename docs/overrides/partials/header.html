@@ -33,11 +33,13 @@
     {{ title }}
   {%- endif %}
 {%- endmacro %}
-{% macro detail_label(title) -%}
-  {% if title == "Overview" -%}
+{% macro detail_label(nav_item) -%}
+  {% set target = target_url(nav_item) %}
+  {% set normalized = target.rstrip("/") %}
+  {% if normalized in [".", "..", ""] or nav_item.title == "Overview" -%}
     Home
   {%- else -%}
-    {{ title }}
+    {{ normalized.split("/")[-1] | replace("-", " ") | title }}
   {%- endif %}
 {%- endmacro %}
 {% for nav_item in nav %}
@@ -132,31 +134,30 @@
     <nav class="bijux-detail-tabs" aria-label="{{ active_section.item.title }} sections">
       <div class="md-grid">
         <ul class="bijux-tabs__list bijux-tabs__list--detail">
-          {% if active_section.item.title.startswith("bijux-canon-") %}
-            {% for ordered_title in ["Overview", "Architecture", "Foundation", "Interfaces", "Operations", "Quality"] %}
-              {% for child in active_section.item.children %}
-                {% if child.title == ordered_title %}
-                  {% set item_class = "bijux-tabs__item" %}
-                  {% if child.active %}
-                    {% set item_class = item_class ~ " bijux-tabs__item--active" %}
-                  {% endif %}
-                  <li class="{{ item_class }}">
-                    <a href="{{ target_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ detail_label(child.title) }}</a>
-                  </li>
-                {% endif %}
-              {% endfor %}
-            {% endfor %}
-          {% else %}
-            {% for child in active_section.item.children %}
+          {% for child in active_section.item.children %}
+            {% set child_target = target_url(child).rstrip("/") %}
+            {% if child_target in [".", "..", ""] or child.title == "Overview" %}
               {% set item_class = "bijux-tabs__item" %}
               {% if child.active %}
                 {% set item_class = item_class ~ " bijux-tabs__item--active" %}
               {% endif %}
               <li class="{{ item_class }}">
-                <a href="{{ target_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ detail_label(child.title) }}</a>
+                <a href="{{ target_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ detail_label(child) }}</a>
               </li>
-            {% endfor %}
-          {% endif %}
+            {% endif %}
+          {% endfor %}
+          {% for child in active_section.item.children | sort(attribute="title") %}
+            {% set child_target = target_url(child).rstrip("/") %}
+            {% if child_target not in [".", "..", ""] and child.title != "Overview" %}
+              {% set item_class = "bijux-tabs__item" %}
+              {% if child.active %}
+                {% set item_class = item_class ~ " bijux-tabs__item--active" %}
+              {% endif %}
+              <li class="{{ item_class }}">
+                <a href="{{ target_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail">{{ detail_label(child) }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
         </ul>
       </div>
     </nav>
