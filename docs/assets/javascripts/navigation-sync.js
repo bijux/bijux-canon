@@ -62,7 +62,7 @@ function bijuxSyncDetailStripVisibility() {
 
   for (const strip of strips) {
     const rootPath = bijuxNormalizePath(
-      strip.getAttribute("data-bijux-detail-root") || "/"
+      strip.getAttribute("data-bijux-detail-root-path") || "/"
     );
     strip.hidden = rootPath !== activeSitePath;
   }
@@ -78,9 +78,9 @@ function bijuxSyncDetailStripActiveState() {
 
   let activeLink = null;
 
-  for (const link of activeStrip.querySelectorAll("[data-bijux-detail-target]")) {
+  for (const link of activeStrip.querySelectorAll("[data-bijux-detail-path]")) {
     const linkPath = bijuxNormalizePath(
-      link.getAttribute("data-bijux-detail-target") || "/"
+      link.getAttribute("data-bijux-detail-path") || "/"
     );
     const isMatch =
       currentPath === linkPath ||
