@@ -118,6 +118,10 @@ def _parse_navigation(site_dir: Path, relative_path: str) -> _RenderedNavigation
     return parser
 
 
+def _page_text(site_dir: Path, relative_path: str) -> str:
+    return (site_dir / relative_path).read_text(encoding="utf-8")
+
+
 def test_product_package_detail_tabs_follow_authored_order(
     rendered_docs: Path,
 ) -> None:
@@ -135,9 +139,7 @@ def test_product_package_detail_tabs_follow_authored_order(
 
 
 def test_package_overview_sidebar_expands_all_section_groups(rendered_docs: Path) -> None:
-    text = (
-        rendered_docs / "bijux-canon-index/index.html"
-    ).read_text(encoding="utf-8")
+    text = _page_text(rendered_docs, "bijux-canon-index/index.html")
 
     assert 'id="__nav_2" checked' in text
     assert 'id="__nav_3" checked' in text
@@ -162,6 +164,13 @@ def test_repository_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
         "Documentation System",
     ]
     assert page.active_detail_tabs == ["Home"]
+
+
+def test_primary_sidebar_does_not_use_lifted_nav_mode(rendered_docs: Path) -> None:
+    text = _page_text(rendered_docs, "bijux-canon-reason/interfaces/index.html")
+
+    assert '<nav class="md-nav md-nav--primary"' in text
+    assert '<nav class="md-nav md-nav--primary md-nav--lifted"' not in text
 
 
 def test_compatibility_detail_tabs_keep_package_names(rendered_docs: Path) -> None:
