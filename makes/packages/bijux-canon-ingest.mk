@@ -1,5 +1,5 @@
 
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package/profile.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package/bootstrap.mk
 include $(ROOT_MAKE_DIR)/bijux-py/package/api-python.mk
 
 PACKAGE_IMPORT_NAME            := bijux_canon_ingest
