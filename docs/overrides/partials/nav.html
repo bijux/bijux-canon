@@ -3,34 +3,24 @@
   {% set class = class ~ " md-nav--integrated" %}
 {% endif %}
 {% set bijux_primary_section_nav = true %}
-{% set scoped = namespace(items=nav, title=config.site_name) %}
+{% set scoped = namespace(items=[], title=config.site_name, visible=false) %}
 {% set active_root = namespace(item=None) %}
-{% set active_detail = namespace(item=None) %}
 {% for nav_item in nav %}
   {% if nav_item.active %}
     {% set active_root.item = nav_item %}
   {% endif %}
 {% endfor %}
-{% if active_root.item and active_root.item.children %}
-  {% for child in active_root.item.children %}
-    {% if child.active %}
-      {% set active_detail.item = child %}
-    {% endif %}
-  {% endfor %}
-{% endif %}
-{% if active_detail.item and active_detail.item.children %}
-  {% set scoped.items = active_detail.item.children %}
-  {% set scoped.title = active_detail.item.title %}
-{% elif page and page.parent and page.parent.children %}
+{% if page and active_root.item and page.parent and page.parent.children and page.parent != active_root.item %}
   {% set scoped.items = page.parent.children %}
   {% set scoped.title = page.parent.title %}
+  {% set scoped.visible = true %}
 {% endif %}
 {% set bijux_expand_scoped_groups = false %}
-{% if page and page.title == "Overview" %}
+{% if scoped.visible and page and page.title == "Overview" %}
   {% set bijux_expand_scoped_groups = true %}
 {% endif %}
 {% import "partials/nav-item.html" as item with context %}
-<nav class="{{ class }}" aria-label="{{ lang.t('nav') }}" data-md-level="0">
+<nav class="{{ class }}" aria-label="{{ lang.t('nav') }}" data-bijux-nav-empty="{{ 'false' if scoped.visible else 'true' }}" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-nav__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
       {% include "partials/logo.html" %}
@@ -43,9 +33,11 @@
     </div>
   {% endif %}
   <ul class="md-nav__list" data-md-scrollfix>
-    {% for nav_item in scoped.items %}
-      {% set path = "__nav_" ~ loop.index %}
-      {{ item.render(nav_item, path, 1) }}
-    {% endfor %}
+    {% if scoped.visible %}
+      {% for nav_item in scoped.items %}
+        {% set path = "__nav_" ~ loop.index %}
+        {{ item.render(nav_item, path, 1) }}
+      {% endfor %}
+    {% endif %}
   </ul>
 </nav>
