@@ -42,7 +42,7 @@ exclude = [
 extend-exclude = ["src/**/_version.py"]
 
 [lint]
-select = ["E", "F", "I", "B", "UP", "SIM", "C4", "PERF"]
+select = ["E", "F", "I", "B"]
 ignore = ["E501", "E203"]
 
 [lint.per-file-ignores]
