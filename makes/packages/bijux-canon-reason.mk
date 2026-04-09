@@ -1,6 +1,6 @@
 PACKAGE_KIND := api-python
 PACKAGE_IMPORT_NAME := bijux_canon_reason
-ENABLE_MYPY := 0
+ENABLE_MYPY := 1
 API_MODULE := bijux_canon_reason.api.v1.app
 API_INSTALL_EDITABLE := 1
 API_NODE_BOOTSTRAP_MODE := npm-ci-sandbox
