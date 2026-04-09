@@ -488,7 +488,7 @@ ROOT_PAGES = [
 
 
 DEV_PAGES = [
-    ("index", "Maintainer Handbook"),
+    ("index", "Maintenance Handbook"),
     ("package-overview", "Package Overview"),
     ("scope-and-non-goals", "Scope and Non-Goals"),
     ("module-map", "Module Map"),
@@ -527,17 +527,38 @@ TARGET_ORDER = [
 ]
 
 
-def clean_docs_root() -> None:
-    """Handle clean docs root."""
+def _remove_path(path: Path) -> None:
+    """Remove a file or directory when it exists."""
+    if not path.exists():
+        return
+    if path.is_dir():
+        shutil.rmtree(path)
+        return
+    path.unlink()
+
+
+def clean_docs_root(
+    targets: set[str],
+    categories_by_package: dict[str, tuple[str, ...]],
+) -> None:
+    """Remove only the generated docs paths owned by the selected targets."""
     DOCS_ROOT.mkdir(exist_ok=True)
-    for child in DOCS_ROOT.iterdir():
-        if child.name == "assets":
+
+    if "platform" in targets:
+        _remove_path(DOCS_ROOT / "index.md")
+        _remove_path(DOCS_ROOT / "bijux-canon")
+    if "dev" in targets:
+        _remove_path(DOCS_ROOT / "bijux-canon-dev")
+        _remove_path(DOCS_ROOT / "bijux-canon-maintain")
+    if "compat" in targets:
+        _remove_path(DOCS_ROOT / "compat-packages")
+    for key in ("ingest", "index", "reason", "agent", "runtime"):
+        if key not in targets:
             continue
-        if child.is_dir():
-            shutil.rmtree(child)
-            continue
-        if child.suffix == ".md":
-            child.unlink()
+        package = PRODUCT_PACKAGES[key]
+        package_root = DOCS_ROOT / package.slug
+        for category in categories_by_package.get(key, ()):
+            _remove_path(package_root / category)
 
 
 def ensure_parent(path: Path) -> None:
@@ -2656,7 +2677,7 @@ def render_home(
         if target in PRODUCT_PACKAGES and target in targets:
             sections.append(PRODUCT_PACKAGES[target].title)
     if "dev" in targets:
-        sections.append("bijux-canon-dev")
+        sections.append("bijux-canon-maintain")
     if "compat" in targets:
         sections.append("compatibility packages")
     quicklinks = []
@@ -2671,7 +2692,7 @@ def render_home(
             )
     if "dev" in targets:
         quicklinks.append(
-            '<a class="md-button" href="bijux-canon-dev/">Open maintainer docs</a>'
+            '<a class="md-button" href="bijux-canon-maintain/">Open maintenance docs</a>'
         )
     if "compat" in targets:
         quicklinks.append(
@@ -2728,7 +2749,7 @@ def render_home(
             "",
             "- open [bijux-canon](bijux-canon/index.md) when the question crosses package boundaries or touches shared governance",
             "- open one product package when you need ownership, interfaces, operations, or proof for one package",
-            "- open [bijux-canon-dev](bijux-canon-dev/index.md) for repository automation, schema enforcement, and maintainer-only guardrails"
+            "- open [bijux-canon-maintain](bijux-canon-maintain/index.md) for repository automation, schema enforcement, and maintainer-only guardrails"
             if "dev" in targets
             else "- maintainer guidance appears here when the dev section is rendered",
             "- open [compatibility packages](compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem"
@@ -3037,7 +3058,7 @@ def render_root_page(
 
             ## Shared Maintainer Packages
 
-            - [bijux-canon-dev](../bijux-canon-dev/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
+            - [bijux-canon-maintain](../bijux-canon-maintain/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
             - [compatibility packages](../compat-packages/index.md) for legacy distribution and import preservation
 
             ## Purpose
@@ -3324,7 +3345,7 @@ def render_dev_page(slug: str, title: str) -> str:
     bodies = {
         "index": textwrap.dedent(
             f"""\
-            # Maintainer Handbook
+            # Maintenance Handbook
 
             `bijux-canon-dev` is the maintainer package for repository health. It exists
             so schema drift checks, quality gates, supply-chain helpers, and release
@@ -3344,7 +3365,7 @@ def render_dev_page(slug: str, title: str) -> str:
 
             ## Purpose
 
-            This page explains how to use the maintainer handbook without confusing it with user-facing product docs.
+            This page explains how to use the maintenance handbook without confusing it with user-facing product docs.
 
             ## Stability
 
@@ -3601,7 +3622,7 @@ def render_dev_page(slug: str, title: str) -> str:
     body = add_page_route_map(
         body,
         "bijux-canon",
-        "Maintainer Handbook",
+        "Maintenance Handbook",
         title,
         dev_questions,
         ("explain automation", "see repository-health scope", "review package impact"),
@@ -5469,7 +5490,7 @@ def write_package_docs(package_key: str, active_categories: tuple[str, ...]) -> 
 
 def write_dev_docs() -> None:
     """Write dev docs."""
-    base = DOCS_ROOT / "bijux-canon-dev"
+    base = DOCS_ROOT / "bijux-canon-maintain"
     for slug, title in DEV_PAGES:
         write_doc(base / f"{slug}.md", render_dev_page(slug, title))
 
@@ -5515,9 +5536,9 @@ def nav_lines(
     if "dev" in targets:
         lines.extend(
             [
-                "  - Maintainer Handbook:",
+                "  - Maintenance Handbook:",
                 *[
-                    f"      - {title}: bijux-canon-dev/{slug}.md"
+                    f"      - {title}: bijux-canon-maintain/{slug}.md"
                     for slug, title in DEV_PAGES
                 ],
             ]
@@ -5561,7 +5582,38 @@ def write_mkdocs(
     (ROOT / "mkdocs.yml").write_text(body + "\n", encoding="utf-8")
 
 
-def validate_rendered_docs() -> None:
+def generated_doc_paths(
+    targets: set[str],
+    categories_by_package: dict[str, tuple[str, ...]],
+) -> tuple[Path, ...]:
+    """Return the docs paths owned by the catalog for the selected targets."""
+    paths: list[Path] = [DOCS_ROOT / "index.md"]
+    if "platform" in targets:
+        paths.extend(DOCS_ROOT / "bijux-canon" / f"{slug}.md" for slug, _ in ROOT_PAGES)
+    if "dev" in targets:
+        paths.extend(
+            DOCS_ROOT / "bijux-canon-maintain" / f"{slug}.md" for slug, _ in DEV_PAGES
+        )
+    if "compat" in targets:
+        paths.extend(
+            DOCS_ROOT / "compat-packages" / f"{slug}.md" for slug, _ in COMPAT_PAGES
+        )
+    for key in ("ingest", "index", "reason", "agent", "runtime"):
+        if key not in targets:
+            continue
+        package = PRODUCT_PACKAGES[key]
+        for category in categories_by_package.get(key, ()):
+            paths.extend(
+                DOCS_ROOT / package.slug / category / f"{slug}.md"
+                for slug, _ in PACKAGE_CATEGORY_PAGES[category]
+            )
+    return tuple(sorted(paths))
+
+
+def validate_rendered_docs(
+    targets: set[str],
+    categories_by_package: dict[str, tuple[str, ...]],
+) -> None:
     """Validate rendered docs."""
     required_headings = (
         "## Visual Summary",
@@ -5577,7 +5629,7 @@ def validate_rendered_docs() -> None:
     )
     narrative_headings: tuple[str, ...] = ()
     failures: list[str] = []
-    for path in sorted(DOCS_ROOT.rglob("*.md")):
+    for path in generated_doc_paths(targets, categories_by_package):
         text = path.read_text(encoding="utf-8")
         if text.count("```mermaid") < 1:
             failures.append(f"{path}: missing Mermaid diagram")
@@ -5684,7 +5736,7 @@ def main() -> None:
     categories_by_package = {
         key: category_overrides.get(key, product_categories) for key in PRODUCT_PACKAGES
     }
-    clean_docs_root()
+    clean_docs_root(targets, categories_by_package)
     if "platform" in targets:
         write_platform_docs(targets, categories_by_package)
     for key in ("ingest", "index", "reason", "agent", "runtime"):
@@ -5699,7 +5751,7 @@ def main() -> None:
     else:
         write_doc(DOCS_ROOT / "index.md", render_home(targets, categories_by_package))
     write_mkdocs(targets, categories_by_package)
-    validate_rendered_docs()
+    validate_rendered_docs(targets, categories_by_package)
     count = len(list(DOCS_ROOT.rglob("*.md")))
     print(f"Rendered {count} Markdown files for targets: {', '.join(sorted(targets))}")
 

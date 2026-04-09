@@ -1,5 +1,5 @@
 ---
-title: Scope and Non-Goals
+title: SBOM and Supply Chain
 audience: mixed
 type: explanation
 status: canonical
@@ -7,61 +7,61 @@ owner: bijux-canon-dev-docs
 last_reviewed: 2026-04-04
 ---
 
-# Scope and Non-Goals
+# SBOM and Supply Chain
 
-`bijux-canon-dev` is for maintainers and automation.
+Supply-chain visibility is a repository maintenance concern, so SBOM helpers
+live in `bijux-canon-dev` instead of being duplicated by each package.
 
-Its value depends on discipline. If maintainer code starts absorbing
-product behavior, the repository loses one of its most important
-boundaries: the difference between health tooling and product surface.
+The point is not just compliance. The point is to keep dependency and build
+provenance explainable at repository level without smearing that burden
+across every product package.
 
 These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
 
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Scope and Non-Goals<br/>clarifies: explain automation | see repository-health scope | review package impact"]
+flowchart RL
+    page["SBOM and Supply Chain<br/>clarifies: explain automation | see repository-health scope | review package impact"]
     classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
     classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    role1["quality gates"]
-    role1 --> page
-    role2["security gates"]
-    role2 --> page
-    role3["release support"]
-    role3 --> page
-    health1["schema integrity"]
-    page --> health1
-    health2["supply-chain visibility"]
-    page --> health2
-    health3["package-aware automation"]
-    page --> health3
-    outcome1["release clarity"]
-    health1 --> outcome1
-    outcome2["package consistency"]
-    health2 --> outcome2
-    outcome3["less CI archaeology"]
-    health3 --> outcome3
+    detail1["less CI archaeology"]
+    detail1 --> page
+    detail2["quality gates"]
+    detail2 --> page
+    detail3["security gates"]
+    detail3 --> page
+    detail4["release support"]
+    detail4 --> page
+    detail5["schema integrity"]
+    detail5 --> page
+    detail6["supply-chain visibility"]
+    detail6 --> page
+    detail7["package-aware automation"]
+    detail7 --> page
+    detail8["release clarity"]
+    detail8 --> page
+    detail9["package consistency"]
+    detail9 --> page
+    next1["open the relevant helper module or test after using this page to orient yourself"]
+    page --> next1
+    next2["return to repository handbook pages when the maintainer issue turns out to be root policy instead"]
+    page --> next2
+    next3["move to product package docs if the question is user-facing behavior rather than repository health"]
+    page --> next3
     class page page;
-    class role1,role2,role3 positive;
-    class health1,health2,health3 anchor;
-    class outcome1,outcome2,outcome3 action;
+    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
+    class next1,next2,next3 action;
 ```
 
-## In Scope
+## Current Surfaces
 
-- CI-facing helpers
-- quality, security, SBOM, release, and schema checks
-- package-specific repository automation
-
-## Out of Scope
-
-- user-facing runtime behavior
-- product-domain models that belong to canonical packages
-- legacy-name compatibility shims
+- `sbom/requirements_writer.py`
+- `tests/test_sbom_requirements_writer.py`
+- shared dependency metadata in package `pyproject.toml` files
 
 ## Concrete Anchors
 
@@ -77,7 +77,7 @@ flowchart TB
 
 ## Decision Rule
 
-Use `Scope and Non-Goals` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use `SBOM and Supply Chain` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
 
 ## What This Page Answers
 
@@ -103,8 +103,8 @@ This section can describe maintainer automation and repository health work, but 
 
 ## Purpose
 
-This page prevents maintenance code from becoming an unbounded dumping ground.
+This page explains the home for supply-chain oriented repository tooling.
 
 ## Stability
 
-Update this page only when ownership truly moves into or out of the maintenance package.
+Keep it aligned with the checked-in SBOM helpers and tests.

@@ -40,6 +40,18 @@ theme:
 plugins:
   - search
   - autorefs
+  - redirects:
+      redirect_maps:
+        bijux-canon-dev/index.md: bijux-canon-maintain/index.md
+        bijux-canon-dev/package-overview.md: bijux-canon-maintain/package-overview.md
+        bijux-canon-dev/scope-and-non-goals.md: bijux-canon-maintain/scope-and-non-goals.md
+        bijux-canon-dev/module-map.md: bijux-canon-maintain/module-map.md
+        bijux-canon-dev/quality-gates.md: bijux-canon-maintain/quality-gates.md
+        bijux-canon-dev/security-gates.md: bijux-canon-maintain/security-gates.md
+        bijux-canon-dev/schema-governance.md: bijux-canon-maintain/schema-governance.md
+        bijux-canon-dev/release-support.md: bijux-canon-maintain/release-support.md
+        bijux-canon-dev/sbom-and-supply-chain.md: bijux-canon-maintain/sbom-and-supply-chain.md
+        bijux-canon-dev/operating-guidelines.md: bijux-canon-maintain/operating-guidelines.md
   - git-revision-date-localized:
       enable_creation_date: false
       fallback_to_build_date: true

@@ -21,35 +21,40 @@ These maintainer pages should read like explicit operational memory for reposito
 ## Visual Summary
 
 ```mermaid
-flowchart LR
+flowchart TB
     page["Schema Governance<br/>clarifies: explain automation | see repository-health scope | review package impact"]
     classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
     classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    role1["security gates"]
-    role1 --> page
-    role2["release support"]
-    role2 --> page
-    role3["quality gates"]
-    role3 --> page
-    health1["package-aware automation"]
-    page --> health1
-    health2["schema integrity"]
-    page --> health2
-    health3["supply-chain visibility"]
-    page --> health3
-    outcome1["release clarity"]
-    health1 --> outcome1
-    outcome2["package consistency"]
-    health2 --> outcome2
-    outcome3["less CI archaeology"]
-    health3 --> outcome3
+    detail1["quality gates"]
+    detail1 --> page
+    detail2["security gates"]
+    detail2 --> page
+    detail3["release support"]
+    detail3 --> page
+    detail4["schema integrity"]
+    detail4 --> page
+    detail5["supply-chain visibility"]
+    detail5 --> page
+    detail6["package-aware automation"]
+    detail6 --> page
+    detail7["release clarity"]
+    detail7 --> page
+    detail8["package consistency"]
+    detail8 --> page
+    detail9["less CI archaeology"]
+    detail9 --> page
+    next1["move to product package docs if the question is user-facing behavior rather than repository health"]
+    page --> next1
+    next2["open the relevant helper module or test after using this page to orient yourself"]
+    page --> next2
+    next3["return to repository handbook pages when the maintainer issue turns out to be root policy instead"]
+    page --> next3
     class page page;
-    class role1,role2,role3 positive;
-    class health1,health2,health3 anchor;
-    class outcome1,outcome2,outcome3 action;
+    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
+    class next1,next2,next3 action;
 ```
 
 ## Current Surfaces

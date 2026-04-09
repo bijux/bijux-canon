@@ -1,5 +1,5 @@
 ---
-title: Maintainer Handbook
+title: Maintenance Handbook
 audience: mixed
 type: index
 status: canonical
@@ -7,7 +7,7 @@ owner: bijux-canon-dev-docs
 last_reviewed: 2026-04-04
 ---
 
-# Maintainer Handbook
+# Maintenance Handbook
 
 `bijux-canon-dev` is the maintainer package for repository health. It exists
 so schema drift checks, quality gates, supply-chain helpers, and release
@@ -22,35 +22,40 @@ These maintainer pages should read like explicit operational memory for reposito
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Maintainer Handbook<br/>clarifies: explain automation | see repository-health scope | review package impact"]
+flowchart LR
+    page["Maintenance Handbook<br/>clarifies: explain automation | see repository-health scope | review package impact"]
     classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
     classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    role1["release support"]
-    role1 --> page
-    role2["quality gates"]
-    role2 --> page
-    role3["security gates"]
-    role3 --> page
-    health1["supply-chain visibility"]
-    page --> health1
-    health2["package-aware automation"]
-    page --> health2
-    health3["schema integrity"]
-    page --> health3
-    outcome1["package consistency"]
-    health1 --> outcome1
-    outcome2["less CI archaeology"]
-    health2 --> outcome2
-    outcome3["release clarity"]
-    health3 --> outcome3
+    detail1["supply-chain visibility"]
+    detail1 --> page
+    detail2["package-aware automation"]
+    detail2 --> page
+    detail3["release clarity"]
+    detail3 --> page
+    detail4["package consistency"]
+    detail4 --> page
+    detail5["less CI archaeology"]
+    detail5 --> page
+    detail6["quality gates"]
+    detail6 --> page
+    detail7["security gates"]
+    detail7 --> page
+    detail8["release support"]
+    detail8 --> page
+    detail9["schema integrity"]
+    detail9 --> page
+    next1["move to product package docs if the question is user-facing behavior rather than repository health"]
+    page --> next1
+    next2["open the relevant helper module or test after using this page to orient yourself"]
+    page --> next2
+    next3["return to repository handbook pages when the maintainer issue turns out to be root policy instead"]
+    page --> next3
     class page page;
-    class role1,role2,role3 positive;
-    class health1,health2,health3 anchor;
-    class outcome1,outcome2,outcome3 action;
+    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
+    class next1,next2,next3 action;
 ```
 
 ## Pages in This Section
@@ -88,7 +93,7 @@ flowchart RL
 
 ## Decision Rule
 
-Use `Maintainer Handbook` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use `Maintenance Handbook` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
 
 ## What This Page Answers
 
@@ -114,7 +119,7 @@ This section can describe maintainer automation and repository health work, but 
 
 ## Purpose
 
-This page explains how to use the maintainer handbook without confusing it with user-facing product docs.
+This page explains how to use the maintenance handbook without confusing it with user-facing product docs.
 
 ## Stability
 

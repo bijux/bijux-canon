@@ -349,17 +349,17 @@ nav:
           - Change Validation: bijux-canon-runtime/quality/change-validation.md
           - Known Limitations: bijux-canon-runtime/quality/known-limitations.md
           - Risk Register: bijux-canon-runtime/quality/risk-register.md
-  - Maintainer Handbook:
-      - Maintainer Handbook: bijux-canon-dev/index.md
-      - Package Overview: bijux-canon-dev/package-overview.md
-      - Scope and Non-Goals: bijux-canon-dev/scope-and-non-goals.md
-      - Module Map: bijux-canon-dev/module-map.md
-      - Quality Gates: bijux-canon-dev/quality-gates.md
-      - Security Gates: bijux-canon-dev/security-gates.md
-      - Schema Governance: bijux-canon-dev/schema-governance.md
-      - Release Support: bijux-canon-dev/release-support.md
-      - SBOM and Supply Chain: bijux-canon-dev/sbom-and-supply-chain.md
-      - Operating Guidelines: bijux-canon-dev/operating-guidelines.md
+  - Maintenance Handbook:
+      - Maintenance Handbook: bijux-canon-maintain/index.md
+      - Package Overview: bijux-canon-maintain/package-overview.md
+      - Scope and Non-Goals: bijux-canon-maintain/scope-and-non-goals.md
+      - Module Map: bijux-canon-maintain/module-map.md
+      - Quality Gates: bijux-canon-maintain/quality-gates.md
+      - Security Gates: bijux-canon-maintain/security-gates.md
+      - Schema Governance: bijux-canon-maintain/schema-governance.md
+      - Release Support: bijux-canon-maintain/release-support.md
+      - SBOM and Supply Chain: bijux-canon-maintain/sbom-and-supply-chain.md
+      - Operating Guidelines: bijux-canon-maintain/operating-guidelines.md
   - Compatibility Packages:
       - Compatibility Packages: compat-packages/index.md
       - agentic-flows: compat-packages/agentic-flows/index.md

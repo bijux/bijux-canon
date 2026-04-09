@@ -1,5 +1,5 @@
 ---
-title: SBOM and Supply Chain
+title: Quality Gates
 audience: mixed
 type: explanation
 status: canonical
@@ -7,56 +7,61 @@ owner: bijux-canon-dev-docs
 last_reviewed: 2026-04-04
 ---
 
-# SBOM and Supply Chain
+# Quality Gates
 
-Supply-chain visibility is a repository maintenance concern, so SBOM helpers
-live in `bijux-canon-dev` instead of being duplicated by each package.
+Repository quality checks live here so package code does not each reinvent the
+same maintenance logic.
 
-The point is not just compliance. The point is to keep dependency and build
-provenance explainable at repository level without smearing that burden
-across every product package.
+This page should make the gates feel concrete and inspectable. A quality bar
+is more credible when a contributor can point to the helper, the test, and
+the workflow that back it.
 
 These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
 
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["SBOM and Supply Chain<br/>clarifies: explain automation | see repository-health scope | review package impact"]
+flowchart TB
+    page["Quality Gates<br/>clarifies: explain automation | see repository-health scope | review package impact"]
     classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
     classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    role1["release support"]
-    role1 --> page
-    role2["quality gates"]
-    role2 --> page
-    role3["security gates"]
-    role3 --> page
-    health1["package-aware automation"]
-    page --> health1
-    health2["schema integrity"]
-    page --> health2
-    health3["supply-chain visibility"]
-    page --> health3
-    outcome1["release clarity"]
-    health1 --> outcome1
-    outcome2["package consistency"]
-    health2 --> outcome2
-    outcome3["less CI archaeology"]
-    health3 --> outcome3
+    detail1["quality gates"]
+    detail1 --> page
+    detail2["security gates"]
+    detail2 --> page
+    detail3["release support"]
+    detail3 --> page
+    detail4["schema integrity"]
+    detail4 --> page
+    detail5["supply-chain visibility"]
+    detail5 --> page
+    detail6["package-aware automation"]
+    detail6 --> page
+    detail7["release clarity"]
+    detail7 --> page
+    detail8["package consistency"]
+    detail8 --> page
+    detail9["less CI archaeology"]
+    detail9 --> page
+    next1["open the relevant helper module or test after using this page to orient yourself"]
+    page --> next1
+    next2["return to repository handbook pages when the maintainer issue turns out to be root policy instead"]
+    page --> next2
+    next3["move to product package docs if the question is user-facing behavior rather than repository health"]
+    page --> next3
     class page page;
-    class role1,role2,role3 positive;
-    class health1,health2,health3 anchor;
-    class outcome1,outcome2,outcome3 action;
+    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
+    class next1,next2,next3 action;
 ```
 
-## Current Surfaces
+## Current Quality Surfaces
 
-- `sbom/requirements_writer.py`
-- `tests/test_sbom_requirements_writer.py`
-- shared dependency metadata in package `pyproject.toml` files
+- dependency analysis in `quality/deptry_scan.py`
+- package-specific checks under `packages/`
+- root test coverage through `packages/bijux-canon-dev/tests`
 
 ## Concrete Anchors
 
@@ -72,7 +77,7 @@ flowchart RL
 
 ## Decision Rule
 
-Use `SBOM and Supply Chain` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use `Quality Gates` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
 
 ## What This Page Answers
 
@@ -98,8 +103,8 @@ This section can describe maintainer automation and repository health work, but 
 
 ## Purpose
 
-This page explains the home for supply-chain oriented repository tooling.
+This page explains how the package participates in repository-wide correctness and consistency.
 
 ## Stability
 
-Keep it aligned with the checked-in SBOM helpers and tests.
+Keep it aligned with the actual quality checks that run in tests or CI.

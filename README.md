@@ -120,7 +120,7 @@ maintaining the workspace rather than for end-user installation.
 - Repository handbook source: [`docs/index.md`](docs/index.md)
 - Repository overview section: [`docs/bijux-canon`](docs/bijux-canon)
 - Compatibility handbook: [`docs/compat-packages`](docs/compat-packages)
-- Developer tooling handbook: [`docs/bijux-canon-dev`](docs/bijux-canon-dev)
+- Maintenance handbook: [`docs/bijux-canon-maintain`](docs/bijux-canon-maintain)
 
 If you want the fastest high-level orientation, start with the repository
 handbook and then jump to the package docs that match the layer you care about.
