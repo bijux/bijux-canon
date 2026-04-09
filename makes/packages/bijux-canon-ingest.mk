@@ -1,7 +1,4 @@
-
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package/bootstrap.mk
-include $(ROOT_MAKE_DIR)/bijux-py/package/api-python.mk
-
+PACKAGE_KIND := api-python
 PACKAGE_IMPORT_NAME            := bijux_canon_ingest
 PACKAGE_LINT_EXTRA_DIRS        := stubs
 PACKAGE_CLEAN_EXTRA_PATHS      := site
@@ -29,4 +26,4 @@ PACKAGE_INSTALL_TARGETS := \
   fmt-artifacts lint-artifacts interrogate-report
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
-include $(ROOT_MAKE_DIR)/bijux-py/package/gates.mk
+include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
