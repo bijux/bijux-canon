@@ -6,6 +6,9 @@
   --bijux-panel-strong: rgba(79, 70, 229, 0.08);
   --bijux-map-shadow: 0 22px 54px rgba(30, 41, 89, 0.14);
   --bijux-surface-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0));
+  --bijux-shell-width: 84rem;
+  --bijux-shell-width-wide: 92rem;
+  --bijux-shell-width-ultra: 102rem;
 }
 
 [data-md-color-scheme="default"] {
@@ -326,8 +329,24 @@ button {
 }
 
 @media screen and (min-width: 76.25em) {
+  .md-grid {
+    max-width: min(calc(100vw - 3rem), var(--bijux-shell-width));
+  }
+
   .md-header__title {
     display: none;
+  }
+}
+
+@media screen and (min-width: 90em) {
+  :root {
+    --bijux-shell-width: var(--bijux-shell-width-wide);
+  }
+}
+
+@media screen and (min-width: 110em) {
+  :root {
+    --bijux-shell-width: var(--bijux-shell-width-ultra);
   }
 }
 
