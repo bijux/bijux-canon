@@ -12,6 +12,8 @@ CLI_HELP = """
  Usage: python -m bijux_canon_index.interfaces.cli.app [OPTIONS] COMMAND        
                                                        [ARGS]...                
                                                                                 
+ Handle main callback.                                                          
+                                                                                
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --format          TEXT  Output format: json|table (default: json)            │
 │ --output          PATH  Write output to a file                               │
@@ -22,22 +24,22 @@ CLI_HELP = """
 │ --help                  Show this message and exit.                          │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
-│ list-artifacts                                                               │
-│ list-runs                                                                    │
-│ init                                                                         │
-│ capabilities                                                                 │
-│ audit                                                                        │
-│ ingest                                                                       │
-│ validate                                                                     │
-│ doctor                                                                       │
-│ materialize                                                                  │
-│ execute                                                                      │
-│ explain                                                                      │
-│ replay                                                                       │
-│ compare                                                                      │
-│ bench                                                                        │
-│ metrics                                                                      │
-│ debug-bundle                                                                 │
+│ list-artifacts   List artifacts.                                             │
+│ list-runs        List runs.                                                  │
+│ init             Handle init.                                                │
+│ capabilities     Handle capabilities.                                        │
+│ audit            Handle audit.                                               │
+│ ingest           Handle ingest.                                              │
+│ validate         Validate ctx.                                               │
+│ doctor           Handle doctor.                                              │
+│ materialize      Handle materialize.                                         │
+│ execute          Handle execute.                                             │
+│ explain          Explain ctx.                                                │
+│ replay           Handle replay.                                              │
+│ compare          Compare ctx.                                                │
+│ bench            Handle bench.                                               │
+│ metrics          Handle metrics snapshot.                                    │
+│ debug-bundle     Handle debug bundle.                                        │
 │ vdb              Vector DB utilities                                         │
 │ nd               ND utilities                                                │
 │ config           Configuration utilities                                     │
