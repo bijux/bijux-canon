@@ -23,7 +23,7 @@ def _drop_trace_entry(record_fn: Callable, target_node: str) -> Callable:
     def wrapper(entry: object) -> None:
         if getattr(entry, "node", "") == target_node and not dropped["seen"]:
             dropped["seen"] = True
-            return
+            return None
         return record_fn(entry)
 
     return wrapper

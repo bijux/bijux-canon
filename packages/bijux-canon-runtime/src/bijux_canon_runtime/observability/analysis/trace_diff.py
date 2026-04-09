@@ -125,8 +125,7 @@ def _event_signature(
         ]
     if acceptability == ReplayAcceptability.INVARIANT_PRESERVING:
         return [(event.event_type, event.step_index) for event in trace.events]
-    else:
-        return sorted((event.event_type, event.step_index) for event in trace.events)
+    return sorted((event.event_type, event.step_index) for event in trace.events)
 
 
 def _dataset_payload(dataset: DatasetDescriptor) -> dict[str, object]:

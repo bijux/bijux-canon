@@ -10,9 +10,7 @@ from datetime import datetime, timedelta
 try:
     from datetime import UTC
 except ImportError:  # pragma: no cover - interpreter compatibility for tooling
-    from datetime import timezone
-
-    UTC = timezone.utc
+    UTC = UTC
 
 from bijux_canon_ingest.domain.capabilities import Clock
 

@@ -8,8 +8,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from bijux_canon_ingest.application.index_runtime import IndexBackend, StoredIndex
-from bijux_canon_ingest.retrieval.indexes import BM25Index, NumpyCosineIndex, load_index
 from bijux_canon_ingest.result.types import Err, Ok, Result
+from bijux_canon_ingest.retrieval.indexes import BM25Index, NumpyCosineIndex, load_index
 
 
 def save_stored_index(index: StoredIndex, path: Path) -> Result[None, str]:

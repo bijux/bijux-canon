@@ -5,10 +5,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from bijux_canon_ingest.fp.effects.state import State, get, modify, pure, put, run_state
 from hypothesis import given, settings
 import hypothesis.strategies as st
-
-from bijux_canon_ingest.fp.effects.state import State, get, modify, pure, put, run_state
 
 settings.register_profile("ci", max_examples=250, derandomize=True, deadline=None)
 settings.load_profile("ci")

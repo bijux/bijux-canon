@@ -42,9 +42,7 @@ def _rewrite_config(
                     f"  - {_rewrite_watch_path(watch_path, source_root=source_root)}"
                 )
                 continue
-            if stripped and not line.startswith(" "):
-                in_watch_block = False
-            elif not stripped:
+            if stripped and not line.startswith(" ") or not stripped:
                 in_watch_block = False
 
         if line.startswith("watch:"):

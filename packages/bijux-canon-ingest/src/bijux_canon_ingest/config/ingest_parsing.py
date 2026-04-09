@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from bijux_canon_ingest.config.cleaning import CleanConfig, DEFAULT_CLEAN_CONFIG, RULES
+from bijux_canon_ingest.config.cleaning import DEFAULT_CLEAN_CONFIG, RULES, CleanConfig
 from bijux_canon_ingest.config.ingest import IngestConfig
 from bijux_canon_ingest.core.types import RagEnv
 from bijux_canon_ingest.result import Err, Ok, Result

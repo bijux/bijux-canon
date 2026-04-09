@@ -13,6 +13,7 @@ from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 import hashlib
 
+from bijux_canon_ingest.core.structural_dedup import structural_dedup_lazy
 from bijux_canon_ingest.core.types import (
     Chunk,
     ChunkWithoutEmbedding,
@@ -21,7 +22,6 @@ from bijux_canon_ingest.core.types import (
     RagEnv,
     RawDoc,
 )
-from bijux_canon_ingest.core.structural_dedup import structural_dedup_lazy
 from bijux_canon_ingest.result.types import Err, Ok, Result
 
 

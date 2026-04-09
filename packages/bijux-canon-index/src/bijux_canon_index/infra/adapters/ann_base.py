@@ -75,11 +75,11 @@ class AnnExecutionRequestRunner(ABC):
 
     def warmup(self, artifact_id: str, queries: Iterable[Iterable[float]]) -> None:
         _ = (artifact_id, queries)
-        return None
+        return
 
     def compact(self, artifact_id: str, vectors: Iterable[Vector], metric: str) -> None:
         _ = (artifact_id, vectors, metric)
-        return None
+        return
 
     def query(
         self, vector: Iterable[float], k: int, **params: object
@@ -90,7 +90,7 @@ class AnnExecutionRequestRunner(ABC):
     def set_randomness_profile(self, randomness: object | None) -> None:
         """Optional hook to pass randomness profile (e.g. seed) into the runner."""
         _ = randomness
-        return None
+        return
 
     @abstractmethod
     def approximate_request(

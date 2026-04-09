@@ -37,8 +37,6 @@ from .validation_issues import (
 class ValidationError(Exception):
     """Exception for validation failures, used for strict mode."""
 
-    pass
-
 
 class ValidatorAgent(BaseAgent):
     """Enhanced ValidatorAgent for a multi-agent system.
@@ -114,7 +112,6 @@ class ValidatorAgent(BaseAgent):
         Currently, no additional initialization is required beyond what's done in
         __init__.
         """
-        pass
 
     @property
     def capabilities(self) -> list[str]:

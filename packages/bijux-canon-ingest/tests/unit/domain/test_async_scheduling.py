@@ -6,9 +6,6 @@ from __future__ import annotations
 import asyncio
 from random import Random
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.domain.effects.asyncio import (
     FairnessPolicy,
     FakeClock,
@@ -19,6 +16,8 @@ from bijux_canon_ingest.domain.effects.asyncio import (
     async_gen_rate_limited,
 )
 from bijux_canon_ingest.result.types import Ok
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 
 @given(

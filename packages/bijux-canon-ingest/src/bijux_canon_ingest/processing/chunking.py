@@ -10,6 +10,7 @@ from collections.abc import Iterable, Iterator
 from typing import TypeVar
 
 from bijux_canon_ingest.core.types import ChunkWithoutEmbedding, CleanDoc, RagEnv
+
 from .stages import (
     iter_chunk_doc,
     iter_chunk_spans,

@@ -3,14 +3,13 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_ingest.application.document_inputs import (
     coerce_raw_doc,
     raw_docs_to_chunks,
 )
 from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.result import Ok
+import pytest
 
 
 def test_coerce_raw_doc_accepts_mapping_rows() -> None:

@@ -37,7 +37,7 @@ class _ResourceStream(Generic[R], AbstractContextManager[Iterator[R]]):
         if callable(close):
             with contextlib.suppress(Exception):
                 close()
-        return None
+        return
 
 
 def with_resource_stream(gen: Iterator[R]) -> AbstractContextManager[Iterator[R]]:
@@ -67,7 +67,7 @@ class _ManagedStream(Generic[R], AbstractContextManager[Iterator[R]]):
             if callable(close):
                 with contextlib.suppress(Exception):
                     close()
-        return None
+        return
 
 
 def managed_stream(
@@ -101,7 +101,7 @@ def nested_managed(
             if self._stack is None:  # pragma: no cover - defensive invariant
                 raise RuntimeError("nested resource stack was not entered")
             self._stack.__exit__(exc_type, exc, tb)
-            return None
+            return
 
     return _Nested(managers)
 

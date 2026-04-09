@@ -22,8 +22,9 @@ def _matches_forbidden(module: str, level: int) -> bool:
         level > 0
         and (
             module in FORBIDDEN_RELATIVE
-            or module.startswith(f"{FORBIDDEN_RELATIVE[0]}.")
-            or module.startswith(f"{FORBIDDEN_RELATIVE[1]}.")
+            or module.startswith(
+                (f"{FORBIDDEN_RELATIVE[0]}.", f"{FORBIDDEN_RELATIVE[1]}.")
+            )
         )
     )
 

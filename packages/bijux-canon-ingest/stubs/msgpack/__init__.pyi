@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 def packb(o: Any, **kwargs: Any) -> bytes: ...
 def unpackb(data: bytes, **kwargs: Any) -> Any: ...

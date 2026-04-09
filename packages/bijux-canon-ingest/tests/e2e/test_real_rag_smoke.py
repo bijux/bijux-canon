@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.application.service import IngestService
+from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.result import is_ok
 
 

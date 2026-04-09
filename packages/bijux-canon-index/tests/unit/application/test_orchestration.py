@@ -9,7 +9,7 @@ class SpyAuthz:
 
     def check(self, tx, *, action, resource, actor=None, context=None):
         self.calls.append((action, resource))
-        return None
+        return
 
 
 def test_ingest_uses_authz_and_tx(monkeypatch):

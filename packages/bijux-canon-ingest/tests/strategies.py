@@ -7,10 +7,9 @@ from __future__ import annotations
 
 import hashlib
 
+from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc, TextNode, TreeDoc
 import hypothesis.strategies as st
 from hypothesis.strategies import SearchStrategy
-
-from bijux_canon_ingest.core.types import Chunk, RagEnv, RawDoc, TextNode, TreeDoc
 
 
 def raw_doc_strategy() -> SearchStrategy[RawDoc]:

@@ -3,9 +3,6 @@
 
 from __future__ import annotations
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.integrations.toolz_compat import (
     compose,
     curried_filter,
@@ -13,6 +10,8 @@ from bijux_canon_ingest.integrations.toolz_compat import (
     pipe,
     reduceby,
 )
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 
 @given(xs=st.lists(st.integers(), max_size=200))

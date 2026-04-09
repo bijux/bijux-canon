@@ -3,9 +3,7 @@
 
 from __future__ import annotations
 
-from hypothesis import given
-from hypothesis import strategies as st
-
+from bijux_canon_ingest.fp.core import Err, ErrInfo, NoneVal, Ok, Some
 from bijux_canon_ingest.interfaces.serialization.codecs import (
     MIGRATORS,
     Envelope,
@@ -19,7 +17,8 @@ from bijux_canon_ingest.interfaces.serialization.codecs import (
     to_json,
     to_msgpack,
 )
-from bijux_canon_ingest.fp.core import Err, ErrInfo, NoneVal, Ok, Some
+from hypothesis import given
+from hypothesis import strategies as st
 
 
 @given(opt=st.one_of(st.builds(Some, st.integers()), st.just(NoneVal())))

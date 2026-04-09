@@ -7,6 +7,8 @@ from bijux_canon_ingest.core.types import ChunkWithoutEmbedding
 from bijux_canon_ingest.domain.effects import perform
 from bijux_canon_ingest.domain.facades import (
     Keyed,
+)
+from bijux_canon_ingest.domain.facades import (
     deterministic_embedder_port as legacy_embedder_port,
 )
 from bijux_canon_ingest.infra.adapters.embedder_port import deterministic_embedder_port

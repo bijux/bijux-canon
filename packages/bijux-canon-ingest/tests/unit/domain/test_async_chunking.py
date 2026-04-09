@@ -5,15 +5,14 @@ from __future__ import annotations
 
 import asyncio
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.domain.effects.asyncio import (
     ChunkPolicy,
     FakeSleeper,
     async_gen_chunk,
 )
 from bijux_canon_ingest.result.types import Ok
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 
 @given(items=st.lists(st.integers(), max_size=200))

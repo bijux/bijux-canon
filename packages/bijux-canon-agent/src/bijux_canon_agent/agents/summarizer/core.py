@@ -125,7 +125,6 @@ class SummarizerAgent(BaseAgent):
 
     def _initialize(self) -> None:
         """Initialize the agent by setting up any necessary resources."""
-        pass
 
     def _cleanup(self) -> None:
         """Clean up resources used by the agent."""

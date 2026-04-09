@@ -26,10 +26,10 @@ from bijux_canon_ingest.fp.core import (
     VSuccess,
 )
 from bijux_canon_ingest.interfaces.serialization.envelopes import (
+    MIGRATORS,
     Decoder,
     Encoder,
     Envelope,
-    MIGRATORS,
     from_json,
     from_msgpack,
     iter_msgpack,

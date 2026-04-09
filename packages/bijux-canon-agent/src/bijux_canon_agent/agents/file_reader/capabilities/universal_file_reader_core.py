@@ -57,8 +57,6 @@ from .text import (
 class FileExtractionError(Exception):
     """Custom exception for file extraction errors."""
 
-    pass
-
 
 class UniversalFileReader:
     """A robust, async-compatible utility class for reading multiple file formats.
@@ -278,16 +276,14 @@ class UniversalFileReader:
                 > 0.8
             ):
                 return await self._extract_text_file(file_path)
-            else:
-                return {
-                    "error": "Binary or unknown file type - not processed",
-                    "file_info": file_info,
-                    "warnings": ["File appears to be binary and cannot be processed"],
-                    "action_plan": [
-                        "Convert file to a supported format or register a "
-                        "custom extractor"
-                    ],
-                }
+            return {
+                "error": "Binary or unknown file type - not processed",
+                "file_info": file_info,
+                "warnings": ["File appears to be binary and cannot be processed"],
+                "action_plan": [
+                    "Convert file to a supported format or register a custom extractor"
+                ],
+            }
         except Exception as e:
             return {
                 "error": f"Could not analyze unknown file type: {e}",

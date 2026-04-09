@@ -5,9 +5,6 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from hypothesis import given
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.fp.error import ErrorCode
 from bijux_canon_ingest.fp.validation import VFailure, VSuccess
 from bijux_canon_ingest.retrieval.domain import (
@@ -16,6 +13,8 @@ from bijux_canon_ingest.retrieval.domain import (
     Embedding,
     assemble,
 )
+from hypothesis import given
+from hypothesis import strategies as st
 
 raw_tags = st.lists(st.text(min_size=1), min_size=0, max_size=15)
 

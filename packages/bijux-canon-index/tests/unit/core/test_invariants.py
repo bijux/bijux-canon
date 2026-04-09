@@ -29,15 +29,15 @@ def test_validate_execution_artifact_happy_path():
 
 @pytest.mark.parametrize("field", ["corpus_fingerprint", "vector_fingerprint"])
 def test_validate_execution_artifact_empty_fingerprints(field: str):
-    kwargs = dict(
-        artifact_id="art-1",
-        corpus_fingerprint="corp-fp",
-        vector_fingerprint="vec-fp",
-        metric=next(iter(ALLOWED_METRICS)),
-        scoring_version="v1",
-        build_params=(),
-        execution_contract=ExecutionContract.DETERMINISTIC,
-    )
+    kwargs = {
+        "artifact_id": "art-1",
+        "corpus_fingerprint": "corp-fp",
+        "vector_fingerprint": "vec-fp",
+        "metric": next(iter(ALLOWED_METRICS)),
+        "scoring_version": "v1",
+        "build_params": (),
+        "execution_contract": ExecutionContract.DETERMINISTIC,
+    }
     kwargs[field] = ""
     with pytest.raises(InvariantError):
         ExecutionArtifact(**kwargs)

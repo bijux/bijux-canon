@@ -3,10 +3,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 import sys
 import types
-from typing import Callable
 
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor

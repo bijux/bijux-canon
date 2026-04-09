@@ -7,10 +7,9 @@ from functools import partial, reduce
 from itertools import chain
 import operator
 
+from bijux_canon_ingest.integrations.stdlib_fp import merge_streams, running_sum
 from hypothesis import given, settings
 from hypothesis import strategies as st
-
-from bijux_canon_ingest.integrations.stdlib_fp import merge_streams, running_sum
 
 
 @given(a=st.lists(st.integers()), b=st.lists(st.integers()))

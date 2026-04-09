@@ -178,8 +178,7 @@ class ReferenceAnnRunner(AnnExecutionRequestRunner):
         results = list(self.vectors.query(artifact.artifact_id, request))
         if not results:
             return ()
-        truncated = results[: max(1, len(results) // 2)]
-        return truncated
+        return results[: max(1, len(results) // 2)]
 
     def _query_params_metadata(self) -> tuple[tuple[str, str], ...]:
         params = self._last_query_metadata.get("query_params")

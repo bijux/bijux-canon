@@ -65,14 +65,12 @@ class StageRunnerAgent(BaseAgent):
         Currently, no additional initialization is required beyond what's done in
         __init__.
         """
-        pass
 
     def _cleanup(self) -> None:
         """Clean up resources used by the agent.
 
         Currently, no additional cleanup is required.
         """
-        pass
 
     def set_stages(self, stages: Sequence[Mapping[str, Any]]) -> None:
         """Set the list of stages to be executed by the StageRunnerAgent.

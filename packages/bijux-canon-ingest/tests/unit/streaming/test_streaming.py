@@ -5,8 +5,6 @@ from __future__ import annotations
 
 from itertools import islice
 
-import pytest
-
 from bijux_canon_ingest import (
     Chunk,
     ChunkWithoutEmbedding,
@@ -16,12 +14,12 @@ from bijux_canon_ingest import (
     RawDoc,
     TraceLens,
     _trace_iter,
+    build_ingest_deps,
     compose_transforms,
     fence_k,
     fork2_lockstep,
     gen_bounded_chunks,
     gen_overlapping_chunks,
-    build_ingest_deps,
     make_chunk_stream_fn,
     make_peek,
     make_sampler_stable,
@@ -30,6 +28,7 @@ from bijux_canon_ingest import (
     structural_dedup_lazy,
     throttle,
 )
+import pytest
 
 
 def test_dedup_iterator_preserves_order() -> None:

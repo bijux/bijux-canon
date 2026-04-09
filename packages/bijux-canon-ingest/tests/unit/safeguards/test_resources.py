@@ -5,17 +5,16 @@ from __future__ import annotations
 
 import contextlib
 
-from hypothesis import given
-from hypothesis import strategies as st
-import pytest
-
+from bijux_canon_ingest.result import Err, Ok
 from bijux_canon_ingest.safeguards.breakers import short_circuit_on_err_truncate
 from bijux_canon_ingest.safeguards.resources import (
     managed_stream,
     nested_managed,
     with_resource_stream,
 )
-from bijux_canon_ingest.result import Err, Ok
+from hypothesis import given
+from hypothesis import strategies as st
+import pytest
 
 
 def test_cleanup_on_normal_exhaustion() -> None:

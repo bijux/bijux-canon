@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterator, MutableMapping
+from collections.abc import Iterator, MutableMapping
+from typing import Any
 
 class ConfigDict(MutableMapping[str, Any]):
     def __init__(

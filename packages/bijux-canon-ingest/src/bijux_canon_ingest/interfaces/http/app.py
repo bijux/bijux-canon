@@ -10,10 +10,6 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from bijux_canon_ingest.application.service import (
     IngestService,
 )
-from bijux_canon_ingest.processing.stages import (
-    ChunkAndEmbedConfig,
-    chunk_and_embed_docs,
-)
 from bijux_canon_ingest.interfaces.http.mappers import (
     ask_response_from_payload,
     chunk_response_from_result,
@@ -36,6 +32,10 @@ from bijux_canon_ingest.interfaces.http.runtime import (
     InMemoryIndexStore,
     build_openapi_factory,
     index_backend_from_name,
+)
+from bijux_canon_ingest.processing.stages import (
+    ChunkAndEmbedConfig,
+    chunk_and_embed_docs,
 )
 from bijux_canon_ingest.result.types import Err
 
@@ -209,7 +209,7 @@ def create_app() -> FastAPI:
         return ask_response_from_payload(res.value)
 
     app.include_router(router)
-    setattr(app, "openapi", build_openapi_factory(app))
+    app.openapi = build_openapi_factory(app)
     return app
 
 

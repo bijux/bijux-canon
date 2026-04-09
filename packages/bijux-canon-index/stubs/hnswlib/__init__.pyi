@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Iterable, Sequence, Tuple
+from collections.abc import Iterable, Sequence
 
 class Index:
     def __init__(self, space: str, dim: int, seed: int | None = ...) -> None: ...
@@ -10,7 +10,7 @@ class Index:
         self, max_elements: int, ef_construction: int = ..., M: int = ...
     ) -> None: ...
     def add_items(
-        self, data: Iterable[Tuple[float, ...]], ids: Iterable[int]
+        self, data: Iterable[tuple[float, ...]], ids: Iterable[int]
     ) -> None: ...
     def knn_query(
         self, data: Sequence[Sequence[float]], k: int = ...

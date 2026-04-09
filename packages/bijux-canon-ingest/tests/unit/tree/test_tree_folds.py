@@ -3,9 +3,6 @@
 
 from __future__ import annotations
 
-from hypothesis import given
-from tests.strategies import tree_strategy
-
 from bijux_canon_ingest.tree import (
     flatten,
     fold_count_length_maxdepth,
@@ -13,6 +10,8 @@ from bijux_canon_ingest.tree import (
     fold_tree_buffered,
     fold_tree_no_path,
 )
+from hypothesis import given
+from tests.strategies import tree_strategy
 
 
 def recursive_fold(tree, seed, combiner, *, depth: int = 0, path: tuple[int, ...] = ()):
@@ -52,7 +51,7 @@ def test_fold_preorder_matches_flatten(tree) -> None:
 
     def step(_, _n, _d, p):
         order_via_fold.append(p)
-        return None
+        return
 
     fold_tree(tree, None, step)
     order_via_flatten = [c.metadata["path"] for c in flatten(tree)]

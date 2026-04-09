@@ -6,10 +6,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import cast
 
-from hypothesis import given
-from hypothesis import strategies as st
-import pytest
-
 from bijux_canon_ingest.fp.applicative import (
     Validation,
     VFailure,
@@ -19,6 +15,9 @@ from bijux_canon_ingest.fp.applicative import (
     v_failure,
     v_success,
 )
+from hypothesis import given
+from hypothesis import strategies as st
+import pytest
 
 
 @given(x=st.integers())

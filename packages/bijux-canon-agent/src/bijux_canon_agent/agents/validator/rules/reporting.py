@@ -79,7 +79,7 @@ def persistence_error(
     agent: Any, msg: str, context: dict[str, Any] | None, stage: str
 ) -> dict[str, Any]:
     """Build an error result dictionary for failures in the run loop."""
-    result = {
+    return {
         "validation_status": "invalid",
         "valid": False,
         "errors": [msg],
@@ -92,7 +92,6 @@ def persistence_error(
         "duration_sec": 0.0,
         "action_plan": [f"Fix error: {msg}"],
     }
-    return result
 
 
 async def error_result(

@@ -5,6 +5,13 @@
 
 from __future__ import annotations
 
+from bijux_canon_ingest import (
+    chunk_doc,
+    clean_doc,
+    embed_chunk,
+    structural_dedup_chunks,
+)
+from bijux_canon_ingest.core.types import ChunkWithoutEmbedding, RagEnv, RawDoc
 from hypothesis import given
 import hypothesis.strategies as st
 from tests.strategies import (
@@ -13,14 +20,6 @@ from tests.strategies import (
     pipeline_chunk_strategy,
     raw_doc_strategy,
 )
-
-from bijux_canon_ingest import (
-    chunk_doc,
-    clean_doc,
-    embed_chunk,
-    structural_dedup_chunks,
-)
-from bijux_canon_ingest.core.types import ChunkWithoutEmbedding, RagEnv, RawDoc
 
 
 @given(doc=raw_doc_strategy())

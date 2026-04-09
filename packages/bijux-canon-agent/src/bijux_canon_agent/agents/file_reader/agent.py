@@ -117,14 +117,12 @@ class FileReaderAgent(BaseAgent):
         Currently, no additional initialization is required beyond what's done in
         __init__.
         """
-        pass
 
     def _cleanup(self) -> None:
         """Clean up resources used by the agent.
 
         Currently, no additional cleanup is required.
         """
-        pass
 
     @property
     def capabilities(self) -> list[str]:

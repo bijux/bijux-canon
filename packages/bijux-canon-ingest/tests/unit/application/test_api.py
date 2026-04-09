@@ -5,34 +5,33 @@
 
 from __future__ import annotations
 
-from hypothesis import given
-import pytest
-from tests.strategies import doc_list_strategy, env_strategy
-
 from bijux_canon_ingest import (
     DEFAULT_RULES,
     All,
     Err,
-    LenGt,
-    Ok,
     IngestBoundaryDeps,
     IngestConfig,
+    LenGt,
+    Ok,
     StartsWith,
-    parse_ingest_config,
+    build_ingest_deps,
     clean_doc,
     embed_chunk,
     eval_pred,
+    gen_chunk_doc,
+    iter_ingest_pipeline_core,
+    parse_ingest_config,
+    parse_rule,
     run_ingest_pipeline_docs,
     run_ingest_pipeline_path,
-    gen_chunk_doc,
-    build_ingest_deps,
-    iter_ingest_pipeline_core,
-    parse_rule,
     structural_dedup_chunks,
 )
-from bijux_canon_ingest.core.types import RagEnv, RawDoc
 from bijux_canon_ingest.core.rules_lint import assert_rule_is_safe_expr
+from bijux_canon_ingest.core.types import RagEnv, RawDoc
 from bijux_canon_ingest.result import Result
+from hypothesis import given
+import pytest
+from tests.strategies import doc_list_strategy, env_strategy
 
 
 def _baseline_chunks(docs: list[RawDoc], env: RagEnv) -> list:

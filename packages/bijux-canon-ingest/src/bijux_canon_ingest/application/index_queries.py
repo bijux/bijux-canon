@@ -8,11 +8,11 @@ from __future__ import annotations
 import msgpack  # type: ignore[import-untyped]
 
 from bijux_canon_ingest.application.index_runtime import IndexBackend, StoredIndex
+from bijux_canon_ingest.result.types import Err, Ok, Result
 from bijux_canon_ingest.retrieval.embedder_factory import embedder_for_model
 from bijux_canon_ingest.retrieval.indexes import BM25Index, NumpyCosineIndex
 from bijux_canon_ingest.retrieval.ports import Candidate
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
-from bijux_canon_ingest.result.types import Err, Ok, Result
 
 
 def retrieve_candidates(

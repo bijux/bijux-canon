@@ -25,19 +25,19 @@ from bijux_canon_ingest.application.index_queries import (
     retrieve_blob_candidates,
     retrieve_candidates,
 )
-from bijux_canon_ingest.application.index_storage import (
-    load_stored_index,
-    save_stored_index,
-)
 from bijux_canon_ingest.application.index_runtime import (
     IndexBackend,
     StoredIndex,
     build_stored_index,
 )
+from bijux_canon_ingest.application.index_storage import (
+    load_stored_index,
+    save_stored_index,
+)
+from bijux_canon_ingest.result.types import Err, Ok, Result
 from bijux_canon_ingest.retrieval.answering import ExtractiveAnswerer
 from bijux_canon_ingest.retrieval.ports import Answer, Candidate
 from bijux_canon_ingest.retrieval.rerankers import LexicalOverlapReranker
-from bijux_canon_ingest.result.types import Err, Ok, Result
 
 
 @dataclass(frozen=True, slots=True)

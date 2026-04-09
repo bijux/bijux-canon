@@ -85,9 +85,7 @@ def _public_names(module):
         if name.startswith("_"):
             continue
         obj_module = getattr(obj, "__module__", None)
-        if obj_module == module.__name__:
-            names.add(name)
-        elif (
+        if obj_module == module.__name__ or (
             not inspect.ismodule(obj)
             and obj.__class__.__module__ == "builtins"
             and obj_module is None

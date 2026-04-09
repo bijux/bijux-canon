@@ -47,9 +47,12 @@ def _core_import_graph() -> dict[str, set[str]]:
 def _guarded_by_type_checking(node: ast.AST) -> bool:
     parent = getattr(node, "parent", None)
     while parent:
-        if isinstance(parent, ast.If) and isinstance(parent.test, ast.Name):
-            if parent.test.id in {"TYPE_CHECKING", "_TYPE_CHECKING"}:
-                return True
+        if (
+            isinstance(parent, ast.If)
+            and isinstance(parent.test, ast.Name)
+            and parent.test.id in {"TYPE_CHECKING", "_TYPE_CHECKING"}
+        ):
+            return True
         parent = getattr(parent, "parent", None)
     return False
 

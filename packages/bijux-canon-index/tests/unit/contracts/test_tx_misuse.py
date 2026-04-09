@@ -18,10 +18,12 @@ def backend(request, tmp_path):
 
 
 def test_nested_tx_fails(backend):
-    with pytest.raises(AtomicityViolationError):
-        with backend.tx_factory():
-            with backend.tx_factory():
-                pass
+    with (
+        pytest.raises(AtomicityViolationError),
+        backend.tx_factory(),
+        backend.tx_factory(),
+    ):
+        pass
 
 
 def test_commit_without_enter_fails(backend):

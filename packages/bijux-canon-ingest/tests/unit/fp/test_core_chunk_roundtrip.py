@@ -7,10 +7,6 @@ import dataclasses
 from dataclasses import dataclass
 from typing import Literal, assert_never
 
-from hypothesis import given
-from hypothesis import strategies as st
-import pytest
-
 from bijux_canon_ingest.fp.core import (
     Chunk,
     ChunkState,
@@ -24,6 +20,9 @@ from bijux_canon_ingest.fp.core import (
     make_chunk,
     success,
 )
+from hypothesis import given
+from hypothesis import strategies as st
+import pytest
 
 json_value = st.recursive(
     st.none()

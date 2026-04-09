@@ -7,9 +7,6 @@ import asyncio
 from random import Random
 import warnings
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.domain.effects.asyncio import (
     FakeClock,
     ResilienceEnv,
@@ -19,6 +16,8 @@ from bijux_canon_ingest.domain.effects.asyncio import (
     make_fake_timeout_ctx,
 )
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 
 def test_identity_when_no_retry_no_timeout() -> None:

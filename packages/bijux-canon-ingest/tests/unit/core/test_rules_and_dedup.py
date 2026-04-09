@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_ingest.core.rules_dsl import (
     abstract_min_len,
     category_startswith,
@@ -17,6 +15,7 @@ from bijux_canon_ingest.core.rules_lint import assert_rule_is_safe_expr
 from bijux_canon_ingest.core.structural_dedup import structural_dedup_lazy
 from bijux_canon_ingest.core.types import Chunk, RawDoc
 from bijux_canon_ingest.result import Ok
+import pytest
 
 
 def test_parse_rule_supports_safe_doc_expressions() -> None:

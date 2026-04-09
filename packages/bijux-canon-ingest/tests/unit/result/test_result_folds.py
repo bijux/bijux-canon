@@ -3,9 +3,6 @@
 
 from __future__ import annotations
 
-from hypothesis import given
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.result import (
     Err,
     Ok,
@@ -15,6 +12,8 @@ from bijux_canon_ingest.result import (
     fold_results_fail_fast,
     fold_until_error_rate,
 )
+from hypothesis import given
+from hypothesis import strategies as st
 
 
 @st.composite

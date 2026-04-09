@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from bijux_canon_ingest.application.document_inputs import raw_docs_to_chunks
+from bijux_canon_ingest.result.types import Err, Ok, Result
 from bijux_canon_ingest.retrieval.embedder_factory import embedder_for_model
 from bijux_canon_ingest.retrieval.indexes import (
     BM25Index,
@@ -17,7 +18,6 @@ from bijux_canon_ingest.retrieval.indexes import (
     build_bm25_index,
     build_numpy_cosine_index,
 )
-from bijux_canon_ingest.result.types import Err, Ok, Result
 
 
 class IndexBackend(StrEnum):

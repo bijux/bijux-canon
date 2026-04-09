@@ -3,15 +3,14 @@
 
 from __future__ import annotations
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
-import pytest
-
 from bijux_canon_ingest.interfaces.serialization.pydantic_models import (
     ChunkModel,
     deserialize_model,
     serialize_model,
 )
+from hypothesis import given, settings
+from hypothesis import strategies as st
+import pytest
 
 nonfinite = st.sampled_from([float("nan"), float("inf"), float("-inf")])
 

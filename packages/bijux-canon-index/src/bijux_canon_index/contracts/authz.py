@@ -65,4 +65,4 @@ class DenyAllAuthz(Authz):
             raise AuthzDeniedError(
                 message=f"Action '{action}' on '{resource}' denied by policy"
             )
-        return None
+        return

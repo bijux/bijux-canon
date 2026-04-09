@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
+from bijux_canon_ingest.fp.effects.writer import Writer, listen, pure, run_writer, tell
 from hypothesis import given, settings
 import hypothesis.strategies as st
-
-from bijux_canon_ingest.fp.effects.writer import Writer, listen, pure, run_writer, tell
 
 settings.register_profile("ci", max_examples=250, derandomize=True, deadline=None)
 settings.load_profile("ci")

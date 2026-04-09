@@ -3,9 +3,6 @@
 
 from __future__ import annotations
 
-from hypothesis import given, settings
-import hypothesis.strategies as st
-
 from bijux_canon_ingest.fp.effects.configurable import (
     toggle_logging,
     toggle_metrics,
@@ -13,6 +10,8 @@ from bijux_canon_ingest.fp.effects.configurable import (
 )
 from bijux_canon_ingest.fp.effects.writer import Writer
 from bijux_canon_ingest.result.types import Err, Ok, Result
+from hypothesis import given, settings
+import hypothesis.strategies as st
 
 settings.register_profile("ci", max_examples=200, derandomize=True, deadline=None)
 settings.load_profile("ci")

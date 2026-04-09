@@ -21,10 +21,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-import pytest
-
 from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.result import Err, Ok
+import pytest
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -147,8 +146,7 @@ def rag_index(
     )
 
     _unwrap_ok(save(index0, index_path), what="save_index")
-    index1 = _unwrap_ok(load(index_path), what="load_index")
-    return index1
+    return _unwrap_ok(load(index_path), what="load_index")
 
 
 __all__ = [

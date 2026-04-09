@@ -205,6 +205,7 @@ class MemoryTx(Tx):
             actions.append("execution_results")
         return actions
         self._state.in_tx = False
+        return None
 
     def abort(self) -> None:
         if not self._entered:

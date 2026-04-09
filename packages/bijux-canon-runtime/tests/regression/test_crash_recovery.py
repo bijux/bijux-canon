@@ -15,8 +15,8 @@ from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionReadStore,
     DuckDBExecutionWriteStore,
 )
-from bijux_canon_runtime.testing.crash_recovery import run_with_crash
 from bijux_canon_runtime.ontology.ids import RunID, TenantID
+from bijux_canon_runtime.testing.crash_recovery import run_with_crash
 import duckdb
 import pytest
 

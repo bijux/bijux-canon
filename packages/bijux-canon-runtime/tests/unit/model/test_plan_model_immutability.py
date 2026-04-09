@@ -3,8 +3,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import dataclasses
-from typing import Any, Callable, cast
+from typing import Any, cast
 
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor

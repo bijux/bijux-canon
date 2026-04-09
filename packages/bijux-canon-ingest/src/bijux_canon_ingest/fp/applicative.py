@@ -10,9 +10,9 @@
 from __future__ import annotations
 
 from .validation import (
+    Validation,
     VFailure,
     VSuccess,
-    Validation,
     compose,
     dedup_stable,
     from_validation,

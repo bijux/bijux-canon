@@ -3,11 +3,10 @@
 
 from __future__ import annotations
 
+from bijux_canon_ingest.result import NONE, Err, NoneVal, Ok, Some
 from hypothesis import given
 from hypothesis import strategies as st
 import pytest
-
-from bijux_canon_ingest.result import NONE, Err, NoneVal, Ok, Some
 
 
 @given(x=st.integers())

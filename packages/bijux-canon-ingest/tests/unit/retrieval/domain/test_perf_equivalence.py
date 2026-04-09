@@ -3,10 +3,6 @@
 
 from __future__ import annotations
 
-from hypothesis import given
-from hypothesis import strategies as st
-import numpy as np
-
 from bijux_canon_ingest.fp.validation import VFailure, VSuccess
 from bijux_canon_ingest.retrieval.domain import (
     Chunk,
@@ -14,6 +10,9 @@ from bijux_canon_ingest.retrieval.domain import (
     ChunkText,
     process_batch_hybrid,
 )
+from hypothesis import given
+from hypothesis import strategies as st
+import numpy as np
 
 chunk_strat = st.builds(
     Chunk,

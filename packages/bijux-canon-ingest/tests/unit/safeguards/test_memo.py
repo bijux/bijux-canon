@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
+from bijux_canon_ingest.safeguards.memo import lru_cache_custom, memoize_keyed
 from hypothesis import given
 from hypothesis import strategies as st
-
-from bijux_canon_ingest.safeguards.memo import lru_cache_custom, memoize_keyed
 
 
 @given(inputs=st.lists(st.integers(), min_size=100, max_size=1000, unique=False))

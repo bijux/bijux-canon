@@ -143,7 +143,6 @@ class CritiqueAgent(BaseAgent):
 
         No additional initialization is required beyond what is done in __init__.
         """
-        pass
 
     # Add the missing _cleanup method
     def _cleanup(self) -> None:

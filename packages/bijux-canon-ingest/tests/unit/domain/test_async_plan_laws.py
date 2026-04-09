@@ -5,11 +5,10 @@ from __future__ import annotations
 
 import asyncio
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.domain.effects.asyncio import async_bind, async_pure
 from bijux_canon_ingest.infra.adapters.async_runtime import perform_async
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 
 @given(x=st.integers())

@@ -5,8 +5,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_runtime.model.flow_manifest import FlowManifest
-
 from bijux_canon_runtime.core.errors import NonDeterminismViolationError
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
@@ -15,6 +13,7 @@ from bijux_canon_runtime.model.execution.non_deterministic_intent import (
     NonDeterministicIntent,
 )
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
+from bijux_canon_runtime.model.flow_manifest import FlowManifest
 from bijux_canon_runtime.model.identifiers.execution_event import ExecutionEvent
 from bijux_canon_runtime.model.policy.non_determinism_policy import (
     NonDeterminismPolicy,

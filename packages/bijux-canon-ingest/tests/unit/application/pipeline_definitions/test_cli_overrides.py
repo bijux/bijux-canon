@@ -3,13 +3,12 @@
 
 from __future__ import annotations
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.application.pipeline_definitions.cli import (
     deep_merge,
     parse_override,
 )
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 
 @given(

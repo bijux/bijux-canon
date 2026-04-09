@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from bijux_canon_ingest.application.pipeline_definitions import (
     DistributedCompilerError,
     beam_support,
@@ -12,6 +10,7 @@ from bijux_canon_ingest.application.pipeline_definitions import (
     compile_to_dask_bag,
     dask_support,
 )
+import pytest
 
 
 def test_dask_support_is_explicit_about_missing_compiler() -> None:

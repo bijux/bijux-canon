@@ -12,10 +12,9 @@ from tests.conformance.suite import default_backends, parametrize_backends
 def test_mid_tx_failure_rolls_back(backend_case):
     fixture = backend_case.factory()
     doc = Document(document_id="fail-doc", text="temp")
-    with pytest.raises(RuntimeError):
-        with fixture.tx_factory() as tx:
-            fixture.stores.vectors.put_document(tx, doc)
-            raise RuntimeError("boom")
+    with pytest.raises(RuntimeError), fixture.tx_factory() as tx:
+        fixture.stores.vectors.put_document(tx, doc)
+        raise RuntimeError("boom")
     assert fixture.stores.vectors.get_document(doc.document_id) is None
 
 

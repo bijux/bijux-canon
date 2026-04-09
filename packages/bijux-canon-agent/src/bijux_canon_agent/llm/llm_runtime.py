@@ -260,11 +260,10 @@ class LLMUtils:
         if backend == "deepseek":
             backend_config = self.config.get("llms", {}).get("deepseek", {})
             return DeepSeekBackend(backend_config)
-        else:
-            raise ValueError(
-                f"Unsupported LLM backend: {backend}. Register a custom backend "
-                "or use a supported provider."
-            )
+        raise ValueError(
+            f"Unsupported LLM backend: {backend}. Register a custom backend "
+            "or use a supported provider."
+        )
 
     def register_custom_backend(self, backend_name: str, backend: LLMBackend) -> None:
         """Register a custom LLM backend.

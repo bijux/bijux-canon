@@ -39,8 +39,7 @@ def make_logger(tmp_path: Path) -> LoggerManager:
 
 class KernelProbeAgent(BaseAgent):
     async def _run_payload(self, context: dict[str, Any]) -> dict[str, Any]:
-        context = self.execution_kernel.normalize_context(context)
-        return context
+        return self.execution_kernel.normalize_context(context)
 
     def _revise_payload(
         self, feedback: dict[str, Any], context: dict[str, Any]

@@ -15,7 +15,6 @@ from typing import Any, assert_never
 
 from ._lazy_exports import LazyExport, resolve_lazy_export
 from ._package_api import LAZY_EXPORTS, PUBLIC_API
-
 from ._version import __version__
 from .config.cleaning import DEFAULT_CLEAN_CONFIG, CleanConfig, make_cleaner
 from .core.rules_dsl import (
@@ -32,9 +31,9 @@ from .core.rules_dsl import (
 )
 from .core.rules_lint import SafeVisitor, assert_rule_is_safe_expr
 from .core.rules_pred import (
+    DEFAULT_RULES,
     All,
     AnyOf,
-    DEFAULT_RULES,
     Eq,
     LenGt,
     Not,

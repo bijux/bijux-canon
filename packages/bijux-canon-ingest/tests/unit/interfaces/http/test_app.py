@@ -3,11 +3,10 @@
 
 from __future__ import annotations
 
-from fastapi.testclient import TestClient
-import pytest
-
 from bijux_canon_ingest.interfaces.http.app import create_app
 from bijux_canon_ingest.interfaces.http.models import ChunkRequest, IndexBuildRequest
+from fastapi.testclient import TestClient
+import pytest
 
 
 def _docs() -> list[dict[str, str]]:

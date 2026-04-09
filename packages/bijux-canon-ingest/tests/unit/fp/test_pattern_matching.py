@@ -6,12 +6,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TypeAlias, TypeVar, assert_never
 
-from hypothesis import given
-from hypothesis import strategies as st
-
 from bijux_canon_ingest.fp.core import NoneVal, Some
 from bijux_canon_ingest.fp.error import ErrorCode
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
+from hypothesis import given
+from hypothesis import strategies as st
 
 T = TypeVar("T")
 E = TypeVar("E")

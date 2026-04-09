@@ -56,14 +56,14 @@ class BaseAgent(Generic[InputT, OutputT], ABC):
 
         Default implementation is no-op. Subclasses may override to perform setup.
         """
-        return None
+        return
 
     def _cleanup(self) -> None:
         """Hook for subclass cleanup (e.g., resource release).
 
         Default implementation is no-op. Subclasses may override to release resources.
         """
-        return None
+        return
 
     @final
     async def run(self, context: AgentInput | dict[str, Any]) -> OutputT:
@@ -220,11 +220,11 @@ class BaseAgent(Generic[InputT, OutputT], ABC):
 
     def reset_telemetry(self) -> None:
         """Reset telemetry counters; no-op by default."""
-        return None
+        return
 
     async def shutdown(self) -> None:
         """Perform cleanup tasks when the agent is shutting down.
 
         Subclasses can override to release resources.
         """
-        return None
+        return

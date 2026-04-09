@@ -108,13 +108,12 @@ def _build_trace_with_evidence(run_dir: Path, plan_id: str) -> Trace:
             output={"kind": "derive", "claim_ids": [claim.id]},
         ),
     ]
-    trace = Trace(
+    return Trace(
         spec_id="spec1",
         plan_id=plan_id,
         events=events,
         metadata={},
     ).with_content_id()
-    return trace
 
 
 def test_forged_evidence_hash_fails(tmp_path: Path) -> None:

@@ -29,10 +29,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-import pytest
-
 from bijux_canon_ingest.core.types import RawDoc
 from bijux_canon_ingest.result import Err, Ok
+import pytest
 
 pytestmark = [pytest.mark.e2e]
 
@@ -244,8 +243,7 @@ def rag_index(
         what="build_index",
     )
     _unwrap_ok(rag_app.save_index(index0, index_path), what="save_index")
-    index1 = _unwrap_ok(rag_app.load_index(index_path), what="load_index")
-    return index1
+    return _unwrap_ok(rag_app.load_index(index_path), what="load_index")
 
 
 # -----------------------------

@@ -5,15 +5,14 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from hypothesis import given
-from hypothesis import strategies as st
-
+from bijux_canon_ingest.result import Err, Ok
 from bijux_canon_ingest.safeguards.retries import (
     RetryDecision,
     fixed_policy,
     retry_map_iter,
 )
-from bijux_canon_ingest.result import Err, Ok
+from hypothesis import given
+from hypothesis import strategies as st
 
 
 @given(items=st.lists(st.integers()))

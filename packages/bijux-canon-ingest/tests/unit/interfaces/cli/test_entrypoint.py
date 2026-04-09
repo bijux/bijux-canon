@@ -5,13 +5,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from bijux_canon_ingest.interfaces.cli.entrypoint import main
-from bijux_canon_ingest.interfaces.cli.typer_app import build_app
 from bijux_canon_ingest.interfaces.cli.pipeline_config import load_pipeline_config
 from bijux_canon_ingest.interfaces.cli.pipeline_runner import boundary_app_config
+from bijux_canon_ingest.interfaces.cli.typer_app import build_app
 from bijux_canon_ingest.result import Err, Ok
+import pytest
 
 
 def test_load_pipeline_config_reads_step_definitions(tmp_path: Path) -> None:

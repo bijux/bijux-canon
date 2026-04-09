@@ -810,7 +810,7 @@ def render_focus_diagram(
     next_checks: tuple[str, ...],
 ) -> str:
     seed = stable_seed(scope_title, section_title, page_title, *destination_titles)
-    focus_groups = {title: details for title, details in focus_sections}
+    focus_groups = dict(focus_sections)
     family = section_title.lower()
     lines = [
         f"flowchart {('TB', 'LR', 'RL')[seed % 3]}",

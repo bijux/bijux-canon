@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from .answering import ExtractiveAnswerer
 from .domain import (
     Chunk,
     ChunkId,
@@ -21,21 +22,20 @@ from .domain import (
     try_set_embedding,
     upcast_metadata_v1,
 )
-from .answering import ExtractiveAnswerer
 from .embedders import HashEmbedder, SentenceTransformersEmbedder
+from .index_loading import load_index
 from .indexes import (
     BM25Index,
     NumpyCosineIndex,
     build_bm25_index,
     build_numpy_cosine_index,
 )
-from .index_loading import load_index
 from .ports import (
     Answer,
+    Answerer,
     Candidate,
     Citation,
     Embedder,
-    Answerer,
     Index,
     Indexer,
     Reranker,

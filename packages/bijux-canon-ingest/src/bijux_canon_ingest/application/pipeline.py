@@ -16,6 +16,17 @@ from collections.abc import Callable, Iterable, Iterator
 from itertools import chain
 from typing import TypeVar
 
+from bijux_canon_ingest.application.pipeline_observations import (
+    build_observations,
+    tap_items,
+)
+from bijux_canon_ingest.config.ingest import (
+    IngestBoundaryDeps,
+    IngestConfig,
+    IngestDeps,
+)
+from bijux_canon_ingest.core.rules_dsl import any_doc
+from bijux_canon_ingest.core.rules_pred import eval_pred
 from bijux_canon_ingest.core.types import (
     Chunk,
     ChunkWithoutEmbedding,
@@ -24,24 +35,11 @@ from bijux_canon_ingest.core.types import (
     RagEnv,
     RawDoc,
 )
-from bijux_canon_ingest.core.rules_dsl import any_doc
-from bijux_canon_ingest.core.rules_pred import eval_pred
 from bijux_canon_ingest.fp import StageInstrumentation, instrument_stage
+from bijux_canon_ingest.observability import Observations
 from bijux_canon_ingest.processing.chunking import gen_chunk_doc
 from bijux_canon_ingest.processing.stages import embed_chunk, structural_dedup_chunks
 from bijux_canon_ingest.result import Err, Ok, Result
-
-from bijux_canon_ingest.config.ingest import (
-    IngestBoundaryDeps,
-    IngestConfig,
-    IngestDeps,
-)
-from bijux_canon_ingest.application.pipeline_observations import (
-    build_observations,
-    tap_items,
-)
-
-from bijux_canon_ingest.observability import Observations
 
 T = TypeVar("T")
 

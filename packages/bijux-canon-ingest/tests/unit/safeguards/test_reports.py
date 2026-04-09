@@ -5,11 +5,10 @@ from __future__ import annotations
 
 import json
 
+from bijux_canon_ingest.result import Err, Ok, make_errinfo, map_result_iter
+from bijux_canon_ingest.safeguards.reports import fold_error_report, report_to_jsonable
 from hypothesis import given
 from hypothesis import strategies as st
-
-from bijux_canon_ingest.safeguards.reports import fold_error_report, report_to_jsonable
-from bijux_canon_ingest.result import Err, Ok, make_errinfo, map_result_iter
 
 
 @given(items=st.lists(st.integers()))

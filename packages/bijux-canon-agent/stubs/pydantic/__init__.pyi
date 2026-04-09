@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable
+import builtins
+from collections.abc import Iterable
+from typing import Any
 
 from .config import ConfigDict
 
@@ -19,7 +21,7 @@ class BaseModel:
         exclude_unset: bool = False,
         exclude_defaults: bool = False,
         by_alias: bool = False,
-    ) -> Dict[str, Any]: ...
+    ) -> builtins.dict[str, Any]: ...
     def dict(
         self,
         *,
@@ -29,7 +31,7 @@ class BaseModel:
         exclude_unset: bool = False,
         exclude_defaults: bool = False,
         by_alias: bool = False,
-    ) -> Dict[str, Any]: ...
+    ) -> builtins.dict[str, Any]: ...
     def model_dump_json(self, *, indent: int | None = None) -> str: ...
     def json(self, *, indent: int | None = None) -> str: ...
 

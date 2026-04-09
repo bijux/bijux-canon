@@ -49,7 +49,5 @@ async def run_custom_validator(
 ) -> dict[str, Any]:
     """Invoke the custom validator, supporting both sync and async variants."""
     if asyncio.iscoroutinefunction(agent.custom_validator):
-        result = await agent.custom_validator(data, config)
-        return result  # type: ignore[return-value]
-    result = await asyncio.to_thread(agent.custom_validator, data, config)
-    return result  # type: ignore[return-value]
+        return await agent.custom_validator(data, config)
+    return await asyncio.to_thread(agent.custom_validator, data, config)

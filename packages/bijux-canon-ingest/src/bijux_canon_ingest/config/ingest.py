@@ -9,18 +9,18 @@ from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
 from typing import Protocol
 
+from bijux_canon_ingest.config.cleaning import (
+    DEFAULT_CLEAN_CONFIG,
+    CleanConfig,
+    make_cleaner,
+)
+from bijux_canon_ingest.core.rules_pred import DEFAULT_RULES, RulesConfig
 from bijux_canon_ingest.core.types import (
     Chunk,
     ChunkWithoutEmbedding,
     CleanDoc,
     RagEnv,
     RawDoc,
-)
-from bijux_canon_ingest.core.rules_pred import DEFAULT_RULES, RulesConfig
-from bijux_canon_ingest.config.cleaning import (
-    DEFAULT_CLEAN_CONFIG,
-    CleanConfig,
-    make_cleaner,
 )
 from bijux_canon_ingest.observability import (
     DebugConfig,
