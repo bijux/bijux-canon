@@ -34,6 +34,11 @@ function bijuxSyncSiteTabActiveState() {
   for (const item of document.querySelectorAll(".bijux-site-tabs .bijux-tabs__item")) {
     item.classList.remove("md-tabs__item--active", "bijux-tabs__item--active");
   }
+  for (const link of document.querySelectorAll(
+    ".bijux-site-tabs [data-bijux-site-path]"
+  )) {
+    link.removeAttribute("aria-current");
+  }
 
   if (!activeSitePath) {
     return null;
@@ -50,6 +55,7 @@ function bijuxSyncSiteTabActiveState() {
         "md-tabs__item--active",
         "bijux-tabs__item--active"
       );
+      link.setAttribute("aria-current", "page");
     }
   }
 
@@ -94,11 +100,15 @@ function bijuxSyncDetailStripActiveState() {
   for (const item of activeStrip.querySelectorAll(".bijux-tabs__item")) {
     item.classList.remove("bijux-tabs__item--active");
   }
+  for (const link of activeStrip.querySelectorAll("[data-bijux-detail-path]")) {
+    link.removeAttribute("aria-current");
+  }
 
   if (activeLink) {
     activeLink.node.closest(".bijux-tabs__item")?.classList.add(
       "bijux-tabs__item--active"
     );
+    activeLink.node.setAttribute("aria-current", "page");
   }
 }
 

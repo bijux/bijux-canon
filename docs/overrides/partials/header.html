@@ -98,11 +98,13 @@
       <ul class="md-tabs__list bijux-tabs__list bijux-tabs__list--site">
         {% for nav_item in nav %}
           {% set item_class = "md-tabs__item bijux-tabs__item" %}
+          {% set current = "" %}
           {% if nav_item.active %}
             {% set item_class = item_class ~ " md-tabs__item--active bijux-tabs__item--active" %}
+            {% set current = 'aria-current="page"' %}
           {% endif %}
           <li class="{{ item_class }}">
-            <a href="{{ bijux_nav.first_page_url(nav_item) }}" class="md-tabs__link bijux-tabs__link bijux-tabs__link--site" data-bijux-site-path="{{ bijux_nav.first_page_path(nav_item) | trim }}">
+            <a href="{{ bijux_nav.first_page_url(nav_item) }}" class="md-tabs__link bijux-tabs__link bijux-tabs__link--site" data-bijux-site-path="{{ bijux_nav.first_page_path(nav_item) | trim }}" {{ current }}>
               {{ site_label(nav_item.title) }}
             </a>
           </li>
@@ -118,11 +120,13 @@
           <ul class="bijux-tabs__list bijux-tabs__list--detail">
             {% for child in nav_item.children %}
               {% set item_class = "bijux-tabs__item" %}
+              {% set current = "" %}
               {% if nav_item == active_section.item and child.active %}
                 {% set item_class = item_class ~ " bijux-tabs__item--active" %}
+                {% set current = 'aria-current="page"' %}
               {% endif %}
               <li class="{{ item_class }}">
-                <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail" data-bijux-detail-path="{{ bijux_nav.first_page_path(child) | trim }}">{{ bijux_nav.detail_label(child) }}</a>
+                <a href="{{ bijux_nav.first_page_url(child) }}" class="bijux-tabs__link bijux-tabs__link--detail" data-bijux-detail-path="{{ bijux_nav.first_page_path(child) | trim }}" {{ current }}>{{ bijux_nav.detail_label(child) }}</a>
               </li>
             {% endfor %}
           </ul>
