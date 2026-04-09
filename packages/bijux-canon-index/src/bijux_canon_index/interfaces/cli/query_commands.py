@@ -176,6 +176,7 @@ def execute(
     dry_run: bool = typer.Option(False, "--dry-run"),
     explain: bool = typer.Option(False, "--explain"),
 ) -> None:
+    """Handle execute."""
     try:
         resolved_correlation_id = _resolve_correlation_id(correlation_id)
         req, contract = build_execute_payload(
@@ -287,6 +288,7 @@ def execute(
 def explain(
     ctx: typer.Context, result_id: str = typer.Option(..., "--result-id")
 ) -> None:
+    """Explain ctx."""
     try:
         req = ExplainRequest(result_id=result_id)
         engine = VectorExecutionEngine()
@@ -322,6 +324,7 @@ def replay(
     max_memory_mb: int | None = typer.Option(None, "--max-memory-mb"),
     max_error: float | None = typer.Option(None, "--max-error"),
 ) -> None:
+    """Handle replay."""
     try:
         engine = VectorExecutionEngine()
         randomness_profile, execution_budget = build_replay_runtime(
@@ -371,6 +374,7 @@ def compare(
     bundle_a: Path | None = typer.Option(None, "--bundle-a"),  # noqa: B008
     bundle_b: Path | None = typer.Option(None, "--bundle-b"),  # noqa: B008
 ) -> None:
+    """Compare ctx."""
     try:
         comparison = build_run_or_bundle_comparison(
             run_a=run_a,

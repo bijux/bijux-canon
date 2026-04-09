@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Adapter helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
@@ -34,17 +36,21 @@ DEFAULT_METRIC = "l2"
 
 @dataclass(frozen=True)
 class FaissRecord:
+    """Represents FAISS record."""
     vector_id: str
     vector: tuple[float, ...]
     metadata: dict[str, str]
 
 
 class FaissIndexLock:
+    """Represents FAISS index lock."""
     def __init__(self, path: Path) -> None:
+        """Initialize the instance."""
         self._path = path
         self._fd: int | None = None
 
     def __enter__(self) -> None:
+        """Enter the managed context."""
         try:
             self._path.parent.mkdir(parents=True, exist_ok=True)
             fd = os.open(self._path, os.O_CREAT | os.O_RDWR)
@@ -61,6 +67,7 @@ class FaissIndexLock:
             ) from exc
 
     def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+        """Exit the managed context."""
         if self._fd is None:
             return
         try:
@@ -73,12 +80,14 @@ class FaissIndexLock:
 
 
 class FaissVectorStoreAdapter(VectorStoreAdapter):
+    """Represents FAISS vector store adapter."""
     backend = "faiss"
     is_noop = False
 
     def __init__(
         self, uri: str | None = None, options: Mapping[str, str] | None = None
     ) -> None:
+        """Initialize the instance."""
         if faiss is None:  # pragma: no cover - handled by registry availability
             raise ImportError("faiss is not available")
         self._options = dict(options or {})
@@ -99,10 +108,12 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
 
     @property
     def options(self) -> dict[str, str]:
+        """Handle options."""
         return dict(self._options)
 
     @property
     def index_params(self) -> dict[str, object]:
+        """Handle index params."""
         return {
             "type": self._index_type_name(),
             "dimension": self._dimension,
@@ -114,9 +125,11 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
 
     @property
     def backend_version(self) -> str | None:
+        """Handle backend version."""
         return getattr(faiss, "__version__", None) if faiss is not None else None
 
     def connect(self) -> None:
+        """Handle connect."""
         if faiss is None:  # pragma: no cover - defensive
             raise ImportError("faiss is not available")
         if not self._index_path:
@@ -130,6 +143,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         vectors: Iterable[Sequence[float]],
         metadata: Iterable[dict[str, Any]] | None = None,
     ) -> list[str]:
+        """Handle insert."""
         vectors_list = [list(vec) for vec in vectors]
         if not vectors_list:
             return []
@@ -180,6 +194,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
     def query(
         self, vector: Sequence[float], k: int, mode: str
     ) -> list[tuple[str, float]]:
+        """Query vector."""
         if self._index is None or self._index.ntotal == 0:
             return []
         if "filter" in self._options:
@@ -202,6 +217,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         return results
 
     def delete(self, ids: Iterable[str]) -> int:
+        """Handle delete."""
         if not self._records:
             return 0
         ids_set = {str(vector_id) for vector_id in ids}
@@ -213,6 +229,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         return self._delete_records(ids_set)
 
     def rebuild(self, *, index_type: str | None = None) -> dict[str, object]:
+        """Handle rebuild."""
         if not self._index_path:
             raise ValidationError(message="FAISS rebuild requires a persistent URI")
         if self._lock_path:
@@ -221,6 +238,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         return self._rebuild(index_type=index_type)
 
     def status(self) -> dict[str, object]:
+        """Handle status."""
         return {
             "reachable": True,
             "backend": self.backend,
@@ -236,6 +254,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         }
 
     def _load_state(self) -> None:
+        """Load state."""
         if not self._index_path or not self._meta_path or not self._records_path:
             return
         if not self._meta_path.exists():
@@ -270,15 +289,18 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
             raise CorruptArtifactError(message="FAISS index/record count mismatch")
 
     def _append_records(self, records: list[FaissRecord]) -> None:
+        """Handle append records."""
         self._records.extend(records)
 
     def _add_to_index(self, vectors_list: list[list[float]]) -> None:
+        """Handle add to index."""
         if self._index is None:
             raise CorruptArtifactError(message="FAISS index missing during insert")
         array = np.asarray(vectors_list, dtype="float32")
         self._index.add(array)
 
     def _delete_records(self, ids_set: set[str]) -> int:
+        """Handle delete records."""
         if not ids_set:
             return 0
         remaining = [rec for rec in self._records if rec.vector_id not in ids_set]
@@ -291,6 +313,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         return removed
 
     def _rebuild(self, *, index_type: str | None = None) -> dict[str, object]:
+        """Handle rebuild."""
         if index_type:
             self._index_kind = self._resolve_index_kind(index_type)
         self._rebuild_index_from_records()
@@ -298,6 +321,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         return self.status()
 
     def _rebuild_index_from_records(self) -> None:
+        """Handle rebuild index from records."""
         if not self._records:
             self._index = None
             self._dimension = None
@@ -308,6 +332,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         self._index.add(np.asarray(vectors, dtype="float32"))
 
     def _persist(self) -> None:
+        """Handle persist."""
         if not self._index_path or not self._meta_path or not self._records_path:
             return
         if not self._records or self._index is None:
@@ -357,6 +382,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
                     path.unlink(missing_ok=True)
 
     def _ensure_index(self, dimension: int) -> None:
+        """Ensure index."""
         if self._index is not None:
             return
         if self._records_path and self._records_path.exists():
@@ -366,16 +392,19 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         self._index = self._build_index(dimension, self._index_kind)
 
     def _build_index(self, dimension: int, index_kind: str) -> Any:
+        """Build index."""
         if index_kind == "ann":
             return faiss.IndexHNSWFlat(dimension, 32)
         return faiss.IndexFlatL2(dimension)
 
     def _index_type_name(self) -> str:
+        """Handle index type name."""
         if self._index is None:
             return EXACT_INDEX_TYPE if self._index_kind == "exact" else ANN_INDEX_TYPE
         return type(self._index).__name__
 
     def _resolve_index_kind(self, raw: str | None) -> str:
+        """Resolve index kind."""
         if not raw:
             return "exact"
         key = raw.lower()
@@ -386,6 +415,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
         raise ValidationError(message=f"Unknown FAISS index_type: {raw}")
 
     def _validate_meta(self, meta: dict[str, Any]) -> None:
+        """Validate meta."""
         if meta.get("index_version") != INDEX_VERSION:
             raise CorruptArtifactError(message="FAISS index version mismatch")
         if meta.get("faiss_version") != self.backend_version:
@@ -397,6 +427,7 @@ class FaissVectorStoreAdapter(VectorStoreAdapter):
             self._index_kind = self._resolve_index_kind(str(index_kind))
 
     def _enforce_mode(self, mode: str) -> None:
+        """Enforce mode."""
         if mode == "deterministic" and self._index_kind != "exact":
             raise DeterminismViolationError(
                 message="Deterministic execution requires an exact FAISS index",

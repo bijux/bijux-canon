@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
+"""Validators schemas for interface payloads."""
+
 from __future__ import annotations
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
@@ -11,6 +13,7 @@ from bijux_canon_index.domain.non_determinism.randomness import (
 
 
 def validate_execution_request_payload(payload: object) -> None:
+    """Validate execution request payload."""
     contract = getattr(payload, "execution_contract", None)
     execution_mode = getattr(payload, "execution_mode", None)
     execution_intent = getattr(payload, "execution_intent", None)

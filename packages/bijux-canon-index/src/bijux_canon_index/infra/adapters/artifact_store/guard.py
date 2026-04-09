@@ -14,6 +14,7 @@ ARTIFACT_ROOT = (Path("artifacts") / "bijux-canon-index").resolve()
 
 
 def assert_artifact_path(path: Path, *, allow_outside: bool = False) -> Path:
+    """Handle assert artifact path."""
     resolved = path.resolve()
     if allow_outside:
         return resolved
@@ -25,6 +26,7 @@ def assert_artifact_path(path: Path, *, allow_outside: bool = False) -> Path:
 
 
 def write_bytes(path: Path, data: bytes, *, allow_outside: bool = False) -> None:
+    """Write bytes."""
     target = assert_artifact_path(path, allow_outside=allow_outside)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(data)

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
+"""Runner helpers for repository tooling."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -32,34 +34,41 @@ from bijux_canon_index.interfaces.schemas.requests import (
 
 @dataclass(frozen=True)
 class BenchmarkRun:
+    """Represents benchmark run."""
     timings_ms: list[float]
     throughput_qps: float
     warmup_ms: float
 
     @property
     def p50(self) -> float:
+        """Handle p50."""
         return statistics.median(self.timings_ms)
 
     @property
     def p95(self) -> float:
+        """Handle p95."""
         return statistics.quantiles(self.timings_ms, n=100)[94]
 
     @property
     def p99(self) -> float:
+        """Handle p99."""
         return statistics.quantiles(self.timings_ms, n=100)[98]
 
     @property
     def mean(self) -> float:
+        """Handle mean."""
         return statistics.fmean(self.timings_ms)
 
 
 def _now_ms() -> float:
+    """Handle now ms."""
     return time.perf_counter() * 1000.0
 
 
 def _build_engine(
     store_backend: str | None, store_uri: str | None, state_path: str | None
 ) -> VectorExecutionEngine:
+    """Build engine."""
     config = None
     if store_backend:
         config = ExecutionConfig(
@@ -72,6 +81,7 @@ def _build_engine(
 def _ingest(
     engine: VectorExecutionEngine, documents: list[str], vectors: np.ndarray
 ) -> None:
+    """Handle ingest."""
     req = IngestRequest(
         documents=documents,
         vectors=[vec.tolist() for vec in vectors],
@@ -82,6 +92,7 @@ def _ingest(
 def _materialize(
     engine: VectorExecutionEngine, contract: ExecutionContract, index_mode: str | None
 ) -> str:
+    """Handle materialize."""
     result = engine.materialize(
         ExecutionArtifactRequest(
             execution_contract=contract,
@@ -103,6 +114,7 @@ def _execute_queries(
     randomness: RandomnessProfilePayload | None,
     repeats: int,
 ) -> BenchmarkRun:
+    """Handle execute queries."""
     timings_ms: list[float] = []
     start_warmup = _now_ms()
     for _ in range(repeats):
@@ -150,6 +162,7 @@ def _execute_queries(
 def _exact_top_k(
     vectors: np.ndarray, vector_ids: list[str], query: np.ndarray, top_k: int
 ) -> list[str]:
+    """Handle exact top k."""
     import numpy as np
 
     if len(vector_ids) == 0 or top_k <= 0:
@@ -174,6 +187,7 @@ def run_benchmark(
     repeats: int,
     warmup: int,
 ) -> dict[str, Any]:
+    """Handle run benchmark."""
     if mode not in {"exact", "ann"}:
         raise ValueError("mode must be exact or ann")
 
@@ -332,6 +346,7 @@ def run_benchmark(
 
 
 def format_table(summary: dict[str, Any]) -> str:
+    """Format table."""
     rows = [
         ("mean_ms", summary["mean_ms"]),
         ("p50_ms", summary["p50_ms"]),

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Vectorstore registry helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping, Sequence
@@ -19,6 +21,7 @@ from bijux_canon_index.infra.plugins.entrypoints import load_entrypoints
 
 @dataclass(frozen=True)
 class VectorStoreDescriptor:
+    """Represents vector store descriptor."""
     name: str
     available: bool
     supports_exact: bool
@@ -34,16 +37,19 @@ class VectorStoreDescriptor:
 
 @dataclass(frozen=True)
 class VectorStoreResolution:
+    """Represents vector store resolution."""
     descriptor: VectorStoreDescriptor
     adapter: VectorStoreAdapter
     uri_redacted: str | None
 
 
 class NoOpVectorStoreAdapter(VectorStoreAdapter):
+    """Represents no op vector store adapter."""
     backend = "memory"
     is_noop = True
 
     def connect(self) -> None:
+        """Handle connect."""
         return None
 
     def insert(
@@ -51,6 +57,7 @@ class NoOpVectorStoreAdapter(VectorStoreAdapter):
         vectors: Iterable[Sequence[float]],
         metadata: Iterable[dict[str, Any]] | None = None,
     ) -> list[str]:
+        """Handle insert."""
         if metadata:
             return [entry.get("vector_id", "") for entry in metadata]
         return []
@@ -58,9 +65,11 @@ class NoOpVectorStoreAdapter(VectorStoreAdapter):
     def query(
         self, vector: Sequence[float], k: int, mode: str
     ) -> list[tuple[str, float]]:
+        """Query vector."""
         return []
 
     def delete(self, ids: Iterable[str]) -> int:
+        """Handle delete."""
         return 0
 
 
@@ -71,6 +80,7 @@ AvailabilityCheck = Callable[[], tuple[bool, str | None, str | None]]
 
 
 def _redact_uri(uri: str | None) -> str | None:
+    """Handle redact uri."""
     if uri is None:
         return None
     parts = urlsplit(uri)
@@ -93,7 +103,9 @@ def _redact_uri(uri: str | None) -> str | None:
 
 
 class VectorStoreRegistry:
+    """Represents vector store registry."""
     def __init__(self) -> None:
+        """Initialize the instance."""
         self._entries: dict[
             str,
             tuple[
@@ -116,6 +128,7 @@ class VectorStoreRegistry:
         contract: PluginContract,
         availability: AvailabilityCheck | None = None,
     ) -> None:
+        """Register name."""
         key = name.lower()
         if not contract.determinism:
             raise ValueError("Plugin contract must declare determinism")
@@ -131,6 +144,7 @@ class VectorStoreRegistry:
         uri: str | None = None,
         options: Mapping[str, str] | None = None,
     ) -> VectorStoreResolution:
+        """Resolve name."""
         if not name:
             raise ValidationError(message="vector store name is required")
         raw = name.lower()
@@ -197,6 +211,7 @@ class VectorStoreRegistry:
         )
 
     def descriptors(self) -> list[VectorStoreDescriptor]:
+        """Handle descriptors."""
         items: list[VectorStoreDescriptor] = []
         for _, (descriptor, _factory, availability, _contract) in sorted(
             self._entries.items()
@@ -230,6 +245,7 @@ class VectorStoreRegistry:
         status: str,
         warning: str | None = None,
     ) -> None:
+        """Record plugin load."""
         entry: dict[str, object] = dict(meta)
         entry["status"] = status
         if warning:
@@ -237,12 +253,15 @@ class VectorStoreRegistry:
         self._plugin_loads.append(entry)
 
     def _set_active_plugin(self, meta: dict[str, str | None]) -> None:
+        """Handle set active plugin."""
         self._active_plugin = dict(meta)
 
     def _clear_active_plugin(self) -> None:
+        """Handle clear active plugin."""
         self._active_plugin = None
 
     def plugin_reports(self) -> list[dict[str, object]]:
+        """Handle plugin reports."""
         reports: list[dict[str, object]] = []
         for name, meta in self._plugin_sources.items():
             descriptor, _factory, _availability, contract = self._entries[name]
@@ -277,6 +296,7 @@ VECTOR_STORES = VectorStoreRegistry()
 def _noop_factory(
     uri: str | None, options: Mapping[str, str] | None
 ) -> VectorStoreAdapter:
+    """Handle noop factory."""
     return NoOpVectorStoreAdapter()
 
 
@@ -325,6 +345,7 @@ VECTOR_STORES.register(
 
 
 def _faiss_available() -> tuple[bool, str | None, str | None]:
+    """Handle FAISS available."""
     try:
         import faiss
 
@@ -336,12 +357,14 @@ def _faiss_available() -> tuple[bool, str | None, str | None]:
 def _faiss_factory(
     uri: str | None, options: Mapping[str, str] | None
 ) -> VectorStoreAdapter:
+    """Handle FAISS factory."""
     from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
 
     return FaissVectorStoreAdapter(uri=uri, options=options)
 
 
 def _qdrant_available() -> tuple[bool, str | None, str | None]:
+    """Handle Qdrant available."""
     try:
         import qdrant_client
 
@@ -353,6 +376,7 @@ def _qdrant_available() -> tuple[bool, str | None, str | None]:
 def _qdrant_factory(
     uri: str | None, options: Mapping[str, str] | None
 ) -> VectorStoreAdapter:
+    """Handle Qdrant factory."""
     from bijux_canon_index.infra.adapters.qdrant.adapter import QdrantVectorStoreAdapter
 
     return QdrantVectorStoreAdapter(uri=uri, options=options)

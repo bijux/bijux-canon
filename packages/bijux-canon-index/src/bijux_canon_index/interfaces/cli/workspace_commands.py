@@ -28,6 +28,7 @@ def list_artifacts(
     limit: int | None = typer.Option(None, "--limit"),
     offset: int = typer.Option(0, "--offset"),
 ) -> None:
+    """List artifacts."""
     _emit(ctx, VectorExecutionEngine().list_artifacts(limit=limit, offset=offset))
 
 
@@ -36,6 +37,7 @@ def list_runs(
     limit: int | None = typer.Option(None, "--limit"),
     offset: int = typer.Option(0, "--offset"),
 ) -> None:
+    """List runs."""
     runs = RunStore().list_runs(limit=limit, offset=offset)
     _emit(ctx, {"runs": runs})
 
@@ -47,6 +49,7 @@ def init(
     ),
     force: bool = typer.Option(False, "--force"),
 ) -> None:
+    """Handle init."""
     try:
         _emit(ctx, initialize_workspace(config_path, force=force))
     except ValidationError as exc:
@@ -55,6 +58,7 @@ def init(
 
 
 def capabilities(ctx: typer.Context) -> None:
+    """Handle capabilities."""
     _emit(ctx, VectorExecutionEngine().capabilities())
 
 
@@ -63,6 +67,7 @@ def audit(
     vector_store: str | None = typer.Option(None, "--vector-store"),
     vector_store_uri: str | None = typer.Option(None, "--vector-store-uri"),
 ) -> None:
+    """Handle audit."""
     base_config = _load_config(ctx.obj.config_path) if ctx.obj else None
     config = _build_config(
         vector_store=vector_store,

@@ -52,6 +52,7 @@ def ingest(
     correlation_id: str | None = typer.Option(None, "--correlation-id"),
     dry_run: bool = typer.Option(False, "--dry-run"),
 ) -> None:
+    """Handle ingest."""
     try:
         resolved_correlation_id = _resolve_correlation_id(correlation_id)
         base_config = _load_config(ctx.obj.config_path) if ctx.obj else None
@@ -114,6 +115,7 @@ def materialize(
     vector_store: str | None = typer.Option(None, "--vector-store"),
     vector_store_uri: str | None = typer.Option(None, "--vector-store-uri"),
 ) -> None:
+    """Handle materialize."""
     try:
         contract = _parse_contract(execution_contract)
         base_config = _load_config(ctx.obj.config_path) if ctx.obj else None

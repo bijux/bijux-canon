@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Workspace setup helpers for the CLI interface."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -23,6 +25,7 @@ model = "all-MiniLM-L6-v2"
 
 
 def initialize_workspace(config_path: Path, *, force: bool) -> dict[str, str]:
+    """Initialize workspace."""
     if config_path.exists() and not force:
         raise ValidationError(
             message="Config already exists. Use --force to overwrite."
@@ -41,6 +44,7 @@ def initialize_workspace(config_path: Path, *, force: bool) -> dict[str, str]:
 
 
 def ensure_gitignore_entries(gitignore_path: Path, *, entries: tuple[str, ...]) -> None:
+    """Ensure gitignore entries."""
     lines: list[str] = []
     if gitignore_path.exists():
         lines = gitignore_path.read_text(encoding="utf-8").splitlines()

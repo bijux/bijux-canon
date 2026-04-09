@@ -63,6 +63,7 @@ def _main_callback(
     quiet: bool = typer.Option(False, "--quiet", help="Suppress non-error output"),
     no_color: bool = typer.Option(False, "--no-color", help="Disable colored output"),
 ) -> None:
+    """Handle main callback."""
     if trace:
         enable_trace()
     if no_color:

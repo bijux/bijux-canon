@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""ANN base helpers."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -33,17 +35,21 @@ class AnnExecutionRequestRunner(ABC):
 
     @property
     def supports_seed(self) -> bool:
+        """Handle supports seed."""
         return False
 
     @property
     def supports_incremental(self) -> bool:
+        """Handle supports incremental."""
         return False
 
     @property
     def supports_compaction(self) -> bool:
+        """Handle supports compaction."""
         return False
 
     def ensure_contract(self, artifact: ExecutionArtifact) -> None:
+        """Ensure contract."""
         if artifact.execution_contract is ExecutionContract.DETERMINISTIC:
             raise InvariantError(
                 message="ANN runner refuses deterministic execution_contract"
@@ -74,10 +80,12 @@ class AnnExecutionRequestRunner(ABC):
         return {}
 
     def warmup(self, artifact_id: str, queries: Iterable[Iterable[float]]) -> None:
+        """Handle warmup."""
         _ = (artifact_id, queries)
         return
 
     def compact(self, artifact_id: str, vectors: Iterable[Vector], metric: str) -> None:
+        """Handle compact."""
         _ = (artifact_id, vectors, metric)
         return
 

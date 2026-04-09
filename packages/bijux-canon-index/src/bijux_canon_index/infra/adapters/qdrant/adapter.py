@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Adapter helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
@@ -21,6 +23,7 @@ from bijux_canon_index.infra.adapters.vectorstore import VectorStoreAdapter
 
 @dataclass(frozen=True)
 class QdrantOptions:
+    """Represents Qdrant options."""
     collection: str
     batch_size: int
     retry_count: int
@@ -31,12 +34,14 @@ class QdrantOptions:
 
 
 class QdrantVectorStoreAdapter(VectorStoreAdapter):
+    """Represents Qdrant vector store adapter."""
     backend = "qdrant"
     is_noop = False
 
     def __init__(
         self, uri: str | None = None, options: Mapping[str, str] | None = None
     ) -> None:
+        """Initialize the instance."""
         if QdrantClient is None:  # pragma: no cover - handled by registry availability
             raise ImportError("qdrant-client is not available")
         self._options_raw = dict(options or {})
@@ -47,10 +52,12 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
 
     @property
     def options(self) -> dict[str, str]:
+        """Handle options."""
         return dict(self._options_raw)
 
     @property
     def index_params(self) -> dict[str, object]:
+        """Handle index params."""
         return {
             "collection": self._opts.collection,
             "batch_size": self._opts.batch_size,
@@ -60,6 +67,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
         }
 
     def connect(self) -> None:
+        """Handle connect."""
         if QdrantClient is None:  # pragma: no cover - defensive
             raise ImportError("qdrant-client is not available")
         if self._uri in {":memory:", "memory"}:
@@ -76,6 +84,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
         vectors: Iterable[Sequence[float]],
         metadata: Iterable[dict[str, Any]] | None = None,
     ) -> list[str]:
+        """Handle insert."""
         vectors_list = [list(vec) for vec in vectors]
         if not vectors_list:
             return []
@@ -108,6 +117,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
     def query(
         self, vector: Sequence[float], k: int, mode: str
     ) -> list[tuple[str, float]]:
+        """Query vector."""
         if self._client is None:
             raise BackendCapabilityError(message="Qdrant client is not connected")
         if mode == "deterministic":
@@ -136,6 +146,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
         return output
 
     def delete(self, ids: Iterable[str]) -> int:
+        """Handle delete."""
         if self._client is None:
             raise BackendCapabilityError(message="Qdrant client is not connected")
         ids_list = [self._qdrant_id(str(vector_id)) for vector_id in ids]
@@ -148,6 +159,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
         return len(ids_list)
 
     def status(self) -> dict[str, object]:
+        """Handle status."""
         if self._client is None:
             raise BackendCapabilityError(message="Qdrant client is not connected")
         info = self._client.get_collection(self._opts.collection)
@@ -171,6 +183,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
         }
 
     def _ensure_collection(self, dimension: int) -> None:
+        """Ensure collection."""
         if self._client is None:
             raise BackendCapabilityError(message="Qdrant client is not connected")
         if self._dimension is None:
@@ -186,6 +199,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
         )
 
     def _upsert(self, points: list[Any]) -> None:
+        """Handle upsert."""
         if self._client is None:
             raise BackendCapabilityError(message="Qdrant client is not connected")
         batch = int(self._opts.batch_size)
@@ -217,6 +231,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
 
     @staticmethod
     def _parse_options(options: Mapping[str, str]) -> QdrantOptions:
+        """Parse options."""
         collection = options.get("collection", "bijux_canon_index")
         batch_size = int(options.get("batch_size", "128"))
         retry_count = int(options.get("retry_count", "2"))
@@ -240,6 +255,7 @@ class QdrantVectorStoreAdapter(VectorStoreAdapter):
 
     @staticmethod
     def _qdrant_id(vector_id: str) -> str:
+        """Handle Qdrant ID."""
         return str(uuid.uuid5(uuid.NAMESPACE_URL, vector_id))
 
 

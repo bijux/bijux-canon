@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Logging helpers."""
+
 from __future__ import annotations
 
 import json
@@ -14,6 +16,7 @@ _TRACE_EVENTS: list[dict[str, Any]] = []
 
 
 def log_event(name: str, **fields: Any) -> None:
+    """Handle log event."""
     if not _LOGGER.handlers:
         logging.basicConfig(level=logging.INFO)
     payload = {"event": name, **fields}
@@ -35,11 +38,13 @@ def log_event(name: str, **fields: Any) -> None:
 
 
 def enable_trace() -> None:
+    """Handle enable trace."""
     global _TRACE_ENABLED
     _TRACE_ENABLED = True
 
 
 def trace_events() -> list[dict[str, Any]]:
+    """Handle trace events."""
     return list(_TRACE_EVENTS)
 
 

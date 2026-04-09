@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Environment helpers."""
+
 from __future__ import annotations
 
 import os
@@ -11,6 +13,7 @@ def read_env(
     legacy: str | None = None,
     default: str | None = None,
 ) -> str | None:
+    """Read env."""
     value = os.getenv(primary)
     if value not in (None, ""):
         return value

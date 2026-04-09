@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Backend helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -48,6 +50,7 @@ ACTIVE_CONNECTIONS: set[int] = set()
 
 
 def _init_schema(conn: sqlite3.Connection) -> None:
+    """Handle init schema."""
     conn.execute(
         "CREATE TABLE IF NOT EXISTS documents(id TEXT PRIMARY KEY, text TEXT, source TEXT, version TEXT)"
     )
@@ -87,6 +90,7 @@ def _init_schema(conn: sqlite3.Connection) -> None:
 
 
 def _ensure_vector_columns(conn: sqlite3.Connection) -> None:
+    """Ensure vector columns."""
     existing = {row[1] for row in conn.execute("PRAGMA table_info(vectors)").fetchall()}
     if "model" not in existing:
         conn.execute("ALTER TABLE vectors ADD COLUMN model TEXT")
@@ -95,7 +99,9 @@ def _ensure_vector_columns(conn: sqlite3.Connection) -> None:
 
 
 class SQLiteTx(Tx):
+    """Represents SQLite tx."""
     def __init__(self, conn: sqlite3.Connection, lock: threading.RLock):
+        """Initialize the instance."""
         self._conn = conn
         self._lock = lock
         self._active = True
@@ -103,9 +109,11 @@ class SQLiteTx(Tx):
 
     @property
     def tx_id(self) -> str:
+        """Handle tx ID."""
         return "sqlite-tx"
 
     def __enter__(self) -> Tx:
+        """Enter the managed context."""
         self._lock.acquire()
         conn_id = id(self._conn)
         if conn_id in ACTIVE_CONNECTIONS:
@@ -117,6 +125,7 @@ class SQLiteTx(Tx):
         return self
 
     def commit(self) -> None:
+        """Handle commit."""
         if not self._entered:
             raise AtomicityViolationError(message="Tx must be entered before commit")
         if not self._active:
@@ -129,6 +138,7 @@ class SQLiteTx(Tx):
             self._lock.release()
 
     def abort(self) -> None:
+        """Handle abort."""
         if not self._entered:
             raise AtomicityViolationError(message="Tx must be entered before abort")
         if not self._active:
@@ -142,7 +152,9 @@ class SQLiteTx(Tx):
 
 
 class SQLiteVectorSource(VectorSource):
+    """Represents SQLite vector source."""
     def __init__(self, conn: sqlite3.Connection, lock: threading.RLock):
+        """Initialize the instance."""
         self._conn = conn
         self._lock = lock
         self._metric_cache: dict[str, str] = {}
@@ -151,6 +163,7 @@ class SQLiteVectorSource(VectorSource):
 
     # Documents
     def put_document(self, tx: Tx, document: Document) -> None:
+        """Handle put document."""
         with self._lock:
             self._conn.execute(
                 "REPLACE INTO documents(id, text, source, version) VALUES(?,?,?,?)",
@@ -163,6 +176,7 @@ class SQLiteVectorSource(VectorSource):
             )
 
     def get_document(self, document_id: str) -> Document | None:
+        """Return document."""
         with self._lock:
             row = self._conn.execute(
                 "SELECT id, text, source, version FROM documents WHERE id=?",
@@ -173,6 +187,7 @@ class SQLiteVectorSource(VectorSource):
         return Document(document_id=row[0], text=row[1], source=row[2], version=row[3])
 
     def list_documents(self) -> Iterable[Document]:
+        """List documents."""
         with self._lock:
             rows = self._conn.execute(
                 "SELECT id, text, source, version FROM documents ORDER BY id"
@@ -183,11 +198,13 @@ class SQLiteVectorSource(VectorSource):
         ]
 
     def delete_document(self, tx: Tx, document_id: str) -> None:
+        """Handle delete document."""
         with self._lock:
             self._conn.execute("DELETE FROM documents WHERE id=?", (document_id,))
 
     # Chunks
     def put_chunk(self, tx: Tx, chunk: Chunk) -> None:
+        """Handle put chunk."""
         with self._lock:
             self._conn.execute(
                 "REPLACE INTO chunks(id, document_id, text, ordinal) VALUES(?,?,?,?)",
@@ -195,6 +212,7 @@ class SQLiteVectorSource(VectorSource):
             )
 
     def get_chunk(self, chunk_id: str) -> Chunk | None:
+        """Return chunk."""
         with self._lock:
             row = self._conn.execute(
                 "SELECT id, document_id, text, ordinal FROM chunks WHERE id=?",
@@ -205,6 +223,7 @@ class SQLiteVectorSource(VectorSource):
         return Chunk(chunk_id=row[0], document_id=row[1], text=row[2], ordinal=row[3])
 
     def list_chunks(self, document_id: str | None = None) -> Iterable[Chunk]:
+        """List chunks."""
         with self._lock:
             if document_id:
                 rows = self._conn.execute(
@@ -221,10 +240,12 @@ class SQLiteVectorSource(VectorSource):
         ]
 
     def delete_chunk(self, tx: Tx, chunk_id: str) -> None:
+        """Handle delete chunk."""
         with self._lock:
             self._conn.execute("DELETE FROM chunks WHERE id=?", (chunk_id,))
 
     def _load_artifact(self, artifact_id: str) -> ExecutionArtifact:
+        """Load artifact."""
         cached = self._artifact_cache.get(artifact_id)
         if cached:
             return cached
@@ -253,6 +274,7 @@ class SQLiteVectorSource(VectorSource):
         return artifact
 
     def put_vector(self, tx: Tx, vector: Vector) -> None:
+        """Handle put vector."""
         with self._lock:
             self._conn.execute(
                 "REPLACE INTO vectors(id, chunk_id, dim, vec_values, model, metadata) VALUES(?,?,?,?,?,?)",
@@ -268,6 +290,7 @@ class SQLiteVectorSource(VectorSource):
         self._vector_cache = None
 
     def get_vector(self, vector_id: str) -> Vector | None:
+        """Return vector."""
         with self._lock:
             row = self._conn.execute(
                 "SELECT id, chunk_id, dim, vec_values, model, metadata FROM vectors WHERE id=?",
@@ -286,6 +309,7 @@ class SQLiteVectorSource(VectorSource):
         )
 
     def list_vectors(self, chunk_id: str | None = None) -> Iterable[Vector]:
+        """List vectors."""
         if chunk_id is None and self._vector_cache is not None:
             return list(self._vector_cache)
         with self._lock:
@@ -315,6 +339,7 @@ class SQLiteVectorSource(VectorSource):
 
     def query(self, artifact_id: str, request: ExecutionRequest) -> Iterable[Result]:
         # Basic deterministic L2 similar to memory
+        """Query artifact ID."""
         if request.vector is None:
             raise ValidationError(message="execution vector required")
         artifact = self._load_artifact(artifact_id)
@@ -361,20 +386,24 @@ class SQLiteVectorSource(VectorSource):
         return scored[: request.top_k]
 
     def delete_vector(self, tx: Tx, vector_id: str) -> None:
+        """Handle delete vector."""
         with self._lock:
             self._conn.execute("DELETE FROM vectors WHERE id=?", (vector_id,))
         self._vector_cache = None
 
 
 class SQLiteExecutionLedger(ExecutionLedger):
+    """Represents SQLite execution ledger."""
     MAX_ARTIFACTS = 1000
     MAX_RESULTS = 5000
 
     def __init__(self, conn: sqlite3.Connection, lock: threading.RLock):
+        """Initialize the instance."""
         self._conn = conn
         self._lock = lock
 
     def put_artifact(self, tx: Tx, artifact: ExecutionArtifact) -> None:
+        """Handle put artifact."""
         with self._lock:
             existing = self.get_artifact(artifact.artifact_id)
             if (
@@ -409,6 +438,7 @@ class SQLiteExecutionLedger(ExecutionLedger):
             )
 
     def get_artifact(self, artifact_id: str) -> ExecutionArtifact | None:
+        """Return artifact."""
         with self._lock:
             row = self._conn.execute(
                 "SELECT id, corpus_fp, vector_fp, metric, scoring, execution_contract, execution_id, schema_version, build_params FROM artifacts WHERE id=?",
@@ -430,6 +460,7 @@ class SQLiteExecutionLedger(ExecutionLedger):
         )
 
     def list_artifacts(self) -> Iterable[ExecutionArtifact]:
+        """List artifacts."""
         with self._lock:
             rows = self._conn.execute(
                 "SELECT id, corpus_fp, vector_fp, metric, scoring, execution_contract, execution_id, schema_version, build_params FROM artifacts ORDER BY id"
@@ -450,10 +481,12 @@ class SQLiteExecutionLedger(ExecutionLedger):
         ]
 
     def delete_artifact(self, tx: Tx, artifact_id: str) -> None:
+        """Handle delete artifact."""
         with self._lock:
             self._conn.execute("DELETE FROM artifacts WHERE id=?", (artifact_id,))
 
     def put_execution_result(self, tx: Tx, result: ExecutionResult) -> None:
+        """Handle put execution result."""
         payload = json.dumps(result.to_primitive())
         with self._lock:
             self._conn.execute(
@@ -476,6 +509,7 @@ class SQLiteExecutionLedger(ExecutionLedger):
             )
 
     def get_execution_result(self, execution_id: str) -> ExecutionResult | None:
+        """Return execution result."""
         with self._lock:
             row = self._conn.execute(
                 "SELECT payload FROM execution_results WHERE execution_id=?",
@@ -565,6 +599,7 @@ class SQLiteExecutionLedger(ExecutionLedger):
         )
 
     def latest_execution_result(self, artifact_id: str) -> ExecutionResult | None:
+        """Handle latest execution result."""
         with self._lock:
             row = self._conn.execute(
                 "SELECT payload FROM execution_results WHERE artifact_id=? ORDER BY rowid DESC LIMIT 1",
@@ -577,10 +612,12 @@ class SQLiteExecutionLedger(ExecutionLedger):
 
 
 def json_dumps(vals: Iterable[float]) -> str:
+    """Handle JSON dumps."""
     return json.dumps(list(vals))
 
 
 def json_loads(raw: str) -> list[float]:
+    """Handle JSON loads."""
     loaded = json.loads(raw)
     return [float(v) for v in loaded]
 
@@ -588,6 +625,7 @@ def json_loads(raw: str) -> list[float]:
 def json_dumps_meta(
     metadata: tuple[tuple[str, str], ...] | dict[str, str] | None,
 ) -> str | None:
+    """Handle JSON dumps meta."""
     if not metadata:
         return None
     payload = list(metadata.items()) if isinstance(metadata, dict) else list(metadata)
@@ -595,6 +633,7 @@ def json_dumps_meta(
 
 
 def json_loads_meta(raw: str | None) -> tuple[tuple[str, str], ...] | None:
+    """Handle JSON loads meta."""
     if not raw:
         return None
     loaded = json.loads(raw)
@@ -602,6 +641,7 @@ def json_loads_meta(raw: str | None) -> tuple[tuple[str, str], ...] | None:
 
 
 class SQLiteFixture(NamedTuple):
+    """Represents SQLite fixture."""
     tx_factory: Callable[[], SQLiteTx]
     stores: ExecutionResources
     authz: Authz
@@ -611,6 +651,7 @@ class SQLiteFixture(NamedTuple):
 
 
 def sqlite_backend(db_path: str = ":memory:") -> SQLiteFixture:
+    """Handle SQLite backend."""
     conn = sqlite3.connect(db_path, check_same_thread=False, timeout=30)
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA busy_timeout=5000")
@@ -618,6 +659,7 @@ def sqlite_backend(db_path: str = ":memory:") -> SQLiteFixture:
     lock = threading.RLock()
 
     def tx_factory() -> SQLiteTx:
+        """Handle tx factory."""
         return SQLiteTx(conn, lock)
 
     capabilities = BackendCapabilities(

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
+"""Metadata helpers."""
+
 from __future__ import annotations
 
 from bijux_canon_index.core.errors import CorruptArtifactError, InvariantError
@@ -8,6 +10,7 @@ from bijux_canon_index.infra.adapters.hnsw.params import as_int, resolve_space
 
 
 def as_dict(value: object) -> dict[str, object]:
+    """Coerce to dict."""
     if isinstance(value, dict):
         return value
     return {}
@@ -20,6 +23,7 @@ def validate_index_meta(
     *,
     index_version: int,
 ) -> None:
+    """Validate index meta."""
     if not meta:
         raise CorruptArtifactError(message="ANN index metadata missing")
     if meta.get("artifact_id") != artifact.artifact_id:

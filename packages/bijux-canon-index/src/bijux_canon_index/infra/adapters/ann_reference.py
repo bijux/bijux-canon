@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+"""ANN reference helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -25,6 +27,7 @@ class ReferenceAnnRunner(AnnExecutionRequestRunner):
     """Reference ANN runner that truncates deterministic results."""
 
     def __init__(self, vectors: VectorSource, index_dir: str | Path | None = None):
+        """Initialize the instance."""
         self.vectors = vectors
         self._index_info: dict[str, dict[str, object]] = {}
         self._last_query_metadata: dict[str, object] = {}
@@ -32,24 +35,29 @@ class ReferenceAnnRunner(AnnExecutionRequestRunner):
 
     @property
     def randomness_sources(self) -> tuple[str, ...]:
+        """Handle randomness sources."""
         return ("reference_ann_truncation",)
 
     @property
     def reproducibility_bounds(self) -> str:
+        """Handle reproducibility bounds."""
         return "bounded"
 
     @property
     def supports_seed(self) -> bool:
+        """Handle supports seed."""
         return True
 
     def approximate_request(
         self, artifact: ExecutionArtifact, request: ExecutionRequest
     ) -> Iterable[Result]:
+        """Handle approximate request."""
         return self._truncate_results(artifact, request)
 
     def deterministic_fallback(
         self, artifact_id: str, request: ExecutionRequest
     ) -> Iterable[Result]:
+        """Handle deterministic fallback."""
         return self.vectors.query(artifact_id, request)
 
     def build_index(
@@ -59,6 +67,7 @@ class ReferenceAnnRunner(AnnExecutionRequestRunner):
         metric: str,
         nd_settings: object | None = None,
     ) -> dict[str, object]:
+        """Build index."""
         vectors_list = list(vectors)
         if not vectors_list:
             return {}
@@ -85,11 +94,13 @@ class ReferenceAnnRunner(AnnExecutionRequestRunner):
         return info
 
     def index_info(self, artifact_id: str) -> dict[str, object]:
+        """Handle index info."""
         return dict(self._index_info.get(artifact_id, {}))
 
     def query(
         self, vector: Iterable[float], k: int, **params: object
     ) -> tuple[list[str], list[float], dict[str, object]]:
+        """Query vector."""
         request = ExecutionRequest(
             request_id="ann-query",
             text=None,
@@ -127,6 +138,7 @@ class ReferenceAnnRunner(AnnExecutionRequestRunner):
         request: ExecutionRequest,
         results: Iterable[Result],
     ) -> ApproximationReport:
+        """Handle approximation report."""
         materialized = tuple(results)
         exact = tuple(self.deterministic_fallback(artifact.artifact_id, request))
         exact_ids = {res.vector_id: res.rank for res in exact}
@@ -175,18 +187,21 @@ class ReferenceAnnRunner(AnnExecutionRequestRunner):
     def _truncate_results(
         self, artifact: ExecutionArtifact, request: ExecutionRequest
     ) -> Iterable[Result]:
+        """Handle truncate results."""
         results = list(self.vectors.query(artifact.artifact_id, request))
         if not results:
             return ()
         return results[: max(1, len(results) // 2)]
 
     def _query_params_metadata(self) -> tuple[tuple[str, str], ...]:
+        """Query params metadata."""
         params = self._last_query_metadata.get("query_params")
         if isinstance(params, dict):
             return tuple((str(k), str(v)) for k, v in params.items())
         return ()
 
     def _seed_value(self) -> int | None:
+        """Handle seed value."""
         seed = self._last_query_metadata.get("seed")
         if isinstance(seed, bool):
             return None

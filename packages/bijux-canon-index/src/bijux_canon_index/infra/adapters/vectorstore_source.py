@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Vectorstore source helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -25,13 +27,16 @@ from bijux_canon_index.infra.logging import log_event
 
 
 class VectorStoreVectorSource(VectorSource):
+    """Represents vector store vector source."""
     def __init__(self, base: VectorSource, resolved: VectorStoreResolution):
+        """Initialize the instance."""
         self._base = base
         self._resolved = resolved
         self._adapter = resolved.adapter
 
     @property
     def vector_store_metadata(self) -> dict[str, object]:
+        """Handle vector store metadata."""
         index_params = getattr(self._adapter, "index_params", None)
         return {
             "backend": self._resolved.descriptor.name,
@@ -48,32 +53,41 @@ class VectorStoreVectorSource(VectorSource):
 
     # Document operations
     def put_document(self, tx: Any, document: Document) -> None:
+        """Handle put document."""
         self._base.put_document(tx, document)
 
     def get_document(self, document_id: str) -> Document | None:
+        """Return document."""
         return self._base.get_document(document_id)
 
     def list_documents(self) -> Iterable[Document]:
+        """List documents."""
         return self._base.list_documents()
 
     def delete_document(self, tx: Any, document_id: str) -> None:
+        """Handle delete document."""
         self._base.delete_document(tx, document_id)
 
     # Chunk operations
     def put_chunk(self, tx: Any, chunk: Chunk) -> None:
+        """Handle put chunk."""
         self._base.put_chunk(tx, chunk)
 
     def get_chunk(self, chunk_id: str) -> Chunk | None:
+        """Return chunk."""
         return self._base.get_chunk(chunk_id)
 
     def list_chunks(self, document_id: str | None = None) -> Iterable[Chunk]:
+        """List chunks."""
         return self._base.list_chunks(document_id=document_id)
 
     def delete_chunk(self, tx: Any, chunk_id: str) -> None:
+        """Handle delete chunk."""
         self._base.delete_chunk(tx, chunk_id)
 
     # Vector operations
     def put_vector(self, tx: Any, vector: Vector) -> None:
+        """Handle put vector."""
         self._base.put_vector(tx, vector)
         if getattr(self._adapter, "is_noop", False):
             return
@@ -89,12 +103,15 @@ class VectorStoreVectorSource(VectorSource):
         self._adapter.insert([list(vector.values)], metadata=[metadata])
 
     def get_vector(self, vector_id: str) -> Vector | None:
+        """Return vector."""
         return self._base.get_vector(vector_id)
 
     def list_vectors(self, chunk_id: str | None = None) -> Iterable[Vector]:
+        """List vectors."""
         return self._base.list_vectors(chunk_id=chunk_id)
 
     def query(self, artifact_id: str, request: ExecutionRequest) -> Iterable[Result]:
+        """Query artifact ID."""
         if request.vector is None:
             raise ValidationError(message="execution vector required")
         if getattr(self._adapter, "is_noop", False):
@@ -176,6 +193,7 @@ class VectorStoreVectorSource(VectorSource):
         return limited
 
     def delete_vector(self, tx: Any, vector_id: str) -> None:
+        """Handle delete vector."""
         self._base.delete_vector(tx, vector_id)
         if getattr(self._adapter, "is_noop", False):
             return
@@ -186,6 +204,7 @@ class VectorStoreVectorSource(VectorSource):
         self._adapter.delete([vector_id])
 
     def _matches_filter(self, result: Result, filter_spec: dict[str, Any]) -> bool:
+        """Handle matches filter."""
         doc_id = result.document_id
         chunk_id = result.chunk_id
         document = self._base.get_document(doc_id) if doc_id else None

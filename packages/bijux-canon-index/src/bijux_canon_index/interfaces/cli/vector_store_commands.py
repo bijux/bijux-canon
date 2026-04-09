@@ -23,6 +23,7 @@ from bijux_canon_index.interfaces.errors.reporting import record_failure
 
 
 def register_vector_store_commands(vdb_app: typer.Typer) -> None:
+    """Register vector store commands."""
     vdb_app.command("status")(vdb_status)
     vdb_app.command("rebuild")(vdb_rebuild)
     vdb_app.command("compact")(vdb_compact)
@@ -33,6 +34,7 @@ def vdb_status(
     vector_store: str = typer.Option(..., "--vector-store"),
     uri: str | None = typer.Option(None, "--uri"),
 ) -> None:
+    """Handle vdb status."""
     try:
         engine = VectorExecutionEngine(
             config=_build_config(vector_store=vector_store, vector_store_uri=uri)
@@ -68,6 +70,7 @@ def vdb_rebuild(
     uri: str | None = typer.Option(None, "--uri"),
     mode: str = typer.Option("exact", "--mode", help="exact|ann"),
 ) -> None:
+    """Handle vdb rebuild."""
     try:
         engine = VectorExecutionEngine(
             config=_build_config(vector_store=vector_store, vector_store_uri=uri)
@@ -124,6 +127,7 @@ def vdb_compact(
     uri: str | None = typer.Option(None, "--uri"),
     mode: str = typer.Option("ann", "--mode", help="exact|ann"),
 ) -> None:
+    """Handle vdb compact."""
     try:
         engine = VectorExecutionEngine(
             config=_build_config(vector_store=vector_store, vector_store_uri=uri)

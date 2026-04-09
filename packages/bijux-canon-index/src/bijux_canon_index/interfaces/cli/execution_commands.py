@@ -25,6 +25,7 @@ from bijux_canon_index.interfaces.cli.workspace_commands import (
 
 
 def register_execution_commands(app: typer.Typer) -> None:
+    """Register execution commands."""
     app.command()(list_artifacts)
     app.command()(list_runs)
     app.command()(init)

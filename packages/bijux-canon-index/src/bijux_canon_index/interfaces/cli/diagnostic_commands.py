@@ -33,12 +33,14 @@ from bijux_canon_index.interfaces.errors.reporting import record_failure
 
 
 def register_diagnostic_commands(app: typer.Typer, config_app: typer.Typer) -> None:
+    """Register diagnostic commands."""
     config_app.command("show")(config_show)
     app.command("metrics")(metrics_snapshot)
     app.command("debug-bundle")(debug_bundle)
 
 
 def config_show(ctx: typer.Context) -> None:
+    """Handle config show."""
     try:
         config = _load_config(ctx.obj.config_path) if ctx.obj else None
         _emit(ctx, _redact_config(config))
@@ -47,6 +49,7 @@ def config_show(ctx: typer.Context) -> None:
 
 
 def metrics_snapshot(ctx: typer.Context) -> None:
+    """Handle metrics snapshot."""
     try:
         snapshot = METRICS.snapshot()
         _emit(
@@ -63,6 +66,7 @@ def debug_bundle(
     vector_store: str | None = typer.Option(None, "--vector-store"),
     vector_store_uri: str | None = typer.Option(None, "--vector-store-uri"),
 ) -> None:
+    """Handle debug bundle."""
     try:
         base_config = _load_config(ctx.obj.config_path) if ctx.obj else None
         config = _build_config(

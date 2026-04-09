@@ -32,6 +32,7 @@ from bijux_canon_index.interfaces.errors.reporting import record_failure
 
 
 def register_artifact_commands(artifact_app: typer.Typer) -> None:
+    """Register artifact commands."""
     artifact_app.command("pack")(artifact_pack)
     artifact_app.command("unpack")(artifact_unpack)
 
@@ -42,6 +43,7 @@ def artifact_pack(
     out: Path = typer.Option(Path("bundle.zip"), "--out"),  # noqa: B008
     include_vectors: bool = typer.Option(False, "--include-vectors"),
 ) -> None:
+    """Handle artifact pack."""
     try:
         run = RunStore().load(run_id)
         base_config = _load_config(ctx.obj.config_path) if ctx.obj else None
@@ -93,6 +95,7 @@ def artifact_unpack(
     bundle: Path = typer.Argument(...),  # noqa: B008
     out_dir: Path = typer.Option(Path("bundle_out"), "--out-dir"),  # noqa: B008
 ) -> None:
+    """Handle artifact unpack."""
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(bundle, "r") as archive:

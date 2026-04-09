@@ -43,6 +43,7 @@ def validate(
     vector_store: str | None = typer.Option(None, "--vector-store"),
     vector_store_uri: str | None = typer.Option(None, "--vector-store-uri"),
 ) -> None:
+    """Validate ctx."""
     try:
         docs = doc or []
         vectors = [json.loads(v) for v in (vector or [])]
@@ -101,6 +102,7 @@ def doctor(
     vector_store: str | None = typer.Option(None, "--vector-store"),
     vector_store_uri: str | None = typer.Option(None, "--vector-store-uri"),
 ) -> None:
+    """Handle doctor."""
     try:
         extras = {}
         for module in ("faiss", "qdrant_client", "sentence_transformers"):

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Cache helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -18,18 +20,28 @@ from bijux_canon_index.infra.runtime_paths import (
 
 @dataclass(frozen=True)
 class EmbeddingCacheEntry:
+    """Represents embedding cache entry."""
     vector: tuple[float, ...]
     metadata: dict[str, str | None]
 
 
 class EmbeddingCache(Protocol):
-    def get(self, key: str) -> EmbeddingCacheEntry | None: ...
+    """Represents embedding cache."""
+    def get(self, key: str) -> EmbeddingCacheEntry | None:
+        """Look up a cached embedding entry."""
 
-    def set(self, key: str, entry: EmbeddingCacheEntry) -> None: ...
+        ...
+
+    def set(self, key: str, entry: EmbeddingCacheEntry) -> None:
+        """Store a cached embedding entry."""
+
+        ...
 
 
 class SQLiteEmbeddingCache:
+    """Represents SQLite embedding cache."""
     def __init__(self, path: str | Path) -> None:
+        """Initialize the instance."""
         self._path = ensure_parent_dir(path)
         self._conn = sqlite3.connect(self._path)
         self._conn.execute(
@@ -38,6 +50,7 @@ class SQLiteEmbeddingCache:
         self._conn.commit()
 
     def get(self, key: str) -> EmbeddingCacheEntry | None:
+        """Handle get."""
         row = self._conn.execute(
             "SELECT vector, metadata FROM embeddings_cache WHERE key=?", (key,)
         ).fetchone()
@@ -48,6 +61,7 @@ class SQLiteEmbeddingCache:
         return EmbeddingCacheEntry(vector=vector, metadata=metadata)
 
     def set(self, key: str, entry: EmbeddingCacheEntry) -> None:
+        """Handle set."""
         self._conn.execute(
             "REPLACE INTO embeddings_cache(key, vector, metadata) VALUES(?,?,?)",
             (key, json.dumps(list(entry.vector)), json.dumps(entry.metadata)),
@@ -56,6 +70,7 @@ class SQLiteEmbeddingCache:
 
 
 def build_cache(cache_spec: str | None) -> EmbeddingCache | None:
+    """Build cache."""
     if not cache_spec:
         return None
     if cache_spec.lower() == "sqlite":
@@ -69,6 +84,7 @@ def build_cache(cache_spec: str | None) -> EmbeddingCache | None:
 
 
 def cache_key(model_id: str, text: str, config_hash: str) -> str:
+    """Handle cache key."""
     text_hash = fingerprint(text)
     return f"{model_id}:{text_hash}:{config_hash}"
 
@@ -80,6 +96,7 @@ def embedding_config_hash(
     *,
     provider_version: str | None = None,
 ) -> str:
+    """Handle embedding config hash."""
     payload = {
         "provider": provider,
         "provider_version": provider_version,
@@ -90,6 +107,7 @@ def embedding_config_hash(
 
 
 def metadata_as_dict(meta: Mapping[str, Any]) -> dict[str, str | None]:
+    """Handle metadata as dict."""
     return {str(k): None if v is None else str(v) for k, v in meta.items()}
 
 

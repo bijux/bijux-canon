@@ -24,6 +24,7 @@ ALLOWED_INTENTS = {intent.value for intent in ExecutionIntent}
 
 
 def parse_contract(raw: str) -> ExecutionContract:
+    """Parse contract."""
     try:
         return ExecutionContract(raw)
     except Exception:
@@ -32,6 +33,7 @@ def parse_contract(raw: str) -> ExecutionContract:
 
 
 def parse_mode(raw: str) -> ExecutionMode:
+    """Parse mode."""
     try:
         return ExecutionMode(raw)
     except Exception:
@@ -40,6 +42,7 @@ def parse_mode(raw: str) -> ExecutionMode:
 
 
 def parse_intent(raw: str) -> ExecutionIntent:
+    """Parse intent."""
     if raw not in ALLOWED_INTENTS:
         allowed = "|".join(sorted(ALLOWED_INTENTS))
         typer.echo(f"execution-intent must be one of {allowed}")
@@ -48,6 +51,7 @@ def parse_intent(raw: str) -> ExecutionIntent:
 
 
 def load_config(config_path: Path | None) -> ExecutionConfig | None:
+    """Load config."""
     if not config_path:
         return None
 
@@ -123,6 +127,7 @@ def build_config(
     cache_embeddings: str | None = None,
     base_config: ExecutionConfig | None = None,
 ) -> ExecutionConfig:
+    """Build config."""
     resolved_vector_store = base_config.vector_store if base_config else None
     if vector_store:
         resolved_vector_store = VectorStoreConfig(

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Requests schemas for interface payloads."""
+
 from __future__ import annotations
 
 from typing import Self
@@ -13,10 +15,12 @@ from bijux_canon_index.interfaces.schemas.base import StrictModel
 
 
 class CreateRequest(StrictModel):
+    """Represents create request."""
     name: str = Field(min_length=1)
 
 
 class IngestRequest(StrictModel):
+    """Represents ingest request."""
     documents: list[str]
     vectors: list[list[float]] | None = None
     embed_provider: str | None = None
@@ -30,6 +34,7 @@ class IngestRequest(StrictModel):
 
     @model_validator(mode="after")  # type: ignore[untyped-decorator]
     def ensure_lengths(self) -> Self:
+        """Ensure lengths."""
         if self.vectors:
             if len(self.documents) != len(self.vectors):
                 raise ValueError("documents and vectors length mismatch")
@@ -40,12 +45,14 @@ class IngestRequest(StrictModel):
 
 
 class ExecutionBudgetPayload(StrictModel):
+    """Represents execution budget payload."""
     max_latency_ms: int | None = None
     max_memory_mb: int | None = None
     max_error: float | None = None
 
 
 class RandomnessProfilePayload(StrictModel):
+    """Represents randomness profile payload."""
     seed: int | None = None
     sources: list[str] | None = None
     bounded: bool = False
@@ -53,6 +60,7 @@ class RandomnessProfilePayload(StrictModel):
 
 
 class ExecutionRequestPayload(StrictModel):
+    """Represents execution request payload."""
     artifact_id: str | None = None
     request_text: str | None = None
     vector: tuple[float, ...] | None = None
@@ -95,12 +103,14 @@ class ExecutionRequestPayload(StrictModel):
 
     @model_validator(mode="after")  # type: ignore[untyped-decorator]
     def ensure_one_of_request_or_vector(self) -> Self:
+        """Ensure one of request or vector."""
         if self.request_text is None and self.vector is None:
             raise ValueError("request_text or vector is required")
         return self
 
     @model_validator(mode="after")  # type: ignore[untyped-decorator]
     def ensure_randomness_for_nd(self) -> Self:
+        """Ensure randomness for ND."""
         from bijux_canon_index.interfaces.schemas.validators import (
             validate_execution_request_payload,
         )
@@ -110,6 +120,7 @@ class ExecutionRequestPayload(StrictModel):
 
 
 class ExecutionArtifactRequest(StrictModel):
+    """Represents execution artifact request."""
     execution_contract: ExecutionContract
     index_mode: str | None = None
     vector_store: str | None = None
@@ -118,6 +129,7 @@ class ExecutionArtifactRequest(StrictModel):
 
     @model_validator(mode="after")  # type: ignore[untyped-decorator]
     def ensure_index_mode(self) -> Self:
+        """Ensure index mode."""
         if self.index_mode is None:
             return self
         if self.index_mode not in {"exact", "ann"}:
@@ -126,6 +138,7 @@ class ExecutionArtifactRequest(StrictModel):
 
 
 class ExplainRequest(StrictModel):
+    """Represents explain request."""
     result_id: str = Field(min_length=1)
     artifact_id: str | None = None
 

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Execution payloads helpers for the CLI interface."""
+
 from __future__ import annotations
 
 import json
@@ -68,6 +70,7 @@ def build_execute_payload(
     nd_space: str | None,
     correlation_id: str,
 ) -> tuple[ExecutionRequestPayload, ExecutionContract]:
+    """Build execute payload."""
     vector_parsed = json.loads(vector) if vector else None
     contract = parse_contract(execution_contract)
     sources = parse_randomness_sources(randomness_sources)
@@ -137,6 +140,7 @@ def build_replay_runtime(
     max_memory_mb: int | None,
     max_error: float | None,
 ) -> tuple[RandomnessProfile, ExecutionBudget]:
+    """Build replay runtime."""
     sources = parse_randomness_sources(randomness_sources)
     return (
         RandomnessProfile(
@@ -162,6 +166,7 @@ def build_artifact_compare_payload(
     vector_store: str | None,
     vector_store_uri: str | None,
 ) -> ExecutionRequestPayload:
+    """Build artifact compare payload."""
     return ExecutionRequestPayload(
         request_text=None,
         vector=tuple(json.loads(vector)),
@@ -182,6 +187,7 @@ def build_run_or_bundle_comparison(
     load_run: callable,
     load_bundle: callable,
 ) -> dict[str, object] | None:
+    """Build run or bundle comparison."""
     if not (run_a or run_b or bundle_a or bundle_b):
         return None
     if not (run_a and run_b) and not (bundle_a and bundle_b):
@@ -232,12 +238,14 @@ def build_run_or_bundle_comparison(
 
 
 def parse_randomness_sources(raw: str | None) -> list[str] | None:
+    """Parse randomness sources."""
     if not raw:
         return None
     return [segment.strip() for segment in raw.split(",")]
 
 
 def extract_results(result_payload: object) -> list[str]:
+    """Extract results."""
     if not isinstance(result_payload, dict):
         return []
     results = result_payload.get("results", [])
@@ -247,12 +255,14 @@ def extract_results(result_payload: object) -> list[str]:
 
 
 def ensure_metadata(metadata: object) -> dict[str, Any]:
+    """Ensure metadata."""
     if isinstance(metadata, dict):
         return dict(metadata)
     return {}
 
 
 def nested_metadata(metadata: dict[str, Any], *path: str) -> object:
+    """Handle nested metadata."""
     current: object = metadata
     for part in path:
         if not isinstance(current, dict):

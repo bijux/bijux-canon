@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Registry helpers."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -13,6 +15,7 @@ from bijux_canon_index.infra.plugins.entrypoints import load_entrypoints
 
 @dataclass(frozen=True)
 class EmbeddingMetadata:
+    """Represents embedding metadata."""
     provider: str
     provider_version: str | None
     model: str
@@ -27,21 +30,25 @@ class EmbeddingMetadata:
 
 @dataclass(frozen=True)
 class EmbeddingBatch:
+    """Represents embedding batch."""
     vectors: list[tuple[float, ...]]
     metadata: EmbeddingMetadata
 
 
 class EmbeddingProvider(ABC):
+    """Represents embedding provider."""
     name: str
 
     @property
     def provider_version(self) -> str | None:
+        """Handle provider version."""
         return None
 
     @abstractmethod
     def embed(
         self, texts: list[str], model: str, options: Mapping[str, str] | None = None
     ) -> EmbeddingBatch:
+        """Handle embed."""
         raise NotImplementedError
 
 
@@ -49,7 +56,9 @@ EmbeddingProviderFactory = Callable[[], EmbeddingProvider]
 
 
 class EmbeddingProviderRegistry:
+    """Represents embedding provider registry."""
     def __init__(self) -> None:
+        """Initialize the instance."""
         self._providers: dict[str, tuple[EmbeddingProviderFactory, PluginContract]] = {}
         self._default: str | None = None
         self._plugin_loads: list[dict[str, object]] = []
@@ -64,6 +73,7 @@ class EmbeddingProviderRegistry:
         contract: PluginContract,
         default: bool = False,
     ) -> None:
+        """Register name."""
         if not contract.determinism:
             raise ValueError("Embedding provider contract must declare determinism")
         if contract.randomness_sources is None:
@@ -78,6 +88,7 @@ class EmbeddingProviderRegistry:
             self._plugin_sources[key] = dict(self._active_plugin)
 
     def resolve(self, name: str | None = None) -> EmbeddingProvider:
+        """Resolve name."""
         key = (name or self._default or "").lower()
         if not key:
             raise ValueError("Embedding provider name is required")
@@ -92,10 +103,12 @@ class EmbeddingProviderRegistry:
             ) from exc
 
     def providers(self) -> list[str]:
+        """Handle providers."""
         return sorted(self._providers.keys())
 
     @property
     def default(self) -> str | None:
+        """Handle default."""
         return self._default
 
     def _record_plugin_load(
@@ -105,6 +118,7 @@ class EmbeddingProviderRegistry:
         status: str,
         warning: str | None = None,
     ) -> None:
+        """Record plugin load."""
         entry: dict[str, object] = dict(meta)
         entry["status"] = status
         if warning:
@@ -112,12 +126,15 @@ class EmbeddingProviderRegistry:
         self._plugin_loads.append(entry)
 
     def _set_active_plugin(self, meta: dict[str, str | None]) -> None:
+        """Handle set active plugin."""
         self._active_plugin = dict(meta)
 
     def _clear_active_plugin(self) -> None:
+        """Handle clear active plugin."""
         self._active_plugin = None
 
     def plugin_reports(self) -> list[dict[str, object]]:
+        """Handle plugin reports."""
         reports: list[dict[str, object]] = []
         for name, meta in self._plugin_sources.items():
             _factory, contract = self._providers[name]
@@ -144,6 +161,7 @@ EMBEDDING_PROVIDERS = EmbeddingProviderRegistry()
 
 
 def _register_sentence_transformers() -> None:
+    """Register sentence transformers."""
     try:
         from bijux_canon_index.infra.embeddings.sentence_transformers import (
             SentenceTransformersProvider,

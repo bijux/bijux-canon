@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
+"""Dataset helpers for repository tooling."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -17,6 +19,7 @@ DEFAULT_SEED = 1337
 
 @dataclass(frozen=True)
 class BenchmarkDataset:
+    """Represents benchmark dataset."""
     documents: list[str]
     vectors: np.ndarray
     queries: np.ndarray
@@ -25,6 +28,7 @@ class BenchmarkDataset:
 
 
 def _generate_documents(size: int, rng: np.random.Generator) -> list[str]:
+    """Handle generate documents."""
     vocab = [
         "alpha",
         "bravo",
@@ -67,6 +71,7 @@ def generate_dataset(
     query_count: int = DEFAULT_QUERY_COUNT,
     seed: int = DEFAULT_SEED,
 ) -> BenchmarkDataset:
+    """Handle generate dataset."""
     import numpy as np
 
     rng = np.random.default_rng(seed)
@@ -83,6 +88,7 @@ def generate_dataset(
 
 
 def save_dataset(dataset: BenchmarkDataset, folder: Path) -> None:
+    """Handle save dataset."""
     import numpy as np
 
     folder.mkdir(parents=True, exist_ok=True)
@@ -101,6 +107,7 @@ def save_dataset(dataset: BenchmarkDataset, folder: Path) -> None:
 
 
 def load_dataset(folder: Path) -> BenchmarkDataset:
+    """Load dataset."""
     import numpy as np
 
     meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
@@ -121,4 +128,5 @@ def load_dataset(folder: Path) -> BenchmarkDataset:
 
 
 def dataset_folder(base_dir: Path, size: int, dimension: int, seed: int) -> Path:
+    """Handle dataset folder."""
     return base_dir / f"size_{size}_dim_{dimension}_seed_{seed}"

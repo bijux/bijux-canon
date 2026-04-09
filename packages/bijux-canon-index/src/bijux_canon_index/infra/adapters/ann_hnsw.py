@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""ANN HNSW helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
@@ -41,6 +43,7 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
     INDEX_VERSION = 1
 
     def __init__(self, vectors: VectorSource, index_dir: str | Path | None = None):
+        """Initialize the instance."""
         if hnswlib is None:  # pragma: no cover - optional dependency
             raise RuntimeError("hnswlib is required for HnswAnnRunner")
         self.vectors = vectors
@@ -56,21 +59,26 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
 
     @property
     def randomness_sources(self) -> tuple[str, ...]:
+        """Handle randomness sources."""
         return ("hnswlib",)
 
     @property
     def reproducibility_bounds(self) -> str:
+        """Handle reproducibility bounds."""
         return "bounded"
 
     @property
     def supports_seed(self) -> bool:
+        """Handle supports seed."""
         return True
 
     @property
     def supports_compaction(self) -> bool:
+        """Handle supports compaction."""
         return True
 
     def set_randomness_profile(self, randomness: object | None) -> None:
+        """Handle set randomness profile."""
         if randomness is None:
             self._active_seed = None
             return
@@ -86,11 +94,13 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
     def approximate_request(
         self, artifact: ExecutionArtifact, request: ExecutionRequest
     ) -> Iterable[Result]:
+        """Handle approximate request."""
         return self._hnsw_results(artifact, request)
 
     def deterministic_fallback(
         self, artifact_id: str, request: ExecutionRequest
     ) -> Iterable[Result]:
+        """Handle deterministic fallback."""
         return self.vectors.query(artifact_id, request)
 
     def build_index(
@@ -100,6 +110,7 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
         metric: str,
         nd_settings: object | None = None,
     ) -> dict[str, object]:
+        """Build index."""
         vectors_list = list(vectors)
         if not vectors_list:
             return {}
@@ -181,9 +192,11 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
         return info
 
     def index_info(self, artifact_id: str) -> dict[str, object]:
+        """Handle index info."""
         return dict(self._index_info.get(artifact_id, {}))
 
     def warmup(self, artifact_id: str, queries: Iterable[Iterable[float]]) -> None:
+        """Handle warmup."""
         if self._index is None:
             return
         warm_k = 1
@@ -195,11 +208,13 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
                 log_event("nd_warmup_query_failed", error=str(exc))
 
     def compact(self, artifact_id: str, vectors: Iterable[Vector], metric: str) -> None:
+        """Handle compact."""
         self.build_index(artifact_id, vectors, metric)
 
     def query(
         self, vector: Iterable[float], k: int, **params: object
     ) -> tuple[list[str], list[float], dict[str, object]]:
+        """Query vector."""
         if self._index is None:
             raise AnnIndexBuildError(message="HNSW index not loaded")
         labels: Sequence[Sequence[int]]
@@ -224,6 +239,7 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
         request: ExecutionRequest,
         results: Iterable[Result],
     ) -> ApproximationReport:
+        """Handle approximation report."""
         materialized = tuple(results)
         index_info = as_dict(self._index_info.get(artifact.artifact_id))
         index_hash = index_info.get("index_hash") if index_info else None
@@ -254,6 +270,7 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
     def _hnsw_results(
         self, artifact: ExecutionArtifact, request: ExecutionRequest
     ) -> Iterable[Result]:
+        """Handle HNSW results."""
         if self._index is None:
             try:
                 self._load_index(artifact, request.nd_settings)
@@ -388,6 +405,7 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
     def _load_index(
         self, artifact: ExecutionArtifact, settings: NDSettings | None
     ) -> None:
+        """Load index."""
         if self._index_dir is None:
             return
         index_file = self._index_dir / f"{artifact.artifact_id}.hnsw"
@@ -429,6 +447,7 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
             )
 
     def _persist_index(self, artifact_id: str, info: dict[str, object]) -> None:
+        """Handle persist index."""
         if self._index_dir is None or self._index is None:
             return
         index_file = self._index_dir / f"{artifact_id}.hnsw"
@@ -443,12 +462,14 @@ class HnswAnnRunner(AnnExecutionRequestRunner):
         meta_tmp.replace(meta_file)
 
     def _query_params_metadata(self) -> tuple[tuple[str, str], ...]:
+        """Query params metadata."""
         params = self._last_query_metadata.get("query_params")
         if isinstance(params, dict):
             return tuple((str(k), str(v)) for k, v in params.items())
         return ()
 
     def _seed_value(self) -> int | None:
+        """Handle seed value."""
         seed = self._last_query_metadata.get("seed")
         if isinstance(seed, bool):
             return None

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Entrypoints helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -12,6 +14,7 @@ from bijux_canon_index.infra.environment import read_env
 
 
 def load_entrypoints(group: str, registry: Any) -> None:
+    """Load entrypoints."""
     entries = []
     try:
         entries = list(metadata.entry_points(group=group))
@@ -35,6 +38,7 @@ def load_entrypoints(group: str, registry: Any) -> None:
             _set_active_plugin(registry, meta)
 
             def _register(plugin: Any = plugin, registry: Any = registry) -> None:
+                """Register plugin."""
                 _register_plugin(plugin, registry)
 
             _call_with_timeout(_register)
@@ -51,6 +55,7 @@ def load_entrypoints(group: str, registry: Any) -> None:
 
 
 def _register_plugin(plugin: Any, registry: Any) -> None:
+    """Register plugin."""
     if hasattr(plugin, "register") and callable(plugin.register):
         plugin.register(registry)
         return
@@ -60,6 +65,7 @@ def _register_plugin(plugin: Any, registry: Any) -> None:
 
 
 def _call_with_timeout(func: Callable[[], None]) -> None:
+    """Handle call with timeout."""
     timeout_ms = int(
         read_env(
             "BIJUX_CANON_INDEX_PLUGIN_TIMEOUT_MS",
@@ -77,6 +83,7 @@ def _call_with_timeout(func: Callable[[], None]) -> None:
 
 
 def _entrypoint_meta(ep: Any, group: str) -> dict[str, str | None]:
+    """Handle entrypoint meta."""
     dist_name = None
     dist_version = None
     if getattr(ep, "dist", None) is not None:
@@ -93,16 +100,19 @@ def _entrypoint_meta(ep: Any, group: str) -> dict[str, str | None]:
 def _record_plugin_load(
     registry: Any, meta: dict[str, str | None], status: str, warning: str | None = None
 ) -> None:
+    """Record plugin load."""
     if hasattr(registry, "_record_plugin_load"):
         registry._record_plugin_load(meta, status=status, warning=warning)
 
 
 def _set_active_plugin(registry: Any, meta: dict[str, str | None]) -> None:
+    """Handle set active plugin."""
     if hasattr(registry, "_set_active_plugin"):
         registry._set_active_plugin(meta)
 
 
 def _clear_active_plugin(registry: Any) -> None:
+    """Handle clear active plugin."""
     if hasattr(registry, "_clear_active_plugin"):
         registry._clear_active_plugin()
 

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Sentence transformers helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -21,15 +23,18 @@ import numpy as np
 
 
 class SentenceTransformersProvider(EmbeddingProvider):
+    """Represents sentence transformers provider."""
     name = "sentence_transformers"
 
     @property
     def provider_version(self) -> str | None:
+        """Handle provider version."""
         return getattr(sentence_transformers, "__version__", None)
 
     def embed(
         self, texts: list[str], model: str, options: Mapping[str, str] | None = None
     ) -> EmbeddingBatch:
+        """Handle embed."""
         if (
             sentence_transformers is None or SentenceTransformer is None
         ):  # pragma: no cover

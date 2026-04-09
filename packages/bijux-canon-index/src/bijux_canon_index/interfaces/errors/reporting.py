@@ -16,6 +16,7 @@ _BACKEND_FAILURE_TYPES = (
 
 
 def record_failure(exc: Exception) -> None:
+    """Record failure."""
     if isinstance(exc, _BACKEND_FAILURE_TYPES):
         METRICS.increment("backend_failures_total", 1)
 

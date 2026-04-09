@@ -49,6 +49,7 @@ from bijux_canon_index.tooling.benchmarks.runner import format_table, run_benchm
 
 
 def register_performance_commands(app: typer.Typer, nd_app: typer.Typer) -> None:
+    """Register performance commands."""
     nd_app.command("tune")(nd_tune)
     app.command()(bench)
 
@@ -71,6 +72,7 @@ def nd_tune(
         help="Use existing store vectors instead of loading dataset",
     ),
 ) -> None:
+    """Handle ND tune."""
     try:
         engine = VectorExecutionEngine(
             config=_build_config(vector_store=vector_store, vector_store_uri=uri)
@@ -135,6 +137,7 @@ def nd_tune(
                 return
 
         def _exact(query: tuple[float, ...]) -> list[Result]:
+            """Handle exact."""
             scored: list[Result] = []
             for vector in vectors:
                 score = scoring.score(artifact.metric, query, tuple(vector.values))
@@ -233,6 +236,7 @@ def nd_tune(
                     )
 
         def _dominates(a: dict[str, object], b: dict[str, object]) -> bool:
+            """Handle dominates."""
             a_lat = a["latency_ms"]["mean"]
             b_lat = b["latency_ms"]["mean"]
             a_qual = a["quality"]["overlap_at_k"]
@@ -309,6 +313,7 @@ def bench(
         0.05, "--overlap-regress-threshold"
     ),
 ) -> None:
+    """Handle bench."""
     try:
         if store not in {"memory", "vdb"}:
             typer.echo("store must be memory|vdb")

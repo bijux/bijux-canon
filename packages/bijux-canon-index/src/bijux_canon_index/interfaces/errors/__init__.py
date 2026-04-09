@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Package exports for errors."""
+
 from __future__ import annotations
 
 from bijux_canon_index.core import errors
@@ -51,6 +53,7 @@ CLI_EXIT_MAPPING: dict[type[BaseException], int] = {
 
 
 def to_http_status(exc: Exception) -> int:
+    """Convert to HTTP status."""
     for exc_type, status in HTTP_MAPPING.items():
         if isinstance(exc, exc_type):
             return status
@@ -58,6 +61,7 @@ def to_http_status(exc: Exception) -> int:
 
 
 def to_cli_exit(exc: Exception) -> int:
+    """Convert to CLI exit."""
     for exc_type, code in CLI_EXIT_MAPPING.items():
         if isinstance(exc, exc_type):
             return code

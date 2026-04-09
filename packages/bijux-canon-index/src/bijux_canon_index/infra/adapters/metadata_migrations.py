@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Metadata migrations helpers."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -10,6 +12,7 @@ CURRENT_VECTOR_METADATA_VERSION = 2
 
 
 def migrate_vector_metadata(payload: dict[str, Any]) -> dict[str, Any]:
+    """Handle migrate vector metadata."""
     version_raw = payload.get("schema_version", 0)
     try:
         version = int(version_raw)

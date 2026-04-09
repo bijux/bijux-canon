@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+"""Backend helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -20,6 +22,7 @@ from bijux_canon_index.infra.environment import read_env
 
 
 class HnswFixture(NamedTuple):
+    """Represents HNSW fixture."""
     tx_factory: Callable[[], SQLiteTx]
     stores: ExecutionResources
     authz: Authz

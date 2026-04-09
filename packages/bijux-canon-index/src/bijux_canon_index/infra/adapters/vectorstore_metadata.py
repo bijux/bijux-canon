@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Vectorstore metadata helpers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -14,6 +16,7 @@ from bijux_canon_index.infra.adapters.metadata_migrations import (
 
 @dataclass(frozen=True)
 class VectorStoreMetadata:
+    """Represents vector store metadata."""
     doc_id: str
     chunk_id: str
     source_uri: str | None
@@ -30,6 +33,7 @@ def build_vectorstore_metadata(
     source_uri: str | None = None,
     tags: tuple[str, ...] | None = None,
 ) -> dict[str, Any]:
+    """Build vectorstore metadata."""
     embedding_meta = dict(vector.metadata or ())
     embedding_ref = {
         "provider": embedding_meta.get("embedding_provider"),

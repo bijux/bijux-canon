@@ -18,6 +18,7 @@ SUPPORTED_VERSION = "1.0"
 def migrate_execution_artifact(
     artifact: ExecutionArtifact, target_version: str = SUPPORTED_VERSION
 ) -> ExecutionArtifact:
+    """Handle migrate execution artifact."""
     if artifact.execution_artifact_version == target_version:
         return artifact
     raise InvariantError(

@@ -20,6 +20,7 @@ from bijux_canon_index.infra.logging import trace_events
 
 @dataclass(frozen=True)
 class OutputOptions:
+    """Represents output options."""
     fmt: str | None = None
     output: Path | None = None
     config_path: Path | None = None
@@ -29,6 +30,7 @@ class OutputOptions:
 
 
 def render_table(data: object) -> str:
+    """Render table."""
     if isinstance(data, dict):
         lines = ["key | value", "---- | -----"]
         for key, value in data.items():
@@ -45,6 +47,7 @@ def render_table(data: object) -> str:
 
 
 def resolve_correlation_id(raw: str | None) -> str:
+    """Resolve correlation ID."""
     return raw or f"req-{uuid.uuid4().hex}"
 
 
@@ -54,6 +57,7 @@ def emit(
     *,
     table: str | None = None,
 ) -> None:
+    """Handle emit."""
     options: OutputOptions | None = getattr(ctx, "obj", None) if ctx else None
     fmt = options.fmt if options else None
     output = options.output if options else None
@@ -82,12 +86,14 @@ def emit(
 
 
 def config_to_dict(config: ExecutionConfig | None) -> dict[str, object]:
+    """Handle config to dict."""
     if config is None:
         return {}
     return asdict(config)
 
 
 def redact_config(config: ExecutionConfig | None) -> dict[str, object]:
+    """Handle redact config."""
     payload = config_to_dict(config)
     vector_store = payload.get("vector_store")
     if isinstance(vector_store, dict) and vector_store.get("uri"):
@@ -100,6 +106,7 @@ def redact_config(config: ExecutionConfig | None) -> dict[str, object]:
 
 
 def load_bundle(path: Path) -> dict[str, object]:
+    """Load bundle."""
     with zipfile.ZipFile(path, "r") as archive:
         metadata = json.loads(archive.read("metadata.json").decode("utf-8"))
         result = json.loads(archive.read("result.json").decode("utf-8"))
