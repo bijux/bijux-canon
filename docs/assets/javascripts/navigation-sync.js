@@ -81,7 +81,26 @@ function bijuxSyncDetailStripActiveState() {
   }
 }
 
+function bijuxRevealActiveNavigationTarget() {
+  const activeDetailLink = document.querySelector(
+    "[data-bijux-detail-strip]:not([hidden]) .bijux-tabs__item--active a"
+  );
+  const activeSidebarLink = document.querySelector(
+    ".md-sidebar--primary .md-nav__link--active"
+  );
+
+  activeDetailLink?.scrollIntoView({
+    block: "nearest",
+    inline: "center",
+  });
+  activeSidebarLink?.scrollIntoView({
+    block: "nearest",
+    inline: "nearest",
+  });
+}
+
 document$.subscribe(() => {
   bijuxSyncDetailStripVisibility();
   bijuxSyncDetailStripActiveState();
+  bijuxRevealActiveNavigationTarget();
 });
