@@ -26,6 +26,9 @@ extra:
     repository: bijux-canon
     docs_package: bijux-canon-dev
     hub_links:
+      - key: bijux
+        label: Bijux
+        url: https://bijux.io/
       - key: core
         label: Core
         url: https://bijux.io/

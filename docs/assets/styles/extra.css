@@ -150,13 +150,19 @@ button {
   border-color: transparent;
 }
 
-.bijux-hub-tabs,
+.bijux-site-tabs,
 .bijux-detail-tabs {
   border-top: 1px solid var(--bijux-hub-border);
 }
 
-.bijux-hub-tabs {
-  background: var(--bijux-hub-bg);
+.bijux-hub-strip {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.bijux-site-tabs {
+  background: rgba(40, 53, 123, 0.98);
 }
 
 .bijux-detail-tabs {
@@ -167,15 +173,23 @@ button {
 
 .bijux-tabs__list {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.45rem 0.55rem;
   list-style: none;
   margin: 0;
   padding: 0.55rem 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  white-space: nowrap;
+}
+
+.bijux-tabs__list::-webkit-scrollbar {
+  display: none;
 }
 
 .bijux-tabs__item {
   margin: 0;
+  flex: 0 0 auto;
 }
 
 .bijux-tabs__link {
@@ -183,25 +197,40 @@ button {
   border: 1px solid transparent;
   border-radius: 999px;
   color: var(--bijux-hub-link);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.01em;
   line-height: 1.2;
-  padding: 0.5rem 0.85rem;
+  padding: 0.45rem 0.85rem;
   text-decoration: none;
-  text-transform: uppercase;
   transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
-.bijux-hub-tabs .bijux-tabs__link:hover,
-.bijux-hub-tabs .bijux-tabs__item--active .bijux-tabs__link {
+.bijux-tabs__link--hub {
+  font-size: 0.74rem;
+}
+
+.bijux-hub-strip .bijux-tabs__link:hover,
+.bijux-hub-strip .bijux-tabs__item--active .bijux-tabs__link {
   background: var(--bijux-hub-link-active-bg);
   border-color: var(--bijux-hub-border);
   color: #fff;
 }
 
-.bijux-detail-tabs .bijux-tabs__link {
+.bijux-tabs__link--site {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.bijux-site-tabs .bijux-tabs__link:hover,
+.bijux-site-tabs .bijux-tabs__item--active .bijux-tabs__link {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.bijux-tabs__link--detail {
   color: var(--bijux-detail-link);
+  font-size: 0.76rem;
 }
 
 .bijux-detail-tabs .bijux-tabs__link:hover,
@@ -212,11 +241,18 @@ button {
 }
 
 .md-tabs__list {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-header__title {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 76.2344em) {
-  .bijux-hub-tabs,
+  .bijux-hub-strip,
+  .bijux-site-tabs,
   .bijux-detail-tabs {
     display: none;
   }
