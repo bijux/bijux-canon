@@ -78,6 +78,17 @@ function bijuxSyncDetailStripActiveState() {
   const activeStrip = document.querySelector("[data-bijux-detail-strip]:not([hidden])");
   const currentPath = bijuxNormalizePath(window.location.pathname);
 
+  for (const item of document.querySelectorAll(
+    "[data-bijux-detail-strip] .bijux-tabs__item"
+  )) {
+    item.classList.remove("bijux-tabs__item--active");
+  }
+  for (const link of document.querySelectorAll(
+    "[data-bijux-detail-strip] [data-bijux-detail-path]"
+  )) {
+    link.removeAttribute("aria-current");
+  }
+
   if (!activeStrip) {
     return;
   }
@@ -95,13 +106,6 @@ function bijuxSyncDetailStripActiveState() {
     if (isMatch && (!activeLink || linkPath.length > activeLink.path.length)) {
       activeLink = { path: linkPath, node: link };
     }
-  }
-
-  for (const item of activeStrip.querySelectorAll(".bijux-tabs__item")) {
-    item.classList.remove("bijux-tabs__item--active");
-  }
-  for (const link of activeStrip.querySelectorAll("[data-bijux-detail-path]")) {
-    link.removeAttribute("aria-current");
   }
 
   if (activeLink) {
