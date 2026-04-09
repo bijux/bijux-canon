@@ -3,20 +3,34 @@
 from __future__ import annotations
 
 import argparse
+from importlib import import_module
 import json
 import sys
+from typing import Any
 
-from bijux_canon_index.infra.adapters.vectorstore_registry import VECTOR_STORES
-from bijux_canon_index.infra.embeddings.registry import EMBEDDING_PROVIDERS
-from bijux_canon_index.infra.runners.registry import RUNNERS
+
+def _load_registry(module_path: str, attr_name: str) -> Any:
+    """Load a plugin registry object from bijux-canon-index lazily."""
+    module = import_module(module_path)
+    registry = getattr(module, attr_name, None)
+    if registry is None:
+        raise RuntimeError(f"missing registry {attr_name!r} in module {module_path!r}")
+    return registry
 
 
 def collect_report() -> dict[str, object]:
     """Handle collect report."""
+    vector_stores = _load_registry(
+        "bijux_canon_index.infra.adapters.vectorstore_registry", "VECTOR_STORES"
+    )
+    embedding_providers = _load_registry(
+        "bijux_canon_index.infra.embeddings.registry", "EMBEDDING_PROVIDERS"
+    )
+    runners = _load_registry("bijux_canon_index.infra.runners.registry", "RUNNERS")
     groups = {
-        "vectorstores": VECTOR_STORES.plugin_reports(),
-        "embeddings": EMBEDDING_PROVIDERS.plugin_reports(),
-        "runners": RUNNERS.plugin_reports(),
+        "vectorstores": vector_stores.plugin_reports(),
+        "embeddings": embedding_providers.plugin_reports(),
+        "runners": runners.plugin_reports(),
     }
     entries = [entry for group_entries in groups.values() for entry in group_entries]
     failures = [entry for entry in entries if entry.get("status") != "loaded"]
