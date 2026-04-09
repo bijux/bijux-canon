@@ -1,8 +1,10 @@
+# Bijux shared
 .DS_Store
 .idea/
 .vscode/
 .tox/
 .venv/
+.venv-esm/
 .coverage
 .coverage.*
 .python-version
@@ -14,8 +16,6 @@
 .cache/
 .tmp/
 .github/tmp/
-artifacts/*
-!artifacts/.gitkeep
 site/
 build/
 dist/
@@ -23,6 +23,10 @@ htmlcov/
 node_modules/
 *.egg-info/
 pip-wheel-metadata/
+
+artifacts/*
+!artifacts/.gitkeep
+packages/*/artifacts/
 
 **/__pycache__/
 **/.pytest_cache/
@@ -44,3 +48,5 @@ pip-wheel-metadata/
 **/*.pyo
 *.swp
 *.swo
+
+# Repo-specific
