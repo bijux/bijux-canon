@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+from typing import Any, cast
 
 from bijux_canon_reason.core.types import (
     Claim,
@@ -49,7 +50,7 @@ def _build_trace_with_evidence(run_dir: Path, plan_id: str) -> Trace:
     evidence_path.parent.mkdir(parents=True, exist_ok=True)
     evidence_path.write_bytes(ev_bytes)
 
-    ev_ref = EvidenceRef.model_validate(
+    ev_ref = cast(Any, EvidenceRef).model_validate(
         {
             "id": "ev1",
             "uri": "mem://doc1",

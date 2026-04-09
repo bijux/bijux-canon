@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 
 from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
@@ -43,6 +44,8 @@ def test_run_artifacts_are_versioned_and_fingerprinted(tmp_path: Path) -> None:
     assert trace.canonicalization_version == 1
     assert trace.metadata.get("runtime_fingerprint")
 
-    runtime_fp = fingerprint_obj(artifacts.runtime_descriptor.model_dump(mode="json"))
+    runtime_fp = fingerprint_obj(
+        cast(Any, artifacts.runtime_descriptor).model_dump(mode="json")
+    )
     assert meta["runtime_fingerprint"] == runtime_fp
     assert artifacts.runtime_descriptor.kind == "FakeRuntime"

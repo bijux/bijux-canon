@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
 from bijux_canon_reason.core.types import ProblemSpec
@@ -21,8 +22,11 @@ def test_replay_checksum_mismatch_fails(tmp_path: Path) -> None:
     )
 
     # Tamper with plan (reorder nodes) to change checksum without updating metadata.
-    plan_raw = artifacts.plan.model_dump(mode="json")
-    plan_raw["nodes"] = list(reversed(plan_raw.get("nodes", [])))
+    plan_raw = cast(
+        dict[str, object], cast(Any, artifacts.plan).model_dump(mode="json")
+    )
+    nodes = cast(list[object], plan_raw.get("nodes", []))
+    plan_raw["nodes"] = list(reversed(nodes))
     (artifacts.run_dir / "plan.json").write_text(
         json.dumps(plan_raw, sort_keys=True), encoding="utf-8"
     )

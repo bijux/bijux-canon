@@ -10,7 +10,7 @@ from bijux_canon_reason.core.types import (
     ToolCalledEvent,
     ToolReturnedEvent,
 )
-from pydantic import ValidationError
+from pydantic_core import ValidationError
 import pytest
 
 

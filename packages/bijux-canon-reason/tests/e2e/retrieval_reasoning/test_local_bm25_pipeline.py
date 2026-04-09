@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from bijux_canon_reason.core.types import ClaimEmittedEvent, EvidenceRegisteredEvent
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import read_trace_jsonl
 from tests.e2e._helpers import read_json, run_cli, write_spec
 
@@ -49,7 +50,7 @@ def test_local_bm25_run_produces_grounded_derived_claim(tmp_path: Path) -> None:
     run_dir = Path(cp.stdout.strip())
 
     trace = read_trace_jsonl(run_dir / "trace.jsonl")
-    claim_events = [ev for ev in trace.events if ev.kind == "claim_emitted"]
+    claim_events = [ev for ev in trace.events if isinstance(ev, ClaimEmittedEvent)]
     assert len(claim_events) == 1
     claim = claim_events[0].claim
 
@@ -60,7 +61,7 @@ def test_local_bm25_run_produces_grounded_derived_claim(tmp_path: Path) -> None:
     assert claim.supports[0].span is not None
     assert claim.supports[0].snippet_sha256 is not None
 
-    ev_events = [ev for ev in trace.events if ev.kind == "evidence_registered"]
+    ev_events = [ev for ev in trace.events if isinstance(ev, EvidenceRegisteredEvent)]
     ids = {ev.evidence.id: ev.evidence for ev in ev_events}
     assert cited_id in ids
     ev_ref = ids[cited_id]

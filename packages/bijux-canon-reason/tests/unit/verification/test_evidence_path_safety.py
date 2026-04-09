@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from bijux_canon_reason.core.types import EvidenceRef
-from pydantic import ValidationError
+from pydantic_core import ValidationError
 import pytest
 
 

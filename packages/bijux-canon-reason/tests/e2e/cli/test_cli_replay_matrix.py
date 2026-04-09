@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import sys
+from typing import Any
 
 import pytest
 
@@ -26,7 +27,11 @@ import pytest
     ],
 )
 def test_cli_replay_fingerprint_matches_original(
-    tmp_path: Path, write_spec, run_cli, seed: int, preset: str
+    tmp_path: Path,
+    write_spec: Any,
+    run_cli: Any,
+    seed: int,
+    preset: str,
 ) -> None:
     artifacts = tmp_path / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)

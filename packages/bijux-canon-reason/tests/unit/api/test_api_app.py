@@ -9,5 +9,9 @@ def test_api_app_creates_fastapi_instance() -> None:
     app = create_app()
     assert app.title
     # ensure routes exist (health and runs)
-    paths = {route.path for route in app.router.routes}
+    paths = {
+        path
+        for route in app.router.routes
+        if isinstance((path := getattr(route, "path", None)), str)
+    }
     assert any("/health" in p for p in paths)

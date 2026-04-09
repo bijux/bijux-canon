@@ -20,3 +20,6 @@ def run_all_checks(
         checks.append(c)
         failures.extend(f)
     return checks, failures
+
+
+__all__ = ["VerificationContext", "run_all_checks"]

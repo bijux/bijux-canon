@@ -249,3 +249,6 @@ def _collect_recorded_results(trace: Trace) -> dict[str, ToolResult]:
         recording = RecordedCall(call_id=event.result.call_id, result=event.result)
         recorded_results[recording.call_id] = recording.result
     return recorded_results
+
+
+__all__ = ["diff_traces", "replay_from_artifacts"]

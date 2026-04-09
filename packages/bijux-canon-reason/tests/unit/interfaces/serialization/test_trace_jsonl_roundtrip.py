@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
 from bijux_canon_reason.core.types import (
@@ -68,8 +69,8 @@ def test_trace_jsonl_roundtrip_is_stable(tmp_path: Path) -> None:
 
     trace2 = read_trace_jsonl(out)
 
-    assert fingerprint_obj(trace.model_dump(mode="json")) == fingerprint_obj(
-        trace2.model_dump(mode="json")
+    assert fingerprint_obj(cast(Any, trace).model_dump(mode="json")) == fingerprint_obj(
+        cast(Any, trace2).model_dump(mode="json")
     )
 
 

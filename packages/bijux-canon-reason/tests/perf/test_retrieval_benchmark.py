@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from time import perf_counter
+from typing import Any
 
 from bijux_canon_reason.retrieval.bm25 import BM25Index
 from bijux_canon_reason.retrieval.corpus import CorpusDoc
@@ -10,7 +11,7 @@ import pytest
 
 
 @pytest.mark.benchmark(group="retrieval")
-def test_bm25_topk_benchmark(benchmark: pytest.BenchmarkFixture) -> None:
+def test_bm25_topk_benchmark(benchmark: Any) -> None:
     docs = [
         CorpusDoc(doc_id=f"d{i}", text="hello world " * 5, title=None, source=None)
         for i in range(200)

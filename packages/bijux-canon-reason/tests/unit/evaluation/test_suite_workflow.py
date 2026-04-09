@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 
 from bijux_canon_reason.evaluation.suite_workflow import suite_summary
 
@@ -26,7 +27,8 @@ def test_suite_summary_aggregates_metrics(tmp_path: Path) -> None:
             "failure_taxonomy": {"core_invariants": 1},
         },
     ]
-    summary = suite_summary(results)
+    summary = cast(dict[str, Any], suite_summary(results))
     assert summary["count"] == 2
     assert summary["insufficient_rate"] == 0.5
-    assert summary["failure_taxonomy"]["core_invariants"] == 1
+    failure_taxonomy = cast(dict[str, int], summary["failure_taxonomy"])
+    assert failure_taxonomy["core_invariants"] == 1

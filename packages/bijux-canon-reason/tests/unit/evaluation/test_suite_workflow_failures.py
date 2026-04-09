@@ -2,11 +2,13 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Any, cast
+
 from bijux_canon_reason.evaluation.suite_workflow import suite_summary
 
 
 def test_suite_summary_handles_empty_and_taxonomy() -> None:
-    empty = suite_summary([])
+    empty = cast(dict[str, Any], suite_summary([]))
     assert empty["count"] == 0
     assert empty["failure_taxonomy"] == {}
 
@@ -28,7 +30,8 @@ def test_suite_summary_handles_empty_and_taxonomy() -> None:
             "failure_taxonomy": {"core": 2},
         },
     ]
-    summary = suite_summary(results)
+    summary = cast(dict[str, Any], suite_summary(results))
     assert summary["count"] == 2
     assert summary["insufficient_rate"] == 0.5
-    assert summary["failure_taxonomy"]["core"] == 3
+    failure_taxonomy = cast(dict[str, int], summary["failure_taxonomy"])
+    assert failure_taxonomy["core"] == 3

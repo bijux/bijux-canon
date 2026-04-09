@@ -9,11 +9,12 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from typing import Any
 
 import pytest
 
 
-def _run_with_evidence(tmp_path: Path, write_spec, run_cli) -> Path:
+def _run_with_evidence(tmp_path: Path, write_spec: Any, run_cli: Any) -> Path:
     artifacts = tmp_path / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
     spec_path = write_spec(
@@ -41,7 +42,9 @@ def _run_with_evidence(tmp_path: Path, write_spec, run_cli) -> Path:
 
 @pytest.mark.e2e
 def test_verify_fails_when_snippet_hash_tampered(
-    tmp_path: Path, write_spec, run_cli
+    tmp_path: Path,
+    write_spec: Any,
+    run_cli: Any,
 ) -> None:
     run_dir = _run_with_evidence(tmp_path, write_spec, run_cli)
     trace_path = run_dir / "trace.jsonl"

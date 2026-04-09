@@ -6,12 +6,17 @@ from __future__ import annotations
 # SPDX-License-Identifier: Apache-2.0
 from pathlib import Path
 import sys
+from typing import Any
 
 import pytest
 
 
 @pytest.mark.e2e
-def test_cli_verify_span_hash_passes(tmp_path: Path, write_spec, run_cli) -> None:
+def test_cli_verify_span_hash_passes(
+    tmp_path: Path,
+    write_spec: Any,
+    run_cli: Any,
+) -> None:
     artifacts = tmp_path / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
     spec_path = write_spec(

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+from typing import cast
 
 from bijux_canon_reason.core.types import ProblemSpec, TraceEventKind
 from bijux_canon_reason.execution.executor import ExecutionPolicy, execute_plan
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import ExecutionRuntime, Runtime
 from bijux_canon_reason.planning.planner import plan_problem
 
 
@@ -33,7 +34,7 @@ def test_executor_emits_claims_with_grounded_supports(tmp_path: Path) -> None:
     result = execute_plan(
         spec=spec,
         plan=plan,
-        runtime=runtime,
+        runtime=cast(ExecutionRuntime, runtime),
         policy=ExecutionPolicy(fail_fast=True),
     )
 

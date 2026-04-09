@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+from typing import Any
 
 import pytest
 
@@ -20,7 +21,11 @@ def _sha256_path(p: Path) -> str:
     [(0, 1), (1, 1), (2, 2), (3, 2), (4, 3), (5, 3), (6, 4), (7, 4), (8, 5), (9, 5)],
 )
 def test_cli_run_writes_evidence_files_and_manifest(
-    tmp_path: Path, write_spec, run_cli, seed: int, top_k: int
+    tmp_path: Path,
+    write_spec: Any,
+    run_cli: Any,
+    seed: int,
+    top_k: int,
 ) -> None:
     artifacts = tmp_path / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)

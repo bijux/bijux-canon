@@ -6,6 +6,7 @@ from pathlib import Path
 
 from bijux_canon_reason.api.v1.app import create_app
 from fastapi.testclient import TestClient
+import pytest
 
 
 def _app(tmp_path: Path) -> TestClient:
@@ -13,7 +14,10 @@ def _app(tmp_path: Path) -> TestClient:
     return TestClient(app)
 
 
-def test_api_requires_token_when_configured(tmp_path: Path, monkeypatch) -> None:
+def test_api_requires_token_when_configured(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv("RAR_API_TOKEN", "secret")
     client = _app(tmp_path)
     resp = client.get("/v1/items")

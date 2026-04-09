@@ -6,11 +6,18 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from typing import Any
 
 import pytest
 
 
-def _run_with_evidence(tmp_path: Path, write_spec, run_cli, *, seed: int) -> Path:
+def _run_with_evidence(
+    tmp_path: Path,
+    write_spec: Any,
+    run_cli: Any,
+    *,
+    seed: int,
+) -> Path:
     artifacts = tmp_path / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
     spec_path = write_spec(
@@ -53,7 +60,11 @@ def _run_with_evidence(tmp_path: Path, write_spec, run_cli, *, seed: int) -> Pat
     ],
 )
 def test_cli_verify_fails_on_evidence_tampering(
-    tmp_path: Path, write_spec, run_cli, seed: int, mutation: str
+    tmp_path: Path,
+    write_spec: Any,
+    run_cli: Any,
+    seed: int,
+    mutation: str,
 ) -> None:
     run_dir = _run_with_evidence(tmp_path, write_spec, run_cli, seed=seed)
     ev_files = sorted((run_dir / "evidence").glob("*.txt"))
@@ -91,7 +102,9 @@ def test_cli_verify_fails_on_evidence_tampering(
 
 @pytest.mark.e2e
 def test_cli_verify_fails_on_support_snippet_tamper(
-    tmp_path: Path, write_spec, run_cli
+    tmp_path: Path,
+    write_spec: Any,
+    run_cli: Any,
 ) -> None:
     run_dir = _run_with_evidence(tmp_path, write_spec, run_cli, seed=123)
     trace_path = run_dir / "trace.jsonl"

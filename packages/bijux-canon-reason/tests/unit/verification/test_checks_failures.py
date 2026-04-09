@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from pathlib import Path
+
 from bijux_canon_reason.core.types import (
     EvidenceRef,
     EvidenceRegisteredEvent,
@@ -35,7 +37,7 @@ def test_checks_fail_when_required_steps_missing() -> None:
     assert failures
 
 
-def test_evidence_hash_failure_detected(tmp_path) -> None:
+def test_evidence_hash_failure_detected(tmp_path: Path) -> None:
     plan = _plan_with_single_step()
     ev_file = tmp_path / "ev.txt"
     ev_file.write_text("abc", encoding="utf-8")

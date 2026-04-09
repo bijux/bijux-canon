@@ -2,10 +2,12 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import cast
+
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
 from bijux_canon_reason.core.types import ProblemSpec
 from bijux_canon_reason.execution.executor import execute_plan
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import ExecutionRuntime, Runtime
 from bijux_canon_reason.planning.planner import plan_problem
 
 
@@ -19,8 +21,8 @@ def test_executor_is_deterministic_same_plan_seed_same_trace_fp() -> None:
     r1 = Runtime.fake(seed=7)
     r2 = Runtime.fake(seed=7)
 
-    t1 = execute_plan(plan=plan, runtime=r1)
-    t2 = execute_plan(plan=plan, runtime=r2)
+    t1 = execute_plan(plan=plan, runtime=cast(ExecutionRuntime, r1))
+    t2 = execute_plan(plan=plan, runtime=cast(ExecutionRuntime, r2))
 
     fp1 = fingerprint_obj(t1.model_dump(mode="json"))
     fp2 = fingerprint_obj(t2.model_dump(mode="json"))

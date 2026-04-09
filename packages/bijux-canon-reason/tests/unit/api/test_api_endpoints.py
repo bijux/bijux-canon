@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any, cast
 
 from bijux_canon_reason.api.v1.app import MAX_REQUEST_BYTES, create_app
 from fastapi.testclient import TestClient
@@ -45,8 +46,9 @@ def test_content_type_denylist(tmp_path: Path) -> None:
 
 def test_size_limit_enforced_on_request_header(tmp_path: Path) -> None:
     client = _client(tmp_path)
+    max_request_bytes = cast(int, cast(Any, MAX_REQUEST_BYTES))
     resp = client.get(
-        "/v1/items", headers={"content-length": str(MAX_REQUEST_BYTES + 100)}
+        "/v1/items", headers={"content-length": str(max_request_bytes + 100)}
     )
     assert resp.status_code == 413
 

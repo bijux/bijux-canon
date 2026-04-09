@@ -7,6 +7,7 @@ from importlib import metadata
 from pathlib import Path
 import re
 import tomllib
+from typing import Any, cast
 
 from bijux_canon_reason import __version__
 from bijux_canon_reason.core.types import Claim, EvidenceRef, ProblemSpec, SupportRef
@@ -61,7 +62,7 @@ def test_version_matches_pyproject() -> None:
 
 
 def test_cli_surface_and_models_are_frozen() -> None:
-    command: typer.main.TyperGroup = typer.main.get_command(app)
+    command = cast(Any, typer.main.get_command(app))
     assert set(command.commands.keys()) == {"run", "verify", "replay", "eval"}
 
     def _opts(cmd_name: str) -> set[str]:
@@ -88,7 +89,7 @@ def test_cli_surface_and_models_are_frozen() -> None:
     assert "--suite" in _opts("eval")
 
     # Guard critical model field sets to prevent accidental API drift.
-    assert set(ProblemSpec.model_fields) == {
+    assert set(cast(Any, ProblemSpec).model_fields) == {
         "id",
         "description",
         "constraints",
@@ -96,7 +97,7 @@ def test_cli_surface_and_models_are_frozen() -> None:
         "expected",
         "version",
     }
-    assert set(EvidenceRef.model_fields) == {
+    assert set(cast(Any, EvidenceRef).model_fields) == {
         "id",
         "uri",
         "sha256",
@@ -104,14 +105,14 @@ def test_cli_surface_and_models_are_frozen() -> None:
         "content_path",
         "chunk_id",
     }
-    assert set(SupportRef.model_fields) == {
+    assert set(cast(Any, SupportRef).model_fields) == {
         "kind",
         "ref_id",
         "span",
         "snippet_sha256",
         "hash_algo",
     }
-    assert set(Claim.model_fields) >= {
+    assert set(cast(Any, Claim).model_fields) >= {
         "id",
         "statement",
         "status",

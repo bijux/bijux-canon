@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
 from bijux_canon_reason.core.types import JsonValue, Plan, ProblemSpec, TraceEventKind
 from bijux_canon_reason.execution.executor import ExecutionPolicy, execute_plan
-from bijux_canon_reason.execution.runtime import Runtime
+from bijux_canon_reason.execution.runtime import ExecutionRuntime, Runtime
 from bijux_canon_reason.execution.tool_runtime import FakeTool, ToolRegistry
 from bijux_canon_reason.planning.planner import plan_problem
 import pytest
@@ -35,6 +36,10 @@ def _build_runtime(tmp_path: Path) -> Runtime:
     )
 
 
+def _as_execution_runtime(runtime: Runtime) -> ExecutionRuntime:
+    return cast(ExecutionRuntime, runtime)
+
+
 def _build_plan() -> tuple[ProblemSpec, Plan]:
     spec = ProblemSpec(
         description="What is Rust?",
@@ -50,7 +55,7 @@ def test_executor_fail_fast_raises_on_tool_failure(tmp_path: Path) -> None:
         execute_plan(
             spec=spec,
             plan=plan,
-            runtime=_build_runtime(tmp_path),
+            runtime=_as_execution_runtime(_build_runtime(tmp_path)),
             policy=ExecutionPolicy(fail_fast=True),
         )
 
@@ -61,7 +66,7 @@ def test_executor_can_continue_after_tool_failure(tmp_path: Path) -> None:
     result = execute_plan(
         spec=spec,
         plan=plan,
-        runtime=_build_runtime(tmp_path),
+        runtime=_as_execution_runtime(_build_runtime(tmp_path)),
         policy=ExecutionPolicy(fail_fast=False),
     )
 

@@ -46,7 +46,7 @@ def test_canonical_dumps_decimal_and_float() -> None:
 
 def test_canonical_dumps_rejects_non_string_keys() -> None:
     with pytest.raises(ValueError):
-        canonical_dumps({1: "bad"})  # type: ignore[arg-type]
+        canonical_dumps({1: "bad"})
 
 
 def test_stable_id_is_deterministic_and_versioned() -> None:
