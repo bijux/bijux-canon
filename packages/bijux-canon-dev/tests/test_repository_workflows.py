@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 from typing import Any
 
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
+WORKFLOW_URL_RE = re.compile(
+    r"https://github\.com/(?P<repo>[^/\s]+/[^/\s]+)/actions/workflows/"
+    r"(?P<workflow>[A-Za-z0-9_.-]+)"
+)
 EXPECTED_WORKFLOWS = {
     "build-release-artifacts.yml",
     "ci-package.yml",
@@ -56,6 +61,15 @@ def _workflow_call_inputs(workflow: dict[str, Any]) -> dict[str, Any]:
         return {}
     workflow_call = on_block.get("workflow_call", {})
     return workflow_call.get("inputs", {}) if isinstance(workflow_call, dict) else {}
+
+
+def _workflow_docs() -> list[Path]:
+    package_root = REPO_ROOT / "packages"
+    return [
+        REPO_ROOT / "README.md",
+        *sorted(package_root.glob("*/README.md")),
+        *sorted(package_root.glob("*/docs/maintainer/pypi.md")),
+    ]
 
 
 def test_workflow_tree_is_standardized() -> None:
@@ -170,3 +184,29 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     build_inputs = _workflow_call_inputs(build_workflow)
     assert "cache_dependency_path" not in build_inputs
     assert "upload_paths" not in build_inputs
+
+
+def test_markdown_workflow_links_track_checked_in_workflow_tree() -> None:
+    expected_repo = "bijux/bijux-canon"
+    expected_workflows = {path.name for path in WORKFLOWS_DIR.glob("*.yml")}
+    failures: list[str] = []
+
+    for path in _workflow_docs():
+        text = path.read_text(encoding="utf-8")
+        for match in WORKFLOW_URL_RE.finditer(text):
+            repo_slug = match.group("repo")
+            workflow_name = match.group("workflow")
+            if repo_slug != expected_repo:
+                failures.append(
+                    f"{path.relative_to(REPO_ROOT)}: expected repo slug "
+                    f"{expected_repo}, found {repo_slug}"
+                )
+            if workflow_name not in expected_workflows:
+                failures.append(
+                    f"{path.relative_to(REPO_ROOT)}: unknown workflow {workflow_name}"
+                )
+
+    root_readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    root_workflows = {match.group("workflow") for match in WORKFLOW_URL_RE.finditer(root_readme)}
+    assert {"verify.yml", "publish.yml", "deploy-docs.yml"} <= root_workflows
+    assert not failures, "workflow doc links failed:\n" + "\n".join(failures)
