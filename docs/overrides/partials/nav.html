@@ -1,4 +1,3 @@
-{% import "partials/nav-item.html" as item with context %}
 {% set class = "md-nav md-nav--primary" %}
 {% if "navigation.tabs" in features %}
   {% set class = class ~ " md-nav--lifted" %}
@@ -6,8 +5,27 @@
 {% if "toc.integrate" in features %}
   {% set class = class ~ " md-nav--integrated" %}
 {% endif %}
+{% set bijux_primary_section_nav = true %}
+{% import "partials/nav-item.html" as item with context %}
 {% set scoped = namespace(items=nav, title=config.site_name) %}
-{% if page and page.parent and page.parent.children %}
+{% set active_root = namespace(item=None) %}
+{% set active_detail = namespace(item=None) %}
+{% for nav_item in nav %}
+  {% if nav_item.active %}
+    {% set active_root.item = nav_item %}
+  {% endif %}
+{% endfor %}
+{% if active_root.item and active_root.item.children %}
+  {% for child in active_root.item.children %}
+    {% if child.active %}
+      {% set active_detail.item = child %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% if active_detail.item and active_detail.item.children %}
+  {% set scoped.items = active_detail.item.children %}
+  {% set scoped.title = active_detail.item.title %}
+{% elif page and page.parent and page.parent.children %}
   {% set scoped.items = page.parent.children %}
   {% set scoped.title = page.parent.title %}
 {% endif %}
