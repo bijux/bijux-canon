@@ -36,33 +36,34 @@ def index_backend_from_name(name: str) -> IndexBackend:
     return IndexBackend.NUMPY_COSINE
 
 
-def build_openapi_factory(app: FastAPI) -> Any:
-    """Create the custom OpenAPI callback for the FastAPI app."""
+class IngestHttpApplication(FastAPI):
+    """FastAPI application that serves the repository OpenAPI contract."""
 
-    def _custom_openapi() -> dict[str, Any]:
-        existing_schema = app.openapi_schema
+    def openapi(self) -> dict[str, Any]:
+        """Build and cache the OpenAPI schema with the repository contract."""
+
+        existing_schema = self.openapi_schema
         if isinstance(existing_schema, dict):
             return existing_schema
-        app.openapi_schema = get_openapi(
-            title=app.title,
-            version=app.version,
-            routes=app.routes,
+
+        self.openapi_schema = get_openapi(
+            title=self.title,
+            version=self.version,
+            routes=self.routes,
             openapi_version="3.1.0",
-            summary=app.summary,
-            description=app.description,
-            tags=app.openapi_tags,
-            servers=app.servers,
-            contact=app.contact,
-            license_info=app.license_info,
+            summary=self.summary,
+            description=self.description,
+            tags=self.openapi_tags,
+            servers=self.servers,
+            contact=self.contact,
+            license_info=self.license_info,
         )
-        generated_schema = app.openapi_schema
+        generated_schema = self.openapi_schema
         if not isinstance(
             generated_schema, dict
         ):  # pragma: no cover - FastAPI contract
             raise RuntimeError("FastAPI returned a non-dict OpenAPI schema")
         return generated_schema
 
-    return _custom_openapi
 
-
-__all__ = ["InMemoryIndexStore", "build_openapi_factory", "index_backend_from_name"]
+__all__ = ["InMemoryIndexStore", "IngestHttpApplication", "index_backend_from_name"]

@@ -30,7 +30,7 @@ from bijux_canon_ingest.interfaces.http.models import (
 )
 from bijux_canon_ingest.interfaces.http.runtime import (
     InMemoryIndexStore,
-    build_openapi_factory,
+    IngestHttpApplication,
     index_backend_from_name,
 )
 from bijux_canon_ingest.processing.stages import (
@@ -43,7 +43,7 @@ from bijux_canon_ingest.result.types import Err
 def create_app() -> FastAPI:
     """Construct a FastAPI app with chunking and RAG endpoints."""
 
-    app = FastAPI(
+    app = IngestHttpApplication(
         title="bijux-canon-ingest API",
         summary="Deterministic chunking, indexing, retrieval, and answer assembly.",
         description=(
@@ -209,7 +209,6 @@ def create_app() -> FastAPI:
         return ask_response_from_payload(res.value)
 
     app.include_router(router)
-    app.openapi = build_openapi_factory(app)
     return app
 
 
