@@ -11,9 +11,13 @@
   {% endif %}
 {% endfor %}
 {% if page and active_root.item and page.parent and page.parent.children and page.parent != active_root.item %}
-  {% set scoped.items = page.parent.children %}
+  {% for child in page.parent.children %}
+    {% if not child.is_index %}
+      {% set _ = scoped.items.append(child) %}
+    {% endif %}
+  {% endfor %}
   {% set scoped.title = page.parent.title %}
-  {% set scoped.visible = true %}
+  {% set scoped.visible = scoped.items | length > 0 %}
 {% endif %}
 {% set bijux_expand_scoped_groups = false %}
 {% if scoped.visible and page and page.title == "Overview" %}
