@@ -10,6 +10,7 @@ import bijux_canon_index
 import bijux_canon_reason
 import bijux_rag
 import pytest
+
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -58,7 +59,6 @@ from bijux_canon_runtime.ontology.public import (
     ReplayAcceptability,
 )
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
-
 from tests.helpers import build_claim_statement
 
 pytestmark = pytest.mark.regression
