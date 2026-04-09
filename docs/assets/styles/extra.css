@@ -292,6 +292,8 @@ button {
 
 .bijux-tabs__link--site {
   color: rgba(255, 255, 255, 0.86);
+  font-size: 0.76rem;
+  padding: 0.42rem 0.78rem;
 }
 
 .bijux-site-tabs .bijux-tabs__link:hover,
@@ -303,7 +305,16 @@ button {
 
 .bijux-tabs__link--detail {
   color: var(--bijux-detail-link);
-  font-size: 0.76rem;
+  font-size: 0.74rem;
+  padding: 0.4rem 0.72rem;
+}
+
+.bijux-tabs__list--site {
+  gap: 0.32rem 0.42rem;
+}
+
+.bijux-tabs__list--detail {
+  gap: 0.28rem 0.38rem;
 }
 
 .bijux-detail-tabs .bijux-tabs__link:hover,
