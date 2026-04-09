@@ -102,7 +102,7 @@
             {% set item_class = item_class ~ " md-tabs__item--active bijux-tabs__item--active" %}
           {% endif %}
           <li class="{{ item_class }}">
-            <a href="{{ bijux_nav.first_page_url(nav_item) }}" class="md-tabs__link bijux-tabs__link bijux-tabs__link--site" data-bijux-site-target="{{ bijux_nav.first_page_url(nav_item) }}">
+            <a href="{{ bijux_nav.first_page_url(nav_item) }}" class="md-tabs__link bijux-tabs__link bijux-tabs__link--site" data-bijux-site-path="{{ bijux_nav.first_page_path(nav_item) | trim }}">
               {{ site_label(nav_item.title) }}
             </a>
           </li>

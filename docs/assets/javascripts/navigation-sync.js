@@ -7,13 +7,13 @@ function bijuxNormalizePath(target) {
 function bijuxBestSitePath() {
   const currentPath = bijuxNormalizePath(window.location.pathname);
   const siteLinks = document.querySelectorAll(
-    ".bijux-site-tabs [data-bijux-site-target]"
+    ".bijux-site-tabs [data-bijux-site-path]"
   );
   let bestMatch = null;
 
   for (const link of siteLinks) {
     const linkPath = bijuxNormalizePath(
-      link.getAttribute("data-bijux-site-target") || "/"
+      link.getAttribute("data-bijux-site-path") || "/"
     );
     if (
       currentPath === linkPath ||
@@ -40,10 +40,10 @@ function bijuxSyncSiteTabActiveState() {
   }
 
   for (const link of document.querySelectorAll(
-    ".bijux-site-tabs [data-bijux-site-target]"
+    ".bijux-site-tabs [data-bijux-site-path]"
   )) {
     const linkPath = bijuxNormalizePath(
-      link.getAttribute("data-bijux-site-target") || "/"
+      link.getAttribute("data-bijux-site-path") || "/"
     );
     if (linkPath === activeSitePath) {
       link.closest(".bijux-tabs__item")?.classList.add(
