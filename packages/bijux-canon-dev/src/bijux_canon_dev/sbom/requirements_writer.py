@@ -1,3 +1,5 @@
+"""Requirements writer helpers."""
+
 from __future__ import annotations
 
 import argparse
@@ -12,10 +14,12 @@ except ModuleNotFoundError:  # pragma: no cover
 
 
 def repo_root_for(pyproject_path: Path) -> Path:
+    """Handle repo root for."""
     return pyproject_path.resolve().parents[2]
 
 
 def local_package_map(pyproject_path: Path) -> dict[str, Path]:
+    """Handle local package map."""
     packages_dir = repo_root_for(pyproject_path) / "packages"
     package_map: dict[str, Path] = {}
     for candidate in packages_dir.glob("*/pyproject.toml"):
@@ -31,6 +35,7 @@ def local_package_map(pyproject_path: Path) -> dict[str, Path]:
 def render_local_requirement(
     requirement_text: str, package_map: dict[str, Path]
 ) -> str:
+    """Render local requirement."""
     requirement = Requirement(requirement_text)
     package_dir = package_map.get(requirement.name)
     if package_dir is None or requirement.url is not None:
@@ -48,6 +53,7 @@ def render_local_requirement(
 
 
 def dedupe(items: list[str]) -> list[str]:
+    """Handle dedupe."""
     seen: set[str] = set()
     ordered: list[str] = []
     for item in items:
@@ -58,6 +64,7 @@ def dedupe(items: list[str]) -> list[str]:
 
 
 def load_project(pyproject_path: Path) -> dict[str, object]:
+    """Load project."""
     data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
     return data.get("project", {})
 
@@ -68,6 +75,7 @@ def write_requirements(
     group: str,
     optional_group: str,
 ) -> int:
+    """Write requirements."""
     project = load_project(pyproject_path)
     dependencies = list(project.get("dependencies", []))
     optional = project.get("optional-dependencies", {})
@@ -86,6 +94,7 @@ def write_requirements(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse args."""
     parser = argparse.ArgumentParser(
         description="Write requirements.txt content for pip-audit."
     )
@@ -106,6 +115,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     args = parse_args()
     return write_requirements(
         pyproject_path=Path(args.pyproject),

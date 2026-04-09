@@ -1,3 +1,5 @@
+"""Pip audit gate helpers."""
+
 from __future__ import annotations
 
 import json
@@ -10,6 +12,7 @@ IS_STRICT = os.getenv("SECURITY_STRICT", "1") == "1"
 
 
 def load_report(path: str) -> list[dict[str, Any]]:
+    """Load report."""
     try:
         with open(path, encoding="utf-8") as handle:
             data = json.load(handle)
@@ -37,6 +40,7 @@ def load_report(path: str) -> list[dict[str, Any]]:
 
 
 def vulnerability_ids(vulnerability: dict[str, Any]) -> set[str]:
+    """Handle vulnerability IDs."""
     ids: set[str] = set()
     vuln_id = vulnerability.get("id")
     if isinstance(vuln_id, str) and vuln_id:
@@ -50,10 +54,12 @@ def vulnerability_ids(vulnerability: dict[str, Any]) -> set[str]:
 
 
 def primary_id(ids: set[str]) -> str:
+    """Handle primary ID."""
     return sorted(ids)[0] if ids else "?"
 
 
 def format_table(rows: list[tuple[str, str, str, str]]) -> str:
+    """Format table."""
     header = ("Package", "Version", "ID", "FixVersions")
     widths = [len(cell) for cell in header]
     for row in rows:
@@ -61,6 +67,7 @@ def format_table(rows: list[tuple[str, str, str, str]]) -> str:
             widths[index] = max(widths[index], len(cell))
 
     def format_row(columns: tuple[str, ...]) -> str:
+        """Format row."""
         return "  ".join(
             column.ljust(widths[index]) for index, column in enumerate(columns)
         )
@@ -71,6 +78,7 @@ def format_table(rows: list[tuple[str, str, str, str]]) -> str:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     if IGNORE_IDS:
         print(f"INFO: ignoring IDs and aliases: {' '.join(sorted(IGNORE_IDS))}")
 

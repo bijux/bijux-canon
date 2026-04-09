@@ -1,3 +1,5 @@
+"""Plugin contract report helpers."""
+
 from __future__ import annotations
 
 import argparse
@@ -10,6 +12,7 @@ from bijux_canon_index.infra.runners.registry import RUNNERS
 
 
 def collect_report() -> dict[str, object]:
+    """Handle collect report."""
     groups = {
         "vectorstores": VECTOR_STORES.plugin_reports(),
         "embeddings": EMBEDDING_PROVIDERS.plugin_reports(),
@@ -29,6 +32,7 @@ def collect_report() -> dict[str, object]:
 
 
 def render_table(report: dict[str, object]) -> str:
+    """Render table."""
     lines = [
         "group | name | status | determinism | warning",
         "--- | --- | --- | --- | ---",
@@ -49,6 +53,7 @@ def render_table(report: dict[str, object]) -> str:
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse args."""
     parser = argparse.ArgumentParser(
         description="Validate bijux-canon-index plugin contracts."
     )
@@ -59,6 +64,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     args = parse_args()
     report = collect_report()
     if args.format == "table":

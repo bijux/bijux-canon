@@ -1,3 +1,5 @@
+"""Check dependency allowlist helpers for runtime support."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -10,6 +12,7 @@ PACKAGE_ROOT = MONOREPO_ROOT / "packages" / "bijux-canon-runtime"
 
 
 def read_allowlist(path: Path) -> set[str]:
+    """Read allowlist."""
     return {
         line.strip()
         for line in path.read_text(encoding="utf-8").splitlines()
@@ -18,6 +21,7 @@ def read_allowlist(path: Path) -> set[str]:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     allowlist_path = (
         MONOREPO_ROOT / "configs" / "bijux-canon-runtime" / "dependency_allowlist.txt"
     )

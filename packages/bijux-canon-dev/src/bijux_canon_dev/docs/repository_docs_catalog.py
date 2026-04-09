@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Repository docs catalog helpers."""
+
 from __future__ import annotations
 
 import argparse
@@ -15,6 +17,7 @@ LAST_REVIEWED = "2026-04-04"
 
 @dataclass(frozen=True)
 class PackageInfo:
+    """Represents package info."""
     slug: str
     title: str
     description: str
@@ -524,6 +527,7 @@ TARGET_ORDER = [
 
 
 def clean_docs_root() -> None:
+    """Handle clean docs root."""
     DOCS_ROOT.mkdir(exist_ok=True)
     for child in DOCS_ROOT.iterdir():
         if child.name == "assets":
@@ -536,15 +540,18 @@ def clean_docs_root() -> None:
 
 
 def ensure_parent(path: Path) -> None:
+    """Ensure parent."""
     path.parent.mkdir(parents=True, exist_ok=True)
 
 
 def write_doc(path: Path, body: str) -> None:
+    """Write doc."""
     ensure_parent(path)
     path.write_text(body.rstrip() + "\n", encoding="utf-8")
 
 
 def clean_block(text: str) -> str:
+    """Handle clean block."""
     cleaned = inspect.cleandoc(text)
     return "\n".join(
         line[12:] if line.startswith("            ") else line
@@ -553,6 +560,7 @@ def clean_block(text: str) -> str:
 
 
 def front_matter(title: str, owner: str, doc_type: str) -> str:
+    """Handle front matter."""
     return textwrap.dedent(
         f"""\
         ---
@@ -568,35 +576,43 @@ def front_matter(title: str, owner: str, doc_type: str) -> str:
 
 
 def bullet_lines(items: tuple[str, ...] | list[str]) -> str:
+    """Handle bullet lines."""
     return "\n".join(f"- {item}" for item in items)
 
 
 def path_lines(items: tuple[tuple[str, str], ...]) -> str:
+    """Handle path lines."""
     return "\n".join(f"- `{path}` for {meaning}" for path, meaning in items)
 
 
 def first_items(items: tuple[str, ...], count: int = 3) -> tuple[str, ...]:
+    """Handle first items."""
     return items[:count]
 
 
 def link(label: str, target: str) -> str:
+    """Handle link."""
     return f"[{label}]({target})"
 
 
 def mermaid_block(source: str) -> str:
+    """Handle mermaid block."""
     return "\n".join(["```mermaid", source.rstrip(), "```"])
 
 
 def mermaid_text(text: str) -> str:
+    """Handle mermaid text."""
     return " ".join(text.replace("`", "").replace('"', "'").split())
 
 
 def stable_seed(*parts: str) -> int:
+    """Handle stable seed."""
     text = "|".join(parts)
     return sum((index + 1) * ord(char) for index, char in enumerate(text))
 
 
 def rotate_items(items: tuple[str, ...], seed: int) -> tuple[str, ...]:
+    """Handle rotate items."""
     if not items:
         return items
     offset = seed % len(items)
@@ -606,6 +622,7 @@ def rotate_items(items: tuple[str, ...], seed: int) -> tuple[str, ...]:
 def flatten_focus_details(
     focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
 ) -> tuple[str, ...]:
+    """Handle flatten focus details."""
     details: list[str] = []
     for _, detail_titles in focus_sections:
         details.extend(detail_titles)
@@ -613,6 +630,7 @@ def flatten_focus_details(
 
 
 def compact_step_label(text: str) -> str:
+    """Handle compact step label."""
     lowered = text.lower()
     keyword_map = (
         ("repository handbook", "repository handbook"),
@@ -638,6 +656,7 @@ def compact_step_label(text: str) -> str:
 
 
 def insert_after_intro(body: str, block: str) -> str:
+    """Handle insert after intro."""
     lines = body.splitlines()
     split_index = len(lines)
     for index, line in enumerate(lines[1:], start=1):
@@ -650,6 +669,7 @@ def insert_after_intro(body: str, block: str) -> str:
 
 
 def insert_before_heading(body: str, heading: str, block: str) -> str:
+    """Handle insert before heading."""
     marker = f"## {heading}"
     if marker not in body:
         return "\n\n".join([body.rstrip(), block.strip()])
@@ -665,6 +685,7 @@ def render_route_diagram(
     next_checks: tuple[str, ...],
     focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
 ) -> str:
+    """Render route diagram."""
     seed = stable_seed(scope_title, section_title, page_title)
     orientation = ("LR", "TB", "RL", "BT")[seed % 4]
     question_titles = rotate_items(
@@ -760,6 +781,7 @@ def render_route_diagram(
 
 
 def diagram_focus_role(section_title: str, index: int) -> tuple[str, str]:
+    """Handle diagram focus role."""
     title = section_title.lower()
     if any(
         token in title
@@ -796,6 +818,7 @@ def diagram_focus_role(section_title: str, index: int) -> tuple[str, str]:
 
 
 def page_map_promise(page_title: str, destination_titles: tuple[str, ...]) -> str:
+    """Handle page map promise."""
     if destination_titles:
         return f"{page_title}<br/>clarifies: {' | '.join(mermaid_text(title) for title in destination_titles[:3])}"
     return f"{page_title}<br/>should reduce ambiguity, not restate the tree"
@@ -809,6 +832,7 @@ def render_focus_diagram(
     destination_titles: tuple[str, ...],
     next_checks: tuple[str, ...],
 ) -> str:
+    """Render focus diagram."""
     seed = stable_seed(scope_title, section_title, page_title, *destination_titles)
     focus_groups = dict(focus_sections)
     family = section_title.lower()
@@ -1227,6 +1251,7 @@ def add_page_route_map(
     focus_sections: tuple[tuple[str, tuple[str, ...]], ...],
     next_checks: tuple[str, ...],
 ) -> str:
+    """Handle add page route map."""
     block = "\n".join(
         [
             "## Visual Summary",
@@ -1245,6 +1270,7 @@ def add_page_route_map(
 
 
 def add_question_section(body: str, questions: tuple[str, ...]) -> str:
+    """Handle add question section."""
     block = "\n".join(
         [
             "## What This Page Answers",
@@ -1260,6 +1286,7 @@ def package_page_questions(
     category: str,
     title: str,
 ) -> tuple[str, ...]:
+    """Handle package page questions."""
     question_map = {
         "foundation": (
             f"what problem `{package.title}` is supposed to own on purpose",
@@ -1294,6 +1321,7 @@ def package_page_reader_fit(
     package: PackageInfo,
     category: str,
 ) -> tuple[str, ...]:
+    """Handle package page reader fit."""
     fit_map = {
         "foundation": (
             "you need the package idea before the implementation detail",
@@ -1328,6 +1356,7 @@ def package_page_reviewer_lens(
     package: PackageInfo,
     category: str,
 ) -> tuple[str, ...]:
+    """Handle package page reviewer lens."""
     lens_map = {
         "foundation": (
             "compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it",
@@ -1359,6 +1388,7 @@ def package_page_reviewer_lens(
 
 
 def package_honesty_boundary(package: PackageInfo, category: str) -> str:
+    """Handle package honesty boundary."""
     honesty_map = {
         "foundation": (
             f"This page can explain the intended boundary of `{package.title}`, but it"
@@ -1393,6 +1423,7 @@ def package_honesty_boundary(package: PackageInfo, category: str) -> str:
 
 
 def package_anchor_bullets(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package anchor bullets."""
     anchor_map = {
         "foundation": (
             f"`{package.package_dir}` as the package root",
@@ -1421,6 +1452,7 @@ def package_anchor_bullets(package: PackageInfo, category: str) -> tuple[str, ..
 
 
 def package_core_claim(package: PackageInfo, category: str) -> str:
+    """Handle package core claim."""
     claim_map = {
         "foundation": (
             f"The core foundational claim of `{package.title}` is that its ownership can be"
@@ -1452,6 +1484,7 @@ def package_core_claim(package: PackageInfo, category: str) -> str:
 
 
 def package_why_it_matters(package: PackageInfo, category: str) -> str:
+    """Handle package why it matters."""
     matter_map = {
         "foundation": (
             f"If the foundation pages for `{package.title}` are weak, reviewers stop"
@@ -1483,6 +1516,7 @@ def package_why_it_matters(package: PackageInfo, category: str) -> str:
 
 
 def package_if_it_drifts(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package if it drifts."""
     drift_map = {
         "foundation": (
             "ownership starts migrating by convenience instead of by explicit package boundary",
@@ -1514,6 +1548,7 @@ def package_if_it_drifts(package: PackageInfo, category: str) -> tuple[str, ...]
 
 
 def package_scenario(package: PackageInfo, category: str) -> str:
+    """Handle package scenario."""
     scenario_map = {
         "foundation": (
             f"A contributor proposes moving new behavior into `{package.title}` because it"
@@ -1546,6 +1581,7 @@ def package_scenario(package: PackageInfo, category: str) -> str:
 
 
 def package_source_of_truth(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package source of truth."""
     truth_map = {
         "foundation": (
             f"`{package.package_dir}/src/{package.import_name}` for the real ownership boundary in code",
@@ -1580,6 +1616,7 @@ def package_source_of_truth(package: PackageInfo, category: str) -> tuple[str, .
 
 
 def package_common_misreadings(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package common misreadings."""
     misreading_map = {
         "foundation": (
             f"that `{package.title}` owns any nearby behavior just because it would be convenient",
@@ -1611,6 +1648,7 @@ def package_common_misreadings(package: PackageInfo, category: str) -> tuple[str
 
 
 def package_next_checks(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package next checks."""
     next_map = {
         "foundation": (
             "move to architecture when the question becomes structural rather than boundary-oriented",
@@ -1642,6 +1680,7 @@ def package_next_checks(package: PackageInfo, category: str) -> tuple[str, ...]:
 
 
 def package_update_triggers(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package update triggers."""
     trigger_map = {
         "foundation": (
             "package ownership moves between this package and a neighboring one",
@@ -1673,6 +1712,7 @@ def package_update_triggers(package: PackageInfo, category: str) -> tuple[str, .
 
 
 def package_working_interpretation(package: PackageInfo, category: str) -> str:
+    """Handle package working interpretation."""
     interpretation_map = {
         "foundation": (
             f"Treat the {category} pages for `{package.title}` as the package's durable"
@@ -1704,6 +1744,7 @@ def package_working_interpretation(package: PackageInfo, category: str) -> str:
 
 
 def package_decision_rule(package: PackageInfo, category: str, title: str) -> str:
+    """Handle package decision rule."""
     rule_map = {
         "foundation": (
             f"Use `{title}` to decide whether a change makes `{package.title}` easier or harder to defend as one distinct role in the overall system. "
@@ -1732,6 +1773,7 @@ def package_decision_rule(package: PackageInfo, category: str, title: str) -> st
 def package_what_good_looks_like(
     package: PackageInfo, category: str, title: str
 ) -> tuple[str, ...]:
+    """Handle package what good looks like."""
     good_map = {
         "foundation": (
             f"`{title}` leaves a reviewer able to explain `{package.title}` in one clean sentence without hand-waving",
@@ -1765,6 +1807,7 @@ def package_what_good_looks_like(
 def package_failure_signals(
     package: PackageInfo, category: str, title: str
 ) -> tuple[str, ...]:
+    """Handle package failure signals."""
     signal_map = {
         "foundation": (
             f"`{title}` needs repeated exceptions before the package role makes sense",
@@ -1796,6 +1839,7 @@ def package_failure_signals(
 
 
 def package_cross_implications(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package cross implications."""
     implication_map = {
         "foundation": (
             f"changes here influence how neighboring packages are allowed to stay narrow around `{package.title}`",
@@ -1827,6 +1871,7 @@ def package_cross_implications(package: PackageInfo, category: str) -> tuple[str
 
 
 def package_evidence_checklist(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package evidence checklist."""
     checklist_map = {
         "foundation": (
             f"read the owned module roots under `{package.package_dir}/src/{package.import_name}` with the boundary statement in mind",
@@ -1861,6 +1906,7 @@ def package_evidence_checklist(package: PackageInfo, category: str) -> tuple[str
 
 
 def package_antipatterns(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package antipatterns."""
     antipattern_map = {
         "foundation": (
             "using package adjacency as a substitute for package ownership",
@@ -1892,6 +1938,7 @@ def package_antipatterns(package: PackageInfo, category: str) -> tuple[str, ...]
 
 
 def package_escalate_when(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package escalate when."""
     escalate_map = {
         "foundation": (
             "the page can no longer explain ownership without repeated cross-package caveats",
@@ -1923,6 +1970,7 @@ def package_escalate_when(package: PackageInfo, category: str) -> tuple[str, ...
 
 
 def package_tradeoffs(package: PackageInfo, category: str) -> tuple[str, ...]:
+    """Handle package tradeoffs."""
     tradeoff_map = {
         "foundation": (
             "prefer clean ownership over local convenience, even when nearby code looks easier to reuse",
@@ -1956,6 +2004,7 @@ def package_tradeoffs(package: PackageInfo, category: str) -> tuple[str, ...]:
 def package_approval_questions(
     package: PackageInfo, category: str, title: str
 ) -> tuple[str, ...]:
+    """Handle package approval questions."""
     approval_map = {
         "foundation": (
             f"does `{title}` still let a reviewer state `{package.title}` ownership in one clear sentence",
@@ -1987,6 +2036,7 @@ def package_approval_questions(
 
 
 def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add reader fit section."""
     block = "\n".join(
         [
             "## Use This Page When",
@@ -2000,6 +2050,7 @@ def add_reader_fit_section(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_reviewer_lens_section(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add reviewer lens section."""
     block = "\n".join(
         [
             "## Reviewer Lens",
@@ -2011,6 +2062,7 @@ def add_reviewer_lens_section(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_honesty_boundary(body: str, text: str) -> str:
+    """Handle add honesty boundary."""
     block = "\n".join(
         [
             "## Honesty Boundary",
@@ -2022,6 +2074,7 @@ def add_honesty_boundary(body: str, text: str) -> str:
 
 
 def add_section_contract(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add section contract."""
     block = "\n".join(
         [
             "## Section Contract",
@@ -2033,6 +2086,7 @@ def add_section_contract(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_reading_advice(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add reading advice."""
     block = "\n".join(
         [
             "## Reading Advice",
@@ -2044,6 +2098,7 @@ def add_reading_advice(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_anchor_section(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add anchor section."""
     block = "\n".join(
         [
             "## Concrete Anchors",
@@ -2055,6 +2110,7 @@ def add_anchor_section(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_core_claim(body: str, text: str) -> str:
+    """Handle add core claim."""
     block = "\n".join(
         [
             "## Core Claim",
@@ -2066,6 +2122,7 @@ def add_core_claim(body: str, text: str) -> str:
 
 
 def add_why_it_matters(body: str, text: str) -> str:
+    """Handle add why it matters."""
     block = "\n".join(
         [
             "## Why It Matters",
@@ -2077,6 +2134,7 @@ def add_why_it_matters(body: str, text: str) -> str:
 
 
 def add_if_it_drifts(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add if it drifts."""
     block = "\n".join(
         [
             "## If It Drifts",
@@ -2088,6 +2146,7 @@ def add_if_it_drifts(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_representative_scenario(body: str, text: str) -> str:
+    """Handle add representative scenario."""
     block = "\n".join(
         [
             "## Representative Scenario",
@@ -2099,6 +2158,7 @@ def add_representative_scenario(body: str, text: str) -> str:
 
 
 def add_source_of_truth(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add source of truth."""
     block = "\n".join(
         [
             "## Source Of Truth Order",
@@ -2110,6 +2170,7 @@ def add_source_of_truth(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_common_misreadings(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add common misreadings."""
     block = "\n".join(
         [
             "## Common Misreadings",
@@ -2121,6 +2182,7 @@ def add_common_misreadings(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_next_checks(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add next checks."""
     block = "\n".join(
         [
             "## Next Checks",
@@ -2132,6 +2194,7 @@ def add_next_checks(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_update_triggers(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add update triggers."""
     block = "\n".join(
         [
             "## Update This Page When",
@@ -2143,6 +2206,7 @@ def add_update_triggers(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_working_interpretation(body: str, text: str) -> str:
+    """Handle add working interpretation."""
     lines = body.splitlines()
     split_index = len(lines)
     for index, line in enumerate(lines[1:], start=1):
@@ -2155,6 +2219,7 @@ def add_working_interpretation(body: str, text: str) -> str:
 
 
 def add_decision_rule(body: str, text: str) -> str:
+    """Handle add decision rule."""
     block = "\n".join(
         [
             "## Decision Rule",
@@ -2168,6 +2233,7 @@ def add_decision_rule(body: str, text: str) -> str:
 
 
 def add_what_good_looks_like(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add what good looks like."""
     block = "\n".join(
         [
             "## What Good Looks Like",
@@ -2181,6 +2247,7 @@ def add_what_good_looks_like(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_failure_signals(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add failure signals."""
     block = "\n".join(
         [
             "## Failure Signals",
@@ -2194,6 +2261,7 @@ def add_failure_signals(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_cross_implications(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add cross implications."""
     block = "\n".join(
         [
             "## Cross Implications",
@@ -2205,6 +2273,7 @@ def add_cross_implications(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_evidence_checklist(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add evidence checklist."""
     block = "\n".join(
         [
             "## Evidence Checklist",
@@ -2218,6 +2287,7 @@ def add_evidence_checklist(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_antipatterns(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add antipatterns."""
     block = "\n".join(
         [
             "## Anti-Patterns",
@@ -2231,6 +2301,7 @@ def add_antipatterns(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_escalate_when(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add escalate when."""
     block = "\n".join(
         [
             "## Escalate When",
@@ -2244,6 +2315,7 @@ def add_escalate_when(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_tradeoffs(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add tradeoffs."""
     block = "\n".join(
         [
             "## Tradeoffs To Hold",
@@ -2257,6 +2329,7 @@ def add_tradeoffs(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def add_approval_questions(body: str, bullets: tuple[str, ...]) -> str:
+    """Handle add approval questions."""
     block = "\n".join(
         [
             "## Approval Questions",
@@ -2270,6 +2343,7 @@ def add_approval_questions(body: str, bullets: tuple[str, ...]) -> str:
 
 
 def home_map_focus_sections() -> tuple[tuple[str, tuple[str, ...]], ...]:
+    """Handle home map focus sections."""
     return (
         (
             "System idea",
@@ -2301,6 +2375,7 @@ def home_map_focus_sections() -> tuple[tuple[str, tuple[str, ...]], ...]:
 def root_page_map(
     slug: str, title: str
 ) -> tuple[tuple[str, ...], tuple[tuple[str, tuple[str, ...]], ...]]:
+    """Handle root page map."""
     configs = {
         "index": (
             (
@@ -2574,6 +2649,7 @@ def render_home(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
 ) -> str:
+    """Render home."""
     sections = ["bijux-canon"]
     for target in TARGET_ORDER:
         if target in PRODUCT_PACKAGES and target in targets:
@@ -2759,6 +2835,7 @@ def render_root_page(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
 ) -> str:
+    """Render root page."""
     package_links = "\n".join(
         (
             f"- [{info.title}](../{info.slug}/foundation/index.md) for {info.description.lower()}"
@@ -3229,6 +3306,7 @@ def render_root_page(
 
 
 def render_dev_page(slug: str, title: str) -> str:
+    """Render dev page."""
     modules = bullet_lines(
         [
             "`src/bijux_canon_dev/quality` for repository quality checks",
@@ -3600,6 +3678,7 @@ def render_dev_page(slug: str, title: str) -> str:
 
 
 def render_compat_page(slug: str, title: str) -> str:
+    """Render compat page."""
     mappings = [
         ("agentic-flows", "bijux-canon-runtime"),
         ("bijux-agent", "bijux-canon-agent"),
@@ -3961,6 +4040,7 @@ def render_compat_page(slug: str, title: str) -> str:
 
 
 def package_section_summary(category: str, package: PackageInfo) -> str:
+    """Handle package section summary."""
     summaries = {
         "foundation": (
             f"This section explains why `{package.title}` exists, what it owns on"
@@ -3991,6 +4071,7 @@ def package_section_summary(category: str, package: PackageInfo) -> str:
 
 
 def package_section_orientation(category: str, package: PackageInfo) -> str:
+    """Handle package section orientation."""
     orientations = {
         "foundation": (
             "Read this section first when you need the durable package story before"
@@ -4024,6 +4105,7 @@ def package_section_orientation(category: str, package: PackageInfo) -> str:
 def related_links(
     package: PackageInfo, category: str, active_categories: tuple[str, ...]
 ) -> str:
+    """Handle related links."""
     reasons = {
         "foundation": "when you need the package boundary and ownership story first",
         "architecture": "when the question becomes structural, modular, or execution-oriented",
@@ -4042,6 +4124,7 @@ def related_links(
 
 
 def package_map_destinations(category: str) -> tuple[str, ...]:
+    """Handle package map destinations."""
     destination_map = {
         "foundation": ("own the right work", "name the boundary", "compare neighbors"),
         "architecture": (
@@ -4063,6 +4146,7 @@ def package_map_destinations(category: str) -> tuple[str, ...]:
 def package_map_focus_sections(
     package: PackageInfo, category: str, title: str
 ) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    """Handle package map focus sections."""
     focus_map = {
         "foundation": (
             ("Owned here", first_items(package.owns)),
@@ -4120,6 +4204,7 @@ def render_package_page(
     title: str,
     active_categories: tuple[str, ...],
 ) -> str:
+    """Render package page."""
     package_root = f"../../{package.slug}"
     category_page_links = "\n".join(
         f"- [{page_title}]({page_slug}.md)"
@@ -4254,6 +4339,7 @@ def render_package_topic(
     title: str,
     package_root: str,
 ) -> str:
+    """Render package topic."""
     shared = {
         "foundation": {
             "package-overview": f"""# {title}
@@ -5358,6 +5444,7 @@ def write_platform_docs(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
 ) -> None:
+    """Write platform docs."""
     write_doc(DOCS_ROOT / "index.md", render_home(targets, categories_by_package))
     base = DOCS_ROOT / "bijux-canon"
     for slug, title in ROOT_PAGES:
@@ -5368,6 +5455,7 @@ def write_platform_docs(
 
 
 def write_package_docs(package_key: str, active_categories: tuple[str, ...]) -> None:
+    """Write package docs."""
     package = PRODUCT_PACKAGES[package_key]
     base = DOCS_ROOT / package.slug
     for category in active_categories:
@@ -5379,12 +5467,14 @@ def write_package_docs(package_key: str, active_categories: tuple[str, ...]) -> 
 
 
 def write_dev_docs() -> None:
+    """Write dev docs."""
     base = DOCS_ROOT / "bijux-canon-dev"
     for slug, title in DEV_PAGES:
         write_doc(base / f"{slug}.md", render_dev_page(slug, title))
 
 
 def write_compat_docs() -> None:
+    """Write compat docs."""
     base = DOCS_ROOT / "compat-packages"
     for slug, title in COMPAT_PAGES:
         write_doc(base / f"{slug}.md", render_compat_page(slug, title))
@@ -5394,6 +5484,7 @@ def nav_lines(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
 ) -> list[str]:
+    """Handle nav lines."""
     lines = [
         "nav:",
         "  - Home: index.md",
@@ -5447,6 +5538,7 @@ def write_mkdocs(
     targets: set[str],
     categories_by_package: dict[str, tuple[str, ...]],
 ) -> None:
+    """Write MkDocs."""
     body = "\n".join(
         [
             "INHERIT: mkdocs.shared.yml",
@@ -5469,6 +5561,7 @@ def write_mkdocs(
 
 
 def validate_rendered_docs() -> None:
+    """Validate rendered docs."""
     required_headings = (
         "## Visual Summary",
         "## Use This Page When",
@@ -5521,6 +5614,7 @@ def validate_rendered_docs() -> None:
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse args."""
     parser = argparse.ArgumentParser(
         description="Render the canonical bijux-canon documentation catalog."
     )
@@ -5547,6 +5641,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def parse_category_overrides(values: list[str]) -> dict[str, tuple[str, ...]]:
+    """Parse category overrides."""
     overrides: dict[str, tuple[str, ...]] = {}
     for value in values:
         if "=" not in value:
@@ -5569,6 +5664,7 @@ def parse_category_overrides(values: list[str]) -> dict[str, tuple[str, ...]]:
 
 
 def parse_targets(values: list[str]) -> set[str]:
+    """Parse targets."""
     invalid = [value for value in values if value not in TARGET_ORDER]
     if invalid:
         choices = ", ".join(TARGET_ORDER)
@@ -5579,6 +5675,7 @@ def parse_targets(values: list[str]) -> set[str]:
 
 
 def main() -> None:
+    """Run the command-line entry point."""
     args = parse_args()
     targets = parse_targets(args.targets)
     product_categories = tuple(args.product_categories)

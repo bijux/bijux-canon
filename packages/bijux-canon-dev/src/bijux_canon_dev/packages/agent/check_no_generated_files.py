@@ -1,3 +1,5 @@
+"""Check no generated files helpers."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -9,10 +11,12 @@ PATTERNS = ("__pycache__", ".pyc", ".coverage", ".mypy_cache", ".ruff_cache")
 
 
 def repo_root() -> Path:
+    """Handle repo root."""
     return Path(__file__).resolve().parents[6]
 
 
 def git_executable() -> str:
+    """Handle Git executable."""
     resolved = shutil.which("git")
     if resolved is None:
         raise SystemExit("git executable not found")
@@ -20,6 +24,7 @@ def git_executable() -> str:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     result = run_text(
         [git_executable(), "ls-files"],
         capture_output=True,

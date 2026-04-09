@@ -1,3 +1,5 @@
+"""Publication guard helpers."""
+
 from __future__ import annotations
 
 import argparse
@@ -7,6 +9,7 @@ from .version_resolver import resolve_version
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse args."""
     parser = argparse.ArgumentParser(
         description="Validate that a package version is safe to publish."
     )
@@ -30,6 +33,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def _artifact_version(path: Path) -> str:
+    """Handle artifact version."""
     if path.name.endswith(".whl"):
         parts = path.name[:-4].split("-")
         if len(parts) < 2:
@@ -44,6 +48,7 @@ def _artifact_version(path: Path) -> str:
 
 
 def artifact_versions(dist_dir: Path) -> dict[str, str]:
+    """Handle artifact versions."""
     versions: dict[str, str] = {}
     for path in sorted(dist_dir.glob("*.whl")) + sorted(dist_dir.glob("*.tar.gz")):
         versions[path.name] = _artifact_version(path)
@@ -56,6 +61,7 @@ def assert_publishable_version(
     allow_prerelease: bool = False,
     allow_local_version: bool = False,
 ) -> None:
+    """Handle assert publishable version."""
     lowered = version.lower()
     prerelease_markers = (".dev", "a", "b", "rc")
     if not allow_prerelease and any(marker in lowered for marker in prerelease_markers):
@@ -71,6 +77,7 @@ def assert_publishable_version(
 
 
 def assert_artifacts_match_version(dist_dir: Path, version: str) -> None:
+    """Handle assert artifacts match version."""
     versions = artifact_versions(dist_dir)
     if not versions:
         raise ValueError(f"no artifacts found under {dist_dir}")
@@ -90,6 +97,7 @@ def assert_artifacts_match_version(dist_dir: Path, version: str) -> None:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     args = parse_args()
     version = resolve_version(Path(args.pyproject), args.package_name)
     if version == "0.0.0":

@@ -1,3 +1,5 @@
+"""Version resolver helpers."""
+
 from __future__ import annotations
 
 import argparse
@@ -14,6 +16,7 @@ from bijux_canon_dev.trusted_process import run_text
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse args."""
     parser = argparse.ArgumentParser(
         description="Resolve a package version from pyproject metadata or package tags."
     )
@@ -23,10 +26,12 @@ def parse_args() -> argparse.Namespace:
 
 
 def _pyproject_data(pyproject_path: Path) -> dict[str, object]:
+    """Handle pyproject data."""
     return tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
 
 
 def _resolve_hatch_version(pyproject_path: Path) -> str | None:
+    """Resolve hatch version."""
     result = run_text(
         [sys.executable, "-m", "hatch", "version"],
         capture_output=True,
@@ -40,6 +45,7 @@ def _resolve_hatch_version(pyproject_path: Path) -> str | None:
 
 
 def _tag_glob(pyproject: dict[str, object], package_name: str) -> str:
+    """Handle tag glob."""
     hatch_version = pyproject.get("tool", {}).get("hatch", {}).get("version", {})
     tag_pattern = hatch_version.get("tag-pattern")
     if isinstance(tag_pattern, str):
@@ -52,6 +58,7 @@ def _tag_glob(pyproject: dict[str, object], package_name: str) -> str:
 
 
 def _git_executable() -> str:
+    """Handle Git executable."""
     resolved = shutil.which("git")
     if resolved is None:
         raise SystemExit("git executable not found")
@@ -59,6 +66,7 @@ def _git_executable() -> str:
 
 
 def resolve_version(pyproject_path: Path, package_name: str) -> str:
+    """Resolve version."""
     pyproject = _pyproject_data(pyproject_path)
     project = pyproject.get("project", {})
     version = project.get("version")
@@ -90,6 +98,7 @@ def resolve_version(pyproject_path: Path, package_name: str) -> str:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     args = parse_args()
     print(resolve_version(Path(args.pyproject), args.package_name))
     return 0

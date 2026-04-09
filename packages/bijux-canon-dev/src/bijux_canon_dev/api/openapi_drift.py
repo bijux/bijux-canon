@@ -1,3 +1,5 @@
+"""OpenAPI drift helpers for API support."""
+
 from __future__ import annotations
 
 import argparse
@@ -10,6 +12,7 @@ import yaml
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse args."""
     parser = argparse.ArgumentParser(
         description="Compare a checked-in OpenAPI schema against a live ASGI app.",
     )
@@ -37,6 +40,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def load_target(entrypoint: str) -> Any:
+    """Load target."""
     module_name, separator, attribute_name = entrypoint.partition(":")
     if not separator or not module_name or not attribute_name:
         raise SystemExit(
@@ -50,6 +54,7 @@ def load_target(entrypoint: str) -> Any:
 
 
 def load_schema(path: Path) -> Any:
+    """Load schema."""
     if not path.exists():
         raise SystemExit(f"Schema file not found: {path}")
     text = path.read_text(encoding="utf-8")
@@ -59,6 +64,7 @@ def load_schema(path: Path) -> Any:
 
 
 def write_schema(path: Path, payload: Any) -> None:
+    """Write schema."""
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.suffix.lower() in {".yaml", ".yml"}:
         path.write_text(
@@ -72,6 +78,7 @@ def write_schema(path: Path, payload: Any) -> None:
 
 
 def write_generated_json(path: Path, payload: Any) -> None:
+    """Write generated JSON."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -79,10 +86,12 @@ def write_generated_json(path: Path, payload: Any) -> None:
 
 
 def canonicalize(payload: Any) -> Any:
+    """Canonicalize payload."""
     return json.loads(json.dumps(payload, sort_keys=True))
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     args = parse_args()
     app = load_target(args.app_import)
     generated = canonicalize(app.openapi())

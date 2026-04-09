@@ -1,3 +1,5 @@
+"""MkDocs config helpers."""
+
 from __future__ import annotations
 
 import argparse
@@ -5,6 +7,7 @@ from pathlib import Path
 
 
 def _rewrite_watch_path(path_text: str, *, source_root: Path) -> str:
+    """Handle rewrite watch path."""
     stripped = path_text.strip()
     if not stripped:
         return path_text
@@ -23,6 +26,7 @@ def _rewrite_config(
     site_url: str | None = None,
     inherit_config: Path | None = None,
 ) -> None:
+    """Handle rewrite config."""
     lines = source_config.read_text(encoding="utf-8").splitlines()
     rewritten: list[str] = []
     wrote_docs_dir = False
@@ -77,6 +81,7 @@ def _rewrite_config(
 
 
 def prepare_source(args: argparse.Namespace) -> int:
+    """Handle prepare source."""
     _rewrite_config(
         source_config=args.source_config,
         output_config=args.output_config,
@@ -86,6 +91,7 @@ def prepare_source(args: argparse.Namespace) -> int:
 
 
 def render_serve_config(args: argparse.Namespace) -> int:
+    """Render serve config."""
     inherit_config = args.inherit_config if args.inherit_config else None
     _rewrite_config(
         source_config=args.source_config,
@@ -99,6 +105,7 @@ def render_serve_config(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build parser."""
     parser = argparse.ArgumentParser(
         description="Rewrite MkDocs config files for repository workflows."
     )
@@ -127,6 +134,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     parser = build_parser()
     args = parser.parse_args()
     return args.func(args)

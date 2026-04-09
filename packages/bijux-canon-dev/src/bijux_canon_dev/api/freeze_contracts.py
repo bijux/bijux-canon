@@ -15,6 +15,7 @@ import yaml
 
 
 def _load_artifact(path: Path) -> Any:
+    """Load artifact."""
     text = path.read_text(encoding="utf-8")
     if path.suffix == ".json":
         return json.loads(text)
@@ -22,6 +23,7 @@ def _load_artifact(path: Path) -> Any:
 
 
 def _canonicalize(payload: Any) -> Any:
+    """Canonicalize payload."""
     if isinstance(payload, dict):
         return {
             str(key): _canonicalize(value)
@@ -41,6 +43,7 @@ def _canonicalize(payload: Any) -> Any:
 
 
 def _extract_hash_value(path: Path) -> str | None:
+    """Extract hash value."""
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.startswith("sha256:"):
             return line.split(":", 1)[1].strip()
@@ -48,6 +51,7 @@ def _extract_hash_value(path: Path) -> str | None:
 
 
 def run(repo_root: Path) -> int:
+    """Run the requested operation."""
     failures: list[str] = []
     schema_paths = sorted((repo_root / "apis").glob("*/v1/schema.yaml"))
     if not schema_paths:
@@ -88,6 +92,7 @@ def run(repo_root: Path) -> int:
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse args."""
     parser = argparse.ArgumentParser(
         description="Validate checked-in API freeze contracts for a repository root."
     )
@@ -101,6 +106,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     args = parse_args()
     return run(args.repo_root.resolve())
 

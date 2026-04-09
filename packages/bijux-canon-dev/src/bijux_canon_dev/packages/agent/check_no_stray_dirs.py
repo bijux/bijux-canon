@@ -1,3 +1,5 @@
+"""Check no stray dirs helpers."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,10 +9,12 @@ from bijux_canon_dev.trusted_process import run_text
 
 
 def package_root() -> Path:
+    """Handle package root."""
     return Path(__file__).resolve().parents[6] / "packages" / "bijux-canon-agent"
 
 
 def git_executable() -> str:
+    """Handle Git executable."""
     resolved = shutil.which("git")
     if resolved is None:
         raise SystemExit("git executable not found")
@@ -18,6 +22,7 @@ def git_executable() -> str:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     result = run_text(
         [
             git_executable(),

@@ -19,10 +19,12 @@ TomlTable = dict[str, Any]
 
 
 def _as_table(value: object) -> TomlTable:
+    """Coerce to table."""
     return value if isinstance(value, dict) else {}
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse args."""
     parser = argparse.ArgumentParser(
         description="Run deptry with repository-owned config merged into a package pyproject.toml.",
     )
@@ -45,6 +47,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def resolve_relative_command(command: list[str], project_dir: Path) -> list[str]:
+    """Resolve relative command."""
     executable = Path(command[0]).expanduser()
     if executable.is_absolute():
         return [os.fspath(executable.resolve()), *command[1:]]
@@ -66,6 +69,7 @@ def resolve_relative_command(command: list[str], project_dir: Path) -> list[str]
 
 
 def resolve_deptry_command(deptry_bin: str, project_dir: Path) -> list[str]:
+    """Resolve Deptry command."""
     deptry_command = shlex.split(deptry_bin)
     if not deptry_command:
         return resolve_relative_command([sys.executable, "-m", "deptry"], project_dir)
@@ -75,6 +79,7 @@ def resolve_deptry_command(deptry_bin: str, project_dir: Path) -> list[str]:
 def merge_deptry_config(
     config_path: Path, package_slug: str, package_pyproject: TomlTable
 ) -> TomlTable:
+    """Handle merge Deptry config."""
     root_config = tomllib.loads(config_path.read_text(encoding="utf-8"))
     tool_table = _as_table(root_config.get("tool"))
     base_config = _as_table(tool_table.get("deptry"))
@@ -112,6 +117,7 @@ def merge_deptry_config(
 
 
 def render_deptry_config(config: dict[str, object]) -> str:
+    """Render Deptry config."""
     lines = ["[tool.deptry]"]
     config_copy = dict(config)
     package_module_name_map = config_copy.pop("package_module_name_map", None)
@@ -126,6 +132,7 @@ def render_deptry_config(config: dict[str, object]) -> str:
 
 
 def render_toml_value(value: object) -> str:
+    """Render TOML value."""
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, str):
@@ -141,6 +148,7 @@ def render_toml_value(value: object) -> str:
 
 
 def main() -> int:
+    """Run the command-line entry point."""
     args = parse_args()
     project_dir = Path(args.project_dir).resolve()
     config_path = Path(args.config).resolve()
