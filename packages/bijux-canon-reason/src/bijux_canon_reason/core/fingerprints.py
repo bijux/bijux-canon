@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Fingerprints helpers for core logic."""
+
 from __future__ import annotations
 
 import dataclasses
@@ -20,6 +22,7 @@ FINGERPRINT_ALGO = "sha256"
 
 
 def _normalize_float(x: float) -> float:
+    """Normalize float."""
     if not math.isfinite(x):
         raise ValueError("Non-finite float is not allowed in canonical JSON.")
     if x == 0.0:
@@ -28,10 +31,12 @@ def _normalize_float(x: float) -> float:
 
 
 def _normalize_decimal(x: Decimal) -> str:
+    """Normalize decimal."""
     return format(x, "f")
 
 
 def _to_canonical_obj(obj: Any) -> Any:
+    """Convert to canonical obj."""
     if isinstance(obj, BaseModel):
         return _to_canonical_obj(obj.model_dump(mode="json"))
     if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
@@ -63,6 +68,7 @@ def _to_canonical_obj(obj: Any) -> Any:
 
 
 def canonical_dumps(obj: Any) -> str:
+    """Handle canonical dumps."""
     canon = _to_canonical_obj(obj)
     return json.dumps(
         canon,
@@ -74,14 +80,17 @@ def canonical_dumps(obj: Any) -> str:
 
 
 def fingerprint_bytes(payload: bytes) -> str:
+    """Fingerprint bytes."""
     return hashlib.sha256(payload).hexdigest()
 
 
 def fingerprint_obj(obj: Any) -> str:
+    """Fingerprint obj."""
     s = canonical_dumps(obj)
     return fingerprint_bytes(s.encode("utf-8"))
 
 
 def stable_id(kind: str, obj: Any) -> str:
+    """Handle stable ID."""
     fp = fingerprint_obj(obj)
     return f"{kind}_v{CANONICAL_VERSION}_{fp}"

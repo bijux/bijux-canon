@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Structural checks helpers for verification support."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -24,6 +26,7 @@ INV_TLK_001 = "INV-TLK-001"
 
 @dataclass(frozen=True)
 class _TraceStructure:
+    """Represents trace structure."""
     claim_ids: set[str]
     evidence_ids: set[str]
     tool_call_ids: set[str]
@@ -35,6 +38,7 @@ class _TraceStructure:
 def check_core_invariants(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
+    """Handle check core invariants."""
     errs = validate_plan(ctx.plan) + validate_trace(ctx.trace, plan=ctx.plan)
     if not errs:
         return VerificationCheck(name="core_invariants", passed=True), []
@@ -56,6 +60,7 @@ def check_core_invariants(
 def check_claim_supports(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
+    """Handle check claim supports."""
     failures: list[VerificationFailure] = []
     trace_structure = _index_trace_structure(ctx)
 
@@ -102,6 +107,7 @@ def check_claim_supports(
 def check_finalize_validated(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
+    """Handle check finalize validated."""
     finalize_present = "finalize" in _index_trace_structure(ctx).finished_step_outputs
     if finalize_present:
         return VerificationCheck(name="finalize_present", passed=True), []
@@ -113,6 +119,7 @@ def check_finalize_validated(
 def check_insufficient_reasoning(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
+    """Handle check insufficient reasoning."""
     failures: list[VerificationFailure] = []
     trace_structure = _index_trace_structure(ctx)
     has_claim = trace_structure.has_derived_claim
@@ -136,6 +143,7 @@ def check_insufficient_reasoning(
 def check_required_steps(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
+    """Handle check required steps."""
     required: set[StepKind] = {"understand", "gather", "derive", "verify", "finalize"}
     trace_structure = _index_trace_structure(ctx)
     seen: set[StepKind] = {
@@ -154,6 +162,7 @@ def check_required_steps(
 def check_tool_linkage(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
+    """Handle check tool linkage."""
     tool_call_ids = {
         event.call.id
         for event in ctx.trace.events
@@ -174,6 +183,7 @@ def check_tool_linkage(
 
 
 def _index_trace_structure(ctx: VerificationContext) -> _TraceStructure:
+    """Handle index trace structure."""
     claim_ids: set[str] = set()
     evidence_ids: set[str] = set()
     tool_call_ids: set[str] = set()
@@ -212,6 +222,7 @@ def _failure(
     message: str,
     invariant_id: str | None = None,
 ) -> VerificationFailure:
+    """Handle failure."""
     return VerificationFailure(
         severity=VerificationSeverity.error,
         message=message,

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Run workflow helpers for application workflows."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -21,6 +23,7 @@ from bijux_canon_reason.verification.verifier import verify_trace
 
 @dataclass(frozen=True)
 class RunWorkflowResult:
+    """Represents run workflow result."""
     spec: ProblemSpec
     plan: Plan
     trace: Trace
@@ -36,6 +39,7 @@ def run_app(
     artifacts_dir: Path | None = None,
     runtime: ExecutionRuntime | None = None,
 ) -> RunWorkflowResult:
+    """Handle run app."""
     assert_system_contract()
     spec_with_id = spec if spec.id else spec.with_content_id()
     plan = plan_problem(spec=spec_with_id, preset=preset)
@@ -60,6 +64,7 @@ def _resolve_runtime(
     artifacts_dir: Path | None,
     runtime: ExecutionRuntime | None,
 ) -> ExecutionRuntime:
+    """Resolve runtime."""
     if runtime is not None:
         return runtime
     return Runtime.fake(seed=seed, artifacts_dir=artifacts_dir)

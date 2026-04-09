@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Step execution helpers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -28,6 +30,7 @@ from bijux_canon_reason.reasoning.extractive import Derivation
 
 @dataclass
 class ExecutionState:
+    """Represents execution state."""
     claims: dict[str, Claim] = field(default_factory=dict)
     evidence_ids: list[str] = field(default_factory=list)
     evidence_bytes: dict[str, bytes] = field(default_factory=dict)
@@ -45,6 +48,7 @@ def build_step_output(
     state: ExecutionState,
     min_supports: int,
 ) -> StepOutput:
+    """Build step output."""
     if node.kind == "understand":
         return UnderstandOutput(
             normalized_question=spec.description.strip(),
@@ -71,6 +75,7 @@ def _build_derive_output(
     state: ExecutionState,
     min_supports: int,
 ) -> StepOutput:
+    """Build derive output."""
     ranked_evidence = _ranked_evidence(state)
     available = _available_evidence(ranked_evidence)
     if len(available) < min_supports:
@@ -96,6 +101,7 @@ def _build_derive_output(
 
 
 def _build_verify_output(state: ExecutionState) -> StepOutput:
+    """Build verify output."""
     _apply_verification_outcomes(state)
     return VerifyOutput(
         validated_claim_ids=sorted(set(state.validated_claim_ids)),
@@ -105,6 +111,7 @@ def _build_verify_output(state: ExecutionState) -> StepOutput:
 
 
 def _build_finalize_output(state: ExecutionState) -> StepOutput:
+    """Build finalize output."""
     final_ids = _final_claim_ids(state)
     answer = state.claims[final_ids[0]].statement if final_ids else None
     return FinalizeOutput(
@@ -115,6 +122,7 @@ def _build_finalize_output(state: ExecutionState) -> StepOutput:
 
 
 def _ranked_evidence(state: ExecutionState) -> list[tuple[str, bytes]]:
+    """Handle ranked evidence."""
     return [
         (evidence_id, state.evidence_bytes.get(evidence_id, b""))
         for evidence_id in state.evidence_ids
@@ -124,10 +132,12 @@ def _ranked_evidence(state: ExecutionState) -> list[tuple[str, bytes]]:
 def _available_evidence(
     ranked_evidence: list[tuple[str, bytes]],
 ) -> list[tuple[str, bytes]]:
+    """Handle available evidence."""
     return [evidence for evidence in ranked_evidence if evidence[1]]
 
 
 def _resolve_max_citations(*, spec: ProblemSpec, min_supports: int) -> int:
+    """Resolve max citations."""
     raw_max = (
         spec.constraints.get("max_citations", min_supports)
         if isinstance(spec.constraints, dict)
@@ -142,6 +152,7 @@ def _resolve_max_citations(*, spec: ProblemSpec, min_supports: int) -> int:
 
 
 def _build_derived_claim(derivation: Derivation) -> Claim:
+    """Build derived claim."""
     supports = [
         SupportRef(
             kind=SupportKind.evidence,
@@ -166,6 +177,7 @@ def _build_derived_claim(derivation: Derivation) -> Claim:
 
 
 def _reasoner_payload(raw_reasoner: object) -> dict[str, JsonValue]:
+    """Handle reasoner payload."""
     if not isinstance(raw_reasoner, dict):
         return {}
     payload: dict[str, JsonValue] = {}
@@ -182,6 +194,7 @@ def _record_derivation(
     claim: Claim,
     result_sha256: str,
 ) -> None:
+    """Record derivation."""
     state.claims[claim.id] = claim
     state.reasoning_meta.update(
         {
@@ -193,6 +206,7 @@ def _record_derivation(
 
 
 def _apply_verification_outcomes(state: ExecutionState) -> None:
+    """Handle apply verification outcomes."""
     for claim_id, claim in state.claims.items():
         if claim.claim_type == ClaimType.assumed or claim.supports:
             state.validated_claim_ids.append(claim_id)
@@ -202,6 +216,7 @@ def _apply_verification_outcomes(state: ExecutionState) -> None:
 
 
 def _final_claim_ids(state: ExecutionState) -> list[str]:
+    """Handle final claim IDs."""
     return sorted(set(state.validated_claim_ids)) or sorted(state.claims.keys())
 
 

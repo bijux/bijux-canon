@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""HTTP guards helpers for API support."""
+
 from __future__ import annotations
 
 import json
@@ -17,6 +19,7 @@ DENY_CONTENT_TYPES = {"application/xml", "text/xml"}
 
 
 def initialize_rate_limit_state(limit: int) -> dict[str, object]:
+    """Initialize rate limit state."""
     return {
         "limit": limit,
         "window_start": time.time(),
@@ -32,6 +35,7 @@ def guard_request(
     rate_limit: int,
     rate_limit_state: dict[str, object],
 ) -> None:
+    """Handle guard request."""
     _check_size_limit(request)
     supplied = request.headers.get("x-api-token")
     if api_token and supplied != api_token:
@@ -48,6 +52,7 @@ def guard_request(
 
 
 def enforce_response_size(payload: dict[str, object]) -> dict[str, object]:
+    """Enforce response size."""
     encoded = json.dumps(payload, separators=(",", ":")).encode("utf-8")
     if len(encoded) > MAX_RESPONSE_BYTES:
         raise HTTPException(status_code=413, detail="response too large")
@@ -55,6 +60,7 @@ def enforce_response_size(payload: dict[str, object]) -> dict[str, object]:
 
 
 def _check_size_limit(request: Request) -> None:
+    """Handle check size limit."""
     content_length = request.headers.get("content-length")
     if content_length is None:
         return

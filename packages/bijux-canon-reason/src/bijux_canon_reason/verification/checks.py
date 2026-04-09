@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Checks helpers for verification support."""
+
 from __future__ import annotations
 
 from bijux_canon_reason.core.types import VerificationCheck, VerificationFailure
@@ -10,6 +12,7 @@ from bijux_canon_reason.verification.context import VerificationContext
 def run_all_checks(
     ctx: VerificationContext,
 ) -> tuple[list[VerificationCheck], list[VerificationFailure]]:
+    """Handle run all checks."""
     checks: list[VerificationCheck] = []
     failures: list[VerificationFailure] = []
     for fn in CHECK_SEQUENCE:

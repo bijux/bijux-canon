@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Runtime helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -22,12 +24,20 @@ from bijux_canon_reason.execution.tool_runtime import (
 
 
 class ToolExecutor(Protocol):
-    def describe(self) -> list[ToolDescriptor]: ...
+    """Represents tool executor."""
+    def describe(self) -> list[ToolDescriptor]:
+        """Describe the available tools."""
 
-    def invoke(self, call: ToolCall, *, seed: int) -> ToolResult: ...
+        ...
+
+    def invoke(self, call: ToolCall, *, seed: int) -> ToolResult:
+        """Invoke a tool call."""
+
+        ...
 
 
 class ExecutionRuntime(Protocol):
+    """Represents execution runtime."""
     seed: int
     tools: ToolExecutor
     runtime_kind: str
@@ -35,11 +45,15 @@ class ExecutionRuntime(Protocol):
     artifacts_dir: Path | None
 
     @property
-    def descriptor(self) -> RuntimeDescriptor: ...
+    def descriptor(self) -> RuntimeDescriptor:
+        """Return the runtime descriptor."""
+
+        ...
 
 
 @dataclass(frozen=True)
 class Runtime:
+    """Represents runtime."""
     seed: int
     tools: ToolRegistry | FrozenToolRegistry
     runtime_kind: str
@@ -48,6 +62,7 @@ class Runtime:
 
     @property
     def descriptor(self) -> RuntimeDescriptor:
+        """Return the descriptor payload."""
         if isinstance(self.tools, FrozenToolRegistry):
             return RuntimeDescriptor(
                 kind=self.runtime_kind, mode=self.mode, tools=self.tools.describe()
@@ -60,6 +75,7 @@ class Runtime:
 
     @staticmethod
     def fake(seed: int, *, artifacts_dir: Path | None = None) -> Runtime:
+        """Handle fake."""
         tools = ToolRegistry(
             tools={
                 "retrieve": FakeTool(name="retrieve"),
@@ -119,6 +135,7 @@ class Runtime:
         mode: Literal["live", "frozen"] = "frozen",
         runtime_kind: str = "ReplayRuntime",
     ) -> Runtime:
+        """Handle frozen."""
         frozen_tools = FrozenToolRegistry(
             recorded=dict(recorded_results),
             descriptors=list(descriptors or []),

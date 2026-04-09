@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Run routes helpers for API support."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -29,12 +31,14 @@ JsonDocument: TypeAlias = (
 
 
 class RunCreateRequest(BaseModel):
+    """Represents run create request."""
     spec: ProblemSpec
     preset: str = Field(default="default")
     seed: int = Field(default=0, ge=0)
 
 
 class RunCreateResponse(BaseModel):
+    """Represents run create response."""
     run_id: str
     run_dir: str
     trace_id: str
@@ -42,6 +46,7 @@ class RunCreateResponse(BaseModel):
 
 
 class RunReplayResponse(BaseModel):
+    """Represents run replay response."""
     original_trace_fingerprint: str
     replayed_trace_fingerprint: str
     diff_summary: dict[str, object]
@@ -55,6 +60,7 @@ def register_run_routes(
     guard_request: Callable[[Request], None],
     max_request_bytes: int,
 ) -> None:
+    """Register run routes."""
     guard_responses = {
         401: {
             "description": "Authentication failed for the requested endpoint.",
@@ -93,6 +99,7 @@ def register_run_routes(
         },
     )
     def create_run(req: RunCreateRequest, request: Request) -> RunCreateResponse:
+        """Create run."""
         guard_request(request)
         artifacts = RunBuilder().build(
             inputs=RunInputs(spec=req.spec, preset=req.preset, seed=req.seed),
@@ -122,6 +129,7 @@ def register_run_routes(
         },
     )
     def get_run(run_id: str, request: Request) -> JsonDocument:
+        """Return run."""
         guard_request(request)
         return _load_run_document(
             artifacts_dir=artifacts_dir,
@@ -146,6 +154,7 @@ def register_run_routes(
         },
     )
     def get_manifest(run_id: str, request: Request) -> JsonDocument:
+        """Return manifest."""
         guard_request(request)
         return _load_run_document(
             artifacts_dir=artifacts_dir,
@@ -174,6 +183,7 @@ def register_run_routes(
         },
     )
     def fetch_trace(run_id: str, request: Request) -> str:
+        """Handle fetch trace."""
         guard_request(request)
         path = _run_dir(artifacts_dir, run_id) / "trace.jsonl"
         if not path.exists():
@@ -196,6 +206,7 @@ def register_run_routes(
         },
     )
     def verify_run(run_id: str, request: Request) -> dict[str, object]:
+        """Handle verify run."""
         guard_request(request)
         run_dir = _run_dir(artifacts_dir, run_id)
         trace_path = run_dir / "trace.jsonl"
@@ -228,6 +239,7 @@ def register_run_routes(
         },
     )
     def replay_run(run_id: str, request: Request) -> RunReplayResponse:
+        """Handle replay run."""
         guard_request(request)
         trace_path = _run_dir(artifacts_dir, run_id) / "trace.jsonl"
         if not trace_path.exists():
@@ -242,6 +254,7 @@ def register_run_routes(
 
 
 def _run_dir(artifacts_dir: Path, run_id: str) -> Path:
+    """Handle run dir."""
     try:
         sanitized_run_id = sanitize_run_id(run_id)
     except ValueError as exc:
@@ -256,6 +269,7 @@ def _load_run_document(
     filename: str,
     missing_detail: str,
 ) -> JsonDocument:
+    """Load run document."""
     path = _run_dir(artifacts_dir, run_id) / filename
     if not path.exists():
         raise HTTPException(status_code=404, detail=missing_detail)
@@ -263,6 +277,7 @@ def _load_run_document(
 
 
 def _unwrap_canonical_document(raw: object) -> JsonDocument:
+    """Handle unwrap canonical document."""
     if isinstance(raw, dict) and "data" in raw and "canonical_version" in raw:
         return raw["data"]
     if isinstance(raw, (dict, list, str, int, float, bool)) or raw is None:
@@ -271,6 +286,7 @@ def _unwrap_canonical_document(raw: object) -> JsonDocument:
 
 
 def _read_trace_content(*, path: Path, max_request_bytes: int) -> str:
+    """Read trace content."""
     content = path.read_text(encoding="utf-8")
     if len(content.encode("utf-8")) > max_request_bytes * 10:
         raise HTTPException(status_code=413, detail="response too large")

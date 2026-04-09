@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Evidence records helpers."""
+
 from __future__ import annotations
 
 import hashlib
@@ -11,6 +13,7 @@ from bijux_canon_reason.execution.runtime import ExecutionRuntime
 
 
 def coerce_reasoner_value(value: object) -> JsonValue:
+    """Handle coerce reasoner value."""
     if isinstance(value, (str, int, float, bool)) or value is None:
         return value
     if isinstance(value, (list, dict)):
@@ -26,6 +29,7 @@ def write_evidence_record(
     span: tuple[int, int],
     chunk_id: str,
 ) -> EvidenceRef:
+    """Write evidence record."""
     sha = _sha256_bytes(content)
     if runtime.artifacts_dir is None:
         return EvidenceRef(
@@ -57,10 +61,12 @@ def write_evidence_record(
 
 
 def _sha256_bytes(value: bytes) -> str:
+    """Handle sha256 bytes."""
     return hashlib.sha256(value).hexdigest()
 
 
 def _ensure_dir(path: Path) -> None:
+    """Ensure dir."""
     path.mkdir(parents=True, exist_ok=True)
 
 

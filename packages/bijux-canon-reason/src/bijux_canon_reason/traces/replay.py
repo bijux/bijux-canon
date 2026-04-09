@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Replay helpers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -32,6 +34,7 @@ from bijux_canon_reason.traces.diff import diff_traces
 
 @dataclass(frozen=True)
 class ReplayPaths:
+    """Represents replay paths."""
     trace_path: Path
     run_dir: Path
     spec_path: Path
@@ -46,6 +49,7 @@ class ReplayPaths:
 
 @dataclass(frozen=True)
 class ReplayInputs:
+    """Represents replay inputs."""
     paths: ReplayPaths
     preset: str
     seed: int
@@ -58,6 +62,7 @@ class ReplayInputs:
 
 
 def replay_from_artifacts(trace_path: Path) -> tuple[ReplayResult, Path]:
+    """Handle replay from artifacts."""
     inputs = _load_replay_inputs(trace_path)
     trace = inputs.trace
 
@@ -115,6 +120,7 @@ def replay_from_artifacts(trace_path: Path) -> tuple[ReplayResult, Path]:
 
 
 def _load_replay_inputs(trace_path: Path) -> ReplayInputs:
+    """Load replay inputs."""
     paths = _build_replay_paths(trace_path)
     _require_replay_artifacts(paths)
 
@@ -136,6 +142,7 @@ def _load_replay_inputs(trace_path: Path) -> ReplayInputs:
 
 
 def _build_replay_paths(trace_path: Path) -> ReplayPaths:
+    """Build replay paths."""
     run_dir = trace_path.parent
     replay_dir = run_dir / "replay"
     replay_dir.mkdir(parents=True, exist_ok=True)
@@ -154,6 +161,7 @@ def _build_replay_paths(trace_path: Path) -> ReplayPaths:
 
 
 def _require_replay_artifacts(paths: ReplayPaths) -> None:
+    """Require replay artifacts."""
     required_paths = (
         ("spec.json", paths.spec_path),
         ("run_meta.json", paths.meta_path),
@@ -167,6 +175,7 @@ def _require_replay_artifacts(paths: ReplayPaths) -> None:
 
 
 def _validate_retrieval_provenance(*, paths: ReplayPaths, trace: Trace) -> None:
+    """Validate retrieval provenance."""
     trace_provenance = (
         trace.metadata.get("retrieval_provenance")
         if isinstance(trace.metadata, dict)
@@ -200,6 +209,7 @@ def _validate_retrieval_provenance(*, paths: ReplayPaths, trace: Trace) -> None:
 def _read_runtime_metadata(
     meta: dict[str, object],
 ) -> tuple[str, str, RuntimeDescriptor | None]:
+    """Read runtime metadata."""
     runtime_info = meta.get("runtime", {})
     runtime = runtime_info if isinstance(runtime_info, dict) else {}
     descriptor_raw = meta.get("runtime_descriptor")
@@ -216,6 +226,7 @@ def _read_runtime_metadata(
 
 
 def _recorded_checksum(*, meta_path: Path, trace: Trace) -> str:
+    """Handle recorded checksum."""
     meta = read_json_file(meta_path)
     recorded = meta.get("invariant_checksum") or (
         trace.metadata.get("invariant_checksum")
@@ -228,6 +239,7 @@ def _recorded_checksum(*, meta_path: Path, trace: Trace) -> str:
 
 
 def _collect_recorded_results(trace: Trace) -> dict[str, ToolResult]:
+    """Handle collect recorded results."""
     recorded_results: dict[str, ToolResult] = {}
     for event in trace.events:
         if event.kind != TraceEventKind.tool_returned or not event.result:

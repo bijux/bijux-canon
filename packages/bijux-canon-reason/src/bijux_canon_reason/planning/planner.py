@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Planner helpers."""
+
 from __future__ import annotations
 
 from bijux_canon_reason.core.fingerprints import stable_id
@@ -42,6 +44,7 @@ def plan_problem(spec: ProblemSpec, preset: str) -> Plan:
 
 
 def _build_steps(spec: ProblemSpec, preset: str) -> list[StepSpec]:
+    """Build steps."""
     constraints = spec.constraints or {}
 
     wants_retrieval = bool(constraints.get("needs_retrieval", False))
@@ -72,6 +75,7 @@ def _build_steps(spec: ProblemSpec, preset: str) -> list[StepSpec]:
 
 
 def _step_params(step: StepSpec, preset: str) -> dict[str, JsonValue]:
+    """Handle step params."""
     return {
         "preset": preset,
     }

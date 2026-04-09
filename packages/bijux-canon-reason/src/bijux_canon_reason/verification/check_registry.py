@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Check registry helpers for verification support."""
+
 from __future__ import annotations
 
 from collections.abc import Callable

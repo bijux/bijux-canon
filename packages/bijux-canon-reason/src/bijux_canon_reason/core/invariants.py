@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Invariants helpers for core logic."""
+
 from __future__ import annotations
 
 from collections import defaultdict, deque
@@ -18,6 +20,7 @@ SUPPORTED_FINGERPRINT_ALGOS = {"sha256"}
 
 
 def validate_plan(plan: Plan) -> list[str]:
+    """Validate plan."""
     nodes_by_id = _plan_nodes_by_id(plan)
     return [
         *_duplicate_node_id_errors(plan),
@@ -27,6 +30,7 @@ def validate_plan(plan: Plan) -> list[str]:
 
 
 def validate_trace(trace: Trace, plan: Plan | None = None) -> list[str]:
+    """Validate trace."""
     plan_nodes = set() if plan is None else {node.id for node in plan.nodes}
     state = _TraceValidationState(plan_nodes=plan_nodes)
     return [
@@ -38,6 +42,7 @@ def validate_trace(trace: Trace, plan: Plan | None = None) -> list[str]:
 
 
 def validate_verification_report(report: VerificationReport) -> list[str]:
+    """Validate verification report."""
     errors: list[str] = []
     seen: set[str] = set()
     for check in report.checks:
@@ -48,10 +53,12 @@ def validate_verification_report(report: VerificationReport) -> list[str]:
 
 
 def _plan_nodes_by_id(plan: Plan) -> dict[str, object]:
+    """Handle plan nodes by ID."""
     return {node.id: node for node in plan.nodes}
 
 
 def _duplicate_node_id_errors(plan: Plan) -> list[str]:
+    """Handle duplicate node ID errors."""
     node_ids = [node.id for node in plan.nodes]
     if len(set(node_ids)) == len(node_ids):
         return []
@@ -59,6 +66,7 @@ def _duplicate_node_id_errors(plan: Plan) -> list[str]:
 
 
 def _missing_dependency_errors(plan: Plan, nodes_by_id: dict[str, object]) -> list[str]:
+    """Handle missing dependency errors."""
     return [
         f"PlanNode {node.id} depends on missing node id: {dependency}"
         for node in plan.nodes
@@ -68,6 +76,7 @@ def _missing_dependency_errors(plan: Plan, nodes_by_id: dict[str, object]) -> li
 
 
 def _cycle_errors(plan: Plan, nodes_by_id: dict[str, object]) -> list[str]:
+    """Handle cycle errors."""
     indegree = dict.fromkeys(nodes_by_id, 0)
     adjacency: dict[str, list[str]] = defaultdict(list)
     for node in plan.nodes:
@@ -90,7 +99,9 @@ def _cycle_errors(plan: Plan, nodes_by_id: dict[str, object]) -> list[str]:
 
 
 class _TraceValidationState:
+    """Represents trace validation state."""
     def __init__(self, *, plan_nodes: set[str]) -> None:
+        """Initialize the instance."""
         self.plan_nodes = plan_nodes
         self.tool_calls: set[str] = set()
         self.tool_results: set[str] = set()
@@ -100,6 +111,7 @@ class _TraceValidationState:
 
 
 def _trace_header_errors(trace: Trace) -> list[str]:
+    """Handle trace header errors."""
     errors: list[str] = []
     if trace.schema_version not in SUPPORTED_TRACE_SCHEMA_VERSIONS:
         errors.append(
@@ -127,6 +139,7 @@ def _trace_header_errors(trace: Trace) -> list[str]:
 
 
 def _trace_index_errors(trace: Trace) -> list[str]:
+    """Handle trace index errors."""
     errors: list[str] = []
     for idx, event in enumerate(trace.events):
         if event.idx is None:
@@ -137,6 +150,7 @@ def _trace_index_errors(trace: Trace) -> list[str]:
 
 
 def _trace_linkage_errors(trace: Trace, state: _TraceValidationState) -> list[str]:
+    """Handle trace linkage errors."""
     errors: list[str] = []
     for event in trace.events:
         if event.kind == TraceEventKind.tool_called:
@@ -162,6 +176,7 @@ def _trace_linkage_errors(trace: Trace, state: _TraceValidationState) -> list[st
 
 
 def _trace_lifecycle_errors(trace: Trace, state: _TraceValidationState) -> list[str]:
+    """Handle trace lifecycle errors."""
     errors: list[str] = []
     for event in trace.events:
         if event.kind == TraceEventKind.step_started:

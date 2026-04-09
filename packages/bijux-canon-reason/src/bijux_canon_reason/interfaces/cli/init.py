@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Init helpers for the CLI interface."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -19,6 +21,7 @@ TARGET_OPTION = typer.Option(
 
 @app.command("init")
 def init_project(target: Path = TARGET_OPTION) -> None:
+    """Handle init project."""
     target = target or _DEFAULT_TARGET
     target.mkdir(parents=True, exist_ok=True)
     sample_spec = target / "sample_spec.json"

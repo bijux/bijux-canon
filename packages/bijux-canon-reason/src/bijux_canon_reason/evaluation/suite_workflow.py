@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Suite workflow helpers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -17,6 +19,7 @@ from bijux_canon_reason.verification.types import Severity
 
 @dataclass(frozen=True)
 class EvalResult:
+    """Represents eval result."""
     suite: str
     total: int
     passed: int
@@ -24,6 +27,7 @@ class EvalResult:
     failures: list[dict[str, object]] = field(default_factory=list)
 
     def to_json(self) -> dict[str, object]:
+        """Convert to JSON."""
         return {
             "suite": self.suite,
             "total": self.total,
@@ -35,6 +39,7 @@ class EvalResult:
 
 @dataclass(frozen=True)
 class EvalCaseMetrics:
+    """Represents eval case metrics."""
     run_dir: str
     spec_path: str
     evidence_count: int
@@ -52,6 +57,7 @@ class EvalCaseMetrics:
     claims_failed: int
 
     def to_json(self) -> dict[str, object]:
+        """Convert to JSON."""
         return {
             "run_dir": self.run_dir,
             "spec_path": self.spec_path,
@@ -73,6 +79,7 @@ class EvalCaseMetrics:
 
 @dataclass(frozen=True)
 class EvalSummaryMetrics:
+    """Represents eval summary metrics."""
     recall_at_k: float
     mrr: float
     alignment_rate: float
@@ -81,6 +88,7 @@ class EvalSummaryMetrics:
     failure_taxonomy: dict[str, int]
 
     def to_json(self) -> dict[str, object]:
+        """Convert to JSON."""
         return {
             "recall_at_k": self.recall_at_k,
             "mrr": self.mrr,
@@ -113,6 +121,7 @@ def _default_suite_root() -> Path:
 
 
 def _read_jsonl(path: Path) -> list[dict[str, object]]:
+    """Read JSONL."""
     rows: list[dict[str, object]] = []
     with path.open("r", encoding="utf-8") as f:
         for line in f:
@@ -124,6 +133,7 @@ def _read_jsonl(path: Path) -> list[dict[str, object]]:
 
 
 def _case_metrics(arts: RunArtifacts) -> EvalCaseMetrics:
+    """Handle case metrics."""
     trace = arts.trace
     verify_report = arts.verify_report
 
@@ -270,12 +280,14 @@ def run_eval_suite(
 
 
 def _average_metric(rows: list[dict[str, object]], key: str) -> float:
+    """Handle average metric."""
     if not rows:
         return 0.0
     return sum(float(row.get(key, 0.0)) for row in rows) / len(rows)
 
 
 def _aggregate_taxonomy(rows: list[dict[str, object]]) -> dict[str, int]:
+    """Handle aggregate taxonomy."""
     taxonomy: dict[str, int] = {}
     for row in rows:
         raw_taxonomy = row.get("failure_taxonomy", {})
@@ -287,12 +299,14 @@ def _aggregate_taxonomy(rows: list[dict[str, object]]) -> dict[str, int]:
 
 
 def _insufficiency_rate(rows: list[dict[str, object]]) -> float:
+    """Handle insufficiency rate."""
     if not rows:
         return 0.0
     return sum(1 for row in rows if row.get("insufficient")) / len(rows)
 
 
 def _summary_metrics(rows: list[dict[str, object]]) -> EvalSummaryMetrics:
+    """Handle summary metrics."""
     return EvalSummaryMetrics(
         recall_at_k=_average_metric(rows, "recall_at_k"),
         mrr=_average_metric(rows, "mrr"),

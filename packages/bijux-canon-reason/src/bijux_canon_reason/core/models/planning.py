@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Planning helpers for core logic."""
+
 from __future__ import annotations
 
 from typing import Literal, cast
@@ -11,6 +13,7 @@ from bijux_canon_reason.core.models.base import JsonValue, StableModel
 
 
 class ProblemSpec(StableModel):
+    """Represents problem spec."""
     id: str = ""
     description: str
     constraints: dict[str, object] = Field(default_factory=dict)
@@ -19,6 +22,7 @@ class ProblemSpec(StableModel):
     version: int | None = None
 
     def with_content_id(self) -> ProblemSpec:
+        """Handle with content ID."""
         cid = stable_id(
             "spec",
             {
@@ -33,6 +37,7 @@ class ProblemSpec(StableModel):
 
     @model_validator(mode="after")
     def _ensure_id(self) -> ProblemSpec:
+        """Ensure ID."""
         if not self.id:
             object.__setattr__(
                 self,
@@ -55,17 +60,20 @@ StepKind = Literal["understand", "gather", "derive", "verify", "finalize"]
 
 
 class ToolRequest(StableModel):
+    """Represents tool request."""
     tool_name: str
     arguments: dict[str, JsonValue] = Field(default_factory=dict)
 
 
 class StepSpec(StableModel):
+    """Represents step spec."""
     kind: StepKind
     notes: str = ""
     tool_requests: list[ToolRequest] = Field(default_factory=list)
 
 
 class PlanNode(StableModel):
+    """Represents plan node."""
     id: str = ""
     kind: StepKind
     dependencies: list[str] = Field(default_factory=list)
@@ -75,6 +83,7 @@ class PlanNode(StableModel):
     @model_validator(mode="before")
     @classmethod
     def _default_step(cls, values: dict[str, object]) -> dict[str, object]:
+        """Return the default step."""
         if "step" not in values and "kind" in values:
             kind = cast(StepKind, values["kind"])
             values["step"] = StepSpec(kind=kind)
@@ -82,6 +91,7 @@ class PlanNode(StableModel):
 
     @model_validator(mode="after")
     def _fill_id(self) -> PlanNode:
+        """Handle fill ID."""
         if not self.id:
             object.__setattr__(
                 self,
@@ -100,6 +110,7 @@ class PlanNode(StableModel):
 
 
 class Plan(StableModel):
+    """Represents plan."""
     id: str = ""
     problem: str = ""
     spec_id: str
@@ -107,6 +118,7 @@ class Plan(StableModel):
     edges: list[tuple[str, str]] = Field(default_factory=list)
 
     def with_content_id(self) -> Plan:
+        """Handle with content ID."""
         cid = stable_id(
             "plan",
             {

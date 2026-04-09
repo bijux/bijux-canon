@@ -20,6 +20,7 @@ _SENT_SPLIT = re.compile(r"(?<=[.!?])\s+")
 
 @dataclass(frozen=True)
 class Citation:
+    """Represents citation."""
     evidence_id: str
     span: tuple[int, int]
     snippet_sha256: str

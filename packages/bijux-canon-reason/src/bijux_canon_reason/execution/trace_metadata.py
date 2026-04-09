@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Trace metadata helpers."""
+
 from __future__ import annotations
 
 from bijux_canon_reason.core.types import JsonValue, Trace, TraceEvent
@@ -16,6 +18,7 @@ def build_trace_result(
     state: ExecutionState,
     min_supports: int,
 ) -> Trace:
+    """Build trace result."""
     trace = Trace(
         id="",
         spec_id=spec_id,
@@ -44,6 +47,7 @@ def build_trace_result(
 
 
 def _coerce_trace_metadata(value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+    """Handle coerce trace metadata."""
     coerced: dict[str, JsonValue] = {}
     for key, item in value.items():
         coerced[str(key)] = item

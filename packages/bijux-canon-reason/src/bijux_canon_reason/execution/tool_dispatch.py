@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Tool dispatch helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -13,12 +15,14 @@ from bijux_canon_reason.execution.runtime import ExecutionRuntime
 
 @dataclass(frozen=True)
 class RetrievedEvidenceRecord:
+    """Represents retrieved evidence record."""
     reference: EvidenceRef
     content: bytes
 
 
 @dataclass(frozen=True)
 class ToolDispatchResult:
+    """Represents tool dispatch result."""
     retrieval_provenance: dict[str, JsonValue] = field(default_factory=dict)
     evidences: list[RetrievedEvidenceRecord] = field(default_factory=list)
     failures: list[ToolResult] = field(default_factory=list)
@@ -31,6 +35,7 @@ def dispatch_tool_requests(
     runtime: ExecutionRuntime,
     push_event: Callable[[dict[str, object]], None],
 ) -> ToolDispatchResult:
+    """Handle dispatch tool requests."""
     retrieval_provenance: dict[str, JsonValue] = {}
     evidences: list[RetrievedEvidenceRecord] = []
     failures: list[ToolResult] = []
@@ -92,6 +97,7 @@ def dispatch_tool_requests(
 
 
 def _coerce_provenance(raw: object) -> dict[str, JsonValue]:
+    """Handle coerce provenance."""
     if not isinstance(raw, dict):
         return {}
     provenance: dict[str, JsonValue] = {}
@@ -107,6 +113,7 @@ def _extract_retrieved_evidence(
     raw: object,
     push_event: Callable[[dict[str, object]], None],
 ) -> list[RetrievedEvidenceRecord]:
+    """Extract retrieved evidence."""
     if not isinstance(raw, list):
         return []
 
@@ -142,6 +149,7 @@ def _extract_retrieved_evidence(
 
 
 def _coerce_span(raw: object) -> tuple[int, int] | None:
+    """Handle coerce span."""
     if not isinstance(raw, (list, tuple)) or len(raw) != 2:
         return None
     start, end = raw

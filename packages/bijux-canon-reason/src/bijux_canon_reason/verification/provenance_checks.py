@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Provenance checks helpers for verification support."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -29,12 +31,14 @@ EVIDENCE_MARKER_RE = re.compile(
 
 @dataclass(frozen=True)
 class _ChunkManifest:
+    """Represents chunk manifest."""
     spans: dict[str, tuple[int, int]]
     hashes: dict[str, str]
 
 
 @dataclass(frozen=True)
 class _EvidenceArtifact:
+    """Represents evidence artifact."""
     bytes_: bytes
     span: tuple[int, int]
 
@@ -116,6 +120,7 @@ def check_derived_grounding(
 def check_evidence_hashes(
     ctx: VerificationContext,
 ) -> tuple[VerificationCheck, list[VerificationFailure]]:
+    """Handle check evidence hashes."""
     if ctx.artifacts_dir is None:
         return VerificationCheck(
             name="evidence_hashes",
@@ -244,16 +249,19 @@ def check_reasoning_trace(
 
 
 def _sha256_path(path: Path) -> str:
+    """Handle sha256 path."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _reasoning_policy(ctx: VerificationContext) -> dict[str, JsonValue]:
+    """Handle reasoning policy."""
     metadata = ctx.trace.metadata if isinstance(ctx.trace.metadata, dict) else {}
     policy = metadata.get("reasoning_policy", {}) if isinstance(metadata, dict) else {}
     return policy if isinstance(policy, dict) else {}
 
 
 def _resolve_min_supports(policy: dict[str, JsonValue]) -> int:
+    """Resolve min supports."""
     raw_min = policy.get("min_supports_per_claim")
     if not isinstance(raw_min, (int, float, str)):
         return 2
@@ -264,6 +272,7 @@ def _resolve_min_supports(policy: dict[str, JsonValue]) -> int:
 
 
 def _marker_map(statement: str) -> set[tuple[str, int, int, str]]:
+    """Handle marker map."""
     return {
         (
             match.group("eid"),
@@ -278,6 +287,7 @@ def _marker_map(statement: str) -> set[tuple[str, int, int, str]]:
 def _load_chunk_manifest(
     artifacts_dir: Path,
 ) -> _ChunkManifest:
+    """Load chunk manifest."""
     chunk_spans: dict[str, tuple[int, int]] = {}
     chunk_hashes: dict[str, str] = {}
     chunks_file = artifacts_dir / "provenance" / "chunks.jsonl"
@@ -302,6 +312,7 @@ def _derived_claim_hashes(
     ctx: VerificationContext,
     failures: list[VerificationFailure],
 ) -> set[str]:
+    """Handle derived claim hashes."""
     claim_hashes: set[str] = set()
     for event in ctx.trace.events:
         if (
@@ -332,6 +343,7 @@ def _load_evidence_artifacts(
     chunk_manifest: _ChunkManifest,
     failures: list[VerificationFailure],
 ) -> dict[str, _EvidenceArtifact]:
+    """Load evidence artifacts."""
     artifacts: dict[str, _EvidenceArtifact] = {}
     for event in ctx.trace.events:
         if event.kind != TraceEventKind.evidence_registered:
@@ -371,6 +383,7 @@ def _validate_chunk_alignment(
     chunk_manifest: _ChunkManifest,
     failures: list[VerificationFailure],
 ) -> None:
+    """Validate chunk alignment."""
     evidence = event.evidence
     if evidence.chunk_id not in chunk_manifest.spans:
         return
@@ -408,6 +421,7 @@ def _validate_support_span(
     evidence_artifacts: dict[str, _EvidenceArtifact],
     failures: list[VerificationFailure],
 ) -> None:
+    """Validate support span."""
     artifact = evidence_artifacts.get(support.ref_id)
     if artifact is None:
         failures.append(
@@ -459,6 +473,7 @@ def _validate_support_span(
 
 
 def _evidence_supports(supports: list[object]) -> list[object]:
+    """Handle evidence supports."""
     return [support for support in supports if support.kind == SupportKind.evidence]
 
 
@@ -467,6 +482,7 @@ def _failure(
     message: str,
     invariant_id: str | None = None,
 ) -> VerificationFailure:
+    """Handle failure."""
     return VerificationFailure(
         severity=VerificationSeverity.error,
         message=message,

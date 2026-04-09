@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Main helpers for the CLI interface."""
+
 from __future__ import annotations
 
 import json
@@ -69,12 +71,14 @@ EVAL_SUITE_OPTION = typer.Option(
 
 
 def _exit(code: int, msg: str | None = None) -> NoReturn:
+    """Handle exit."""
     if msg:
         typer.echo(msg, err=(code != 0))
     raise typer.Exit(code=code)
 
 
 def _emit_json(payload: dict[str, object]) -> None:
+    """Handle emit JSON."""
     typer.echo(json.dumps(payload, sort_keys=True))
 
 
@@ -90,6 +94,7 @@ def run(
         False, "--json", help="Emit structured JSON instead of plain output."
     ),
 ) -> None:
+    """Run the requested operation."""
     raw = read_json_file(spec)
     spec_obj = ProblemSpec.model_validate(raw)
 
@@ -125,6 +130,7 @@ def verify(
         False, "--json", help="Emit structured JSON instead of plain output."
     ),
 ) -> None:
+    """Handle verify."""
     tr = read_trace_jsonl(trace)
     trace_id = tr.id
     if trace_id is None:
@@ -158,6 +164,7 @@ def replay(
         False, "--json", help="Emit structured JSON instead of plain output."
     ),
 ) -> None:
+    """Handle replay."""
     res, replay_trace = replay_from_artifacts(trace)
     payload = _replay_payload(replay_trace=replay_trace, result=res)
     _emit_json(payload)
@@ -186,6 +193,7 @@ def eval_suite(
         False, "--json", help="Emit structured JSON instead of plain output."
     ),
 ) -> None:
+    """Handle eval suite."""
     res, out_path = run_eval_suite(
         suite=suite, artifacts_dir=artifacts_dir, preset=preset, seed=seed
     )
@@ -197,6 +205,7 @@ def eval_suite(
 
 
 def _run_payload(artifacts: RunArtifacts) -> dict[str, object]:
+    """Handle run payload."""
     return {
         "run_dir": str(artifacts.run_dir),
         "verify_failures": len(artifacts.verify_report.failures),
@@ -205,6 +214,7 @@ def _run_payload(artifacts: RunArtifacts) -> dict[str, object]:
 
 
 def _verify_payload(report: VerificationReport) -> dict[str, object]:
+    """Handle verify payload."""
     return {
         "status": "ok" if not report.failures else "failed",
         "failures": [failure.message for failure in report.failures],
@@ -217,6 +227,7 @@ def _replay_payload(
     replay_trace: Path,
     result: ReplayResult,
 ) -> dict[str, object]:
+    """Handle replay payload."""
     payload = {
         "original_trace_fingerprint": result.original_trace_fingerprint,
         "replayed_trace_fingerprint": result.replayed_trace_fingerprint,
@@ -230,4 +241,5 @@ def _replay_payload(
 
 
 def _eval_payload(*, summary_path: Path, result: EvalResult) -> dict[str, object]:
+    """Handle eval payload."""
     return {"summary": str(summary_path), **result.to_json()}

@@ -28,6 +28,7 @@ def tokenize(text: str) -> list[str]:
 
 @dataclass(frozen=True)
 class BM25Index:
+    """Represents BM25 index."""
     docs: tuple[CorpusDoc, ...]
     doc_tokens: tuple[tuple[str, ...], ...]
     doc_tf: tuple[Counter[str], ...]
@@ -36,6 +37,7 @@ class BM25Index:
 
     @staticmethod
     def build(docs: Iterable[CorpusDoc]) -> BM25Index:
+        """Build docs."""
         dlist = tuple(docs)
         if not dlist:
             raise ValueError("Cannot build BM25Index for empty corpus")
@@ -63,6 +65,7 @@ class BM25Index:
     def score(
         self, query_tokens: list[str], *, k1: float = 1.2, b: float = 0.75
     ) -> list[float]:
+        """Handle score."""
         doc_count = len(self.docs)
         scores = [0.0 for _ in range(doc_count)]
         q_terms = Counter(query_tokens)
@@ -86,6 +89,7 @@ class BM25Index:
     def top_k(
         self, query: str, *, k: int = 3, k1: float = 1.2, b: float = 0.75
     ) -> list[tuple[CorpusDoc, float]]:
+        """Handle top k."""
         qt = tokenize(query)
         scores = self.score(qt, k1=k1, b=b)
         ranked = sorted(

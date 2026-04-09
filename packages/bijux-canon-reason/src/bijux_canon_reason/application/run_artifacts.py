@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Run artifacts helpers for application workflows."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -34,6 +36,7 @@ RUN_CPU_BUDGET_SEC = float(os.getenv("RAR_RUN_CPU_BUDGET_SEC", "0"))
 
 
 def _default_corpus_fixture() -> Path:
+    """Return the default corpus fixture."""
     module_path = Path(__file__).resolve()
     for parent in module_path.parents:
         candidate = parent / "tests" / "fixtures" / "corpus_small.jsonl"
@@ -43,6 +46,7 @@ def _default_corpus_fixture() -> Path:
 
 
 def _dir_size(root: Path) -> int:
+    """Handle dir size."""
     total = 0
     for path in root.rglob("*"):
         if path.is_file():
@@ -55,6 +59,7 @@ def _dir_size(root: Path) -> int:
 
 @dataclass(frozen=True)
 class RunInputs:
+    """Represents run inputs."""
     spec: ProblemSpec
     preset: str
     seed: int
@@ -62,6 +67,7 @@ class RunInputs:
 
 @dataclass(frozen=True)
 class RunArtifacts:
+    """Represents run artifacts."""
     run_id: str
     run_dir: Path
 
@@ -81,6 +87,7 @@ class RunArtifacts:
 
 @dataclass(frozen=True)
 class RunRuntimeConfig:
+    """Represents run runtime config."""
     needs_retrieval: bool
     corpus_path: Path | None
     chunk_chars: int
@@ -104,6 +111,7 @@ class RunBuilder:
     """
 
     def build(self, inputs: RunInputs, artifacts_root: Path) -> RunArtifacts:
+        """Build inputs."""
         start_time = time.time()
         start_cpu = time.process_time()
         spec_with_id = inputs.spec if inputs.spec.id else inputs.spec.with_content_id()
@@ -227,6 +235,7 @@ class RunBuilder:
 
 
 def _resolve_runtime_config(spec: ProblemSpec) -> RunRuntimeConfig:
+    """Resolve runtime config."""
     constraints = spec.constraints or {}
     needs_retrieval = bool(constraints.get("needs_retrieval"))
     default_corpus = _default_corpus_fixture()
@@ -253,6 +262,7 @@ def _resolve_runtime_config(spec: ProblemSpec) -> RunRuntimeConfig:
 def _build_runtime(
     *, seed: int, artifacts_dir: Path | None, config: RunRuntimeConfig
 ) -> Runtime:
+    """Build runtime."""
     if config.needs_retrieval and config.corpus_path is not None:
         return Runtime.local_bm25(
             seed=seed,
@@ -268,12 +278,14 @@ def _build_runtime(
 
 
 def _coerce_int_constraint(value: object, *, default: int) -> int:
+    """Handle coerce int constraint."""
     if isinstance(value, (int, float, str)):
         return int(value)
     return default
 
 
 def _coerce_float_constraint(value: object, *, default: float) -> float:
+    """Handle coerce float constraint."""
     if isinstance(value, (int, float, str)):
         return float(value)
     return default
@@ -285,6 +297,7 @@ def _build_manifest(
     trace: Trace,
     core_files: list[Path],
 ) -> dict[str, str]:
+    """Build manifest."""
     manifest: dict[str, str] = {}
 
     for event in trace.events:
@@ -317,10 +330,12 @@ def _build_manifest(
 
 
 def _hash_file(path: Path) -> str:
+    """Handle hash file."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _enforce_disk_quota(root: Path, *, message: str) -> None:
+    """Enforce disk quota."""
     if RUN_DISK_QUOTA_BYTES <= 0:
         return
     if _dir_size(root) > RUN_DISK_QUOTA_BYTES:
@@ -328,6 +343,7 @@ def _enforce_disk_quota(root: Path, *, message: str) -> None:
 
 
 def _enforce_time_budget(start_time: float) -> None:
+    """Enforce time budget."""
     if RUN_TIME_BUDGET_SEC <= 0:
         return
     if time.time() - start_time > RUN_TIME_BUDGET_SEC:
@@ -335,6 +351,7 @@ def _enforce_time_budget(start_time: float) -> None:
 
 
 def _enforce_cpu_budget(start_cpu: float) -> None:
+    """Enforce CPU budget."""
     if RUN_CPU_BUDGET_SEC <= 0:
         return
     if time.process_time() - start_cpu > RUN_CPU_BUDGET_SEC:

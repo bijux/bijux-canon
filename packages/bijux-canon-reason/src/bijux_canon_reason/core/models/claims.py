@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Claims helpers for core logic."""
+
 from __future__ import annotations
 
 from enum import StrEnum
@@ -14,6 +16,7 @@ from bijux_canon_reason.core.models.base import JsonValue, StableModel
 
 
 class SupportKind(StrEnum):
+    """Enumeration of support kind."""
     claim = "claim"
     evidence = "evidence"
     tool_call = "tool_call"
@@ -33,6 +36,7 @@ class SupportRef(StableModel):
     @field_validator("span")
     @classmethod
     def _validate_span(cls, value: tuple[int, int]) -> tuple[int, int]:
+        """Validate span."""
         start, end = int(value[0]), int(value[1])
         if start < 0 or end <= start:
             raise ValueError("span must satisfy 0 <= start < end")
@@ -41,24 +45,28 @@ class SupportRef(StableModel):
     @field_validator("snippet_sha256")
     @classmethod
     def _validate_snippet_sha(cls, value: str) -> str:
+        """Validate snippet sha."""
         if not re.fullmatch(r"[0-9a-f]{64}", value):
             raise ValueError("snippet_sha256 must be 64 lowercase hex characters")
         return value
 
 
 class ClaimStatus(StrEnum):
+    """Enumeration of claim status."""
     proposed = "proposed"
     validated = "validated"
     rejected = "rejected"
 
 
 class ClaimType(StrEnum):
+    """Enumeration of claim type."""
     derived = "derived"
     observed = "observed"
     assumed = "assumed"
 
 
 class Claim(StableModel):
+    """Represents claim."""
     id: str = ""
     statement: str
     status: ClaimStatus = ClaimStatus.proposed
@@ -70,6 +78,7 @@ class Claim(StableModel):
     @model_validator(mode="before")
     @classmethod
     def _alias_supports(cls, values: dict[str, object]) -> dict[str, object]:
+        """Handle alias supports."""
         if (
             isinstance(values, dict)
             and "support_refs" in values
@@ -79,6 +88,7 @@ class Claim(StableModel):
         return values
 
     def with_content_id(self) -> Claim:
+        """Handle with content ID."""
         cid = stable_id(
             "claim",
             {
@@ -96,6 +106,7 @@ class Claim(StableModel):
 
     @model_validator(mode="after")
     def _ensure_id(self) -> Claim:
+        """Ensure ID."""
         if not self.id:
             object.__setattr__(
                 self,
@@ -118,14 +129,17 @@ class Claim(StableModel):
 
     @property
     def support_refs(self) -> list[SupportRef]:
+        """Handle support refs."""
         return self.supports
 
     @property
     def content(self) -> dict[str, JsonValue]:
+        """Handle content."""
         return {"statement": self.statement}
 
 
 class EvidenceRef(StableModel):
+    """Represents evidence ref."""
     id: str = ""
     uri: str
     sha256: str
@@ -136,6 +150,7 @@ class EvidenceRef(StableModel):
     @field_validator("span")
     @classmethod
     def _validate_span(cls, value: tuple[int, int]) -> tuple[int, int]:
+        """Validate span."""
         start, end = int(value[0]), int(value[1])
         if start < 0 or end <= start:
             raise ValueError("span must satisfy 0 <= start < end")
@@ -144,6 +159,7 @@ class EvidenceRef(StableModel):
     @field_validator("chunk_id")
     @classmethod
     def _validate_chunk_id(cls, value: str) -> str:
+        """Validate chunk ID."""
         if not re.fullmatch(r"[0-9a-f]{64}", value):
             raise ValueError("chunk_id must be 64 lowercase hex characters")
         return value
@@ -168,6 +184,7 @@ class EvidenceRef(StableModel):
         return str(path)
 
     def with_content_id(self) -> EvidenceRef:
+        """Handle with content ID."""
         cid = stable_id(
             "evidence",
             {
@@ -182,6 +199,7 @@ class EvidenceRef(StableModel):
 
     @model_validator(mode="after")
     def _ensure_id(self) -> EvidenceRef:
+        """Ensure ID."""
         if not self.id:
             object.__setattr__(
                 self,

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""JSON canonical helpers."""
+
 from __future__ import annotations
 
 from typing import Any

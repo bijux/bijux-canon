@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Diff helpers."""
+
 from __future__ import annotations
 
 from bijux_canon_reason.core.types import Trace

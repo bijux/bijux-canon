@@ -29,11 +29,13 @@ SCHEMA_VERSION = 1
 
 
 def _sha256_path(p: Path) -> str:
+    """Handle sha256 path."""
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
 @dataclass(frozen=True)
 class ChunkedBM25Index:
+    """Represents chunked BM25 index."""
     corpus_sha256: str
     chunk_chars: int
     overlap_chars: int
@@ -55,6 +57,7 @@ class ChunkedBM25Index:
         max_chunks: int | None = None,
         max_docs: int | None = None,
     ) -> ChunkedBM25Index:
+        """Build docs."""
         all_chunks: list[Chunk] = []
         for doc_seen, d in enumerate(docs, start=1):
             if max_docs is not None and max_docs > 0 and doc_seen > max_docs:
@@ -110,11 +113,13 @@ class ChunkedBM25Index:
         b: float = 0.75,
         parallel: bool = False,
     ) -> list[float]:
+        """Handle score."""
         doc_count = len(self.chunks)
         scores = [0.0 for _ in range(doc_count)]
         q_terms = Counter(query_tokens)
 
         def _score_one(i: int) -> tuple[int, float]:
+            """Handle score one."""
             return i, _score_document(
                 query_terms=q_terms,
                 document_tokens=self.doc_tokens[i],
@@ -145,6 +150,7 @@ class ChunkedBM25Index:
         b: float = 0.75,
         parallel: bool = False,
     ) -> list[tuple[Chunk, float]]:
+        """Handle top k."""
         qt = tokenize(query)
         scores = self.score(qt, k1=k1, b=b, parallel=parallel)
         ranked = sorted(
@@ -154,6 +160,7 @@ class ChunkedBM25Index:
         return ranked[: max(0, int(k))]
 
     def to_json(self) -> bytes:
+        """Convert to JSON."""
         payload = {
             "schema_version": SCHEMA_VERSION,
             "corpus_sha256": self.corpus_sha256,
@@ -170,6 +177,7 @@ class ChunkedBM25Index:
 
     @staticmethod
     def from_json(data: bytes) -> ChunkedBM25Index:
+        """Handle from JSON."""
         obj = json.loads(data.decode("utf-8"))
         if int(obj.get("schema_version", 0)) != SCHEMA_VERSION:
             raise ValueError("Unsupported chunked BM25 schema_version")
@@ -266,6 +274,7 @@ def _score_document(
     k1: float,
     b: float,
 ) -> float:
+    """Handle score document."""
     import math
 
     document_length = len(document_tokens)
@@ -298,6 +307,7 @@ def _inverse_document_frequency(
     doc_count: int,
     math_module: object,
 ) -> float:
+    """Handle inverse document frequency."""
     matches = document_frequency.get(term, 0)
     if matches == 0:
         return 0.0
@@ -305,6 +315,7 @@ def _inverse_document_frequency(
 
 
 def _chunk_json(chunk: Chunk) -> dict[str, object]:
+    """Handle chunk JSON."""
     return {
         "doc_id": chunk.doc_id,
         "doc_sha256": chunk.doc_sha256,
@@ -318,6 +329,7 @@ def _chunk_json(chunk: Chunk) -> dict[str, object]:
 
 
 def _chunk_from_json(chunk_payload: object) -> Chunk:
+    """Handle chunk from JSON."""
     chunk_obj = dict(chunk_payload)
     return Chunk(
         doc_id=str(chunk_obj["doc_id"]),
@@ -344,6 +356,7 @@ def _load_cached_index(
     max_chunks: int | None,
     max_docs: int | None,
 ) -> ChunkedBM25Index | None:
+    """Load cached index."""
     if index_path is None or not index_path.exists():
         return None
     raw = index_path.read_bytes()
@@ -372,6 +385,7 @@ def _matches_index_config(
     max_chunks: int | None,
     max_docs: int | None,
 ) -> bool:
+    """Handle matches index config."""
     return (
         index.corpus_sha256 == corpus_sha
         and index.chunk_chars == int(chunk_chars)

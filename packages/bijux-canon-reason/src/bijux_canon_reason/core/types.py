@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Types helpers for core logic."""
+
 from __future__ import annotations
 
 from bijux_canon_reason.core.models import (

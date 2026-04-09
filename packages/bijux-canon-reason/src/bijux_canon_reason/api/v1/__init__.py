@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Package exports for v1."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -8,6 +10,7 @@ __all__ = ["app", "create_app"]
 
 
 def __getattr__(name: str) -> Any:
+    """Lazily resolve exported attributes."""
     if name == "app":
         from bijux_canon_reason.api.v1.app import app
 

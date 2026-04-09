@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Backend helpers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -21,7 +23,10 @@ class ReasonerBackend(Protocol):
         question: str,
         evidence: list[tuple[str, bytes]],
         max_citations: int,
-    ) -> Derivation: ...
+    ) -> Derivation:
+        """Derive question."""
+
+        ...
 
 
 @dataclass(frozen=True)
@@ -35,6 +40,7 @@ class BaselineReasoner:
         evidence: list[tuple[str, bytes]],
         max_citations: int,
     ) -> Derivation:
+        """Derive question."""
         return derive_extractive_answer(
             question=question, evidence=evidence, max_citations=max_citations
         )

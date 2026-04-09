@@ -34,6 +34,7 @@ NextHandler = Callable[[Request], Awaitable[Response]]
 
 
 def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
+    """Create app."""
     artifacts_root = artifacts_dir or Path("artifacts/bijux-canon-reason")
     app = FastAPI(
         title="bijux-canon-reason API",
@@ -96,6 +97,7 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
         },
     )
     def health() -> dict[str, str]:
+        """Handle health."""
         return {"status": "ok"}
 
     register_item_routes(
@@ -116,6 +118,7 @@ def create_app(*, artifacts_dir: Path | None = None) -> FastAPI:
 
 
 def _read_rate_limit() -> int:
+    """Read rate limit."""
     rate_limit_raw = os.getenv("RAR_API_RATE_LIMIT", "0")
     try:
         return int(rate_limit_raw)
@@ -129,7 +132,9 @@ def _build_request_guard(
     rate_limit: int,
     rate_limit_state: dict[str, object],
 ) -> RequestGuard:
+    """Build request guard."""
     def _guard(request: Request) -> None:
+        """Handle guard."""
         guard_request(
             request,
             api_token=api_token,
@@ -141,8 +146,11 @@ def _build_request_guard(
 
 
 def _install_guard_middleware(app: FastAPI, request_guard: RequestGuard) -> None:
+    """Install guard middleware."""
+
     @app.middleware("http")
     async def _guard_middleware(request: Request, call_next: NextHandler) -> Response:
+        """Handle guard middleware."""
         try:
             request_guard(request)
             response = await call_next(request)
@@ -157,16 +165,21 @@ def _install_guard_middleware(app: FastAPI, request_guard: RequestGuard) -> None
 
 
 def _install_validation_handler(app: FastAPI) -> None:
+    """Install validation handler."""
+
     @app.exception_handler(RequestValidationError)
     async def _validation_handler(
         request: Request, exc: RequestValidationError
     ) -> JSONResponse:
+        """Handle validation handler."""
         del request, exc
         return JSONResponse(status_code=422, content={"detail": "invalid request"})
 
 
 def _install_openapi_schema(app: FastAPI) -> None:
+    """Install OpenAPI schema."""
     def _openapi() -> dict[str, object]:
+        """Handle OpenAPI."""
         if app.openapi_schema is not None:
             return app.openapi_schema
 

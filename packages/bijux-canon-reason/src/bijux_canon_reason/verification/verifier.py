@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Verifier helpers for verification support."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -23,6 +25,7 @@ def verify_trace(
     artifacts_dir: Path | None = None,
     policy: VerificationPolicyMode = VerificationPolicyMode.strict,
 ) -> VerificationReport:
+    """Handle verify trace."""
     ctx = VerificationContext(trace=trace, plan=plan, artifacts_dir=artifacts_dir)
     checks, failures = run_all_checks(ctx)
     filtered_failures: list[VerificationFailure] = list(failures)

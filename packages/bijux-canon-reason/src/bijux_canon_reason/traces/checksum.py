@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Checksum helpers."""
+
 from __future__ import annotations
 
 from bijux_canon_reason.core.fingerprints import canonical_dumps, fingerprint_bytes
@@ -7,6 +9,7 @@ from bijux_canon_reason.core.types import Plan, RuntimeDescriptor, Trace, TraceE
 
 
 def _evidence_order(trace: Trace) -> list[str]:
+    """Handle evidence order."""
     return [
         ev.evidence.id
         for ev in trace.events

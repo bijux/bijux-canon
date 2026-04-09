@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Executor helpers."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -30,25 +32,30 @@ from bijux_canon_reason.execution.trace_metadata import build_trace_result
 
 @dataclass(frozen=True)
 class ExecutionPolicy:
+    """Represents execution policy."""
     fail_fast: bool = True
     min_supports_per_claim: int = 2
 
 
 @dataclass(frozen=True)
 class ExecutionResult:
+    """Represents execution result."""
     trace: Trace
 
     def model_dump(self, mode: str = "json") -> dict[str, object]:
+        """Handle model dump."""
         return {"trace": self.trace.model_dump(mode=mode)}
 
 
 @dataclass
 class _EventLog:
+    """Represents event log."""
     adapter: TypeAdapter[TraceEvent]
     events: list[TraceEvent]
     next_idx: int = 0
 
     def append(self, payload: dict[str, object]) -> None:
+        """Handle append."""
         payload["idx"] = self.next_idx
         self.next_idx += 1
         self.events.append(self.adapter.validate_python(payload))
@@ -73,6 +80,7 @@ def _validate_topology(plan: Plan) -> None:
 
 
 def _topo(plan: Plan) -> list[PlanNode]:
+    """Handle topo."""
     _validate_topology(plan)
     nodes = {n.id: n for n in plan.nodes}
     remaining = set(nodes.keys())
@@ -100,6 +108,7 @@ def execute_plan(
     runtime: ExecutionRuntime,
     policy: ExecutionPolicy | None = None,
 ) -> ExecutionResult:
+    """Handle execute plan."""
     policy = policy or ExecutionPolicy(fail_fast=True)
     spec = (
         spec or ProblemSpec(description=plan.problem, constraints={}).with_content_id()
@@ -138,6 +147,7 @@ def execute_plan(
 
 
 def _resolve_min_supports(*, spec: ProblemSpec, policy: ExecutionPolicy) -> int:
+    """Resolve min supports."""
     min_supports = policy.min_supports_per_claim
     if isinstance(spec.constraints, dict):
         raw_min = spec.constraints.get("min_supports_per_claim")
@@ -156,6 +166,7 @@ def _execute_node(
     policy: ExecutionPolicy,
     event_log: _EventLog,
 ) -> None:
+    """Handle execute node."""
     event_log.append(
         {
             "kind": TraceEventKind.step_started,
@@ -204,6 +215,7 @@ def _merge_tool_dispatch(
     state: ExecutionState,
     tool_dispatch: ToolDispatchResult,
 ) -> None:
+    """Handle merge tool dispatch."""
     if tool_dispatch.retrieval_provenance:
         state.retrieval_provenance = tool_dispatch.retrieval_provenance
     for evidence_record in tool_dispatch.evidences:
@@ -214,6 +226,7 @@ def _merge_tool_dispatch(
 def _raise_on_tool_failures(
     *, node_id: str, policy: ExecutionPolicy, failures: list[ToolResult]
 ) -> None:
+    """Raise on tool failures."""
     if not failures or not policy.fail_fast:
         return
     first_failure = failures[0]

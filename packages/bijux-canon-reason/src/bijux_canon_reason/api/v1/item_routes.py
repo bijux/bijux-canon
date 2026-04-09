@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Item routes helpers for API support."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -20,18 +22,21 @@ from bijux_canon_reason.api.v1.openapi_models import (
 
 
 class ItemCreate(BaseModel):
+    """Represents item create."""
     model_config = {"extra": "allow"}
     name: str | None = None
     description: str | None = None
 
 
 class ItemUpdate(BaseModel):
+    """Represents item update."""
     model_config = {"extra": "allow"}
     name: str | None = None
     description: str | None = None
 
 
 def configure_item_store(artifacts_dir: Path) -> Path:
+    """Handle configure item store."""
     db_path = artifacts_dir / "api_storage.db"
     db_path.parent.mkdir(parents=True, exist_ok=True)
     with closing(_connect_item_store(db_path)) as conn:
@@ -58,6 +63,7 @@ def register_item_routes(
     max_response_items: int,
     max_offset: int,
 ) -> None:
+    """Register item routes."""
     db_path = Path(app.state.db_path)
     guard_responses = {
         401: {
@@ -101,6 +107,7 @@ def register_item_routes(
         limit: int = Query(default=10, ge=1, le=max_response_items),
         offset: int = Query(default=0, ge=0, le=max_offset),
     ) -> dict[str, object]:
+        """List items."""
         guard_request(request)
         _reject_unknown_query_params(request=request, allowed={"limit", "offset"})
         with closing(_connect_item_store(db_path)) as conn:
@@ -145,6 +152,7 @@ def register_item_routes(
         request: Request,
         item_id: int = FastPath(ge=1, le=1_000_000),
     ) -> dict[str, object]:
+        """Return item."""
         guard_request(request)
         _validate_item_id(item_id)
         with closing(_connect_item_store(db_path)) as conn:
@@ -174,6 +182,7 @@ def register_item_routes(
         request: Request,
         item_id: int = FastPath(ge=1, le=1_000_000),
     ) -> Response:
+        """Handle delete item."""
         guard_request(request)
         _validate_item_id(item_id)
         with closing(_connect_item_store(db_path)) as conn:
@@ -210,6 +219,7 @@ def register_item_routes(
         },
     )
     def create_item(request: Request, payload: ItemCreate) -> dict[str, object]:
+        """Create item."""
         guard_request(request)
         item_name = payload.name or f"item-{uuid.uuid4().hex[:8]}"
         description = payload.description or ""
@@ -259,6 +269,7 @@ def register_item_routes(
         item_id: int = FastPath(ge=1, le=1_000_000),
         payload: ItemUpdate = ...,
     ) -> dict[str, object]:
+        """Handle update item."""
         guard_request(request)
         _validate_item_id(item_id)
         item_name = payload.name or f"item-{item_id}"
@@ -284,12 +295,14 @@ def register_item_routes(
 
 
 def _connect_item_store(db_path: Path) -> sqlite3.Connection:
+    """Handle connect item store."""
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def _reject_unknown_query_params(*, request: Request, allowed: set[str]) -> None:
+    """Handle reject unknown query params."""
     extras = [key for key in request.query_params if key not in allowed]
     if extras:
         raise HTTPException(
@@ -299,6 +312,7 @@ def _reject_unknown_query_params(*, request: Request, allowed: set[str]) -> None
 
 
 def _read_item_row(conn: sqlite3.Connection, *, item_id: int) -> sqlite3.Row | None:
+    """Read item row."""
     return conn.execute(
         "SELECT id, name, description, deleted FROM items WHERE id = ?",
         (item_id,),
@@ -308,6 +322,7 @@ def _read_item_row(conn: sqlite3.Connection, *, item_id: int) -> sqlite3.Row | N
 def _read_item_by_name(
     conn: sqlite3.Connection, *, item_name: str
 ) -> sqlite3.Row | None:
+    """Read item by name."""
     return conn.execute(
         "SELECT id, name, description, deleted FROM items WHERE name = ?",
         (item_name,),
@@ -315,6 +330,7 @@ def _read_item_by_name(
 
 
 def _read_active_item(conn: sqlite3.Connection, *, item_id: int) -> dict[str, object]:
+    """Read active item."""
     row = _read_item_row(conn, item_id=item_id)
     if row is None:
         raise HTTPException(status_code=404, detail="item not found")
@@ -326,6 +342,7 @@ def _read_active_item(conn: sqlite3.Connection, *, item_id: int) -> dict[str, ob
 def _create_or_restore_item(
     conn: sqlite3.Connection, *, item_name: str, description: str
 ) -> dict[str, object]:
+    """Create or restore item."""
     row = _read_item_by_name(conn, item_name=item_name)
     if row and not row["deleted"]:
         return _row_to_item(row)
@@ -350,6 +367,7 @@ def _upsert_item(
     item_name: str,
     description: str,
 ) -> dict[str, object]:
+    """Handle upsert item."""
     row = _read_item_row(conn, item_id=item_id)
     if row is None:
         conn.execute(
@@ -368,6 +386,7 @@ def _upsert_item(
 
 
 def _row_to_item(row: sqlite3.Row) -> dict[str, object]:
+    """Handle row to item."""
     return {
         "id": row["id"],
         "name": row["name"],
@@ -376,6 +395,7 @@ def _row_to_item(row: sqlite3.Row) -> dict[str, object]:
 
 
 def _validate_item_id(item_id: int) -> None:
+    """Validate item ID."""
     if item_id < 1 or item_id > 1_000_000:
         raise HTTPException(status_code=422, detail="item_id out of range")
 

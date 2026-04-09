@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Tool runtime helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -27,14 +29,20 @@ from bijux_canon_reason.retrieval.corpus import CorpusDoc, load_corpus_jsonl
 
 
 class Tool(Protocol):
-    def invoke(self, *, arguments: dict[str, JsonValue], seed: int) -> JsonValue: ...
+    """Represents tool."""
+    def invoke(self, *, arguments: dict[str, JsonValue], seed: int) -> JsonValue:
+        """Invoke the tool with the provided arguments."""
+
+        ...
 
 
 @dataclass(frozen=True)
 class ToolRegistry:
+    """Represents tool registry."""
     tools: Mapping[str, Tool]
 
     def describe(self) -> list[ToolDescriptor]:
+        """Describe the current object."""
         out: list[ToolDescriptor] = []
         for name, tool in sorted(self.tools.items()):
             version = getattr(tool, "version", "0.0.0")
@@ -47,6 +55,7 @@ class ToolRegistry:
         return out
 
     def invoke(self, call: ToolCall, *, seed: int) -> ToolResult:
+        """Invoke the requested operation."""
         tool = self.tools[call.tool_name]
         try:
             result = tool.invoke(arguments=call.arguments, seed=seed)
@@ -63,9 +72,11 @@ class FrozenToolRegistry:
     descriptors: list[ToolDescriptor]
 
     def describe(self) -> list[ToolDescriptor]:
+        """Describe the current object."""
         return list(self.descriptors)
 
     def invoke(self, call: ToolCall, *, seed: int) -> ToolResult:  # noqa: ARG002
+        """Invoke the requested operation."""
         try:
             return self.recorded[call.id]
         except KeyError as e:
@@ -74,14 +85,17 @@ class FrozenToolRegistry:
 
 @dataclass(frozen=True)
 class FakeTool:
+    """Represents fake tool."""
     name: str
     version: str = "0.0.0"
 
     @property
     def config_fingerprint(self) -> str:
+        """Handle config fingerprint."""
         return stable_id("toolcfg", {"name": self.name})
 
     def invoke(self, *, arguments: dict[str, JsonValue], seed: int) -> JsonValue:
+        """Invoke the requested operation."""
         if self.name == "retrieve":
             q = str(arguments.get("query", ""))
             raw_top_k = arguments.get("top_k", 3)
@@ -108,6 +122,7 @@ class FakeTool:
 
 @dataclass(frozen=True)
 class _ProvenancePaths:
+    """Represents provenance paths."""
     root: Path
     corpus_path: Path
     index_path: Path
@@ -144,11 +159,13 @@ class BM25Retriever:
     _docs = None
 
     def __post_init__(self) -> None:
+        """Finalize initialization after dataclass construction."""
         if not self.corpus_path.exists():
             raise FileNotFoundError(self.corpus_path)
 
     @property
     def _corpus_sha256(self) -> str:
+        """Handle corpus sha256."""
         if self._corpus_sha is None:
             # Always hash the pinned snapshot if artifacts_dir is set.
             corpus_src = self._pin_corpus() if self.artifacts_dir else self.corpus_path
@@ -157,6 +174,7 @@ class BM25Retriever:
 
     @property
     def config_fingerprint(self) -> str:
+        """Handle config fingerprint."""
         return stable_id(
             "toolcfg",
             {
@@ -177,6 +195,7 @@ class BM25Retriever:
         )
 
     def _pin_corpus(self) -> Path:
+        """Handle pin corpus."""
         if self.artifacts_dir is None:
             return self.corpus_path
         paths = _provenance_paths(self.artifacts_dir)
@@ -186,6 +205,7 @@ class BM25Retriever:
         return paths.corpus_path
 
     def _load_index(self) -> None:
+        """Load index."""
         pinned_corpus = self._pin_corpus()
         index_path = _index_path(self.artifacts_dir, self.corpus_path)
         idx, corpus_sha, idx_sha = build_or_load_index(
@@ -203,6 +223,7 @@ class BM25Retriever:
         self._docs = tuple(load_corpus_jsonl(pinned_corpus))
 
     def invoke(self, *, arguments: dict[str, JsonValue], seed: int) -> JsonValue:  # noqa: ARG002
+        """Invoke the requested operation."""
         q = str(arguments.get("query", ""))
         raw_top_k = arguments.get("top_k", 3)
         top_k = int(raw_top_k) if isinstance(raw_top_k, (int, float, str)) else 3
@@ -219,6 +240,7 @@ class BM25Retriever:
         return {"evidences": cast(JsonValue, evidences), "provenance": provenance}
 
     def _require_loaded_index(self) -> tuple[ChunkedBM25Index, tuple[CorpusDoc, ...]]:
+        """Require loaded index."""
         if self._index is None:
             self._load_index()
         if self._index is None or self._docs is None:
@@ -228,6 +250,7 @@ class BM25Retriever:
     def _build_retrieval_provenance(
         self, index: ChunkedBM25Index
     ) -> dict[str, JsonValue]:
+        """Build retrieval provenance."""
         provenance: dict[str, JsonValue] = {
             "schema_version": BM25_SCHEMA_VERSION,
             "corpus_sha256": index.corpus_sha256,
@@ -273,6 +296,7 @@ class BM25Retriever:
         return provenance
 
     def _persist_retrieval_provenance(self, provenance: dict[str, JsonValue]) -> None:
+        """Handle persist retrieval provenance."""
         if self.artifacts_dir is None:
             return
 
@@ -291,6 +315,7 @@ def _build_retrieved_evidences(
     ranked: list[tuple[Chunk, float]],
     doc_meta: dict[str, CorpusDoc],
 ) -> list[dict[str, JsonValue]]:
+    """Build retrieved evidences."""
     evidences: list[dict[str, JsonValue]] = []
     for chunk, score in ranked:
         meta = doc_meta.get(chunk.doc_id)
@@ -324,6 +349,7 @@ def _config_sha256(
     lazy_index: bool,
     corpus_max_bytes: int | None,
 ) -> str:
+    """Handle config sha256."""
     payload = {
         "chunk_chars": chunk_chars,
         "overlap_chars": overlap_chars,
@@ -340,6 +366,7 @@ def _config_sha256(
 
 
 def _provenance_paths(artifacts_dir: Path) -> _ProvenancePaths:
+    """Handle provenance paths."""
     root = artifacts_dir / "provenance"
     return _ProvenancePaths(
         root=root,
@@ -351,6 +378,7 @@ def _provenance_paths(artifacts_dir: Path) -> _ProvenancePaths:
 
 
 def _index_path(artifacts_dir: Path | None, corpus_path: Path) -> Path:
+    """Handle index path."""
     if artifacts_dir is None:
         return corpus_path.with_suffix(".bm25_index.json")
     return _provenance_paths(artifacts_dir).index_path
@@ -362,6 +390,7 @@ def _write_chunk_manifest(
     chunks_path: Path,
     chunks: tuple[Chunk, ...],
 ) -> str:
+    """Write chunk manifest."""
     chunks_path.parent.mkdir(parents=True, exist_ok=True)
     if not chunks_path.exists():
         with chunks_path.open("w", encoding="utf-8", newline="") as fh:

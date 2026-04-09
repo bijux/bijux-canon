@@ -15,6 +15,7 @@ import hashlib
 
 @dataclass(frozen=True)
 class Chunk:
+    """Represents chunk."""
     doc_id: str
     doc_sha256: str
     chunk_id: str
@@ -26,6 +27,7 @@ class Chunk:
 
 
 def _char_to_byte_offsets(text: str) -> list[int]:
+    """Handle char to byte offsets."""
     offsets = [0]
     total = 0
     for ch in text:

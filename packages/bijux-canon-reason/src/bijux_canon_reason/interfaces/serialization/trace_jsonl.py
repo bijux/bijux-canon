@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
+"""Trace JSONL helpers."""
+
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -20,6 +22,7 @@ _TRACE_EVENT_RECORD = "trace_event"
 
 
 def _atomic_write(path: Path, data: bytes) -> None:
+    """Handle atomic write."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(
         dir=path.parent, prefix=path.name, suffix=".tmp", delete=False
@@ -32,6 +35,7 @@ def _atomic_write(path: Path, data: bytes) -> None:
 
 
 def write_trace_jsonl(trace: Trace, path: Path) -> None:
+    """Write trace JSONL."""
     path.parent.mkdir(parents=True, exist_ok=True)
 
     header = {
@@ -59,6 +63,7 @@ def write_trace_jsonl(trace: Trace, path: Path) -> None:
 
 
 def _iter_lines(path: Path) -> Iterator[str]:
+    """Handle iter lines."""
     with path.open("r", encoding="utf-8") as f:
         for line in f:
             # Tolerate Windows CRLF while keeping stable canonical content.
@@ -69,6 +74,7 @@ def _iter_lines(path: Path) -> Iterator[str]:
 
 
 def read_trace_jsonl(path: Path) -> Trace:
+    """Read trace JSONL."""
     import json
 
     it = _iter_lines(path)
@@ -104,4 +110,5 @@ def read_trace_jsonl(path: Path) -> Trace:
 
 
 def fingerprint_trace_file(path: Path) -> str:
+    """Fingerprint trace file."""
     return fingerprint_bytes(path.read_bytes())
