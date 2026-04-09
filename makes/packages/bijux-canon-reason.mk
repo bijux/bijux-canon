@@ -1,5 +1,5 @@
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package-profile.mk
-include $(ROOT_MAKE_DIR)/bijux-py/package-api-python.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package/profile.mk
+include $(ROOT_MAKE_DIR)/bijux-py/package/api-python.mk
 
 PACKAGE_IMPORT_NAME := bijux_canon_reason
 ENABLE_MYPY := 0
@@ -15,4 +15,4 @@ TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_reason/core) $(abspath src/bi
 TEST_MAIN_ARGS := --maxfail=1
 ENABLE_BENCH := 0
 
-include $(ROOT_MAKE_DIR)/bijux-py/package-gates.mk
+include $(ROOT_MAKE_DIR)/bijux-py/package/gates.mk

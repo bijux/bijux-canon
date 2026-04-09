@@ -4,4 +4,4 @@ PUBLISH_UPLOAD_ENABLED    ?= 1
 PUBLISH_ALLOW_PRERELEASE  ?= 0
 PUBLISH_ALLOW_LOCAL_VERSION ?= 0
 
-include $(ROOT_MAKE_DIR)/bijux-py/repository-publish.mk
+include $(ROOT_MAKE_DIR)/bijux-py/repository/publish.mk

@@ -24,4 +24,4 @@ COMPAT_PACKAGE_RECORDS := \
 
 PACKAGE_RECORDS := $(PRIMARY_PACKAGE_RECORDS) $(COMPAT_PACKAGE_RECORDS)
 
-include $(ROOT_MAKEFILE_DIR)/bijux-py/package-catalog.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/package/catalog.mk

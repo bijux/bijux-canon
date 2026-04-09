@@ -9,4 +9,4 @@ SECURITY_PIP_AUDIT_TEXT_COMMAND ?= "$(VENV_PYTHON)" -m bijux_canon_dev.security.
 SBOM_VERSION_RESOLVER ?= -m bijux_canon_dev.release.version_resolver
 SBOM_REQUIREMENTS_WRITER ?= -m bijux_canon_dev.sbom.requirements_writer
 
-include $(ROOT_MAKE_DIR)/bijux-py/repository-env.mk
+include $(ROOT_MAKE_DIR)/bijux-py/repository/env.mk

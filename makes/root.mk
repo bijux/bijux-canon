@@ -1,6 +1,6 @@
 ROOT_MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
-include $(ROOT_MAKEFILE_DIR)/bijux-py/root-env.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/root/env.mk
 include $(ROOT_MAKEFILE_DIR)/env.mk
 include $(ROOT_MAKEFILE_DIR)/packages.mk
 
@@ -9,16 +9,16 @@ ROOT_CHECK_VENV := $(ROOT_ARTIFACTS_DIR)/check-venv
 ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
 UV_SYNC := UV_PROJECT_ENVIRONMENT="$(ROOT_CHECK_VENV)" $(UV) sync --frozen --group dev --python "$(PYTHON)"
 
-include $(ROOT_MAKEFILE_DIR)/bijux-py/repository-root.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
-include $(ROOT_MAKEFILE_DIR)/bijux-py/root-package-dispatch.mk
-include $(ROOT_MAKEFILE_DIR)/bijux-py/root-docs.mk
-include $(ROOT_MAKEFILE_DIR)/bijux-py/repository-config-layout.mk
-include $(ROOT_MAKEFILE_DIR)/bijux-py/repository-make-layout.mk
-include $(ROOT_MAKEFILE_DIR)/bijux-py/shared-bijux-py.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/root/package-dispatch.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/root/docs.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/config-layout.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/make-layout.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/bijux.mk
 
 HELP_WIDTH := 26
-include $(ROOT_MAKEFILE_DIR)/bijux-py/help.mk
+include $(ROOT_MAKEFILE_DIR)/bijux-py/ci/help.mk
 
 ##@ Repository
 help: ## Show generated repository commands from included make modules

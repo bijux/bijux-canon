@@ -1,4 +1,4 @@
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package-profile.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package/profile.mk
 
 LINT_DIRS ?= src hatch_build.py
 LINT_TARGETS ?= src hatch_build.py
@@ -32,12 +32,12 @@ PACKAGE_INSTALL_TARGETS ?= \
   lint-artifacts quality security-bandit security-audit security-deps \
   build publish publish-test release-dry
 
-include $(ROOT_MAKE_DIR)/bijux-py/lint.mk
-include $(ROOT_MAKE_DIR)/bijux-py/quality.mk
-include $(ROOT_MAKE_DIR)/bijux-py/security.mk
-include $(ROOT_MAKE_DIR)/bijux-py/build.mk
+include $(ROOT_MAKE_DIR)/bijux-py/ci/lint.mk
+include $(ROOT_MAKE_DIR)/bijux-py/ci/quality.mk
+include $(ROOT_MAKE_DIR)/bijux-py/ci/security.mk
+include $(ROOT_MAKE_DIR)/bijux-py/ci/build.mk
 include $(ROOT_MAKE_DIR)/publish.mk
-include $(ROOT_MAKE_DIR)/bijux-py/package-lifecycle.mk
+include $(ROOT_MAKE_DIR)/bijux-py/package/lifecycle.mk
 
 ##@ Core
 clean: ## Remove virtualenv plus compatibility package artifacts

@@ -1,5 +1,5 @@
-include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package-profile.mk
-include $(ROOT_MAKE_DIR)/bijux-py/package-api-python.mk
+include $(abspath $(dir $(lastword $(MAKEFILE_LIST))))/../bijux-py/package/profile.mk
+include $(ROOT_MAKE_DIR)/bijux-py/package/api-python.mk
 
 PACKAGE_IMPORT_NAME := bijux_canon_agent
 MYPY_CONFIG          := $(MONOREPO_ROOT)/configs/mypy.ini
@@ -38,7 +38,7 @@ TEST_PYCACHE_PREFIX  = $(TEST_ARTIFACTS_DIR)/pycache
 TEST_RESET_PYCACHE   := 1
 TEST_PRE_TARGETS     := bootstrap
 
-include $(ROOT_MAKE_DIR)/bijux-py/package-gates.mk
+include $(ROOT_MAKE_DIR)/bijux-py/package/gates.mk
 
 ci-fast: lint test mypy-core
 .PHONY: ci-fast
