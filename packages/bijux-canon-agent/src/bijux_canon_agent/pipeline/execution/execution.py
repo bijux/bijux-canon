@@ -216,10 +216,7 @@ class PipelineExecutionMixin(PipelineIOMixin):
     async def finalize_or_abort(
         self, convergence: ConvergenceApplied
     ) -> PipelineExecutionResult:
-        return cast(
-            PipelineExecutionResult,
-            await finalize_execution_result(cast(Any, self), cast(Any, convergence)),
-        )
+        return await finalize_execution_result(cast(Any, self), cast(Any, convergence))
 
     def _generate_cache_key(self, context: dict[str, Any]) -> str:
         context_str = str(

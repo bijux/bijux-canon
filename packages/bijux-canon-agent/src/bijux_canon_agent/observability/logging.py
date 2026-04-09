@@ -25,6 +25,14 @@ from bijux_canon_agent.observability.log_metrics import LoggerTelemetry, MetricT
 
 install_custom_log_record_factory()
 
+__all__ = [
+    "CustomLogger",
+    "LoggerConfig",
+    "LoggerManager",
+    "LoggerSettings",
+    "MetricType",
+]
+
 
 class CustomLogger:
     """Custom logger wrapper exposing context and async_log methods."""
