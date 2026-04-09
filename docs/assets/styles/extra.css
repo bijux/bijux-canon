@@ -238,7 +238,21 @@ button {
 }
 
 .bijux-tabs__link--hub {
-  font-size: 0.74rem;
+  font-size: 0.7rem;
+  padding: 0.4rem 0.72rem;
+}
+
+.bijux-tabs__list--hub {
+  gap: 0.32rem 0.42rem;
+}
+
+.bijux-header-tools .md-source {
+  min-width: 0;
+}
+
+.bijux-header-tools .md-source__repository {
+  font-size: 0.72rem;
+  line-height: 1.1;
 }
 
 .bijux-hub-strip .bijux-tabs__link:hover,
@@ -372,6 +386,17 @@ button {
 @media screen and (min-width: 110em) {
   :root {
     --bijux-shell-width: var(--bijux-shell-width-ultra);
+  }
+}
+
+@media screen and (max-width: 100em) {
+  .bijux-header-tools .md-source__repository,
+  .bijux-header-tools .md-source__facts {
+    display: none;
+  }
+
+  .bijux-header-tools .md-source {
+    padding-inline: 0.8rem;
   }
 }
 
