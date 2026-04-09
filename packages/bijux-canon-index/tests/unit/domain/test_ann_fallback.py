@@ -2,6 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
@@ -23,7 +26,7 @@ from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 class FallbackAnn(AnnExecutionRequestRunner):
-    def __init__(self, stores):
+    def __init__(self, stores: Any) -> None:
         self.stores = stores
         self.force_fallback = True
 
@@ -35,14 +38,23 @@ class FallbackAnn(AnnExecutionRequestRunner):
     def reproducibility_bounds(self) -> str:
         return "fallback"
 
-    def ensure_contract(self, artifact):  # type: ignore[override]
+    def ensure_contract(self, artifact: ExecutionArtifact) -> None:
         super().ensure_contract(artifact)
 
-    def approximate_request(self, artifact, request):  # type: ignore[override]
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: ExecutionRequest
+    ) -> Iterable[Any]:
+        del artifact, request
         # should be bypassed due to force_fallback
         return ()
 
-    def approximation_report(self, artifact, request, results):
+    def approximation_report(
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Any],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=1.0,
             rank_displacement=0.0,
@@ -55,11 +67,13 @@ class FallbackAnn(AnnExecutionRequestRunner):
             truncation_ratio=1.0,
         )
 
-    def deterministic_fallback(self, artifact_id: str, request: ExecutionRequest):
-        return self.stores.vectors.query(artifact_id, request)
+    def deterministic_fallback(
+        self, artifact_id: str, request: ExecutionRequest
+    ) -> Iterable[Any]:
+        return tuple(self.stores.vectors.query(artifact_id, request))
 
 
-def test_ann_fallback_matches_exact():
+def test_ann_fallback_matches_exact() -> None:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="d", text="hello")
@@ -80,7 +94,7 @@ def test_ann_fallback_matches_exact():
         backend.stores.vectors.put_vector(tx, vec)
         backend.stores.ledger.put_artifact(tx, art)
     ann = FallbackAnn(backend.stores)
-    backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
+    backend = cast(Any, backend)._replace(ann=ann)
     request = ExecutionRequest(
         request_id="req",
         text=None,
@@ -93,12 +107,9 @@ def test_ann_fallback_matches_exact():
             max_latency_ms=10, max_memory_mb=10, max_error=1.0
         ),
     )
-    session = start_execution_session(
-        backend.stores.ledger.get_artifact("art"),
-        request,
-        backend.stores,
-        ann_runner=ann,
-    )
+    artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
+    session = start_execution_session(artifact, request, backend.stores, ann_runner=ann)
     exec_res, res = execute_request(session, backend.stores, ann_runner=ann)
     assert exec_res.randomness_sources
     exact_results = tuple(backend.stores.vectors.query("art", request))

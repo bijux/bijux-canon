@@ -13,7 +13,9 @@ import sys
 import pytest
 
 
-def test_cli_denies_mutations_when_authz_disabled(tmp_path: Path, monkeypatch):
+def test_cli_denies_mutations_when_authz_disabled(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     repo_root = Path(__file__).resolve().parents[3]
     env = os.environ.copy()
     env["BIJUX_CANON_INDEX_STATE_PATH"] = str(tmp_path / "authz.sqlite")

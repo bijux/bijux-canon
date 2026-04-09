@@ -2,6 +2,7 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
 
 from bijux_canon_index.application.engine import VectorExecutionEngine
@@ -30,7 +31,12 @@ pytest.importorskip("faiss")
 class StaticTestEmbeddingProvider(EmbeddingProvider):
     name = "static_test"
 
-    def embed(self, texts: list[str], model: str, options=None) -> EmbeddingBatch:
+    def embed(
+        self,
+        texts: list[str],
+        model: str,
+        options: Mapping[str, str] | None = None,
+    ) -> EmbeddingBatch:
         metadata = EmbeddingMetadata(
             provider=self.name,
             provider_version="tests",
@@ -44,7 +50,7 @@ class StaticTestEmbeddingProvider(EmbeddingProvider):
             config_hash=embedding_config_hash(
                 self.name,
                 model,
-                options or {},
+                dict(options or {}),
                 provider_version="tests",
             ),
         )

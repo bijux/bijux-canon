@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Any
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BackendDivergenceError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -17,7 +19,9 @@ from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 import pytest
 
 
-def _seed(backend, suffix: str, values=(0.0,)) -> ExecutionArtifact:
+def _seed(
+    backend: Any, suffix: str, values: tuple[float, ...] = (0.0,)
+) -> ExecutionArtifact:
     with backend.tx_factory() as tx:
         doc = Document(document_id=f"d{suffix}", text="hi")
         chunk = Chunk(
@@ -44,7 +48,7 @@ def _seed(backend, suffix: str, values=(0.0,)) -> ExecutionArtifact:
     return art
 
 
-def test_drift_detection_flags_divergence():
+def test_drift_detection_flags_divergence() -> None:
     a = memory_backend()
     b = memory_backend()
     _seed(a, "a", values=(0.0,))

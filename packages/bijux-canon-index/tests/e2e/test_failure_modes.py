@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
     InvariantError,
@@ -28,7 +30,7 @@ import pytest
 from typer.testing import CliRunner
 
 
-def test_cli_help_snapshot():
+def test_cli_help_snapshot() -> None:
     runner = CliRunner()
     result = runner.invoke(cli_app.app, ["--help"], prog_name="bijux")
     assert result.exit_code == 0
@@ -36,7 +38,7 @@ def test_cli_help_snapshot():
     assert "execute" in result.output
 
 
-def test_invariant_violation_replay_fail():
+def test_invariant_violation_replay_fail() -> None:
     backend = memory_backend()
     artifact = ExecutionArtifact(
         artifact_id="art",
@@ -62,9 +64,9 @@ def test_invariant_violation_replay_fail():
         replay(request, artifact, backend.stores)
 
 
-def test_backend_drift_detection_failure():
+def test_backend_drift_detection_failure() -> None:
     backend = memory_backend()
-    backend = backend._replace(ann=None)  # type: ignore[attr-defined]
+    backend = cast(Any, backend)._replace(ann=None)
     artifact = ExecutionArtifact(
         artifact_id="art",
         corpus_fingerprint="c",
@@ -98,8 +100,8 @@ def test_backend_drift_detection_failure():
         )
 
 
-def test_nd_failure_propagates_with_retry_and_metadata():
-    backend = memory_backend()._replace(ann=None)  # type: ignore[attr-defined]
+def test_nd_failure_propagates_with_retry_and_metadata() -> None:
+    backend = cast(Any, memory_backend())._replace(ann=None)
     artifact = ExecutionArtifact(
         artifact_id="art",
         corpus_fingerprint="corp",
@@ -112,7 +114,7 @@ def test_nd_failure_propagates_with_retry_and_metadata():
         backend.stores.ledger.put_artifact(tx, artifact)
     attempts = {"n": 0}
 
-    def attempt():
+    def attempt() -> None:
         attempts["n"] += 1
         req = ExecutionRequest(
             request_id="r",

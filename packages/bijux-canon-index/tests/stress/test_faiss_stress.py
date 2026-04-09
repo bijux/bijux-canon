@@ -2,13 +2,16 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any, cast
+
 import pytest
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("faiss")
 
 
-def test_faiss_large_ingest_and_query(tmp_path) -> None:
+def test_faiss_large_ingest_and_query(tmp_path: Path) -> None:
     from bijux_canon_index.infra.adapters.faiss.adapter import FaissVectorStoreAdapter
 
     dimension = 16
@@ -25,5 +28,6 @@ def test_faiss_large_ingest_and_query(tmp_path) -> None:
         results = adapter.query(query.tolist(), k=5, mode="deterministic")
         assert results
 
-    status = adapter.status()
-    assert status["index"]["vector_count"] >= vector_count
+    status = cast(dict[str, Any], adapter.status())
+    index_status = cast(dict[str, int], status["index"])
+    assert index_status["vector_count"] >= vector_count

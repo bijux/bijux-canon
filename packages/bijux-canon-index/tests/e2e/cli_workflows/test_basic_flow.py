@@ -10,16 +10,18 @@ from pathlib import Path
 import subprocess
 import sys
 
+import pytest
+
 CLI = [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app"]
 
 
-def run_cmd(args):
+def run_cmd(args: list[str]) -> str:
     repo_root = Path(__file__).resolve().parents[3]
     env = {**os.environ, "PYTHONPATH": str(repo_root / "src")}
     return subprocess.check_output(CLI + args, text=True, env=env).strip()
 
 
-def test_basic_cli_flow(tmp_path: Path, monkeypatch):
+def test_basic_cli_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     vec = json.dumps([0.0, 0.0])
     out = run_cmd(

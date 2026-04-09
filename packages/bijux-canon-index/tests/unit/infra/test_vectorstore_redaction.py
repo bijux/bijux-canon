@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Any, cast
+
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
@@ -61,6 +63,8 @@ def test_provenance_does_not_leak_vector_store_secrets() -> None:
         )
     )
     provenance = explain_result(obj, engine.stores)
-    uri = provenance["vector_store_uri_redacted"]
+    uri = cast(
+        str | None, cast(dict[str, Any], provenance)["vector_store_uri_redacted"]
+    )
     assert uri is not None
     assert "secret" not in uri

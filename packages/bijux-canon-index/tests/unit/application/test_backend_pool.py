@@ -6,9 +6,12 @@ from pathlib import Path
 import threading
 
 from bijux_canon_index.application.orchestrator import Orchestrator
+import pytest
 
 
-def test_backend_pool_reuses_sqlite_backend(tmp_path: Path, monkeypatch) -> None:
+def test_backend_pool_reuses_sqlite_backend(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.delenv("BIJUX_CANON_INDEX_BACKEND", raising=False)
     state_path = tmp_path / "session.sqlite"
     orchestrator_a = Orchestrator(state_path=state_path)
@@ -16,7 +19,9 @@ def test_backend_pool_reuses_sqlite_backend(tmp_path: Path, monkeypatch) -> None
     assert orchestrator_a.backend is orchestrator_b.backend
 
 
-def test_backend_pool_separates_state_paths(tmp_path: Path, monkeypatch) -> None:
+def test_backend_pool_separates_state_paths(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.delenv("BIJUX_CANON_INDEX_BACKEND", raising=False)
     state_a = tmp_path / "a.sqlite"
     state_b = tmp_path / "b.sqlite"
@@ -25,7 +30,9 @@ def test_backend_pool_separates_state_paths(tmp_path: Path, monkeypatch) -> None
     assert orchestrator_a.backend is not orchestrator_b.backend
 
 
-def test_backend_pool_is_thread_safe(tmp_path: Path, monkeypatch) -> None:
+def test_backend_pool_is_thread_safe(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.delenv("BIJUX_CANON_INDEX_BACKEND", raising=False)
     state_path = tmp_path / "session.sqlite"
     backends: list[object] = []

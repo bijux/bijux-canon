@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from bijux_canon_index.infra.metrics import InMemoryMetrics, timed
+from bijux_canon_index.infra.metrics import InMemoryMetrics, MetricsSnapshot, timed
 
 
 @dataclass
@@ -18,8 +18,11 @@ class RecordingMetrics:
     def observe_ms(self, name: str, value_ms: float) -> None:
         self.timers_ms.setdefault(name, []).append(value_ms)
 
-    def snapshot(self) -> object:
-        return {"counters": self.counters, "timers_ms": self.timers_ms}
+    def snapshot(self) -> MetricsSnapshot:
+        return MetricsSnapshot(
+            counters=dict(self.counters),
+            timers_ms={k: list(v) for k, v in self.timers_ms.items()},
+        )
 
 
 def test_in_memory_metrics_snapshot_is_defensive() -> None:

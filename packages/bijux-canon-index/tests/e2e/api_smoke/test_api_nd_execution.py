@@ -8,9 +8,10 @@ from pathlib import Path
 
 from bijux_canon_index.api.v1 import build_app
 from fastapi.testclient import TestClient
+import pytest
 
 
-def test_api_nd_execution_path(tmp_path: Path, monkeypatch) -> None:
+def test_api_nd_execution_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     db_path = tmp_path / "api.sqlite"
     monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", str(db_path))
     monkeypatch.setenv("BIJUX_CANON_INDEX_BACKEND", "hnsw")

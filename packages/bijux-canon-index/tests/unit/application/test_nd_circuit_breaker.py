@@ -2,12 +2,22 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any, cast
+
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BackendUnavailableError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
-from bijux_canon_index.core.types import Chunk, Document, ExecutionArtifact, Vector
+from bijux_canon_index.core.execution_result import ApproximationReport
+from bijux_canon_index.core.types import (
+    Chunk,
+    Document,
+    ExecutionArtifact,
+    Result,
+    Vector,
+)
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 from bijux_canon_index.interfaces.errors import refusal_payload
@@ -20,7 +30,7 @@ import pytest
 
 
 class FailingAnn(AnnExecutionRequestRunner):
-    def __init__(self, stores):
+    def __init__(self, stores: Any) -> None:
         self.stores = stores
 
     @property
@@ -31,14 +41,20 @@ class FailingAnn(AnnExecutionRequestRunner):
     def reproducibility_bounds(self) -> str:
         return "unreliable"
 
-    def approximate_request(self, artifact, request):  # type: ignore[override]
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: object
+    ) -> Iterable[Result]:
+        del artifact, request
         raise BackendUnavailableError(message="Injected failure for circuit breaker")
 
-    def approximation_report(self, artifact, request, results):  # type: ignore[override]
+    def approximation_report(
+        self, artifact: ExecutionArtifact, request: object, results: Iterable[object]
+    ) -> ApproximationReport:
+        del artifact, request, results
         raise BackendUnavailableError(message="Injected failure for circuit breaker")
 
 
-def test_nd_circuit_breaker_refuses_after_failures():
+def test_nd_circuit_breaker_refuses_after_failures() -> None:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="d", text="hello")
@@ -59,11 +75,11 @@ def test_nd_circuit_breaker_refuses_after_failures():
         backend.stores.vectors.put_vector(tx, vec)
         backend.stores.ledger.put_artifact(tx, art)
     ann = FailingAnn(backend.stores)
-    backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
+    backend = cast(Any, backend)._replace(ann=ann)
     engine = VectorExecutionEngine(backend=backend)
-    engine.backend = backend  # type: ignore[assignment]
-    engine._nd_guard.max_failures = 1  # type: ignore[attr-defined]
-    engine._nd_guard.cooldown_seconds = 60  # type: ignore[attr-defined]
+    engine.backend = backend
+    engine._nd_guard.max_failures = 1
+    engine._nd_guard.cooldown_seconds = 60
 
     req = ExecutionRequestPayload(
         request_text=None,

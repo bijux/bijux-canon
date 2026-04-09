@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Any
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.types import (
@@ -14,7 +16,7 @@ from bijux_canon_index.core.types import (
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def _run_pipeline(prefix: str):
+def _run_pipeline(prefix: str) -> tuple[Any, list[Any], ExecutionArtifact]:
     backend = memory_backend()
     doc = Document(document_id=f"{prefix}-doc", text="hello")
     chunk = Chunk(
@@ -58,7 +60,7 @@ def _run_pipeline(prefix: str):
     return backend, results, artifact
 
 
-def test_cross_run_state_is_isolated():
+def test_cross_run_state_is_isolated() -> None:
     backend_a, results_a, art_a = _run_pipeline("a")
     backend_b, results_b, art_b = _run_pipeline("b")
 
@@ -71,5 +73,5 @@ def test_cross_run_state_is_isolated():
     assert (
         backend_a.stores.vectors._state.audit_log
         is not backend_b.stores.vectors._state.audit_log
-    )  # type: ignore[attr-defined]
+    )
     assert results_a[0].vector_id != results_b[0].vector_id

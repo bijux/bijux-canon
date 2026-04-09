@@ -9,6 +9,7 @@ from bijux_canon_index.infra.embeddings.cache import (
     SQLiteEmbeddingCache,
     build_cache,
 )
+import pytest
 
 
 def test_sqlite_embedding_cache_round_trip(tmp_path: Path) -> None:
@@ -20,7 +21,9 @@ def test_sqlite_embedding_cache_round_trip(tmp_path: Path) -> None:
     assert cache.get("doc-1") == entry
 
 
-def test_build_cache_uses_workspace_default_path(tmp_path: Path, monkeypatch) -> None:
+def test_build_cache_uses_workspace_default_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.chdir(tmp_path)
 
     cache = build_cache("sqlite")

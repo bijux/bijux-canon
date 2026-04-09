@@ -14,10 +14,11 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExecutionRequestPayload,
     IngestRequest,
 )
+import pytest
 
 
 def test_run_metadata_includes_determinism_fingerprints(
-    tmp_path: Path, monkeypatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("BIJUX_CANON_INDEX_BACKEND", "memory")
     monkeypatch.setenv("BIJUX_CANON_INDEX_RUN_DIR", str(tmp_path))

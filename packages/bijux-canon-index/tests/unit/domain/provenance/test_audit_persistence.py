@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 from bijux_canon_index.contracts.tx import Tx
 from bijux_canon_index.domain.provenance.audit import AuditRecord, chain_hash
@@ -48,14 +49,16 @@ def _deserialize(path: Path) -> list[AuditRecord]:
     ]
 
 
-def test_audit_chain_persists_and_validates(tmp_path: Path):
+def test_audit_chain_persists_and_validates(tmp_path: Path) -> None:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         _touch(tx)
     with backend.tx_factory() as tx:
         _touch(tx)
 
-    audit_log = backend.stores.vectors._state.audit_log  # type: ignore[attr-defined]
+    audit_log = cast(
+        list[AuditRecord], cast(Any, backend.stores.vectors)._state.audit_log
+    )
     dump_path = tmp_path / "audit.json"
     _serialize(audit_log, dump_path)
 

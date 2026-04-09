@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
     InvariantError,
@@ -33,10 +36,19 @@ class NoAnn(AnnExecutionRequestRunner):
     randomness_sources: tuple[str, ...] = ()
     reproducibility_bounds: str = "none"
 
-    def approximate_request(self, artifact, request):
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: ExecutionRequest
+    ) -> Iterable[Any]:
+        del artifact, request
         return ()
 
-    def approximation_report(self, artifact, request, results):
+    def approximation_report(
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Any],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=0.0,
             rank_displacement=0.0,
@@ -50,7 +62,7 @@ class NoAnn(AnnExecutionRequestRunner):
         )
 
 
-def _artifact(contract: ExecutionContract) -> tuple[ExecutionArtifact, any]:
+def _artifact(contract: ExecutionContract) -> tuple[ExecutionArtifact, Any]:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="d", text="t")
@@ -71,10 +83,12 @@ def _artifact(contract: ExecutionContract) -> tuple[ExecutionArtifact, any]:
                 execution_contract=contract,
             ),
         )
-    return backend.stores.ledger.get_artifact("a"), backend
+    artifact = backend.stores.ledger.get_artifact("a")
+    assert artifact is not None
+    return artifact, backend
 
 
-def test_nd_without_ann_runner_fails_loudly():
+def test_nd_without_ann_runner_fails_loudly() -> None:
     artifact, backend = _artifact(ExecutionContract.NON_DETERMINISTIC)
     req = ExecutionRequest(
         request_id="r",
@@ -93,7 +107,7 @@ def test_nd_without_ann_runner_fails_loudly():
     assert "ann runner" in str(exc.value)
 
 
-def test_budget_free_ann_probes_refused():
+def test_budget_free_ann_probes_refused() -> None:
     artifact, backend = _artifact(ExecutionContract.NON_DETERMINISTIC)
     req = ExecutionRequest(
         request_id="r",
@@ -112,7 +126,7 @@ def test_budget_free_ann_probes_refused():
     )
 
 
-def test_contract_mismatch_fails():
+def test_contract_mismatch_fails() -> None:
     artifact, backend = _artifact(ExecutionContract.DETERMINISTIC)
     req = ExecutionRequest(
         request_id="r",
@@ -128,7 +142,7 @@ def test_contract_mismatch_fails():
         start_execution_session(artifact, req, backend.stores, ann_runner=NoAnn())
 
 
-def test_replay_without_provenance_raises():
+def test_replay_without_provenance_raises() -> None:
     artifact, backend = _artifact(ExecutionContract.DETERMINISTIC)
     req = ExecutionRequest(
         request_id="r",
@@ -146,7 +160,7 @@ def test_replay_without_provenance_raises():
         replay(req, artifact, backend.stores)
 
 
-def test_adversarial_violation_prioritizes_randomness_requirement():
+def test_adversarial_violation_prioritizes_randomness_requirement() -> None:
     """Multiple contract violations should fail on the first, deterministic check."""
     artifact, backend = _artifact(ExecutionContract.NON_DETERMINISTIC)
     with pytest.raises(InvariantError) as exc:

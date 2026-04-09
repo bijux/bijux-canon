@@ -5,10 +5,13 @@ from __future__ import annotations
 from pathlib import Path
 
 from bijux_canon_index.api.v1.app import build_app
+import pytest
 from starlette.testclient import TestClient
 
 
-def test_list_artifacts_and_runs(tmp_path: Path, monkeypatch) -> None:
+def test_list_artifacts_and_runs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setenv("BIJUX_CANON_INDEX_STATE_PATH", str(tmp_path / "api.sqlite"))
     monkeypatch.setenv("BIJUX_CANON_INDEX_RUN_DIR", str(tmp_path / "runs"))
     app = build_app()

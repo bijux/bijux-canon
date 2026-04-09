@@ -2,6 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError, ValidationError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -29,7 +32,7 @@ import pytest
 
 
 class FlappingAnn(AnnExecutionRequestRunner):
-    def __init__(self, stores):
+    def __init__(self, stores: Any) -> None:
         self.stores = stores
         self.flip = False
 
@@ -41,7 +44,9 @@ class FlappingAnn(AnnExecutionRequestRunner):
     def reproducibility_bounds(self) -> str:
         return "top-k ordering may flip across runs"
 
-    def approximate_request(self, artifact: ExecutionArtifact, query: ExecutionRequest):
+    def approximate_request(
+        self, artifact: ExecutionArtifact, query: ExecutionRequest
+    ) -> Iterable[Result]:
         vectors = list(self.stores.vectors.list_vectors())
         results: list[Result] = []
         for vec in vectors:
@@ -77,8 +82,12 @@ class FlappingAnn(AnnExecutionRequestRunner):
         )
 
     def approximation_report(
-        self, artifact: ExecutionArtifact, request: ExecutionRequest, results
-    ):
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Result],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=1.0,
             rank_displacement=0.0,
@@ -94,7 +103,7 @@ class FlappingAnn(AnnExecutionRequestRunner):
 
 def _seed_backend(
     contract: ExecutionContract, ann: AnnExecutionRequestRunner | None = None
-):
+) -> Any:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="doc", text="hi")
@@ -138,7 +147,7 @@ def _seed_backend(
             ),
         )
     if ann:
-        backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
+        backend = cast(Any, backend)._replace(ann=ann)
     return backend
 
 
@@ -160,14 +169,16 @@ def _request(contract: ExecutionContract) -> ExecutionRequest:
     )
 
 
-def test_contract_drives_distinct_plans():
+def test_contract_drives_distinct_plans() -> None:
     backend_det = _seed_backend(ExecutionContract.DETERMINISTIC)
     artifact_det = backend_det.stores.ledger.get_artifact("art")
+    assert artifact_det is not None
     backend_nd = _seed_backend(
         ExecutionContract.NON_DETERMINISTIC, ann=FlappingAnn(None)
     )
-    backend_nd.ann.stores = backend_nd.stores  # type: ignore[attr-defined]
+    backend_nd.ann.stores = backend_nd.stores
     artifact_nd = backend_nd.stores.ledger.get_artifact("art")
+    assert artifact_nd is not None
     req_det = _request(ExecutionContract.DETERMINISTIC)
     req_nd = _request(ExecutionContract.NON_DETERMINISTIC)
     session_det = start_execution_session(
@@ -185,9 +196,10 @@ def test_contract_drives_distinct_plans():
     assert exec_det.plan.steps != exec_nd.plan.steps
 
 
-def test_deterministic_replay_is_identical():
+def test_deterministic_replay_is_identical() -> None:
     backend = _seed_backend(ExecutionContract.DETERMINISTIC)
     artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     request = _request(ExecutionContract.DETERMINISTIC)
 
     session = start_execution_session(artifact, request, backend.stores)
@@ -206,11 +218,12 @@ def test_deterministic_replay_is_identical():
     assert outcome.details == {}
 
 
-def test_non_deterministic_replay_declares_divergence():
+def test_non_deterministic_replay_declares_divergence() -> None:
     ann = FlappingAnn(None)
     backend = _seed_backend(ExecutionContract.NON_DETERMINISTIC, ann=ann)
     ann.stores = backend.stores  # late bind after backend creation
     artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     request = _request(ExecutionContract.NON_DETERMINISTIC)
 
     session_one = start_execution_session(
@@ -246,11 +259,12 @@ def test_non_deterministic_replay_declares_divergence():
     assert provenance["lossy_dimensions"] == ("ranking",)
 
 
-def test_cross_contract_request_rejected():
+def test_cross_contract_request_rejected() -> None:
     ann = FlappingAnn(None)
     backend = _seed_backend(ExecutionContract.NON_DETERMINISTIC, ann=ann)
     ann.stores = backend.stores  # late bind after backend creation
     artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     deterministic_request = _request(ExecutionContract.DETERMINISTIC)
 
     with pytest.raises((InvariantError, ValidationError)):

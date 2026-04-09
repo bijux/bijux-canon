@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 pytest.importorskip("faiss")
@@ -40,7 +42,7 @@ def _ingest(engine: VectorExecutionEngine) -> None:
     )
 
 
-def test_cross_backend_query_contract(tmp_path) -> None:
+def test_cross_backend_query_contract(tmp_path: Path) -> None:
     memory_engine = VectorExecutionEngine(
         config=ExecutionConfig(vector_store=VectorStoreConfig(backend="memory"))
     )

@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BudgetExceededError, InvariantError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -26,7 +29,7 @@ import pytest
 
 
 class ViolatingAnn(AnnExecutionRequestRunner):
-    def __init__(self):
+    def __init__(self) -> None:
         self.used_fallback = False
 
     @property
@@ -38,16 +41,26 @@ class ViolatingAnn(AnnExecutionRequestRunner):
         return "unbounded"
 
     def deterministic_fallback(
-        self, artifact_id, request
-    ):  # pragma: no cover - specific path
+        self, artifact_id: str, request: ExecutionRequest
+    ) -> Iterable[Any]:  # pragma: no cover - specific path
+        del artifact_id, request
         self.used_fallback = True
         return ()
 
-    def approximate_request(self, artifact, request):
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: ExecutionRequest
+    ) -> Iterable[Any]:
+        del artifact, request
         # Return no results, forcing rank instability and divergence
         return ()
 
-    def approximation_report(self, artifact, request, results):
+    def approximation_report(
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Any],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=0.0,
             rank_displacement=0.0,
@@ -70,14 +83,23 @@ class ExhaustingAnn(AnnExecutionRequestRunner):
     def reproducibility_bounds(self) -> str:
         return "bounded"
 
-    def approximate_request(self, artifact, request):
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: ExecutionRequest
+    ) -> Iterable[Any]:
+        del artifact, request
         raise BudgetExceededError(
             message="ann probes exhausted",
             dimension="ann_probes",
             partial_results=(),
         )
 
-    def approximation_report(self, artifact, request, results):
+    def approximation_report(
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Any],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=0.0,
             rank_displacement=0.0,
@@ -92,7 +114,7 @@ class ExhaustingAnn(AnnExecutionRequestRunner):
 
 
 @pytest.fixture()
-def backend_det():
+def backend_det() -> Any:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         backend.stores.vectors.put_document(tx, Document(document_id="d", text="t"))
@@ -118,7 +140,7 @@ def backend_det():
 
 
 @pytest.fixture()
-def backend_nd():
+def backend_nd() -> Any:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         backend.stores.vectors.put_document(tx, Document(document_id="d", text="t"))
@@ -143,7 +165,9 @@ def backend_nd():
     return backend
 
 
-def _req(contract: ExecutionContract, budget: ExecutionBudget | None = None):
+def _req(
+    contract: ExecutionContract, budget: ExecutionBudget | None = None
+) -> ExecutionRequest:
     return ExecutionRequest(
         request_id="r",
         text=None,
@@ -164,14 +188,13 @@ def _req(contract: ExecutionContract, budget: ExecutionBudget | None = None):
     )
 
 
-def _artifact(backend) -> ExecutionArtifact:
+def _artifact(backend: Any) -> ExecutionArtifact:
     art = backend.stores.ledger.get_artifact("art")
-    if art is None:
-        raise RuntimeError("artifact missing in fixture")
-    return art
+    assert art is not None
+    return cast(ExecutionArtifact, art)
 
 
-def test_budget_exhaustion_mid_execution_is_partial(backend_nd):
+def test_budget_exhaustion_mid_execution_is_partial(backend_nd: Any) -> None:
     ann = ExhaustingAnn()
     art = _artifact(backend_nd)
     req = _req(
@@ -183,7 +206,7 @@ def test_budget_exhaustion_mid_execution_is_partial(backend_nd):
     assert result.status.name == "PARTIAL"
 
 
-def test_ann_fallback_declared_bounds_violate(backend_nd):
+def test_ann_fallback_declared_bounds_violate(backend_nd: Any) -> None:
     ann = ViolatingAnn()
     art = _artifact(backend_nd)
     req = _req(
@@ -198,7 +221,9 @@ def test_ann_fallback_declared_bounds_violate(backend_nd):
     assert result.determinism_report.randomness_sources
 
 
-def test_replay_refuses_with_provenance_when_contract_mismatch(backend_det):
+def test_replay_refuses_with_provenance_when_contract_mismatch(
+    backend_det: Any,
+) -> None:
     art = _artifact(backend_det)
     req = _req(ExecutionContract.DETERMINISTIC)
     session = start_execution_session(art, req, backend_det.stores)

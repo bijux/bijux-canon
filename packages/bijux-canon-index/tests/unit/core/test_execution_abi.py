@@ -4,6 +4,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_abi import (
     EXECUTION_ABI_VERSION,
     execution_abi_fingerprint,
@@ -15,18 +17,27 @@ EXPECTED_ABI_FINGERPRINT = (
 )
 
 
-def test_execution_abi_is_frozen():
+def test_execution_abi_is_frozen() -> None:
     assert EXECUTION_ABI_VERSION == "1.3.21"
     assert execution_abi_fingerprint() == EXPECTED_ABI_FINGERPRINT
     payload = execution_abi_payload()
     assert "execution_request_fields" in payload
 
 
-def test_execution_abi_payload_is_semantic():
+def test_execution_abi_payload_is_semantic() -> None:
     payload = execution_abi_payload()
-    req_fields = tuple(name for name, _, _ in payload["execution_request_fields"])
-    artifact_fields = tuple(name for name, _, _ in payload["execution_artifact_fields"])
-    result_fields = tuple(name for name, _, _ in payload["execution_result_fields"])
+    req_payload = cast(
+        tuple[tuple[str, Any, Any], ...], payload["execution_request_fields"]
+    )
+    artifact_payload = cast(
+        tuple[tuple[str, Any, Any], ...], payload["execution_artifact_fields"]
+    )
+    result_payload = cast(
+        tuple[tuple[str, Any, Any], ...], payload["execution_result_fields"]
+    )
+    req_fields = tuple(name for name, _, _ in req_payload)
+    artifact_fields = tuple(name for name, _, _ in artifact_payload)
+    result_fields = tuple(name for name, _, _ in result_payload)
     assert req_fields[:5] == (
         "request_id",
         "text",

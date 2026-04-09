@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -37,11 +40,20 @@ class DriftAnn(AnnExecutionRequestRunner):
     def reproducibility_bounds(self) -> str:
         return "bounded"
 
-    def approximate_request(self, artifact, request):
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: ExecutionRequest
+    ) -> Iterable[Any]:
+        del artifact, request
         # Return empty result set to simulate drift within bounds
         return ()
 
-    def approximation_report(self, artifact, request, results):
+    def approximation_report(
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Any],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=0.0,
             rank_displacement=0.0,
@@ -56,7 +68,7 @@ class DriftAnn(AnnExecutionRequestRunner):
 
 
 @pytest.fixture()
-def backend_fixture():
+def backend_fixture() -> Any:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         backend.stores.vectors.put_document(tx, Document(document_id="d", text="t"))
@@ -80,7 +92,9 @@ def backend_fixture():
     return backend
 
 
-def _req(contract: ExecutionContract, budget: ExecutionBudget | None = None):
+def _req(
+    contract: ExecutionContract, budget: ExecutionBudget | None = None
+) -> ExecutionRequest:
     return ExecutionRequest(
         request_id="r",
         text=None,
@@ -89,17 +103,18 @@ def _req(contract: ExecutionContract, budget: ExecutionBudget | None = None):
         execution_contract=contract,
         execution_intent=ExecutionIntent.EXPLORATORY_SEARCH
         if contract is ExecutionContract.NON_DETERMINISTIC
-        else "exact_validation",
+        else ExecutionIntent.EXACT_VALIDATION,
         execution_mode=ExecutionMode.BOUNDED
         if contract is ExecutionContract.NON_DETERMINISTIC
-        else "strict",
+        else ExecutionMode.STRICT,
         execution_budget=budget,
     )
 
 
-def test_nd_drift_within_bounds_emits_report(backend_fixture):
+def test_nd_drift_within_bounds_emits_report(backend_fixture: Any) -> None:
     ann = DriftAnn()
     art = backend_fixture.stores.ledger.get_artifact("art")
+    assert art is not None
     req = _req(
         ExecutionContract.NON_DETERMINISTIC,
         budget=ExecutionBudget(max_ann_probes=1, max_vectors=1),
@@ -110,8 +125,9 @@ def test_nd_drift_within_bounds_emits_report(backend_fixture):
     assert result.status.name in {"SUCCESS", "PARTIAL"}
 
 
-def test_replay_fails_on_corrupted_artifact(backend_fixture):
+def test_replay_fails_on_corrupted_artifact(backend_fixture: Any) -> None:
     art = backend_fixture.stores.ledger.get_artifact("art")
+    assert art is not None
     req = _req(
         ExecutionContract.NON_DETERMINISTIC, budget=ExecutionBudget(max_ann_probes=1)
     )

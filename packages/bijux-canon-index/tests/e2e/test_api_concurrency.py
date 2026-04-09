@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -12,7 +14,9 @@ from bijux_canon_index.api.v1.app import build_app
 from fastapi.testclient import TestClient
 
 
-def test_api_execute_concurrency(tmp_path, monkeypatch) -> None:
+def test_api_execute_concurrency(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setenv(
         "BIJUX_CANON_INDEX_STATE_PATH", str(tmp_path / "concurrency.sqlite")
     )
@@ -44,7 +48,7 @@ def test_api_execute_concurrency(tmp_path, monkeypatch) -> None:
         with TestClient(app) as client:
             response = client.post("/execute", json=payload)
             assert response.status_code == 200
-            return response.json()
+            return cast(dict[str, object], response.json())
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         results = list(pool.map(lambda _: run_execute(), range(8)))

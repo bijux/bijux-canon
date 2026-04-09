@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
@@ -19,7 +21,7 @@ from bijux_canon_index.domain.requests.request_execution import (
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def _seed_artifacts(count: int = 10):
+def _seed_artifacts(count: int = 10) -> tuple[Any, list[ExecutionArtifact]]:
     backend = memory_backend()
     artifacts: list[ExecutionArtifact] = []
     with backend.tx_factory() as tx:
@@ -52,7 +54,7 @@ def _seed_artifacts(count: int = 10):
     return backend, artifacts
 
 
-def test_multi_artifact_execute_and_replay_symmetry():
+def test_multi_artifact_execute_and_replay_symmetry() -> None:
     backend, artifacts = _seed_artifacts()
     # execute across many artifacts, ensure symmetry and no implicit defaults
     for art in artifacts:
@@ -72,15 +74,21 @@ def test_multi_artifact_execute_and_replay_symmetry():
         from bijux_canon_index.domain.provenance.lineage import explain_result
         from bijux_canon_index.domain.provenance.replay import replay
 
-        explanation = explain_result(results[0], backend.stores)
-        assert explanation["artifact"].artifact_id == art.artifact_id
+        indexed_results = tuple(results)
+        explanation = cast(
+            dict[str, Any], explain_result(indexed_results[0], backend.stores)
+        )
+        assert (
+            cast(ExecutionArtifact, explanation["artifact"]).artifact_id
+            == art.artifact_id
+        )
         with backend.tx_factory() as tx:
             backend.stores.ledger.put_execution_result(tx, execution_result)
         replay_outcome = replay(req, art, backend.stores, baseline_fingerprint=None)
         assert replay_outcome.matches is True
 
 
-def test_mixed_dimensions_fail_fast():
+def test_mixed_dimensions_fail_fast() -> None:
     backend, artifacts = _seed_artifacts(2)
     # mutate one vector dimension
     with backend.tx_factory() as tx:

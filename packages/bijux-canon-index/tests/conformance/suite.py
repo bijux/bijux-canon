@@ -6,7 +6,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from typing import NamedTuple
+from pathlib import Path
+from typing import Any, NamedTuple, cast
 
 from bijux_canon_index.contracts.authz import Authz
 from bijux_canon_index.contracts.resources import ExecutionResources
@@ -25,7 +26,7 @@ class BackendCase(NamedTuple):
     factory: Callable[[], ConformanceFixture]
 
 
-def parametrize_backends(backends: Iterable[BackendCase]):
+def parametrize_backends(backends: Iterable[BackendCase]) -> Any:
     import pytest
 
     ids = [case.name for case in backends]
@@ -36,7 +37,13 @@ def default_backends() -> Iterable[BackendCase]:
     from bijux_canon_index.infra.adapters.memory.backend import memory_backend
     from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 
+    def _sqlite_default() -> ConformanceFixture:
+        return cast(ConformanceFixture, sqlite_backend(str(Path(":memory:"))))
+
     return [
-        BackendCase(name="memory", factory=memory_backend),
-        BackendCase(name="sqlite", factory=sqlite_backend),
+        BackendCase(
+            name="memory",
+            factory=cast(Callable[[], ConformanceFixture], memory_backend),
+        ),
+        BackendCase(name="sqlite", factory=_sqlite_default),
     ]

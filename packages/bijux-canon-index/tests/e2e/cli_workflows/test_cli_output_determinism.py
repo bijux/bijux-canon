@@ -10,16 +10,20 @@ from pathlib import Path
 import subprocess
 import sys
 
+import pytest
+
 CLI = [sys.executable, "-m", "bijux_canon_index.interfaces.cli.app"]
 
 
-def run_cmd(args, env):
+def run_cmd(args: list[str], env: dict[str, str]) -> str:
     repo_root = Path(__file__).resolve().parents[3]
     env = {**env, "PYTHONPATH": str(repo_root / "src")}
     return subprocess.check_output(CLI + args, text=True, env=env).strip()
 
 
-def test_cli_outputs_are_deterministic(tmp_path: Path, monkeypatch):
+def test_cli_outputs_are_deterministic(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     db_path = tmp_path / "cli.sqlite"
     env = os.environ.copy()
     env["BIJUX_CANON_INDEX_STATE_PATH"] = str(db_path)

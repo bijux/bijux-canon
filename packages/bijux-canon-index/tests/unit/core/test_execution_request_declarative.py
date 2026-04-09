@@ -15,7 +15,7 @@ from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 import pytest
 
 
-def test_execution_request_cannot_execute_directly():
+def test_execution_request_cannot_execute_directly() -> None:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         backend.stores.ledger.put_artifact(
@@ -43,6 +43,7 @@ def test_execution_request_cannot_execute_directly():
         from bijux_canon_index.domain.requests.execution_plan import run_plan
 
         art = backend.stores.ledger.get_artifact("art")
+        assert art is not None
         run_plan(
             plan=None,  # type: ignore[arg-type]
             execution=None,  # type: ignore[arg-type]
@@ -50,8 +51,10 @@ def test_execution_request_cannot_execute_directly():
             resources=backend.stores,
         )
     # Session creation succeeds
+    artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     session = start_execution_session(
-        backend.stores.ledger.get_artifact("art"),
+        artifact,
         request,
         backend.stores,
     )

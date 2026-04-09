@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 pytest.importorskip("qdrant_client")
@@ -17,10 +19,10 @@ class _StubClient:
     def collection_exists(self, name: str) -> bool:
         return True
 
-    def create_collection(self, **kwargs) -> None:  # pragma: no cover - unused
+    def create_collection(self, **kwargs: Any) -> None:  # pragma: no cover - unused
         return None
 
-    def upsert(self, collection_name: str, points) -> None:
+    def upsert(self, collection_name: str, points: list[Any]) -> None:
         self.upsert_calls += 1
         if self.upsert_calls == 1:
             raise TimeoutError("timeout")

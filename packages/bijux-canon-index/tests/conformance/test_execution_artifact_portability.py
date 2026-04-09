@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from pathlib import Path
+from typing import Any
 
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -18,8 +20,12 @@ from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 
 
 def _ingest(
-    backend, doc: Document, chunk: Chunk, vec: Vector, artifact: ExecutionArtifact
-):
+    backend: Any,
+    doc: Document,
+    chunk: Chunk,
+    vec: Vector,
+    artifact: ExecutionArtifact,
+) -> None:
     with backend.tx_factory() as tx:
         backend.stores.vectors.put_document(tx, doc)
         backend.stores.vectors.put_chunk(tx, chunk)
@@ -27,7 +33,7 @@ def _ingest(
         backend.stores.ledger.put_artifact(tx, artifact)
 
 
-def test_artifact_round_trip_between_backends(tmp_path):
+def test_artifact_round_trip_between_backends(tmp_path: Path) -> None:
     doc = Document(document_id="d1", text="hello")
     chunk = Chunk(chunk_id="c1", document_id=doc.document_id, text=doc.text, ordinal=0)
     vec = Vector(
@@ -58,7 +64,7 @@ def test_artifact_round_trip_between_backends(tmp_path):
 
     portable_kwargs = {k: v for k, v in asdict(artifact).items() if k != "replayable"}
     portable = ExecutionArtifact(**portable_kwargs)
-    sqlite = sqlite_backend(tmp_path / "db.sqlite")
+    sqlite = sqlite_backend(str(tmp_path / "db.sqlite"))
     _ingest(sqlite, doc, chunk, vec, portable)
     sqlite_results = list(sqlite.stores.vectors.query("art-1", query))
 

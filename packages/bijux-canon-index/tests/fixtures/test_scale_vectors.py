@@ -5,12 +5,13 @@
 from __future__ import annotations
 
 import random
+from typing import Any
 
 from bijux_canon_index.core.types import Chunk, Document, Vector
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
-def build_scale_backend(count: int = 10000, dim: int = 8):
+def build_scale_backend(count: int = 10000, dim: int = 8) -> Any:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="scale-doc", text="dense")

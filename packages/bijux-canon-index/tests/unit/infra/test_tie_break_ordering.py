@@ -2,6 +2,9 @@
 # Copyright © 2026 Bijan Mousavi <bijan@bijux.io>
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
@@ -17,13 +20,25 @@ from bijux_canon_index.infra.adapters.vectorstore_source import VectorStoreVecto
 class _TieAdapter:
     is_noop = False
 
-    def insert(self, vectors, metadata=None):  # pragma: no cover - unused
+    def connect(self) -> None:
+        return None
+
+    def insert(
+        self,
+        vectors: Iterable[Sequence[float]],
+        metadata: Iterable[dict[str, Any]] | None = None,
+    ) -> list[str]:  # pragma: no cover - unused
+        del vectors, metadata
         return []
 
-    def query(self, vector, k, mode):
+    def query(
+        self, vector: Sequence[float], k: int, mode: str
+    ) -> list[tuple[str, float]]:
+        del vector, k, mode
         return [("vec-2", 0.0), ("vec-1", 0.0)]
 
-    def delete(self, ids):  # pragma: no cover - unused
+    def delete(self, ids: Iterable[str]) -> int:  # pragma: no cover - unused
+        del ids
         return 0
 
 
@@ -68,7 +83,9 @@ def test_tie_breaker_ordering_is_stable() -> None:
         version=None,
     )
     resolution = VectorStoreResolution(
-        descriptor=descriptor, adapter=_TieAdapter(), uri_redacted=None
+        descriptor=descriptor,
+        adapter=cast(Any, _TieAdapter()),
+        uri_redacted=None,
     )
     source = VectorStoreVectorSource(stores.vectors, resolution)
     request = ExecutionRequest(

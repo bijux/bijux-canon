@@ -71,6 +71,7 @@ def test_nd_approximation_metrics_include_witness() -> None:
     )
     randomness = RandomnessProfile(seed=0, sources=("test",), bounded=True)
     artifact = backend.stores.ledger.get_artifact("art-nd")
+    assert artifact is not None
     session = start_execution_session(
         artifact, request, backend.stores, randomness, ann_runner
     )

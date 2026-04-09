@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BudgetExceededError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -26,7 +29,7 @@ from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 class DivergingAnn(AnnExecutionRequestRunner):
-    def __init__(self, stores, force_fallback: bool = False):
+    def __init__(self, stores: Any, force_fallback: bool = False):
         self.stores = stores
         self.force_fallback = force_fallback
         self.fallback_used = False
@@ -39,28 +42,37 @@ class DivergingAnn(AnnExecutionRequestRunner):
     def reproducibility_bounds(self) -> str:
         return "approximate"
 
-    def approximate_request(self, artifact, request):
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: ExecutionRequest
+    ) -> Iterable[Any]:
         if not self.force_fallback:
             self.force_fallback = True
             return self._exhaust_then_stop()
         return self.deterministic_fallback(artifact.artifact_id, request)
 
-    def _exhaust_then_stop(self):
-        def _gen():
+    def _exhaust_then_stop(self) -> Iterable[Any]:
+        def _gen() -> Iterable[Any]:
             raise BudgetExceededError(
                 message="ann budget exhausted mid-flight",
                 dimension="ann_probes",
                 partial_results=(),
             )
-            yield from ()
 
         return _gen()
 
-    def deterministic_fallback(self, artifact_id: str, request: ExecutionRequest):
+    def deterministic_fallback(
+        self, artifact_id: str, request: ExecutionRequest
+    ) -> Iterable[Any]:
         self.fallback_used = True
-        return self.stores.vectors.query(artifact_id, request)
+        return tuple(self.stores.vectors.query(artifact_id, request))
 
-    def approximation_report(self, artifact, request, results):
+    def approximation_report(
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Any],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=0.0,
             rank_displacement=0.0,
@@ -74,7 +86,7 @@ class DivergingAnn(AnnExecutionRequestRunner):
         )
 
 
-def _seed():
+def _seed() -> Any:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="doc", text="text")
@@ -109,11 +121,12 @@ def _seed():
     return backend
 
 
-def test_forcing_scenario_budget_fallback_replay_divergence():
+def test_forcing_scenario_budget_fallback_replay_divergence() -> None:
     backend = _seed()
     ann = DivergingAnn(backend.stores)
-    backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
+    backend = cast(Any, backend)._replace(ann=ann)
     artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     req = ExecutionRequest(
         request_id="req",
         text=None,

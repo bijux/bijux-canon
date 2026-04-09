@@ -10,26 +10,26 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExplainRequest,
     IngestRequest,
 )
-from pydantic import ValidationError
+from pydantic_core import ValidationError
 import pytest
 
 
-def test_unknown_fields_rejected():
+def test_unknown_fields_rejected() -> None:
     with pytest.raises(ValidationError):
-        CreateRequest(name="demo", extra="nope")  # type: ignore[arg-type]
+        CreateRequest(name="demo", extra="nope")
 
 
-def test_ingest_length_mismatch():
+def test_ingest_length_mismatch() -> None:
     with pytest.raises(ValidationError):
         IngestRequest(documents=["a", "b"], vectors=[[0.0]])
 
 
-def test_ingest_requires_vectors_or_embed_model():
+def test_ingest_requires_vectors_or_embed_model() -> None:
     with pytest.raises(ValidationError):
         IngestRequest(documents=["a"])
 
 
-def test_execute_requires_request_or_vector():
+def test_execute_requires_request_or_vector() -> None:
     with pytest.raises(ValidationError):
         ExecutionRequestPayload(
             execution_contract=ExecutionContract.DETERMINISTIC,
@@ -37,7 +37,7 @@ def test_execute_requires_request_or_vector():
         )
 
 
-def test_non_deterministic_requires_randomness():
+def test_non_deterministic_requires_randomness() -> None:
     with pytest.raises(ValidationError):
         ExecutionRequestPayload(
             execution_contract=ExecutionContract.NON_DETERMINISTIC,
@@ -46,6 +46,6 @@ def test_non_deterministic_requires_randomness():
         )
 
 
-def test_explain_requires_result_id():
+def test_explain_requires_result_id() -> None:
     with pytest.raises(ValidationError):
         ExplainRequest(result_id="")

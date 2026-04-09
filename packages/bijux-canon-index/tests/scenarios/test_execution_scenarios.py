@@ -2,6 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
@@ -25,7 +28,7 @@ from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 class FallbackAnn(AnnExecutionRequestRunner):
-    def __init__(self, stores):
+    def __init__(self, stores: Any) -> None:
         self.stores = stores
         self.fallback_used = False
 
@@ -37,15 +40,25 @@ class FallbackAnn(AnnExecutionRequestRunner):
     def reproducibility_bounds(self) -> str:
         return "approximate"
 
-    def approximate_request(self, artifact, request):
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: ExecutionRequest
+    ) -> Iterable[Any]:
         self.fallback_used = True
         return self.deterministic_fallback(artifact.artifact_id, request)
 
-    def deterministic_fallback(self, artifact_id: str, request: ExecutionRequest):
+    def deterministic_fallback(
+        self, artifact_id: str, request: ExecutionRequest
+    ) -> Iterable[Any]:
         self.fallback_used = True
-        return self.stores.vectors.query(artifact_id, request)
+        return tuple(self.stores.vectors.query(artifact_id, request))
 
-    def approximation_report(self, artifact, request, results):
+    def approximation_report(
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Any],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=1.0,
             rank_displacement=0.0,
@@ -59,7 +72,7 @@ class FallbackAnn(AnnExecutionRequestRunner):
         )
 
 
-def _seed_backend(contract: ExecutionContract, count: int = 3):
+def _seed_backend(contract: ExecutionContract, count: int = 3) -> Any:
     backend = memory_backend()
     with backend.tx_factory() as tx:
         doc = Document(document_id="doc", text="text")
@@ -95,7 +108,9 @@ def _seed_backend(contract: ExecutionContract, count: int = 3):
     return backend
 
 
-def _request(contract: ExecutionContract, budget: ExecutionBudget | None = None):
+def _request(
+    contract: ExecutionContract, budget: ExecutionBudget | None = None
+) -> ExecutionRequest:
     return ExecutionRequest(
         request_id="req",
         text=None,
@@ -116,9 +131,10 @@ def _request(contract: ExecutionContract, budget: ExecutionBudget | None = None)
     )
 
 
-def test_deterministic_replay_hash_matches():
+def test_deterministic_replay_hash_matches() -> None:
     backend = _seed_backend(ExecutionContract.DETERMINISTIC)
     artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     req = _request(ExecutionContract.DETERMINISTIC)
     session = start_execution_session(artifact, req, backend.stores)
     exec_one, results_one = execute_request(session, backend.stores)
@@ -130,11 +146,12 @@ def test_deterministic_replay_hash_matches():
     assert outcome.matches is True
 
 
-def test_nd_emits_determinism_report():
+def test_nd_emits_determinism_report() -> None:
     backend = _seed_backend(ExecutionContract.NON_DETERMINISTIC)
     ann = FallbackAnn(backend.stores)
-    backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
+    backend = cast(Any, backend)._replace(ann=ann)
     artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     req = _request(
         ExecutionContract.NON_DETERMINISTIC,
         budget=ExecutionBudget(max_latency_ms=5, max_memory_mb=5, max_error=1.0),
@@ -146,11 +163,12 @@ def test_nd_emits_determinism_report():
     assert ann.fallback_used
 
 
-def test_budget_exhaustion_mid_plan():
+def test_budget_exhaustion_mid_plan() -> None:
     backend = _seed_backend(ExecutionContract.NON_DETERMINISTIC, count=5)
     ann = FallbackAnn(backend.stores)
-    backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
+    backend = cast(Any, backend)._replace(ann=ann)
     artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     req = _request(
         ExecutionContract.NON_DETERMINISTIC,
         budget=ExecutionBudget(
@@ -164,11 +182,12 @@ def test_budget_exhaustion_mid_plan():
     assert execution_result.failure_reason.startswith("budget_exhausted")
 
 
-def test_ann_fallback_forced():
+def test_ann_fallback_forced() -> None:
     backend = _seed_backend(ExecutionContract.NON_DETERMINISTIC)
     ann = FallbackAnn(backend.stores)
-    backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
+    backend = cast(Any, backend)._replace(ann=ann)
     artifact = backend.stores.ledger.get_artifact("art")
+    assert artifact is not None
     req = _request(
         ExecutionContract.NON_DETERMINISTIC,
         budget=ExecutionBudget(max_latency_ms=10, max_memory_mb=10, max_error=1.0),

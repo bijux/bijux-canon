@@ -2,6 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
@@ -24,7 +27,7 @@ from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 
 
 class ReversingAnn(AnnExecutionRequestRunner):
-    def __init__(self, stores):
+    def __init__(self, stores: Any) -> None:
         self.stores = stores
 
     @property
@@ -35,7 +38,9 @@ class ReversingAnn(AnnExecutionRequestRunner):
     def reproducibility_bounds(self) -> str:
         return "ordering may reverse"
 
-    def approximate_request(self, artifact, request):  # type: ignore[override]
+    def approximate_request(
+        self, artifact: ExecutionArtifact, request: ExecutionRequest
+    ) -> Iterable[Any]:
         vectors = list(self.stores.vectors.list_vectors())
         vectors.reverse()
         results = []
@@ -57,7 +62,13 @@ class ReversingAnn(AnnExecutionRequestRunner):
             )
         return tuple(results)
 
-    def approximation_report(self, artifact, request, results):
+    def approximation_report(
+        self,
+        artifact: ExecutionArtifact,
+        request: ExecutionRequest,
+        results: Iterable[Any],
+    ) -> ApproximationReport:
+        del artifact, request, results
         return ApproximationReport(
             recall_at_k=1.0,
             rank_displacement=0.0,
@@ -71,10 +82,10 @@ class ReversingAnn(AnnExecutionRequestRunner):
         )
 
 
-def test_compare_exact_and_ann_results():
+def test_compare_exact_and_ann_results() -> None:
     backend = memory_backend()
     ann = ReversingAnn(backend.stores)
-    backend = backend._replace(ann=ann)  # type: ignore[attr-defined]
+    backend = cast(Any, backend)._replace(ann=ann)
     with backend.tx_factory() as tx:
         doc = Document(document_id="d1", text="hello")
         chunk = Chunk(
@@ -136,6 +147,8 @@ def test_compare_exact_and_ann_results():
 
     art_exact = backend.stores.ledger.get_artifact("art-det")
     art_ann = backend.stores.ledger.get_artifact("art-ann")
+    assert art_exact is not None
+    assert art_ann is not None
 
     session_exact = start_execution_session(
         art_exact, req_exact, backend.stores, ann_runner=None

@@ -7,6 +7,7 @@ from __future__ import annotations
 import ast
 from graphlib import CycleError, TopologicalSorter
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
@@ -60,7 +61,7 @@ def _guarded_by_type_checking(node: ast.AST) -> bool:
 def _attach_parents(tree: ast.AST) -> None:
     for parent in ast.walk(tree):
         for child in ast.iter_child_nodes(parent):
-            child.parent = parent
+            cast(Any, child).parent = parent
 
 
 _IGNORED = {

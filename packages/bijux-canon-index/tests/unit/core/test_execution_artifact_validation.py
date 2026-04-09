@@ -4,6 +4,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typing import Any, cast
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.types import ExecutionArtifact
@@ -42,14 +44,14 @@ def test_execution_artifact_validates_required_fields() -> None:
 
 def test_execution_artifact_forbids_unknown_fields() -> None:
     with pytest.raises(TypeError):
-        ExecutionArtifact(
+        cast(Any, ExecutionArtifact)(
             artifact_id="art",
             corpus_fingerprint="corp",
             vector_fingerprint="vec",
             metric="l2",
             scoring_version="v1",
             execution_contract=ExecutionContract.DETERMINISTIC,
-            extra="nope",  # type: ignore[arg-type]
+            extra="nope",
         )
 
 
@@ -60,7 +62,7 @@ def test_build_params_are_canonicalized() -> None:
         vector_fingerprint="vec",
         metric="l2",
         scoring_version="v1",
-        build_params=(("k1", "v1"), ["k2", "v2"]),
+        build_params=(("k1", "v1"), ("k2", "v2")),
         execution_contract=ExecutionContract.DETERMINISTIC,
     )
     assert artifact.build_params == (("k1", "v1"), ("k2", "v2"))
@@ -87,7 +89,7 @@ def test_replayable_matches_contract() -> None:
     assert ann.replayable is False
 
 
-def test_artifact_growth_limits():
+def test_artifact_growth_limits() -> None:
     oversized_params = tuple((str(i), str(i)) for i in range(300))
     with pytest.raises(InvariantError):
         ExecutionArtifact(

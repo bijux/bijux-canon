@@ -2,6 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.types import (
@@ -17,7 +20,7 @@ from bijux_canon_index.infra.adapters.sqlite.backend import sqlite_backend
 
 
 def _seed_backend(
-    backend, prefix: str = ""
+    backend: Any, prefix: str = ""
 ) -> tuple[ExecutionArtifact, ExecutionRequest]:
     doc = Document(document_id=f"{prefix}doc", text="hello")
     chunk = Chunk(
@@ -53,7 +56,7 @@ def _seed_backend(
     return artifact, query
 
 
-def test_replay_matches_across_backends(tmp_path):
+def test_replay_matches_across_backends(tmp_path: Path) -> None:
     mem = memory_backend()
     mem_art, query = _seed_backend(mem, "m-")
     from bijux_canon_index.domain.provenance.replay import _results_fingerprint
@@ -69,13 +72,18 @@ def test_replay_matches_across_backends(tmp_path):
     baseline_fp = _results_fingerprint(mem_result.results)
     baseline = replay(query, mem_art, mem.stores, baseline_fingerprint=baseline_fp)
 
-    sqlite = sqlite_backend(tmp_path / "cross.sqlite")
+    sqlite = sqlite_backend(str(tmp_path / "cross.sqlite"))
     sql_art, query_sql = _seed_backend(sqlite, "m-")
     sql_session = start_execution_session(sql_art, query_sql, sqlite.stores)
     sql_result, _ = execute_request(sql_session, sqlite.stores)
     with sqlite.tx_factory() as tx:
         sqlite.stores.ledger.put_execution_result(tx, sql_result)
-    outcome = replay(query_sql, sql_art, sqlite.stores, baseline.original_fingerprint)
+    outcome = replay(
+        query_sql,
+        sql_art,
+        sqlite.stores,
+        baseline_fingerprint=baseline.original_fingerprint,
+    )
 
     assert outcome.matches is True
     assert outcome.original_fingerprint == baseline.original_fingerprint
