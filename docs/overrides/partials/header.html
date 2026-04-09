@@ -14,10 +14,12 @@
     Repository
   {%- elif title == "Maintainer Handbook" -%}
     Maintainer
-  {%- elif title == "Compatibility Packages" -%}
-    Compatibility
-  {%- elif title.startswith("bijux-canon-") -%}
-    {{ title | replace("bijux-canon-", "") | title }}
+  {%- elif active_repository and title.startswith(active_repository ~ "-") -%}
+    {{ title | replace(active_repository ~ "-", "") | replace("-", " ") | title }}
+  {%- elif title.startswith("bijux-") -%}
+    {{ title | replace("bijux-", "") | replace("-", " ") | title }}
+  {%- elif "-" in title -%}
+    {{ title | replace("-", " ") | title }}
   {%- else -%}
     {{ title }}
   {%- endif %}
