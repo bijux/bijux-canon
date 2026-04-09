@@ -34,12 +34,10 @@
   {%- endif %}
 {%- endmacro %}
 {% macro detail_label(nav_item) -%}
-  {% set target = target_url(nav_item) %}
-  {% set normalized = target.rstrip("/") %}
-  {% if normalized in [".", "..", ""] or nav_item.title == "Overview" -%}
+  {% if nav_item.title == "Overview" -%}
     Home
   {%- else -%}
-    {{ normalized.split("/")[-1] | replace("-", " ") | title }}
+    {{ nav_item.title }}
   {%- endif %}
 {%- endmacro %}
 {% for nav_item in nav %}
@@ -135,8 +133,7 @@
       <div class="md-grid">
         <ul class="bijux-tabs__list bijux-tabs__list--detail">
           {% for child in active_section.item.children %}
-            {% set child_target = target_url(child).rstrip("/") %}
-            {% if child_target in [".", "..", ""] or child.title == "Overview" %}
+            {% if child.title == "Overview" %}
               {% set item_class = "bijux-tabs__item" %}
               {% if child.active %}
                 {% set item_class = item_class ~ " bijux-tabs__item--active" %}
@@ -147,8 +144,7 @@
             {% endif %}
           {% endfor %}
           {% for child in active_section.item.children | sort(attribute="title") %}
-            {% set child_target = target_url(child).rstrip("/") %}
-            {% if child_target not in [".", "..", ""] and child.title != "Overview" %}
+            {% if child.title != "Overview" %}
               {% set item_class = "bijux-tabs__item" %}
               {% if child.active %}
                 {% set item_class = item_class ~ " bijux-tabs__item--active" %}
