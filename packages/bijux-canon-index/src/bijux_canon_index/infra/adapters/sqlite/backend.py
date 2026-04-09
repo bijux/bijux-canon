@@ -100,6 +100,7 @@ def _ensure_vector_columns(conn: sqlite3.Connection) -> None:
 
 class SQLiteTx(Tx):
     """Represents SQLite tx."""
+
     def __init__(self, conn: sqlite3.Connection, lock: threading.RLock):
         """Initialize the instance."""
         self._conn = conn
@@ -153,6 +154,7 @@ class SQLiteTx(Tx):
 
 class SQLiteVectorSource(VectorSource):
     """Represents SQLite vector source."""
+
     def __init__(self, conn: sqlite3.Connection, lock: threading.RLock):
         """Initialize the instance."""
         self._conn = conn
@@ -394,6 +396,7 @@ class SQLiteVectorSource(VectorSource):
 
 class SQLiteExecutionLedger(ExecutionLedger):
     """Represents SQLite execution ledger."""
+
     MAX_ARTIFACTS = 1000
     MAX_RESULTS = 5000
 
@@ -642,6 +645,7 @@ def json_loads_meta(raw: str | None) -> tuple[tuple[str, str], ...] | None:
 
 class SQLiteFixture(NamedTuple):
     """Represents SQLite fixture."""
+
     tx_factory: Callable[[], SQLiteTx]
     stores: ExecutionResources
     authz: Authz

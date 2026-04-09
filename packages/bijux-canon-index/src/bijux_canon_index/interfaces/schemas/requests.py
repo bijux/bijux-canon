@@ -16,11 +16,13 @@ from bijux_canon_index.interfaces.schemas.base import StrictModel
 
 class CreateRequest(StrictModel):
     """Represents create request."""
+
     name: str = Field(min_length=1)
 
 
 class IngestRequest(StrictModel):
     """Represents ingest request."""
+
     documents: list[str]
     vectors: list[list[float]] | None = None
     embed_provider: str | None = None
@@ -46,6 +48,7 @@ class IngestRequest(StrictModel):
 
 class ExecutionBudgetPayload(StrictModel):
     """Represents execution budget payload."""
+
     max_latency_ms: int | None = None
     max_memory_mb: int | None = None
     max_error: float | None = None
@@ -53,6 +56,7 @@ class ExecutionBudgetPayload(StrictModel):
 
 class RandomnessProfilePayload(StrictModel):
     """Represents randomness profile payload."""
+
     seed: int | None = None
     sources: list[str] | None = None
     bounded: bool = False
@@ -61,6 +65,7 @@ class RandomnessProfilePayload(StrictModel):
 
 class ExecutionRequestPayload(StrictModel):
     """Represents execution request payload."""
+
     artifact_id: str | None = None
     request_text: str | None = None
     vector: tuple[float, ...] | None = None
@@ -121,6 +126,7 @@ class ExecutionRequestPayload(StrictModel):
 
 class ExecutionArtifactRequest(StrictModel):
     """Represents execution artifact request."""
+
     execution_contract: ExecutionContract
     index_mode: str | None = None
     vector_store: str | None = None
@@ -139,6 +145,7 @@ class ExecutionArtifactRequest(StrictModel):
 
 class ExplainRequest(StrictModel):
     """Represents explain request."""
+
     result_id: str = Field(min_length=1)
     artifact_id: str | None = None
 

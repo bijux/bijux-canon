@@ -41,6 +41,7 @@ from bijux_canon_index.infra.logging import log_event
 @dataclass(frozen=True)
 class NonDeterministicPlan:
     """Represents non deterministic plan."""
+
     runner: AnnExecutionRequestRunner
     settings: NDSettings | None
     budget: ExecutionBudget | None

@@ -2,7 +2,6 @@
 # Copyright © 2026 Bijan Mousavi
 """Base helpers for core logic."""
 
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field, fields
@@ -22,6 +21,7 @@ if _TYPE_CHECKING:  # pragma: no cover
 @dataclass(frozen=True)
 class Document:
     """Represents document."""
+
     document_id: str
     text: str
     source: str | None = None
@@ -31,6 +31,7 @@ class Document:
 @dataclass(frozen=True)
 class Chunk:
     """Represents chunk."""
+
     chunk_id: str
     document_id: str
     text: str
@@ -42,6 +43,7 @@ class Chunk:
 @dataclass(frozen=True)
 class Vector:
     """Represents vector."""
+
     vector_id: str
     chunk_id: str
     values: tuple[float, ...]
@@ -69,6 +71,7 @@ class Vector:
 @dataclass(frozen=True)
 class ModelSpec:
     """Represents model spec."""
+
     model_id: str
     dimension: int
     vendor: str | None = None
@@ -78,6 +81,7 @@ class ModelSpec:
 @dataclass(frozen=True)
 class ExecutionBudget:
     """Represents execution budget."""
+
     max_latency_ms: int | None = None
     max_memory_mb: int | None = None
     max_error: float | None = None
@@ -89,6 +93,7 @@ class ExecutionBudget:
 @dataclass(frozen=True)
 class NDSettings:
     """Represents ndsettings."""
+
     profile: str | None = None
     target_recall: float | None = None
     latency_budget_ms: int | None = None
@@ -120,6 +125,7 @@ class NDSettings:
 @dataclass(frozen=True)
 class ExecutionRequest:
     """Represents execution request."""
+
     request_id: str
     text: str | None
     vector: tuple[float, ...] | None
@@ -271,6 +277,7 @@ class ExecutionRequest:
 @dataclass(frozen=True)
 class Result:
     """Represents result."""
+
     request_id: str
     document_id: str
     chunk_id: str
@@ -283,6 +290,7 @@ class Result:
 @dataclass(frozen=True)
 class ExecutionArtifact:
     """Represents execution artifact."""
+
     artifact_id: str
     corpus_fingerprint: str
     vector_fingerprint: str

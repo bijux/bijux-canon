@@ -24,6 +24,7 @@ from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 @dataclass(frozen=True)
 class ReplayOutcome:
     """Represents replay outcome."""
+
     execution_contract: ExecutionContract
     execution_id: str
     original_fingerprint: str

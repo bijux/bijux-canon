@@ -9,6 +9,7 @@ from enum import Enum
 
 class ExecutionContract(Enum):
     """Enumeration of execution contract."""
+
     DETERMINISTIC = "deterministic"
     NON_DETERMINISTIC = "non_deterministic"
 

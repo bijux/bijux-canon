@@ -28,6 +28,7 @@ from bijux_canon_index.infra.logging import log_event
 
 class VectorStoreVectorSource(VectorSource):
     """Represents vector store vector source."""
+
     def __init__(self, base: VectorSource, resolved: VectorStoreResolution):
         """Initialize the instance."""
         self._base = base

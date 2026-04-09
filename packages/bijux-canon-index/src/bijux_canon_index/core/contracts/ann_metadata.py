@@ -11,6 +11,7 @@ from bijux_canon_index.core.execution_result import ApproximationReport
 @dataclass(frozen=True)
 class ANNResultMetadata:
     """Represents annresult metadata."""
+
     algorithm: str
     index_params: tuple[tuple[str, str | int | float], ...]
     query_params: tuple[tuple[str, str | int | float], ...]

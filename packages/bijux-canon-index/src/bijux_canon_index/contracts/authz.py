@@ -44,7 +44,7 @@ class AllowAllAuthz(Authz):
         context: Any | None = None,
     ) -> None:
         """Handle check."""
-        return None
+        return
 
 
 class DenyAllAuthz(Authz):

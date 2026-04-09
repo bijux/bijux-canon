@@ -30,6 +30,7 @@ _BACKEND_LOCK = threading.Lock()
 @dataclass(frozen=True)
 class OrchestratorRuntimeBootstrap:
     """Represents orchestrator runtime bootstrap."""
+
     backend: Any
     authz: Authz
     stores: Any

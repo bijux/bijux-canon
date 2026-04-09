@@ -14,6 +14,7 @@ from bijux_canon_index.domain.requests.execution_diff import (
 
 class ExecutionComparator:
     """Represents execution comparator."""
+
     def compare(
         self,
         execution_a: ExecutionResult,

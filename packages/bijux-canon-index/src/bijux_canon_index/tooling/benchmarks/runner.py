@@ -35,6 +35,7 @@ from bijux_canon_index.interfaces.schemas.requests import (
 @dataclass(frozen=True)
 class BenchmarkRun:
     """Represents benchmark run."""
+
     timings_ms: list[float]
     throughput_qps: float
     warmup_ms: float

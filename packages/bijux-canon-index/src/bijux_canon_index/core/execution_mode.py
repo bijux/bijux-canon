@@ -9,6 +9,7 @@ from enum import Enum
 
 class ExecutionMode(Enum):
     """Enumeration of execution mode."""
+
     STRICT = "strict"
     BOUNDED = "bounded"
     EXPLORATORY = "exploratory"

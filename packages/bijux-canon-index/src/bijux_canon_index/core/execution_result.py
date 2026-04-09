@@ -15,6 +15,7 @@ from bijux_canon_index.core.types import Result
 
 class ExecutionStatus(Enum):
     """Enumeration of execution status."""
+
     SUCCESS = "success"
     PARTIAL = "partial"
     FAILED = "failed"
@@ -23,6 +24,7 @@ class ExecutionStatus(Enum):
 @dataclass(frozen=True)
 class ExecutionCost:
     """Represents execution cost."""
+
     vector_reads: int
     distance_computations: int
     graph_hops: int
@@ -35,6 +37,7 @@ class ExecutionCost:
 @dataclass(frozen=True)
 class WitnessReport:
     """Represents witness report."""
+
     sample_k: int
     overlap_ratio: float
     rank_instability: float
@@ -44,6 +47,7 @@ class WitnessReport:
 @dataclass(frozen=True)
 class ApproximationReport:
     """Represents approximation report."""
+
     recall_at_k: float
     rank_displacement: float
     distance_error: float
@@ -87,6 +91,7 @@ class ApproximationReport:
 @dataclass(frozen=True)
 class ExecutionResult:
     """Represents execution result."""
+
     execution_id: str
     signature: str
     artifact_id: str
@@ -104,6 +109,7 @@ class ExecutionResult:
 
     def to_primitive(self) -> dict[str, Any]:
         """Convert to primitive."""
+
         def _flatten(obj: Any) -> Any:
             """Handle flatten."""
             if isinstance(obj, Enum):
@@ -139,6 +145,7 @@ __all__ = [
 @dataclass(frozen=True)
 class NDDecisionTrace:
     """Represents nddecision trace."""
+
     runner: str
     params: tuple[tuple[str, object], ...]
     budget: tuple[tuple[str, object], ...]
@@ -150,6 +157,7 @@ class NDDecisionTrace:
 @dataclass(frozen=True)
 class NDResultSchema:
     """Represents ndresult schema."""
+
     results: tuple[Result, ...]
     quality: ApproximationReport | None
     quality_reason: str | None

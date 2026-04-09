@@ -16,6 +16,7 @@ from bijux_canon_index.core.types import ExecutionArtifact
 @dataclass(frozen=True)
 class ExecutionTrackingContext:
     """Represents execution tracking context."""
+
     ann_index_info: dict[str, object] | None
     vector_store_consistency: str | None
     vector_store_index_params: object | None

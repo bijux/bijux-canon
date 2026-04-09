@@ -37,6 +37,7 @@ DEFAULT_METRIC = "l2"
 @dataclass(frozen=True)
 class FaissRecord:
     """Represents FAISS record."""
+
     vector_id: str
     vector: tuple[float, ...]
     metadata: dict[str, str]
@@ -44,6 +45,7 @@ class FaissRecord:
 
 class FaissIndexLock:
     """Represents FAISS index lock."""
+
     def __init__(self, path: Path) -> None:
         """Initialize the instance."""
         self._path = path
@@ -81,6 +83,7 @@ class FaissIndexLock:
 
 class FaissVectorStoreAdapter(VectorStoreAdapter):
     """Represents FAISS vector store adapter."""
+
     backend = "faiss"
     is_noop = False
 

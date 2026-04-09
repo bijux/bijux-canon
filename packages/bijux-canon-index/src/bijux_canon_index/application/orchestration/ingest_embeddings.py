@@ -22,6 +22,7 @@ from bijux_canon_index.interfaces.schemas.requests import IngestRequest
 @dataclass(frozen=True)
 class PreparedIngestVectors:
     """Represents prepared ingest vectors."""
+
     vectors: list[list[float]]
     embedding_meta_by_index: dict[int, dict[str, str | None]]
     embedding_model: str | None

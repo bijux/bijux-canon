@@ -21,6 +21,7 @@ from bijux_canon_index.infra.logging import log_event
 @dataclass(frozen=True)
 class DeterminismClassification:
     """Represents determinism classification."""
+
     label: str
     randomness_sources: tuple[str, ...]
     reasons: tuple[str, ...]

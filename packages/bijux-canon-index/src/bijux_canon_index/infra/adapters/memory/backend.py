@@ -2,7 +2,6 @@
 # Copyright © 2026 Bijan Mousavi
 """Backend helpers."""
 
-
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -39,6 +38,7 @@ from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 
 class MemoryState:
     """Represents memory state."""
+
     def __init__(self) -> None:
         """Initialize the instance."""
         self.documents: dict[str, Document] = {}
@@ -76,6 +76,7 @@ class MemoryState:
 
 class MemoryTx(Tx):
     """Represents memory tx."""
+
     def __init__(
         self,
         state: MemoryState,
@@ -253,6 +254,7 @@ def _as_memory_tx(tx: Tx) -> MemoryTx:
 
 class MemoryVectorSource(VectorSource):
     """Represents memory vector source."""
+
     def __init__(self, state: MemoryState):
         """Initialize the instance."""
         self._state = state
@@ -366,6 +368,7 @@ class MemoryVectorSource(VectorSource):
 
 class MemoryExecutionLedger(ExecutionLedger):
     """Represents memory execution ledger."""
+
     MAX_ARTIFACTS = 1000
     MAX_RESULTS = 5000
 
@@ -424,6 +427,7 @@ class MemoryExecutionLedger(ExecutionLedger):
 
 class MemoryFixture(NamedTuple):
     """Represents memory fixture."""
+
     tx_factory: Callable[[], MemoryTx]
     stores: ExecutionResources
     authz: Authz

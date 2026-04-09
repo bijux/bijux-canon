@@ -142,6 +142,7 @@ __all__ = ["start_execution_session", "execute_request", "ExecutionSession"]
 @dataclass(frozen=True)
 class ExecutionOutcome:
     """Represents execution outcome."""
+
     result: ExecutionResult | None
     failure: BijuxError | None
 

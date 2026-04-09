@@ -14,12 +14,14 @@ from typing import Protocol
 @dataclass
 class MetricsSnapshot:
     """Represents metrics snapshot."""
+
     counters: dict[str, int]
     timers_ms: dict[str, list[float]]
 
 
 class MetricsSink(Protocol):
     """Represents metrics sink."""
+
     def increment(self, name: str, value: int = 1) -> None:
         """Increment a counter metric."""
 
@@ -39,6 +41,7 @@ class MetricsSink(Protocol):
 @dataclass
 class InMemoryMetrics:
     """Represents in memory metrics."""
+
     counters: dict[str, int] = field(default_factory=dict)
     timers_ms: dict[str, list[float]] = field(default_factory=dict)
 

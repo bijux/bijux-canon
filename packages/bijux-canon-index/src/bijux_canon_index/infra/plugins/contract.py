@@ -10,6 +10,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class PluginContract:
     """Represents plugin contract."""
+
     determinism: str
     randomness_sources: tuple[str, ...]
     approximation: bool

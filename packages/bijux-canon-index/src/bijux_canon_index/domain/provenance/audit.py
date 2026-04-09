@@ -14,6 +14,7 @@ from bijux_canon_index.core.identity.ids import fingerprint
 @dataclass(frozen=True)
 class AuditRecord:
     """Represents audit record."""
+
     record_id: str
     tx_id: str
     action: str

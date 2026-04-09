@@ -19,6 +19,7 @@ from bijux_canon_index.domain.requests.scoring import tie_break_key
 @dataclass(frozen=True)
 class NDQualityMetrics:
     """Represents ndquality metrics."""
+
     rank_instability: float
     distance_margin: float
     similarity_entropy: float

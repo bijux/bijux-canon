@@ -31,6 +31,7 @@ from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 
 class ExactVectorExecutionAlgorithm(VectorExecutionAlgorithm):
     """Represents exact vector execution algorithm."""
+
     name = "exact_vector_execution"
     supported_contracts = {ExecutionContract.DETERMINISTIC}
 
@@ -104,6 +105,7 @@ class ExactVectorExecutionAlgorithm(VectorExecutionAlgorithm):
 
 class ApproximateAnnAlgorithm(VectorExecutionAlgorithm):
     """Represents approximate ANN algorithm."""
+
     name = "ann_approximate"
     supported_contracts = {ExecutionContract.NON_DETERMINISTIC}
 

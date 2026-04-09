@@ -13,6 +13,7 @@ from bijux_canon_index.interfaces.schemas.base import StrictModel
 
 class ListArtifactsResponse(StrictModel):
     """Represents list artifacts response."""
+
     artifacts: list[str] = Field(
         description="Execution artifact identifiers available in the active backend."
     )
@@ -20,6 +21,7 @@ class ListArtifactsResponse(StrictModel):
 
 class ListRunsResponse(StrictModel):
     """Represents list runs response."""
+
     runs: list[str] = Field(
         description="Recorded execution run identifiers available for inspection."
     )
@@ -27,6 +29,7 @@ class ListRunsResponse(StrictModel):
 
 class CreateResponse(StrictModel):
     """Represents create response."""
+
     name: str = Field(description="Logical corpus name reserved by the API.")
     status: str = Field(
         description="Lifecycle state returned after the create request."
@@ -35,6 +38,7 @@ class CreateResponse(StrictModel):
 
 class IngestResponse(StrictModel):
     """Represents ingest response."""
+
     ingested: int = Field(
         ge=0,
         description="Number of documents accepted into the backend during this call.",
@@ -46,6 +50,7 @@ class IngestResponse(StrictModel):
 
 class ArtifactResponse(StrictModel):
     """Represents artifact response."""
+
     artifact_id: str = Field(
         description="Identifier of the execution artifact materialized by the API."
     )
@@ -62,6 +67,7 @@ class ArtifactResponse(StrictModel):
 
 class ExecuteResponse(StrictModel):
     """Represents execute response."""
+
     results: list[str] = Field(
         description="Ordered vector identifiers returned by the execution request."
     )
@@ -84,6 +90,7 @@ class ExecuteResponse(StrictModel):
 
 class ExplainResponse(StrictModel):
     """Represents explain response."""
+
     document_id: str = Field(description="Document that produced the requested result.")
     chunk_id: str = Field(description="Chunk that contributed the requested result.")
     vector_id: str = Field(description="Vector identifier for the explained result.")
@@ -111,6 +118,7 @@ class ExplainResponse(StrictModel):
 
 class ReplayResponse(StrictModel):
     """Represents replay response."""
+
     matches: bool = Field(
         description="Whether the replay satisfied the declared equivalence expectation."
     )

@@ -12,6 +12,7 @@ from bijux_canon_index.core.identity.ids import make_id
 
 class IdGenerationStrategy(Protocol):
     """Represents ID generation strategy."""
+
     def next_artifact_id(self) -> str:
         """Return the next artifact ID."""
 
@@ -36,6 +37,7 @@ class IdGenerationStrategy(Protocol):
 @dataclass(frozen=True)
 class EnvArtifactIdPolicy(IdGenerationStrategy):
     """Represents env artifact ID policy."""
+
     default_artifact_id: str = "art-1"
     env_var: str = "BIJUX_CANON_INDEX_ARTIFACT_ID"
 
@@ -59,6 +61,7 @@ class EnvArtifactIdPolicy(IdGenerationStrategy):
 @dataclass(frozen=True)
 class ContentAddressedIdPolicy(IdGenerationStrategy):
     """Represents content addressed ID policy."""
+
     salt: str = "bijux-canon-index"
 
     def next_artifact_id(self) -> str:
@@ -81,6 +84,7 @@ class ContentAddressedIdPolicy(IdGenerationStrategy):
 @dataclass(frozen=True)
 class FingerprintPolicy:
     """Represents fingerprint policy."""
+
     prefix: str = "exec"
 
     def execution_id(self, payload: object) -> str:

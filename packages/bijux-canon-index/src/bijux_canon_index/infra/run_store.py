@@ -26,6 +26,7 @@ def _atomic_write(path: Path, payload: dict[str, Any]) -> None:
 @dataclass(frozen=True)
 class RunRecord:
     """Represents run record."""
+
     run_id: str
     status: str
     metadata: dict[str, Any]
@@ -34,6 +35,7 @@ class RunRecord:
 
 class RunStore:
     """Represents run store."""
+
     def __init__(self, base_dir: str | Path | None = None) -> None:
         """Initialize the instance."""
         base = (

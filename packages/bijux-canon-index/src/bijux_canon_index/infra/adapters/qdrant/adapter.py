@@ -24,6 +24,7 @@ from bijux_canon_index.infra.adapters.vectorstore import VectorStoreAdapter
 @dataclass(frozen=True)
 class QdrantOptions:
     """Represents Qdrant options."""
+
     collection: str
     batch_size: int
     retry_count: int
@@ -35,6 +36,7 @@ class QdrantOptions:
 
 class QdrantVectorStoreAdapter(VectorStoreAdapter):
     """Represents Qdrant vector store adapter."""
+
     backend = "qdrant"
     is_noop = False
 

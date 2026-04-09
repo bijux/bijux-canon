@@ -13,6 +13,7 @@ from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
 @dataclass(frozen=True)
 class Invariant:
     """Represents invariant."""
+
     invariant_id: str
     description: str
     predicate: Callable[[], bool]

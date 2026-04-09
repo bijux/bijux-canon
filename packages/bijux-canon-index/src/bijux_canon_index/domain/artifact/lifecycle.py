@@ -13,6 +13,7 @@ from bijux_canon_index.core.types import ExecutionArtifact
 
 class IndexState(StrEnum):
     """Enumeration of index state."""
+
     UNBUILT = "unbuilt"
     BUILDING = "building"
     READY = "ready"
@@ -22,6 +23,7 @@ class IndexState(StrEnum):
 @dataclass(frozen=True)
 class ExecutionArtifactState:
     """Represents execution artifact state."""
+
     artifact: ExecutionArtifact
     status: IndexState
     generation: int = 1

@@ -15,6 +15,7 @@ from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest, Re
 
 class VectorExecutionAlgorithm(ABC):
     """Represents vector execution algorithm."""
+
     name: str
     supported_contracts: set[ExecutionContract]
 

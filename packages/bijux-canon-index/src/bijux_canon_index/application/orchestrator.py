@@ -95,6 +95,7 @@ class Orchestrator:
     # This module is allowed to be “ugly but bounded”: wiring/glue only.
     # Domain rules belong in domain/core; do not reintroduce policy here.
     """Represents orchestrator."""
+
     def __init__(
         self,
         backend: Any | None = None,

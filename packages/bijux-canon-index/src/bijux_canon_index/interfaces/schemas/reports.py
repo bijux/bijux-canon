@@ -9,6 +9,7 @@ from bijux_canon_index.interfaces.schemas.base import StrictModel
 
 class StorageBackendDescriptor(StrictModel):
     """Represents storage backend descriptor."""
+
     name: str
     status: str
     persistence: str | None = None
@@ -17,6 +18,7 @@ class StorageBackendDescriptor(StrictModel):
 
 class VectorStoreDescriptor(StrictModel):
     """Represents vector store descriptor."""
+
     name: str
     available: bool
     supports_exact: bool
@@ -32,6 +34,7 @@ class VectorStoreDescriptor(StrictModel):
 
 class BackendCapabilitiesReport(StrictModel):
     """Represents backend capabilities report."""
+
     backend: str
     contracts: list[str]
     deterministic_query: bool | None

@@ -38,6 +38,7 @@ from bijux_canon_index.interfaces.schemas.requests import ExecutionRequestPayloa
 @dataclass(frozen=True)
 class NormalizedExecutionRequest:
     """Represents normalized execution request."""
+
     correlation_id: str
     run_id: str
     artifact: ExecutionArtifact

@@ -20,6 +20,7 @@ T = TypeVar("T")
 
 class FailureKind(Enum):
     """Enumeration of failure kind."""
+
     RETRYABLE = "retryable"
     TERMINAL = "terminal"
     DIVERGENCE = "divergence"

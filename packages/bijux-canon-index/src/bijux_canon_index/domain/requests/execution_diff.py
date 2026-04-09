@@ -14,6 +14,7 @@ from bijux_canon_index.core.types import Result
 @dataclass(frozen=True)
 class VectorExecutionDiff:
     """Represents vector execution diff."""
+
     execution_a: ExecutionResult
     execution_b: ExecutionResult
     overlap_ratio: float

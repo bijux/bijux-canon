@@ -13,6 +13,7 @@ from bijux_canon_index.domain.requests.execution_diff import VectorExecutionDiff
 @dataclass(frozen=True)
 class ComparisonPolicy:
     """Represents comparison policy."""
+
     min_recall: float = 0.0
     max_rank_instability: float = 1.0
 

@@ -14,6 +14,7 @@ from bijux_canon_index.infra.logging import log_event
 @dataclass
 class NDExecutionGuard:
     """Represents ndexecution guard."""
+
     rate_limit: int
     rate_window_seconds: int
     max_failures: int

@@ -10,6 +10,7 @@ from typing import Any
 
 class IdempotencyCache:
     """Represents idempotency cache."""
+
     def __init__(self) -> None:
         """Initialize the instance."""
         self._lock = Lock()

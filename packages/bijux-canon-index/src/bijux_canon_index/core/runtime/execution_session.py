@@ -19,6 +19,7 @@ from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
 
 class ExecutionState(StrEnum):
     """Enumeration of execution state."""
+
     CREATED = "created"
     PLANNED = "planned"
     RUNNING = "running"

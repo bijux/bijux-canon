@@ -14,6 +14,7 @@ from bijux_canon_index.infra.plugins.entrypoints import load_entrypoints
 @dataclass(frozen=True)
 class RunnerDescriptor:
     """Represents runner descriptor."""
+
     name: str
 
 
@@ -22,6 +23,7 @@ RunnerFactory = Callable[[], object]
 
 class RunnerRegistry:
     """Represents runner registry."""
+
     def __init__(self) -> None:
         """Initialize the instance."""
         self._runners: dict[str, tuple[RunnerFactory, PluginContract]] = {}

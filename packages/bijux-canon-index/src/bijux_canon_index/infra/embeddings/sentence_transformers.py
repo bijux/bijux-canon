@@ -24,6 +24,7 @@ import numpy as np
 
 class SentenceTransformersProvider(EmbeddingProvider):
     """Represents sentence transformers provider."""
+
     name = "sentence_transformers"
 
     @property

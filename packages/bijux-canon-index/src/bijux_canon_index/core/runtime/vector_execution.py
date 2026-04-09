@@ -17,6 +17,7 @@ from bijux_canon_index.core.types import ExecutionRequest
 @dataclass(frozen=True)
 class RandomnessProfile:
     """Represents randomness profile."""
+
     seed: int | None = None
     sources: tuple[str, ...] = field(default_factory=tuple)
     bounded: bool = False
@@ -28,6 +29,7 @@ class RandomnessProfile:
 @dataclass(frozen=True)
 class VectorExecution:
     """Represents vector execution."""
+
     request: ExecutionRequest
     contract: ExecutionContract
     backend_id: str

@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 @dataclass(frozen=True)
 class PerformanceEnvelope:
     """Represents performance envelope."""
+
     name: str
     description: str
     max_rank_instability: float | None = None

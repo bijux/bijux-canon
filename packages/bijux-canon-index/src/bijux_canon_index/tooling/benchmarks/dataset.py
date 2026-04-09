@@ -20,6 +20,7 @@ DEFAULT_SEED = 1337
 @dataclass(frozen=True)
 class BenchmarkDataset:
     """Represents benchmark dataset."""
+
     documents: list[str]
     vectors: np.ndarray
     queries: np.ndarray

@@ -9,6 +9,7 @@ from enum import Enum
 
 class ExecutionIntent(Enum):
     """Enumeration of execution intent."""
+
     EXACT_VALIDATION = "exact_validation"
     REPRODUCIBLE_RESEARCH = "reproducible_research"
     EXPLORATORY_SEARCH = "exploratory_search"

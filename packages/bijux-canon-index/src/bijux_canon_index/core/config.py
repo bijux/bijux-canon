@@ -11,6 +11,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class VectorStoreConfig:
     """Represents vector store config."""
+
     backend: str | None = None
     uri: str | None = None
     options: Mapping[str, str] | None = None
@@ -19,6 +20,7 @@ class VectorStoreConfig:
 @dataclass(frozen=True)
 class EmbeddingCacheConfig:
     """Represents embedding cache config."""
+
     backend: str | None = None
     uri: str | None = None
     options: Mapping[str, str] | None = None
@@ -27,6 +29,7 @@ class EmbeddingCacheConfig:
 @dataclass(frozen=True)
 class EmbeddingConfig:
     """Represents embedding config."""
+
     provider: str | None = None
     model: str | None = None
     cache: EmbeddingCacheConfig | None = None
@@ -35,6 +38,7 @@ class EmbeddingConfig:
 @dataclass(frozen=True)
 class ExecutionConfig:
     """Represents execution config."""
+
     vector_store: VectorStoreConfig | None = None
     embeddings: EmbeddingConfig | None = None
     resource_limits: ResourceLimits | None = None
@@ -43,6 +47,7 @@ class ExecutionConfig:
 @dataclass(frozen=True)
 class ResourceLimits:
     """Represents resource limits."""
+
     max_vectors_per_ingest: int | None = None
     max_k: int | None = None
     max_query_size: int | None = None

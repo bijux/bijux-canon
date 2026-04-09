@@ -14,6 +14,7 @@ from bijux_canon_index.core.identity.ids import fingerprint
 @dataclass(frozen=True)
 class RandomnessSource:
     """Represents randomness source."""
+
     name: str
     description: str
     category: str  # e.g. sampling, graph_traversal, parallelism
@@ -22,6 +23,7 @@ class RandomnessSource:
 @dataclass(frozen=True)
 class ExecutionPlan:
     """Represents execution plan."""
+
     algorithm: str
     contract: ExecutionContract
     k: int

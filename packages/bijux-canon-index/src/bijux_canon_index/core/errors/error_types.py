@@ -12,6 +12,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class BijuxError(Exception):
     """Raised when bijux error."""
+
     message: str
     invariant_id: str = "INV-000"
     retryable: bool = False

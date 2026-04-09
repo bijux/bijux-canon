@@ -22,6 +22,7 @@ from bijux_canon_index.infra.plugins.entrypoints import load_entrypoints
 @dataclass(frozen=True)
 class VectorStoreDescriptor:
     """Represents vector store descriptor."""
+
     name: str
     available: bool
     supports_exact: bool
@@ -38,6 +39,7 @@ class VectorStoreDescriptor:
 @dataclass(frozen=True)
 class VectorStoreResolution:
     """Represents vector store resolution."""
+
     descriptor: VectorStoreDescriptor
     adapter: VectorStoreAdapter
     uri_redacted: str | None
@@ -45,12 +47,13 @@ class VectorStoreResolution:
 
 class NoOpVectorStoreAdapter(VectorStoreAdapter):
     """Represents no op vector store adapter."""
+
     backend = "memory"
     is_noop = True
 
     def connect(self) -> None:
         """Handle connect."""
-        return None
+        return
 
     def insert(
         self,
@@ -104,6 +107,7 @@ def _redact_uri(uri: str | None) -> str | None:
 
 class VectorStoreRegistry:
     """Represents vector store registry."""
+
     def __init__(self) -> None:
         """Initialize the instance."""
         self._entries: dict[

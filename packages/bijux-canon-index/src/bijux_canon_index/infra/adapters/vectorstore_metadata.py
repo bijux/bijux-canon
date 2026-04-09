@@ -17,6 +17,7 @@ from bijux_canon_index.infra.adapters.metadata_migrations import (
 @dataclass(frozen=True)
 class VectorStoreMetadata:
     """Represents vector store metadata."""
+
     doc_id: str
     chunk_id: str
     source_uri: str | None

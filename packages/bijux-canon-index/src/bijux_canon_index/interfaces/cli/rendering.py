@@ -21,6 +21,7 @@ from bijux_canon_index.infra.logging import trace_events
 @dataclass(frozen=True)
 class OutputOptions:
     """Represents output options."""
+
     fmt: str | None = None
     output: Path | None = None
     config_path: Path | None = None

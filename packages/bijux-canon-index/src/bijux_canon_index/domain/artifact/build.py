@@ -16,6 +16,7 @@ from bijux_canon_index.core.types import ExecutionArtifact
 @dataclass(frozen=True)
 class BuildPlan:
     """Represents build plan."""
+
     artifact: ExecutionArtifact
     plan_fingerprint: str
     index_config_fingerprint: str

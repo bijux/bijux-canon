@@ -16,6 +16,7 @@ from bijux_canon_index.infra.plugins.entrypoints import load_entrypoints
 @dataclass(frozen=True)
 class EmbeddingMetadata:
     """Represents embedding metadata."""
+
     provider: str
     provider_version: str | None
     model: str
@@ -31,12 +32,14 @@ class EmbeddingMetadata:
 @dataclass(frozen=True)
 class EmbeddingBatch:
     """Represents embedding batch."""
+
     vectors: list[tuple[float, ...]]
     metadata: EmbeddingMetadata
 
 
 class EmbeddingProvider(ABC):
     """Represents embedding provider."""
+
     name: str
 
     @property
@@ -57,6 +60,7 @@ EmbeddingProviderFactory = Callable[[], EmbeddingProvider]
 
 class EmbeddingProviderRegistry:
     """Represents embedding provider registry."""
+
     def __init__(self) -> None:
         """Initialize the instance."""
         self._providers: dict[str, tuple[EmbeddingProviderFactory, PluginContract]] = {}

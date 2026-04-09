@@ -21,12 +21,14 @@ from bijux_canon_index.infra.runtime_paths import (
 @dataclass(frozen=True)
 class EmbeddingCacheEntry:
     """Represents embedding cache entry."""
+
     vector: tuple[float, ...]
     metadata: dict[str, str | None]
 
 
 class EmbeddingCache(Protocol):
     """Represents embedding cache."""
+
     def get(self, key: str) -> EmbeddingCacheEntry | None:
         """Look up a cached embedding entry."""
 
@@ -40,6 +42,7 @@ class EmbeddingCache(Protocol):
 
 class SQLiteEmbeddingCache:
     """Represents SQLite embedding cache."""
+
     def __init__(self, path: str | Path) -> None:
         """Initialize the instance."""
         self._path = ensure_parent_dir(path)
