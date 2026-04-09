@@ -1,5 +1,5 @@
 function bijuxNormalizePath(target) {
-  const url = new URL(target, window.location.origin);
+  const url = new URL(target, window.location.href);
   const path = url.pathname.replace(/\/+$/, "");
   return path || "/";
 }
@@ -47,6 +47,41 @@ function bijuxSyncDetailStripVisibility() {
   }
 }
 
+function bijuxSyncDetailStripActiveState() {
+  const activeStrip = document.querySelector("[data-bijux-detail-strip]:not([hidden])");
+  const currentPath = bijuxNormalizePath(window.location.pathname);
+
+  if (!activeStrip) {
+    return;
+  }
+
+  let activeLink = null;
+
+  for (const link of activeStrip.querySelectorAll("[data-bijux-detail-target]")) {
+    const linkPath = bijuxNormalizePath(
+      link.getAttribute("data-bijux-detail-target") || "/"
+    );
+    const isMatch =
+      currentPath === linkPath ||
+      (linkPath !== "/" && currentPath.startsWith(`${linkPath}/`));
+
+    if (isMatch && (!activeLink || linkPath.length > activeLink.path.length)) {
+      activeLink = { path: linkPath, node: link };
+    }
+  }
+
+  for (const item of activeStrip.querySelectorAll(".bijux-tabs__item")) {
+    item.classList.remove("bijux-tabs__item--active");
+  }
+
+  if (activeLink) {
+    activeLink.node.closest(".bijux-tabs__item")?.classList.add(
+      "bijux-tabs__item--active"
+    );
+  }
+}
+
 document$.subscribe(() => {
   bijuxSyncDetailStripVisibility();
+  bijuxSyncDetailStripActiveState();
 });
