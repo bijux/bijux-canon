@@ -13,6 +13,7 @@ from bijux_canon_index.core.types import (
     ExecutionRequest,
     Vector,
 )
+
 from tests.conformance.suite import default_backends
 
 

@@ -14,6 +14,7 @@ from bijux_canon_index.domain.requests.request_execution import (
 )
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 import pytest
+
 from tests.conformance.test_cross_backend_replay import _seed_backend
 
 

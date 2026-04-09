@@ -51,7 +51,9 @@ def test_human_intervention_events_returns_event_indexes() -> None:
 def test_first_divergent_step_prefers_smallest_failure_candidate() -> None:
     assert (
         first_divergent_step(
-            cast(ExecutionSteps, SimpleNamespace(steps=[SimpleNamespace(step_index=9)])),
+            cast(
+                ExecutionSteps, SimpleNamespace(steps=[SimpleNamespace(step_index=9)])
+            ),
             {"failed_steps": [4, 2], "missing_step_end": [5]},
         )
         == 2
