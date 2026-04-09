@@ -28,9 +28,7 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Path to the package root containing pyproject.toml.",
     )
-    parser.add_argument(
-        "--deptry-bin", default="", help="Deptry executable to invoke."
-    )
+    parser.add_argument("--deptry-bin", default="", help="Deptry executable to invoke.")
     parser.add_argument(
         "roots",
         nargs="*",
@@ -40,21 +38,32 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def resolve_deptry_command(deptry_bin: str) -> list[str]:
+def resolve_relative_command(command: list[str], project_dir: Path) -> list[str]:
+    executable = Path(command[0]).expanduser()
+    if executable.is_absolute():
+        return [os.fspath(executable.resolve()), *command[1:]]
+    if len(executable.parts) == 1:
+        resolved = shutil.which(command[0])
+        if resolved is None:
+            raise SystemExit(f"deptry executable not found: {command[0]}")
+        return [resolved, *command[1:]]
+
+    candidates = (
+        project_dir / executable,
+        project_dir.parent / executable,
+        project_dir.parent.parent / executable,
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return [os.fspath(candidate.resolve()), *command[1:]]
+    raise SystemExit(f"deptry executable not found: {command[0]}")
+
+
+def resolve_deptry_command(deptry_bin: str, project_dir: Path) -> list[str]:
     deptry_command = shlex.split(deptry_bin)
     if not deptry_command:
-        return [sys.executable, "-m", "deptry"]
-
-    deptry_bin_arg = Path(deptry_command[0]).expanduser()
-    if deptry_bin_arg.is_absolute() or len(deptry_bin_arg.parts) > 1:
-        if not deptry_bin_arg.absolute().is_file():
-            raise SystemExit(f"deptry executable not found: {deptry_bin}")
-        return [os.fspath(deptry_bin_arg.absolute()), *deptry_command[1:]]
-
-    resolved_deptry = shutil.which(deptry_command[0])
-    if resolved_deptry is None:
-        raise SystemExit(f"deptry executable not found: {deptry_bin}")
-    return [resolved_deptry, *deptry_command[1:]]
+        return resolve_relative_command([sys.executable, "-m", "deptry"], project_dir)
+    return resolve_relative_command(deptry_command, project_dir)
 
 
 def merge_deptry_config(
@@ -79,17 +88,19 @@ def merge_deptry_config(
 
     if "known_first_party" not in merged_config:
         merged_config["known_first_party"] = [package_slug.replace("-", "_")]
-    optional_dependencies = (
-        package_pyproject.get("project", {}).get("optional-dependencies", {})
+    optional_dependencies = package_pyproject.get("project", {}).get(
+        "optional-dependencies", {}
     )
     available_groups = set(optional_dependencies)
-    dev_groups = merged_config.get("optional_dependencies_dev_groups")
-    if isinstance(dev_groups, list):
+    for key in ("pep621_dev_dependency_groups", "optional_dependencies_dev_groups"):
+        dev_groups = merged_config.get(key)
+        if not isinstance(dev_groups, list):
+            continue
         filtered_groups = [group for group in dev_groups if group in available_groups]
         if filtered_groups:
-            merged_config["optional_dependencies_dev_groups"] = filtered_groups
+            merged_config[key] = filtered_groups
         else:
-            merged_config.pop("optional_dependencies_dev_groups", None)
+            merged_config.pop(key, None)
     return merged_config
 
 
@@ -133,9 +144,9 @@ def main() -> int:
     if not config_path.is_file():
         raise SystemExit(f"deptry config not found at {config_path}")
 
-    deptry_command = resolve_deptry_command(args.deptry_bin)
     pyproject_text = pyproject_path.read_text(encoding="utf-8").rstrip()
     package_pyproject = tomllib.loads(pyproject_text)
+    deptry_command = resolve_deptry_command(args.deptry_bin, project_dir)
     config_text = render_deptry_config(
         merge_deptry_config(config_path, project_dir.name, package_pyproject)
     )
