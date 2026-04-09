@@ -145,6 +145,7 @@ def test_product_package_detail_tabs_follow_authored_order(
         "bijux-canon/index.html",
         "bijux-canon-index/index.html",
         "bijux-canon-agent/index.html",
+        "bijux-canon-maintain/index.html",
         "compat-packages/index.html",
     ],
 )
@@ -300,6 +301,39 @@ def test_compatibility_migration_leaf_pages_keep_section_sidebar(
         "Validation Strategy",
         "Retirement Conditions",
         "Retirement Playbook",
+    ]
+
+
+def test_maintenance_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
+    page = _parse_navigation(rendered_docs, "bijux-canon-maintain/index.html")
+
+    assert page.detail_tabs == [
+        "Home",
+        "bijux-canon-dev",
+    ]
+    assert page.active_detail_tabs == ["Home"]
+
+
+def test_maintenance_dev_leaf_pages_keep_section_sidebar(
+    rendered_docs: Path,
+) -> None:
+    page = _parse_navigation(
+        rendered_docs,
+        "bijux-canon-maintain/bijux-canon-dev/security-gates/index.html",
+    )
+
+    assert page.active_detail_tabs == ["bijux-canon-dev"]
+    assert page.sidebar_title == "bijux-canon-dev"
+    assert page.sidebar_links == [
+        "Package Overview",
+        "Scope and Non-Goals",
+        "Module Map",
+        "Quality Gates",
+        "Security Gates",
+        "Schema Governance",
+        "Release Support",
+        "SBOM and Supply Chain",
+        "Operating Guidelines",
     ]
 
 

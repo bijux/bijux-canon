@@ -4,123 +4,111 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-09
 ---
 
 # Maintenance Handbook
 
-`bijux-canon-dev` is the maintainer package for repository health. It exists
-so schema drift checks, quality gates, supply-chain helpers, and release
-support have one clear home outside the end-user product surface.
+The maintenance handbook explains the repository-owned operational surfaces that
+do not belong in one product package handbook.
 
-This package matters because hidden maintenance logic erodes trust fast. If
-contributors can only discover repository policy by reading CI output or shell
-glue, the monorepo stops feeling reviewable.
+This handbook exists because repository health work is real work. Schema drift
+checks, supply-chain helpers, shared Make targets, and CI workflow contracts are
+too important to leave half-documented in scripts and logs. They need their own
+home so maintainers can review them as first-class parts of the system instead
+of as hidden support glue.
 
-These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
+The maintenance handbook should make repository-health behavior explicit without
+turning it into a shadow product layer. It is strongest when readers can see
+what the shared maintenance surfaces do, where they live, and which packages or
+rules they affect.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    page["Maintenance Handbook<br/>clarifies: explain automation | see repository-health scope | review package impact"]
+    page["Maintenance Handbook<br/>clarifies: maintenance scope | shared automation | workflow contracts"]
     classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
     classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    detail1["supply-chain visibility"]
-    detail1 --> page
-    detail2["package-aware automation"]
-    detail2 --> page
-    detail3["release clarity"]
-    detail3 --> page
-    detail4["package consistency"]
-    detail4 --> page
-    detail5["less CI archaeology"]
-    detail5 --> page
-    detail6["quality gates"]
-    detail6 --> page
-    detail7["security gates"]
-    detail7 --> page
-    detail8["release support"]
-    detail8 --> page
-    detail9["schema integrity"]
-    detail9 --> page
-    next1["move to product package docs if the question is user-facing behavior rather than repository health"]
+    anchor1["packages/bijux-canon-dev"]
+    anchor2["makes/"]
+    anchor3[".github/workflows/"]
+    anchor1 --> page
+    anchor2 --> page
+    anchor3 --> page
+    next1["open the dev-package section for maintainer helper code"]
+    next2["open the make section for shared command surfaces"]
+    next3["open the workflow section for CI and release contracts"]
     page --> next1
-    next2["open the relevant helper module or test after using this page to orient yourself"]
     page --> next2
-    next3["return to repository handbook pages when the maintainer issue turns out to be root policy instead"]
     page --> next3
     class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
+    class anchor1,anchor2,anchor3 anchor;
     class next1,next2,next3 action;
 ```
 
-## Pages in This Section
+## Sections
 
-- [Package Overview](package-overview.md)
-- [Scope and Non-Goals](scope-and-non-goals.md)
-- [Module Map](module-map.md)
-- [Quality Gates](quality-gates.md)
-- [Security Gates](security-gates.md)
-- [Schema Governance](schema-governance.md)
-- [Release Support](release-support.md)
-- [SBOM and Supply Chain](sbom-and-supply-chain.md)
-- [Operating Guidelines](operating-guidelines.md)
+- [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer package behavior,
+  schema drift tooling, release support, SBOM helpers, and repository-health
+  guardrails
 
-## Module Map
+## Shared Maintenance Anchors
 
-- `src/bijux_canon_dev/quality` for repository quality checks
-- `src/bijux_canon_dev/security` for security gates
-- `src/bijux_canon_dev/sbom` for supply-chain and bill-of-materials support
-- `src/bijux_canon_dev/release` for release support
-- `src/bijux_canon_dev/api` for OpenAPI and schema drift tooling
-- `src/bijux_canon_dev/packages` for package-specific repository helpers
-
-## Concrete Anchors
-
-- `packages/bijux-canon-dev/src/bijux_canon_dev` for maintainer helpers
-- `packages/bijux-canon-dev/tests` for executable maintenance proof
-- `apis/` and root workflows for repository-level integration points
+- `packages/bijux-canon-dev` for maintainer helper code
+- `makes/` for shared make entrypoints and composition
+- `.github/workflows/` for CI, docs, and publication workflow truth
 
 ## Use This Page When
 
 - you are changing repository automation, validation, or release support
 - you need maintainer-only context that should not live in product package docs
-- you are reviewing CI, schema drift, or supply-chain behavior
+- you are reviewing CI, schema drift, supply-chain, or shared automation
 
 ## Decision Rule
 
-Use `Maintenance Handbook` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use `Maintenance Handbook` to decide whether a change belongs to repository
+maintenance surfaces or to a product package contract. If the change would
+affect end-user behavior directly, this handbook should push the review back
+toward the owning product package instead of letting maintainer scope sprawl.
 
 ## What This Page Answers
 
-- which repository maintenance concern this page explains
-- which maintainer modules or tests support that concern
+- which maintenance section owns the current repository-health concern
+- which shared automation surfaces matter for that concern
 - what a reviewer should confirm before changing repository automation
 
 ## Reviewer Lens
 
-- compare the described maintainer behavior with the actual helper modules and tests
+- compare the described maintenance behavior with the actual helper modules,
+  make surfaces, and workflow files
 - check that maintainer-only guidance has not leaked into product-facing pages
 - confirm that repository automation still names its package impact explicitly
 
 ## Next Checks
 
-- move to product package docs if the question is user-facing behavior rather than repository health
-- open the relevant helper module or test after using this page to orient yourself
-- return to repository handbook pages when the maintainer issue turns out to be root policy instead
+- move to the `bijux-canon-dev` section when the question is about the
+  maintainer package itself
+- move to product package docs if the question is user-facing behavior rather
+  than repository health
+- return to repository handbook pages when the issue turns out to be root
+  governance rather than maintenance implementation
 
 ## Honesty Boundary
 
-This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.
+This handbook can describe maintainer automation and repository health work, but
+it should never imply that maintainer tooling is part of the end-user product
+surface. It also should not pretend that hidden scripts count as documentation
+just because CI happens to run them.
 
 ## Purpose
 
-This page explains how to use the maintenance handbook without confusing it with user-facing product docs.
+This page explains how to use the maintenance handbook without confusing it with
+user-facing product docs.
 
 ## Stability
 
-Keep this page aligned with the actual maintainer modules that exist under `packages/bijux-canon-dev`.
+Keep this page aligned with the actual maintenance sections and shared surfaces
+documented in this handbook.
