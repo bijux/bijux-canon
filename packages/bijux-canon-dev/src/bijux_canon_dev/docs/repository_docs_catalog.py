@@ -18,6 +18,7 @@ LAST_REVIEWED = "2026-04-04"
 @dataclass(frozen=True)
 class PackageInfo:
     """Represents package info."""
+
     slug: str
     title: str
     description: str
