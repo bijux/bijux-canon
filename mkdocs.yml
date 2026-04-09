@@ -55,15 +55,23 @@ nav:
   - Home: index.md
   - Repository Handbook:
       - Repository Handbook: bijux-canon/index.md
-      - Platform Overview: bijux-canon/platform-overview.md
-      - Repository Scope: bijux-canon/repository-scope.md
-      - Workspace Layout: bijux-canon/workspace-layout.md
-      - Package Map: bijux-canon/package-map.md
-      - API and Schema Governance: bijux-canon/api-and-schema-governance.md
-      - Local Development: bijux-canon/local-development.md
-      - Testing and Validation: bijux-canon/testing-and-validation.md
-      - Release and Versioning: bijux-canon/release-and-versioning.md
-      - Documentation System: bijux-canon/documentation-system.md
+      - Foundation:
+          - Foundation: bijux-canon/foundation/index.md
+          - Platform Overview: bijux-canon/foundation/platform-overview.md
+          - Repository Scope: bijux-canon/foundation/repository-scope.md
+          - Workspace Layout: bijux-canon/foundation/workspace-layout.md
+          - Package Map: bijux-canon/foundation/package-map.md
+          - Ownership Model: bijux-canon/foundation/ownership-model.md
+          - Domain Language: bijux-canon/foundation/domain-language.md
+          - Documentation System: bijux-canon/foundation/documentation-system.md
+          - Change Principles: bijux-canon/foundation/change-principles.md
+          - Decision Rules: bijux-canon/foundation/decision-rules.md
+      - Operations:
+          - Operations: bijux-canon/local-development.md
+          - Local Development: bijux-canon/local-development.md
+          - Testing and Validation: bijux-canon/testing-and-validation.md
+          - Release and Versioning: bijux-canon/release-and-versioning.md
+          - API and Schema Governance: bijux-canon/api-and-schema-governance.md
   - bijux-canon-ingest:
       - Overview: bijux-canon-ingest/index.md
       - Foundation:

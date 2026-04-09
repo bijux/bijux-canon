@@ -164,17 +164,33 @@ def test_repository_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
 
     assert page.detail_tabs == [
         "Home",
+        "Foundation",
+        "Operations",
+    ]
+    assert page.active_detail_tabs == ["Home"]
+
+
+def test_repository_foundation_leaf_pages_keep_section_sidebar(
+    rendered_docs: Path,
+) -> None:
+    page = _parse_navigation(
+        rendered_docs,
+        "bijux-canon/foundation/package-map/index.html",
+    )
+
+    assert page.active_detail_tabs == ["Foundation"]
+    assert page.sidebar_title == "Foundation"
+    assert page.sidebar_links == [
         "Platform Overview",
         "Repository Scope",
         "Workspace Layout",
         "Package Map",
-        "API and Schema Governance",
-        "Local Development",
-        "Testing and Validation",
-        "Release and Versioning",
+        "Ownership Model",
+        "Domain Language",
         "Documentation System",
+        "Change Principles",
+        "Decision Rules",
     ]
-    assert page.active_detail_tabs == ["Home"]
 
 
 def test_primary_sidebar_does_not_use_lifted_nav_mode(rendered_docs: Path) -> None:
