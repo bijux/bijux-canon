@@ -54,6 +54,8 @@ flowchart LR
 - [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer package behavior,
   schema drift tooling, release support, SBOM helpers, and repository-health
   guardrails
+- [makes](makes/index.md) for the shared make entrypoints, package dispatch,
+  CI target families, and release-facing command surfaces
 
 ## Shared Maintenance Anchors
 

@@ -375,6 +375,17 @@ nav:
           - Release Support: bijux-canon-maintain/bijux-canon-dev/release-support.md
           - SBOM and Supply Chain: bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain.md
           - Operating Guidelines: bijux-canon-maintain/bijux-canon-dev/operating-guidelines.md
+      - makes:
+          - makes: bijux-canon-maintain/makes/index.md
+          - Make System Overview: bijux-canon-maintain/makes/make-system-overview.md
+          - Root Entrypoints: bijux-canon-maintain/makes/root-entrypoints.md
+          - Environment Model: bijux-canon-maintain/makes/environment-model.md
+          - Repository Layout: bijux-canon-maintain/makes/repository-layout.md
+          - Package Dispatch: bijux-canon-maintain/makes/package-dispatch.md
+          - CI Targets: bijux-canon-maintain/makes/ci-targets.md
+          - Package Contracts: bijux-canon-maintain/makes/package-contracts.md
+          - Release Surfaces: bijux-canon-maintain/makes/release-surfaces.md
+          - Authoring Rules: bijux-canon-maintain/makes/authoring-rules.md
   - Compatibility Packages:
       - Compatibility Packages: compat-packages/index.md
       - Catalog:

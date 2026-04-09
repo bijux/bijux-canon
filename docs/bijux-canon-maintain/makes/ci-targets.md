@@ -1,0 +1,34 @@
+---
+title: CI Targets
+audience: mixed
+type: explanation
+status: canonical
+owner: bijux-canon-dev-docs
+last_reviewed: 2026-04-09
+---
+
+# CI Targets
+
+The CI make surface should be explicit enough that workflow files are not the
+only place where verification logic can be understood.
+
+The repository groups CI-oriented make fragments under `makes/bijux-py/ci/`.
+Those files define target families for docs, lint, quality, sbom, security,
+test, and build-related work.
+
+## CI Anchors
+
+- `makes/bijux-py/ci/build.mk`
+- `makes/bijux-py/ci/docs.mk`
+- `makes/bijux-py/ci/lint.mk`
+- `makes/bijux-py/ci/quality.mk`
+- `makes/bijux-py/ci/security.mk`
+- `makes/bijux-py/ci/test.mk`
+
+## Purpose
+
+This page explains where CI-oriented targets live in the make tree.
+
+## Stability
+
+Keep it aligned with the actual CI fragment set under `makes/bijux-py/ci/`.

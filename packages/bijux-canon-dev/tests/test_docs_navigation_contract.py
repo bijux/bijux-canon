@@ -310,6 +310,7 @@ def test_maintenance_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
     assert page.detail_tabs == [
         "Home",
         "bijux-canon-dev",
+        "makes",
     ]
     assert page.active_detail_tabs == ["Home"]
 
@@ -334,6 +335,29 @@ def test_maintenance_dev_leaf_pages_keep_section_sidebar(
         "Release Support",
         "SBOM and Supply Chain",
         "Operating Guidelines",
+    ]
+
+
+def test_maintenance_make_leaf_pages_keep_section_sidebar(
+    rendered_docs: Path,
+) -> None:
+    page = _parse_navigation(
+        rendered_docs,
+        "bijux-canon-maintain/makes/package-dispatch/index.html",
+    )
+
+    assert page.active_detail_tabs == ["makes"]
+    assert page.sidebar_title == "makes"
+    assert page.sidebar_links == [
+        "Make System Overview",
+        "Root Entrypoints",
+        "Environment Model",
+        "Repository Layout",
+        "Package Dispatch",
+        "CI Targets",
+        "Package Contracts",
+        "Release Surfaces",
+        "Authoring Rules",
     ]
 
 
