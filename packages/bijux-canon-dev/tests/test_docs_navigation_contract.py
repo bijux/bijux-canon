@@ -184,6 +184,30 @@ def test_primary_sidebar_does_not_use_lifted_nav_mode(rendered_docs: Path) -> No
     assert '<nav class="md-nav md-nav--primary md-nav--lifted"' not in text
 
 
+def test_header_navigation_uses_canonical_path_contract(rendered_docs: Path) -> None:
+    text = _page_text(rendered_docs, "bijux-canon-index/interfaces/index.html")
+
+    assert 'data-bijux-site-path="/"' in text
+    assert 'data-bijux-site-path="/bijux-canon-index/"' in text
+    assert 'data-bijux-site-path="/bijux-canon-reason/"' in text
+    assert 'data-bijux-detail-root-path="/bijux-canon-index/"' in text
+    assert 'data-bijux-detail-path="/bijux-canon-index/interfaces/"' in text
+    assert 'data-bijux-detail-path="/bijux-canon-index/architecture/"' in text
+    assert "data-bijux-site-target" not in text
+    assert "data-bijux-detail-target" not in text
+    assert "data-bijux-detail-root=" not in text
+
+
+def test_rendered_header_marks_active_navigation_links(rendered_docs: Path) -> None:
+    text = _page_text(rendered_docs, "bijux-canon-reason/operations/index.html")
+
+    assert 'data-bijux-site-path="/bijux-canon-reason/" aria-current="page"' in text
+    assert (
+        'data-bijux-detail-path="/bijux-canon-reason/operations/" '
+        'aria-current="page"' in text
+    )
+
+
 def test_compatibility_detail_tabs_keep_package_names(rendered_docs: Path) -> None:
     page = _parse_navigation(rendered_docs, "compat-packages/index.html")
 
