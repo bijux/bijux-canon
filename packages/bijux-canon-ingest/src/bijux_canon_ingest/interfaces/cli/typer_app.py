@@ -33,7 +33,7 @@ def build_app() -> Any:
         add_completion=False,
         help="Optional Typer shell over the ingest package CLI entrypoint.",
     )
-    typed_app = cast(_TyperApp, app)
+    typed_app = cast("_TyperApp", app)
 
     @typed_app.command()
     def pipeline(
