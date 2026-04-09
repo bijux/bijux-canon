@@ -7,7 +7,9 @@
 {%- endmacro %}
 
 {% macro detail_label(nav_item) -%}
-  {% if nav_item.title == "Overview" -%}
+  {% if nav_item.parent and nav_item.title == nav_item.parent.title -%}
+    Home
+  {%- elif nav_item.title == "Overview" -%}
     Home
   {%- else -%}
     {{ nav_item.title }}
