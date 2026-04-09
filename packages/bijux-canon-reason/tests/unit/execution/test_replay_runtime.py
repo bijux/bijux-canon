@@ -11,7 +11,11 @@ def test_frozen_tool_registry_missing_call_raises() -> None:
     try:
         registry.invoke(
             call=ToolCall(
-                id="missing", tool_name="compute", arguments={}, step_id="s1"
+                id="missing",
+                tool_name="compute",
+                arguments={},
+                step_id="s1",
+                call_idx=0,
             ),
             seed=0,
         )
@@ -23,7 +27,13 @@ def test_frozen_tool_registry_returns_recorded_results() -> None:
     result = ToolResult(call_id="c1", success=True, result={"ok": True})
     registry = FrozenToolRegistry(recorded={"c1": result}, descriptors=[])
     out = registry.invoke(
-        call=ToolCall(id="c1", tool_name="compute", arguments={}, step_id="s1"),
+        call=ToolCall(
+            id="c1",
+            tool_name="compute",
+            arguments={},
+            step_id="s1",
+            call_idx=0,
+        ),
         seed=0,
     )
     assert out == result
