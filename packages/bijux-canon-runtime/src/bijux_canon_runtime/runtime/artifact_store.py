@@ -21,6 +21,7 @@ ArtifactProducer = Literal["agent", "retrieval", "reasoning"]
 
 class _HostileDecision(TypedDict):
     """Represents hostile decision."""
+
     drop: bool
     corrupt: bool
     delay: int
