@@ -2,6 +2,7 @@ components:
   schemas:
     ArtifactResponse:
       additionalProperties: false
+      description: Represents artifact response.
       properties:
         artifact_id:
           description: Identifier of the execution artifact materialized by the API.
@@ -28,6 +29,7 @@ components:
       type: object
     BackendCapabilitiesReport:
       additionalProperties: false
+      description: Represents backend capabilities report.
       properties:
         ann_status:
           title: Ann Status
@@ -115,6 +117,7 @@ components:
       type: object
     CreateRequest:
       additionalProperties: false
+      description: Represents create request.
       properties:
         name:
           minLength: 1
@@ -126,6 +129,7 @@ components:
       type: object
     CreateResponse:
       additionalProperties: false
+      description: Represents create response.
       properties:
         name:
           description: Logical corpus name reserved by the API.
@@ -142,6 +146,7 @@ components:
       type: object
     ExecuteResponse:
       additionalProperties: false
+      description: Represents execute response.
       properties:
         correlation_id:
           description: Correlation identifier attached to the execution lifecycle.
@@ -180,6 +185,7 @@ components:
       type: object
     ExecutionArtifactRequest:
       additionalProperties: false
+      description: Represents execution artifact request.
       properties:
         execution_contract:
           $ref: '#/components/schemas/ExecutionContract'
@@ -211,6 +217,7 @@ components:
       type: object
     ExecutionBudgetPayload:
       additionalProperties: false
+      description: Represents execution budget payload.
       properties:
         max_error:
           anyOf:
@@ -230,12 +237,14 @@ components:
       title: ExecutionBudgetPayload
       type: object
     ExecutionContract:
+      description: Enumeration of execution contract.
       enum:
       - deterministic
       - non_deterministic
       title: ExecutionContract
       type: string
     ExecutionIntent:
+      description: Enumeration of execution intent.
       enum:
       - exact_validation
       - reproducible_research
@@ -244,6 +253,7 @@ components:
       title: ExecutionIntent
       type: string
     ExecutionMode:
+      description: Enumeration of execution mode.
       enum:
       - strict
       - bounded
@@ -252,6 +262,7 @@ components:
       type: string
     ExecutionRequestPayload:
       additionalProperties: false
+      description: Represents execution request payload.
       properties:
         artifact_id:
           anyOf:
@@ -442,6 +453,7 @@ components:
       type: object
     ExplainRequest:
       additionalProperties: false
+      description: Represents explain request.
       properties:
         artifact_id:
           anyOf:
@@ -458,6 +470,7 @@ components:
       type: object
     ExplainResponse:
       additionalProperties: false
+      description: Represents explain response.
       properties:
         artifact_id:
           description: Execution artifact used to resolve the result.
@@ -528,6 +541,7 @@ components:
       type: object
     IngestRequest:
       additionalProperties: false
+      description: Represents ingest request.
       properties:
         cache_embeddings:
           anyOf:
@@ -591,6 +605,7 @@ components:
       type: object
     IngestResponse:
       additionalProperties: false
+      description: Represents ingest response.
       properties:
         correlation_id:
           description: Correlation identifier attached to the ingest transaction.
@@ -608,6 +623,7 @@ components:
       type: object
     ListArtifactsResponse:
       additionalProperties: false
+      description: Represents list artifacts response.
       properties:
         artifacts:
           description: Execution artifact identifiers available in the active backend.
@@ -621,6 +637,7 @@ components:
       type: object
     ListRunsResponse:
       additionalProperties: false
+      description: Represents list runs response.
       properties:
         runs:
           description: Recorded execution run identifiers available for inspection.
@@ -634,6 +651,7 @@ components:
       type: object
     RandomnessProfilePayload:
       additionalProperties: false
+      description: Represents randomness profile payload.
       properties:
         bounded:
           default: false
@@ -659,6 +677,7 @@ components:
       type: object
     ReplayResponse:
       additionalProperties: false
+      description: Represents replay response.
       properties:
         details:
           additionalProperties: true
@@ -714,6 +733,7 @@ components:
       type: object
     StorageBackendDescriptor:
       additionalProperties: false
+      description: Represents storage backend descriptor.
       properties:
         name:
           title: Name
@@ -764,6 +784,7 @@ components:
       type: object
     VectorStoreDescriptor:
       additionalProperties: false
+      description: Represents vector store descriptor.
       properties:
         available:
           title: Available
@@ -1114,7 +1135,7 @@ paths:
                       reason: determinism_violation
                       remediation: Use deterministic inputs or switch to non_deterministic
                         contract with declared randomness.
-          description: Unprocessable Entity
+          description: Unprocessable Content
       summary: Execute a vector query
       tags:
       - Execution

@@ -3,6 +3,7 @@
     "schemas": {
       "ArtifactResponse": {
         "additionalProperties": false,
+        "description": "Represents artifact response.",
         "properties": {
           "artifact_id": {
             "description": "Identifier of the execution artifact materialized by the API.",
@@ -36,6 +37,7 @@
       },
       "BackendCapabilitiesReport": {
         "additionalProperties": false,
+        "description": "Represents backend capabilities report.",
         "properties": {
           "ann_status": {
             "title": "Ann Status",
@@ -172,6 +174,7 @@
       },
       "CreateRequest": {
         "additionalProperties": false,
+        "description": "Represents create request.",
         "properties": {
           "name": {
             "minLength": 1,
@@ -187,6 +190,7 @@
       },
       "CreateResponse": {
         "additionalProperties": false,
+        "description": "Represents create response.",
         "properties": {
           "name": {
             "description": "Logical corpus name reserved by the API.",
@@ -208,6 +212,7 @@
       },
       "ExecuteResponse": {
         "additionalProperties": false,
+        "description": "Represents execute response.",
         "properties": {
           "correlation_id": {
             "description": "Correlation identifier attached to the execution lifecycle.",
@@ -256,6 +261,7 @@
       },
       "ExecutionArtifactRequest": {
         "additionalProperties": false,
+        "description": "Represents execution artifact request.",
         "properties": {
           "execution_contract": {
             "$ref": "#/components/schemas/ExecutionContract"
@@ -316,6 +322,7 @@
       },
       "ExecutionBudgetPayload": {
         "additionalProperties": false,
+        "description": "Represents execution budget payload.",
         "properties": {
           "max_error": {
             "anyOf": [
@@ -355,6 +362,7 @@
         "type": "object"
       },
       "ExecutionContract": {
+        "description": "Enumeration of execution contract.",
         "enum": [
           "deterministic",
           "non_deterministic"
@@ -363,6 +371,7 @@
         "type": "string"
       },
       "ExecutionIntent": {
+        "description": "Enumeration of execution intent.",
         "enum": [
           "exact_validation",
           "reproducible_research",
@@ -373,6 +382,7 @@
         "type": "string"
       },
       "ExecutionMode": {
+        "description": "Enumeration of execution mode.",
         "enum": [
           "strict",
           "bounded",
@@ -383,6 +393,7 @@
       },
       "ExecutionRequestPayload": {
         "additionalProperties": false,
+        "description": "Represents execution request payload.",
         "properties": {
           "artifact_id": {
             "anyOf": [
@@ -757,6 +768,7 @@
       },
       "ExplainRequest": {
         "additionalProperties": false,
+        "description": "Represents explain request.",
         "properties": {
           "artifact_id": {
             "anyOf": [
@@ -783,6 +795,7 @@
       },
       "ExplainResponse": {
         "additionalProperties": false,
+        "description": "Represents explain response.",
         "properties": {
           "artifact_id": {
             "description": "Execution artifact used to resolve the result.",
@@ -871,6 +884,7 @@
       },
       "IngestRequest": {
         "additionalProperties": false,
+        "description": "Represents ingest request.",
         "properties": {
           "cache_embeddings": {
             "anyOf": [
@@ -996,6 +1010,7 @@
       },
       "IngestResponse": {
         "additionalProperties": false,
+        "description": "Represents ingest response.",
         "properties": {
           "correlation_id": {
             "description": "Correlation identifier attached to the ingest transaction.",
@@ -1018,6 +1033,7 @@
       },
       "ListArtifactsResponse": {
         "additionalProperties": false,
+        "description": "Represents list artifacts response.",
         "properties": {
           "artifacts": {
             "description": "Execution artifact identifiers available in the active backend.",
@@ -1036,6 +1052,7 @@
       },
       "ListRunsResponse": {
         "additionalProperties": false,
+        "description": "Represents list runs response.",
         "properties": {
           "runs": {
             "description": "Recorded execution run identifiers available for inspection.",
@@ -1054,6 +1071,7 @@
       },
       "RandomnessProfilePayload": {
         "additionalProperties": false,
+        "description": "Represents randomness profile payload.",
         "properties": {
           "bounded": {
             "default": false,
@@ -1096,6 +1114,7 @@
       },
       "ReplayResponse": {
         "additionalProperties": false,
+        "description": "Represents replay response.",
         "properties": {
           "details": {
             "additionalProperties": true,
@@ -1163,6 +1182,7 @@
       },
       "StorageBackendDescriptor": {
         "additionalProperties": false,
+        "description": "Represents storage backend descriptor.",
         "properties": {
           "name": {
             "title": "Name",
@@ -1244,6 +1264,7 @@
       },
       "VectorStoreDescriptor": {
         "additionalProperties": false,
+        "description": "Represents vector store descriptor.",
         "properties": {
           "available": {
             "title": "Available",
@@ -1783,7 +1804,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           }
         },
         "summary": "Execute a vector query",
