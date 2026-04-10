@@ -181,7 +181,14 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
     assert any(
         isinstance(step, dict)
         and step.get("uses") == "softprops/action-gh-release@v2"
-        and step.get("with", {}).get("overwrite_files") is False
+        and step.get("with", {}).get("overwrite_files") is True
+        for step in release_steps
+    )
+    assert any(
+        isinstance(step, dict)
+        and step.get("name") == "Reset existing GitHub release"
+        and "gh release delete" in step.get("run", "")
+        and step.get("env", {}).get("GH_TOKEN") == "${{ github.token }}"
         for step in release_steps
     )
 
@@ -267,9 +274,9 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
         in release_script
     )
     assert 'sbom_dir="${ARTIFACTS_DIR}/sbom"' in release_script
-    assert '${{ inputs.package_slug }}-sbom-prod.cdx.json' in release_script
-    assert '${{ inputs.package_slug }}-sbom-dev.cdx.json' in release_script
-    assert '${{ inputs.package_slug }}-sbom-summary.txt' in release_script
+    assert "${{ inputs.package_slug }}-sbom-prod.cdx.json" in release_script
+    assert "${{ inputs.package_slug }}-sbom-dev.cdx.json" in release_script
+    assert "${{ inputs.package_slug }}-sbom-summary.txt" in release_script
     assert (
         'makefile="${{ inputs.makefile_path }}"'
         in build_workflow["jobs"]["build"]["steps"][3]["run"]
