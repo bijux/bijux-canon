@@ -16,7 +16,7 @@ def test_distribution_version_uses_first_installed_distribution(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     versions: dict[str, str] = {
-        "bijux-canon-agent": "0.3.0",
+        "bijux-canon-agent": "0.3.2",
     }
 
     def fake_version(name: str) -> str:
@@ -24,7 +24,7 @@ def test_distribution_version_uses_first_installed_distribution(
 
     monkeypatch.setattr(metadata, "version", fake_version)
 
-    assert distribution_version("bijux-canon-agent") == "0.3.0"
+    assert distribution_version("bijux-canon-agent") == "0.3.2"
 
 
 def test_distribution_version_falls_back_when_no_distribution_is_installed(
@@ -43,10 +43,10 @@ def test_runtime_dependency_versions_use_canonical_keys(
 ) -> None:
     values = {
         "bijux-cli": "0.3.3",
-        "bijux-canon-agent": "0.3.0",
-        "bijux-canon-ingest": "0.3.0",
-        "bijux-canon-reason": "0.3.0",
-        "bijux-canon-index": "0.3.0",
+        "bijux-canon-agent": "0.3.2",
+        "bijux-canon-ingest": "0.3.2",
+        "bijux-canon-reason": "0.3.2",
+        "bijux-canon-index": "0.3.2",
     }
 
     def fake_version(name: str) -> str:
@@ -59,8 +59,8 @@ def test_runtime_dependency_versions_use_canonical_keys(
 
     assert runtime_dependency_versions() == {
         "bijux-cli": "0.3.3",
-        "bijux-canon-agent": "0.3.0",
-        "bijux-canon-ingest": "0.3.0",
-        "bijux-canon-reason": "0.3.0",
-        "bijux-canon-index": "0.3.0",
+        "bijux-canon-agent": "0.3.2",
+        "bijux-canon-ingest": "0.3.2",
+        "bijux-canon-reason": "0.3.2",
+        "bijux-canon-index": "0.3.2",
     }
