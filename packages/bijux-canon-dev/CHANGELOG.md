@@ -6,6 +6,15 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
+## 0.3.2 - 2026-04-10
+
+### Fixed
+
+- Release metadata contracts now enforce the public package fallback version
+  expected for the `v0.3.2` release line.
+- Package release-surface documentation checks now cover the current
+  per-package PyPI guidance.
+
 ## 0.3.0 - 2026-04-05
 
 ### Added

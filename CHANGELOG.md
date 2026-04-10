@@ -20,6 +20,8 @@ whole workspace.
   canon package line.
 - Source-checkout version fallbacks now report the intended release version
   when installed package metadata is unavailable.
+- Developer release contracts now check the current public fallback version and
+  package release-surface documentation.
 
 ## 0.3.0 - 2026-04-05
 
