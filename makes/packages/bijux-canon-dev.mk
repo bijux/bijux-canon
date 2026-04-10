@@ -7,6 +7,6 @@ ENABLE_RADON      := 0
 ENABLE_PYDOCSTYLE := 0
 BUILD_CHECK_DISTS := 1
 PACKAGE_ALL_TARGETS := clean install test lint quality security build sbom
-QUALITY_MYPY_CONFIG := $(MONOREPO_ROOT)/configs/mypy.ini
+QUALITY_MYPY_CONFIG = $(MONOREPO_ROOT)/configs/mypy.ini
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
