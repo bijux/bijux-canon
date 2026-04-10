@@ -163,6 +163,16 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
         entry for entry in build_include if entry["package_slug"] == "bijux-canon-index"
     )
     assert index["dist_subdir"] == "release"
+    compat_entries = [
+        entry
+        for entry in build_include
+        if str(entry.get("package_dir", "")).startswith("packages/compat-")
+    ]
+    assert compat_entries
+    assert all(
+        entry.get("makefile_path") == "makes/packages/compat-package.mk"
+        for entry in compat_entries
+    )
 
 
 def test_reusable_workflows_use_uv_cache_contract() -> None:
@@ -189,6 +199,7 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     build_inputs = _workflow_call_inputs(build_workflow)
     assert "cache_dependency_path" not in build_inputs
     assert "upload_paths" not in build_inputs
+    assert "makefile_path" in build_inputs
     build_steps = build_workflow["jobs"]["build"].get("steps", [])
     stage_step = next(
         step for step in build_steps if step.get("name") == "Stage publish artifacts"
@@ -196,6 +207,11 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     stage_script = stage_step["run"]
     assert 'find "$dist_dir" -type f' in stage_script
     assert "No publish artifacts found under $dist_dir" in stage_script
+    assert 'makefile="${{ inputs.makefile_path }}"' in build_workflow["jobs"]["build"][
+        "steps"
+    ][3]["run"] or 'makefile="${{ inputs.makefile_path }}"' in build_workflow["jobs"][
+        "build"
+    ]["steps"][4]["run"]
 
 
 def test_markdown_workflow_links_track_checked_in_workflow_tree() -> None:
