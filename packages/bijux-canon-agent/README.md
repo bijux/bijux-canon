@@ -67,9 +67,10 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 ## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/bijux-canon-agent/)
-- [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/ARCHITECTURE.md)
-- [Boundaries](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/BOUNDARIES.md)
-- [Contracts](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/docs/CONTRACTS.md)
+- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-agent/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-agent/architecture/)
+- [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-agent/interfaces/)
+- [Operator workflows](https://bijux.io/bijux-canon/bijux-canon-agent/interfaces/operator-workflows/)
 - [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md)
 
