@@ -66,9 +66,10 @@ here.
 ## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/bijux-canon-runtime/)
-- [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/docs/ARCHITECTURE.md)
-- [Boundaries](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/docs/BOUNDARIES.md)
-- [Contracts](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/docs/CONTRACTS.md)
+- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-runtime/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-runtime/architecture/)
+- [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-runtime/interfaces/)
+- [Release and versioning](https://bijux.io/bijux-canon/bijux-canon-runtime/operations/release-and-versioning/)
 - [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md)
 
