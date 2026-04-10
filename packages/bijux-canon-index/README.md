@@ -68,10 +68,10 @@ tooling, you are outside this package's boundary.
 ## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/bijux-canon-index/)
-- [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/docs/ARCHITECTURE.md)
-- [Public API](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/docs/PUBLIC_API.md)
-- [Mental model](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/docs/spec/mental_model.md)
-- [Failure semantics](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/docs/spec/failure_semantics.md)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-index/architecture/)
+- [API surface](https://bijux.io/bijux-canon/bijux-canon-index/interfaces/api-surface/)
+- [Execution model](https://bijux.io/bijux-canon/bijux-canon-index/architecture/execution-model/)
+- [Error model](https://bijux.io/bijux-canon/bijux-canon-index/architecture/error-model/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md)
 
 ## Primary entrypoint

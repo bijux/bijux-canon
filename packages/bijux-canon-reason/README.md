@@ -66,10 +66,11 @@ you are outside this package's boundary.
 ## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/bijux-canon-reason/)
-- [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/docs/ARCHITECTURE.md)
-- [Contracts](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/docs/CONTRACTS.md)
+- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-reason/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-reason/architecture/)
+- [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-reason/interfaces/)
 - [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
-- [Tests](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/docs/TESTS.md)
+- [Test strategy](https://bijux.io/bijux-canon/bijux-canon-reason/quality/test-strategy/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md)
 
 ## Primary entrypoint
