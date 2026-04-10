@@ -267,10 +267,9 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
         in release_script
     )
     assert 'sbom_dir="${ARTIFACTS_DIR}/sbom"' in release_script
-    assert (
-        'asset_name="${{ inputs.package_slug }}-sbom-$(basename "$file_path")"'
-        in release_script
-    )
+    assert '${{ inputs.package_slug }}-sbom-prod.cdx.json' in release_script
+    assert '${{ inputs.package_slug }}-sbom-dev.cdx.json' in release_script
+    assert '${{ inputs.package_slug }}-sbom-summary.txt' in release_script
     assert (
         'makefile="${{ inputs.makefile_path }}"'
         in build_workflow["jobs"]["build"]["steps"][3]["run"]
