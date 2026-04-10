@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-10
 ---
 
 # reusable-workflows
@@ -15,7 +15,8 @@ release artifact creation consistent across packages.
 `ci-package.yml` defines the reusable package-check contract, while
 `build-release-artifacts.yml` defines the reusable artifact build contract used
 by publication flow. Grouping them together makes their role clear: they are
-workflow building blocks rather than top-level entrypoints.
+workflow building blocks rather than top-level entrypoints, so they run through
+their callers instead of appearing as separate manual workflows.
 
 ## Workflow Anchors
 

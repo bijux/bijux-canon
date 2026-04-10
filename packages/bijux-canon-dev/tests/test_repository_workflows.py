@@ -142,28 +142,54 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
     workflow = _workflow(WORKFLOWS_DIR / "publish.yml")
     jobs = workflow.get("jobs", {})
     build = jobs.get("build", {})
-    publish = jobs.get("publish", {})
+    publish_pypi = jobs.get("publish_pypi", {})
+    publish_ghcr = jobs.get("publish_ghcr", {})
+    release = jobs.get("release", {})
 
     assert build.get("uses") == "./.github/workflows/build-release-artifacts.yml"
-    assert publish.get("needs") == "build"
-    assert publish.get("environment", {}).get("name") == "pypi"
-    assert publish.get("permissions") == {"contents": "read"}
+    assert publish_pypi.get("needs") == "build"
+    assert publish_pypi.get("environment", {}).get("name") == "pypi"
+    assert publish_pypi.get("permissions") == {"contents": "read"}
+    assert publish_ghcr.get("needs") == "build"
+    assert publish_ghcr.get("permissions") == {
+        "contents": "read",
+        "packages": "write",
+    }
+    assert release.get("needs") == ["build", "publish_pypi", "publish_ghcr"]
+    assert release.get("permissions") == {"contents": "write"}
 
-    publish_steps = publish.get("steps", [])
+    publish_steps = publish_pypi.get("steps", [])
     assert any(
         isinstance(step, dict)
         and step.get("uses") == "pypa/gh-action-pypi-publish@release/v1"
         and step.get("with", {}).get("password") == "${{ secrets.PYPI_API_TOKEN }}"
         for step in publish_steps
     )
+    ghcr_steps = publish_ghcr.get("steps", [])
+    assert any(
+        isinstance(step, dict) and step.get("uses") == "oras-project/setup-oras@v1"
+        for step in ghcr_steps
+    )
+    assert any(
+        isinstance(step, dict)
+        and step.get("uses") == "softprops/action-gh-release@v2"
+        for step in release.get("steps", [])
+    )
 
     build_include = _matrix_include(build)
-    publish_include = _matrix_include(publish)
+    publish_pypi_include = _matrix_include(publish_pypi)
+    publish_ghcr_include = _matrix_include(publish_ghcr)
     build_packages = {entry["package_slug"] for entry in build_include}
-    publish_packages = {entry["package_slug"] for entry in publish_include}
+    publish_pypi_packages = {
+        entry["package_slug"] for entry in publish_pypi_include
+    }
+    publish_ghcr_packages = {
+        entry["package_slug"] for entry in publish_ghcr_include
+    }
 
     assert build_packages == EXPECTED_PUBLISH_PACKAGES
-    assert publish_packages == EXPECTED_PUBLISH_PACKAGES
+    assert publish_pypi_packages == EXPECTED_PUBLISH_PACKAGES
+    assert publish_ghcr_packages == EXPECTED_PUBLISH_PACKAGES
     assert all(entry.get("build_targets") == "build sbom" for entry in build_include)
 
     index = next(
@@ -211,9 +237,17 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     stage_step = next(
         step for step in build_steps if step.get("name") == "Stage publish artifacts"
     )
+    release_step = next(
+        step
+        for step in build_steps
+        if step.get("name") == "Stage GitHub release assets"
+    )
     stage_script = stage_step["run"]
+    release_script = release_step["run"]
     assert 'find "$dist_dir" -type f' in stage_script
     assert "No publish artifacts found under $dist_dir" in stage_script
+    assert 'mkdir -p "$stage_dir/dist"' in release_script
+    assert 'sbom_dir="${ARTIFACTS_DIR}/sbom"' in release_script
     assert (
         'makefile="${{ inputs.makefile_path }}"'
         in build_workflow["jobs"]["build"]["steps"][3]["run"]
