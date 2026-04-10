@@ -169,8 +169,7 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
         for step in publish_steps
     )
     assert all(
-        isinstance(step, dict)
-        and "password" not in step.get("with", {})
+        isinstance(step, dict) and "password" not in step.get("with", {})
         for step in publish_steps
     )
     ghcr_steps = publish_ghcr.get("steps", [])
@@ -179,8 +178,7 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
         for step in ghcr_steps
     )
     assert any(
-        isinstance(step, dict)
-        and step.get("uses") == "softprops/action-gh-release@v2"
+        isinstance(step, dict) and step.get("uses") == "softprops/action-gh-release@v2"
         for step in release.get("steps", [])
     )
 
@@ -188,12 +186,8 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
     publish_pypi_include = _matrix_include(publish_pypi)
     publish_ghcr_include = _matrix_include(publish_ghcr)
     build_packages = {entry["package_slug"] for entry in build_include}
-    publish_pypi_packages = {
-        entry["package_slug"] for entry in publish_pypi_include
-    }
-    publish_ghcr_packages = {
-        entry["package_slug"] for entry in publish_ghcr_include
-    }
+    publish_pypi_packages = {entry["package_slug"] for entry in publish_pypi_include}
+    publish_ghcr_packages = {entry["package_slug"] for entry in publish_ghcr_include}
 
     assert build_packages == EXPECTED_PUBLISH_PACKAGES
     assert publish_pypi_packages == EXPECTED_PUBLISH_PACKAGES
@@ -265,8 +259,15 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     release_script = release_step["run"]
     assert 'find "$dist_dir" -type f' in stage_script
     assert "No publish artifacts found under $dist_dir" in stage_script
-    assert 'mkdir -p "$stage_dir/dist"' in release_script
+    assert (
+        'asset_name="${{ inputs.package_slug }}-dist-$(basename "$file_path")"'
+        in release_script
+    )
     assert 'sbom_dir="${ARTIFACTS_DIR}/sbom"' in release_script
+    assert (
+        'asset_name="${{ inputs.package_slug }}-sbom-$(basename "$file_path")"'
+        in release_script
+    )
     assert (
         'makefile="${{ inputs.makefile_path }}"'
         in build_workflow["jobs"]["build"]["steps"][3]["run"]
