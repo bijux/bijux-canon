@@ -40,9 +40,11 @@ class _RenderedNavigationParser(HTMLParser):
 
         if tag == "a":
             if self._detail_depth is not None:
-                self._capture = "active_detail_tabs" if self._inside(
-                    "bijux-tabs__item--active"
-                ) else "detail_tabs"
+                self._capture = (
+                    "active_detail_tabs"
+                    if self._inside("bijux-tabs__item--active")
+                    else "detail_tabs"
+                )
                 self._buffer = []
             elif (
                 self._primary_sidebar_depth is not None
@@ -402,7 +404,12 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
 
 
 @pytest.mark.parametrize(
-    ("relative_path", "expected_active_detail", "expected_sidebar_title", "expected_sidebar_links"),
+    (
+        "relative_path",
+        "expected_active_detail",
+        "expected_sidebar_title",
+        "expected_sidebar_links",
+    ),
     [
         (
             "bijux-canon-index/interfaces/index.html",

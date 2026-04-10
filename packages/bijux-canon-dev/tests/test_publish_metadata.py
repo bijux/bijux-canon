@@ -27,7 +27,9 @@ PACKAGE_MAP_URL = "https://bijux.io/bijux-canon/bijux-canon/foundation/package-m
 COMPATIBILITY_GUIDE_URL = (
     "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
 )
-LEGACY_NAME_MAP_URL = "https://bijux.io/bijux-canon/compat-packages/catalog/legacy-name-map/"
+LEGACY_NAME_MAP_URL = (
+    "https://bijux.io/bijux-canon/compat-packages/catalog/legacy-name-map/"
+)
 README_BADGE_MARKER = "https://img.shields.io"
 EXPECTED_BADGE_COUNT = 19
 EXPECTED_PYPI_GUIDE_BADGE_COUNT = 17
