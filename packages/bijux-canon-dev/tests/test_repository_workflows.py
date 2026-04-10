@@ -149,7 +149,10 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
     assert build.get("uses") == "./.github/workflows/build-release-artifacts.yml"
     assert publish_pypi.get("needs") == "build"
     assert publish_pypi.get("environment", {}).get("name") == "pypi"
-    assert publish_pypi.get("permissions") == {"contents": "read"}
+    assert publish_pypi.get("permissions") == {
+        "contents": "read",
+        "id-token": "write",
+    }
     assert publish_ghcr.get("needs") == "build"
     assert publish_ghcr.get("permissions") == {
         "contents": "read",
@@ -162,7 +165,12 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
     assert any(
         isinstance(step, dict)
         and step.get("uses") == "pypa/gh-action-pypi-publish@release/v1"
-        and step.get("with", {}).get("password") == "${{ secrets.PYPI_API_TOKEN }}"
+        and step.get("with", {}).get("packages-dir")
+        for step in publish_steps
+    )
+    assert all(
+        isinstance(step, dict)
+        and "password" not in step.get("with", {})
         for step in publish_steps
     )
     ghcr_steps = publish_ghcr.get("steps", [])
