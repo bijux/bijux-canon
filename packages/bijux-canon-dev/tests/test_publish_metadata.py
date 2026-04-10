@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PACKAGE_ROOT = REPO_ROOT / "packages"
 CHANGELOG_URL_PREFIX = "https://github.com/bijux/bijux-canon/blob/main/"
-PUBLIC_RELEASE_VERSION = "0.3.0"
+PUBLIC_RELEASE_VERSION = "0.3.2"
 REQUIRED_PUBLIC_URLS = {
     "Homepage",
     "Website",
@@ -180,7 +180,7 @@ def test_public_release_matrix_excludes_internal_dev_package() -> None:
     assert internal_packages == ["bijux-canon-dev"]
 
 
-def test_public_release_packages_are_aligned_to_v0_3_0() -> None:
+def test_public_release_packages_are_aligned_to_v0_3_2() -> None:
     workspace = _workspace_metadata()
     public_packages = set(workspace["public_release_packages"])
     package_dirs = workspace["package_dirs"]
