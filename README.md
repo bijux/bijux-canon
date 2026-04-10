@@ -5,6 +5,9 @@
 [![Verify](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml)
 [![Publish](https://github.com/bijux/bijux-canon/actions/workflows/publish.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/publish.yml)
 [![Docs](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml)
+[![Release](https://img.shields.io/github/v/release/bijux/bijux-canon?display_name=tag&label=release)](https://github.com/bijux/bijux-canon/releases)
+[![GHCR bundles](https://img.shields.io/badge/ghcr-10%20bundles-181717?logo=github)](https://github.com/orgs/bijux/packages?repo_name=bijux-canon)
+[![Published packages](https://img.shields.io/badge/published%20packages-10-2563EB)](https://github.com/bijux/bijux-canon/tree/main/packages)
 
 [![bijux-canon-runtime](https://img.shields.io/pypi/v/bijux-canon-runtime?label=runtime&logo=pypi)](https://pypi.org/project/bijux-canon-runtime/)
 [![bijux-canon-agent](https://img.shields.io/pypi/v/bijux-canon-agent?label=agent&logo=pypi)](https://pypi.org/project/bijux-canon-agent/)
@@ -31,6 +34,11 @@ It exists for teams that need more than "it worked once on my machine." The
 goal is not just to run AI and retrieval workflows, but to run them with clear
 boundaries, stable contracts, checked-in schemas, replayable behavior, and a
 repository layout that stays understandable as the system grows.
+
+This repository publishes `10` packages. Each release tag builds one staged
+bundle per package, uploads distributions to PyPI, publishes release bundles to
+`ghcr.io/bijux/bijux-canon/<package>`, and attaches the same staged assets to
+the GitHub Release.
 
 ## Why `bijux-canon` Exists
 
