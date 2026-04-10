@@ -16,6 +16,10 @@ It matters because documentation in this repository is treated as a maintained
 surface, not as an optional by-product. The deploy workflow is therefore part
 of the documentation contract, not a secondary convenience step.
 
+It runs on `main` when docs-related files change and can also be started
+manually. The job tree stays small on purpose: build the strict site, validate
+the published assets, then deploy the Pages artifact.
+
 ## Workflow Anchors
 
 - `.github/workflows/deploy-docs.yml`
@@ -24,7 +28,8 @@ of the documentation contract, not a secondary convenience step.
 
 ## Purpose
 
-This page records the role of the docs deployment workflow.
+Use this page to understand when documentation publication runs and which site
+inputs it validates before deploy.
 
 ## Stability
 

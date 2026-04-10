@@ -213,6 +213,17 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     build_workflow = _workflow(WORKFLOWS_DIR / "build-release-artifacts.yml")
     docs_workflow = _workflow(WORKFLOWS_DIR / "deploy-docs.yml")
 
+    assert ci_workflow["jobs"]["tests"]["name"] == (
+        "tests-${{ inputs.package_slug }}-py${{ matrix.python-version }}"
+    )
+    assert ci_workflow["jobs"]["checks"]["name"] == (
+        "checks-${{ inputs.package_slug }}-${{ matrix.target }}"
+    )
+    assert ci_workflow["jobs"]["lint"]["name"] == "lint-${{ inputs.package_slug }}"
+    assert build_workflow["jobs"]["build"]["name"] == (
+        "build-release-artifacts-${{ inputs.package_slug }}"
+    )
+
     reusable_jobs = [
         ci_workflow["jobs"]["tests"],
         ci_workflow["jobs"]["checks"],
