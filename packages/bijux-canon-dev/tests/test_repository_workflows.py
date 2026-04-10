@@ -56,7 +56,7 @@ def _matrix_include(job: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _workflow_call_inputs(workflow: dict[str, Any]) -> dict[str, Any]:
-    on_block = workflow.get("on", {})
+    on_block = workflow.get("on", workflow.get(True, {}))
     if not isinstance(on_block, dict):
         return {}
     workflow_call = on_block.get("workflow_call", {})
@@ -207,11 +207,12 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     stage_script = stage_step["run"]
     assert 'find "$dist_dir" -type f' in stage_script
     assert "No publish artifacts found under $dist_dir" in stage_script
-    assert 'makefile="${{ inputs.makefile_path }}"' in build_workflow["jobs"]["build"][
-        "steps"
-    ][3]["run"] or 'makefile="${{ inputs.makefile_path }}"' in build_workflow["jobs"][
-        "build"
-    ]["steps"][4]["run"]
+    assert (
+        'makefile="${{ inputs.makefile_path }}"'
+        in build_workflow["jobs"]["build"]["steps"][3]["run"]
+        or 'makefile="${{ inputs.makefile_path }}"'
+        in build_workflow["jobs"]["build"]["steps"][4]["run"]
+    )
 
 
 def test_markdown_workflow_links_track_checked_in_workflow_tree() -> None:
