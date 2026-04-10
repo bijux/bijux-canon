@@ -67,9 +67,10 @@ This package should help a maintainer answer practical questions such as:
 ## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/bijux-canon-ingest/)
-- [Project overview](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/docs/project_overview.md)
-- [Layout and ownership map](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/docs/LAYOUT.md)
-- [Architecture](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/docs/ARCHITECTURE.md)
+- [Package overview](https://bijux.io/bijux-canon/bijux-canon-ingest/foundation/package-overview/)
+- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-ingest/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-ingest/architecture/)
+- [Operator workflows](https://bijux.io/bijux-canon/bijux-canon-ingest/interfaces/operator-workflows/)
 - [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md)
 
