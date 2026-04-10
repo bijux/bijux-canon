@@ -45,20 +45,27 @@ def _workflow(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         data = yaml.safe_load(handle)
     assert isinstance(data, dict)
-    return data
+    workflow: dict[str, Any] = {}
+    for key, value in data.items():
+        normalized_key = "on" if key is True else key
+        if isinstance(normalized_key, str):
+            workflow[normalized_key] = value
+    return workflow
+
+
+def _as_dict(value: object) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
 
 
 def _matrix_include(job: dict[str, Any]) -> list[dict[str, Any]]:
-    strategy = job.get("strategy", {})
-    matrix = strategy.get("matrix", {})
+    strategy = _as_dict(job.get("strategy"))
+    matrix = _as_dict(strategy.get("matrix"))
     include = matrix.get("include", [])
     return include if isinstance(include, list) else []
 
 
 def _workflow_call_inputs(workflow: dict[str, Any]) -> dict[str, Any]:
-    on_block = workflow.get("on", workflow.get(True, {}))
-    if not isinstance(on_block, dict):
-        return {}
+    on_block = _as_dict(workflow.get("on"))
     workflow_call = on_block.get("workflow_call", {})
     return workflow_call.get("inputs", {}) if isinstance(workflow_call, dict) else {}
 
