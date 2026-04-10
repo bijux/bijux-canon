@@ -10,6 +10,15 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## 0.3.3 - 2026-04-10
+
+### Changed
+
+- Public package fallback versions and runtime dependency floors now align with
+  the synchronized `v0.3.3` canon release line.
+- Source-checkout version fallbacks and repository release tests now target
+  `0.3.3` as the current public release version.
+
 ## 0.3.2 - 2026-04-10
 
 ### Fixed

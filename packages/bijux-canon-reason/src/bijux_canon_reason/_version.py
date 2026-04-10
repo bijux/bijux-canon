@@ -37,7 +37,7 @@ except ImportError:
         try:
             return package_version("bijux-canon-reason")
         except PackageNotFoundError:
-            return "0.3.2"
+            return "0.3.3"
 
     def _version_parts(value: str) -> tuple[int | str, ...]:
         """Handle version parts."""

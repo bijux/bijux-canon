@@ -129,7 +129,7 @@ CompatibilityGuide = "https://bijux.io/bijux-canon/compat-packages/migration/mig
 source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
-fallback-version = "0.3.2"
+fallback-version = "0.3.3"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/bijux_canon_reason/_build_version.py"
