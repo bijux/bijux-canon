@@ -79,7 +79,10 @@ def _uses_setup_uv_with_lock_cache(step: Any) -> bool:
     if not isinstance(uses, str) or not uses.startswith("astral-sh/setup-uv@v8"):
         return False
     with_block = step.get("with", {})
-    return isinstance(with_block, dict) and with_block.get("cache-dependency-glob") == "uv.lock"
+    return (
+        isinstance(with_block, dict)
+        and with_block.get("cache-dependency-glob") == "uv.lock"
+    )
 
 
 def test_workflow_tree_is_standardized() -> None:
@@ -95,10 +98,7 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
 
     assert repository.get("name") == "repository-contracts"
     repository_steps = repository.get("steps", [])
-    assert any(
-        _uses_setup_uv_with_lock_cache(step)
-        for step in repository_steps
-    )
+    assert any(_uses_setup_uv_with_lock_cache(step) for step in repository_steps)
     assert any(
         isinstance(step, dict)
         and step.get("name") == "Verify repository automation contracts"
@@ -180,10 +180,9 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
 
     for job in reusable_jobs:
         steps = job.get("steps", [])
-        assert any(
-            _uses_setup_uv_with_lock_cache(step)
-            for step in steps
-        ), "reusable workflow job is missing setup-uv"
+        assert any(_uses_setup_uv_with_lock_cache(step) for step in steps), (
+            "reusable workflow job is missing setup-uv"
+        )
 
     inputs = _workflow_call_inputs(ci_workflow)
     assert "cache_dependency_path" not in inputs
