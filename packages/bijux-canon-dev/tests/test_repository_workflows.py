@@ -177,9 +177,12 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
         isinstance(step, dict) and step.get("uses") == "oras-project/setup-oras@v1"
         for step in ghcr_steps
     )
+    release_steps = release.get("steps", [])
     assert any(
-        isinstance(step, dict) and step.get("uses") == "softprops/action-gh-release@v2"
-        for step in release.get("steps", [])
+        isinstance(step, dict)
+        and step.get("uses") == "softprops/action-gh-release@v2"
+        and step.get("with", {}).get("overwrite_files") is False
+        for step in release_steps
     )
 
     build_include = _matrix_include(build)
