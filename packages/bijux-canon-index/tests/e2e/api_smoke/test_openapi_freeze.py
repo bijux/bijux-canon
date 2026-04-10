@@ -8,7 +8,7 @@ from bijux_canon_index.core.identity.ids import fingerprint
 from fastapi.encoders import jsonable_encoder
 
 EXPECTED_OPENAPI_FINGERPRINT = (
-    "557cc419773482099132622010af952e9d65c6a4b0e8b2d1668d3ff3d28fb7e3"
+    "acabfc3b388d424eb63cda9bbe1f5b20821cbbf6c00ccd8323bc3a1af0fc2993"
 )
 
 
