@@ -15,10 +15,9 @@ is the architecture, not a packaging afterthought. Each package owns one
 kind of promise clearly enough that readers can understand the system by
 skimming the docs instead of reconstructing intent from the tree.
 
-This site is meant to stand on its own. A new reader should be able to
-answer three questions quickly: why the repository is split, which
-package owns the current concern, and which checked-in files prove the
-story being told.
+Start here when you need repository-level orientation. A new reader
+should be able to see why the repository is split, which package owns
+the current concern, and which checked-in files back the explanation.
 
 [![Release](https://img.shields.io/github/v/release/bijux/bijux-canon?display_name=tag&label=release)](https://github.com/bijux/bijux-canon/releases)
 [![GHCR bundles](https://img.shields.io/badge/ghcr-10%20bundles-181717?logo=github)](https://github.com/orgs/bijux/packages?repo_name=bijux-canon)
@@ -55,7 +54,7 @@ whole system.
 
 <div class="bijux-panel-grid">
   <div class="bijux-panel"><h3>Whole-System Idea</h3><p>Use the root pages to understand why the repository is split and how the five canonical packages fit into one accountable flow.</p></div>
-  <div class="bijux-panel"><h3>Honesty Rule</h3><p>The docs are only useful if they send readers back to code, schemas, tests, and release assets quickly enough to verify the claims.</p></div>
+  <div class="bijux-panel"><h3>Honesty Rule</h3><p>Use the docs as a map, then verify the claim in code, schemas, tests, or release assets before treating it as settled.</p></div>
   <div class="bijux-panel"><h3>Fast Reading Path</h3><p>Open the repository handbook for cross-package questions, one product handbook for owned behavior, the maintainer handbook for repository health, and compatibility docs only for legacy names.</p></div>
 </div>
 
@@ -64,8 +63,6 @@ whole system.
 <a class="md-button" href="bijux-canon-maintain/">Open maintenance docs</a>
 <a class="md-button" href="compat-packages/">Open compatibility docs</a>
 </div>
-
-Treat the root page as the shortest honest explanation of the whole documentation system. A reader should be able to skim it, understand the package split, and know which handbook branch to open next without needing a meeting first.
 
 ## Visual Summary
 
@@ -169,7 +166,8 @@ This page can route readers quickly, but it does not replace the package, mainta
 
 ## Purpose
 
-This page is the front door to the handbook. Its job is to make the split legible quickly enough that a reader can choose the right next section before they drown in detail.
+Use this page to get oriented quickly, choose the right handbook branch,
+and move to the files that carry the detailed proof.
 
 ## Stability
 

@@ -10,21 +10,19 @@ last_reviewed: 2026-04-04
 # Documentation System
 
 The root documentation site is the canonical handbook for repository and
-package behavior. It is intentionally structured like the reference documentation
-in `bijux-pollenomics` and `bijux-masterclass`: one root index, section indexes,
-and topic pages with stable names and repeated layout.
+package behavior. It uses one landing page, section indexes, and stable topic
+pages so readers can move from orientation into checked-in proof without
+guesswork.
 
-The goal is not just consistency. The goal is reader trust. The handbook
-should let a new reviewer understand the design quickly, let a maintainer find
-concrete anchors without guesswork, and stay honest about what the docs can
-explain versus what only code and tests can prove.
+The goal is reader trust. The handbook should help a reviewer understand the
+design quickly, help a maintainer find the concrete anchors behind a claim, and
+stay explicit about what docs can explain versus what code, schemas, tests, and
+release assets must still prove.
 
-A good documentation system should reduce meeting debt. If the handbook is
-working, a reader can understand the whole idea of `bijux-canon`, choose the
-right page, and verify the claims from checked-in assets without needing a
-private walkthrough first.
-
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
+These repository pages explain the cross-package frame that no single package
+can explain alone. They are strongest when they make the monorepo easier to
+understand without turning the root into a second owner of package-local
+behavior.
 
 ## Visual Summary
 
@@ -120,7 +118,8 @@ These pages explain repository-level intent and shared rules, but they do not ov
 
 ## Purpose
 
-This page records the handbook system itself so the structure stays intentional instead of growing ad hoc again.
+Use this page to understand how the handbook is organized, which section should
+own a question, and where repository guidance should stop.
 
 ## Stability
 
