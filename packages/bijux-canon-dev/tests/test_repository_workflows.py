@@ -189,6 +189,13 @@ def test_reusable_workflows_use_uv_cache_contract() -> None:
     build_inputs = _workflow_call_inputs(build_workflow)
     assert "cache_dependency_path" not in build_inputs
     assert "upload_paths" not in build_inputs
+    build_steps = build_workflow["jobs"]["build"].get("steps", [])
+    stage_step = next(
+        step for step in build_steps if step.get("name") == "Stage publish artifacts"
+    )
+    stage_script = stage_step["run"]
+    assert 'find "$dist_dir" -type f' in stage_script
+    assert "No publish artifacts found under $dist_dir" in stage_script
 
 
 def test_markdown_workflow_links_track_checked_in_workflow_tree() -> None:
