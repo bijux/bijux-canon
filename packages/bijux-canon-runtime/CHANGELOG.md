@@ -6,6 +6,15 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.3.2] - 2026-04-10
+
+### Fixed
+
+* Runtime release metadata now falls back to `0.3.2` when tag metadata is not
+  available during local validation.
+* Internal canon package dependency floors now require the synchronized
+  `0.3.2` package line.
+
 <a id="v0-3-0"></a>  
 ## [0.3.0] - 2026-04-05  
 

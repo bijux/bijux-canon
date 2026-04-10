@@ -5,6 +5,13 @@ All notable changes to `bijux-canon-agent` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## 0.3.2 - 2026-04-10
+
+### Fixed
+
+- Release fallback metadata now aligns with the `v0.3.2` tag so PyPI builds
+  and local package checks report the intended package line.
+
 ## 0.3.0 - 2026-04-05
 
 ### Added

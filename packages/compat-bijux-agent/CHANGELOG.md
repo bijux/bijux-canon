@@ -8,6 +8,13 @@ name while the canonical package lives at `bijux-canon-agent`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
+## 0.3.2 - 2026-04-10
+
+### Fixed
+
+- Compatibility package fallback metadata now aligns with the synchronized
+  `v0.3.2` canon release.
+
 ## 0.3.0 - 2026-04-05
 
 ### Added
