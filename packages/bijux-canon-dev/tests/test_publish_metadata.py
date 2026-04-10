@@ -32,7 +32,7 @@ LEGACY_NAME_MAP_URL = (
 )
 README_BADGE_MARKER = "https://img.shields.io"
 EXPECTED_BADGE_COUNT = 19
-EXPECTED_PYPI_GUIDE_BADGE_COUNT = 17
+EXPECTED_PYPI_GUIDE_BADGE_COUNT = 5
 FORBIDDEN_STANDALONE_DOC_URLS = (
     "https://bijux.io/bijux-canon-runtime/",
     "https://bijux.io/bijux-canon-agent/",
@@ -125,6 +125,12 @@ def _shared_docs_url(package_name: str) -> str:
 
 def _compat_docs_url(distribution_name: str) -> str:
     return f"{BIJUX_CANON_DOCS_URL}compat-packages/catalog/{distribution_name}/"
+
+
+def _distribution_name(package_name: str) -> str:
+    if package_name in COMPATIBILITY_PACKAGES:
+        return str(COMPATIBILITY_PACKAGES[package_name]["distribution"])
+    return package_name
 
 
 def test_all_packages_have_package_local_changelogs() -> None:
@@ -544,7 +550,7 @@ def test_public_release_packages_ship_package_local_publication_guides() -> None
     )
 
 
-def test_public_release_package_publication_guides_publish_family_badges() -> None:
+def test_public_release_package_publication_guides_publish_release_surface() -> None:
     workspace = _workspace_metadata()
     public_packages = set(workspace["public_release_packages"])
 
@@ -553,26 +559,44 @@ def test_public_release_package_publication_guides_publish_family_badges() -> No
         guide = (
             _package_path(package_name) / "docs" / "maintainer" / "pypi.md"
         ).read_text(encoding="utf-8")
-        if guide.count(README_BADGE_MARKER) < EXPECTED_PYPI_GUIDE_BADGE_COUNT:
+        if guide.count("[![") < EXPECTED_PYPI_GUIDE_BADGE_COUNT:
             failures.append(
                 f"{package_name}: expected at least {EXPECTED_PYPI_GUIDE_BADGE_COUNT} badges in pypi.md"
             )
-        if "https://pypi.org/project/bijux-canon-runtime/" not in guide:
+        if "## Release Surface" not in guide:
             failures.append(
-                f"{package_name}: pypi.md should advertise the canonical package family"
+                f"{package_name}: pypi.md should include a release-surface section"
             )
-        if "https://pypi.org/project/bijux-vex/" not in guide:
+        distribution_name = _distribution_name(package_name)
+        if f"https://pypi.org/project/{distribution_name}/" not in guide:
             failures.append(
-                f"{package_name}: pypi.md should advertise the compatibility package family"
+                f"{package_name}: pypi.md should advertise the package distribution"
             )
         verify_url = "https://github.com/bijux/bijux-canon/actions/workflows/verify.yml"
         if verify_url not in guide:
             failures.append(
                 f"{package_name}: pypi.md should advertise repository verification"
             )
-        if _shared_docs_url("bijux-canon-runtime") not in guide:
+        publish_url = (
+            "https://github.com/bijux/bijux-canon/actions/workflows/publish.yml"
+        )
+        if publish_url not in guide:
             failures.append(
-                f"{package_name}: pypi.md should link shared handbook package docs"
+                f"{package_name}: pypi.md should advertise publish workflow"
+            )
+        docs_url = (
+            "https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml"
+        )
+        if docs_url not in guide:
+            failures.append(f"{package_name}: pypi.md should advertise docs workflow")
+        package_docs_url = (
+            _compat_docs_url(distribution_name)
+            if package_name in COMPATIBILITY_PACKAGES
+            else _shared_docs_url(package_name)
+        )
+        if package_docs_url not in guide:
+            failures.append(
+                f"{package_name}: pypi.md should link package handbook docs"
             )
 
     assert not failures, (
