@@ -33,3 +33,7 @@ clean-root-artifacts: ## Remove stray root-level caches outside artifacts
 check-shared-bijux-py: ## Verify shared bijux-py make modules match across sibling repositories
 check-config-layout: ## Validate the repository config tree shape and required tool configs
 check-make-layout: ## Validate the repository make tree shape and required entrypoints
+sync-badges: root-check-env ## Render shared badge blocks from docs/badges.md into README surfaces
+	@"$(ROOT_CHECK_PYTHON)" -m bijux_canon_dev.docs.badge_sync sync
+check-badges: root-check-env ## Verify README badge blocks match docs/badges.md
+	@"$(ROOT_CHECK_PYTHON)" -m bijux_canon_dev.docs.badge_sync check
