@@ -17,6 +17,20 @@ package README publish the same badge contract.
 Do not hand-edit badge blocks inside README files. Those files consume the
 templates below through generated badge sections.
 
+Generated badge sections always render in this order:
+
+1. surface summary badges
+2. `PyPI` badges for every public package
+3. `Documentation` badges for the canonical `bijux-canon-*` packages
+4. `GHCR` badges for the canonical `bijux-canon-*` packages
+
+Link policy for GHCR badges is fixed here as part of the contract:
+
+- the repository-wide GHCR summary badge links to
+  `https://github.com/bijux?tab=packages`
+- per-package GHCR badges link to the package-specific
+  `https://github.com/bijux/bijux-canon/pkgs/container/...` page
+
 ## Repository Summary
 
 <!-- bijux-canon-badges:repository-summary:start -->
@@ -38,7 +52,6 @@ templates below through generated badge sections.
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
 [![CI Status](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml)
 [![GitHub Repository](https://img.shields.io/badge/github-bijux%2Fbijux--canon-181717?logo=github)](https://github.com/bijux/bijux-canon)
-[![{{ distribution_name }}](https://img.shields.io/badge/{{ distribution_shields_slug }}-ghcr-181717?logo=github)]({{ package_ghcr_url }})
 <!-- bijux-canon-badges:package-summary:end -->
 
 ## Family PyPI Badge

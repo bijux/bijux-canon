@@ -20,6 +20,11 @@ BADGE_BLOCK_RE = re.compile(
     re.DOTALL,
 )
 TOKEN_RE = re.compile(r"{{\s*(?P<name>[a-z0-9_]+)\s*}}")
+BADGE_GROUPS: tuple[tuple[str, str], ...] = (
+    ("PyPI", "family-pypi-badge"),
+    ("Documentation", "family-docs-badge"),
+    ("GHCR", "family-ghcr-badge"),
+)
 
 
 @dataclass(frozen=True)
@@ -142,24 +147,80 @@ def _render_family_badges(
     return [_render_template(template, _record_context(record)) for record in records]
 
 
+def _render_badge_group(
+    heading: str,
+    template: str,
+    records: tuple[PackageBadgeRecord, ...],
+) -> str:
+    badges = _render_family_badges(template, records)
+    if not badges:
+        return ""
+    return f"**{heading}**\n" + "\n".join(badges)
+
+
+def _render_badge_groups(
+    catalog: dict[str, str],
+    records: tuple[PackageBadgeRecord, ...],
+    *,
+    current: PackageBadgeRecord | None = None,
+) -> list[str]:
+    sections: list[str] = []
+    for heading, template_name in BADGE_GROUPS:
+        selected_records = _records_for_badge_group(
+            records,
+            template_name,
+            current=current,
+        )
+        section = _render_badge_group(
+            heading, catalog[template_name], selected_records
+        )
+        if section:
+            sections.append(section)
+    return sections
+
+
+def _prioritize_record(
+    records: tuple[PackageBadgeRecord, ...], current: PackageBadgeRecord
+) -> tuple[PackageBadgeRecord, ...]:
+    return (current,) + tuple(
+        record for record in records if record.package_slug != current.package_slug
+    )
+
+
+def _canonical_records(
+    records: tuple[PackageBadgeRecord, ...]
+) -> tuple[PackageBadgeRecord, ...]:
+    return tuple(
+        record for record in records if record.package_slug.startswith("bijux-canon-")
+    )
+
+
+def _records_for_badge_group(
+    records: tuple[PackageBadgeRecord, ...],
+    template_name: str,
+    *,
+    current: PackageBadgeRecord | None = None,
+) -> tuple[PackageBadgeRecord, ...]:
+    if template_name == "family-pypi-badge":
+        selected = records
+    else:
+        selected = _canonical_records(records)
+    if current is not None and any(
+        record.package_slug == current.package_slug for record in selected
+    ):
+        return _prioritize_record(selected, current)
+    return selected
+
+
 def _render_repository_badges(
     catalog: dict[str, str], records: tuple[PackageBadgeRecord, ...]
 ) -> str:
-    canonical = tuple(
-        record for record in records if record.package_slug.startswith("bijux-canon-")
-    )
-    compatibility = tuple(
-        record for record in records if record.package_slug.startswith("compat-")
-    )
     sections = [
         _render_template(
             catalog["repository-summary"],
             {"public_package_count": str(len(records))},
         ),
-        "\n".join(_render_family_badges(catalog["family-pypi-badge"], canonical)),
-        "\n".join(_render_family_badges(catalog["family-pypi-badge"], compatibility)),
-        "\n".join(_render_family_badges(catalog["family-ghcr-badge"], records)),
-        "\n".join(_render_family_badges(catalog["family-docs-badge"], canonical)),
+        *_render_badge_groups(catalog, records),
     ]
     return "\n\n".join(section for section in sections if section)
 
@@ -169,17 +230,10 @@ def _render_package_badges(
     record: PackageBadgeRecord,
     records: tuple[PackageBadgeRecord, ...],
 ) -> str:
-    canonical = tuple(
-        item for item in records if item.package_slug.startswith("bijux-canon-")
-    )
-    compatibility = tuple(
-        item for item in records if item.package_slug.startswith("compat-")
-    )
+    ordered_records = _prioritize_record(records, record)
     sections = [
         _render_template(catalog["package-summary"], _record_context(record)),
-        "\n".join(_render_family_badges(catalog["family-pypi-badge"], canonical)),
-        "\n".join(_render_family_badges(catalog["family-pypi-badge"], compatibility)),
-        "\n".join(_render_family_badges(catalog["family-docs-badge"], canonical)),
+        *_render_badge_groups(catalog, ordered_records, current=record),
     ]
     return "\n\n".join(section for section in sections if section)
 
@@ -209,7 +263,9 @@ def render_badge_block(target: BadgeTarget) -> str:
     if target.kind == "repository":
         return _render_repository_badges(catalog, records)
     if target.kind == "package" and target.package_slug is not None:
-        record = next(record for record in records if record.package_slug == target.package_slug)
+        record = next(
+            record for record in records if record.package_slug == target.package_slug
+        )
         return _render_package_badges(catalog, record, records)
     raise ValueError(f"Unsupported badge target: {target}")
 
