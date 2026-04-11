@@ -20,7 +20,7 @@ should be able to see why the repository is split, which package owns
 the current concern, and which checked-in files back the explanation.
 
 [![Release](https://img.shields.io/github/v/release/bijux/bijux-canon?display_name=tag&label=release)](https://github.com/bijux/bijux-canon/releases)
-[![GHCR bundles](https://img.shields.io/badge/ghcr-10%20bundles-181717?logo=github)](https://github.com/orgs/bijux/packages?repo_name=bijux-canon)
+[![GHCR packages](https://img.shields.io/badge/ghcr-10%20packages-181717?logo=github)](https://github.com/bijux?tab=packages)
 [![Published packages](https://img.shields.io/badge/published%20packages-10-2563EB)](https://github.com/bijux/bijux-canon/tree/main/packages)
 
 [![bijux-canon-runtime](https://img.shields.io/pypi/v/bijux-canon-runtime?label=runtime&logo=pypi)](https://pypi.org/project/bijux-canon-runtime/)

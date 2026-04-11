@@ -6,6 +6,10 @@ from typing import Any, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BIJUX_CANON_DOCS_URL = "https://bijux.io/bijux-canon/"
+BIJUX_GITHUB_PACKAGES_URL = "https://github.com/bijux?tab=packages"
+BROKEN_BIJUX_ORG_PACKAGES_URL = (
+    "https://github.com/orgs/bijux/packages?repo_name=bijux-canon"
+)
 
 
 def _workspace_metadata() -> dict[str, Any]:
@@ -75,6 +79,23 @@ def test_root_readme_package_map_advertises_resolvable_docs_pages() -> None:
     assert not failures, "README docs publication contract failed:\n" + "\n".join(
         failures
     )
+
+
+def test_root_package_surfaces_link_ghcr_summary_to_user_packages() -> None:
+    surfaces = {
+        "README.md": REPO_ROOT / "README.md",
+        "docs/index.md": REPO_ROOT / "docs" / "index.md",
+    }
+
+    failures: list[str] = []
+    for label, path in surfaces.items():
+        text = path.read_text(encoding="utf-8")
+        if BIJUX_GITHUB_PACKAGES_URL not in text:
+            failures.append(f"{label}: missing user-scoped GitHub Packages URL")
+        if BROKEN_BIJUX_ORG_PACKAGES_URL in text:
+            failures.append(f"{label}: should not use the broken org-scoped URL")
+
+    assert not failures, "GHCR summary package links failed:\n" + "\n".join(failures)
 
 
 def _handbook_layout(section_root: Path) -> tuple[list[str], list[str], dict[str, int]]:
