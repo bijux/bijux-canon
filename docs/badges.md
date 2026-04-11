@@ -23,9 +23,9 @@ plain markdown links instead of inline badge markdown.
 Generated badge sections always render in this order:
 
 1. surface summary badges
-2. `PyPI` badges for every public package
-3. `Documentation` badges for the canonical `bijux-canon-*` packages
-4. `GHCR` badges for the canonical `bijux-canon-*` packages
+2. one line of `PyPI` badges for every public package
+3. one line of `GHCR` badges for every public package
+4. one line of `Documentation` badges for the canonical `bijux-canon-*` packages
 
 Link policy for GHCR badges is fixed here as part of the contract:
 

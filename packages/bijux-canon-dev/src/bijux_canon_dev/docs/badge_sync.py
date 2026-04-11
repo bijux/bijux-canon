@@ -20,10 +20,10 @@ BADGE_BLOCK_RE = re.compile(
     re.DOTALL,
 )
 TOKEN_RE = re.compile(r"{{\s*(?P<name>[a-z0-9_]+)\s*}}")
-BADGE_GROUPS: tuple[tuple[str, str], ...] = (
-    ("PyPI", "family-pypi-badge"),
-    ("Documentation", "family-docs-badge"),
-    ("GHCR", "family-ghcr-badge"),
+BADGE_GROUPS: tuple[str, ...] = (
+    "family-pypi-badge",
+    "family-ghcr-badge",
+    "family-docs-badge",
 )
 
 
@@ -147,15 +147,11 @@ def _render_family_badges(
     return [_render_template(template, _record_context(record)) for record in records]
 
 
-def _render_badge_group(
-    heading: str,
-    template: str,
-    records: tuple[PackageBadgeRecord, ...],
-) -> str:
+def _render_badge_group(template: str, records: tuple[PackageBadgeRecord, ...]) -> str:
     badges = _render_family_badges(template, records)
     if not badges:
         return ""
-    return f"**{heading}**\n" + "\n".join(badges)
+    return "\n".join(badges)
 
 
 def _render_badge_groups(
@@ -165,15 +161,13 @@ def _render_badge_groups(
     current: PackageBadgeRecord | None = None,
 ) -> list[str]:
     sections: list[str] = []
-    for heading, template_name in BADGE_GROUPS:
+    for template_name in BADGE_GROUPS:
         selected_records = _records_for_badge_group(
             records,
             template_name,
             current=current,
         )
-        section = _render_badge_group(
-            heading, catalog[template_name], selected_records
-        )
+        section = _render_badge_group(catalog[template_name], selected_records)
         if section:
             sections.append(section)
     return sections
@@ -201,7 +195,7 @@ def _records_for_badge_group(
     *,
     current: PackageBadgeRecord | None = None,
 ) -> tuple[PackageBadgeRecord, ...]:
-    if template_name == "family-pypi-badge":
+    if template_name in {"family-pypi-badge", "family-ghcr-badge"}:
         selected = records
     else:
         selected = _canonical_records(records)

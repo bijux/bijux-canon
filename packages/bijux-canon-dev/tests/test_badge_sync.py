@@ -32,14 +32,17 @@ def test_repository_badge_block_renders_all_public_badge_groups() -> None:
     rendered = render_badge_block(
         BadgeTarget(path=Path("README.md"), kind="repository")
     )
-    assert "**PyPI**" in rendered
-    assert "**Documentation**" in rendered
-    assert "**GHCR**" in rendered
     assert rendered.count("https://img.shields.io/pypi/v/") == 10
-    assert rendered.count("/pkgs/container/") == 5
+    assert rendered.count("/pkgs/container/") == 10
     assert rendered.count("https://bijux.io/bijux-canon/") == 5
     assert "https://img.shields.io/badge/runtime-ghcr" in rendered
     assert "https://img.shields.io/badge/agent-ghcr" in rendered
+    assert rendered.index("https://img.shields.io/pypi/v/") < rendered.index(
+        "https://img.shields.io/badge/runtime-ghcr"
+    )
+    assert rendered.index("https://img.shields.io/badge/runtime-ghcr") < rendered.index(
+        "https://img.shields.io/badge/docs-runtime"
+    )
 
 
 def test_package_badge_block_prioritizes_the_current_distribution() -> None:
@@ -50,11 +53,16 @@ def test_package_badge_block_prioritizes_the_current_distribution() -> None:
             package_slug="compat-agentic-flows",
         )
     )
-    assert "**PyPI**\n[![agentic-flows]" in rendered
-    assert "**Documentation**\n[![bijux-canon-runtime docs]" in rendered
-    assert "**GHCR**\n[![bijux-canon-runtime](https://img.shields.io/badge/runtime-ghcr" in rendered
+    assert "\n[![agentic-flows](https://img.shields.io/pypi/v/agentic-flows" in rendered
+    assert "\n[![agentic-flows](https://img.shields.io/badge/agentic--flows-ghcr" in rendered
+    assert "\n[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime" in rendered
     assert "agentic-flows docs" not in rendered
-    assert "bijux-canon%2Fagentic-flows" not in rendered
+    assert rendered.index("https://img.shields.io/pypi/v/agentic-flows") < rendered.index(
+        "https://img.shields.io/badge/agentic--flows-ghcr"
+    )
+    assert rendered.index("https://img.shields.io/badge/agentic--flows-ghcr") < rendered.index(
+        "https://img.shields.io/badge/docs-runtime"
+    )
 
 
 def test_badge_surfaces_are_synchronized() -> None:
