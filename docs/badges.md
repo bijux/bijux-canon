@@ -17,6 +17,9 @@ package README publish the same badge contract.
 Do not hand-edit badge blocks inside README files. Those files consume the
 templates below through generated badge sections.
 
+If a README surface needs package links outside the managed badge section, use
+plain markdown links instead of inline badge markdown.
+
 Generated badge sections always render in this order:
 
 1. surface summary badges

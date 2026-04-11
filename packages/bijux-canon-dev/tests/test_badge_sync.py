@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -9,6 +10,11 @@ from bijux_canon_dev.docs.badge_sync import BadgeTarget
 from bijux_canon_dev.docs.badge_sync import load_badge_catalog
 from bijux_canon_dev.docs.badge_sync import render_badge_block
 from bijux_canon_dev.docs.badge_sync import synchronize_badges
+
+GENERATED_BLOCK_RE = re.compile(
+    r"<!-- bijux-canon-badges:generated:start -->.*?<!-- bijux-canon-badges:generated:end -->",
+    re.DOTALL,
+)
 
 
 def test_badge_catalog_exposes_expected_templates() -> None:
@@ -51,3 +57,24 @@ def test_package_badge_block_prioritizes_the_current_distribution() -> None:
 
 def test_badge_surfaces_are_synchronized() -> None:
     assert synchronize_badges(check=True) == []
+
+
+def test_readme_surfaces_only_use_generated_badges() -> None:
+    targets = [
+        Path("README.md"),
+        Path("docs/index.md"),
+        Path("packages/bijux-canon-runtime/README.md"),
+        Path("packages/bijux-canon-agent/README.md"),
+        Path("packages/bijux-canon-ingest/README.md"),
+        Path("packages/bijux-canon-reason/README.md"),
+        Path("packages/bijux-canon-index/README.md"),
+        Path("packages/compat-agentic-flows/README.md"),
+        Path("packages/compat-bijux-agent/README.md"),
+        Path("packages/compat-bijux-rag/README.md"),
+        Path("packages/compat-bijux-rar/README.md"),
+        Path("packages/compat-bijux-vex/README.md"),
+    ]
+    for path in targets:
+        text = path.read_text(encoding="utf-8")
+        stripped = GENERATED_BLOCK_RE.sub("", text)
+        assert "[![" not in stripped, f"{path} contains inline badges outside the generated block"
