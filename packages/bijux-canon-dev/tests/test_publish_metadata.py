@@ -31,7 +31,7 @@ LEGACY_NAME_MAP_URL = (
     "https://bijux.io/bijux-canon/compat-packages/catalog/legacy-name-map/"
 )
 README_BADGE_MARKER = "https://img.shields.io"
-EXPECTED_BADGE_COUNT = 19
+EXPECTED_BADGE_COUNT = 20
 EXPECTED_PYPI_GUIDE_BADGE_COUNT = 5
 FORBIDDEN_STANDALONE_DOC_URLS = (
     "https://bijux.io/bijux-canon-runtime/",
@@ -389,6 +389,7 @@ def test_public_release_package_readmes_publish_badges_and_absolute_links() -> N
     failures: list[str] = []
     for package_name in sorted(public_packages):
         readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
+        distribution_name = _distribution_name(package_name)
         if readme.count(README_BADGE_MARKER) < EXPECTED_BADGE_COUNT:
             failures.append(
                 f"{package_name}: expected at least {EXPECTED_BADGE_COUNT} badges"
@@ -404,6 +405,12 @@ def test_public_release_package_readmes_publish_badges_and_absolute_links() -> N
             failures.append(
                 f"{package_name}: README should link the shared migration guide"
             )
+        ghcr_url = (
+            "https://github.com/bijux/bijux-canon/pkgs/container/"
+            f"bijux-canon%2F{distribution_name}"
+        )
+        if ghcr_url not in readme:
+            failures.append(f"{package_name}: README should link its GHCR package page")
         if "](docs/" in readme or "](src/" in readme or "](tests)" in readme:
             failures.append(
                 f"{package_name}: README should avoid PyPI-broken relative links"
