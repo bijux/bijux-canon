@@ -6,6 +6,17 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.3.4] - 2026-04-11
+
+### Fixed
+
+* Runtime release metadata now falls back to `0.3.4` when tag metadata is not
+  available during local validation.
+* Internal canon package dependency floors now require the synchronized
+  `0.3.4` package line.
+* Package README badge links now follow the shared badge catalog and point to
+  the exact GHCR package pages used for published runtime bundles.
+
 ## [0.3.2] - 2026-04-10
 
 ### Fixed

@@ -6,6 +6,20 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
+## 0.3.4 - 2026-04-11
+
+### Changed
+
+- Shared badge generation now treats `docs/badges.md` as the single source of
+  truth for root, docs, and package README badge blocks.
+
+### Fixed
+
+- Release metadata contracts now enforce `0.3.4` as the current public package
+  line.
+- Documentation publication checks now lock GHCR badge targets to the
+  user-scoped packages summary and exact package pages.
+
 ## 0.3.2 - 2026-04-10
 
 ### Fixed

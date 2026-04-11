@@ -5,6 +5,15 @@ All notable changes to `bijux-canon-agent` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## 0.3.4 - 2026-04-11
+
+### Fixed
+
+- Release fallback metadata now aligns with the synchronized `v0.3.4` canon
+  line so local package checks report the intended package version.
+- Package README badge links now follow the shared badge catalog and point to
+  the exact GHCR package pages used for published agent bundles.
+
 ## 0.3.2 - 2026-04-10
 
 ### Fixed

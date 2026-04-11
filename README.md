@@ -49,8 +49,8 @@ repository layout that stays understandable as the system grows.
 
 This repository publishes `10` packages. Each release tag builds one staged
 bundle per package, uploads distributions to PyPI, publishes release bundles to
-`ghcr.io/bijux/bijux-canon/<package>`, and attaches the same staged assets to
-the GitHub Release.
+their exact GHCR package pages under the `bijux` account, and attaches the same
+staged assets to the GitHub Release.
 
 ## Why `bijux-canon` Exists
 

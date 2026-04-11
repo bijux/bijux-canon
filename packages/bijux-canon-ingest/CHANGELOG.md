@@ -5,6 +5,15 @@ All notable changes to `bijux-canon-ingest` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.3.4] - 2026-04-11
+
+### Fixed
+
+- Release fallback metadata and source-checkout version fallback now align with
+  the synchronized `v0.3.4` tag.
+- Package README badge links now follow the shared badge catalog and point to
+  the exact GHCR package pages used for published ingest bundles.
+
 ## [0.3.2] - 2026-04-10
 
 ### Fixed

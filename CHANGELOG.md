@@ -10,6 +10,24 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## 0.3.4 - 2026-04-11
+
+### Changed
+
+- Shared badge generation now treats `docs/badges.md` as the single source of
+  truth for the root README, the docs landing page, and every public package
+  README.
+- Repository release notes now describe GHCR publication through exact package
+  pages instead of a vague family placeholder path.
+
+### Fixed
+
+- GHCR badge targets now consistently use the user-scoped GitHub Packages
+  summary page and exact package pages for canonical and compatibility
+  distributions.
+- Public package fallback versions, runtime dependency floors, and maintainer
+  release checks now align with the synchronized `v0.3.4` release line.
+
 ## 0.3.3 - 2026-04-10
 
 ### Changed
