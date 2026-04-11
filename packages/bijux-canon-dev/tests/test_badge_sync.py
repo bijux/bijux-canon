@@ -6,10 +6,12 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from bijux_canon_dev.docs.badge_sync import BadgeTarget
-from bijux_canon_dev.docs.badge_sync import load_badge_catalog
-from bijux_canon_dev.docs.badge_sync import render_badge_block
-from bijux_canon_dev.docs.badge_sync import synchronize_badges
+from bijux_canon_dev.docs.badge_sync import (
+    BadgeTarget,
+    load_badge_catalog,
+    render_badge_block,
+    synchronize_badges,
+)
 
 GENERATED_BLOCK_RE = re.compile(
     r"<!-- bijux-canon-badges:generated:start -->.*?<!-- bijux-canon-badges:generated:end -->",
@@ -54,15 +56,21 @@ def test_package_badge_block_prioritizes_the_current_distribution() -> None:
         )
     )
     assert "\n[![agentic-flows](https://img.shields.io/pypi/v/agentic-flows" in rendered
-    assert "\n[![agentic-flows](https://img.shields.io/badge/agentic--flows-ghcr" in rendered
-    assert "\n[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime" in rendered
+    assert (
+        "\n[![agentic-flows](https://img.shields.io/badge/agentic--flows-ghcr"
+        in rendered
+    )
+    assert (
+        "\n[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime"
+        in rendered
+    )
     assert "agentic-flows docs" not in rendered
-    assert rendered.index("https://img.shields.io/pypi/v/agentic-flows") < rendered.index(
+    assert rendered.index(
+        "https://img.shields.io/pypi/v/agentic-flows"
+    ) < rendered.index("https://img.shields.io/badge/agentic--flows-ghcr")
+    assert rendered.index(
         "https://img.shields.io/badge/agentic--flows-ghcr"
-    )
-    assert rendered.index("https://img.shields.io/badge/agentic--flows-ghcr") < rendered.index(
-        "https://img.shields.io/badge/docs-runtime"
-    )
+    ) < rendered.index("https://img.shields.io/badge/docs-runtime")
 
 
 def test_badge_surfaces_are_synchronized() -> None:
@@ -87,4 +95,6 @@ def test_readme_surfaces_only_use_generated_badges() -> None:
     for path in targets:
         text = path.read_text(encoding="utf-8")
         stripped = GENERATED_BLOCK_RE.sub("", text)
-        assert "[![" not in stripped, f"{path} contains inline badges outside the generated block"
+        assert "[![" not in stripped, (
+            f"{path} contains inline badges outside the generated block"
+        )

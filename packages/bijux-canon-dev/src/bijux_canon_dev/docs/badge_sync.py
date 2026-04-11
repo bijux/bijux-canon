@@ -182,7 +182,7 @@ def _prioritize_record(
 
 
 def _canonical_records(
-    records: tuple[PackageBadgeRecord, ...]
+    records: tuple[PackageBadgeRecord, ...],
 ) -> tuple[PackageBadgeRecord, ...]:
     return tuple(
         record for record in records if record.package_slug.startswith("bijux-canon-")
@@ -317,7 +317,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    sync = subparsers.add_parser("sync", help="Render badge blocks into README surfaces.")
+    sync = subparsers.add_parser(
+        "sync", help="Render badge blocks into README surfaces."
+    )
     sync.set_defaults(check=False)
 
     check = subparsers.add_parser(
