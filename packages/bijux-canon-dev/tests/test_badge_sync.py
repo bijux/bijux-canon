@@ -38,6 +38,8 @@ def test_repository_badge_block_renders_all_public_badge_groups() -> None:
     assert rendered.count("https://img.shields.io/pypi/v/") == 10
     assert rendered.count("/pkgs/container/") == 5
     assert rendered.count("https://bijux.io/bijux-canon/") == 5
+    assert "https://img.shields.io/badge/runtime-ghcr" in rendered
+    assert "https://img.shields.io/badge/agent-ghcr" in rendered
 
 
 def test_package_badge_block_prioritizes_the_current_distribution() -> None:
@@ -50,7 +52,7 @@ def test_package_badge_block_prioritizes_the_current_distribution() -> None:
     )
     assert "**PyPI**\n[![agentic-flows]" in rendered
     assert "**Documentation**\n[![bijux-canon-runtime docs]" in rendered
-    assert "**GHCR**\n[![bijux-canon-runtime]" in rendered
+    assert "**GHCR**\n[![bijux-canon-runtime](https://img.shields.io/badge/runtime-ghcr" in rendered
     assert "agentic-flows docs" not in rendered
     assert "bijux-canon%2Fagentic-flows" not in rendered
 

@@ -66,7 +66,7 @@ Link policy for GHCR badges is fixed here as part of the contract:
 ## Family GHCR Badge
 
 <!-- bijux-canon-badges:family-ghcr-badge:start -->
-[![{{ distribution_name }}](https://img.shields.io/badge/{{ distribution_shields_slug }}-ghcr-181717?logo=github)]({{ package_ghcr_url }})
+[![{{ distribution_name }}](https://img.shields.io/badge/{{ pypi_badge_label }}-ghcr-181717?logo=github)]({{ package_ghcr_url }})
 <!-- bijux-canon-badges:family-ghcr-badge:end -->
 
 ## Family Docs Badge
