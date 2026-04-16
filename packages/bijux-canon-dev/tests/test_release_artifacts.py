@@ -5,7 +5,7 @@ import tomllib
 from typing import Any, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PUBLIC_LICENSE_SOURCE = "../../LICENSE"
+PUBLIC_LICENSE_SOURCE = "LICENSE"
 GENERATED_VERSION_PACKAGES = {
     "bijux-canon-ingest": "src/bijux_canon_ingest/_build_version.py",
     "bijux-canon-reason": "src/bijux_canon_reason/_build_version.py",

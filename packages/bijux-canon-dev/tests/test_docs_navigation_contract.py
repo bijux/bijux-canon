@@ -153,6 +153,12 @@ def _parse_navigation(site_dir: Path, relative_path: str) -> _RenderedNavigation
     parser.sidebar_links = [
         link for link in parser.sidebar_links if "bijux/bijux-canon" not in link
     ]
+    if (
+        parser.sidebar_title
+        and parser.sidebar_links
+        and parser.sidebar_links[0] == parser.sidebar_title
+    ):
+        parser.sidebar_links = parser.sidebar_links[1:]
     return parser
 
 
@@ -561,9 +567,12 @@ def test_section_pages_keep_sidebar_scoped_to_current_third_row(
 
 
 def test_navigation_sync_prefers_authored_active_links() -> None:
-    script = (
-        REPO_ROOT / "docs" / "assets" / "javascripts" / "navigation-sync.js"
+    site_script = (
+        REPO_ROOT / "docs" / "assets" / "javascripts" / "shell" / "nav-state.js"
+    ).read_text(encoding="utf-8")
+    detail_script = (
+        REPO_ROOT / "docs" / "assets" / "javascripts" / "shell" / "detail-tabs.js"
     ).read_text(encoding="utf-8")
 
-    assert "[data-bijux-site-path][aria-current='page']" in script
-    assert "[data-bijux-detail-path][aria-current='page']" in script
+    assert "[data-bijux-site-path][aria-current='page']" in site_script
+    assert "a[data-bijux-detail-path][aria-current='page']" in detail_script
