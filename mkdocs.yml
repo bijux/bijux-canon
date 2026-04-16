@@ -14,6 +14,7 @@ watch:
   - docs
   - docs/assets
   - docs/overrides
+  - shared/bijux-docs
   - mkdocs.yml
   - mkdocs.shared.yml
   - packages/bijux-canon-dev/src/bijux_canon_dev/docs
@@ -25,6 +26,8 @@ extra:
   bijux:
     repository: bijux-canon
     docs_package: bijux-canon-dev
+    nav_mode: default
+    theme_key: bijux:theme
     hub_links:
       - key: bijux
         label: Bijux
