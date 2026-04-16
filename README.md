@@ -181,3 +181,7 @@ The root keeps only the assets that truly need repository ownership:
 
 That split is intentional. It keeps package code local, shared governance
 visible, and repository policy discoverable for both human readers and tooling.
+
+## License
+
+This repository is licensed under the Apache License 2.0. Copyright 2026 Bijan Mousavi <bijan@bijux.io>. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
