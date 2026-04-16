@@ -10,3 +10,5 @@ PACKAGE_ALL_TARGETS := clean install test lint quality security build sbom
 QUALITY_MYPY_CONFIG = $(MONOREPO_ROOT)/configs/mypy.ini
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
+
+PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.7

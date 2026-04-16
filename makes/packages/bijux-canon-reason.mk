@@ -14,3 +14,5 @@ TEST_MAIN_ARGS := --maxfail=1
 ENABLE_BENCH := 0
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
+
+PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.7

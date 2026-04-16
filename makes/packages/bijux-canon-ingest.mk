@@ -27,3 +27,5 @@ PACKAGE_INSTALL_TARGETS := \
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
+
+PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.7
