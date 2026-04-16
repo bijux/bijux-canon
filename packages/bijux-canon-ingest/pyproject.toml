@@ -170,7 +170,7 @@ include = [
   "docs/maintainer/pypi.md",
   "pyproject.toml",
 ]
-force-include = { "../../LICENSE" = "LICENSE" }
+force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_ingest"]

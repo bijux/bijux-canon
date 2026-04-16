@@ -71,7 +71,7 @@ canonical-name = "bijux-canon-runtime"
 ignore-vcs = true
 include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/agentic_flows/**"]
 exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
-force-include = { "../../LICENSE" = "LICENSE" }
+force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentic_flows"]

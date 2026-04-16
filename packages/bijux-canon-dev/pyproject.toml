@@ -81,3 +81,4 @@ include = [
   "README.md",
   "src/bijux_canon_dev/**",
 ]
+force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
