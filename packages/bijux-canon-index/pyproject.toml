@@ -65,7 +65,7 @@ config = [
   "PyYAML>=6.0,<7.0",
 ]
 embeddings = [
-  "sentence-transformers>=2.7.0,<3.0",
+  "sentence-transformers>=2.7.0,<6.0",
 ]
 nd = [
   "hnswlib>=0.8.0,<1.0",
