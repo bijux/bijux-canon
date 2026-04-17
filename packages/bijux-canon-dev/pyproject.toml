@@ -23,7 +23,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "packaging>=24.0,<25.0",
+  "packaging>=24.0,<27.0",
   "PyYAML>=6.0,<7.0",
 ]
 
