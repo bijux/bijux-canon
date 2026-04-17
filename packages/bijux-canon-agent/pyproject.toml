@@ -144,7 +144,7 @@ doc = [
 ]
 extra = [
     "python-docx>=1.1.0,<2.0.0",  # For DOCX support
-    "lxml>=5.3.0,<6.0.0",         # For XML support
+    "lxml>=5.3.0,<7.0.0",         # For XML support
     "openpyxl>=3.1.0,<4.0.0"      # For Excel support (future)
 ]
 profiling = [
