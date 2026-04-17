@@ -64,7 +64,7 @@ docs = [
 ]
 dev = [
   "pytest>=9.0.3,<10.0",
-  "pytest-cov>=6.0,<7.0",
+  "pytest-cov>=6.0,<8.0",
   "pytest-asyncio>=1.0.0,<2.0",
   "pytest-timeout>=2.3,<3.0",
   "hypothesis>=6.91,<7.0",
