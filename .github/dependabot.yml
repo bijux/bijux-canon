@@ -1,0 +1,145 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - github_actions
+
+  - package-ecosystem: npm
+    directory: "/configs"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - javascript
+
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/bijux-canon-agent"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/bijux-canon-dev"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/bijux-canon-index"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/bijux-canon-index/plugins/example_remote_backend"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/bijux-canon-index/plugins/template_plugin"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/bijux-canon-ingest"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/bijux-canon-reason"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/bijux-canon-runtime"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/compat-agentic-flows"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/compat-bijux-agent"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/compat-bijux-rag"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/compat-bijux-rar"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
+    directory: "/packages/compat-bijux-vex"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
