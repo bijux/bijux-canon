@@ -7,9 +7,7 @@ API_UVICORN               ?= $(ACT)/uvicorn
 PRANCE                    ?= $(ACT)/prance
 OPENAPI_SPEC_VALIDATOR    ?= $(ACT)/openapi-spec-validator
 SCHEMATHESIS              ?= $(ACT)/schemathesis
-API_SCHEMATHESIS_ARGS     ?= --workers=1 --max-failures=1 --checks=not_a_server_error,response_schema_conformance,content_type_conformance,response_headers_conformance --request-timeout=30000 --max-response-time=500
-API_SCHEMATHESIS_MAX_EXAMPLES ?= 5
-API_SCHEMATHESIS_SUPPRESS_HEALTH ?= filter_too_much
+API_SCHEMATHESIS_ARGS     ?= --workers=1 --max-failures=1 --checks=not_a_server_error,response_schema_conformance,content_type_conformance,response_headers_conformance --hypothesis-max-examples=5 --request-timeout=30000 --max-response-time=500 --hypothesis-suppress-health-check=filter_too_much
 API_SERVER_IMPORT         ?=
 
 .PHONY: api api-install api-lint api-test api-clean openapi-drift api-drift
@@ -56,8 +54,6 @@ api-test:
 	  echo "→ Running schemathesis against live server"
 	@set -eu; \
 	  BASE_FLAG=$$($(SCHEMATHESIS) run -h 2>&1 | grep -q " --url " && echo --url || echo --base-url); \
-	  MAX_EXAMPLES_FLAG=$$($(SCHEMATHESIS) run -h 2>&1 | grep -q " --max-examples " && echo --max-examples || echo --hypothesis-max-examples); \
-	  SUPPRESS_HEALTH_FLAG=$$($(SCHEMATHESIS) run -h 2>&1 | grep -q " --suppress-health-check " && echo --suppress-health-check || echo --hypothesis-suppress-health-check); \
 	  EXTRA_FLAG=""; \
 	  HAS_EXPERIMENTAL=$$($(SCHEMATHESIS) run -h 2>&1 | grep -q " --experimental" && echo 1 || echo 0); \
 	  if [ "$$HAS_EXPERIMENTAL" -eq 1 ]; then \
@@ -67,7 +63,7 @@ api-test:
 	    esac; \
 	  fi; \
 	  PORT="$$(cat "$(API_ARTIFACTS_DIR_ABS)/port")"; \
-	  $(SCHEMATHESIS) run "$(API_SCHEMA)" $$BASE_FLAG "http://$(API_HOST):$$PORT" $$EXTRA_FLAG $(API_SCHEMATHESIS_ARGS) $$MAX_EXAMPLES_FLAG=$(API_SCHEMATHESIS_MAX_EXAMPLES) $$SUPPRESS_HEALTH_FLAG=$(API_SCHEMATHESIS_SUPPRESS_HEALTH) 2>&1 | tee "$(API_ARTIFACTS_DIR_ABS)/schemathesis.log"; \
+	  $(SCHEMATHESIS) run "$(API_SCHEMA)" $$BASE_FLAG "http://$(API_HOST):$$PORT" $$EXTRA_FLAG $(API_SCHEMATHESIS_ARGS) 2>&1 | tee "$(API_ARTIFACTS_DIR_ABS)/schemathesis.log"; \
 	  RC=$$?; \
 	  kill $$(cat "$(API_ARTIFACTS_DIR_ABS)/server.pid") >/dev/null 2>&1 || true; \
 	  wait $$(cat "$(API_ARTIFACTS_DIR_ABS)/server.pid") >/dev/null 2>&1 || true; \
