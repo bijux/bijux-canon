@@ -76,7 +76,7 @@ CompatibilityGuide = "https://bijux.io/bijux-canon/compat-packages/migration/mig
 [project.optional-dependencies]
 api = [
   "fastapi>=0.128,<1.0",
-  "starlette>=0.46,<1.0",
+  "starlette>=0.46,<2.0",
   "uvicorn>=0.32,<1.0",
 ]
 dev = [
@@ -100,7 +100,7 @@ dev = [
   "pyfakefs>=5.9.0",
   "httpx>=0.27.0,<1.0",
   "fastapi>=0.128,<1.0",
-  "starlette>=0.46,<1.0",
+  "starlette>=0.46,<2.0",
   "ruff>=0.6.8,<1.0",
   "mypy>=1.11.2,<2.0",
   "codespell>=2.3.0,<3.0",
