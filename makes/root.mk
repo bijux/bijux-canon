@@ -36,7 +36,7 @@ lock-check: ## Verify uv.lock matches pyproject.toml
 all: ## Run the repository test, lint, quality, security, docs, api, build, and sbom flows
 root-check-env: ## Create or refresh the shared root check environment
 clean-root-artifacts: ## Remove stray root-level caches outside artifacts
-check-shared-bijux-py: ## Verify shared bijux-py make modules match across sibling repositories
+check-bijux-standard: ## Verify shared bijux-py make modules match across sibling repositories
 check-config-layout: ## Validate the repository config tree shape and required tool configs
 check-make-layout: ## Validate the repository make tree shape and required entrypoints
 sync-badges: root-check-env ## Render shared badge blocks from docs/badges.md into README surfaces

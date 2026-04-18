@@ -123,7 +123,7 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     assert any(
         isinstance(step, dict)
         and step.get("name") == "Verify repository automation contracts"
-        and "check-shared-bijux-py" in step.get("run", "")
+        and "check-bijux-standard" in step.get("run", "")
         and "check-config-layout" in step.get("run", "")
         and "check-make-layout" in step.get("run", "")
         for step in repository_steps
