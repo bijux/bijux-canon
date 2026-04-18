@@ -23,6 +23,8 @@ whole workspace.
   from `bijux-std`, including shared tooling path updates and checksum refreshes.
 - Main-branch governance policy and dependency bot policy are now codified in
   repository governance records.
+- Repository bookkeeping now treats the shared standards baseline as
+  `bijux-std v0.1.0` after tag reset.
 
 ### Fixed
 
