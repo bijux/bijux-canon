@@ -18,6 +18,7 @@ EXPECTED_WORKFLOWS = {
     "ci.yml",
     "deploy-docs.yml",
     "publish.yml",
+    "release-github.yml",
     "verify.yml",
 }
 EXPECTED_VERIFY_PACKAGES = {
@@ -174,6 +175,13 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
     }
     assert release.get("needs") == ["build", "publish_pypi", "publish_ghcr"]
     assert release.get("permissions") == {"contents": "write"}
+    assert release.get("uses") == "./.github/workflows/release-github.yml"
+    assert release.get("with") == {
+        "artifact_pattern": "*-release",
+        "artifact_path": ".github/tmp/release-assets",
+        "release_files_glob": ".github/tmp/release-assets/**/*",
+        "fail_on_unmatched_files": True,
+    }
 
     publish_steps = publish_pypi.get("steps", [])
     assert any(
@@ -200,20 +208,6 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
         _uses_action_with_min_major(step, "oras-project/setup-oras", min_major=1)
         for step in ghcr_steps
     )
-    release_steps = release.get("steps", [])
-    assert any(
-        _uses_action_with_min_major(step, "softprops/action-gh-release", min_major=2)
-        and step.get("with", {}).get("overwrite_files") is True
-        for step in release_steps
-    )
-    assert any(
-        isinstance(step, dict)
-        and step.get("name") == "Reset existing GitHub release"
-        and "gh release delete" in step.get("run", "")
-        and step.get("env", {}).get("GH_TOKEN") == "${{ github.token }}"
-        for step in release_steps
-    )
-
     build_include = _matrix_include(build)
     publish_pypi_include = _matrix_include(publish_pypi)
     publish_ghcr_include = _matrix_include(publish_ghcr)
