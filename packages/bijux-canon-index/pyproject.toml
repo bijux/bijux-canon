@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-  "hatchling>=1.27.0,<1.28",
+  "hatchling>=1.27.0,<1.30",
   "hatch-fancy-pypi-readme>=24.2,<26.0",
   "hatch-vcs>=0.4.0,<1.0",
 ]
@@ -52,12 +52,12 @@ classifiers = [
 dependencies = [
   "pydantic>=2.12,<3.0",
   "typer>=0.21,<0.22",
-  "fastapi>=0.128,<0.129",
+  "fastapi>=0.128,<0.137",
 ]
 
 [project.optional-dependencies]
 api = [
-  "fastapi>=0.128,<0.129",
+  "fastapi>=0.128,<0.137",
   "uvicorn>=0.30.1,<1.0",
   "schemathesis>=4.0,<5.0",
 ]
@@ -65,7 +65,7 @@ config = [
   "PyYAML>=6.0,<7.0",
 ]
 embeddings = [
-  "sentence-transformers>=2.7.0,<3.0",
+  "sentence-transformers>=2.7.0,<6.0",
 ]
 nd = [
   "hnswlib>=0.8.0,<1.0",
@@ -78,7 +78,7 @@ vdb = [
 docs = [
   "mkdocs>=1.6.1,<2.0",
   "mkdocs-material>=9.5.39,<10.0",
-  "mkdocstrings[python]>=0.26.1,<1.0",
+  "mkdocstrings[python]>=0.26.1,<2.0",
   "mkdocs-git-revision-date-localized-plugin>=1.2.0,<2.0",
   "mkdocs-include-markdown-plugin",
   "mkdocs-gen-files",
@@ -92,15 +92,15 @@ dev = [
   "types-PyYAML>=6.0.12,<7.0",
   "types-orjson>=3.6.0,<4.0",
   "types-colorama>=0.0.14,<1.0",
-  "types-psutil>=6.0.0,<7.0",
+  "types-psutil>=6.0.0,<8.0",
   "typing-extensions>=4.5.0,<5.0",
   "types-pexpect>=4.9.0,<5.0",
 
   "pytest>=9.0.3,<10.0",
-  "pytest-cov>=6.2.1,<7.0",
+  "pytest-cov>=6.2.1,<8.0",
   "pytest-asyncio>=1.0.0,<2.0",
   "pytest-timeout>=2.4.0,<3.0",
-  "pytest-rerunfailures>=13.0,<14.0",
+  "pytest-rerunfailures>=13.0,<17.0",
   "pytest-benchmark>=4.0.0,<5.0",
   "hypothesis>=6.103.0,<7.0",
   "hypothesis-jsonschema>=0.23.0,<1.0",

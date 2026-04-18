@@ -55,7 +55,7 @@ docs = [
   "mkdocs-redirects>=1.2,<2",
   "mkdocs-git-revision-date-localized-plugin>=1.2,<2",
   "pymdown-extensions>=10.8,<11",
-  "mkdocstrings[python]>=0.29,<1",
+  "mkdocstrings[python]>=0.29,<2",
   "mkdocs-gen-files>=0.5,<1",
   "mkdocs-literate-nav>=0.6,<1",
   "mkdocs-section-index>=0.3,<1",
@@ -64,7 +64,7 @@ docs = [
 ]
 dev = [
   "pytest>=9.0.3,<10.0",
-  "pytest-cov>=6.0,<7.0",
+  "pytest-cov>=6.0,<8.0",
   "pytest-asyncio>=1.0.0,<2.0",
   "pytest-timeout>=2.3,<3.0",
   "hypothesis>=6.91,<7.0",
@@ -89,7 +89,7 @@ dev = [
   "mkdocs-redirects>=1.2,<2",
   "mkdocs-glightbox>=0.4.0",
   "mkdocs-include-markdown-plugin",
-  "mkdocstrings[python]>=0.29,<1",
+  "mkdocstrings[python]>=0.29,<2",
   "mkdocs-gen-files>=0.5,<1",
   "mkdocs-literate-nav>=0.6,<1",
   "mkdocs-section-index>=0.3,<1",
