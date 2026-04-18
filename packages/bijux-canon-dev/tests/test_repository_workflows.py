@@ -169,8 +169,17 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
         and step.get("with", {}).get("packages-dir")
         for step in publish_steps
     )
-    assert all(
-        isinstance(step, dict) and "password" not in step.get("with", {})
+    assert any(
+        isinstance(step, dict)
+        and step.get("name") == "Publish to PyPI (trusted publisher)"
+        and step.get("if") == "${{ matrix.publish_auth == 'trusted' }}"
+        for step in publish_steps
+    )
+    assert any(
+        isinstance(step, dict)
+        and step.get("name") == "Publish to PyPI (token bootstrap)"
+        and step.get("if") == "${{ matrix.publish_auth == 'token' }}"
+        and step.get("with", {}).get("password") == "${{ secrets.PYPI_API_TOKEN }}"
         for step in publish_steps
     )
     ghcr_steps = publish_ghcr.get("steps", [])
@@ -204,6 +213,7 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
     assert publish_pypi_packages == EXPECTED_PUBLISH_PACKAGES
     assert publish_ghcr_packages == EXPECTED_PUBLISH_PACKAGES
     assert all(entry.get("build_targets") == "build sbom" for entry in build_include)
+    assert all(entry.get("publish_auth") == "trusted" for entry in publish_pypi_include)
 
     index = next(
         entry for entry in build_include if entry["package_slug"] == "bijux-canon-index"
