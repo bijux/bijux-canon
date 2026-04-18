@@ -15,7 +15,7 @@ WORKFLOW_URL_RE = re.compile(
 EXPECTED_WORKFLOWS = {
     "bijux-std-checks.yml",
     "build-release-artifacts.yml",
-    "ci-package.yml",
+    "ci.yml",
     "deploy-docs.yml",
     "publish.yml",
     "verify.yml",
@@ -129,7 +129,7 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
         for step in repository_steps
     )
     assert package.get("needs") == "repository"
-    assert package.get("uses") == "./.github/workflows/ci-package.yml"
+    assert package.get("uses") == "./.github/workflows/ci.yml"
 
     include = _matrix_include(package)
     found = {entry["package_slug"] for entry in include}
@@ -244,7 +244,7 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
 
 
 def test_reusable_workflows_use_uv_cache_contract() -> None:
-    ci_workflow = _workflow(WORKFLOWS_DIR / "ci-package.yml")
+    ci_workflow = _workflow(WORKFLOWS_DIR / "ci.yml")
     build_workflow = _workflow(WORKFLOWS_DIR / "build-release-artifacts.yml")
     docs_workflow = _workflow(WORKFLOWS_DIR / "deploy-docs.yml")
 
