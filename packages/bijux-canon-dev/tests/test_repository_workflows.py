@@ -93,6 +93,19 @@ def _uses_setup_uv_with_lock_cache(step: Any) -> bool:
     )
 
 
+def _uses_action_with_min_major(step: Any, action: str, min_major: int) -> bool:
+    if not isinstance(step, dict):
+        return False
+    uses = step.get("uses")
+    if not isinstance(uses, str):
+        return False
+    pattern = rf"^{re.escape(action)}@v(?P<major>\d+)$"
+    match = re.match(pattern, uses)
+    if match is None:
+        return False
+    return int(match.group("major")) >= min_major
+
+
 def test_workflow_tree_is_standardized() -> None:
     found = {path.name for path in WORKFLOWS_DIR.glob("*.yml")}
     assert found == EXPECTED_WORKFLOWS
@@ -175,13 +188,12 @@ def test_publish_workflow_uses_matrix_release_contract() -> None:
     )
     ghcr_steps = publish_ghcr.get("steps", [])
     assert any(
-        isinstance(step, dict) and step.get("uses") == "oras-project/setup-oras@v1"
+        _uses_action_with_min_major(step, "oras-project/setup-oras", min_major=1)
         for step in ghcr_steps
     )
     release_steps = release.get("steps", [])
     assert any(
-        isinstance(step, dict)
-        and step.get("uses") == "softprops/action-gh-release@v2"
+        _uses_action_with_min_major(step, "softprops/action-gh-release", min_major=2)
         and step.get("with", {}).get("overwrite_files") is True
         for step in release_steps
     )
