@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.27.0,<1.28", "hatch-vcs>=0.4.0,<1.0"]
+requires = ["hatchling>=1.27.0,<1.30", "hatch-vcs>=0.4.0,<1.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -23,7 +23,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "packaging>=24.0,<25.0",
+  "packaging>=24.0,<27.0",
   "PyYAML>=6.0,<7.0",
 ]
 
@@ -39,7 +39,7 @@ Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 dev = [
   "pytest>=9.0.3,<10.0",
   "pytest-asyncio>=1.0.0,<2.0",
-  "pytest-cov>=6.2.1,<7.0",
+  "pytest-cov>=6.2.1,<8.0",
   "pytest-timeout>=2.4.0,<3.0",
   "hatch>=1.14.0,<2.0",
   "pydantic>=2.12,<3.0",

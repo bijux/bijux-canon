@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-  "hatchling>=1.27.0,<1.28",
+  "hatchling>=1.27.0,<1.30",
   "hatch-fancy-pypi-readme>=24.2,<26.0",
   "hatch-vcs>=0.4.0,<1.0",
 ]
@@ -76,7 +76,7 @@ CompatibilityGuide = "https://bijux.io/bijux-canon/compat-packages/migration/mig
 [project.optional-dependencies]
 api = [
   "fastapi>=0.128,<1.0",
-  "starlette>=0.46,<1.0",
+  "starlette>=0.46,<2.0",
   "uvicorn>=0.32,<1.0",
 ]
 dev = [
@@ -84,15 +84,15 @@ dev = [
   "PyYAML>=6.0,<7.0",
   "types-orjson>=3.6.0,<4.0",
   "types-colorama>=0.0.14,<1.0",
-  "types-psutil>=6.0.0,<7.0",
+  "types-psutil>=6.0.0,<8.0",
   "typing-extensions>=4.5.0,<5.0",
   "types-pexpect>=4.9.0,<5.0",
   "pytest>=9.0.3,<10.0",
-  "pytest-cov>=6.2.1,<7.0",
+  "pytest-cov>=6.2.1,<8.0",
   "pytest-asyncio>=1.0.0,<2.0",
   "pytest-timeout>=2.4.0,<3.0",
   "pytest-rerunfailures>=13.0,<14.0",
-  "pytest-benchmark>=4.0.0,<5.0",
+  "pytest-benchmark>=4.0.0,<6.0",
   "pytest-mock>=3.14.1,<4.0",
   "hypothesis>=6.103.0,<7.0",
   "hypothesis-jsonschema>=0.23.0,<1.0",
@@ -100,7 +100,7 @@ dev = [
   "pyfakefs>=5.9.0",
   "httpx>=0.27.0,<1.0",
   "fastapi>=0.128,<1.0",
-  "starlette>=0.46,<1.0",
+  "starlette>=0.46,<2.0",
   "ruff>=0.6.8,<1.0",
   "mypy>=1.11.2,<2.0",
   "codespell>=2.3.0,<3.0",
