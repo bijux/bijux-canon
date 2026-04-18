@@ -1,9 +1,8 @@
 name: verify
-
-on:
+true:
   push:
-    branches: [main]
-    # Keep branch verification focused on automation, docs, and package surfaces.
+    branches:
+      - main
     paths:
       - ".github/workflows/**"
       - "apis/**"
@@ -11,15 +10,15 @@ on:
       - "docs/**"
       - "makes/**"
       - "packages/**"
-      - "Makefile"
-      - "mkdocs.shared.yml"
-      - "mkdocs.yml"
-      - "pyproject.toml"
-      - "tox.ini"
-      - "uv.lock"
+      - Makefile
+      - mkdocs.shared.yml
+      - mkdocs.yml
+      - pyproject.toml
+      - tox.ini
+      - uv.lock
   pull_request:
-    branches: [main]
-    # Mirror the push filter so pull requests validate the same repository surfaces.
+    branches:
+      - main
     paths:
       - ".github/workflows/**"
       - "apis/**"
@@ -27,35 +26,31 @@ on:
       - "docs/**"
       - "makes/**"
       - "packages/**"
-      - "Makefile"
-      - "mkdocs.shared.yml"
-      - "mkdocs.yml"
-      - "pyproject.toml"
-      - "tox.ini"
-      - "uv.lock"
-  workflow_dispatch:
-
+      - Makefile
+      - mkdocs.shared.yml
+      - mkdocs.yml
+      - pyproject.toml
+      - tox.ini
+      - uv.lock
+  workflow_dispatch: null
 permissions:
   contents: read
-
 concurrency:
-  group: verify-${{ github.ref }}
+  group: "verify-${{ github.ref }}"
   cancel-in-progress: true
-
 jobs:
   run:
     uses: ./.github/workflows/reusable-verify-python-packages.yml
     with:
       repository_timeout_minutes: 30
-      package_matrix_json: >-
-        [
-          {"package_slug":"bijux-canon-runtime","package_dir":"packages/bijux-canon-runtime","artifacts_dir":"artifacts/bijux-canon-runtime","check_targets":"[\"quality\", \"security\", \"docs\", \"build\", \"sbom\", \"api\", \"openapi-drift\"]","api_toolchain_targets":"[\"api\", \"openapi-drift\"]","post_test_command":"set -euo pipefail && venv_python=\"${ARTIFACTS_DIR}/venv/bin/python\" && if compgen -G \"packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*\" > /dev/null; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*\" --fail-under=65; fi && if [ -f \"packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py\" ]; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py\" --fail-under=60; fi && if compgen -G \"packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*\" > /dev/null; then \"${venv_python}\" -m coverage report --rcfile configs/coveragerc.ini --data-file \"${ARTIFACTS_DIR}/test/.coverage\" --include \"packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*\" --fail-under=75; fi"},
-          {"package_slug":"bijux-canon-agent","package_dir":"packages/bijux-canon-agent","artifacts_dir":"artifacts/bijux-canon-agent"},
-          {"package_slug":"bijux-canon-ingest","package_dir":"packages/bijux-canon-ingest","artifacts_dir":"artifacts/bijux-canon-ingest","test_python_versions":"[\"3.11\", \"3.12\", \"3.13\"]"},
-          {"package_slug":"bijux-canon-reason","package_dir":"packages/bijux-canon-reason","artifacts_dir":"artifacts/bijux-canon-reason"},
-          {"package_slug":"bijux-canon-index","package_dir":"packages/bijux-canon-index","artifacts_dir":"artifacts/bijux-canon-index"},
-          {"package_slug":"bijux-canon-dev","package_dir":"packages/bijux-canon-dev","artifacts_dir":"artifacts/bijux-canon-dev","check_targets":"[\"quality\", \"security\", \"build\", \"sbom\"]"}
-        ]
-      default_test_python_versions: '["3.11"]'
-      default_check_targets: '["quality", "security", "docs", "api", "build", "sbom"]'
-      default_api_toolchain_targets: '["api"]'
+      package_matrix_json: "[
+  {\"package_slug\":\"bijux-canon-runtime\",\"package_dir\":\"packages/bijux-canon-runtime\",\"artifacts_dir\":\"artifacts/bijux-canon-runtime\",\"check_targets\":\"[\\\"quality\\\", \\\"security\\\", \\\"docs\\\", \\\"build\\\", \\\"sbom\\\", \\\"api\\\", \\\"openapi-drift\\\"]\",\"api_toolchain_targets\":\"[\\\"api\\\", \\\"openapi-drift\\\"]\",\"post_test_command\":\"set -euo pipefail && venv_python=\\\"${ARTIFACTS_DIR}/venv/bin/python\\\" && if compgen -G \\\"packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*\\\" > /dev/null; then \\\"${venv_python}\\\" -m coverage report --rcfile configs/coveragerc.ini --data-file \\\"${ARTIFACTS_DIR}/test/.coverage\\\" --include \\\"packages/bijux-canon-runtime/src/bijux_canon_runtime/providers/*\\\" --fail-under=65; fi && if [ -f \\\"packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py\\\" ]; then \\\"${venv_python}\\\" -m coverage report --rcfile configs/coveragerc.ini --data-file \\\"${ARTIFACTS_DIR}/test/.coverage\\\" --include \\\"packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces/cli.py\\\" --fail-under=60; fi && if compgen -G \\\"packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*\\\" > /dev/null; then \\\"${venv_python}\\\" -m coverage report --rcfile configs/coveragerc.ini --data-file \\\"${ARTIFACTS_DIR}/test/.coverage\\\" --include \\\"packages/bijux-canon-runtime/src/bijux_canon_runtime/api/*\\\" --fail-under=75; fi\"},
+  {\"package_slug\":\"bijux-canon-agent\",\"package_dir\":\"packages/bijux-canon-agent\",\"artifacts_dir\":\"artifacts/bijux-canon-agent\"},
+  {\"package_slug\":\"bijux-canon-ingest\",\"package_dir\":\"packages/bijux-canon-ingest\",\"artifacts_dir\":\"artifacts/bijux-canon-ingest\",\"test_python_versions\":\"[\\\"3.11\\\", \\\"3.12\\\", \\\"3.13\\\"]\"},
+  {\"package_slug\":\"bijux-canon-reason\",\"package_dir\":\"packages/bijux-canon-reason\",\"artifacts_dir\":\"artifacts/bijux-canon-reason\"},
+  {\"package_slug\":\"bijux-canon-index\",\"package_dir\":\"packages/bijux-canon-index\",\"artifacts_dir\":\"artifacts/bijux-canon-index\"},
+  {\"package_slug\":\"bijux-canon-dev\",\"package_dir\":\"packages/bijux-canon-dev\",\"artifacts_dir\":\"artifacts/bijux-canon-dev\",\"check_targets\":\"[\\\"quality\\\", \\\"security\\\", \\\"build\\\", \\\"sbom\\\"]\"}
+]"
+      default_test_python_versions: "[\"3.11\"]"
+      default_check_targets: "[\"quality\", \"security\", \"docs\", \"api\", \"build\", \"sbom\"]"
+      default_api_toolchain_targets: "[\"api\"]"
