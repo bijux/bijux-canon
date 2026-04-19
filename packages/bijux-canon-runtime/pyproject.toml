@@ -62,12 +62,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/bijux-canon/06-bijux-canon-runtime/"
+Homepage = "https://bijux.io/bijux-canon/bijux-canon-runtime/"
 Website = "https://bijux.io/"
-Documentation = "https://bijux.io/bijux-canon/06-bijux-canon-runtime/"
+Documentation = "https://bijux.io/bijux-canon/bijux-canon-runtime/"
 Repository = "https://github.com/bijux/bijux-canon"
 Issues = "https://github.com/bijux/bijux-canon/issues"
-Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/06-bijux-canon-runtime/CHANGELOG.md"
+Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 Funding = "https://github.com/sponsors/bijux"
 PackageMap = "https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/"

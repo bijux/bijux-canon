@@ -133,12 +133,12 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://bijux.io/bijux-canon/03-bijux-canon-index/"
+"Homepage" = "https://bijux.io/bijux-canon/bijux-canon-index/"
 "Website" = "https://bijux.io/"
 "Repository" = "https://github.com/bijux/bijux-canon"
 "Issues" = "https://github.com/bijux/bijux-canon/issues"
-"Documentation" = "https://bijux.io/bijux-canon/03-bijux-canon-index/"
-"Changelog" = "https://github.com/bijux/bijux-canon/blob/main/packages/03-bijux-canon-index/CHANGELOG.md"
+"Documentation" = "https://bijux.io/bijux-canon/bijux-canon-index/"
+"Changelog" = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md"
 "Security" = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
 "PackageMap" = "https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/"
