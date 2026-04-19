@@ -43,9 +43,9 @@ class RunStore:
             or read_env(
                 "BIJUX_CANON_INDEX_RUN_DIR",
                 legacy="BIJUX_VEX_RUN_DIR",
-                default="artifacts/03-bijux-canon-index/runs",
+                default="artifacts/bijux-canon-index/runs",
             )
-            or "artifacts/03-bijux-canon-index/runs"
+            or "artifacts/bijux-canon-index/runs"
         )
         self._base = Path(base)
 
