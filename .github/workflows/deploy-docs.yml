@@ -234,8 +234,14 @@ jobs:
             exit 0
           fi
 
-          echo "No publishable docs artifact detected; running fallback mkdocs build."
-          mkdocs build --config-file mkdocs.yml --site-dir artifacts/tmp-site
+          if make -prRn 2>/dev/null | awk -F':' '$1 == "docs" { found=1 } END { exit(found ? 0 : 1) }'; then
+            echo "No publishable docs artifact detected; running fallback make docs."
+            make docs
+            exit 0
+          fi
+
+          echo "Unable to build fallback docs site: 'docs' make target is unavailable." >&2
+          exit 1
 
       - name: Resolve docs artifact directory
         id: artifact
