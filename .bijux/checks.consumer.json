@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "consumer_id": "bijux-canon",
+  "suite_id": "bijux_std_suite",
+  "output": {
+    "format": "json"
+  }
+}
