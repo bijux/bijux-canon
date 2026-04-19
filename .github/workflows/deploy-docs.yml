@@ -1,3 +1,6 @@
+# SSOT NOTICE: Synced consumer copies are generated from bijux-std/shared/bijux-gh/workflows/deploy-docs.yml.
+# Do not edit consumer workflow copies directly; update bijux-std and run standards sync refresh.
+
 name: deploy-docs
 
 on:
@@ -23,6 +26,7 @@ on:
       - ".bijux/shared/bijux-docs/**"
       - ".bijux/shared/bijux-makes-py/**"
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -325,7 +329,7 @@ jobs:
   deploy:
     name: Deploy docs site
     needs: build
-    if: ${{ needs.build.outputs.site_available == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) }}
+    if: ${{ needs.build.outputs.site_available == 'true' && (github.event_name == 'workflow_call' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages

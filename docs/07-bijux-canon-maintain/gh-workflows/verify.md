@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-19
 ---
 
 # verify
@@ -16,7 +16,7 @@ package matrix are healthy enough to trust on pushes and pull requests. It is
 therefore the broadest CI truth for day-to-day repository changes.
 
 The job tree is intentionally split. `repository` runs shared automation
-contracts first, `package` fans out by package through `ci-package.yml`, and
+contracts first, `package` fans out by package through `ci.yml`, and
 each reusable package run splits again into package-scoped `tests`, `checks`,
 and `lint` jobs.
 

@@ -161,7 +161,7 @@ def test_release_workflows_replace_legacy_publish_workflow() -> None:
     assert release_pypi["jobs"]["resolve"]["name"] == "resolve-release-pypi-config"
     assert release_pypi["jobs"]["publish_artifact"]["name"].startswith("publish-pypi-")
     assert release_pypi["jobs"]["publish_artifact"]["environment"]["name"] == (
-        "${{ needs.resolve.outputs.environment_name }}"
+        "${{ matrix.environment_name || needs.resolve.outputs.environment_name }}"
     )
 
     assert release_ghcr.get("name") == "release-ghcr"

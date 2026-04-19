@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-10
+last_reviewed: 2026-04-19
 ---
 
 # release-workflows
@@ -27,7 +27,6 @@ The split keeps each publication surface explicit:
 - `.github/workflows/release-github.yml`
 - `.github/workflows/release-pypi.yml`
 - `.github/workflows/release-ghcr.yml`
-- `.github/workflows/build-release-artifacts.yml`
 - package release metadata and staged release assets
 
 ## Current Job Tree
