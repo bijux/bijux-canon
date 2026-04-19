@@ -56,7 +56,7 @@ flowchart LR
 
 - CLI app in src/bijux_canon_reason/interfaces/cli
 - HTTP app in src/bijux_canon_reason/api/v1
-- schema files in apis/04-bijux-canon-reason/v1
+- schema files in apis/bijux-canon-reason/v1
 
 ## Adjacent Systems
 

@@ -32,11 +32,11 @@ flowchart TB
     surface1 --> page
     surface2["HTTP app under src/bijux_canon_index/api"]
     surface2 --> page
-    surface3["OpenAPI schema files under apis/03-bijux-canon-index/v1"]
+    surface3["OpenAPI schema files under apis/bijux-canon-index/v1"]
     surface3 --> page
-    proof1["apis/03-bijux-canon-index/v1/schema.yaml"]
+    proof1["apis/bijux-canon-index/v1/schema.yaml"]
     page --> proof1
-    proof2["apis/03-bijux-canon-index/v1/pinned_openapi.json"]
+    proof2["apis/bijux-canon-index/v1/pinned_openapi.json"]
     page --> proof2
     proof3["vector execution result collections"]
     page --> proof3
@@ -54,21 +54,21 @@ flowchart TB
 
 ## API Artifacts
 
-- apis/03-bijux-canon-index/v1/schema.yaml
-- apis/03-bijux-canon-index/v1/pinned_openapi.json
+- apis/bijux-canon-index/v1/schema.yaml
+- apis/bijux-canon-index/v1/pinned_openapi.json
 
 ## Boundary Modules
 
 - CLI modules under src/bijux_canon_index/interfaces/cli
 - HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/03-bijux-canon-index/v1
+- OpenAPI schema files under apis/bijux-canon-index/v1
 
 ## Concrete Anchors
 
 - CLI modules under src/bijux_canon_index/interfaces/cli
 - HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/03-bijux-canon-index/v1
-- apis/03-bijux-canon-index/v1/schema.yaml
+- OpenAPI schema files under apis/bijux-canon-index/v1
+- apis/bijux-canon-index/v1/schema.yaml
 
 ## Use This Page When
 

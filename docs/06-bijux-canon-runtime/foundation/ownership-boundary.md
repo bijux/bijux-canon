@@ -40,9 +40,9 @@ flowchart TB
     page -.keeps outside.-> limit2
     limit3["agent composition policy"]
     page -.keeps outside.-> limit3
-    anchor1["packages/06-bijux-canon-runtime/src/bijux_canon_runtime"]
+    anchor1["packages/bijux-canon-runtime/src/bijux_canon_runtime"]
     page --> anchor1
-    anchor2["packages/06-bijux-canon-runtime/tests"]
+    anchor2["packages/bijux-canon-runtime/tests"]
     page --> anchor2
     anchor3["packages/bijux-canon-runtime"]
     page --> anchor3
@@ -69,8 +69,8 @@ flowchart TB
 ## Concrete Anchors
 
 - `packages/bijux-canon-runtime` as the package root
-- `packages/06-bijux-canon-runtime/src/bijux_canon_runtime` as the import boundary
-- `packages/06-bijux-canon-runtime/tests` as the package proof surface
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime` as the import boundary
+- `packages/bijux-canon-runtime/tests` as the package proof surface
 
 ## Use This Page When
 

@@ -43,9 +43,9 @@ flowchart LR
     page -.keeps outside.-> limit3
     anchor1["packages/bijux-canon-index"]
     page --> anchor1
-    anchor2["packages/03-bijux-canon-index/src/bijux_canon_index"]
+    anchor2["packages/bijux-canon-index/src/bijux_canon_index"]
     page --> anchor2
-    anchor3["packages/03-bijux-canon-index/tests"]
+    anchor3["packages/bijux-canon-index/tests"]
     page --> anchor3
     class page page;
     class own1,own2,own3 positive;
@@ -55,15 +55,15 @@ flowchart LR
 
 ## Lifecycle Anchors
 
-- entry surfaces: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/03-bijux-canon-index/v1
+- entry surfaces: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/bijux-canon-index/v1
 - code ownership: src/bijux_canon_index/domain, src/bijux_canon_index/application, src/bijux_canon_index/infra
 - durable outputs: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 
 ## Concrete Anchors
 
 - `packages/bijux-canon-index` as the package root
-- `packages/03-bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/03-bijux-canon-index/tests` as the package proof surface
+- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
+- `packages/bijux-canon-index/tests` as the package proof surface
 
 ## Use This Page When
 

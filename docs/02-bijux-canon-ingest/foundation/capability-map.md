@@ -40,11 +40,11 @@ flowchart LR
     page -.keeps outside.-> limit2
     limit3["cross-package vector execution semantics"]
     page -.keeps outside.-> limit3
-    anchor1["packages/02-bijux-canon-ingest/tests"]
+    anchor1["packages/bijux-canon-ingest/tests"]
     page --> anchor1
     anchor2["packages/bijux-canon-ingest"]
     page --> anchor2
-    anchor3["packages/02-bijux-canon-ingest/src/bijux_canon_ingest"]
+    anchor3["packages/bijux-canon-ingest/src/bijux_canon_ingest"]
     page --> anchor3
     class page page;
     class own1,own2,own3 positive;
@@ -70,8 +70,8 @@ flowchart LR
 ## Concrete Anchors
 
 - `packages/bijux-canon-ingest` as the package root
-- `packages/02-bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/02-bijux-canon-ingest/tests` as the package proof surface
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
+- `packages/bijux-canon-ingest/tests` as the package proof surface
 
 ## Use This Page When
 

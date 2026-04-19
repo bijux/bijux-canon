@@ -33,7 +33,7 @@ flowchart RL
     surface3 --> page
     proof1["chunk collections and retrieval-ready records"]
     page --> proof1
-    proof2["apis/02-bijux-canon-ingest/v1/schema.yaml"]
+    proof2["apis/bijux-canon-ingest/v1/schema.yaml"]
     page --> proof2
     proof3["normalized document trees"]
     page --> proof3
@@ -73,7 +73,7 @@ flowchart RL
 - CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py
 - HTTP boundaries under src/bijux_canon_ingest/interfaces
 - configuration modules under src/bijux_canon_ingest/config
-- apis/02-bijux-canon-ingest/v1/schema.yaml
+- apis/bijux-canon-ingest/v1/schema.yaml
 
 ## Use This Page When
 

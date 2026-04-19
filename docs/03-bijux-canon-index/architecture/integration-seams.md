@@ -56,7 +56,7 @@ flowchart TB
 
 - CLI modules under src/bijux_canon_index/interfaces/cli
 - HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/03-bijux-canon-index/v1
+- OpenAPI schema files under apis/bijux-canon-index/v1
 
 ## Adjacent Systems
 

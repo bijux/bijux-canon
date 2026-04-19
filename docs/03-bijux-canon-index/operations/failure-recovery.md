@@ -31,7 +31,7 @@ flowchart LR
     step1 --> page
     step2["HTTP app under src/bijux_canon_index/api"]
     step2 --> page
-    step3["packages/03-bijux-canon-index/pyproject.toml"]
+    step3["packages/bijux-canon-index/pyproject.toml"]
     step3 --> page
     run1["tests/unit for API, application, contracts, domain, infra, and tooling"]
     page --> run1
@@ -53,15 +53,15 @@ flowchart LR
 
 ## Recovery Anchors
 
-- interface surfaces: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/03-bijux-canon-index/v1
+- interface surfaces: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/bijux-canon-index/v1
 - artifacts to inspect: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 - tests to run: tests/unit for API, application, contracts, domain, infra, and tooling, tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
 
 ## Concrete Anchors
 
-- `packages/03-bijux-canon-index/pyproject.toml` for package metadata
-- `packages/03-bijux-canon-index/README.md` for local package framing
-- `packages/03-bijux-canon-index/tests` for executable operational backstops
+- `packages/bijux-canon-index/pyproject.toml` for package metadata
+- `packages/bijux-canon-index/README.md` for local package framing
+- `packages/bijux-canon-index/tests` for executable operational backstops
 
 ## Use This Page When
 

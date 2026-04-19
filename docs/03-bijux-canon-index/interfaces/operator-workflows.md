@@ -27,17 +27,17 @@ flowchart RL
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    surface1["OpenAPI schema files under apis/03-bijux-canon-index/v1"]
+    surface1["OpenAPI schema files under apis/bijux-canon-index/v1"]
     surface1 --> page
     surface2["CLI modules under src/bijux_canon_index/interfaces/cli"]
     surface2 --> page
     surface3["HTTP app under src/bijux_canon_index/api"]
     surface3 --> page
-    proof1["apis/03-bijux-canon-index/v1/pinned_openapi.json"]
+    proof1["apis/bijux-canon-index/v1/pinned_openapi.json"]
     page --> proof1
     proof2["vector execution result collections"]
     page --> proof2
-    proof3["apis/03-bijux-canon-index/v1/schema.yaml"]
+    proof3["apis/bijux-canon-index/v1/schema.yaml"]
     page --> proof3
     review1["tests/conformance and tests/compat_v01 for compatibility behavior"]
     review1 -.raises compatibility pressure on.-> page
@@ -53,7 +53,7 @@ flowchart RL
 
 ## Workflow Anchors
 
-- entry surfaces: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/03-bijux-canon-index/v1
+- entry surfaces: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/bijux-canon-index/v1
 - durable outputs: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 - validation backstops: tests/unit for API, application, contracts, domain, infra, and tooling, tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
 
@@ -61,8 +61,8 @@ flowchart RL
 
 - CLI modules under src/bijux_canon_index/interfaces/cli
 - HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/03-bijux-canon-index/v1
-- apis/03-bijux-canon-index/v1/schema.yaml
+- OpenAPI schema files under apis/bijux-canon-index/v1
+- apis/bijux-canon-index/v1/schema.yaml
 
 ## Use This Page When
 

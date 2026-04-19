@@ -37,9 +37,9 @@ flowchart LR
     page -.keeps outside.-> limit2
     limit3["runtime-wide replay policy and execution governance"]
     page -.keeps outside.-> limit3
-    anchor1["packages/03-bijux-canon-index/src/bijux_canon_index"]
+    anchor1["packages/bijux-canon-index/src/bijux_canon_index"]
     page --> anchor1
-    anchor2["packages/03-bijux-canon-index/tests"]
+    anchor2["packages/bijux-canon-index/tests"]
     page --> anchor2
     anchor3["packages/bijux-canon-index"]
     page --> anchor3
@@ -71,8 +71,8 @@ flowchart LR
 ## Concrete Anchors
 
 - `packages/bijux-canon-index` as the package root
-- `packages/03-bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/03-bijux-canon-index/tests` as the package proof surface
+- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
+- `packages/bijux-canon-index/tests` as the package proof surface
 
 ## Use This Page When
 

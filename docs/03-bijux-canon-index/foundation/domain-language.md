@@ -42,9 +42,9 @@ flowchart RL
     page -.keeps outside.-> limit3
     anchor1["packages/bijux-canon-index"]
     page --> anchor1
-    anchor2["packages/03-bijux-canon-index/src/bijux_canon_index"]
+    anchor2["packages/bijux-canon-index/src/bijux_canon_index"]
     page --> anchor2
-    anchor3["packages/03-bijux-canon-index/tests"]
+    anchor3["packages/bijux-canon-index/tests"]
     page --> anchor3
     class page page;
     class own1,own2,own3 positive;
@@ -62,8 +62,8 @@ flowchart RL
 ## Concrete Anchors
 
 - `packages/bijux-canon-index` as the package root
-- `packages/03-bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/03-bijux-canon-index/tests` as the package proof surface
+- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
+- `packages/bijux-canon-index/tests` as the package proof surface
 
 ## Use This Page When
 

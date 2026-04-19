@@ -38,7 +38,7 @@ flowchart TB
     page --> proof1
     proof2["workflow graph execution records"]
     page --> proof2
-    proof3["apis/05-bijux-canon-agent/v1/schema.yaml"]
+    proof3["apis/bijux-canon-agent/v1/schema.yaml"]
     page --> proof3
     review1["tests/unit for local behavior and utility coverage"]
     review1 -.raises compatibility pressure on.-> page
@@ -54,7 +54,7 @@ flowchart TB
 
 ## API Artifacts
 
-- apis/05-bijux-canon-agent/v1/schema.yaml
+- apis/bijux-canon-agent/v1/schema.yaml
 
 ## Boundary Modules
 
@@ -67,7 +67,7 @@ flowchart TB
 - CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py
 - operator configuration under src/bijux_canon_agent/config
 - HTTP-adjacent modules under src/bijux_canon_agent/api
-- apis/05-bijux-canon-agent/v1/schema.yaml
+- apis/bijux-canon-agent/v1/schema.yaml
 
 ## Use This Page When
 

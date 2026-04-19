@@ -27,13 +27,13 @@ flowchart LR
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
     surface1["HTTP app in src/bijux_canon_runtime/api/v1"]
     surface1 --> page
-    surface2["schema files in apis/06-bijux-canon-runtime/v1"]
+    surface2["schema files in apis/bijux-canon-runtime/v1"]
     surface2 --> page
     surface3["CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py"]
     surface3 --> page
-    proof1["apis/06-bijux-canon-runtime/v1/schema.yaml"]
+    proof1["apis/bijux-canon-runtime/v1/schema.yaml"]
     page --> proof1
-    proof2["apis/06-bijux-canon-runtime/v1/schema.hash"]
+    proof2["apis/bijux-canon-runtime/v1/schema.hash"]
     page --> proof2
     proof3["execution store records"]
     page --> proof3
@@ -72,8 +72,8 @@ flowchart LR
 
 - CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py
 - HTTP app in src/bijux_canon_runtime/api/v1
-- schema files in apis/06-bijux-canon-runtime/v1
-- apis/06-bijux-canon-runtime/v1/schema.yaml
+- schema files in apis/bijux-canon-runtime/v1
+- apis/bijux-canon-runtime/v1/schema.yaml
 
 ## Use This Page When
 

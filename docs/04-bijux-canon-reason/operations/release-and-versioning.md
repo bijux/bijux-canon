@@ -30,7 +30,7 @@ flowchart RL
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
     step1["HTTP app in src/bijux_canon_reason/api/v1"]
     step1 --> page
-    step2["packages/04-bijux-canon-reason/pyproject.toml"]
+    step2["packages/bijux-canon-reason/pyproject.toml"]
     step2 --> page
     step3["CLI app in src/bijux_canon_reason/interfaces/cli"]
     step3 --> page
@@ -60,14 +60,14 @@ flowchart RL
 
 ## Versioning Anchors
 
-- version file: `packages/04-bijux-canon-reason/src/bijux_canon_reason/_version.py`
-- tag pattern is configured in `packages/04-bijux-canon-reason/pyproject.toml`
+- version file: `packages/bijux-canon-reason/src/bijux_canon_reason/_version.py`
+- tag pattern is configured in `packages/bijux-canon-reason/pyproject.toml`
 
 ## Concrete Anchors
 
-- `packages/04-bijux-canon-reason/pyproject.toml` for package metadata
-- `packages/04-bijux-canon-reason/README.md` for local package framing
-- `packages/04-bijux-canon-reason/tests` for executable operational backstops
+- `packages/bijux-canon-reason/pyproject.toml` for package metadata
+- `packages/bijux-canon-reason/README.md` for local package framing
+- `packages/bijux-canon-reason/tests` for executable operational backstops
 
 ## Use This Page When
 

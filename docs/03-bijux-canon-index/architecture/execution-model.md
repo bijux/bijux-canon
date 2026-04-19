@@ -55,7 +55,7 @@ flowchart LR
 
 ## Execution Anchors
 
-- entry surfaces: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/03-bijux-canon-index/v1
+- entry surfaces: CLI modules under src/bijux_canon_index/interfaces/cli, HTTP app under src/bijux_canon_index/api, OpenAPI schema files under apis/bijux-canon-index/v1
 - workflow modules: src/bijux_canon_index/domain, src/bijux_canon_index/application, src/bijux_canon_index/infra
 - outputs: vector execution result collections, provenance and replay comparison reports, backend-specific metadata and audit output
 

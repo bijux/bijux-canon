@@ -41,9 +41,9 @@ flowchart TB
     page -.keeps outside.-> limit2
     limit3["repository maintenance automation"]
     page -.keeps outside.-> limit3
-    anchor1["packages/02-bijux-canon-ingest/src/bijux_canon_ingest"]
+    anchor1["packages/bijux-canon-ingest/src/bijux_canon_ingest"]
     page --> anchor1
-    anchor2["packages/02-bijux-canon-ingest/tests"]
+    anchor2["packages/bijux-canon-ingest/tests"]
     page --> anchor2
     anchor3["packages/bijux-canon-ingest"]
     page --> anchor3
@@ -61,14 +61,14 @@ flowchart TB
 ## Canonical Package Root
 
 - `packages/bijux-canon-ingest`
-- `packages/02-bijux-canon-ingest/src/bijux_canon_ingest`
-- `packages/02-bijux-canon-ingest/tests`
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest`
+- `packages/bijux-canon-ingest/tests`
 
 ## Concrete Anchors
 
 - `packages/bijux-canon-ingest` as the package root
-- `packages/02-bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/02-bijux-canon-ingest/tests` as the package proof surface
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
+- `packages/bijux-canon-ingest/tests` as the package proof surface
 
 ## Use This Page When
 

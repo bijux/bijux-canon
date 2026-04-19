@@ -32,13 +32,13 @@ flowchart TB
     surface1 --> page
     surface2["HTTP app in src/bijux_canon_reason/api/v1"]
     surface2 --> page
-    surface3["schema files in apis/04-bijux-canon-reason/v1"]
+    surface3["schema files in apis/bijux-canon-reason/v1"]
     surface3 --> page
-    proof1["apis/04-bijux-canon-reason/v1/pinned_openapi.json"]
+    proof1["apis/bijux-canon-reason/v1/pinned_openapi.json"]
     page --> proof1
     proof2["reasoning traces and replay diffs"]
     page --> proof2
-    proof3["apis/04-bijux-canon-reason/v1/schema.yaml"]
+    proof3["apis/bijux-canon-reason/v1/schema.yaml"]
     page --> proof3
     review1["tests/unit for planning, reasoning, execution, verification, and interfaces"]
     review1 -.raises compatibility pressure on.-> page
@@ -62,8 +62,8 @@ flowchart TB
 
 - CLI app in src/bijux_canon_reason/interfaces/cli
 - HTTP app in src/bijux_canon_reason/api/v1
-- schema files in apis/04-bijux-canon-reason/v1
-- apis/04-bijux-canon-reason/v1/schema.yaml
+- schema files in apis/bijux-canon-reason/v1
+- apis/bijux-canon-reason/v1/schema.yaml
 
 ## Use This Page When
 

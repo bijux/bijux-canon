@@ -28,7 +28,7 @@ flowchart TB
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    step1["packages/06-bijux-canon-runtime/pyproject.toml"]
+    step1["packages/bijux-canon-runtime/pyproject.toml"]
     step1 --> page
     step2["CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py"]
     step2 --> page
@@ -55,8 +55,8 @@ flowchart TB
 ## Package Metadata Anchors
 
 - package root: `packages/bijux-canon-runtime`
-- metadata file: `packages/06-bijux-canon-runtime/pyproject.toml`
-- readme: `packages/06-bijux-canon-runtime/README.md`
+- metadata file: `packages/bijux-canon-runtime/pyproject.toml`
+- readme: `packages/bijux-canon-runtime/README.md`
 
 ## Dependency Themes
 
@@ -69,9 +69,9 @@ flowchart TB
 
 ## Concrete Anchors
 
-- `packages/06-bijux-canon-runtime/pyproject.toml` for package metadata
-- `packages/06-bijux-canon-runtime/README.md` for local package framing
-- `packages/06-bijux-canon-runtime/tests` for executable operational backstops
+- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
+- `packages/bijux-canon-runtime/README.md` for local package framing
+- `packages/bijux-canon-runtime/tests` for executable operational backstops
 
 ## Use This Page When
 
