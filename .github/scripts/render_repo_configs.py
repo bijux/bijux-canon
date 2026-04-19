@@ -44,6 +44,9 @@ def dump_yaml(obj: Any, indent: int = 0) -> list[str]:
 
     if isinstance(obj, dict):
         for key, value in obj.items():
+            if value is None:
+                lines.append(f"{pad}{key}:")
+                continue
             if isinstance(value, (dict, list)):
                 lines.append(f"{pad}{key}:")
                 lines.extend(dump_yaml(value, indent + 2))

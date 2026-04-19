@@ -32,7 +32,7 @@ on:
       - pyproject.toml
       - tox.ini
       - uv.lock
-  workflow_dispatch: null
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
