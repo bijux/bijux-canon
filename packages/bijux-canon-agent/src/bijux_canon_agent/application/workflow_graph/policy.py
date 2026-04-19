@@ -1,4 +1,4 @@
-"""Failure and retry rules parsed from `packages/05-bijux-canon-agent/config/execution_policy.yaml`."""
+"""Failure and retry rules parsed from `packages/bijux-canon-agent/config/execution_policy.yaml`."""
 
 from __future__ import annotations
 
