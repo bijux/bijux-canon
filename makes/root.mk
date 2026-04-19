@@ -8,7 +8,7 @@ ROOT_DEV_PYTHONPATH := $(CURDIR)/packages/bijux-canon-dev/src
 ROOT_CHECK_VENV := $(ROOT_ARTIFACTS_DIR)/check-venv
 ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
 UV_SYNC := UV_PROJECT_ENVIRONMENT="$(ROOT_CHECK_VENV)" $(UV) sync --frozen --group dev --python "$(PYTHON)"
-BIJUX_PY_SYSTEM_REL ?= $(if $(wildcard $(CURDIR)/.bijux/shared/bijux-makes-py),.bijux/shared/bijux-makes-py,shared/bijux-makes-py)
+BIJUX_PY_SYSTEM_REL ?= .bijux/shared/bijux-makes-py
 BIJUX_GH_PY_SHARED_DIR ?= $(if $(wildcard $(CURDIR)/.bijux/shared/bijux-gh),.bijux/shared/bijux-gh,shared/bijux-gh-py)
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
