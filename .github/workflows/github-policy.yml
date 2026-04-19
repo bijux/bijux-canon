@@ -52,6 +52,7 @@ jobs:
           python3 .github/scripts/render_repo_configs.py --repo "${repo_name}"
 
       - name: Ensure generated files are committed
+        if: ${{ github.event_name == 'pull_request' }}
         shell: bash
         run: |
           set -euo pipefail
