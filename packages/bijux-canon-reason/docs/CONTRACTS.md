@@ -7,7 +7,7 @@ entrypoints and typed reasoning outputs.
 
 - console scripts `bijux-canon-reason` and the legacy compatibility command `bijux-rar`
 - HTTP surface under `api/v1/`
-- pinned OpenAPI assets under `apis/bijux-canon-reason/v1/`
+- pinned OpenAPI assets under `apis/04-bijux-canon-reason/v1/`
 - stable reasoning and verification models that callers are expected to consume
 
 ## Change policy

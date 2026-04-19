@@ -7,7 +7,7 @@ the shapes callers depend on.
 
 - console entrypoint `bijux-canon-ingest`
 - HTTP surface under `interfaces/http/`
-- pinned API schema under `apis/bijux-canon-ingest/v1/schema.yaml`
+- pinned API schema under `apis/02-bijux-canon-ingest/v1/schema.yaml`
 - package-facing request, result, and configuration models
 
 ## Change policy

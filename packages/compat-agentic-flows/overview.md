@@ -27,6 +27,6 @@ If you are updating scripts or dependencies, prefer changing them to:
 
 - distribution: `bijux-canon-runtime`
 - Python import: `bijux_canon_runtime`
-- legacy package handbook: `https://bijux.io/bijux-canon/compat-packages/catalog/agentic-flows/`
-- docs entrypoint: `https://bijux.io/bijux-canon/bijux-canon-runtime/`
-- migration handbook: `https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/`
+- legacy package handbook: `https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/`
+- docs entrypoint: `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
+- migration handbook: `https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/`

@@ -40,16 +40,16 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://bijux.io/bijux-canon/compat-packages/catalog/bijux-vex/"
+"Homepage" = "https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/"
 "Website" = "https://bijux.io/"
 "Repository" = "https://github.com/bijux/bijux-canon"
 "Issues" = "https://github.com/bijux/bijux-canon/issues"
-"Documentation" = "https://bijux.io/bijux-canon/compat-packages/catalog/bijux-vex/"
+"Documentation" = "https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/"
 "Changelog" = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/CHANGELOG.md"
 "Security" = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 "Funding" = "https://github.com/sponsors/bijux"
-"MigrationGuide" = "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
-"LegacyNameMap" = "https://bijux.io/bijux-canon/compat-packages/catalog/legacy-name-map/"
+"MigrationGuide" = "https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/"
+"LegacyNameMap" = "https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/"
 
 [project.scripts]
 bijux-vex = "bijux_canon_index.interfaces.cli.app:app"

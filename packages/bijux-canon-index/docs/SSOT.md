@@ -3,7 +3,7 @@
 ## Authoritative locations
 
 - `src/bijux_canon_index/` for implementation
-- `apis/bijux-canon-index/v1/` for pinned API contracts
+- `apis/03-bijux-canon-index/v1/` for pinned API contracts
 - `tests/` and plugin tests for executable conformance
 - `docs/` for package-local intent and ownership
 

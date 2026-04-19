@@ -1,17 +1,17 @@
 # bijux-canon-ingest
 
 <!-- bijux-canon-badges:generated:start -->
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-ingest/)
-[![Typing: typed](https://img.shields.io/badge/typing-typed%20(PEP%20561)-0A7BBB)](https://pypi.org/project/bijux-canon-ingest/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/02-bijux-canon-ingest/)
+[![Typing: typed](https://img.shields.io/badge/typing-typed%20(PEP%20561)-0A7BBB)](https://pypi.org/project/02-bijux-canon-ingest/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
 [![CI Status](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml)
 [![GitHub Repository](https://img.shields.io/badge/github-bijux%2Fbijux--canon-181717?logo=github)](https://github.com/bijux/bijux-canon)
 
-[![bijux-canon-ingest](https://img.shields.io/pypi/v/bijux-canon-ingest?label=ingest&logo=pypi)](https://pypi.org/project/bijux-canon-ingest/)
-[![bijux-canon-runtime](https://img.shields.io/pypi/v/bijux-canon-runtime?label=runtime&logo=pypi)](https://pypi.org/project/bijux-canon-runtime/)
-[![bijux-canon-agent](https://img.shields.io/pypi/v/bijux-canon-agent?label=agent&logo=pypi)](https://pypi.org/project/bijux-canon-agent/)
-[![bijux-canon-reason](https://img.shields.io/pypi/v/bijux-canon-reason?label=reason&logo=pypi)](https://pypi.org/project/bijux-canon-reason/)
-[![bijux-canon-index](https://img.shields.io/pypi/v/bijux-canon-index?label=index&logo=pypi)](https://pypi.org/project/bijux-canon-index/)
+[![bijux-canon-ingest](https://img.shields.io/pypi/v/bijux-canon-ingest?label=ingest&logo=pypi)](https://pypi.org/project/02-bijux-canon-ingest/)
+[![bijux-canon-runtime](https://img.shields.io/pypi/v/bijux-canon-runtime?label=runtime&logo=pypi)](https://pypi.org/project/06-bijux-canon-runtime/)
+[![bijux-canon-agent](https://img.shields.io/pypi/v/bijux-canon-agent?label=agent&logo=pypi)](https://pypi.org/project/05-bijux-canon-agent/)
+[![bijux-canon-reason](https://img.shields.io/pypi/v/bijux-canon-reason?label=reason&logo=pypi)](https://pypi.org/project/04-bijux-canon-reason/)
+[![bijux-canon-index](https://img.shields.io/pypi/v/bijux-canon-index?label=index&logo=pypi)](https://pypi.org/project/03-bijux-canon-index/)
 [![agentic-flows](https://img.shields.io/pypi/v/agentic-flows?label=agentic--flows&logo=pypi)](https://pypi.org/project/agentic-flows/)
 [![bijux-agent](https://img.shields.io/pypi/v/bijux-agent?label=bijux--agent&logo=pypi)](https://pypi.org/project/bijux-agent/)
 [![bijux-rag](https://img.shields.io/pypi/v/bijux-rag?label=bijux--rag&logo=pypi)](https://pypi.org/project/bijux-rag/)
@@ -29,11 +29,11 @@
 [![bijux-rar](https://img.shields.io/badge/bijux--rar-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
 [![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
-[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
-[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
-[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
-[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
-[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
+[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
+[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
+[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
+[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
 `bijux-canon-ingest` is the package that turns raw documents into deterministic
@@ -51,7 +51,7 @@ This package should help a maintainer answer practical questions such as:
 - compatibility package: [`bijux-rag`](https://pypi.org/project/bijux-rag/)
 - legacy import root: `bijux_rag`
 - legacy command: `bijux-rag`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-rag>
 
 ## What this package owns
@@ -69,22 +69,22 @@ This package should help a maintainer answer practical questions such as:
 
 ## Source map
 
-- [`src/bijux_canon_ingest/processing`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/processing) for deterministic document transforms
-- [`src/bijux_canon_ingest/retrieval`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval) for retrieval-oriented models and assembly
-- [`src/bijux_canon_ingest/application`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/application) for package workflows
-- [`src/bijux_canon_ingest/infra`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/infra) and [`src/bijux_canon_ingest/integrations`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/integrations) for adapters
-- [`src/bijux_canon_ingest/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/interfaces) for CLI and HTTP edges
-- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/tests) for behavior, layout, and corpus-backed checks
+- [`src/bijux_canon_ingest/processing`](https://github.com/bijux/bijux-canon/tree/main/packages/02-bijux-canon-ingest/src/bijux_canon_ingest/processing) for deterministic document transforms
+- [`src/bijux_canon_ingest/retrieval`](https://github.com/bijux/bijux-canon/tree/main/packages/02-bijux-canon-ingest/src/bijux_canon_ingest/retrieval) for retrieval-oriented models and assembly
+- [`src/bijux_canon_ingest/application`](https://github.com/bijux/bijux-canon/tree/main/packages/02-bijux-canon-ingest/src/bijux_canon_ingest/application) for package workflows
+- [`src/bijux_canon_ingest/infra`](https://github.com/bijux/bijux-canon/tree/main/packages/02-bijux-canon-ingest/src/bijux_canon_ingest/infra) and [`src/bijux_canon_ingest/integrations`](https://github.com/bijux/bijux-canon/tree/main/packages/02-bijux-canon-ingest/src/bijux_canon_ingest/integrations) for adapters
+- [`src/bijux_canon_ingest/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/02-bijux-canon-ingest/src/bijux_canon_ingest/interfaces) for CLI and HTTP edges
+- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/02-bijux-canon-ingest/tests) for behavior, layout, and corpus-backed checks
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon/bijux-canon-ingest/)
-- [Package overview](https://bijux.io/bijux-canon/bijux-canon-ingest/foundation/package-overview/)
-- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-ingest/foundation/ownership-boundary/)
-- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-ingest/architecture/)
-- [Operator workflows](https://bijux.io/bijux-canon/bijux-canon-ingest/interfaces/operator-workflows/)
-- [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
-- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md)
+- [Package guide](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
+- [Package overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/)
+- [Ownership boundary](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/)
+- [Operator workflows](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/operator-workflows/)
+- [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
+- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/02-bijux-canon-ingest/CHANGELOG.md)
 
 ## Primary entrypoint
 

@@ -4,7 +4,7 @@ The contract surface of `bijux-canon-index` includes more than HTTP schemas.
 
 ## Stable surfaces
 
-- API schemas under `apis/bijux-canon-index/v1/`
+- API schemas under `apis/03-bijux-canon-index/v1/`
 - plugin entrypoint groups for vector stores, embeddings, and runners
 - public HTTP behavior under `src/bijux_canon_index/api/v1/`
 - stable models and typed failures under `core/` and boundary schemas

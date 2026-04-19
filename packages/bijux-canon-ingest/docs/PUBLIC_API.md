@@ -6,7 +6,7 @@
 - Python package: `bijux_canon_ingest`
 - package version: `bijux_canon_ingest.__version__`
 - HTTP app factory: `bijux_canon_ingest.interfaces.http.app:create_app`
-- schema contract: `apis/bijux-canon-ingest/v1/schema.yaml`
+- schema contract: `apis/02-bijux-canon-ingest/v1/schema.yaml`
 
 ## Not automatically public
 

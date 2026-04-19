@@ -3,7 +3,7 @@
 ## Authoritative locations
 
 - `src/bijux_canon_reason/` for implementation
-- `apis/bijux-canon-reason/v1/` for pinned API artifacts
+- `apis/04-bijux-canon-reason/v1/` for pinned API artifacts
 - `tests/` for executable behavior and regressions
 - `docs/` for package-local scope and architecture
 
