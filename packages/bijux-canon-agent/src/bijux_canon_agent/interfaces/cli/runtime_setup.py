@@ -25,7 +25,7 @@ def create_bootstrap_logger() -> logging.Logger:
 def create_logger_manager(config: dict[str, Any]) -> LoggerManager:
     """Create the runtime logger manager from CLI configuration."""
     logging_config = config.get("logging", {})
-    log_dir = logging_config.get("log_dir", "artifacts/bijux-canon-agent/test/logs")
+    log_dir = logging_config.get("log_dir", "artifacts/05-bijux-canon-agent/test/logs")
     log_level = logging_config.get("log_level", "INFO")
     log_file_name = logging_config.get("log_file_name", "application.log")
     structured_logging = logging_config.get("structured_logging", True)

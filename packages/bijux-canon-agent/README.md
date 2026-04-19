@@ -51,7 +51,7 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 - compatibility package: [`bijux-agent`](https://pypi.org/project/bijux-agent/)
 - previous import root: `bijux_agent`
 - previous command: `bijux-agent`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-agent>
 
 ## What this package owns
@@ -83,7 +83,7 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 - [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-agent/architecture/)
 - [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-agent/interfaces/)
 - [Operator workflows](https://bijux.io/bijux-canon/bijux-canon-agent/interfaces/operator-workflows/)
-- [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
+- [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md)
 
 ## Primary entrypoint

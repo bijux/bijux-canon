@@ -2692,11 +2692,11 @@ def render_home(
             )
     if "dev" in targets:
         quicklinks.append(
-            '<a class="md-button" href="bijux-canon-maintain/">Open maintenance docs</a>'
+            '<a class="md-button" href="07-bijux-canon-maintain/">Open maintenance docs</a>'
         )
     if "compat" in targets:
         quicklinks.append(
-            '<a class="md-button" href="compat-packages/">Open compatibility docs</a>'
+            '<a class="md-button" href="08-compat-packages/">Open compatibility docs</a>'
         )
     package_rows = "\n".join(
         [
@@ -2746,12 +2746,12 @@ def render_home(
             "",
             "## Start Here",
             "",
-            "- open [bijux-canon](bijux-canon/index.md) when the question crosses package boundaries or touches shared governance",
+            "- open [bijux-canon](01-bijux-canon/index.md) when the question crosses package boundaries or touches shared governance",
             "- open one product package when you need ownership, interfaces, operations, or proof for one package",
-            "- open [bijux-canon-maintain](bijux-canon-maintain/index.md) for repository automation, schema enforcement, and maintainer-only guardrails"
+            "- open [bijux-canon-maintain](07-bijux-canon-maintain/index.md) for repository automation, schema enforcement, and maintainer-only guardrails"
             if "dev" in targets
             else "- maintainer guidance appears here when the dev section is rendered",
-            "- open [compatibility packages](compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem"
+            "- open [compatibility packages](08-compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem"
             if "compat" in targets
             else "- compatibility guidance appears here when the compatibility section is rendered",
             "",
@@ -3057,8 +3057,8 @@ def render_root_page(
 
             ## Shared Maintainer Packages
 
-            - [bijux-canon-maintain](../bijux-canon-maintain/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
-            - [compatibility packages](../compat-packages/index.md) for legacy distribution and import preservation
+            - [bijux-canon-maintain](../07-bijux-canon-maintain/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
+            - [compatibility packages](../08-compat-packages/index.md) for legacy distribution and import preservation
 
             ## Purpose
 
@@ -5537,7 +5537,7 @@ def nav_lines(
             [
                 "  - Maintenance Handbook:",
                 *[
-                    f"      - {title}: bijux-canon-maintain/{slug}.md"
+                    f"      - {title}: 07-bijux-canon-maintain/{slug}.md"
                     for slug, title in DEV_PAGES
                 ],
             ]
@@ -5547,7 +5547,7 @@ def nav_lines(
             [
                 "  - Compatibility Packages:",
                 *[
-                    f"      - {title}: compat-packages/{slug}.md"
+                    f"      - {title}: 08-compat-packages/{slug}.md"
                     for slug, title in COMPAT_PAGES
                 ],
             ]

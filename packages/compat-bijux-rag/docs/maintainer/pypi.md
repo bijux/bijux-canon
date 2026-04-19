@@ -8,15 +8,15 @@ distribution from the monorepo.
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-rag/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
 [![Verify](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml)
-[![Publish](https://github.com/bijux/bijux-canon/actions/workflows/publish.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/publish.yml)
+[![Publish](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml)
 [![Docs](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml)
 
-- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rag/>
+- legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/>
 - canonical package docs: <https://bijux.io/bijux-canon/bijux-canon-ingest/>
-- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/compat-bijux-rag>
 - verify workflow: <https://github.com/bijux/bijux-canon/actions/workflows/verify.yml>
-- publish workflow: <https://github.com/bijux/bijux-canon/actions/workflows/publish.yml>
+- publish workflow: <https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml>
 - docs workflow: <https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml>
 
 ## Release intent
@@ -26,7 +26,7 @@ tracking `bijux-canon-ingest` with the same install, import, and command
 continuity guarantees.
 
 The published package docs URL for this legacy name is
-<https://bijux.io/bijux-canon/compat-packages/catalog/bijux-rag/> so PyPI readers land
+<https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/> so PyPI readers land
 on migration-specific guidance before moving to the canonical ingest handbook.
 
 ## Pre-publish checks

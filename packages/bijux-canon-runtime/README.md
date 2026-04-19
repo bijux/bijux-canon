@@ -50,7 +50,7 @@ here.
 - compatibility package: [`agentic-flows`](https://pypi.org/project/agentic-flows/)
 - legacy import root: `agentic_flows`
 - legacy command: `agentic-flows`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/agentic-flows>
 
 ## What this package owns
@@ -82,7 +82,7 @@ here.
 - [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-runtime/architecture/)
 - [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-runtime/interfaces/)
 - [Release and versioning](https://bijux.io/bijux-canon/bijux-canon-runtime/operations/release-and-versioning/)
-- [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
+- [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md)
 
 ## Primary entrypoint

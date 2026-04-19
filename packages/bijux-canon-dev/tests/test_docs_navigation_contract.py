@@ -189,7 +189,7 @@ def _declared_mermaid_node_ids(block: str) -> set[str]:
 def test_product_package_detail_tabs_follow_authored_order(
     rendered_docs: Path,
 ) -> None:
-    page = _parse_navigation(rendered_docs, "bijux-canon-index/index.html")
+    page = _parse_navigation(rendered_docs, "03-bijux-canon-index/index.html")
 
     assert page.detail_tabs == [
         "Home",
@@ -221,11 +221,11 @@ def test_docs_mermaid_diagrams_avoid_reserved_node_ids() -> None:
     "relative_path",
     [
         "index.html",
-        "bijux-canon/index.html",
-        "bijux-canon-index/index.html",
-        "bijux-canon-agent/index.html",
-        "bijux-canon-maintain/index.html",
-        "compat-packages/index.html",
+        "01-bijux-canon/index.html",
+        "03-bijux-canon-index/index.html",
+        "05-bijux-canon-agent/index.html",
+        "07-bijux-canon-maintain/index.html",
+        "08-compat-packages/index.html",
     ],
 )
 def test_overview_pages_hide_primary_sidebar(
@@ -240,7 +240,7 @@ def test_overview_pages_hide_primary_sidebar(
 
 
 def test_repository_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
-    page = _parse_navigation(rendered_docs, "bijux-canon/index.html")
+    page = _parse_navigation(rendered_docs, "01-bijux-canon/index.html")
 
     assert page.detail_tabs == [
         "Home",
@@ -255,7 +255,7 @@ def test_repository_foundation_leaf_pages_keep_section_sidebar(
 ) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "bijux-canon/foundation/package-map/index.html",
+        "01-bijux-canon/foundation/package-map/index.html",
     )
 
     assert page.active_detail_tabs == ["Foundation"]
@@ -278,7 +278,7 @@ def test_repository_operations_leaf_pages_keep_section_sidebar(
 ) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "bijux-canon/operations/review-expectations/index.html",
+        "01-bijux-canon/operations/review-expectations/index.html",
     )
 
     assert page.active_detail_tabs == ["Operations"]
@@ -297,21 +297,21 @@ def test_repository_operations_leaf_pages_keep_section_sidebar(
 
 
 def test_primary_sidebar_does_not_use_lifted_nav_mode(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "bijux-canon-reason/interfaces/index.html")
+    text = _page_text(rendered_docs, "04-bijux-canon-reason/interfaces/index.html")
 
     assert 'data-bijux-nav-variant="scoped"' in text
     assert '<nav class="md-nav md-nav--primary md-nav--lifted"' not in text
 
 
 def test_header_navigation_uses_canonical_path_contract(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "bijux-canon-index/interfaces/index.html")
+    text = _page_text(rendered_docs, "03-bijux-canon-index/interfaces/index.html")
 
     assert 'data-bijux-site-path="/"' in text
-    assert 'data-bijux-site-path="/bijux-canon-index/"' in text
-    assert 'data-bijux-site-path="/bijux-canon-reason/"' in text
-    assert 'data-bijux-detail-root-path="/bijux-canon-index/"' in text
-    assert 'data-bijux-detail-path="/bijux-canon-index/interfaces/"' in text
-    assert 'data-bijux-detail-path="/bijux-canon-index/architecture/"' in text
+    assert 'data-bijux-site-path="/03-bijux-canon-index/"' in text
+    assert 'data-bijux-site-path="/04-bijux-canon-reason/"' in text
+    assert 'data-bijux-detail-root-path="/03-bijux-canon-index/"' in text
+    assert 'data-bijux-detail-path="/03-bijux-canon-index/interfaces/"' in text
+    assert 'data-bijux-detail-path="/03-bijux-canon-index/architecture/"' in text
     assert "data-bijux-site-target" not in text
     assert "data-bijux-detail-target" not in text
     assert "data-bijux-detail-root=" not in text
@@ -325,24 +325,24 @@ def test_hub_navigation_excludes_private_sites(rendered_docs: Path) -> None:
 
 
 def test_repository_site_tab_uses_repository_label(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "bijux-canon/index.html")
+    text = _page_text(rendered_docs, "01-bijux-canon/index.html")
 
     assert re.search(r">\s*Repository\s*<", text)
     assert re.search(r">\s*Maintainer\s*<", text)
 
 
 def test_rendered_header_marks_active_navigation_links(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "bijux-canon-reason/operations/index.html")
+    text = _page_text(rendered_docs, "04-bijux-canon-reason/operations/index.html")
 
-    assert 'data-bijux-site-path="/bijux-canon-reason/" aria-current="page"' in text
+    assert 'data-bijux-site-path="/04-bijux-canon-reason/" aria-current="page"' in text
     assert (
-        'data-bijux-detail-path="/bijux-canon-reason/operations/" '
+        'data-bijux-detail-path="/04-bijux-canon-reason/operations/" '
         'aria-current="page"' in text
     )
 
 
 def test_compatibility_detail_tabs_keep_package_names(rendered_docs: Path) -> None:
-    page = _parse_navigation(rendered_docs, "compat-packages/index.html")
+    page = _parse_navigation(rendered_docs, "08-compat-packages/index.html")
 
     assert page.detail_tabs == [
         "Home",
@@ -356,7 +356,7 @@ def test_compatibility_catalog_leaf_pages_keep_section_sidebar(
 ) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "compat-packages/catalog/bijux-agent/index.html",
+        "08-compat-packages/catalog/bijux-agent/index.html",
     )
 
     assert page.active_detail_tabs == ["Catalog"]
@@ -379,7 +379,7 @@ def test_compatibility_migration_leaf_pages_keep_section_sidebar(
 ) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "compat-packages/migration/retirement-playbook/index.html",
+        "08-compat-packages/migration/retirement-playbook/index.html",
     )
 
     assert page.active_detail_tabs == ["Migration"]
@@ -398,7 +398,7 @@ def test_compatibility_migration_leaf_pages_keep_section_sidebar(
 
 
 def test_maintenance_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
-    page = _parse_navigation(rendered_docs, "bijux-canon-maintain/index.html")
+    page = _parse_navigation(rendered_docs, "07-bijux-canon-maintain/index.html")
 
     assert page.detail_tabs == [
         "Home",
@@ -414,7 +414,7 @@ def test_maintenance_dev_leaf_pages_keep_section_sidebar(
 ) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "bijux-canon-maintain/bijux-canon-dev/security-gates/index.html",
+        "07-bijux-canon-maintain/bijux-canon-dev/security-gates/index.html",
     )
 
     assert page.active_detail_tabs == ["bijux-canon-dev"]
@@ -437,7 +437,7 @@ def test_maintenance_make_leaf_pages_keep_section_sidebar(
 ) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "bijux-canon-maintain/makes/package-dispatch/index.html",
+        "07-bijux-canon-maintain/makes/package-dispatch/index.html",
     )
 
     assert page.active_detail_tabs == ["makes"]
@@ -460,7 +460,7 @@ def test_maintenance_workflow_leaf_pages_keep_section_sidebar(
 ) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "bijux-canon-maintain/gh-workflows/publish/index.html",
+        "07-bijux-canon-maintain/gh-workflows/release-workflows/index.html",
     )
 
     assert page.active_detail_tabs == ["gh-workflows"]
@@ -469,14 +469,14 @@ def test_maintenance_workflow_leaf_pages_keep_section_sidebar(
         "verify",
         "reusable-workflows",
         "deploy-docs",
-        "publish",
+        "release-workflows",
     ]
 
 
 def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "bijux-canon-index/architecture/code-navigation/index.html",
+        "03-bijux-canon-index/architecture/code-navigation/index.html",
     )
 
     assert page.active_detail_tabs == ["Architecture"]
@@ -503,7 +503,7 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
     ),
     [
         (
-            "bijux-canon-index/interfaces/index.html",
+            "03-bijux-canon-index/interfaces/index.html",
             ["Interfaces"],
             "Interfaces",
             [
@@ -519,7 +519,7 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
             ],
         ),
         (
-            "bijux-canon-index/interfaces/api-surface/index.html",
+            "03-bijux-canon-index/interfaces/api-surface/index.html",
             ["Interfaces"],
             "Interfaces",
             [
@@ -535,7 +535,7 @@ def test_leaf_pages_keep_sidebar_scoped_to_current_section(rendered_docs: Path) 
             ],
         ),
         (
-            "bijux-canon-ingest/operations/index.html",
+            "02-bijux-canon-ingest/operations/index.html",
             ["Operations"],
             "Operations",
             [

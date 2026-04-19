@@ -41,13 +41,13 @@ on PyPI. Each release keeps the legacy distribution, import, and command
 surfaces available while installing `bijux-canon-agent` at the same version.
 
 Its package handbook lives at
-<https://bijux.io/bijux-canon/compat-packages/catalog/bijux-agent/>.
+<https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/>.
 
 ## Migration note
 
 - new installs should use `uv add bijux-canon-agent`
 - existing automation can stay on `bijux-agent` while you update imports and commands
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-agent>
 
 ## Publication status
@@ -73,9 +73,9 @@ Its package handbook lives at
 Use `bijux-canon-agent` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent>
-- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-agent/>
+- legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/>
 - package docs: <https://bijux.io/bijux-canon/bijux-canon-agent/>
-- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-agent/CHANGELOG.md>
 
 ## Primary entrypoint

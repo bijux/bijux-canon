@@ -14,7 +14,7 @@ watch:
   - docs
   - docs/assets
   - docs/overrides
-  - shared/bijux-docs
+  - .bijux/shared/bijux-docs
   - mkdocs.yml
   - mkdocs.shared.yml
   - packages/bijux-canon-dev/src/bijux_canon_dev/docs
@@ -54,365 +54,365 @@ extra:
 nav:
   - Home: index.md
   - Repository Handbook:
-      - Repository Handbook: bijux-canon/index.md
+      - Repository Handbook: 01-bijux-canon/index.md
       - Foundation:
-          - Foundation: bijux-canon/foundation/index.md
-          - Platform Overview: bijux-canon/foundation/platform-overview.md
-          - Repository Scope: bijux-canon/foundation/repository-scope.md
-          - Workspace Layout: bijux-canon/foundation/workspace-layout.md
-          - Package Map: bijux-canon/foundation/package-map.md
-          - Ownership Model: bijux-canon/foundation/ownership-model.md
-          - Domain Language: bijux-canon/foundation/domain-language.md
-          - Documentation System: bijux-canon/foundation/documentation-system.md
-          - Change Principles: bijux-canon/foundation/change-principles.md
-          - Decision Rules: bijux-canon/foundation/decision-rules.md
+          - Foundation: 01-bijux-canon/foundation/index.md
+          - Platform Overview: 01-bijux-canon/foundation/platform-overview.md
+          - Repository Scope: 01-bijux-canon/foundation/repository-scope.md
+          - Workspace Layout: 01-bijux-canon/foundation/workspace-layout.md
+          - Package Map: 01-bijux-canon/foundation/package-map.md
+          - Ownership Model: 01-bijux-canon/foundation/ownership-model.md
+          - Domain Language: 01-bijux-canon/foundation/domain-language.md
+          - Documentation System: 01-bijux-canon/foundation/documentation-system.md
+          - Change Principles: 01-bijux-canon/foundation/change-principles.md
+          - Decision Rules: 01-bijux-canon/foundation/decision-rules.md
       - Operations:
-          - Operations: bijux-canon/operations/index.md
-          - Local Development: bijux-canon/operations/local-development.md
-          - Testing and Validation: bijux-canon/operations/testing-and-validation.md
-          - Release and Versioning: bijux-canon/operations/release-and-versioning.md
-          - API and Schema Governance: bijux-canon/operations/api-and-schema-governance.md
-          - Contributor Workflows: bijux-canon/operations/contributor-workflows.md
-          - Automation Surfaces: bijux-canon/operations/automation-surfaces.md
-          - Artifact Governance: bijux-canon/operations/artifact-governance.md
-          - Review Expectations: bijux-canon/operations/review-expectations.md
-          - Change Management: bijux-canon/operations/change-management.md
+          - Operations: 01-bijux-canon/operations/index.md
+          - Local Development: 01-bijux-canon/operations/local-development.md
+          - Testing and Validation: 01-bijux-canon/operations/testing-and-validation.md
+          - Release and Versioning: 01-bijux-canon/operations/release-and-versioning.md
+          - API and Schema Governance: 01-bijux-canon/operations/api-and-schema-governance.md
+          - Contributor Workflows: 01-bijux-canon/operations/contributor-workflows.md
+          - Automation Surfaces: 01-bijux-canon/operations/automation-surfaces.md
+          - Artifact Governance: 01-bijux-canon/operations/artifact-governance.md
+          - Review Expectations: 01-bijux-canon/operations/review-expectations.md
+          - Change Management: 01-bijux-canon/operations/change-management.md
   - bijux-canon-ingest:
-      - Overview: bijux-canon-ingest/index.md
+      - Overview: 02-bijux-canon-ingest/index.md
       - Foundation:
-          - Foundation: bijux-canon-ingest/foundation/index.md
-          - Package Overview: bijux-canon-ingest/foundation/package-overview.md
-          - Scope and Non-Goals: bijux-canon-ingest/foundation/scope-and-non-goals.md
-          - Ownership Boundary: bijux-canon-ingest/foundation/ownership-boundary.md
-          - Repository Fit: bijux-canon-ingest/foundation/repository-fit.md
-          - Capability Map: bijux-canon-ingest/foundation/capability-map.md
-          - Domain Language: bijux-canon-ingest/foundation/domain-language.md
-          - Lifecycle Overview: bijux-canon-ingest/foundation/lifecycle-overview.md
-          - Dependencies and Adjacencies: bijux-canon-ingest/foundation/dependencies-and-adjacencies.md
-          - Change Principles: bijux-canon-ingest/foundation/change-principles.md
+          - Foundation: 02-bijux-canon-ingest/foundation/index.md
+          - Package Overview: 02-bijux-canon-ingest/foundation/package-overview.md
+          - Scope and Non-Goals: 02-bijux-canon-ingest/foundation/scope-and-non-goals.md
+          - Ownership Boundary: 02-bijux-canon-ingest/foundation/ownership-boundary.md
+          - Repository Fit: 02-bijux-canon-ingest/foundation/repository-fit.md
+          - Capability Map: 02-bijux-canon-ingest/foundation/capability-map.md
+          - Domain Language: 02-bijux-canon-ingest/foundation/domain-language.md
+          - Lifecycle Overview: 02-bijux-canon-ingest/foundation/lifecycle-overview.md
+          - Dependencies and Adjacencies: 02-bijux-canon-ingest/foundation/dependencies-and-adjacencies.md
+          - Change Principles: 02-bijux-canon-ingest/foundation/change-principles.md
       - Architecture:
-          - Architecture: bijux-canon-ingest/architecture/index.md
-          - Module Map: bijux-canon-ingest/architecture/module-map.md
-          - Dependency Direction: bijux-canon-ingest/architecture/dependency-direction.md
-          - Execution Model: bijux-canon-ingest/architecture/execution-model.md
-          - State and Persistence: bijux-canon-ingest/architecture/state-and-persistence.md
-          - Integration Seams: bijux-canon-ingest/architecture/integration-seams.md
-          - Error Model: bijux-canon-ingest/architecture/error-model.md
-          - Extensibility Model: bijux-canon-ingest/architecture/extensibility-model.md
-          - Code Navigation: bijux-canon-ingest/architecture/code-navigation.md
-          - Architecture Risks: bijux-canon-ingest/architecture/architecture-risks.md
+          - Architecture: 02-bijux-canon-ingest/architecture/index.md
+          - Module Map: 02-bijux-canon-ingest/architecture/module-map.md
+          - Dependency Direction: 02-bijux-canon-ingest/architecture/dependency-direction.md
+          - Execution Model: 02-bijux-canon-ingest/architecture/execution-model.md
+          - State and Persistence: 02-bijux-canon-ingest/architecture/state-and-persistence.md
+          - Integration Seams: 02-bijux-canon-ingest/architecture/integration-seams.md
+          - Error Model: 02-bijux-canon-ingest/architecture/error-model.md
+          - Extensibility Model: 02-bijux-canon-ingest/architecture/extensibility-model.md
+          - Code Navigation: 02-bijux-canon-ingest/architecture/code-navigation.md
+          - Architecture Risks: 02-bijux-canon-ingest/architecture/architecture-risks.md
       - Interfaces:
-          - Interfaces: bijux-canon-ingest/interfaces/index.md
-          - CLI Surface: bijux-canon-ingest/interfaces/cli-surface.md
-          - API Surface: bijux-canon-ingest/interfaces/api-surface.md
-          - Configuration Surface: bijux-canon-ingest/interfaces/configuration-surface.md
-          - Data Contracts: bijux-canon-ingest/interfaces/data-contracts.md
-          - Artifact Contracts: bijux-canon-ingest/interfaces/artifact-contracts.md
-          - Entrypoints and Examples: bijux-canon-ingest/interfaces/entrypoints-and-examples.md
-          - Operator Workflows: bijux-canon-ingest/interfaces/operator-workflows.md
-          - Public Imports: bijux-canon-ingest/interfaces/public-imports.md
-          - Compatibility Commitments: bijux-canon-ingest/interfaces/compatibility-commitments.md
+          - Interfaces: 02-bijux-canon-ingest/interfaces/index.md
+          - CLI Surface: 02-bijux-canon-ingest/interfaces/cli-surface.md
+          - API Surface: 02-bijux-canon-ingest/interfaces/api-surface.md
+          - Configuration Surface: 02-bijux-canon-ingest/interfaces/configuration-surface.md
+          - Data Contracts: 02-bijux-canon-ingest/interfaces/data-contracts.md
+          - Artifact Contracts: 02-bijux-canon-ingest/interfaces/artifact-contracts.md
+          - Entrypoints and Examples: 02-bijux-canon-ingest/interfaces/entrypoints-and-examples.md
+          - Operator Workflows: 02-bijux-canon-ingest/interfaces/operator-workflows.md
+          - Public Imports: 02-bijux-canon-ingest/interfaces/public-imports.md
+          - Compatibility Commitments: 02-bijux-canon-ingest/interfaces/compatibility-commitments.md
       - Operations:
-          - Operations: bijux-canon-ingest/operations/index.md
-          - Installation and Setup: bijux-canon-ingest/operations/installation-and-setup.md
-          - Local Development: bijux-canon-ingest/operations/local-development.md
-          - Common Workflows: bijux-canon-ingest/operations/common-workflows.md
-          - Observability and Diagnostics: bijux-canon-ingest/operations/observability-and-diagnostics.md
-          - Performance and Scaling: bijux-canon-ingest/operations/performance-and-scaling.md
-          - Failure Recovery: bijux-canon-ingest/operations/failure-recovery.md
-          - Release and Versioning: bijux-canon-ingest/operations/release-and-versioning.md
-          - Security and Safety: bijux-canon-ingest/operations/security-and-safety.md
-          - Deployment Boundaries: bijux-canon-ingest/operations/deployment-boundaries.md
+          - Operations: 02-bijux-canon-ingest/operations/index.md
+          - Installation and Setup: 02-bijux-canon-ingest/operations/installation-and-setup.md
+          - Local Development: 02-bijux-canon-ingest/operations/local-development.md
+          - Common Workflows: 02-bijux-canon-ingest/operations/common-workflows.md
+          - Observability and Diagnostics: 02-bijux-canon-ingest/operations/observability-and-diagnostics.md
+          - Performance and Scaling: 02-bijux-canon-ingest/operations/performance-and-scaling.md
+          - Failure Recovery: 02-bijux-canon-ingest/operations/failure-recovery.md
+          - Release and Versioning: 02-bijux-canon-ingest/operations/release-and-versioning.md
+          - Security and Safety: 02-bijux-canon-ingest/operations/security-and-safety.md
+          - Deployment Boundaries: 02-bijux-canon-ingest/operations/deployment-boundaries.md
       - Quality:
-          - Quality: bijux-canon-ingest/quality/index.md
-          - Test Strategy: bijux-canon-ingest/quality/test-strategy.md
-          - Invariants: bijux-canon-ingest/quality/invariants.md
-          - Review Checklist: bijux-canon-ingest/quality/review-checklist.md
-          - Documentation Standards: bijux-canon-ingest/quality/documentation-standards.md
-          - Definition of Done: bijux-canon-ingest/quality/definition-of-done.md
-          - Dependency Governance: bijux-canon-ingest/quality/dependency-governance.md
-          - Change Validation: bijux-canon-ingest/quality/change-validation.md
-          - Known Limitations: bijux-canon-ingest/quality/known-limitations.md
-          - Risk Register: bijux-canon-ingest/quality/risk-register.md
+          - Quality: 02-bijux-canon-ingest/quality/index.md
+          - Test Strategy: 02-bijux-canon-ingest/quality/test-strategy.md
+          - Invariants: 02-bijux-canon-ingest/quality/invariants.md
+          - Review Checklist: 02-bijux-canon-ingest/quality/review-checklist.md
+          - Documentation Standards: 02-bijux-canon-ingest/quality/documentation-standards.md
+          - Definition of Done: 02-bijux-canon-ingest/quality/definition-of-done.md
+          - Dependency Governance: 02-bijux-canon-ingest/quality/dependency-governance.md
+          - Change Validation: 02-bijux-canon-ingest/quality/change-validation.md
+          - Known Limitations: 02-bijux-canon-ingest/quality/known-limitations.md
+          - Risk Register: 02-bijux-canon-ingest/quality/risk-register.md
   - bijux-canon-index:
-      - Overview: bijux-canon-index/index.md
+      - Overview: 03-bijux-canon-index/index.md
       - Foundation:
-          - Foundation: bijux-canon-index/foundation/index.md
-          - Package Overview: bijux-canon-index/foundation/package-overview.md
-          - Scope and Non-Goals: bijux-canon-index/foundation/scope-and-non-goals.md
-          - Ownership Boundary: bijux-canon-index/foundation/ownership-boundary.md
-          - Repository Fit: bijux-canon-index/foundation/repository-fit.md
-          - Capability Map: bijux-canon-index/foundation/capability-map.md
-          - Domain Language: bijux-canon-index/foundation/domain-language.md
-          - Lifecycle Overview: bijux-canon-index/foundation/lifecycle-overview.md
-          - Dependencies and Adjacencies: bijux-canon-index/foundation/dependencies-and-adjacencies.md
-          - Change Principles: bijux-canon-index/foundation/change-principles.md
+          - Foundation: 03-bijux-canon-index/foundation/index.md
+          - Package Overview: 03-bijux-canon-index/foundation/package-overview.md
+          - Scope and Non-Goals: 03-bijux-canon-index/foundation/scope-and-non-goals.md
+          - Ownership Boundary: 03-bijux-canon-index/foundation/ownership-boundary.md
+          - Repository Fit: 03-bijux-canon-index/foundation/repository-fit.md
+          - Capability Map: 03-bijux-canon-index/foundation/capability-map.md
+          - Domain Language: 03-bijux-canon-index/foundation/domain-language.md
+          - Lifecycle Overview: 03-bijux-canon-index/foundation/lifecycle-overview.md
+          - Dependencies and Adjacencies: 03-bijux-canon-index/foundation/dependencies-and-adjacencies.md
+          - Change Principles: 03-bijux-canon-index/foundation/change-principles.md
       - Architecture:
-          - Architecture: bijux-canon-index/architecture/index.md
-          - Module Map: bijux-canon-index/architecture/module-map.md
-          - Dependency Direction: bijux-canon-index/architecture/dependency-direction.md
-          - Execution Model: bijux-canon-index/architecture/execution-model.md
-          - State and Persistence: bijux-canon-index/architecture/state-and-persistence.md
-          - Integration Seams: bijux-canon-index/architecture/integration-seams.md
-          - Error Model: bijux-canon-index/architecture/error-model.md
-          - Extensibility Model: bijux-canon-index/architecture/extensibility-model.md
-          - Code Navigation: bijux-canon-index/architecture/code-navigation.md
-          - Architecture Risks: bijux-canon-index/architecture/architecture-risks.md
+          - Architecture: 03-bijux-canon-index/architecture/index.md
+          - Module Map: 03-bijux-canon-index/architecture/module-map.md
+          - Dependency Direction: 03-bijux-canon-index/architecture/dependency-direction.md
+          - Execution Model: 03-bijux-canon-index/architecture/execution-model.md
+          - State and Persistence: 03-bijux-canon-index/architecture/state-and-persistence.md
+          - Integration Seams: 03-bijux-canon-index/architecture/integration-seams.md
+          - Error Model: 03-bijux-canon-index/architecture/error-model.md
+          - Extensibility Model: 03-bijux-canon-index/architecture/extensibility-model.md
+          - Code Navigation: 03-bijux-canon-index/architecture/code-navigation.md
+          - Architecture Risks: 03-bijux-canon-index/architecture/architecture-risks.md
       - Interfaces:
-          - Interfaces: bijux-canon-index/interfaces/index.md
-          - CLI Surface: bijux-canon-index/interfaces/cli-surface.md
-          - API Surface: bijux-canon-index/interfaces/api-surface.md
-          - Configuration Surface: bijux-canon-index/interfaces/configuration-surface.md
-          - Data Contracts: bijux-canon-index/interfaces/data-contracts.md
-          - Artifact Contracts: bijux-canon-index/interfaces/artifact-contracts.md
-          - Entrypoints and Examples: bijux-canon-index/interfaces/entrypoints-and-examples.md
-          - Operator Workflows: bijux-canon-index/interfaces/operator-workflows.md
-          - Public Imports: bijux-canon-index/interfaces/public-imports.md
-          - Compatibility Commitments: bijux-canon-index/interfaces/compatibility-commitments.md
+          - Interfaces: 03-bijux-canon-index/interfaces/index.md
+          - CLI Surface: 03-bijux-canon-index/interfaces/cli-surface.md
+          - API Surface: 03-bijux-canon-index/interfaces/api-surface.md
+          - Configuration Surface: 03-bijux-canon-index/interfaces/configuration-surface.md
+          - Data Contracts: 03-bijux-canon-index/interfaces/data-contracts.md
+          - Artifact Contracts: 03-bijux-canon-index/interfaces/artifact-contracts.md
+          - Entrypoints and Examples: 03-bijux-canon-index/interfaces/entrypoints-and-examples.md
+          - Operator Workflows: 03-bijux-canon-index/interfaces/operator-workflows.md
+          - Public Imports: 03-bijux-canon-index/interfaces/public-imports.md
+          - Compatibility Commitments: 03-bijux-canon-index/interfaces/compatibility-commitments.md
       - Operations:
-          - Operations: bijux-canon-index/operations/index.md
-          - Installation and Setup: bijux-canon-index/operations/installation-and-setup.md
-          - Local Development: bijux-canon-index/operations/local-development.md
-          - Common Workflows: bijux-canon-index/operations/common-workflows.md
-          - Observability and Diagnostics: bijux-canon-index/operations/observability-and-diagnostics.md
-          - Performance and Scaling: bijux-canon-index/operations/performance-and-scaling.md
-          - Failure Recovery: bijux-canon-index/operations/failure-recovery.md
-          - Release and Versioning: bijux-canon-index/operations/release-and-versioning.md
-          - Security and Safety: bijux-canon-index/operations/security-and-safety.md
-          - Deployment Boundaries: bijux-canon-index/operations/deployment-boundaries.md
+          - Operations: 03-bijux-canon-index/operations/index.md
+          - Installation and Setup: 03-bijux-canon-index/operations/installation-and-setup.md
+          - Local Development: 03-bijux-canon-index/operations/local-development.md
+          - Common Workflows: 03-bijux-canon-index/operations/common-workflows.md
+          - Observability and Diagnostics: 03-bijux-canon-index/operations/observability-and-diagnostics.md
+          - Performance and Scaling: 03-bijux-canon-index/operations/performance-and-scaling.md
+          - Failure Recovery: 03-bijux-canon-index/operations/failure-recovery.md
+          - Release and Versioning: 03-bijux-canon-index/operations/release-and-versioning.md
+          - Security and Safety: 03-bijux-canon-index/operations/security-and-safety.md
+          - Deployment Boundaries: 03-bijux-canon-index/operations/deployment-boundaries.md
       - Quality:
-          - Quality: bijux-canon-index/quality/index.md
-          - Test Strategy: bijux-canon-index/quality/test-strategy.md
-          - Invariants: bijux-canon-index/quality/invariants.md
-          - Review Checklist: bijux-canon-index/quality/review-checklist.md
-          - Documentation Standards: bijux-canon-index/quality/documentation-standards.md
-          - Definition of Done: bijux-canon-index/quality/definition-of-done.md
-          - Dependency Governance: bijux-canon-index/quality/dependency-governance.md
-          - Change Validation: bijux-canon-index/quality/change-validation.md
-          - Known Limitations: bijux-canon-index/quality/known-limitations.md
-          - Risk Register: bijux-canon-index/quality/risk-register.md
+          - Quality: 03-bijux-canon-index/quality/index.md
+          - Test Strategy: 03-bijux-canon-index/quality/test-strategy.md
+          - Invariants: 03-bijux-canon-index/quality/invariants.md
+          - Review Checklist: 03-bijux-canon-index/quality/review-checklist.md
+          - Documentation Standards: 03-bijux-canon-index/quality/documentation-standards.md
+          - Definition of Done: 03-bijux-canon-index/quality/definition-of-done.md
+          - Dependency Governance: 03-bijux-canon-index/quality/dependency-governance.md
+          - Change Validation: 03-bijux-canon-index/quality/change-validation.md
+          - Known Limitations: 03-bijux-canon-index/quality/known-limitations.md
+          - Risk Register: 03-bijux-canon-index/quality/risk-register.md
   - bijux-canon-reason:
-      - Overview: bijux-canon-reason/index.md
+      - Overview: 04-bijux-canon-reason/index.md
       - Foundation:
-          - Foundation: bijux-canon-reason/foundation/index.md
-          - Package Overview: bijux-canon-reason/foundation/package-overview.md
-          - Scope and Non-Goals: bijux-canon-reason/foundation/scope-and-non-goals.md
-          - Ownership Boundary: bijux-canon-reason/foundation/ownership-boundary.md
-          - Repository Fit: bijux-canon-reason/foundation/repository-fit.md
-          - Capability Map: bijux-canon-reason/foundation/capability-map.md
-          - Domain Language: bijux-canon-reason/foundation/domain-language.md
-          - Lifecycle Overview: bijux-canon-reason/foundation/lifecycle-overview.md
-          - Dependencies and Adjacencies: bijux-canon-reason/foundation/dependencies-and-adjacencies.md
-          - Change Principles: bijux-canon-reason/foundation/change-principles.md
+          - Foundation: 04-bijux-canon-reason/foundation/index.md
+          - Package Overview: 04-bijux-canon-reason/foundation/package-overview.md
+          - Scope and Non-Goals: 04-bijux-canon-reason/foundation/scope-and-non-goals.md
+          - Ownership Boundary: 04-bijux-canon-reason/foundation/ownership-boundary.md
+          - Repository Fit: 04-bijux-canon-reason/foundation/repository-fit.md
+          - Capability Map: 04-bijux-canon-reason/foundation/capability-map.md
+          - Domain Language: 04-bijux-canon-reason/foundation/domain-language.md
+          - Lifecycle Overview: 04-bijux-canon-reason/foundation/lifecycle-overview.md
+          - Dependencies and Adjacencies: 04-bijux-canon-reason/foundation/dependencies-and-adjacencies.md
+          - Change Principles: 04-bijux-canon-reason/foundation/change-principles.md
       - Architecture:
-          - Architecture: bijux-canon-reason/architecture/index.md
-          - Module Map: bijux-canon-reason/architecture/module-map.md
-          - Dependency Direction: bijux-canon-reason/architecture/dependency-direction.md
-          - Execution Model: bijux-canon-reason/architecture/execution-model.md
-          - State and Persistence: bijux-canon-reason/architecture/state-and-persistence.md
-          - Integration Seams: bijux-canon-reason/architecture/integration-seams.md
-          - Error Model: bijux-canon-reason/architecture/error-model.md
-          - Extensibility Model: bijux-canon-reason/architecture/extensibility-model.md
-          - Code Navigation: bijux-canon-reason/architecture/code-navigation.md
-          - Architecture Risks: bijux-canon-reason/architecture/architecture-risks.md
+          - Architecture: 04-bijux-canon-reason/architecture/index.md
+          - Module Map: 04-bijux-canon-reason/architecture/module-map.md
+          - Dependency Direction: 04-bijux-canon-reason/architecture/dependency-direction.md
+          - Execution Model: 04-bijux-canon-reason/architecture/execution-model.md
+          - State and Persistence: 04-bijux-canon-reason/architecture/state-and-persistence.md
+          - Integration Seams: 04-bijux-canon-reason/architecture/integration-seams.md
+          - Error Model: 04-bijux-canon-reason/architecture/error-model.md
+          - Extensibility Model: 04-bijux-canon-reason/architecture/extensibility-model.md
+          - Code Navigation: 04-bijux-canon-reason/architecture/code-navigation.md
+          - Architecture Risks: 04-bijux-canon-reason/architecture/architecture-risks.md
       - Interfaces:
-          - Interfaces: bijux-canon-reason/interfaces/index.md
-          - CLI Surface: bijux-canon-reason/interfaces/cli-surface.md
-          - API Surface: bijux-canon-reason/interfaces/api-surface.md
-          - Configuration Surface: bijux-canon-reason/interfaces/configuration-surface.md
-          - Data Contracts: bijux-canon-reason/interfaces/data-contracts.md
-          - Artifact Contracts: bijux-canon-reason/interfaces/artifact-contracts.md
-          - Entrypoints and Examples: bijux-canon-reason/interfaces/entrypoints-and-examples.md
-          - Operator Workflows: bijux-canon-reason/interfaces/operator-workflows.md
-          - Public Imports: bijux-canon-reason/interfaces/public-imports.md
-          - Compatibility Commitments: bijux-canon-reason/interfaces/compatibility-commitments.md
+          - Interfaces: 04-bijux-canon-reason/interfaces/index.md
+          - CLI Surface: 04-bijux-canon-reason/interfaces/cli-surface.md
+          - API Surface: 04-bijux-canon-reason/interfaces/api-surface.md
+          - Configuration Surface: 04-bijux-canon-reason/interfaces/configuration-surface.md
+          - Data Contracts: 04-bijux-canon-reason/interfaces/data-contracts.md
+          - Artifact Contracts: 04-bijux-canon-reason/interfaces/artifact-contracts.md
+          - Entrypoints and Examples: 04-bijux-canon-reason/interfaces/entrypoints-and-examples.md
+          - Operator Workflows: 04-bijux-canon-reason/interfaces/operator-workflows.md
+          - Public Imports: 04-bijux-canon-reason/interfaces/public-imports.md
+          - Compatibility Commitments: 04-bijux-canon-reason/interfaces/compatibility-commitments.md
       - Operations:
-          - Operations: bijux-canon-reason/operations/index.md
-          - Installation and Setup: bijux-canon-reason/operations/installation-and-setup.md
-          - Local Development: bijux-canon-reason/operations/local-development.md
-          - Common Workflows: bijux-canon-reason/operations/common-workflows.md
-          - Observability and Diagnostics: bijux-canon-reason/operations/observability-and-diagnostics.md
-          - Performance and Scaling: bijux-canon-reason/operations/performance-and-scaling.md
-          - Failure Recovery: bijux-canon-reason/operations/failure-recovery.md
-          - Release and Versioning: bijux-canon-reason/operations/release-and-versioning.md
-          - Security and Safety: bijux-canon-reason/operations/security-and-safety.md
-          - Deployment Boundaries: bijux-canon-reason/operations/deployment-boundaries.md
+          - Operations: 04-bijux-canon-reason/operations/index.md
+          - Installation and Setup: 04-bijux-canon-reason/operations/installation-and-setup.md
+          - Local Development: 04-bijux-canon-reason/operations/local-development.md
+          - Common Workflows: 04-bijux-canon-reason/operations/common-workflows.md
+          - Observability and Diagnostics: 04-bijux-canon-reason/operations/observability-and-diagnostics.md
+          - Performance and Scaling: 04-bijux-canon-reason/operations/performance-and-scaling.md
+          - Failure Recovery: 04-bijux-canon-reason/operations/failure-recovery.md
+          - Release and Versioning: 04-bijux-canon-reason/operations/release-and-versioning.md
+          - Security and Safety: 04-bijux-canon-reason/operations/security-and-safety.md
+          - Deployment Boundaries: 04-bijux-canon-reason/operations/deployment-boundaries.md
       - Quality:
-          - Quality: bijux-canon-reason/quality/index.md
-          - Test Strategy: bijux-canon-reason/quality/test-strategy.md
-          - Invariants: bijux-canon-reason/quality/invariants.md
-          - Review Checklist: bijux-canon-reason/quality/review-checklist.md
-          - Documentation Standards: bijux-canon-reason/quality/documentation-standards.md
-          - Definition of Done: bijux-canon-reason/quality/definition-of-done.md
-          - Dependency Governance: bijux-canon-reason/quality/dependency-governance.md
-          - Change Validation: bijux-canon-reason/quality/change-validation.md
-          - Known Limitations: bijux-canon-reason/quality/known-limitations.md
-          - Risk Register: bijux-canon-reason/quality/risk-register.md
+          - Quality: 04-bijux-canon-reason/quality/index.md
+          - Test Strategy: 04-bijux-canon-reason/quality/test-strategy.md
+          - Invariants: 04-bijux-canon-reason/quality/invariants.md
+          - Review Checklist: 04-bijux-canon-reason/quality/review-checklist.md
+          - Documentation Standards: 04-bijux-canon-reason/quality/documentation-standards.md
+          - Definition of Done: 04-bijux-canon-reason/quality/definition-of-done.md
+          - Dependency Governance: 04-bijux-canon-reason/quality/dependency-governance.md
+          - Change Validation: 04-bijux-canon-reason/quality/change-validation.md
+          - Known Limitations: 04-bijux-canon-reason/quality/known-limitations.md
+          - Risk Register: 04-bijux-canon-reason/quality/risk-register.md
   - bijux-canon-agent:
-      - Overview: bijux-canon-agent/index.md
+      - Overview: 05-bijux-canon-agent/index.md
       - Foundation:
-          - Foundation: bijux-canon-agent/foundation/index.md
-          - Package Overview: bijux-canon-agent/foundation/package-overview.md
-          - Scope and Non-Goals: bijux-canon-agent/foundation/scope-and-non-goals.md
-          - Ownership Boundary: bijux-canon-agent/foundation/ownership-boundary.md
-          - Repository Fit: bijux-canon-agent/foundation/repository-fit.md
-          - Capability Map: bijux-canon-agent/foundation/capability-map.md
-          - Domain Language: bijux-canon-agent/foundation/domain-language.md
-          - Lifecycle Overview: bijux-canon-agent/foundation/lifecycle-overview.md
-          - Dependencies and Adjacencies: bijux-canon-agent/foundation/dependencies-and-adjacencies.md
-          - Change Principles: bijux-canon-agent/foundation/change-principles.md
+          - Foundation: 05-bijux-canon-agent/foundation/index.md
+          - Package Overview: 05-bijux-canon-agent/foundation/package-overview.md
+          - Scope and Non-Goals: 05-bijux-canon-agent/foundation/scope-and-non-goals.md
+          - Ownership Boundary: 05-bijux-canon-agent/foundation/ownership-boundary.md
+          - Repository Fit: 05-bijux-canon-agent/foundation/repository-fit.md
+          - Capability Map: 05-bijux-canon-agent/foundation/capability-map.md
+          - Domain Language: 05-bijux-canon-agent/foundation/domain-language.md
+          - Lifecycle Overview: 05-bijux-canon-agent/foundation/lifecycle-overview.md
+          - Dependencies and Adjacencies: 05-bijux-canon-agent/foundation/dependencies-and-adjacencies.md
+          - Change Principles: 05-bijux-canon-agent/foundation/change-principles.md
       - Architecture:
-          - Architecture: bijux-canon-agent/architecture/index.md
-          - Module Map: bijux-canon-agent/architecture/module-map.md
-          - Dependency Direction: bijux-canon-agent/architecture/dependency-direction.md
-          - Execution Model: bijux-canon-agent/architecture/execution-model.md
-          - State and Persistence: bijux-canon-agent/architecture/state-and-persistence.md
-          - Integration Seams: bijux-canon-agent/architecture/integration-seams.md
-          - Error Model: bijux-canon-agent/architecture/error-model.md
-          - Extensibility Model: bijux-canon-agent/architecture/extensibility-model.md
-          - Code Navigation: bijux-canon-agent/architecture/code-navigation.md
-          - Architecture Risks: bijux-canon-agent/architecture/architecture-risks.md
+          - Architecture: 05-bijux-canon-agent/architecture/index.md
+          - Module Map: 05-bijux-canon-agent/architecture/module-map.md
+          - Dependency Direction: 05-bijux-canon-agent/architecture/dependency-direction.md
+          - Execution Model: 05-bijux-canon-agent/architecture/execution-model.md
+          - State and Persistence: 05-bijux-canon-agent/architecture/state-and-persistence.md
+          - Integration Seams: 05-bijux-canon-agent/architecture/integration-seams.md
+          - Error Model: 05-bijux-canon-agent/architecture/error-model.md
+          - Extensibility Model: 05-bijux-canon-agent/architecture/extensibility-model.md
+          - Code Navigation: 05-bijux-canon-agent/architecture/code-navigation.md
+          - Architecture Risks: 05-bijux-canon-agent/architecture/architecture-risks.md
       - Interfaces:
-          - Interfaces: bijux-canon-agent/interfaces/index.md
-          - CLI Surface: bijux-canon-agent/interfaces/cli-surface.md
-          - API Surface: bijux-canon-agent/interfaces/api-surface.md
-          - Configuration Surface: bijux-canon-agent/interfaces/configuration-surface.md
-          - Data Contracts: bijux-canon-agent/interfaces/data-contracts.md
-          - Artifact Contracts: bijux-canon-agent/interfaces/artifact-contracts.md
-          - Entrypoints and Examples: bijux-canon-agent/interfaces/entrypoints-and-examples.md
-          - Operator Workflows: bijux-canon-agent/interfaces/operator-workflows.md
-          - Public Imports: bijux-canon-agent/interfaces/public-imports.md
-          - Compatibility Commitments: bijux-canon-agent/interfaces/compatibility-commitments.md
+          - Interfaces: 05-bijux-canon-agent/interfaces/index.md
+          - CLI Surface: 05-bijux-canon-agent/interfaces/cli-surface.md
+          - API Surface: 05-bijux-canon-agent/interfaces/api-surface.md
+          - Configuration Surface: 05-bijux-canon-agent/interfaces/configuration-surface.md
+          - Data Contracts: 05-bijux-canon-agent/interfaces/data-contracts.md
+          - Artifact Contracts: 05-bijux-canon-agent/interfaces/artifact-contracts.md
+          - Entrypoints and Examples: 05-bijux-canon-agent/interfaces/entrypoints-and-examples.md
+          - Operator Workflows: 05-bijux-canon-agent/interfaces/operator-workflows.md
+          - Public Imports: 05-bijux-canon-agent/interfaces/public-imports.md
+          - Compatibility Commitments: 05-bijux-canon-agent/interfaces/compatibility-commitments.md
       - Operations:
-          - Operations: bijux-canon-agent/operations/index.md
-          - Installation and Setup: bijux-canon-agent/operations/installation-and-setup.md
-          - Local Development: bijux-canon-agent/operations/local-development.md
-          - Common Workflows: bijux-canon-agent/operations/common-workflows.md
-          - Observability and Diagnostics: bijux-canon-agent/operations/observability-and-diagnostics.md
-          - Performance and Scaling: bijux-canon-agent/operations/performance-and-scaling.md
-          - Failure Recovery: bijux-canon-agent/operations/failure-recovery.md
-          - Release and Versioning: bijux-canon-agent/operations/release-and-versioning.md
-          - Security and Safety: bijux-canon-agent/operations/security-and-safety.md
-          - Deployment Boundaries: bijux-canon-agent/operations/deployment-boundaries.md
+          - Operations: 05-bijux-canon-agent/operations/index.md
+          - Installation and Setup: 05-bijux-canon-agent/operations/installation-and-setup.md
+          - Local Development: 05-bijux-canon-agent/operations/local-development.md
+          - Common Workflows: 05-bijux-canon-agent/operations/common-workflows.md
+          - Observability and Diagnostics: 05-bijux-canon-agent/operations/observability-and-diagnostics.md
+          - Performance and Scaling: 05-bijux-canon-agent/operations/performance-and-scaling.md
+          - Failure Recovery: 05-bijux-canon-agent/operations/failure-recovery.md
+          - Release and Versioning: 05-bijux-canon-agent/operations/release-and-versioning.md
+          - Security and Safety: 05-bijux-canon-agent/operations/security-and-safety.md
+          - Deployment Boundaries: 05-bijux-canon-agent/operations/deployment-boundaries.md
       - Quality:
-          - Quality: bijux-canon-agent/quality/index.md
-          - Test Strategy: bijux-canon-agent/quality/test-strategy.md
-          - Invariants: bijux-canon-agent/quality/invariants.md
-          - Review Checklist: bijux-canon-agent/quality/review-checklist.md
-          - Documentation Standards: bijux-canon-agent/quality/documentation-standards.md
-          - Definition of Done: bijux-canon-agent/quality/definition-of-done.md
-          - Dependency Governance: bijux-canon-agent/quality/dependency-governance.md
-          - Change Validation: bijux-canon-agent/quality/change-validation.md
-          - Known Limitations: bijux-canon-agent/quality/known-limitations.md
-          - Risk Register: bijux-canon-agent/quality/risk-register.md
+          - Quality: 05-bijux-canon-agent/quality/index.md
+          - Test Strategy: 05-bijux-canon-agent/quality/test-strategy.md
+          - Invariants: 05-bijux-canon-agent/quality/invariants.md
+          - Review Checklist: 05-bijux-canon-agent/quality/review-checklist.md
+          - Documentation Standards: 05-bijux-canon-agent/quality/documentation-standards.md
+          - Definition of Done: 05-bijux-canon-agent/quality/definition-of-done.md
+          - Dependency Governance: 05-bijux-canon-agent/quality/dependency-governance.md
+          - Change Validation: 05-bijux-canon-agent/quality/change-validation.md
+          - Known Limitations: 05-bijux-canon-agent/quality/known-limitations.md
+          - Risk Register: 05-bijux-canon-agent/quality/risk-register.md
   - bijux-canon-runtime:
-      - Overview: bijux-canon-runtime/index.md
+      - Overview: 06-bijux-canon-runtime/index.md
       - Foundation:
-          - Foundation: bijux-canon-runtime/foundation/index.md
-          - Package Overview: bijux-canon-runtime/foundation/package-overview.md
-          - Scope and Non-Goals: bijux-canon-runtime/foundation/scope-and-non-goals.md
-          - Ownership Boundary: bijux-canon-runtime/foundation/ownership-boundary.md
-          - Repository Fit: bijux-canon-runtime/foundation/repository-fit.md
-          - Capability Map: bijux-canon-runtime/foundation/capability-map.md
-          - Domain Language: bijux-canon-runtime/foundation/domain-language.md
-          - Lifecycle Overview: bijux-canon-runtime/foundation/lifecycle-overview.md
-          - Dependencies and Adjacencies: bijux-canon-runtime/foundation/dependencies-and-adjacencies.md
-          - Change Principles: bijux-canon-runtime/foundation/change-principles.md
+          - Foundation: 06-bijux-canon-runtime/foundation/index.md
+          - Package Overview: 06-bijux-canon-runtime/foundation/package-overview.md
+          - Scope and Non-Goals: 06-bijux-canon-runtime/foundation/scope-and-non-goals.md
+          - Ownership Boundary: 06-bijux-canon-runtime/foundation/ownership-boundary.md
+          - Repository Fit: 06-bijux-canon-runtime/foundation/repository-fit.md
+          - Capability Map: 06-bijux-canon-runtime/foundation/capability-map.md
+          - Domain Language: 06-bijux-canon-runtime/foundation/domain-language.md
+          - Lifecycle Overview: 06-bijux-canon-runtime/foundation/lifecycle-overview.md
+          - Dependencies and Adjacencies: 06-bijux-canon-runtime/foundation/dependencies-and-adjacencies.md
+          - Change Principles: 06-bijux-canon-runtime/foundation/change-principles.md
       - Architecture:
-          - Architecture: bijux-canon-runtime/architecture/index.md
-          - Module Map: bijux-canon-runtime/architecture/module-map.md
-          - Dependency Direction: bijux-canon-runtime/architecture/dependency-direction.md
-          - Execution Model: bijux-canon-runtime/architecture/execution-model.md
-          - State and Persistence: bijux-canon-runtime/architecture/state-and-persistence.md
-          - Integration Seams: bijux-canon-runtime/architecture/integration-seams.md
-          - Error Model: bijux-canon-runtime/architecture/error-model.md
-          - Extensibility Model: bijux-canon-runtime/architecture/extensibility-model.md
-          - Code Navigation: bijux-canon-runtime/architecture/code-navigation.md
-          - Architecture Risks: bijux-canon-runtime/architecture/architecture-risks.md
+          - Architecture: 06-bijux-canon-runtime/architecture/index.md
+          - Module Map: 06-bijux-canon-runtime/architecture/module-map.md
+          - Dependency Direction: 06-bijux-canon-runtime/architecture/dependency-direction.md
+          - Execution Model: 06-bijux-canon-runtime/architecture/execution-model.md
+          - State and Persistence: 06-bijux-canon-runtime/architecture/state-and-persistence.md
+          - Integration Seams: 06-bijux-canon-runtime/architecture/integration-seams.md
+          - Error Model: 06-bijux-canon-runtime/architecture/error-model.md
+          - Extensibility Model: 06-bijux-canon-runtime/architecture/extensibility-model.md
+          - Code Navigation: 06-bijux-canon-runtime/architecture/code-navigation.md
+          - Architecture Risks: 06-bijux-canon-runtime/architecture/architecture-risks.md
       - Interfaces:
-          - Interfaces: bijux-canon-runtime/interfaces/index.md
-          - CLI Surface: bijux-canon-runtime/interfaces/cli-surface.md
-          - API Surface: bijux-canon-runtime/interfaces/api-surface.md
-          - Configuration Surface: bijux-canon-runtime/interfaces/configuration-surface.md
-          - Data Contracts: bijux-canon-runtime/interfaces/data-contracts.md
-          - Artifact Contracts: bijux-canon-runtime/interfaces/artifact-contracts.md
-          - Entrypoints and Examples: bijux-canon-runtime/interfaces/entrypoints-and-examples.md
-          - Operator Workflows: bijux-canon-runtime/interfaces/operator-workflows.md
-          - Public Imports: bijux-canon-runtime/interfaces/public-imports.md
-          - Compatibility Commitments: bijux-canon-runtime/interfaces/compatibility-commitments.md
+          - Interfaces: 06-bijux-canon-runtime/interfaces/index.md
+          - CLI Surface: 06-bijux-canon-runtime/interfaces/cli-surface.md
+          - API Surface: 06-bijux-canon-runtime/interfaces/api-surface.md
+          - Configuration Surface: 06-bijux-canon-runtime/interfaces/configuration-surface.md
+          - Data Contracts: 06-bijux-canon-runtime/interfaces/data-contracts.md
+          - Artifact Contracts: 06-bijux-canon-runtime/interfaces/artifact-contracts.md
+          - Entrypoints and Examples: 06-bijux-canon-runtime/interfaces/entrypoints-and-examples.md
+          - Operator Workflows: 06-bijux-canon-runtime/interfaces/operator-workflows.md
+          - Public Imports: 06-bijux-canon-runtime/interfaces/public-imports.md
+          - Compatibility Commitments: 06-bijux-canon-runtime/interfaces/compatibility-commitments.md
       - Operations:
-          - Operations: bijux-canon-runtime/operations/index.md
-          - Installation and Setup: bijux-canon-runtime/operations/installation-and-setup.md
-          - Local Development: bijux-canon-runtime/operations/local-development.md
-          - Common Workflows: bijux-canon-runtime/operations/common-workflows.md
-          - Observability and Diagnostics: bijux-canon-runtime/operations/observability-and-diagnostics.md
-          - Performance and Scaling: bijux-canon-runtime/operations/performance-and-scaling.md
-          - Failure Recovery: bijux-canon-runtime/operations/failure-recovery.md
-          - Release and Versioning: bijux-canon-runtime/operations/release-and-versioning.md
-          - Security and Safety: bijux-canon-runtime/operations/security-and-safety.md
-          - Deployment Boundaries: bijux-canon-runtime/operations/deployment-boundaries.md
+          - Operations: 06-bijux-canon-runtime/operations/index.md
+          - Installation and Setup: 06-bijux-canon-runtime/operations/installation-and-setup.md
+          - Local Development: 06-bijux-canon-runtime/operations/local-development.md
+          - Common Workflows: 06-bijux-canon-runtime/operations/common-workflows.md
+          - Observability and Diagnostics: 06-bijux-canon-runtime/operations/observability-and-diagnostics.md
+          - Performance and Scaling: 06-bijux-canon-runtime/operations/performance-and-scaling.md
+          - Failure Recovery: 06-bijux-canon-runtime/operations/failure-recovery.md
+          - Release and Versioning: 06-bijux-canon-runtime/operations/release-and-versioning.md
+          - Security and Safety: 06-bijux-canon-runtime/operations/security-and-safety.md
+          - Deployment Boundaries: 06-bijux-canon-runtime/operations/deployment-boundaries.md
       - Quality:
-          - Quality: bijux-canon-runtime/quality/index.md
-          - Test Strategy: bijux-canon-runtime/quality/test-strategy.md
-          - Invariants: bijux-canon-runtime/quality/invariants.md
-          - Review Checklist: bijux-canon-runtime/quality/review-checklist.md
-          - Documentation Standards: bijux-canon-runtime/quality/documentation-standards.md
-          - Definition of Done: bijux-canon-runtime/quality/definition-of-done.md
-          - Dependency Governance: bijux-canon-runtime/quality/dependency-governance.md
-          - Change Validation: bijux-canon-runtime/quality/change-validation.md
-          - Known Limitations: bijux-canon-runtime/quality/known-limitations.md
-          - Risk Register: bijux-canon-runtime/quality/risk-register.md
+          - Quality: 06-bijux-canon-runtime/quality/index.md
+          - Test Strategy: 06-bijux-canon-runtime/quality/test-strategy.md
+          - Invariants: 06-bijux-canon-runtime/quality/invariants.md
+          - Review Checklist: 06-bijux-canon-runtime/quality/review-checklist.md
+          - Documentation Standards: 06-bijux-canon-runtime/quality/documentation-standards.md
+          - Definition of Done: 06-bijux-canon-runtime/quality/definition-of-done.md
+          - Dependency Governance: 06-bijux-canon-runtime/quality/dependency-governance.md
+          - Change Validation: 06-bijux-canon-runtime/quality/change-validation.md
+          - Known Limitations: 06-bijux-canon-runtime/quality/known-limitations.md
+          - Risk Register: 06-bijux-canon-runtime/quality/risk-register.md
   - Maintenance Handbook:
-      - Maintenance Handbook: bijux-canon-maintain/index.md
+      - Maintenance Handbook: 07-bijux-canon-maintain/index.md
       - bijux-canon-dev:
-          - bijux-canon-dev: bijux-canon-maintain/bijux-canon-dev/index.md
-          - Package Overview: bijux-canon-maintain/bijux-canon-dev/package-overview.md
-          - Scope and Non-Goals: bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals.md
-          - Module Map: bijux-canon-maintain/bijux-canon-dev/module-map.md
-          - Quality Gates: bijux-canon-maintain/bijux-canon-dev/quality-gates.md
-          - Security Gates: bijux-canon-maintain/bijux-canon-dev/security-gates.md
-          - Schema Governance: bijux-canon-maintain/bijux-canon-dev/schema-governance.md
-          - Release Support: bijux-canon-maintain/bijux-canon-dev/release-support.md
-          - SBOM and Supply Chain: bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain.md
-          - Operating Guidelines: bijux-canon-maintain/bijux-canon-dev/operating-guidelines.md
+          - bijux-canon-dev: 07-bijux-canon-maintain/bijux-canon-dev/index.md
+          - Package Overview: 07-bijux-canon-maintain/bijux-canon-dev/package-overview.md
+          - Scope and Non-Goals: 07-bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals.md
+          - Module Map: 07-bijux-canon-maintain/bijux-canon-dev/module-map.md
+          - Quality Gates: 07-bijux-canon-maintain/bijux-canon-dev/quality-gates.md
+          - Security Gates: 07-bijux-canon-maintain/bijux-canon-dev/security-gates.md
+          - Schema Governance: 07-bijux-canon-maintain/bijux-canon-dev/schema-governance.md
+          - Release Support: 07-bijux-canon-maintain/bijux-canon-dev/release-support.md
+          - SBOM and Supply Chain: 07-bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain.md
+          - Operating Guidelines: 07-bijux-canon-maintain/bijux-canon-dev/operating-guidelines.md
       - makes:
-          - makes: bijux-canon-maintain/makes/index.md
-          - Make System Overview: bijux-canon-maintain/makes/make-system-overview.md
-          - Root Entrypoints: bijux-canon-maintain/makes/root-entrypoints.md
-          - Environment Model: bijux-canon-maintain/makes/environment-model.md
-          - Repository Layout: bijux-canon-maintain/makes/repository-layout.md
-          - Package Dispatch: bijux-canon-maintain/makes/package-dispatch.md
-          - CI Targets: bijux-canon-maintain/makes/ci-targets.md
-          - Package Contracts: bijux-canon-maintain/makes/package-contracts.md
-          - Release Surfaces: bijux-canon-maintain/makes/release-surfaces.md
-          - Authoring Rules: bijux-canon-maintain/makes/authoring-rules.md
+          - makes: 07-bijux-canon-maintain/makes/index.md
+          - Make System Overview: 07-bijux-canon-maintain/makes/make-system-overview.md
+          - Root Entrypoints: 07-bijux-canon-maintain/makes/root-entrypoints.md
+          - Environment Model: 07-bijux-canon-maintain/makes/environment-model.md
+          - Repository Layout: 07-bijux-canon-maintain/makes/repository-layout.md
+          - Package Dispatch: 07-bijux-canon-maintain/makes/package-dispatch.md
+          - CI Targets: 07-bijux-canon-maintain/makes/ci-targets.md
+          - Package Contracts: 07-bijux-canon-maintain/makes/package-contracts.md
+          - Release Surfaces: 07-bijux-canon-maintain/makes/release-surfaces.md
+          - Authoring Rules: 07-bijux-canon-maintain/makes/authoring-rules.md
       - gh-workflows:
-          - gh-workflows: bijux-canon-maintain/gh-workflows/index.md
-          - verify: bijux-canon-maintain/gh-workflows/verify.md
-          - reusable-workflows: bijux-canon-maintain/gh-workflows/reusable-workflows.md
-          - deploy-docs: bijux-canon-maintain/gh-workflows/deploy-docs.md
-          - publish: bijux-canon-maintain/gh-workflows/publish.md
+          - gh-workflows: 07-bijux-canon-maintain/gh-workflows/index.md
+          - verify: 07-bijux-canon-maintain/gh-workflows/verify.md
+          - reusable-workflows: 07-bijux-canon-maintain/gh-workflows/reusable-workflows.md
+          - deploy-docs: 07-bijux-canon-maintain/gh-workflows/deploy-docs.md
+          - release-workflows: 07-bijux-canon-maintain/gh-workflows/release-workflows.md
   - Compatibility Packages:
-      - Compatibility Packages: compat-packages/index.md
+      - Compatibility Packages: 08-compat-packages/index.md
       - Catalog:
-          - Catalog: compat-packages/catalog/index.md
-          - agentic-flows: compat-packages/catalog/agentic-flows.md
-          - bijux-agent: compat-packages/catalog/bijux-agent.md
-          - bijux-rag: compat-packages/catalog/bijux-rag.md
-          - bijux-rar: compat-packages/catalog/bijux-rar.md
-          - bijux-vex: compat-packages/catalog/bijux-vex.md
-          - Legacy Name Map: compat-packages/catalog/legacy-name-map.md
-          - Package Behavior: compat-packages/catalog/package-behavior.md
-          - Import Surfaces: compat-packages/catalog/import-surfaces.md
-          - Command Surfaces: compat-packages/catalog/command-surfaces.md
+          - Catalog: 08-compat-packages/catalog/index.md
+          - agentic-flows: 08-compat-packages/catalog/agentic-flows.md
+          - bijux-agent: 08-compat-packages/catalog/bijux-agent.md
+          - bijux-rag: 08-compat-packages/catalog/bijux-rag.md
+          - bijux-rar: 08-compat-packages/catalog/bijux-rar.md
+          - bijux-vex: 08-compat-packages/catalog/bijux-vex.md
+          - Legacy Name Map: 08-compat-packages/catalog/legacy-name-map.md
+          - Package Behavior: 08-compat-packages/catalog/package-behavior.md
+          - Import Surfaces: 08-compat-packages/catalog/import-surfaces.md
+          - Command Surfaces: 08-compat-packages/catalog/command-surfaces.md
       - Migration:
-          - Migration: compat-packages/migration/index.md
-          - Compatibility Overview: compat-packages/migration/compatibility-overview.md
-          - Migration Guidance: compat-packages/migration/migration-guidance.md
-          - Repository Consolidation: compat-packages/migration/repository-consolidation.md
-          - Canonical Targets: compat-packages/migration/canonical-targets.md
-          - Dependency Continuity: compat-packages/migration/dependency-continuity.md
-          - Release Policy: compat-packages/migration/release-policy.md
-          - Validation Strategy: compat-packages/migration/validation-strategy.md
-          - Retirement Conditions: compat-packages/migration/retirement-conditions.md
-          - Retirement Playbook: compat-packages/migration/retirement-playbook.md
+          - Migration: 08-compat-packages/migration/index.md
+          - Compatibility Overview: 08-compat-packages/migration/compatibility-overview.md
+          - Migration Guidance: 08-compat-packages/migration/migration-guidance.md
+          - Repository Consolidation: 08-compat-packages/migration/repository-consolidation.md
+          - Canonical Targets: 08-compat-packages/migration/canonical-targets.md
+          - Dependency Continuity: 08-compat-packages/migration/dependency-continuity.md
+          - Release Policy: 08-compat-packages/migration/release-policy.md
+          - Validation Strategy: 08-compat-packages/migration/validation-strategy.md
+          - Retirement Conditions: 08-compat-packages/migration/retirement-conditions.md
+          - Retirement Playbook: 08-compat-packages/migration/retirement-playbook.md

@@ -59,40 +59,42 @@ plugins:
   - autorefs
   - redirects:
       redirect_maps:
-        bijux-canon-dev/index.md: bijux-canon-maintain/index.md
-        bijux-canon-dev/package-overview.md: bijux-canon-maintain/bijux-canon-dev/package-overview.md
-        bijux-canon-dev/scope-and-non-goals.md: bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals.md
-        bijux-canon-dev/module-map.md: bijux-canon-maintain/bijux-canon-dev/module-map.md
-        bijux-canon-dev/quality-gates.md: bijux-canon-maintain/bijux-canon-dev/quality-gates.md
-        bijux-canon-dev/security-gates.md: bijux-canon-maintain/bijux-canon-dev/security-gates.md
-        bijux-canon-dev/schema-governance.md: bijux-canon-maintain/bijux-canon-dev/schema-governance.md
-        bijux-canon-dev/release-support.md: bijux-canon-maintain/bijux-canon-dev/release-support.md
-        bijux-canon-dev/sbom-and-supply-chain.md: bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain.md
-        bijux-canon-dev/operating-guidelines.md: bijux-canon-maintain/bijux-canon-dev/operating-guidelines.md
-        bijux-canon/platform-overview.md: bijux-canon/foundation/platform-overview.md
-        bijux-canon/repository-scope.md: bijux-canon/foundation/repository-scope.md
-        bijux-canon/workspace-layout.md: bijux-canon/foundation/workspace-layout.md
-        bijux-canon/package-map.md: bijux-canon/foundation/package-map.md
-        bijux-canon/documentation-system.md: bijux-canon/foundation/documentation-system.md
-        bijux-canon/api-and-schema-governance.md: bijux-canon/operations/api-and-schema-governance.md
-        bijux-canon/local-development.md: bijux-canon/operations/local-development.md
-        bijux-canon/testing-and-validation.md: bijux-canon/operations/testing-and-validation.md
-        bijux-canon/release-and-versioning.md: bijux-canon/operations/release-and-versioning.md
-        compat-packages/agentic-flows/index.md: compat-packages/catalog/agentic-flows.md
-        compat-packages/bijux-agent/index.md: compat-packages/catalog/bijux-agent.md
-        compat-packages/bijux-rag/index.md: compat-packages/catalog/bijux-rag.md
-        compat-packages/bijux-rar/index.md: compat-packages/catalog/bijux-rar.md
-        compat-packages/bijux-vex/index.md: compat-packages/catalog/bijux-vex.md
-        compat-packages/legacy-name-map.md: compat-packages/catalog/legacy-name-map.md
-        compat-packages/package-behavior.md: compat-packages/catalog/package-behavior.md
-        compat-packages/import-surfaces.md: compat-packages/catalog/import-surfaces.md
-        compat-packages/command-surfaces.md: compat-packages/catalog/command-surfaces.md
-        compat-packages/compatibility-overview.md: compat-packages/migration/compatibility-overview.md
-        compat-packages/migration-guidance.md: compat-packages/migration/migration-guidance.md
-        compat-packages/repository-consolidation.md: compat-packages/migration/repository-consolidation.md
-        compat-packages/release-policy.md: compat-packages/migration/release-policy.md
-        compat-packages/validation-strategy.md: compat-packages/migration/validation-strategy.md
-        compat-packages/retirement-conditions.md: compat-packages/migration/retirement-conditions.md
+        bijux-canon/index.md: 01-bijux-canon/index.md
+        bijux-canon-dev/index.md: 07-bijux-canon-maintain/index.md
+        bijux-canon-dev/package-overview.md: 07-bijux-canon-maintain/bijux-canon-dev/package-overview.md
+        bijux-canon-dev/scope-and-non-goals.md: 07-bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals.md
+        bijux-canon-dev/module-map.md: 07-bijux-canon-maintain/bijux-canon-dev/module-map.md
+        bijux-canon-dev/quality-gates.md: 07-bijux-canon-maintain/bijux-canon-dev/quality-gates.md
+        bijux-canon-dev/security-gates.md: 07-bijux-canon-maintain/bijux-canon-dev/security-gates.md
+        bijux-canon-dev/schema-governance.md: 07-bijux-canon-maintain/bijux-canon-dev/schema-governance.md
+        bijux-canon-dev/release-support.md: 07-bijux-canon-maintain/bijux-canon-dev/release-support.md
+        bijux-canon-dev/sbom-and-supply-chain.md: 07-bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain.md
+        bijux-canon-dev/operating-guidelines.md: 07-bijux-canon-maintain/bijux-canon-dev/operating-guidelines.md
+        bijux-canon/platform-overview.md: 01-bijux-canon/foundation/platform-overview.md
+        bijux-canon/repository-scope.md: 01-bijux-canon/foundation/repository-scope.md
+        bijux-canon/workspace-layout.md: 01-bijux-canon/foundation/workspace-layout.md
+        bijux-canon/package-map.md: 01-bijux-canon/foundation/package-map.md
+        bijux-canon/documentation-system.md: 01-bijux-canon/foundation/documentation-system.md
+        bijux-canon/api-and-schema-governance.md: 01-bijux-canon/operations/api-and-schema-governance.md
+        bijux-canon/local-development.md: 01-bijux-canon/operations/local-development.md
+        bijux-canon/testing-and-validation.md: 01-bijux-canon/operations/testing-and-validation.md
+        bijux-canon/release-and-versioning.md: 01-bijux-canon/operations/release-and-versioning.md
+        08-compat-packages/agentic-flows/index.md: 08-compat-packages/catalog/agentic-flows.md
+        08-compat-packages/bijux-agent/index.md: 08-compat-packages/catalog/bijux-agent.md
+        08-compat-packages/bijux-rag/index.md: 08-compat-packages/catalog/bijux-rag.md
+        08-compat-packages/bijux-rar/index.md: 08-compat-packages/catalog/bijux-rar.md
+        08-compat-packages/bijux-vex/index.md: 08-compat-packages/catalog/bijux-vex.md
+        08-compat-packages/legacy-name-map.md: 08-compat-packages/catalog/legacy-name-map.md
+        08-compat-packages/package-behavior.md: 08-compat-packages/catalog/package-behavior.md
+        08-compat-packages/import-surfaces.md: 08-compat-packages/catalog/import-surfaces.md
+        08-compat-packages/command-surfaces.md: 08-compat-packages/catalog/command-surfaces.md
+        08-compat-packages/compatibility-overview.md: 08-compat-packages/migration/compatibility-overview.md
+        08-compat-packages/migration-guidance.md: 08-compat-packages/migration/migration-guidance.md
+        08-compat-packages/repository-consolidation.md: 08-compat-packages/migration/repository-consolidation.md
+        08-compat-packages/release-policy.md: 08-compat-packages/migration/release-policy.md
+        08-compat-packages/validation-strategy.md: 08-compat-packages/migration/validation-strategy.md
+        08-compat-packages/retirement-conditions.md: 08-compat-packages/migration/retirement-conditions.md
+        07-bijux-canon-maintain/gh-workflows/publish.md: 07-bijux-canon-maintain/gh-workflows/release-workflows.md
   - git-revision-date-localized:
       enable_creation_date: false
       fallback_to_build_date: true

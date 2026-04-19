@@ -51,7 +51,7 @@ This package should help a maintainer answer practical questions such as:
 - compatibility package: [`bijux-rag`](https://pypi.org/project/bijux-rag/)
 - legacy import root: `bijux_rag`
 - legacy command: `bijux-rag`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-rag>
 
 ## What this package owns
@@ -83,7 +83,7 @@ This package should help a maintainer answer practical questions such as:
 - [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-ingest/foundation/ownership-boundary/)
 - [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-ingest/architecture/)
 - [Operator workflows](https://bijux.io/bijux-canon/bijux-canon-ingest/interfaces/operator-workflows/)
-- [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
+- [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md)
 
 ## Primary entrypoint

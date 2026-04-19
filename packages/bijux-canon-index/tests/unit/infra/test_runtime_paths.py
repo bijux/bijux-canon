@@ -14,13 +14,13 @@ from bijux_canon_index.infra.runtime_paths import (
 
 def test_default_runtime_paths_live_under_package_artifacts() -> None:
     assert default_state_path() == Path(
-        "artifacts/bijux-canon-index/state/session.sqlite"
+        "artifacts/03-bijux-canon-index/state/session.sqlite"
     )
     assert default_embedding_cache_path() == Path(
-        "artifacts/bijux-canon-index/cache/embeddings.sqlite"
+        "artifacts/03-bijux-canon-index/cache/embeddings.sqlite"
     )
     assert default_pgvector_state_path() == Path(
-        "artifacts/bijux-canon-index/state/pgvector.sqlite"
+        "artifacts/03-bijux-canon-index/state/pgvector.sqlite"
     )
 
 

@@ -23,7 +23,9 @@ the current concern, and which checked-in files back the explanation.
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
 [![Verify](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml)
-[![Publish](https://github.com/bijux/bijux-canon/actions/workflows/publish.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/publish.yml)
+[![Release PyPI](https://github.com/bijux/bijux-canon/actions/workflows/release-pypi.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/release-pypi.yml)
+[![Release GHCR](https://github.com/bijux/bijux-canon/actions/workflows/release-ghcr.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/release-ghcr.yml)
+[![Release GitHub](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml)
 [![Docs](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml)
 [![Release](https://img.shields.io/github/v/release/bijux/bijux-canon?display_name=tag&label=release)](https://github.com/bijux/bijux-canon/releases)
 [![GHCR packages](https://img.shields.io/badge/ghcr-10%20packages-181717?logo=github)](https://github.com/bijux?tab=packages&repo_name=bijux-canon)
@@ -77,8 +79,8 @@ whole system.
 
 <div class="bijux-quicklinks">
 <a class="md-button md-button--primary" href="bijux-canon/">Open the repository handbook</a>
-<a class="md-button" href="bijux-canon-maintain/">Open maintenance docs</a>
-<a class="md-button" href="compat-packages/">Open compatibility docs</a>
+<a class="md-button" href="07-bijux-canon-maintain/">Open maintenance docs</a>
+<a class="md-button" href="08-compat-packages/">Open compatibility docs</a>
 </div>
 
 ## Visual Summary
@@ -122,10 +124,10 @@ flowchart TB
 
 ## Start Here
 
-- open [bijux-canon](bijux-canon/index.md) when the question crosses package boundaries or touches shared governance
+- open [bijux-canon](01-bijux-canon/index.md) when the question crosses package boundaries or touches shared governance
 - open one product package when you need ownership, interfaces, operations, or proof for one package
-- open [bijux-canon-maintain](bijux-canon-maintain/index.md) for repository automation, schema enforcement, and maintainer-only guardrails
-- open [compatibility packages](compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem
+- open [bijux-canon-maintain](07-bijux-canon-maintain/index.md) for repository automation, schema enforcement, and maintainer-only guardrails
+- open [compatibility packages](08-compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem
 
 ## Package Flow
 

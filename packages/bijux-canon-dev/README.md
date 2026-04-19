@@ -34,9 +34,9 @@ repository healthy rather than to run the product, it should usually live here.
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon/bijux-canon-maintain/bijux-canon-dev/)
-- [Scope and non-goals](https://bijux.io/bijux-canon/bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals/)
-- [Module map](https://bijux.io/bijux-canon/bijux-canon-maintain/bijux-canon-dev/module-map/)
-- [Quality gates](https://bijux.io/bijux-canon/bijux-canon-maintain/bijux-canon-dev/quality-gates/)
-- [Release support](https://bijux.io/bijux-canon/bijux-canon-maintain/bijux-canon-dev/release-support/)
+- [Package guide](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/)
+- [Scope and non-goals](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals/)
+- [Module map](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/module-map/)
+- [Quality gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/quality-gates/)
+- [Release support](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/release-support/)
 - [Changelog](CHANGELOG.md)

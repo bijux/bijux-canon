@@ -50,7 +50,7 @@ you are outside this package's boundary.
 - compatibility package: [`bijux-rar`](https://pypi.org/project/bijux-rar/)
 - legacy import root: `bijux_rar`
 - legacy command: `bijux-rar`
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-rar>
 
 ## What this package owns
@@ -81,7 +81,7 @@ you are outside this package's boundary.
 - [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-reason/foundation/ownership-boundary/)
 - [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-reason/architecture/)
 - [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-reason/interfaces/)
-- [Compatibility packages](https://bijux.io/bijux-canon/compat-packages/)
+- [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Test strategy](https://bijux.io/bijux-canon/bijux-canon-reason/quality/test-strategy/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md)
 

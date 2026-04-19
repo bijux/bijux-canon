@@ -41,13 +41,13 @@ PyPI. Each release keeps the legacy distribution, import, and command surfaces
 available while installing `bijux-canon-index` at the same version.
 
 Its package handbook lives at
-<https://bijux.io/bijux-canon/compat-packages/catalog/bijux-vex/>.
+<https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/>.
 
 ## Migration note
 
 - new installs should use `uv add bijux-canon-index`
 - existing automation can stay on `bijux-vex` while you update imports and commands
-- canonical migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - retired repository target: <https://github.com/bijux/bijux-vex>
 
 ## Publication status
@@ -73,9 +73,9 @@ Its package handbook lives at
 Use `bijux-canon-index` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index>
-- legacy package handbook: <https://bijux.io/bijux-canon/compat-packages/catalog/bijux-vex/>
+- legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/>
 - package docs: <https://bijux.io/bijux-canon/bijux-canon-index/>
-- migration guide: <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+- migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/CHANGELOG.md>
 
 ## Primary entrypoint

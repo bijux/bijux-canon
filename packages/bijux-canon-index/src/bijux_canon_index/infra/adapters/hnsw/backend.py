@@ -74,7 +74,7 @@ def hnsw_backend(
             or read_env(
                 "BIJUX_CANON_INDEX_HNSW_PATH",
                 legacy="BIJUX_VEX_HNSW_PATH",
-                default="artifacts/bijux-canon-index/hnsw_index",
+                default="artifacts/03-bijux-canon-index/hnsw_index",
             )
         ).resolve()
     )

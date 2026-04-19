@@ -13,11 +13,15 @@ WORKFLOW_URL_RE = re.compile(
     r"(?P<workflow>[A-Za-z0-9_.-]+)"
 )
 EXPECTED_WORKFLOWS = {
-    "bijux-std-checks.yml",
+    "automerge-pr.yml",
+    "bijux-std.yml",
     "build-release-artifacts.yml",
     "ci-package.yml",
     "deploy-docs.yml",
-    "publish.yml",
+    "github-policy.yml",
+    "release-ghcr.yml",
+    "release-github.yml",
+    "release-pypi.yml",
     "verify.yml",
 }
 EXPECTED_VERIFY_PACKAGES = {
@@ -28,20 +32,6 @@ EXPECTED_VERIFY_PACKAGES = {
     "bijux-canon-index",
     "bijux-canon-dev",
 }
-EXPECTED_PUBLISH_PACKAGES = {
-    "bijux-canon-runtime",
-    "bijux-canon-agent",
-    "bijux-canon-ingest",
-    "bijux-canon-reason",
-    "bijux-canon-index",
-    "agentic-flows",
-    "bijux-agent",
-    "bijux-rag",
-    "bijux-rar",
-    "bijux-vex",
-}
-
-
 def _workflow(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         data = yaml.safe_load(handle)
@@ -93,19 +83,6 @@ def _uses_setup_uv_with_lock_cache(step: Any) -> bool:
     )
 
 
-def _uses_action_with_min_major(step: Any, action: str, min_major: int) -> bool:
-    if not isinstance(step, dict):
-        return False
-    uses = step.get("uses")
-    if not isinstance(uses, str):
-        return False
-    pattern = rf"^{re.escape(action)}@v(?P<major>\d+)$"
-    match = re.match(pattern, uses)
-    if match is None:
-        return False
-    return int(match.group("major")) >= min_major
-
-
 def test_workflow_tree_is_standardized() -> None:
     found = {path.name for path in WORKFLOWS_DIR.glob("*.yml")}
     assert found == EXPECTED_WORKFLOWS
@@ -152,85 +129,37 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     assert dev["check_targets"] == '["quality", "security", "build", "sbom"]'
 
 
-def test_publish_workflow_uses_matrix_release_contract() -> None:
-    workflow = _workflow(WORKFLOWS_DIR / "publish.yml")
-    jobs = workflow.get("jobs", {})
-    build = jobs.get("build", {})
-    publish_pypi = jobs.get("publish_pypi", {})
-    publish_ghcr = jobs.get("publish_ghcr", {})
-    release = jobs.get("release", {})
+def test_release_workflows_replace_legacy_publish_workflow() -> None:
+    release_github = _workflow(WORKFLOWS_DIR / "release-github.yml")
+    release_pypi = _workflow(WORKFLOWS_DIR / "release-pypi.yml")
+    release_ghcr = _workflow(WORKFLOWS_DIR / "release-ghcr.yml")
 
-    assert build.get("uses") == "./.github/workflows/build-release-artifacts.yml"
-    assert publish_pypi.get("needs") == "build"
-    assert publish_pypi.get("environment", {}).get("name") == "pypi"
-    assert publish_pypi.get("permissions") == {
-        "contents": "read",
-        "id-token": "write",
-    }
-    assert publish_ghcr.get("needs") == "build"
-    assert publish_ghcr.get("permissions") == {
+    for workflow in (release_github, release_pypi, release_ghcr):
+        on_block = _as_dict(workflow.get("on"))
+        push_block = _as_dict(on_block.get("push"))
+        tags = push_block.get("tags", [])
+        assert isinstance(tags, list)
+        assert "v*" in tags
+        assert "workflow_dispatch" in on_block
+        assert "workflow_call" in on_block
+
+    assert release_github.get("name") == "release-github"
+    assert release_github["jobs"]["release"]["name"] == "github-release"
+
+    assert release_pypi.get("name") == "release-pypi"
+    assert release_pypi["jobs"]["resolve"]["name"] == "resolve-release-pypi-config"
+    assert release_pypi["jobs"]["publish_artifact"]["name"].startswith("publish-pypi-")
+    assert release_pypi["jobs"]["publish_artifact"]["environment"]["name"] == (
+        "${{ needs.resolve.outputs.environment_name }}"
+    )
+
+    assert release_ghcr.get("name") == "release-ghcr"
+    assert release_ghcr["jobs"]["resolve"]["name"] == "resolve-release-ghcr-config"
+    assert release_ghcr["jobs"]["publish"]["name"].startswith("publish-ghcr-")
+    assert release_ghcr["jobs"]["publish"]["permissions"] == {
         "contents": "read",
         "packages": "write",
     }
-    assert release.get("needs") == ["build", "publish_pypi", "publish_ghcr"]
-    assert release.get("permissions") == {"contents": "write"}
-
-    publish_steps = publish_pypi.get("steps", [])
-    assert any(
-        isinstance(step, dict)
-        and step.get("uses") == "pypa/gh-action-pypi-publish@release/v1"
-        and step.get("with", {}).get("packages-dir")
-        for step in publish_steps
-    )
-    assert all(
-        isinstance(step, dict) and "password" not in step.get("with", {})
-        for step in publish_steps
-    )
-    ghcr_steps = publish_ghcr.get("steps", [])
-    assert any(
-        _uses_action_with_min_major(step, "oras-project/setup-oras", min_major=1)
-        for step in ghcr_steps
-    )
-    release_steps = release.get("steps", [])
-    assert any(
-        _uses_action_with_min_major(step, "softprops/action-gh-release", min_major=2)
-        and step.get("with", {}).get("overwrite_files") is True
-        for step in release_steps
-    )
-    assert any(
-        isinstance(step, dict)
-        and step.get("name") == "Reset existing GitHub release"
-        and "gh release delete" in step.get("run", "")
-        and step.get("env", {}).get("GH_TOKEN") == "${{ github.token }}"
-        for step in release_steps
-    )
-
-    build_include = _matrix_include(build)
-    publish_pypi_include = _matrix_include(publish_pypi)
-    publish_ghcr_include = _matrix_include(publish_ghcr)
-    build_packages = {entry["package_slug"] for entry in build_include}
-    publish_pypi_packages = {entry["package_slug"] for entry in publish_pypi_include}
-    publish_ghcr_packages = {entry["package_slug"] for entry in publish_ghcr_include}
-
-    assert build_packages == EXPECTED_PUBLISH_PACKAGES
-    assert publish_pypi_packages == EXPECTED_PUBLISH_PACKAGES
-    assert publish_ghcr_packages == EXPECTED_PUBLISH_PACKAGES
-    assert all(entry.get("build_targets") == "build sbom" for entry in build_include)
-
-    index = next(
-        entry for entry in build_include if entry["package_slug"] == "bijux-canon-index"
-    )
-    assert index["dist_subdir"] == "release"
-    compat_entries = [
-        entry
-        for entry in build_include
-        if str(entry.get("package_dir", "")).startswith("packages/compat-")
-    ]
-    assert compat_entries
-    assert all(
-        entry.get("makefile_path") == "makes/packages/compat-package.mk"
-        for entry in compat_entries
-    )
 
 
 def test_reusable_workflows_use_uv_cache_contract() -> None:
@@ -322,5 +251,5 @@ def test_markdown_workflow_links_track_checked_in_workflow_tree() -> None:
     root_workflows = {
         match.group("workflow") for match in WORKFLOW_URL_RE.finditer(root_readme)
     }
-    assert {"verify.yml", "publish.yml", "deploy-docs.yml"} <= root_workflows
+    assert {"verify.yml", "release-github.yml", "deploy-docs.yml"} <= root_workflows
     assert not failures, "workflow doc links failed:\n" + "\n".join(failures)
