@@ -59,6 +59,7 @@ plugins:
   - autorefs
   - redirects:
       redirect_maps:
+        bijux-canon/index.md: 01-bijux-canon/index.md
         bijux-canon-dev/index.md: 07-bijux-canon-maintain/index.md
         bijux-canon-dev/package-overview.md: 07-bijux-canon-maintain/bijux-canon-dev/package-overview.md
         bijux-canon-dev/scope-and-non-goals.md: 07-bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals.md
@@ -93,6 +94,7 @@ plugins:
         08-compat-packages/release-policy.md: 08-compat-packages/migration/release-policy.md
         08-compat-packages/validation-strategy.md: 08-compat-packages/migration/validation-strategy.md
         08-compat-packages/retirement-conditions.md: 08-compat-packages/migration/retirement-conditions.md
+        07-bijux-canon-maintain/gh-workflows/publish.md: 07-bijux-canon-maintain/gh-workflows/release-workflows.md
   - git-revision-date-localized:
       enable_creation_date: false
       fallback_to_build_date: true
