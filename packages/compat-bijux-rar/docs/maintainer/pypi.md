@@ -12,7 +12,7 @@ distribution from the monorepo.
 [![Docs](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml)
 
 - legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/>
-- canonical package docs: <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
+- canonical package docs: <https://bijux.io/bijux-canon/bijux-canon-reason/>
 - migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/compat-bijux-rar>
 - verify workflow: <https://github.com/bijux/bijux-canon/actions/workflows/verify.yml>

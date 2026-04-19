@@ -76,7 +76,7 @@ Depend on `bijux-canon-runtime` directly and read the canonical docs there:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime>
 - legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/>
-- package docs: <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
+- package docs: <https://bijux.io/bijux-canon/bijux-canon-runtime/>
 - migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md>
 

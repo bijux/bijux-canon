@@ -69,22 +69,22 @@ tooling, you are outside this package's boundary.
 
 ## Source map
 
-- [`src/bijux_canon_index/core`](https://github.com/bijux/bijux-canon/tree/main/packages/03-bijux-canon-index/src/bijux_canon_index/core) for stable primitives and errors
-- [`src/bijux_canon_index/domain`](https://github.com/bijux/bijux-canon/tree/main/packages/03-bijux-canon-index/src/bijux_canon_index/domain) for execution and provenance semantics
-- [`src/bijux_canon_index/application`](https://github.com/bijux/bijux-canon/tree/main/packages/03-bijux-canon-index/src/bijux_canon_index/application) for package workflows
-- [`src/bijux_canon_index/infra`](https://github.com/bijux/bijux-canon/tree/main/packages/03-bijux-canon-index/src/bijux_canon_index/infra) for backends, adapters, and plugins
-- [`src/bijux_canon_index/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/03-bijux-canon-index/src/bijux_canon_index/interfaces) and [`src/bijux_canon_index/api`](https://github.com/bijux/bijux-canon/tree/main/packages/03-bijux-canon-index/src/bijux_canon_index/api) for boundaries
-- [`plugins`](https://github.com/bijux/bijux-canon/tree/main/packages/03-bijux-canon-index/plugins) for plugin development support
-- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/03-bijux-canon-index/tests) for conformance and replay protection
+- [`src/bijux_canon_index/core`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/core) for stable primitives and errors
+- [`src/bijux_canon_index/domain`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/domain) for execution and provenance semantics
+- [`src/bijux_canon_index/application`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/application) for package workflows
+- [`src/bijux_canon_index/infra`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/infra) for backends, adapters, and plugins
+- [`src/bijux_canon_index/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/interfaces) and [`src/bijux_canon_index/api`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/api) for boundaries
+- [`plugins`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/plugins) for plugin development support
+- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/tests) for conformance and replay protection
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon/03-bijux-canon-index/)
-- [Architecture overview](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/)
-- [API surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/)
-- [Execution model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/execution-model/)
-- [Error model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/error-model/)
-- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/03-bijux-canon-index/CHANGELOG.md)
+- [Package guide](https://bijux.io/bijux-canon/bijux-canon-index/)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-index/architecture/)
+- [API surface](https://bijux.io/bijux-canon/bijux-canon-index/interfaces/api-surface/)
+- [Execution model](https://bijux.io/bijux-canon/bijux-canon-index/architecture/execution-model/)
+- [Error model](https://bijux.io/bijux-canon/bijux-canon-index/architecture/error-model/)
+- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md)
 
 ## Primary entrypoint
 

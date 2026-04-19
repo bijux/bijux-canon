@@ -74,7 +74,7 @@ Use `bijux-canon-reason` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason>
 - legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/>
-- package docs: <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
+- package docs: <https://bijux.io/bijux-canon/bijux-canon-reason/>
 - migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md>
 

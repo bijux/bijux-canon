@@ -68,22 +68,22 @@ here.
 
 ## Source map
 
-- [`src/bijux_canon_runtime/model`](https://github.com/bijux/bijux-canon/tree/main/packages/06-bijux-canon-runtime/src/bijux_canon_runtime/model) for durable runtime models
-- [`src/bijux_canon_runtime/runtime`](https://github.com/bijux/bijux-canon/tree/main/packages/06-bijux-canon-runtime/src/bijux_canon_runtime/runtime) for execution engines and lifecycle logic
-- [`src/bijux_canon_runtime/application`](https://github.com/bijux/bijux-canon/tree/main/packages/06-bijux-canon-runtime/src/bijux_canon_runtime/application) for orchestration and replay coordination
-- [`src/bijux_canon_runtime/observability`](https://github.com/bijux/bijux-canon/tree/main/packages/06-bijux-canon-runtime/src/bijux_canon_runtime/observability) for trace capture, analysis, and storage support
-- [`src/bijux_canon_runtime/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/06-bijux-canon-runtime/src/bijux_canon_runtime/interfaces) and [`src/bijux_canon_runtime/api`](https://github.com/bijux/bijux-canon/tree/main/packages/06-bijux-canon-runtime/src/bijux_canon_runtime/api) for boundaries
-- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/06-bijux-canon-runtime/tests) and [`examples`](https://github.com/bijux/bijux-canon/tree/main/packages/06-bijux-canon-runtime/examples) for executable expectations and teaching material
+- [`src/bijux_canon_runtime/model`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/model) for durable runtime models
+- [`src/bijux_canon_runtime/runtime`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime) for execution engines and lifecycle logic
+- [`src/bijux_canon_runtime/application`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/application) for orchestration and replay coordination
+- [`src/bijux_canon_runtime/observability`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/observability) for trace capture, analysis, and storage support
+- [`src/bijux_canon_runtime/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces) and [`src/bijux_canon_runtime/api`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/api) for boundaries
+- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/tests) and [`examples`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/examples) for executable expectations and teaching material
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
-- [Ownership boundary](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/ownership-boundary/)
-- [Architecture overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/)
-- [Interface contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/)
-- [Release and versioning](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/release-and-versioning/)
+- [Package guide](https://bijux.io/bijux-canon/bijux-canon-runtime/)
+- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-runtime/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-runtime/architecture/)
+- [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-runtime/interfaces/)
+- [Release and versioning](https://bijux.io/bijux-canon/bijux-canon-runtime/operations/release-and-versioning/)
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
-- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/06-bijux-canon-runtime/CHANGELOG.md)
+- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md)
 
 ## Primary entrypoint
 

@@ -74,7 +74,7 @@ Use `bijux-canon-ingest` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest>
 - legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/>
-- package docs: <https://bijux.io/bijux-canon/02-bijux-canon-ingest/>
+- package docs: <https://bijux.io/bijux-canon/bijux-canon-ingest/>
 - migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md>
 

@@ -69,22 +69,22 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 
 ## Source map
 
-- [`src/bijux_canon_agent/agents`](https://github.com/bijux/bijux-canon/tree/main/packages/05-bijux-canon-agent/src/bijux_canon_agent/agents) for role-local behavior
-- [`src/bijux_canon_agent/pipeline`](https://github.com/bijux/bijux-canon/tree/main/packages/05-bijux-canon-agent/src/bijux_canon_agent/pipeline) for execution flow
-- [`src/bijux_canon_agent/application`](https://github.com/bijux/bijux-canon/tree/main/packages/05-bijux-canon-agent/src/bijux_canon_agent/application) for orchestration policies
-- [`src/bijux_canon_agent/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/05-bijux-canon-agent/src/bijux_canon_agent/interfaces) for CLI and HTTP edges
-- [`src/bijux_canon_agent/traces`](https://github.com/bijux/bijux-canon/tree/main/packages/05-bijux-canon-agent/src/bijux_canon_agent/traces) for durable trace-facing models
-- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/05-bijux-canon-agent/tests) for executable package truth
+- [`src/bijux_canon_agent/agents`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/agents) for role-local behavior
+- [`src/bijux_canon_agent/pipeline`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/pipeline) for execution flow
+- [`src/bijux_canon_agent/application`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/application) for orchestration policies
+- [`src/bijux_canon_agent/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/interfaces) for CLI and HTTP edges
+- [`src/bijux_canon_agent/traces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/traces) for durable trace-facing models
+- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/tests) for executable package truth
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
-- [Ownership boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/)
-- [Architecture overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/)
-- [Interface contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/)
-- [Operator workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/operator-workflows/)
+- [Package guide](https://bijux.io/bijux-canon/bijux-canon-agent/)
+- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-agent/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-agent/architecture/)
+- [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-agent/interfaces/)
+- [Operator workflows](https://bijux.io/bijux-canon/bijux-canon-agent/interfaces/operator-workflows/)
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
-- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/05-bijux-canon-agent/CHANGELOG.md)
+- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md)
 
 ## Primary entrypoint
 

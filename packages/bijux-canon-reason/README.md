@@ -68,22 +68,22 @@ you are outside this package's boundary.
 
 ## Source map
 
-- [`src/bijux_canon_reason/planning`](https://github.com/bijux/bijux-canon/tree/main/packages/04-bijux-canon-reason/src/bijux_canon_reason/planning) for planning behavior
-- [`src/bijux_canon_reason/reasoning`](https://github.com/bijux/bijux-canon/tree/main/packages/04-bijux-canon-reason/src/bijux_canon_reason/reasoning) for claim and reasoning semantics
-- [`src/bijux_canon_reason/execution`](https://github.com/bijux/bijux-canon/tree/main/packages/04-bijux-canon-reason/src/bijux_canon_reason/execution) for step execution
-- [`src/bijux_canon_reason/verification`](https://github.com/bijux/bijux-canon/tree/main/packages/04-bijux-canon-reason/src/bijux_canon_reason/verification) for checks and outcomes
-- [`src/bijux_canon_reason/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/04-bijux-canon-reason/src/bijux_canon_reason/interfaces) and [`src/bijux_canon_reason/api`](https://github.com/bijux/bijux-canon/tree/main/packages/04-bijux-canon-reason/src/bijux_canon_reason/api) for boundaries
-- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/04-bijux-canon-reason/tests) for executable protection of the package contract
+- [`src/bijux_canon_reason/planning`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/planning) for planning behavior
+- [`src/bijux_canon_reason/reasoning`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/reasoning) for claim and reasoning semantics
+- [`src/bijux_canon_reason/execution`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/execution) for step execution
+- [`src/bijux_canon_reason/verification`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/verification) for checks and outcomes
+- [`src/bijux_canon_reason/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/interfaces) and [`src/bijux_canon_reason/api`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/api) for boundaries
+- [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/tests) for executable protection of the package contract
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
-- [Ownership boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/)
-- [Architecture overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/)
-- [Interface contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/)
+- [Package guide](https://bijux.io/bijux-canon/bijux-canon-reason/)
+- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-reason/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-reason/architecture/)
+- [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-reason/interfaces/)
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
-- [Test strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/)
-- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/04-bijux-canon-reason/CHANGELOG.md)
+- [Test strategy](https://bijux.io/bijux-canon/bijux-canon-reason/quality/test-strategy/)
+- [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md)
 
 ## Primary entrypoint
 

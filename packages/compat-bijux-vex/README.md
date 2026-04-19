@@ -74,7 +74,7 @@ Use `bijux-canon-index` directly:
 
 - package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index>
 - legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/>
-- package docs: <https://bijux.io/bijux-canon/03-bijux-canon-index/>
+- package docs: <https://bijux.io/bijux-canon/bijux-canon-index/>
 - migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 - changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/CHANGELOG.md>
 
