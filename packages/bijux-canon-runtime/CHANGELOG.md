@@ -11,7 +11,7 @@ tagged release, including legacy distribution naming where applicable.
 ### Changed
 
 - Prepared the `v0.3.6` release line by aligning fallback versions and inter-package dependency floors across the repository.
-- Synchronized release automation and governance with the latest `bijux-std` shared standards baseline.
+- Synchronized release automation and governance with the `bijux-std v0.1.3` shared standards baseline.
 
 ### Fixed
 
