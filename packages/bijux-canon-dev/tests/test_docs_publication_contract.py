@@ -47,6 +47,8 @@ def _docs_source_path(docs_url: str) -> Path:
         docs_root / relative_path / "index.md",
         docs_root / f"{relative_path}.md",
     ]
+    candidates.extend(sorted(docs_root.glob(f"??-{relative_path}/index.md")))
+    candidates.extend(sorted(docs_root.glob(f"??-{relative_path}.md")))
     for candidate in candidates:
         if candidate.exists():
             return candidate
@@ -111,7 +113,7 @@ def _handbook_layout(section_root: Path) -> tuple[list[str], list[str], dict[str
 
 def test_repository_handbook_layout_is_sectioned() -> None:
     root_markdown, section_dirs, section_counts = _handbook_layout(
-        REPO_ROOT / "docs" / "bijux-canon"
+        REPO_ROOT / "docs" / "01-bijux-canon"
     )
 
     assert root_markdown == ["index.md"]
@@ -124,7 +126,7 @@ def test_repository_handbook_layout_is_sectioned() -> None:
 
 def test_compatibility_handbook_layout_is_sectioned() -> None:
     root_markdown, section_dirs, section_counts = _handbook_layout(
-        REPO_ROOT / "docs" / "compat-packages"
+        REPO_ROOT / "docs" / "08-compat-packages"
     )
 
     assert root_markdown == ["index.md"]
@@ -137,7 +139,7 @@ def test_compatibility_handbook_layout_is_sectioned() -> None:
 
 def test_maintenance_handbook_layout_is_sectioned() -> None:
     root_markdown, section_dirs, section_counts = _handbook_layout(
-        REPO_ROOT / "docs" / "bijux-canon-maintain"
+        REPO_ROOT / "docs" / "07-bijux-canon-maintain"
     )
 
     assert root_markdown == ["index.md"]
