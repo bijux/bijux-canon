@@ -343,20 +343,32 @@ jobs:
           path: .github/tmp/${{ matrix.package_slug }}-dist
 
       - name: Publish to PyPI (trusted publisher)
+        id: trusted_publish
         if: ${{ steps.auth.outputs.mode != 'token' }}
+        continue-on-error: true
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
         with:
           packages-dir: .github/tmp/${{ matrix.package_slug }}-dist
           skip-existing: ${{ needs.resolve.outputs.skip_existing == 'true' }}
 
       - name: Publish to PyPI (token bootstrap)
-        if: ${{ steps.auth.outputs.mode == 'token' }}
+        id: token_publish
+        if: ${{ steps.auth.outputs.mode == 'token' || (steps.auth.outputs.mode != 'token' && steps.trusted_publish.outcome == 'failure') }}
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
         with:
           packages-dir: .github/tmp/${{ matrix.package_slug }}-dist
           skip-existing: ${{ needs.resolve.outputs.skip_existing == 'true' }}
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Validate publish mode resolution
+        if: ${{ steps.auth.outputs.mode != 'token' && steps.trusted_publish.outcome == 'failure' && steps.token_publish.outcome != 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Trusted publish failed and token bootstrap did not succeed." >&2
+          echo "Set PYPI_API_TOKEN or configure trusted publishers for this repository/package." >&2
+          exit 1
 
   publish_maturin:
     name: publish-pypi
