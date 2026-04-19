@@ -277,6 +277,7 @@ jobs:
     if: ${{ needs.resolve.outputs.enabled == 'true' && needs.resolve.outputs.run_ghcr == 'true' && needs.resolve.outputs.ghcr_matrix_json != '[]' && (needs.build.result == 'success' || needs.build.result == 'skipped') }}
     permissions:
       contents: read
+      actions: read
       packages: write
     uses: ./.github/workflows/release-ghcr.yml
     with:
@@ -295,6 +296,7 @@ jobs:
     if: ${{ needs.resolve.outputs.enabled == 'true' && needs.resolve.outputs.run_github == 'true' && (needs.build.result == 'success' || needs.build.result == 'skipped') && (needs.publish_pypi.result == 'success' || needs.publish_pypi.result == 'skipped') && (needs.publish_ghcr.result == 'success' || needs.publish_ghcr.result == 'skipped') }}
     permissions:
       contents: write
+      actions: read
     uses: ./.github/workflows/release-github.yml
     with:
       release_tag: ${{ needs.resolve.outputs.release_tag }}
