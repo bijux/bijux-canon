@@ -14,6 +14,10 @@ on:
         description: "Enable GHCR publication for this run"
         required: false
         type: boolean
+      build_matrix_json:
+        description: "JSON array for shared release build matrix"
+        required: false
+        type: string
       package_matrix_json:
         description: "JSON array for package publication matrix"
         required: false
@@ -28,6 +32,10 @@ on:
         required: false
         type: boolean
         default: false
+      build_matrix_json:
+        required: false
+        type: string
+        default: ""
       package_matrix_json:
         required: false
         type: string
@@ -73,6 +81,7 @@ jobs:
     outputs:
       enabled: ${{ steps.config.outputs.enabled }}
       release_tag: ${{ steps.config.outputs.release_tag }}
+      build_matrix_json: ${{ steps.config.outputs.build_matrix_json }}
       package_matrix_json: ${{ steps.config.outputs.package_matrix_json }}
       allowed_packages: ${{ steps.config.outputs.allowed_packages }}
       artifact_suffix: ${{ steps.config.outputs.artifact_suffix }}
@@ -92,6 +101,7 @@ jobs:
         shell: bash
         env:
           INPUT_RELEASE_TAG: ${{ inputs.release_tag || github.event.inputs.release_tag || '' }}
+          INPUT_BUILD_MATRIX_JSON: ${{ inputs.build_matrix_json || github.event.inputs.build_matrix_json || '' }}
           INPUT_PACKAGE_MATRIX_JSON: ${{ inputs.package_matrix_json || github.event.inputs.package_matrix_json || '' }}
           INPUT_ARTIFACT_SUFFIX: ${{ inputs.artifact_suffix || '' }}
           INPUT_PACKAGE_REF_PREFIX: ${{ inputs.package_ref_prefix || '' }}
@@ -159,6 +169,40 @@ jobs:
             esac
           }
 
+          filter_matrix() {
+            local raw="$1"
+            local allowed_raw="$2"
+            python3 - "$raw" "$allowed_raw" <<'PY'
+            import json
+            import re
+            import sys
+
+            raw = sys.argv[1]
+            allowed_raw = sys.argv[2]
+            try:
+                value = json.loads(raw)
+            except Exception as exc:  # pragma: no cover
+                raise SystemExit(f"Invalid matrix JSON: {exc}")
+            if not isinstance(value, list):
+                raise SystemExit("Matrix JSON must be a JSON array")
+            for index, item in enumerate(value):
+                if not isinstance(item, dict):
+                    raise SystemExit(f"Matrix entry {index} must be an object")
+                if "package_slug" not in item or not str(item["package_slug"]).strip():
+                    raise SystemExit(f"Matrix entry {index} missing package_slug")
+
+            allowed = {
+                part.strip()
+                for part in re.split(r"[\s,;]+", allowed_raw.strip())
+                if part.strip()
+            }
+            if allowed:
+                value = [item for item in value if str(item.get("package_slug", "")).strip() in allowed]
+
+            print(json.dumps(value, separators=(",", ":")))
+            PY
+          }
+
           if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
             default_tag="${GITHUB_REF_NAME}"
           else
@@ -177,13 +221,7 @@ jobs:
 
           release_tag="$(from_values "${INPUT_RELEASE_TAG}" "${BIJUX_GHCR_RELEASE_TAG:-}" "${{ vars.BIJUX_GHCR_RELEASE_TAG || '' }}" "$default_tag")"
           enabled="$(bool_from_values "${input_enabled}" "${BIJUX_GHCR_RELEASE_ENABLED:-}" "${{ vars.BIJUX_GHCR_RELEASE_ENABLED || '' }}" "false")"
-          release_artifacts_enabled="$(bool_from_values "" "${BIJUX_RELEASE_ARTIFACTS_ENABLED:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_ENABLED || '' }}" "false")"
-
-          if [[ "${GITHUB_EVENT_NAME:-}" == "push" && "${GITHUB_REF_TYPE:-}" == "tag" && "${release_artifacts_enabled}" == "true" ]]; then
-            # In orchestrated mode, release-artifacts is the canonical tag publisher.
-            enabled="false"
-          fi
-
+          build_matrix_json="$(from_values "${INPUT_BUILD_MATRIX_JSON}" "${BIJUX_RELEASE_BUILD_MATRIX_JSON:-}" "${{ vars.BIJUX_RELEASE_BUILD_MATRIX_JSON || '' }}" "[]")"
           package_matrix_json="$(from_values "${INPUT_PACKAGE_MATRIX_JSON}" "${BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON:-}" "${{ vars.BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON || '' }}" "[]")"
           allowed_packages="$(from_values "" "${BIJUX_GHCR_RELEASE_ALLOWED_PACKAGES:-}" "${{ vars.BIJUX_GHCR_RELEASE_ALLOWED_PACKAGES || '' }}" "")"
           artifact_suffix="$(from_values "${INPUT_ARTIFACT_SUFFIX}" "${BIJUX_GHCR_RELEASE_ARTIFACT_SUFFIX:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARTIFACT_SUFFIX || '' }}" "-release")"
@@ -193,37 +231,10 @@ jobs:
           archive_media_type="$(from_values "${INPUT_ARCHIVE_MEDIA_TYPE}" "${BIJUX_GHCR_RELEASE_ARCHIVE_MEDIA_TYPE:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARCHIVE_MEDIA_TYPE || '' }}" "application/gzip")"
           oras_version="$(from_values "${INPUT_ORAS_VERSION}" "${BIJUX_GHCR_RELEASE_ORAS_VERSION:-}" "${{ vars.BIJUX_GHCR_RELEASE_ORAS_VERSION || '' }}" "1.2.3")"
 
-          package_matrix_json="$(python3 - "$package_matrix_json" "$allowed_packages" <<'PY'
-          import json, sys
-          import re
+          build_matrix_json="$(filter_matrix "${build_matrix_json}" "${allowed_packages}")"
+          package_matrix_json="$(filter_matrix "${package_matrix_json}" "${allowed_packages}")"
 
-          raw = sys.argv[1]
-          allowed_raw = sys.argv[2]
-          try:
-              value = json.loads(raw)
-          except Exception as exc:  # pragma: no cover
-              raise SystemExit(f"Invalid package matrix JSON: {exc}")
-          if not isinstance(value, list):
-              raise SystemExit("Package matrix JSON must be a JSON array")
-          for index, item in enumerate(value):
-              if not isinstance(item, dict):
-                  raise SystemExit(f"Package matrix entry {index} must be an object")
-              if "package_slug" not in item or not str(item["package_slug"]).strip():
-                  raise SystemExit(f"Package matrix entry {index} missing package_slug")
-
-          allowed = {
-              part.strip()
-              for part in re.split(r"[\s,;]+", allowed_raw.strip())
-              if part.strip()
-          }
-          if allowed:
-              value = [item for item in value if str(item.get("package_slug", "")).strip() in allowed]
-
-          print(json.dumps(value, separators=(",", ":")))
-          PY
-          )"
-
-          if [[ "${package_matrix_json}" == "[]" ]]; then
+          if [[ "${build_matrix_json}" == "[]" || "${package_matrix_json}" == "[]" ]]; then
             enabled="false"
           fi
 
@@ -237,14 +248,35 @@ jobs:
             echo "artifact_type=${artifact_type}"
             echo "archive_media_type=${archive_media_type}"
             echo "oras_version=${oras_version}"
+            echo "build_matrix_json<<EOF"
+            printf '%s\n' "${build_matrix_json}"
+            echo "EOF"
             echo "package_matrix_json<<EOF"
             printf '%s\n' "${package_matrix_json}"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
+  build:
+    name: build-${{ matrix.package_slug }}
+    needs: resolve
+    if: ${{ needs.resolve.outputs.enabled == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.resolve.outputs.build_matrix_json) }}
+    uses: ./.github/workflows/build-release-artifacts.yml
+    with:
+      package_slug: ${{ matrix.package_slug }}
+      package_dir: ${{ matrix.package_dir }}
+      artifacts_dir: ${{ matrix.artifacts_dir }}
+      makefile_path: ${{ matrix.makefile_path || '' }}
+      build_targets: ${{ matrix.build_targets || 'build' }}
+      dist_subdir: ${{ matrix.dist_subdir || 'build' }}
   publish:
     name: publish-ghcr-${{ matrix.package_slug }}
-    needs: resolve
+    needs:
+      - resolve
+      - build
     if: ${{ needs.resolve.outputs.enabled == 'true' }}
     runs-on: ubuntu-24.04
     permissions:
