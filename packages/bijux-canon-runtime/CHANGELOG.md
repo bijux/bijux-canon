@@ -6,7 +6,7 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
-## [Unreleased]
+## [0.3.5] - 2026-04-19
 
 ### Changed
 
