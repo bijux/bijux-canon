@@ -227,6 +227,39 @@ jobs:
           SITE_URL: ${{ steps.config.outputs.site_url }}
         run: ${{ steps.config.outputs.build_command }}
 
+      - name: Build docs site fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          candidates=(
+            "${{ steps.config.outputs.site_dir }}"
+            "artifacts/tmp-site"
+            "artifacts/root/docs/build-site"
+            "artifacts/site/bijux-masterclass"
+            "artifacts/docs/site"
+            "artifacts/root/docs/site"
+          )
+
+          for dir in "${candidates[@]}"; do
+            if [[ -n "$dir" && -f "$dir/index.html" ]]; then
+              exit 0
+            fi
+          done
+
+          if [[ ! -f "mkdocs.yml" ]]; then
+            exit 0
+          fi
+
+          if make -prRn 2>/dev/null | awk -F':' '$1 == "docs" { found=1 } END { exit(found ? 0 : 1) }'; then
+            echo "No publishable docs artifact detected; running fallback make docs."
+            make docs
+            exit 0
+          fi
+
+          echo "Unable to build fallback docs site: 'docs' make target is unavailable." >&2
+          exit 1
+
       - name: Resolve docs artifact directory
         id: artifact
         shell: bash
@@ -236,6 +269,7 @@ jobs:
           explicit="${{ steps.config.outputs.site_dir }}"
           candidates=(
             "$explicit"
+            "artifacts/tmp-site"
             "artifacts/root/docs/build-site"
             "artifacts/site/bijux-masterclass"
             "artifacts/docs/site"
@@ -251,14 +285,12 @@ jobs:
           done
 
           if [[ -z "$selected" ]]; then
-            echo "Unable to resolve docs artifact directory. Checked:"
+            echo "Unable to resolve docs artifact directory. Checked:" >&2
             for dir in "${candidates[@]}"; do
-              [[ -n "$dir" ]] && echo "  - $dir"
+              [[ -n "$dir" ]] && echo "  - $dir" >&2
             done
-            echo "Set BIJUX_DOCS_SITE_DIR in repository variables or .github/docs-deploy.env."
-            echo "Skipping docs deployment for this run."
-            echo "site_available=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "Set BIJUX_DOCS_SITE_DIR in repository variables or .github/docs-deploy.env." >&2
+            exit 1
           fi
 
           echo "site_available=true" >> "$GITHUB_OUTPUT"
