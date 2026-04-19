@@ -8,6 +8,18 @@ name while the canonical package lives at `bijux-canon-agent`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
+## 0.3.6 - 2026-04-20
+
+### Changed
+
+- Prepared the `v0.3.6` release line by aligning fallback versions and inter-package dependency floors across the repository.
+- Synchronized release automation and governance with the latest `bijux-std` shared standards baseline.
+
+### Fixed
+
+- `release-pypi.yml` now uses parse-safe publication gating for token/bootstrap checks.
+- Protected workflow policy checks now accept shared-manifest-driven standards updates through approved control paths.
+
 ## 0.3.5 - 2026-04-19
 
 ### Changed
