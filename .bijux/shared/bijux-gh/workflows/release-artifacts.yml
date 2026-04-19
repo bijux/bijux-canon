@@ -29,7 +29,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-artifacts-${{ inputs.package_slug }}
+  group: release-artifacts-${{ github.workflow }}-${{ github.ref }}-${{ inputs.package_slug }}
   cancel-in-progress: false
 
 jobs:
