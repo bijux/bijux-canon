@@ -32,7 +32,7 @@ def yaml_scalar(value: Any) -> str:
         return "null"
 
     text = str(value)
-    if re.fullmatch(r"[A-Za-z0-9_./:-]+", text):
+    if re.fullmatch(r"[A-Za-z0-9_./:@-]+", text):
         return text
     escaped = text.replace('\\', '\\\\').replace('"', '\\"')
     return f'"{escaped}"'
