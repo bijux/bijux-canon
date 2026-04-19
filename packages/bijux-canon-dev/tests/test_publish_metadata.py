@@ -394,7 +394,7 @@ def test_public_release_package_readmes_publish_badges_and_absolute_links() -> N
             failures.append(
                 f"{package_name}: expected at least {EXPECTED_BADGE_COUNT} badges"
             )
-        if "https://pypi.org/project/06-bijux-canon-runtime/" not in readme:
+        if "https://pypi.org/project/bijux-canon-runtime/" not in readme:
             failures.append(
                 f"{package_name}: README should advertise the canonical package family"
             )
