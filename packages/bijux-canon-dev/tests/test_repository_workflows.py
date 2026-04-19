@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import re
 from typing import Any
@@ -19,9 +20,12 @@ EXPECTED_WORKFLOWS = {
     "ci-package.yml",
     "deploy-docs.yml",
     "github-policy.yml",
+    "release-artifacts.yml",
     "release-ghcr.yml",
     "release-github.yml",
     "release-pypi.yml",
+    "reusable-ci-python-packages.yml",
+    "reusable-verify-python-packages.yml",
     "verify.yml",
 }
 EXPECTED_VERIFY_PACKAGES = {
@@ -74,7 +78,7 @@ def _uses_setup_uv_with_lock_cache(step: Any) -> bool:
     if not isinstance(step, dict):
         return False
     uses = step.get("uses")
-    if not isinstance(uses, str) or not uses.startswith("astral-sh/setup-uv@v8"):
+    if not isinstance(uses, str) or not uses.startswith("astral-sh/setup-uv@"):
         return False
     with_block = step.get("with", {})
     return (
@@ -91,25 +95,21 @@ def test_workflow_tree_is_standardized() -> None:
 def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
     workflow = _workflow(WORKFLOWS_DIR / "verify.yml")
     jobs = workflow.get("jobs", {})
-    repository = jobs.get("repository", {})
-    package = jobs.get("package", {})
+    verify_job = _as_dict(jobs.get("verify"))
 
-    assert repository.get("name") == "repository-contracts"
-    repository_steps = repository.get("steps", [])
-    assert any(_uses_setup_uv_with_lock_cache(step) for step in repository_steps)
-    assert any(
-        isinstance(step, dict)
-        and step.get("name") == "Verify repository automation contracts"
-        and "check-shared-bijux-py" in step.get("run", "")
-        and "check-config-layout" in step.get("run", "")
-        and "check-make-layout" in step.get("run", "")
-        for step in repository_steps
+    assert verify_job.get("uses") == (
+        "./.github/workflows/reusable-verify-python-packages.yml"
     )
-    assert package.get("needs") == "repository"
-    assert package.get("uses") == "./.github/workflows/ci-package.yml"
+    with_block = _as_dict(verify_job.get("with"))
+    checks_command = str(with_block.get("repository_checks_command", ""))
+    assert "check-shared-bijux-py" in checks_command
+    assert "check-config-layout" in checks_command
+    assert "check-make-layout" in checks_command
 
-    include = _matrix_include(package)
-    found = {entry["package_slug"] for entry in include}
+    include_raw = with_block.get("package_matrix_json", "[]")
+    include = json.loads(str(include_raw))
+    assert isinstance(include, list)
+    found = {entry["package_slug"] for entry in include if isinstance(entry, dict)}
     assert found == EXPECTED_VERIFY_PACKAGES
 
     runtime = next(
@@ -130,11 +130,12 @@ def test_verify_workflow_uses_repo_contract_job_and_package_matrix() -> None:
 
 
 def test_release_workflows_replace_legacy_publish_workflow() -> None:
+    release_artifacts = _workflow(WORKFLOWS_DIR / "release-artifacts.yml")
     release_github = _workflow(WORKFLOWS_DIR / "release-github.yml")
     release_pypi = _workflow(WORKFLOWS_DIR / "release-pypi.yml")
     release_ghcr = _workflow(WORKFLOWS_DIR / "release-ghcr.yml")
 
-    for workflow in (release_github, release_pypi, release_ghcr):
+    for workflow in (release_artifacts, release_github, release_pypi, release_ghcr):
         on_block = _as_dict(workflow.get("on"))
         push_block = _as_dict(on_block.get("push"))
         tags = push_block.get("tags", [])
@@ -142,6 +143,14 @@ def test_release_workflows_replace_legacy_publish_workflow() -> None:
         assert "v*" in tags
         assert "workflow_dispatch" in on_block
         assert "workflow_call" in on_block
+
+    assert release_artifacts.get("name") == "release-artifacts"
+    assert release_artifacts["jobs"]["resolve"]["name"] == (
+        "resolve-release-artifacts-config"
+    )
+    assert release_artifacts["jobs"]["build"]["uses"] == (
+        "./.github/workflows/build-release-artifacts.yml"
+    )
 
     assert release_github.get("name") == "release-github"
     assert release_github["jobs"]["release"]["name"] == "github-release"
@@ -163,36 +172,46 @@ def test_release_workflows_replace_legacy_publish_workflow() -> None:
 
 
 def test_reusable_workflows_use_uv_cache_contract() -> None:
-    ci_workflow = _workflow(WORKFLOWS_DIR / "ci-package.yml")
+    ci_wrapper = _workflow(WORKFLOWS_DIR / "ci-package.yml")
+    reusable_ci = _workflow(WORKFLOWS_DIR / "reusable-ci-python-packages.yml")
+    reusable_verify = _workflow(WORKFLOWS_DIR / "reusable-verify-python-packages.yml")
     build_workflow = _workflow(WORKFLOWS_DIR / "build-release-artifacts.yml")
     docs_workflow = _workflow(WORKFLOWS_DIR / "deploy-docs.yml")
 
-    assert ci_workflow["jobs"]["tests"]["name"] == (
+    assert ci_wrapper["jobs"]["package"]["uses"] == (
+        "./.github/workflows/reusable-ci-python-packages.yml"
+    )
+
+    assert reusable_ci["jobs"]["tests"]["name"] == (
         "tests-${{ inputs.package_slug }}-py${{ matrix.python-version }}"
     )
-    assert ci_workflow["jobs"]["checks"]["name"] == (
+    assert reusable_ci["jobs"]["checks"]["name"] == (
         "checks-${{ inputs.package_slug }}-${{ matrix.target }}"
     )
-    assert ci_workflow["jobs"]["lint"]["name"] == "lint-${{ inputs.package_slug }}"
+    assert reusable_ci["jobs"]["lint"]["name"] == "lint-${{ inputs.package_slug }}"
+    assert reusable_verify["jobs"]["repository"]["name"] == "repository-contracts"
     assert build_workflow["jobs"]["build"]["name"] == (
         "build-release-artifacts-${{ inputs.package_slug }}"
     )
 
     reusable_jobs = [
-        ci_workflow["jobs"]["tests"],
-        ci_workflow["jobs"]["checks"],
-        ci_workflow["jobs"]["lint"],
+        reusable_ci["jobs"]["tests"],
+        reusable_ci["jobs"]["checks"],
+        reusable_ci["jobs"]["lint"],
+        reusable_verify["jobs"]["repository"],
         build_workflow["jobs"]["build"],
         docs_workflow["jobs"]["build"],
     ]
 
     for job in reusable_jobs:
+        if "uses" in job:
+            continue
         steps = job.get("steps", [])
         assert any(_uses_setup_uv_with_lock_cache(step) for step in steps), (
             "reusable workflow job is missing setup-uv"
         )
 
-    inputs = _workflow_call_inputs(ci_workflow)
+    inputs = _workflow_call_inputs(reusable_ci)
     assert "cache_dependency_path" not in inputs
     build_inputs = _workflow_call_inputs(build_workflow)
     assert "cache_dependency_path" not in build_inputs
