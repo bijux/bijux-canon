@@ -219,23 +219,23 @@ jobs:
           validate_build_matrix() {
             local raw="$1"
             python3 - "$raw" <<'PY'
-            import json
-            import sys
+          import json
+          import sys
 
-            raw = sys.argv[1]
-            try:
-                value = json.loads(raw)
-            except Exception as exc:  # pragma: no cover
-                raise SystemExit(f"Invalid build matrix JSON: {exc}")
-            if not isinstance(value, list):
-                raise SystemExit("Build matrix JSON must be a JSON array")
-            for index, item in enumerate(value):
-                if not isinstance(item, dict):
-                    raise SystemExit(f"Build matrix entry {index} must be an object")
-                if "package_slug" not in item or not str(item["package_slug"]).strip():
-                    raise SystemExit(f"Build matrix entry {index} missing package_slug")
-            print(json.dumps(value, separators=(",", ":")))
-            PY
+          raw = sys.argv[1]
+          try:
+              value = json.loads(raw)
+          except Exception as exc:  # pragma: no cover
+              raise SystemExit(f"Invalid build matrix JSON: {exc}")
+          if not isinstance(value, list):
+              raise SystemExit("Build matrix JSON must be a JSON array")
+          for index, item in enumerate(value):
+              if not isinstance(item, dict):
+                  raise SystemExit(f"Build matrix entry {index} must be an object")
+              if "package_slug" not in item or not str(item["package_slug"]).strip():
+                  raise SystemExit(f"Build matrix entry {index} missing package_slug")
+          print(json.dumps(value, separators=(",", ":")))
+          PY
           }
 
           if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then

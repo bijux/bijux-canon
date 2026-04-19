@@ -173,34 +173,34 @@ jobs:
             local raw="$1"
             local allowed_raw="$2"
             python3 - "$raw" "$allowed_raw" <<'PY'
-            import json
-            import re
-            import sys
+          import json
+          import re
+          import sys
 
-            raw = sys.argv[1]
-            allowed_raw = sys.argv[2]
-            try:
-                value = json.loads(raw)
-            except Exception as exc:  # pragma: no cover
-                raise SystemExit(f"Invalid matrix JSON: {exc}")
-            if not isinstance(value, list):
-                raise SystemExit("Matrix JSON must be a JSON array")
-            for index, item in enumerate(value):
-                if not isinstance(item, dict):
-                    raise SystemExit(f"Matrix entry {index} must be an object")
-                if "package_slug" not in item or not str(item["package_slug"]).strip():
-                    raise SystemExit(f"Matrix entry {index} missing package_slug")
+          raw = sys.argv[1]
+          allowed_raw = sys.argv[2]
+          try:
+              value = json.loads(raw)
+          except Exception as exc:  # pragma: no cover
+              raise SystemExit(f"Invalid matrix JSON: {exc}")
+          if not isinstance(value, list):
+              raise SystemExit("Matrix JSON must be a JSON array")
+          for index, item in enumerate(value):
+              if not isinstance(item, dict):
+                  raise SystemExit(f"Matrix entry {index} must be an object")
+              if "package_slug" not in item or not str(item["package_slug"]).strip():
+                  raise SystemExit(f"Matrix entry {index} missing package_slug")
 
-            allowed = {
-                part.strip()
-                for part in re.split(r"[\s,;]+", allowed_raw.strip())
-                if part.strip()
-            }
-            if allowed:
-                value = [item for item in value if str(item.get("package_slug", "")).strip() in allowed]
+          allowed = {
+              part.strip()
+              for part in re.split(r"[\s,;]+", allowed_raw.strip())
+              if part.strip()
+          }
+          if allowed:
+              value = [item for item in value if str(item.get("package_slug", "")).strip() in allowed]
 
-            print(json.dumps(value, separators=(",", ":")))
-            PY
+          print(json.dumps(value, separators=(",", ":")))
+          PY
           }
 
           if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
