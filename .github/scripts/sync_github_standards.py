@@ -69,6 +69,14 @@ BASE_FILE_MAPPINGS: list[tuple[str, str]] = [
     (".github/bijux-std-shared.sha256", ".github/bijux-std-shared.sha256"),
 ]
 
+LEGACY_MANAGED_RUNTIME_PATHS = {
+    ".github/workflows/release-artifacts.yml",
+}
+
+LEGACY_MANAGED_SHARED_PATHS = {
+    ".bijux/shared/bijux-gh/workflows/release-artifacts.yml",
+}
+
 
 def run(cmd: list[str], cwd: Path | None = None) -> str:
     result = subprocess.run(cmd, cwd=cwd, check=True, text=True, capture_output=True)
@@ -103,6 +111,7 @@ def copy_repo_files(target_repo: str, repo_config: dict[str, Any], manifest: dic
 
     allowlist = set(repo_config.get("workflow_allowlist", []))
     managed_runtime_paths: dict[str, str] = {}
+    managed_shared_paths: set[str] = set()
     for workflow in inventory_entries(manifest):
         workflow_id = workflow["id"]
         source_relative = workflow["source"]
@@ -110,6 +119,7 @@ def copy_repo_files(target_repo: str, repo_config: dict[str, Any], manifest: dic
         runtime_destination = workflow["consumer_runtime"]
 
         copy_file_mapping(source_relative, shared_destination, target_repo)
+        managed_shared_paths.add(shared_destination)
         managed_runtime_paths[runtime_destination] = workflow_id
         if workflow_id in allowlist:
             copy_file_mapping(source_relative, runtime_destination, target_repo)
@@ -124,6 +134,20 @@ def copy_repo_files(target_repo: str, repo_config: dict[str, Any], manifest: dic
                 shutil.rmtree(path)
             else:
                 path.unlink()
+
+    for runtime_path in sorted(LEGACY_MANAGED_RUNTIME_PATHS):
+        if runtime_path in managed_runtime_paths:
+            continue
+        path = repo_dir / runtime_path
+        if path.exists():
+            path.unlink()
+
+    for shared_path in sorted(LEGACY_MANAGED_SHARED_PATHS):
+        if shared_path in managed_shared_paths:
+            continue
+        path = repo_dir / shared_path
+        if path.exists():
+            path.unlink()
 
     if (repo_dir / ".bijux/shared").exists():
         for legacy_name in ("bijux-docs", "bijux-makes-py", "bijux-checks", "bijux-gh"):

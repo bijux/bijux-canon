@@ -17,11 +17,6 @@
       "consumer_runtime": ".github/workflows/github-policy.yml"
     },
     {
-      "id": "release-artifacts",
-      "source": "shared/bijux-gh/workflows/release-artifacts.yml",
-      "consumer_runtime": ".github/workflows/release-artifacts.yml"
-    },
-    {
       "id": "release-crates",
       "source": "shared/bijux-gh/workflows/release-crates.yml",
       "consumer_runtime": ".github/workflows/release-crates.yml"

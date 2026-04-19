@@ -19,11 +19,6 @@
         "consumer_runtime": ".github/workflows/github-policy.yml"
       },
       {
-        "id": "release-artifacts",
-        "source": "shared/bijux-gh/workflows/release-artifacts.yml",
-        "consumer_runtime": ".github/workflows/release-artifacts.yml"
-      },
-      {
         "id": "release-crates",
         "source": "shared/bijux-gh/workflows/release-crates.yml",
         "consumer_runtime": ".github/workflows/release-crates.yml"
@@ -331,6 +326,7 @@
         }
       },
       "workflow_allowlist": [
+        "build-release-artifacts",
         "deploy-docs",
         "github-policy",
         "release-crates",
@@ -358,12 +354,7 @@
           "value": true
         },
         {
-          "key": "BIJUX_RELEASE_ARTIFACTS_ENABLED",
-          "type": "bool",
-          "value": true
-        },
-        {
-          "key": "BIJUX_RELEASE_ARTIFACTS_BUILD_MATRIX_JSON",
+          "key": "BIJUX_RELEASE_BUILD_MATRIX_JSON",
           "type": "json",
           "value": [
             {
@@ -435,7 +426,12 @@
           ]
         },
         {
-          "key": "BIJUX_RELEASE_ARTIFACTS_PYPI_MATRIX_JSON",
+          "key": "BIJUX_PYPI_MODE",
+          "type": "string",
+          "value": "artifact"
+        },
+        {
+          "key": "BIJUX_PYPI_PACKAGE_MATRIX_JSON",
           "type": "json",
           "value": [
             {
@@ -471,7 +467,7 @@
           ]
         },
         {
-          "key": "BIJUX_RELEASE_ARTIFACTS_GHCR_MATRIX_JSON",
+          "key": "BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON",
           "type": "json",
           "value": [
             {
@@ -835,7 +831,6 @@
         "build-release-artifacts",
         "deploy-docs",
         "github-policy",
-        "release-artifacts",
         "release-ghcr",
         "release-github",
         "release-pypi",

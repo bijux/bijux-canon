@@ -73,23 +73,21 @@ def derive_workflow_allowlist(repo_name: str, release_env: list[dict], wrappers:
     if release_env_value(release_env, "BIJUX_RELEASE_ENABLED"):
         allow.add("release-github")
 
-    if release_env_value(release_env, "BIJUX_RELEASE_ARTIFACTS_ENABLED"):
-        allow.update(
-            {
-                "build-release-artifacts",
-                "release-artifacts",
-                "release-ghcr",
-                "release-github",
-                "release-pypi",
-            }
-        )
-
     if release_env_value(release_env, "BIJUX_CRATES_RELEASE_ENABLED"):
         allow.add("release-crates")
     if release_env_value(release_env, "BIJUX_GHCR_RELEASE_ENABLED"):
         allow.add("release-ghcr")
     if release_env_value(release_env, "BIJUX_PYPI_ENABLED"):
         allow.add("release-pypi")
+    if any(
+        release_env_value(release_env, key)
+        for key in (
+            "BIJUX_RELEASE_ENABLED",
+            "BIJUX_GHCR_RELEASE_ENABLED",
+            "BIJUX_PYPI_ENABLED",
+        )
+    ):
+        allow.add("build-release-artifacts")
 
     wrapper_uses_to_workflow_id = {
         "./.github/workflows/ci-package.yml": "ci-package",
