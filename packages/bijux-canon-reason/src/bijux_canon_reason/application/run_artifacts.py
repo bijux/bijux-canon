@@ -103,7 +103,7 @@ class RunRuntimeConfig:
 class RunBuilder:
     """
     Artifact contract (unchanged):
-      artifacts/bijux-canon-reason/runs/<run_id>/
+      artifacts/04-bijux-canon-reason/runs/<run_id>/
         spec.json
         plan.json
         trace.jsonl

@@ -59,6 +59,6 @@ def test_schema_hash_is_stable() -> None:
         "Schema version must match schema.hash before updating"
     )
     assert schema_hash == stored_hash, (
-        "Schema changed. Update apis/bijux-canon-runtime/v1/schema.hash and bump info.version "
+        "Schema changed. Update apis/06-bijux-canon-runtime/v1/schema.hash and bump info.version "
         "for breaking changes."
     )
