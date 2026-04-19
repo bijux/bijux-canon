@@ -185,6 +185,13 @@ jobs:
 
           release_tag="$(from_values "${{ inputs.release_tag || github.event.inputs.release_tag || '' }}" "${BIJUX_RELEASE_TAG:-}" "$default_tag")"
           enabled="$(bool_from_values "${input_enabled}" "${BIJUX_RELEASE_ENABLED:-}" "true")"
+          release_artifacts_enabled="$(bool_from_values "" "${BIJUX_RELEASE_ARTIFACTS_ENABLED:-}" "false")"
+
+          if [[ "${GITHUB_EVENT_NAME:-}" == "push" && "${GITHUB_REF_TYPE:-}" == "tag" && "${release_artifacts_enabled}" == "true" ]]; then
+            # In orchestrated mode, release-artifacts is the canonical tag publisher.
+            enabled="false"
+          fi
+
           release_name="$(from_values "${{ inputs.release_name || '' }}" "${BIJUX_RELEASE_NAME:-}" "")"
           artifact_pattern="$(from_values "${{ inputs.artifact_pattern || '' }}" "${BIJUX_RELEASE_ARTIFACT_PATTERN:-}" "")"
           artifact_path="$(from_values "${{ inputs.artifact_path || '' }}" "${BIJUX_RELEASE_ARTIFACT_PATH:-}" ".github/tmp/release-assets")"

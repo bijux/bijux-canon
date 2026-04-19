@@ -287,7 +287,7 @@
       "workflow_wrappers": {
         "ci": {
           "name": "CI",
-          "true": {
+          "on": {
             "push": {
               "branches": [
                 "main"
@@ -345,17 +345,17 @@
         {
           "key": "BIJUX_RELEASE_ENABLED",
           "type": "bool",
-          "value": false
+          "value": true
         },
         {
           "key": "BIJUX_GHCR_RELEASE_ENABLED",
           "type": "bool",
-          "value": false
+          "value": true
         },
         {
           "key": "BIJUX_PYPI_ENABLED",
           "type": "bool",
-          "value": false
+          "value": true
         },
         {
           "key": "BIJUX_RELEASE_ARTIFACTS_ENABLED",
@@ -695,7 +695,7 @@
       "workflow_wrappers": {
         "verify": {
           "name": "verify",
-          "true": {
+          "on": {
             "push": {
               "branches": [
                 "main"
@@ -839,8 +839,7 @@
         "release-ghcr",
         "release-github",
         "release-pypi",
-        "reusable-ci-python-packages",
-        "reusable-verify-python-packages"
+        "reusable-ci-python-packages"
       ]
     },
     {
@@ -902,7 +901,7 @@
       "workflow_wrappers": {
         "ci": {
           "name": "CI",
-          "true": {
+          "on": {
             "push": {
               "branches": [
                 "main"
@@ -1271,7 +1270,7 @@
       "workflow_wrappers": {
         "verify": {
           "name": "verify",
-          "true": {
+          "on": {
             "push": {
               "branches": [
                 "main"
@@ -1397,7 +1396,8 @@
       },
       "workflow_allowlist": [
         "deploy-docs",
-        "github-policy"
+        "github-policy",
+        "reusable-ci-python-packages"
       ]
     },
     {
@@ -1531,7 +1531,7 @@
       "workflow_wrappers": {
         "verify": {
           "name": "verify",
-          "true": {
+          "on": {
             "push": {
               "branches": [
                 "main"
@@ -1670,7 +1670,8 @@
       },
       "workflow_allowlist": [
         "deploy-docs",
-        "github-policy"
+        "github-policy",
+        "reusable-ci-python-packages"
       ]
     },
     {

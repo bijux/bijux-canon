@@ -92,9 +92,13 @@ def derive_workflow_allowlist(repo_name: str, release_env: list[dict], wrappers:
         allow.add("release-pypi")
 
     wrapper_uses_to_workflow_id = {
+        "./.github/workflows/ci-package.yml": "ci-package",
         "./.github/workflows/reusable-ci-python-packages.yml": "reusable-ci-python-packages",
         "./.github/workflows/reusable-verify-python-packages.yml": "reusable-verify-python-packages",
         "./.github/workflows/reusable-ci-rust-stack.yml": "reusable-ci-rust-stack",
+    }
+    workflow_dependencies = {
+        "ci-package": {"reusable-ci-python-packages"},
     }
     for wrapper in wrappers.values():
         jobs = wrapper.get("jobs", {}) if isinstance(wrapper, dict) else {}
@@ -107,6 +111,7 @@ def derive_workflow_allowlist(repo_name: str, release_env: list[dict], wrappers:
             workflow_id = wrapper_uses_to_workflow_id.get(uses)
             if workflow_id:
                 allow.add(workflow_id)
+                allow.update(workflow_dependencies.get(workflow_id, set()))
 
     return sorted(workflow_id for workflow_id in allow if workflow_id in known)
 
@@ -167,7 +172,24 @@ def parse_yaml(path: Path) -> dict | None:
     except subprocess.CalledProcessError as exc:
         stderr = exc.stderr.strip() if exc.stderr else "unknown parse error"
         raise RuntimeError(f"failed to parse YAML file {path}: {stderr}") from exc
-    return json.loads(result.stdout)
+    parsed = json.loads(result.stdout)
+    return normalize_yaml_keys(parsed)
+
+
+def normalize_yaml_keys(value: Any) -> Any:
+    if isinstance(value, dict):
+        normalized: dict[Any, Any] = {}
+        for key, item in value.items():
+            normalized_key = key
+            if key == "true":
+                normalized_key = "on"
+            elif key == "false":
+                normalized_key = "off"
+            normalized[normalized_key] = normalize_yaml_keys(item)
+        return normalized
+    if isinstance(value, list):
+        return [normalize_yaml_keys(item) for item in value]
+    return value
 
 
 def parse_text(path: Path) -> str | None:

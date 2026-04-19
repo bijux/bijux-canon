@@ -1,5 +1,5 @@
 name: verify
-true:
+on:
   push:
     branches:
       - main
