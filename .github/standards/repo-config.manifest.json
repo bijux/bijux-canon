@@ -832,8 +832,15 @@
         }
       },
       "workflow_allowlist": [
+        "build-release-artifacts",
         "deploy-docs",
-        "github-policy"
+        "github-policy",
+        "release-artifacts",
+        "release-ghcr",
+        "release-github",
+        "release-pypi",
+        "reusable-ci-python-packages",
+        "reusable-verify-python-packages"
       ]
     },
     {
@@ -1322,13 +1329,13 @@
                   "uses": "actions/checkout@v6"
                 },
                 {
-                  "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+                  "uses": "actions/setup-python@v6",
                   "with": {
                     "python-version": 3.11
                   }
                 },
                 {
-                  "uses": "astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b",
+                  "uses": "astral-sh/setup-uv@v8.1.0",
                   "with": {
                     "enable-cache": true,
                     "cache-dependency-glob": "uv.lock"
@@ -1582,13 +1589,13 @@
                   "uses": "actions/checkout@v6"
                 },
                 {
-                  "uses": "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+                  "uses": "actions/setup-python@v6",
                   "with": {
                     "python-version": 3.11
                   }
                 },
                 {
-                  "uses": "astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b",
+                  "uses": "astral-sh/setup-uv@v8.1.0",
                   "with": {
                     "enable-cache": true,
                     "cache-dependency-glob": "uv.lock"

@@ -148,15 +148,25 @@ jobs:
             default_tag=""
           fi
 
+          input_enabled=""
+          input_skip_existing=""
+          if [[ "${GITHUB_EVENT_NAME:-}" == "workflow_dispatch" ]]; then
+            input_enabled="${{ github.event.inputs.enabled || '' }}"
+            input_skip_existing="${{ github.event.inputs.skip_existing || '' }}"
+          elif [[ "${GITHUB_EVENT_NAME:-}" == "workflow_call" ]]; then
+            input_enabled="${{ inputs.enabled && 'true' || 'false' }}"
+            input_skip_existing="${{ inputs.skip_existing && 'true' || 'false' }}"
+          fi
+
           release_tag="$(from_values "${{ inputs.release_tag || github.event.inputs.release_tag || '' }}" "${BIJUX_PYPI_RELEASE_TAG:-}" "${{ vars.BIJUX_PYPI_RELEASE_TAG || '' }}" "$default_tag")"
-          enabled="$(bool_from_values "${{ inputs.enabled }}" "${BIJUX_PYPI_ENABLED:-}" "${{ vars.BIJUX_PYPI_ENABLED || '' }}" "false")"
+          enabled="$(bool_from_values "${input_enabled}" "${BIJUX_PYPI_ENABLED:-}" "${{ vars.BIJUX_PYPI_ENABLED || '' }}" "false")"
           mode="$(from_values "${{ inputs.mode || github.event.inputs.mode || '' }}" "${BIJUX_PYPI_MODE:-}" "${{ vars.BIJUX_PYPI_MODE || '' }}" "maturin")"
           package_matrix_json="$(from_values "${{ inputs.package_matrix_json || github.event.inputs.package_matrix_json || '' }}" "${BIJUX_PYPI_PACKAGE_MATRIX_JSON:-}" "${{ vars.BIJUX_PYPI_PACKAGE_MATRIX_JSON || '' }}" "[]")"
           allowed_packages="$(from_values "" "${BIJUX_PYPI_ALLOWED_PACKAGES:-}" "${{ vars.BIJUX_PYPI_ALLOWED_PACKAGES || '' }}" "")"
           artifact_suffix="$(from_values "${{ inputs.artifact_suffix || '' }}" "${BIJUX_PYPI_ARTIFACT_SUFFIX:-}" "${{ vars.BIJUX_PYPI_ARTIFACT_SUFFIX || '' }}" "-pypi-dist")"
           environment_name="$(from_values "${{ inputs.environment_name || '' }}" "${BIJUX_PYPI_ENVIRONMENT_NAME:-}" "${{ vars.BIJUX_PYPI_ENVIRONMENT_NAME || '' }}" "pypi")"
           publish_auth_default="$(from_values "${{ inputs.publish_auth_default || '' }}" "${BIJUX_PYPI_PUBLISH_AUTH_DEFAULT:-}" "${{ vars.BIJUX_PYPI_PUBLISH_AUTH_DEFAULT || '' }}" "trusted")"
-          skip_existing="$(bool_from_values "${{ inputs.skip_existing }}" "${BIJUX_PYPI_SKIP_EXISTING:-}" "${{ vars.BIJUX_PYPI_SKIP_EXISTING || '' }}" "true")"
+          skip_existing="$(bool_from_values "${input_skip_existing}" "${BIJUX_PYPI_SKIP_EXISTING:-}" "${{ vars.BIJUX_PYPI_SKIP_EXISTING || '' }}" "true")"
 
           wait_for_ci_command="$(from_values "" "${BIJUX_PYPI_WAIT_FOR_CI_COMMAND:-}" "${{ vars.BIJUX_PYPI_WAIT_FOR_CI_COMMAND || '' }}" "")"
           plan_command="$(from_values "" "${BIJUX_PYPI_PLAN_COMMAND:-}" "${{ vars.BIJUX_PYPI_PLAN_COMMAND || '' }}" "")"

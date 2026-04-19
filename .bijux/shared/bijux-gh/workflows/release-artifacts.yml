@@ -160,20 +160,39 @@ jobs:
             default_tag=""
           fi
 
-          enabled="$(bool_from_values "${{ inputs.enabled }}" "${BIJUX_RELEASE_ARTIFACTS_ENABLED:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_ENABLED || '' }}" "false")"
+          input_enabled=""
+          input_run_pypi=""
+          input_run_ghcr=""
+          input_run_github=""
+          input_fail_on_unmatched_files=""
+          if [[ "${GITHUB_EVENT_NAME:-}" == "workflow_dispatch" ]]; then
+            input_enabled="${{ github.event.inputs.enabled || '' }}"
+            input_run_pypi="${{ github.event.inputs.run_pypi || '' }}"
+            input_run_ghcr="${{ github.event.inputs.run_ghcr || '' }}"
+            input_run_github="${{ github.event.inputs.run_github || '' }}"
+            input_fail_on_unmatched_files="${{ github.event.inputs.fail_on_unmatched_files || '' }}"
+          elif [[ "${GITHUB_EVENT_NAME:-}" == "workflow_call" ]]; then
+            input_enabled="${{ inputs.enabled && 'true' || 'false' }}"
+            input_run_pypi="${{ inputs.run_pypi && 'true' || 'false' }}"
+            input_run_ghcr="${{ inputs.run_ghcr && 'true' || 'false' }}"
+            input_run_github="${{ inputs.run_github && 'true' || 'false' }}"
+            input_fail_on_unmatched_files="${{ inputs.fail_on_unmatched_files && 'true' || 'false' }}"
+          fi
+
+          enabled="$(bool_from_values "${input_enabled}" "${BIJUX_RELEASE_ARTIFACTS_ENABLED:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_ENABLED || '' }}" "false")"
           release_tag="$(from_values "${{ inputs.release_tag || github.event.inputs.release_tag || '' }}" "${BIJUX_RELEASE_ARTIFACTS_RELEASE_TAG:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RELEASE_TAG || '' }}" "$default_tag")"
           build_matrix_json="$(from_values "${{ inputs.build_matrix_json || github.event.inputs.build_matrix_json || '' }}" "${BIJUX_RELEASE_ARTIFACTS_BUILD_MATRIX_JSON:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_BUILD_MATRIX_JSON || '' }}" "[]")"
           pypi_matrix_json="$(from_values "${{ inputs.pypi_matrix_json || github.event.inputs.pypi_matrix_json || '' }}" "${BIJUX_RELEASE_ARTIFACTS_PYPI_MATRIX_JSON:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_PYPI_MATRIX_JSON || '' }}" "[]")"
           ghcr_matrix_json="$(from_values "${{ inputs.ghcr_matrix_json || github.event.inputs.ghcr_matrix_json || '' }}" "${BIJUX_RELEASE_ARTIFACTS_GHCR_MATRIX_JSON:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_GHCR_MATRIX_JSON || '' }}" "[]")"
 
-          run_pypi="$(bool_from_values "${{ inputs.run_pypi }}" "${BIJUX_RELEASE_ARTIFACTS_RUN_PYPI:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_PYPI || '' }}" "true")"
-          run_ghcr="$(bool_from_values "${{ inputs.run_ghcr }}" "${BIJUX_RELEASE_ARTIFACTS_RUN_GHCR:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_GHCR || '' }}" "true")"
-          run_github="$(bool_from_values "${{ inputs.run_github }}" "${BIJUX_RELEASE_ARTIFACTS_RUN_GITHUB:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_GITHUB || '' }}" "true")"
+          run_pypi="$(bool_from_values "${input_run_pypi}" "${BIJUX_RELEASE_ARTIFACTS_RUN_PYPI:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_PYPI || '' }}" "true")"
+          run_ghcr="$(bool_from_values "${input_run_ghcr}" "${BIJUX_RELEASE_ARTIFACTS_RUN_GHCR:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_GHCR || '' }}" "true")"
+          run_github="$(bool_from_values "${input_run_github}" "${BIJUX_RELEASE_ARTIFACTS_RUN_GITHUB:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_GITHUB || '' }}" "true")"
 
           artifact_pattern="$(from_values "${{ inputs.artifact_pattern || '' }}" "${BIJUX_RELEASE_ARTIFACTS_ARTIFACT_PATTERN:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_ARTIFACT_PATTERN || '' }}" "*-release")"
           artifact_path="$(from_values "${{ inputs.artifact_path || '' }}" "${BIJUX_RELEASE_ARTIFACTS_ARTIFACT_PATH:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_ARTIFACT_PATH || '' }}" ".github/tmp/release-assets")"
           release_files_glob="$(from_values "${{ inputs.release_files_glob || '' }}" "${BIJUX_RELEASE_ARTIFACTS_RELEASE_FILES_GLOB:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RELEASE_FILES_GLOB || '' }}" ".github/tmp/release-assets/**/*")"
-          fail_on_unmatched_files="$(bool_from_values "${{ inputs.fail_on_unmatched_files }}" "${BIJUX_RELEASE_ARTIFACTS_FAIL_ON_UNMATCHED_FILES:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_FAIL_ON_UNMATCHED_FILES || '' }}" "true")"
+          fail_on_unmatched_files="$(bool_from_values "${input_fail_on_unmatched_files}" "${BIJUX_RELEASE_ARTIFACTS_FAIL_ON_UNMATCHED_FILES:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_FAIL_ON_UNMATCHED_FILES || '' }}" "true")"
 
           python3 - "$build_matrix_json" "$pypi_matrix_json" "$ghcr_matrix_json" <<'PY'
           import json
@@ -240,6 +259,7 @@ jobs:
     if: ${{ needs.resolve.outputs.enabled == 'true' && needs.resolve.outputs.run_pypi == 'true' && needs.resolve.outputs.pypi_matrix_json != '[]' && (needs.build.result == 'success' || needs.build.result == 'skipped') }}
     permissions:
       contents: read
+      actions: read
       id-token: write
     uses: ./.github/workflows/release-pypi.yml
     with:

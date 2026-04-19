@@ -161,8 +161,30 @@ jobs:
             default_tag=""
           fi
 
+          input_enabled=""
+          input_setup_python=""
+          input_setup_rust=""
+          input_delete_existing_release=""
+          input_fail_on_unmatched_files=""
+          input_generate_release_notes=""
+          if [[ "${GITHUB_EVENT_NAME:-}" == "workflow_dispatch" ]]; then
+            input_enabled="${{ github.event.inputs.enabled || '' }}"
+            input_setup_python="${{ github.event.inputs.setup_python || '' }}"
+            input_setup_rust="${{ github.event.inputs.setup_rust || '' }}"
+            input_delete_existing_release="${{ github.event.inputs.delete_existing_release || '' }}"
+            input_fail_on_unmatched_files="${{ github.event.inputs.fail_on_unmatched_files || '' }}"
+            input_generate_release_notes="${{ github.event.inputs.generate_release_notes || '' }}"
+          elif [[ "${GITHUB_EVENT_NAME:-}" == "workflow_call" ]]; then
+            input_enabled="${{ inputs.enabled && 'true' || 'false' }}"
+            input_setup_python="${{ inputs.setup_python && 'true' || 'false' }}"
+            input_setup_rust="${{ inputs.setup_rust && 'true' || 'false' }}"
+            input_delete_existing_release="${{ inputs.delete_existing_release && 'true' || 'false' }}"
+            input_fail_on_unmatched_files="${{ inputs.fail_on_unmatched_files && 'true' || 'false' }}"
+            input_generate_release_notes="${{ inputs.generate_release_notes && 'true' || 'false' }}"
+          fi
+
           release_tag="$(from_values "${{ inputs.release_tag || github.event.inputs.release_tag || '' }}" "${BIJUX_RELEASE_TAG:-}" "$default_tag")"
-          enabled="$(bool_from_values "${{ inputs.enabled }}" "${BIJUX_RELEASE_ENABLED:-}" "true")"
+          enabled="$(bool_from_values "${input_enabled}" "${BIJUX_RELEASE_ENABLED:-}" "true")"
           release_name="$(from_values "${{ inputs.release_name || '' }}" "${BIJUX_RELEASE_NAME:-}" "")"
           artifact_pattern="$(from_values "${{ inputs.artifact_pattern || '' }}" "${BIJUX_RELEASE_ARTIFACT_PATTERN:-}" "")"
           artifact_path="$(from_values "${{ inputs.artifact_path || '' }}" "${BIJUX_RELEASE_ARTIFACT_PATH:-}" ".github/tmp/release-assets")"
@@ -172,13 +194,13 @@ jobs:
           wait_for_ci_command="$(from_values "${{ inputs.wait_for_ci_command || '' }}" "${BIJUX_RELEASE_WAIT_FOR_CI_COMMAND:-}" "")"
           plan_command="$(from_values "${{ inputs.plan_command || '' }}" "${BIJUX_RELEASE_PLAN_COMMAND:-}" "")"
           prepare_command="$(from_values "${{ inputs.prepare_command || '' }}" "${BIJUX_RELEASE_PREPARE_COMMAND:-}" "")"
-          setup_python="$(bool_from_values "${{ inputs.setup_python }}" "${BIJUX_RELEASE_SETUP_PYTHON:-}" "false")"
+          setup_python="$(bool_from_values "${input_setup_python}" "${BIJUX_RELEASE_SETUP_PYTHON:-}" "false")"
           python_version="$(from_values "${{ inputs.python_version || '' }}" "${BIJUX_RELEASE_PYTHON_VERSION:-}" "3.11")"
-          setup_rust="$(bool_from_values "${{ inputs.setup_rust }}" "${BIJUX_RELEASE_SETUP_RUST:-}" "false")"
+          setup_rust="$(bool_from_values "${input_setup_rust}" "${BIJUX_RELEASE_SETUP_RUST:-}" "false")"
           rust_toolchain="$(from_values "${{ inputs.rust_toolchain || '' }}" "${BIJUX_RELEASE_RUST_TOOLCHAIN:-}" "stable")"
-          delete_existing_release="$(bool_from_values "${{ inputs.delete_existing_release }}" "${BIJUX_RELEASE_DELETE_EXISTING:-}" "true")"
-          fail_on_unmatched_files="$(bool_from_values "${{ inputs.fail_on_unmatched_files }}" "${BIJUX_RELEASE_FAIL_ON_UNMATCHED_FILES:-}" "false")"
-          generate_release_notes="$(bool_from_values "${{ inputs.generate_release_notes }}" "${BIJUX_RELEASE_GENERATE_RELEASE_NOTES:-}" "true")"
+          delete_existing_release="$(bool_from_values "${input_delete_existing_release}" "${BIJUX_RELEASE_DELETE_EXISTING:-}" "true")"
+          fail_on_unmatched_files="$(bool_from_values "${input_fail_on_unmatched_files}" "${BIJUX_RELEASE_FAIL_ON_UNMATCHED_FILES:-}" "false")"
+          generate_release_notes="$(bool_from_values "${input_generate_release_notes}" "${BIJUX_RELEASE_GENERATE_RELEASE_NOTES:-}" "true")"
 
           if [[ -n "${release_files_manifest}" ]]; then
             if [[ ! -f "${release_files_manifest}" ]]; then

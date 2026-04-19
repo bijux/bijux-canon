@@ -106,8 +106,15 @@ jobs:
             default_tag=""
           fi
 
+          input_enabled=""
+          if [[ "${GITHUB_EVENT_NAME:-}" == "workflow_dispatch" ]]; then
+            input_enabled="${{ github.event.inputs.enabled || '' }}"
+          elif [[ "${GITHUB_EVENT_NAME:-}" == "workflow_call" ]]; then
+            input_enabled="${{ inputs.enabled && 'true' || 'false' }}"
+          fi
+
           release_tag="$(from_values "${{ inputs.release_tag || github.event.inputs.release_tag || '' }}" "${BIJUX_CRATES_RELEASE_TAG:-}" "${{ vars.BIJUX_CRATES_RELEASE_TAG || '' }}" "$default_tag")"
-          enabled="$(bool_from_values "${{ inputs.enabled }}" "${BIJUX_CRATES_RELEASE_ENABLED:-}" "${{ vars.BIJUX_CRATES_RELEASE_ENABLED || '' }}" "false")"
+          enabled="$(bool_from_values "${input_enabled}" "${BIJUX_CRATES_RELEASE_ENABLED:-}" "${{ vars.BIJUX_CRATES_RELEASE_ENABLED || '' }}" "false")"
           wait_for_ci_command="$(from_values "" "${BIJUX_CRATES_RELEASE_WAIT_FOR_CI_COMMAND:-}" "${{ vars.BIJUX_CRATES_RELEASE_WAIT_FOR_CI_COMMAND || '' }}" "")"
           plan_command="$(from_values "" "${BIJUX_CRATES_RELEASE_PLAN_COMMAND:-}" "${{ vars.BIJUX_CRATES_RELEASE_PLAN_COMMAND || '' }}" "")"
           setup_rust="$(bool_from_values "" "${BIJUX_CRATES_RELEASE_SETUP_RUST:-}" "${{ vars.BIJUX_CRATES_RELEASE_SETUP_RUST || '' }}" "true")"
