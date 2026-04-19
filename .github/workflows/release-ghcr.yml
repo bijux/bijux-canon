@@ -82,6 +82,11 @@ jobs:
       archive_media_type: ${{ steps.config.outputs.archive_media_type }}
       oras_version: ${{ steps.config.outputs.oras_version }}
     steps:
+      - name: Checkout release configuration
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 1
+
       - name: Resolve release-ghcr configuration
         id: config
         shell: bash

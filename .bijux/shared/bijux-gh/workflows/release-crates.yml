@@ -50,6 +50,11 @@ jobs:
       fallback_packages: ${{ steps.config.outputs.fallback_packages }}
       allowed_packages: ${{ steps.config.outputs.allowed_packages }}
     steps:
+      - name: Checkout release configuration
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 1
+
       - name: Resolve release-crates configuration
         id: config
         shell: bash

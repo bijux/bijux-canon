@@ -92,6 +92,11 @@ jobs:
       manifest_path: ${{ steps.config.outputs.manifest_path }}
       python_interpreter: ${{ steps.config.outputs.python_interpreter }}
     steps:
+      - name: Checkout release configuration
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 1
+
       - name: Resolve release-pypi configuration
         id: config
         shell: bash
