@@ -9,20 +9,21 @@ last_reviewed: 2026-04-10
 
 # release-workflows
 
-`release-github.yml`, `release-pypi.yml`, and `release-ghcr.yml` replace the
-legacy single `publish.yml` entrypoint.
+`release-artifacts.yml` orchestrates tag-driven publication and calls
+`release-github.yml`, `release-pypi.yml`, and `release-ghcr.yml` as reusable
+workflow surfaces.
 
 The split keeps each publication surface explicit:
 
 - `release-pypi.yml` governs PyPI publication behavior
 - `release-ghcr.yml` governs GHCR bundle publication behavior
 - `release-github.yml` governs GitHub Release publication behavior
-- `release-orchestrator.yml` orchestrates build + publish order for
+- `release-artifacts.yml` orchestrates build + publish order for
   tag-driven releases
 
 ## Workflow Anchors
 
-- `.github/workflows/release-orchestrator.yml`
+- `.github/workflows/release-artifacts.yml`
 - `.github/workflows/release-github.yml`
 - `.github/workflows/release-pypi.yml`
 - `.github/workflows/release-ghcr.yml`
@@ -31,7 +32,7 @@ The split keeps each publication surface explicit:
 
 ## Current Job Tree
 
-- `release-orchestrator.yml`: build matrix + reusable release workflow
+- `release-artifacts.yml`: build matrix + reusable release workflow
   orchestration
 - `release-pypi.yml`: `resolve` + publication jobs for configured package inputs
 - `release-ghcr.yml`: `resolve` + per-package GHCR artifact publication
