@@ -58,5 +58,4 @@ jobs:
           set -euo pipefail
           python3 .github/scripts/check_pinned_actions.py \
             --manifest-managed .github/standards/repo-config.manifest.json \
-            .github/workflows/bijux-std.yml \
-            shared/bijux-gh/workflows
+            .github/workflows

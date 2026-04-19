@@ -3,13 +3,36 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shutil
 import subprocess
 import time
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[3]
-STD_REPO = ROOT / "bijux-std"
+SCRIPT_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def resolve_std_repo() -> Path:
+    env_path = os.environ.get("BIJUX_STD_REPO")
+    if env_path:
+        candidate = Path(env_path).resolve()
+        if (candidate / ".github/standards/repo-config.manifest.json").exists():
+            return candidate
+        raise FileNotFoundError(f"BIJUX_STD_REPO does not contain standards manifest: {candidate}")
+
+    if (SCRIPT_REPO_ROOT / ".github/standards/repo-config.manifest.json").exists():
+        return SCRIPT_REPO_ROOT
+
+    sibling = ROOT / "bijux-std"
+    if (sibling / ".github/standards/repo-config.manifest.json").exists():
+        return sibling
+
+    raise FileNotFoundError("Unable to resolve bijux-std repository root")
+
+
+STD_REPO = resolve_std_repo()
 PIN_PATH = ".github/standards/bijux-std.sha"
 MANIFEST_PATH = STD_REPO / ".github/standards/repo-config.manifest.json"
 
@@ -24,6 +47,7 @@ DEFAULT_REPOS = [
 ]
 
 BASE_FILE_MAPPINGS: list[tuple[str, str]] = [
+    (".github/CODEOWNERS", ".github/CODEOWNERS"),
     (".github/ISSUE_TEMPLATE/bug-report.yml", ".github/ISSUE_TEMPLATE/bug-report.yml"),
     (".github/ISSUE_TEMPLATE/config.yml", ".github/ISSUE_TEMPLATE/config.yml"),
     (".github/ISSUE_TEMPLATE/feature-request.yml", ".github/ISSUE_TEMPLATE/feature-request.yml"),
@@ -41,6 +65,7 @@ BASE_FILE_MAPPINGS: list[tuple[str, str]] = [
     (".github/standards/workflow-inventory.json", ".github/standards/workflow-inventory.json"),
     (".github/standards/repo-config.manifest.json", ".github/standards/repo-config.manifest.json"),
     (".github/workflows/bijux-std.yml", ".github/workflows/bijux-std.yml"),
+    (".github/workflows/automerge-pr.yml", ".github/workflows/automerge-pr.yml"),
     (".github/bijux-std-shared.sha256", ".github/bijux-std-shared.sha256"),
 ]
 
@@ -81,7 +106,7 @@ def copy_repo_files(target_repo: str, repo_config: dict[str, Any], manifest: dic
     for workflow in inventory_entries(manifest):
         workflow_id = workflow["id"]
         source_relative = workflow["source"]
-        shared_destination = source_relative
+        shared_destination = f".bijux/{source_relative}"
         runtime_destination = workflow["consumer_runtime"]
 
         copy_file_mapping(source_relative, shared_destination, target_repo)
@@ -95,7 +120,19 @@ def copy_repo_files(target_repo: str, repo_config: dict[str, Any], manifest: dic
             continue
         path = repo_dir / runtime_path
         if path.exists():
-            path.unlink()
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+
+    if (repo_dir / ".bijux/shared").exists():
+        for legacy_name in ("bijux-docs", "bijux-makes-py", "bijux-checks", "bijux-gh"):
+            legacy_shared_path = repo_dir / "shared" / legacy_name
+            if legacy_shared_path.exists():
+                shutil.rmtree(legacy_shared_path)
+        legacy_shared_root = repo_dir / "shared"
+        if legacy_shared_root.exists() and not any(legacy_shared_root.iterdir()):
+            legacy_shared_root.rmdir()
 
 
 def sync_repo_files(target_repo: str, manifest: dict[str, Any]) -> None:
@@ -117,6 +154,15 @@ def write_std_pin(repo_name: str, std_sha: str) -> None:
 def has_changes(repo_name: str) -> bool:
     status = run(["git", "status", "--short"], cwd=ROOT / repo_name)
     return bool(status)
+
+
+def stage_managed_paths(repo_dir: Path) -> None:
+    paths: list[str] = [".github"]
+    if (repo_dir / ".bijux/shared").exists():
+        paths.append(".bijux/shared")
+    if (repo_dir / "shared").exists():
+        paths.append("shared")
+    run(["git", "add", *paths], cwd=repo_dir)
 
 
 def ensure_branch(repo_dir: Path, branch_name: str) -> None:
@@ -223,7 +269,7 @@ def main() -> None:
         if args.create_branch:
             ensure_branch(repo_dir, branch_name)
 
-        run(["git", "add", ".github", "shared"], cwd=repo_dir)
+        stage_managed_paths(repo_dir)
         run(["git", "commit", "-m", args.commit_message], cwd=repo_dir)
 
         pr_info = create_pr(repo_dir, args, branch_name)

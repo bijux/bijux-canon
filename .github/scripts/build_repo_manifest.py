@@ -2,12 +2,34 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[3]
-STD_REPO = ROOT / "bijux-std"
+SCRIPT_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def resolve_std_repo() -> Path:
+    env_path = os.environ.get("BIJUX_STD_REPO")
+    if env_path:
+        candidate = Path(env_path).resolve()
+        if (candidate / ".github/standards/workflow-inventory.json").exists():
+            return candidate
+        raise FileNotFoundError(f"BIJUX_STD_REPO does not contain workflow inventory: {candidate}")
+
+    if (SCRIPT_REPO_ROOT / ".github/standards/workflow-inventory.json").exists():
+        return SCRIPT_REPO_ROOT
+
+    sibling = ROOT / "bijux-std"
+    if (sibling / ".github/standards/workflow-inventory.json").exists():
+        return sibling
+
+    raise FileNotFoundError("Unable to resolve bijux-std repository root")
+
+
+STD_REPO = resolve_std_repo()
 WORKFLOW_INVENTORY_PATH = STD_REPO / ".github/standards/workflow-inventory.json"
 REPOS = [
     "bijux-atlas",
@@ -126,19 +148,25 @@ def parse_yaml(path: Path) -> dict | None:
     if not path.exists():
         return None
 
-    result = subprocess.run(
-        [
-            "ruby",
-            "-ryaml",
-            "-rjson",
-            "-e",
-            "puts JSON.generate(YAML.safe_load(File.read(ARGV[0]), aliases: false))",
-            str(path),
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            [
+                "ruby",
+                "-ryaml",
+                "-rjson",
+                "-e",
+                "puts JSON.generate(YAML.safe_load(File.read(ARGV[0]), aliases: false))",
+                str(path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError as exc:
+        raise RuntimeError("ruby is required to parse YAML for manifest generation") from exc
+    except subprocess.CalledProcessError as exc:
+        stderr = exc.stderr.strip() if exc.stderr else "unknown parse error"
+        raise RuntimeError(f"failed to parse YAML file {path}: {stderr}") from exc
     return json.loads(result.stdout)
 
 

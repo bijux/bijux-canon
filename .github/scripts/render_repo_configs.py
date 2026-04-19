@@ -8,7 +8,19 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[3]
-MANIFEST_PATH = ROOT / "bijux-std/.github/standards/repo-config.manifest.json"
+SCRIPT_REPO_ROOT = Path(__file__).resolve().parents[2]
+MANIFEST_PATH = SCRIPT_REPO_ROOT / ".github/standards/repo-config.manifest.json"
+
+
+def resolve_repo_root(repo_name: str) -> Path:
+    if SCRIPT_REPO_ROOT.name == repo_name:
+        return SCRIPT_REPO_ROOT
+
+    candidate = ROOT / repo_name
+    if candidate.exists():
+        return candidate
+
+    raise FileNotFoundError(f"Unable to resolve repository root for '{repo_name}'")
 
 
 def yaml_scalar(value: Any) -> str:
@@ -101,7 +113,7 @@ def write_if_needed(path: Path, content: str) -> None:
 
 def render_repo(repo_name: str, manifest: dict) -> None:
     repo = find_repo_config(manifest, repo_name)
-    repo_root = ROOT / repo_name
+    repo_root = resolve_repo_root(repo_name)
 
     release_path = repo_root / ".github/release.env"
     release_content = render_release_env(repo.get("release_env", []))
