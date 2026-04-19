@@ -24,7 +24,7 @@ ran.
 
 - `.github/workflows/ci-package.yml`
 - `.github/workflows/build-release-artifacts.yml`
-- the package matrix callers in `verify.yml` and `publish.yml`
+- the package matrix callers in `verify.yml` and the release workflows
 
 ## Purpose
 

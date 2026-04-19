@@ -23,22 +23,22 @@ REQUIRED_PUBLIC_URLS = {
 }
 BIJUX_SITE_URL = "https://bijux.io/"
 BIJUX_CANON_DOCS_URL = "https://bijux.io/bijux-canon/"
-PACKAGE_MAP_URL = "https://bijux.io/bijux-canon/bijux-canon/foundation/package-map/"
+PACKAGE_MAP_URL = "https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/"
 COMPATIBILITY_GUIDE_URL = (
-    "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
+    "https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/"
 )
 LEGACY_NAME_MAP_URL = (
-    "https://bijux.io/bijux-canon/compat-packages/catalog/legacy-name-map/"
+    "https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/"
 )
 README_BADGE_MARKER = "https://img.shields.io"
 EXPECTED_BADGE_COUNT = 20
 EXPECTED_PYPI_GUIDE_BADGE_COUNT = 5
 FORBIDDEN_STANDALONE_DOC_URLS = (
-    "https://bijux.io/bijux-canon-runtime/",
-    "https://bijux.io/bijux-canon-agent/",
-    "https://bijux.io/bijux-canon-ingest/",
-    "https://bijux.io/bijux-canon-reason/",
-    "https://bijux.io/bijux-canon-index/",
+    "https://bijux.io/06-bijux-canon-runtime/",
+    "https://bijux.io/05-bijux-canon-agent/",
+    "https://bijux.io/02-bijux-canon-ingest/",
+    "https://bijux.io/04-bijux-canon-reason/",
+    "https://bijux.io/03-bijux-canon-index/",
     "https://bijux.io/bijux-canon-dev/",
 )
 COMPATIBILITY_PACKAGES = {
@@ -124,7 +124,7 @@ def _shared_docs_url(package_name: str) -> str:
 
 
 def _compat_docs_url(distribution_name: str) -> str:
-    return f"{BIJUX_CANON_DOCS_URL}compat-packages/catalog/{distribution_name}/"
+    return f"{BIJUX_CANON_DOCS_URL}08-compat-packages/catalog/{distribution_name}/"
 
 
 def _distribution_name(package_name: str) -> str:
@@ -394,12 +394,12 @@ def test_public_release_package_readmes_publish_badges_and_absolute_links() -> N
             failures.append(
                 f"{package_name}: expected at least {EXPECTED_BADGE_COUNT} badges"
             )
-        if "https://pypi.org/project/bijux-canon-runtime/" not in readme:
+        if "https://pypi.org/project/06-bijux-canon-runtime/" not in readme:
             failures.append(
                 f"{package_name}: README should advertise the canonical package family"
             )
         if (
-            "https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/"
+            "https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/"
             not in readme
         ):
             failures.append(
@@ -584,12 +584,12 @@ def test_public_release_package_publication_guides_publish_release_surface() -> 
             failures.append(
                 f"{package_name}: pypi.md should advertise repository verification"
             )
-        publish_url = (
-            "https://github.com/bijux/bijux-canon/actions/workflows/publish.yml"
+        release_url = (
+            "https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml"
         )
-        if publish_url not in guide:
+        if release_url not in guide:
             failures.append(
-                f"{package_name}: pypi.md should advertise publish workflow"
+                f"{package_name}: pypi.md should advertise release workflow"
             )
         docs_url = (
             "https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml"

@@ -63,7 +63,7 @@ flowchart TB
 - root commit rules live in `pyproject.toml`
 - package versions are written to package-local `_version.py` files by Hatch VCS
 - release support helpers live in `bijux-canon-dev`
-- `publish.yml` fans out into build, PyPI, GHCR, and GitHub Release jobs for the publishable packages
+- the split release workflows (`release-pypi.yml`, `release-ghcr.yml`, `release-github.yml`) publish package artifacts and release metadata
 
 ## Versioning Rule
 
