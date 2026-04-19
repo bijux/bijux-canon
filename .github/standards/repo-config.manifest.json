@@ -738,7 +738,7 @@
           },
           "jobs": {
             "package": {
-              "uses": "bijux/bijux-std/.github/workflows/reusable-ci-python-packages.yml@288361b8a0304c903f0d66d6b267a4f9cd2d5bd7",
+              "uses": "bijux/bijux-std/.github/workflows/reusable-ci-python-packages.yml@c240e0629f69cabe675d4bb43f75e8a072e69cec",
               "with": {
                 "package_slug": "${{ inputs.package_slug }}",
                 "package_dir": "${{ inputs.package_dir }}",
@@ -896,7 +896,8 @@
         "release-ghcr",
         "release-github",
         "release-pypi"
-      ]
+      ],
+      "pinned_std_sha": "c240e0629f69cabe675d4bb43f75e8a072e69cec"
     },
     {
       "name": "bijux-core",
