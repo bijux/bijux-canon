@@ -24,7 +24,6 @@ cross-repository governance assets that are also promoted into the canonical
 - `.github/PULL_REQUEST_TEMPLATE/*`
 - `.github/scripts/wait_for_ci.py`
 - `.github/workflows/deploy-docs.yml`
-- `.github/workflows/build-release-artifacts.yml`
 - `.github/workflows/release-artifacts.yml`
 - `.github/workflows/release-crates.yml`
 - `.github/workflows/release-ghcr.yml`
