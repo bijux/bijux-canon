@@ -58,7 +58,7 @@ bijux-vex = "bijux_canon_index.interfaces.cli.app:app"
 source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
-fallback-version = "0.3.4"
+fallback-version = "0.3.6"
 
 [tool.hatch.metadata.hooks.custom]
 canonical-name = "bijux-canon-index"
