@@ -90,6 +90,14 @@ jobs:
       - name: Resolve release-ghcr configuration
         id: config
         shell: bash
+        env:
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag || github.event.inputs.release_tag || '' }}
+          INPUT_PACKAGE_MATRIX_JSON: ${{ inputs.package_matrix_json || github.event.inputs.package_matrix_json || '' }}
+          INPUT_ARTIFACT_SUFFIX: ${{ inputs.artifact_suffix || '' }}
+          INPUT_PACKAGE_REF_PREFIX: ${{ inputs.package_ref_prefix || '' }}
+          INPUT_ARTIFACT_TYPE: ${{ inputs.artifact_type || '' }}
+          INPUT_ARCHIVE_MEDIA_TYPE: ${{ inputs.archive_media_type || '' }}
+          INPUT_ORAS_VERSION: ${{ inputs.oras_version || '' }}
         run: |
           set -euo pipefail
 
@@ -153,16 +161,16 @@ jobs:
             input_push_latest="${{ inputs.push_latest && 'true' || 'false' }}"
           fi
 
-          release_tag="$(from_values "${{ inputs.release_tag || github.event.inputs.release_tag || '' }}" "${BIJUX_GHCR_RELEASE_TAG:-}" "${{ vars.BIJUX_GHCR_RELEASE_TAG || '' }}" "$default_tag")"
+          release_tag="$(from_values "${INPUT_RELEASE_TAG}" "${BIJUX_GHCR_RELEASE_TAG:-}" "${{ vars.BIJUX_GHCR_RELEASE_TAG || '' }}" "$default_tag")"
           enabled="$(bool_from_values "${input_enabled}" "${BIJUX_GHCR_RELEASE_ENABLED:-}" "${{ vars.BIJUX_GHCR_RELEASE_ENABLED || '' }}" "false")"
-          package_matrix_json="$(from_values "${{ inputs.package_matrix_json || github.event.inputs.package_matrix_json || '' }}" "${BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON:-}" "${{ vars.BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON || '' }}" "[]")"
+          package_matrix_json="$(from_values "${INPUT_PACKAGE_MATRIX_JSON}" "${BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON:-}" "${{ vars.BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON || '' }}" "[]")"
           allowed_packages="$(from_values "" "${BIJUX_GHCR_RELEASE_ALLOWED_PACKAGES:-}" "${{ vars.BIJUX_GHCR_RELEASE_ALLOWED_PACKAGES || '' }}" "")"
-          artifact_suffix="$(from_values "${{ inputs.artifact_suffix || '' }}" "${BIJUX_GHCR_RELEASE_ARTIFACT_SUFFIX:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARTIFACT_SUFFIX || '' }}" "-release")"
-          package_ref_prefix="$(from_values "${{ inputs.package_ref_prefix || '' }}" "${BIJUX_GHCR_RELEASE_PACKAGE_REF_PREFIX:-}" "${{ vars.BIJUX_GHCR_RELEASE_PACKAGE_REF_PREFIX || '' }}" "ghcr.io/${GITHUB_REPOSITORY}")"
+          artifact_suffix="$(from_values "${INPUT_ARTIFACT_SUFFIX}" "${BIJUX_GHCR_RELEASE_ARTIFACT_SUFFIX:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARTIFACT_SUFFIX || '' }}" "-release")"
+          package_ref_prefix="$(from_values "${INPUT_PACKAGE_REF_PREFIX}" "${BIJUX_GHCR_RELEASE_PACKAGE_REF_PREFIX:-}" "${{ vars.BIJUX_GHCR_RELEASE_PACKAGE_REF_PREFIX || '' }}" "ghcr.io/${GITHUB_REPOSITORY}")"
           push_latest="$(bool_from_values "${input_push_latest}" "${BIJUX_GHCR_RELEASE_PUSH_LATEST:-}" "${{ vars.BIJUX_GHCR_RELEASE_PUSH_LATEST || '' }}" "true")"
-          artifact_type="$(from_values "${{ inputs.artifact_type || '' }}" "${BIJUX_GHCR_RELEASE_ARTIFACT_TYPE:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARTIFACT_TYPE || '' }}" "application/vnd.bijux.release-bundle.v1+tar")"
-          archive_media_type="$(from_values "${{ inputs.archive_media_type || '' }}" "${BIJUX_GHCR_RELEASE_ARCHIVE_MEDIA_TYPE:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARCHIVE_MEDIA_TYPE || '' }}" "application/gzip")"
-          oras_version="$(from_values "${{ inputs.oras_version || '' }}" "${BIJUX_GHCR_RELEASE_ORAS_VERSION:-}" "${{ vars.BIJUX_GHCR_RELEASE_ORAS_VERSION || '' }}" "1.2.3")"
+          artifact_type="$(from_values "${INPUT_ARTIFACT_TYPE}" "${BIJUX_GHCR_RELEASE_ARTIFACT_TYPE:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARTIFACT_TYPE || '' }}" "application/vnd.bijux.release-bundle.v1+tar")"
+          archive_media_type="$(from_values "${INPUT_ARCHIVE_MEDIA_TYPE}" "${BIJUX_GHCR_RELEASE_ARCHIVE_MEDIA_TYPE:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARCHIVE_MEDIA_TYPE || '' }}" "application/gzip")"
+          oras_version="$(from_values "${INPUT_ORAS_VERSION}" "${BIJUX_GHCR_RELEASE_ORAS_VERSION:-}" "${{ vars.BIJUX_GHCR_RELEASE_ORAS_VERSION || '' }}" "1.2.3")"
 
           package_matrix_json="$(python3 - "$package_matrix_json" "$allowed_packages" <<'PY'
           import json, sys
