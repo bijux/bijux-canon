@@ -20,7 +20,7 @@ installations should start with `bijux-canon-ingest`.
 - distribution: `bijux-canon-ingest`
 - Python import: `bijux_canon_ingest`
 - command: `bijux-canon-ingest`
-- package handbook: <https://bijux.io/bijux-canon/02-bijux-canon-ingest/>
+- package handbook: <https://bijux.io/bijux-canon/bijux-canon-ingest/>
 
 ## What the compatibility package preserves
 

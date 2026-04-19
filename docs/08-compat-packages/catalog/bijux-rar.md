@@ -20,7 +20,7 @@ installations should start with `bijux-canon-reason`.
 - distribution: `bijux-canon-reason`
 - Python import: `bijux_canon_reason`
 - command: `bijux-canon-reason`
-- package handbook: <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
+- package handbook: <https://bijux.io/bijux-canon/bijux-canon-reason/>
 
 ## What the compatibility package preserves
 

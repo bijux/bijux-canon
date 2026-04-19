@@ -20,7 +20,7 @@ installations should start with `bijux-canon-agent`.
 - distribution: `bijux-canon-agent`
 - Python import: `bijux_canon_agent`
 - command: `bijux-canon-agent`
-- package handbook: <https://bijux.io/bijux-canon/05-bijux-canon-agent/>
+- package handbook: <https://bijux.io/bijux-canon/bijux-canon-agent/>
 
 ## What the compatibility package preserves
 

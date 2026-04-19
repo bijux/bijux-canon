@@ -20,7 +20,7 @@ installations should start with `bijux-canon-index`.
 - distribution: `bijux-canon-index`
 - Python import: `bijux_canon_index`
 - command: `bijux-canon-index`
-- package handbook: <https://bijux.io/bijux-canon/03-bijux-canon-index/>
+- package handbook: <https://bijux.io/bijux-canon/bijux-canon-index/>
 
 ## What the compatibility package preserves
 

@@ -28,5 +28,5 @@ When updating callers, move to:
 - distribution: `bijux-canon-reason`
 - Python import: `bijux_canon_reason`
 - legacy package handbook: `https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/`
-- docs entrypoint: `https://bijux.io/bijux-canon/04-bijux-canon-reason/`
+- docs entrypoint: `https://bijux.io/bijux-canon/bijux-canon-reason/`
 - migration handbook: `https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/`

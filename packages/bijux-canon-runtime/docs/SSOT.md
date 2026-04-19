@@ -3,7 +3,7 @@
 ## Authoritative locations
 
 - `src/bijux_canon_runtime/` for implementation
-- `apis/06-bijux-canon-runtime/v1/` for API contracts
+- `apis/bijux-canon-runtime/v1/` for API contracts
 - execution-store schema files and migrations for persistence contracts
 - `tests/` for executable runtime behavior
 - `docs/` for package-local scope and boundaries

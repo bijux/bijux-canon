@@ -21,7 +21,7 @@ new work. New installations should start with `bijux-canon-runtime`.
 - distribution: `bijux-canon-runtime`
 - Python import: `bijux_canon_runtime`
 - command: `bijux-canon-runtime`
-- package handbook: <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
+- package handbook: <https://bijux.io/bijux-canon/bijux-canon-runtime/>
 
 ## What the compatibility package preserves
 

@@ -6,7 +6,7 @@
 - Python package: `bijux_canon_runtime`
 - CLI entrypoint: `bijux_canon_runtime.interfaces.cli.entrypoint`
 - API app package: `bijux_canon_runtime.api.v1`
-- schema artifacts under `apis/06-bijux-canon-runtime/v1/`
+- schema artifacts under `apis/bijux-canon-runtime/v1/`
 
 ## Not automatically public
 
