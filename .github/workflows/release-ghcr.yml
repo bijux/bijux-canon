@@ -264,7 +264,7 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJSON(needs.resolve.outputs.build_matrix_json) }}
-    uses: ./.github/workflows/build-release-artifacts.yml
+    uses: ./.github/workflows/release-artifacts.yml
     with:
       package_slug: ${{ matrix.package_slug }}
       package_dir: ${{ matrix.package_dir }}

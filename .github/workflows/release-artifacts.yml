@@ -1,4 +1,4 @@
-name: build-release-artifacts
+name: release-artifacts
 
 on:
   workflow_call:
@@ -29,12 +29,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: build-release-artifacts-${{ inputs.package_slug }}
+  group: release-artifacts-${{ inputs.package_slug }}
   cancel-in-progress: false
 
 jobs:
   build:
-    name: build-release-artifacts-${{ inputs.package_slug }}
+    name: release-artifacts-${{ inputs.package_slug }}
     runs-on: ubuntu-24.04
     env:
       ARTIFACTS_DIR: ${{ inputs.artifacts_dir }}

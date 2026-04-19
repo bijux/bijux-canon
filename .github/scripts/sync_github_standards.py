@@ -70,10 +70,12 @@ BASE_FILE_MAPPINGS: list[tuple[str, str]] = [
 ]
 
 LEGACY_MANAGED_RUNTIME_PATHS = {
+    ".github/workflows/build-release-artifacts.yml",
     ".github/workflows/release-artifacts.yml",
 }
 
 LEGACY_MANAGED_SHARED_PATHS = {
+    ".bijux/shared/bijux-gh/workflows/build-release-artifacts.yml",
     ".bijux/shared/bijux-gh/workflows/release-artifacts.yml",
 }
 

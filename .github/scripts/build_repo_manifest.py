@@ -87,7 +87,7 @@ def derive_workflow_allowlist(repo_name: str, release_env: list[dict], wrappers:
             "BIJUX_PYPI_ENABLED",
         )
     ):
-        allow.add("build-release-artifacts")
+        allow.add("release-artifacts")
 
     wrapper_uses_to_workflow_id = {
         "./.github/workflows/ci-package.yml": "ci-package",
