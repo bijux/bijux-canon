@@ -190,9 +190,13 @@ jobs:
           pypi_matrix_json="$(from_values "${{ inputs.pypi_matrix_json || github.event.inputs.pypi_matrix_json || '' }}" "${BIJUX_RELEASE_ARTIFACTS_PYPI_MATRIX_JSON:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_PYPI_MATRIX_JSON || '' }}" "[]")"
           ghcr_matrix_json="$(from_values "${{ inputs.ghcr_matrix_json || github.event.inputs.ghcr_matrix_json || '' }}" "${BIJUX_RELEASE_ARTIFACTS_GHCR_MATRIX_JSON:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_GHCR_MATRIX_JSON || '' }}" "[]")"
 
-          run_pypi="$(bool_from_values "${input_run_pypi}" "${BIJUX_RELEASE_ARTIFACTS_RUN_PYPI:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_PYPI || '' }}" "true")"
-          run_ghcr="$(bool_from_values "${input_run_ghcr}" "${BIJUX_RELEASE_ARTIFACTS_RUN_GHCR:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_GHCR || '' }}" "true")"
-          run_github="$(bool_from_values "${input_run_github}" "${BIJUX_RELEASE_ARTIFACTS_RUN_GITHUB:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_GITHUB || '' }}" "true")"
+          default_run_pypi="$(bool_from_values "" "${BIJUX_PYPI_ENABLED:-}" "${{ vars.BIJUX_PYPI_ENABLED || '' }}" "false")"
+          default_run_ghcr="$(bool_from_values "" "${BIJUX_GHCR_RELEASE_ENABLED:-}" "${{ vars.BIJUX_GHCR_RELEASE_ENABLED || '' }}" "false")"
+          default_run_github="$(bool_from_values "" "${BIJUX_RELEASE_ENABLED:-}" "${{ vars.BIJUX_RELEASE_ENABLED || '' }}" "false")"
+
+          run_pypi="$(bool_from_values "${input_run_pypi}" "${BIJUX_RELEASE_ARTIFACTS_RUN_PYPI:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_PYPI || '' }}" "${default_run_pypi}")"
+          run_ghcr="$(bool_from_values "${input_run_ghcr}" "${BIJUX_RELEASE_ARTIFACTS_RUN_GHCR:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_GHCR || '' }}" "${default_run_ghcr}")"
+          run_github="$(bool_from_values "${input_run_github}" "${BIJUX_RELEASE_ARTIFACTS_RUN_GITHUB:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_RUN_GITHUB || '' }}" "${default_run_github}")"
 
           artifact_pattern="$(from_values "${{ inputs.artifact_pattern || '' }}" "${BIJUX_RELEASE_ARTIFACTS_ARTIFACT_PATTERN:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_ARTIFACT_PATTERN || '' }}" "*-release")"
           artifact_path="$(from_values "${{ inputs.artifact_path || '' }}" "${BIJUX_RELEASE_ARTIFACTS_ARTIFACT_PATH:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_ARTIFACT_PATH || '' }}" ".github/tmp/release-assets")"

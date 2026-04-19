@@ -177,6 +177,13 @@ jobs:
 
           release_tag="$(from_values "${INPUT_RELEASE_TAG}" "${BIJUX_GHCR_RELEASE_TAG:-}" "${{ vars.BIJUX_GHCR_RELEASE_TAG || '' }}" "$default_tag")"
           enabled="$(bool_from_values "${input_enabled}" "${BIJUX_GHCR_RELEASE_ENABLED:-}" "${{ vars.BIJUX_GHCR_RELEASE_ENABLED || '' }}" "false")"
+          release_artifacts_enabled="$(bool_from_values "" "${BIJUX_RELEASE_ARTIFACTS_ENABLED:-}" "${{ vars.BIJUX_RELEASE_ARTIFACTS_ENABLED || '' }}" "false")"
+
+          if [[ "${GITHUB_EVENT_NAME:-}" == "push" && "${GITHUB_REF_TYPE:-}" == "tag" && "${release_artifacts_enabled}" == "true" ]]; then
+            # In orchestrated mode, release-artifacts is the canonical tag publisher.
+            enabled="false"
+          fi
+
           package_matrix_json="$(from_values "${INPUT_PACKAGE_MATRIX_JSON}" "${BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON:-}" "${{ vars.BIJUX_GHCR_RELEASE_PACKAGE_MATRIX_JSON || '' }}" "[]")"
           allowed_packages="$(from_values "" "${BIJUX_GHCR_RELEASE_ALLOWED_PACKAGES:-}" "${{ vars.BIJUX_GHCR_RELEASE_ALLOWED_PACKAGES || '' }}" "")"
           artifact_suffix="$(from_values "${INPUT_ARTIFACT_SUFFIX}" "${BIJUX_GHCR_RELEASE_ARTIFACT_SUFFIX:-}" "${{ vars.BIJUX_GHCR_RELEASE_ARTIFACT_SUFFIX || '' }}" "-release")"
@@ -250,7 +257,7 @@ jobs:
 
     steps:
       - name: Download release artifacts
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ matrix.artifact_name || format('{0}{1}', matrix.package_slug, needs.resolve.outputs.artifact_suffix) }}
           path: .github/tmp/${{ matrix.package_slug }}-release
