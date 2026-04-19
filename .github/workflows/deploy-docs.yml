@@ -41,6 +41,8 @@ jobs:
     name: Build docs site
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      site_available: ${{ steps.artifact.outputs.site_available }}
 
     steps:
       - name: Checkout repository
@@ -249,24 +251,28 @@ jobs:
           done
 
           if [[ -z "$selected" ]]; then
-            echo "Unable to resolve docs artifact directory. Checked:" >&2
+            echo "Unable to resolve docs artifact directory. Checked:"
             for dir in "${candidates[@]}"; do
-              [[ -n "$dir" ]] && echo "  - $dir" >&2
+              [[ -n "$dir" ]] && echo "  - $dir"
             done
-            echo "Set BIJUX_DOCS_SITE_DIR in repository variables or .github/docs-deploy.env." >&2
-            exit 1
+            echo "Set BIJUX_DOCS_SITE_DIR in repository variables or .github/docs-deploy.env."
+            echo "Skipping docs deployment for this run."
+            echo "site_available=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
+          echo "site_available=true" >> "$GITHUB_OUTPUT"
           echo "site_dir=$selected" >> "$GITHUB_OUTPUT"
 
       - name: Verify docs site
-        if: ${{ steps.config.outputs.verify_command != '' }}
+        if: ${{ steps.artifact.outputs.site_available == 'true' && steps.config.outputs.verify_command != '' }}
         env:
           DOCS_BUILD_SITE_URL: ${{ steps.config.outputs.site_url }}
           DOCS_SITE_DIR: ${{ steps.artifact.outputs.site_dir }}
         run: ${{ steps.config.outputs.verify_command }}
 
       - name: Validate Pages bundle
+        if: ${{ steps.artifact.outputs.site_available == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -275,9 +281,11 @@ jobs:
           test -f "${site_dir}/index.html"
 
       - name: Configure Pages
+        if: ${{ steps.artifact.outputs.site_available == 'true' }}
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
       - name: Upload Pages artifact
+        if: ${{ steps.artifact.outputs.site_available == 'true' }}
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v3.0.1
         with:
           path: ${{ steps.artifact.outputs.site_dir }}
@@ -285,7 +293,7 @@ jobs:
   deploy:
     name: Deploy docs site
     needs: build
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
+    if: ${{ needs.build.outputs.site_available == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
