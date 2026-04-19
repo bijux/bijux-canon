@@ -6,6 +6,20 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
+## Unreleased
+
+### Changed
+
+- Release metadata contracts now validate canonical package and API path usage
+  in maintainer tests and generated repository documentation catalogs.
+- Documentation navigation contracts were refreshed to assert current canonical
+  handbook routes instead of legacy redirect entrypoints.
+
+### Fixed
+
+- Badge-template publication checks now reflect distinct release workflow badges
+  for PyPI, GHCR, and GitHub release automation.
+
 ## 0.3.4 - 2026-04-11
 
 ### Changed

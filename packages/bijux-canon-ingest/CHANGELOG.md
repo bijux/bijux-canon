@@ -5,6 +5,15 @@ All notable changes to `bijux-canon-ingest` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [Unreleased]
+
+### Changed
+
+- Package contract docs now reference canonical schema paths under
+  `apis/bijux-canon-ingest/v1`.
+- Shared handbook links now resolve canonical package handbook routes for
+  ingest documentation and migration surfaces.
+
 ## [0.3.4] - 2026-04-11
 
 ### Fixed

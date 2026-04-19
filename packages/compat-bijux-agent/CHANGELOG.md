@@ -8,6 +8,13 @@ name while the canonical package lives at `bijux-canon-agent`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
+## Unreleased
+
+### Changed
+
+- Compatibility handbook links now resolve canonical agent package routes at
+  `bijux-canon/bijux-canon-agent/` instead of numbered slug paths.
+
 ## 0.3.4 - 2026-04-11
 
 ### Fixed

@@ -6,6 +6,15 @@ All notable changes to `bijux-canon-reason` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## Unreleased
+
+### Changed
+
+- Package contract docs now reference canonical schema paths under
+  `apis/bijux-canon-reason/v1`.
+- Shared handbook links now resolve canonical package handbook routes for
+  reasoning documentation and migration surfaces.
+
 ## 0.3.4 - 2026-04-11
 
 ### Fixed

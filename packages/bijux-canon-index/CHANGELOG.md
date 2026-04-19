@@ -5,6 +5,15 @@ All notable changes to `bijux-canon-index` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## Unreleased
+
+### Changed
+
+- Package contract docs and compatibility tests now reference canonical API
+  schema paths under `apis/bijux-canon-index/v1`.
+- Handbook and package documentation links now resolve canonical package
+  handbooks without stale numbered package slugs.
+
 ## 0.3.4 - 2026-04-11
 
 ### Fixed

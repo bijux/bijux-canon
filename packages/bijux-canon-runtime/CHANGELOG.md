@@ -6,6 +6,15 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [Unreleased]
+
+### Changed
+
+* Runtime schema-hash packaging and stability-test guidance now reference
+  canonical API paths under `apis/bijux-canon-runtime/v1`.
+* Package contract docs and shared handbook links now resolve canonical runtime
+  handbook routes without numbered slug targets.
+
 ## [0.3.4] - 2026-04-11
 
 ### Fixed

@@ -9,6 +9,13 @@ Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed. Releases that shipped without a
 changelog update are reconstructed from tag annotations and release diffs.
 
+## Unreleased
+
+### Changed
+
+- Compatibility handbook links now resolve canonical runtime package routes at
+  `bijux-canon/bijux-canon-runtime/` instead of numbered slug paths.
+
 ## 0.3.4 - 2026-04-11
 
 ### Fixed

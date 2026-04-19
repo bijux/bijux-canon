@@ -10,6 +10,24 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## Unreleased
+
+### Changed
+
+- Repository badge templates now publish dedicated workflow badges for
+  `release-pypi.yml`, `release-ghcr.yml`, and `release-github.yml` across the
+  README and docs landing surfaces.
+- Release readiness and docs contracts were aligned with canonical package/API
+  paths and current handbook routes.
+
+### Fixed
+
+- Shared standards manifests, workflow inventory references, and generated docs
+  catalogs now consistently point at canonical `packages/bijux-canon-*` and
+  `apis/bijux-canon-*` locations.
+- Compatibility handbook links now resolve canonical package handbook URLs
+  without stale numbered slug targets.
+
 ## 0.3.4 - 2026-04-11
 
 ### Changed

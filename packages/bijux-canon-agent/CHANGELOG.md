@@ -5,6 +5,15 @@ All notable changes to `bijux-canon-agent` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## Unreleased
+
+### Changed
+
+- Package contracts and docs references now use canonical API schema paths
+  under `apis/bijux-canon-agent/v1`.
+- Internal policy documentation references now point to canonical package paths
+  under `packages/bijux-canon-agent`.
+
 ## 0.3.4 - 2026-04-11
 
 ### Fixed
