@@ -221,7 +221,7 @@ def test_docs_mermaid_diagrams_avoid_reserved_node_ids() -> None:
     "relative_path",
     [
         "index.html",
-        "bijux-canon/index.html",
+        "01-bijux-canon/index.html",
         "03-bijux-canon-index/index.html",
         "05-bijux-canon-agent/index.html",
         "07-bijux-canon-maintain/index.html",
@@ -240,7 +240,7 @@ def test_overview_pages_hide_primary_sidebar(
 
 
 def test_repository_detail_tabs_keep_home_first(rendered_docs: Path) -> None:
-    page = _parse_navigation(rendered_docs, "bijux-canon/index.html")
+    page = _parse_navigation(rendered_docs, "01-bijux-canon/index.html")
 
     assert page.detail_tabs == [
         "Home",
@@ -325,7 +325,7 @@ def test_hub_navigation_excludes_private_sites(rendered_docs: Path) -> None:
 
 
 def test_repository_site_tab_uses_repository_label(rendered_docs: Path) -> None:
-    text = _page_text(rendered_docs, "bijux-canon/index.html")
+    text = _page_text(rendered_docs, "01-bijux-canon/index.html")
 
     assert re.search(r">\s*Repository\s*<", text)
     assert re.search(r">\s*Maintainer\s*<", text)
@@ -460,7 +460,7 @@ def test_maintenance_workflow_leaf_pages_keep_section_sidebar(
 ) -> None:
     page = _parse_navigation(
         rendered_docs,
-        "07-bijux-canon-maintain/gh-workflows/publish/index.html",
+        "07-bijux-canon-maintain/gh-workflows/release-workflows/index.html",
     )
 
     assert page.active_detail_tabs == ["gh-workflows"]
@@ -469,7 +469,7 @@ def test_maintenance_workflow_leaf_pages_keep_section_sidebar(
         "verify",
         "reusable-workflows",
         "deploy-docs",
-        "publish",
+        "release-workflows",
     ]
 
 
