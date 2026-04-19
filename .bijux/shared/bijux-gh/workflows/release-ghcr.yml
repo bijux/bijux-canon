@@ -98,6 +98,10 @@ jobs:
           INPUT_ARTIFACT_TYPE: ${{ inputs.artifact_type || '' }}
           INPUT_ARCHIVE_MEDIA_TYPE: ${{ inputs.archive_media_type || '' }}
           INPUT_ORAS_VERSION: ${{ inputs.oras_version || '' }}
+          INPUT_ENABLED_RAW: ${{ toJSON(inputs.enabled) }}
+          INPUT_PUSH_LATEST_RAW: ${{ toJSON(inputs.push_latest) }}
+          DISPATCH_ENABLED_RAW: ${{ github.event.inputs.enabled || '' }}
+          DISPATCH_PUSH_LATEST_RAW: ${{ github.event.inputs.push_latest || '' }}
         run: |
           set -euo pipefail
 
@@ -145,20 +149,30 @@ jobs:
             esac
           }
 
+          normalize_bool_optional() {
+            local raw="$1"
+            case "${raw,,}" in
+              true|1|yes|on) printf 'true\n' ;;
+              false|0|no|off) printf 'false\n' ;;
+              ''|null) printf '\n' ;;
+              *) printf '\n' ;;
+            esac
+          }
+
           if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
             default_tag="${GITHUB_REF_NAME}"
           else
             default_tag=""
           fi
 
-          input_enabled=""
-          input_push_latest=""
-          if [[ "${GITHUB_EVENT_NAME:-}" == "workflow_dispatch" ]]; then
-            input_enabled="${{ github.event.inputs.enabled || '' }}"
-            input_push_latest="${{ github.event.inputs.push_latest || '' }}"
-          elif [[ "${GITHUB_EVENT_NAME:-}" == "workflow_call" ]]; then
-            input_enabled="${{ inputs.enabled && 'true' || 'false' }}"
-            input_push_latest="${{ inputs.push_latest && 'true' || 'false' }}"
+          input_enabled="$(normalize_bool_optional "${INPUT_ENABLED_RAW}")"
+          if [[ -z "${input_enabled}" ]]; then
+            input_enabled="$(normalize_bool_optional "${DISPATCH_ENABLED_RAW}")"
+          fi
+
+          input_push_latest="$(normalize_bool_optional "${INPUT_PUSH_LATEST_RAW}")"
+          if [[ -z "${input_push_latest}" ]]; then
+            input_push_latest="$(normalize_bool_optional "${DISPATCH_PUSH_LATEST_RAW}")"
           fi
 
           release_tag="$(from_values "${INPUT_RELEASE_TAG}" "${BIJUX_GHCR_RELEASE_TAG:-}" "${{ vars.BIJUX_GHCR_RELEASE_TAG || '' }}" "$default_tag")"

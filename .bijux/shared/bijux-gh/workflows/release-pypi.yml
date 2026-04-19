@@ -107,6 +107,10 @@ jobs:
           INPUT_ARTIFACT_SUFFIX: ${{ inputs.artifact_suffix || '' }}
           INPUT_ENVIRONMENT_NAME: ${{ inputs.environment_name || '' }}
           INPUT_PUBLISH_AUTH_DEFAULT: ${{ inputs.publish_auth_default || '' }}
+          INPUT_ENABLED_RAW: ${{ toJSON(inputs.enabled) }}
+          INPUT_SKIP_EXISTING_RAW: ${{ toJSON(inputs.skip_existing) }}
+          DISPATCH_ENABLED_RAW: ${{ github.event.inputs.enabled || '' }}
+          DISPATCH_SKIP_EXISTING_RAW: ${{ github.event.inputs.skip_existing || '' }}
         run: |
           set -euo pipefail
 
@@ -154,20 +158,30 @@ jobs:
             esac
           }
 
+          normalize_bool_optional() {
+            local raw="$1"
+            case "${raw,,}" in
+              true|1|yes|on) printf 'true\n' ;;
+              false|0|no|off) printf 'false\n' ;;
+              ''|null) printf '\n' ;;
+              *) printf '\n' ;;
+            esac
+          }
+
           if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
             default_tag="${GITHUB_REF_NAME}"
           else
             default_tag=""
           fi
 
-          input_enabled=""
-          input_skip_existing=""
-          if [[ "${GITHUB_EVENT_NAME:-}" == "workflow_dispatch" ]]; then
-            input_enabled="${{ github.event.inputs.enabled || '' }}"
-            input_skip_existing="${{ github.event.inputs.skip_existing || '' }}"
-          elif [[ "${GITHUB_EVENT_NAME:-}" == "workflow_call" ]]; then
-            input_enabled="${{ inputs.enabled && 'true' || 'false' }}"
-            input_skip_existing="${{ inputs.skip_existing && 'true' || 'false' }}"
+          input_enabled="$(normalize_bool_optional "${INPUT_ENABLED_RAW}")"
+          if [[ -z "${input_enabled}" ]]; then
+            input_enabled="$(normalize_bool_optional "${DISPATCH_ENABLED_RAW}")"
+          fi
+
+          input_skip_existing="$(normalize_bool_optional "${INPUT_SKIP_EXISTING_RAW}")"
+          if [[ -z "${input_skip_existing}" ]]; then
+            input_skip_existing="$(normalize_bool_optional "${DISPATCH_SKIP_EXISTING_RAW}")"
           fi
 
           release_tag="$(from_values "${INPUT_RELEASE_TAG}" "${BIJUX_PYPI_RELEASE_TAG:-}" "${{ vars.BIJUX_PYPI_RELEASE_TAG || '' }}" "$default_tag")"
