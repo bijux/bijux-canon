@@ -29,7 +29,7 @@ flowchart LR
     step1 --> page
     step2["HTTP app in src/bijux_canon_runtime/api/v1"]
     step2 --> page
-    step3["packages/bijux-canon-runtime/pyproject.toml"]
+    step3["packages/06-bijux-canon-runtime/pyproject.toml"]
     step3 --> page
     run1["tests/unit for api, contracts, core, interfaces, model, and runtime"]
     page --> run1
@@ -70,9 +70,9 @@ flowchart LR
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
-- `packages/bijux-canon-runtime/README.md` for local package framing
-- `packages/bijux-canon-runtime/tests` for executable operational backstops
+- `packages/06-bijux-canon-runtime/pyproject.toml` for package metadata
+- `packages/06-bijux-canon-runtime/README.md` for local package framing
+- `packages/06-bijux-canon-runtime/tests` for executable operational backstops
 
 ## Use This Page When
 

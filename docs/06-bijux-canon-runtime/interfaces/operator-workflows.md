@@ -31,13 +31,13 @@ flowchart TB
     surface1 --> page
     surface2["HTTP app in src/bijux_canon_runtime/api/v1"]
     surface2 --> page
-    surface3["schema files in apis/bijux-canon-runtime/v1"]
+    surface3["schema files in apis/06-bijux-canon-runtime/v1"]
     surface3 --> page
-    proof1["apis/bijux-canon-runtime/v1/schema.hash"]
+    proof1["apis/06-bijux-canon-runtime/v1/schema.hash"]
     page --> proof1
     proof2["execution store records"]
     page --> proof2
-    proof3["apis/bijux-canon-runtime/v1/schema.yaml"]
+    proof3["apis/06-bijux-canon-runtime/v1/schema.yaml"]
     page --> proof3
     review1["tests/e2e for governed flow behavior"]
     review1 -.raises compatibility pressure on.-> page
@@ -53,7 +53,7 @@ flowchart TB
 
 ## Workflow Anchors
 
-- entry surfaces: CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py, HTTP app in src/bijux_canon_runtime/api/v1, schema files in apis/bijux-canon-runtime/v1
+- entry surfaces: CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py, HTTP app in src/bijux_canon_runtime/api/v1, schema files in apis/06-bijux-canon-runtime/v1
 - durable outputs: execution store records, replay decision artifacts, non-determinism policy evaluations
 - validation backstops: tests/unit for api, contracts, core, interfaces, model, and runtime, tests/e2e for governed flow behavior
 
@@ -61,8 +61,8 @@ flowchart TB
 
 - CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py
 - HTTP app in src/bijux_canon_runtime/api/v1
-- schema files in apis/bijux-canon-runtime/v1
-- apis/bijux-canon-runtime/v1/schema.yaml
+- schema files in apis/06-bijux-canon-runtime/v1
+- apis/06-bijux-canon-runtime/v1/schema.yaml
 
 ## Use This Page When
 

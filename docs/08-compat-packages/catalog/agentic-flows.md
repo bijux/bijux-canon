@@ -21,7 +21,7 @@ new work. New installations should start with `bijux-canon-runtime`.
 - distribution: `bijux-canon-runtime`
 - Python import: `bijux_canon_runtime`
 - command: `bijux-canon-runtime`
-- package handbook: <https://bijux.io/bijux-canon/bijux-canon-runtime/>
+- package handbook: <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
 
 ## What the compatibility package preserves
 
@@ -35,7 +35,7 @@ new work. New installations should start with `bijux-canon-runtime`.
 - keep `agentic-flows` only while existing automation still depends on the
   legacy name
 - use the shared migration handbook for rename planning and retirement review:
-  <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+  <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 
 ## Repository transition
 

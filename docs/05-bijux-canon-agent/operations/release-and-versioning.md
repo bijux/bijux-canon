@@ -30,7 +30,7 @@ flowchart RL
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
     step1["operator configuration under src/bijux_canon_agent/config"]
     step1 --> page
-    step2["packages/bijux-canon-agent/pyproject.toml"]
+    step2["packages/05-bijux-canon-agent/pyproject.toml"]
     step2 --> page
     step3["CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py"]
     step3 --> page
@@ -60,14 +60,14 @@ flowchart RL
 
 ## Versioning Anchors
 
-- version file: `packages/bijux-canon-agent/src/bijux_canon_agent/_version.py`
-- tag pattern is configured in `packages/bijux-canon-agent/pyproject.toml`
+- version file: `packages/05-bijux-canon-agent/src/bijux_canon_agent/_version.py`
+- tag pattern is configured in `packages/05-bijux-canon-agent/pyproject.toml`
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-agent/pyproject.toml` for package metadata
-- `packages/bijux-canon-agent/README.md` for local package framing
-- `packages/bijux-canon-agent/tests` for executable operational backstops
+- `packages/05-bijux-canon-agent/pyproject.toml` for package metadata
+- `packages/05-bijux-canon-agent/README.md` for local package framing
+- `packages/05-bijux-canon-agent/tests` for executable operational backstops
 
 ## Use This Page When
 

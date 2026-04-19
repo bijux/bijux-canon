@@ -43,9 +43,9 @@ flowchart LR
     page -.keeps outside.-> limit3
     anchor1["packages/bijux-canon-agent"]
     page --> anchor1
-    anchor2["packages/bijux-canon-agent/src/bijux_canon_agent"]
+    anchor2["packages/05-bijux-canon-agent/src/bijux_canon_agent"]
     page --> anchor2
-    anchor3["packages/bijux-canon-agent/tests"]
+    anchor3["packages/05-bijux-canon-agent/tests"]
     page --> anchor3
     class page page;
     class own1,own2,own3 positive;
@@ -69,8 +69,8 @@ flowchart LR
 ## Concrete Anchors
 
 - `packages/bijux-canon-agent` as the package root
-- `packages/bijux-canon-agent/src/bijux_canon_agent` as the import boundary
-- `packages/bijux-canon-agent/tests` as the package proof surface
+- `packages/05-bijux-canon-agent/src/bijux_canon_agent` as the import boundary
+- `packages/05-bijux-canon-agent/tests` as the package proof surface
 
 ## Use This Page When
 

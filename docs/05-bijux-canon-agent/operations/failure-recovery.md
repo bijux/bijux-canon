@@ -31,7 +31,7 @@ flowchart LR
     step1 --> page
     step2["operator configuration under src/bijux_canon_agent/config"]
     step2 --> page
-    step3["packages/bijux-canon-agent/pyproject.toml"]
+    step3["packages/05-bijux-canon-agent/pyproject.toml"]
     step3 --> page
     run1["tests/invariants for package promises that should not drift"]
     page --> run1
@@ -59,9 +59,9 @@ flowchart LR
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-agent/pyproject.toml` for package metadata
-- `packages/bijux-canon-agent/README.md` for local package framing
-- `packages/bijux-canon-agent/tests` for executable operational backstops
+- `packages/05-bijux-canon-agent/pyproject.toml` for package metadata
+- `packages/05-bijux-canon-agent/README.md` for local package framing
+- `packages/05-bijux-canon-agent/tests` for executable operational backstops
 
 ## Use This Page When
 

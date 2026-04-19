@@ -37,7 +37,7 @@ flowchart RL
     page --> proof1
     proof2["chunk collections and retrieval-ready records"]
     page --> proof2
-    proof3["apis/bijux-canon-ingest/v1/schema.yaml"]
+    proof3["apis/02-bijux-canon-ingest/v1/schema.yaml"]
     page --> proof3
     review1["tests/e2e for package boundary coverage"]
     review1 -.raises compatibility pressure on.-> page
@@ -67,7 +67,7 @@ flowchart RL
 - CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py
 - HTTP boundaries under src/bijux_canon_ingest/interfaces
 - configuration modules under src/bijux_canon_ingest/config
-- apis/bijux-canon-ingest/v1/schema.yaml
+- apis/02-bijux-canon-ingest/v1/schema.yaml
 
 ## Use This Page When
 

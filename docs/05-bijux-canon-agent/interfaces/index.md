@@ -35,7 +35,7 @@ flowchart TB
     page --> proof1
     proof2["workflow graph execution records"]
     page --> proof2
-    proof3["apis/bijux-canon-agent/v1/schema.yaml"]
+    proof3["apis/05-bijux-canon-agent/v1/schema.yaml"]
     page --> proof3
     review1["tests/integration and tests/e2e for end-to-end workflow behavior"]
     review1 -.raises compatibility pressure on.-> page
@@ -73,7 +73,7 @@ flowchart TB
 - CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py
 - operator configuration under src/bijux_canon_agent/config
 - HTTP-adjacent modules under src/bijux_canon_agent/api
-- apis/bijux-canon-agent/v1/schema.yaml
+- apis/05-bijux-canon-agent/v1/schema.yaml
 
 ## Use This Page When
 

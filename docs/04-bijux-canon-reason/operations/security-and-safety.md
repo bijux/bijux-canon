@@ -29,7 +29,7 @@ flowchart RL
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
     step1["HTTP app in src/bijux_canon_reason/api/v1"]
     step1 --> page
-    step2["packages/bijux-canon-reason/pyproject.toml"]
+    step2["packages/04-bijux-canon-reason/pyproject.toml"]
     step2 --> page
     step3["CLI app in src/bijux_canon_reason/interfaces/cli"]
     step3 --> page
@@ -55,7 +55,7 @@ flowchart RL
 
 - CLI app in src/bijux_canon_reason/interfaces/cli
 - HTTP app in src/bijux_canon_reason/api/v1
-- schema files in apis/bijux-canon-reason/v1
+- schema files in apis/04-bijux-canon-reason/v1
 
 ## Safety Rule
 
@@ -63,9 +63,9 @@ Any change that broadens package authority should update docs, tests, and releas
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-reason/pyproject.toml` for package metadata
-- `packages/bijux-canon-reason/README.md` for local package framing
-- `packages/bijux-canon-reason/tests` for executable operational backstops
+- `packages/04-bijux-canon-reason/pyproject.toml` for package metadata
+- `packages/04-bijux-canon-reason/README.md` for local package framing
+- `packages/04-bijux-canon-reason/tests` for executable operational backstops
 
 ## Use This Page When
 

@@ -20,7 +20,7 @@ installations should start with `bijux-canon-ingest`.
 - distribution: `bijux-canon-ingest`
 - Python import: `bijux_canon_ingest`
 - command: `bijux-canon-ingest`
-- package handbook: <https://bijux.io/bijux-canon/bijux-canon-ingest/>
+- package handbook: <https://bijux.io/bijux-canon/02-bijux-canon-ingest/>
 
 ## What the compatibility package preserves
 
@@ -34,7 +34,7 @@ installations should start with `bijux-canon-ingest`.
 - keep `bijux-rag` only while existing automation still depends on the legacy
   name
 - use the shared migration handbook for rename planning and retirement review:
-  <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+  <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 
 ## Repository transition
 

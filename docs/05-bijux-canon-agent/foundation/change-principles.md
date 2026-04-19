@@ -41,9 +41,9 @@ flowchart TB
     page -.keeps outside.-> limit2
     limit3["repository tooling and release automation"]
     page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-agent/src/bijux_canon_agent"]
+    anchor1["packages/05-bijux-canon-agent/src/bijux_canon_agent"]
     page --> anchor1
-    anchor2["packages/bijux-canon-agent/tests"]
+    anchor2["packages/05-bijux-canon-agent/tests"]
     page --> anchor2
     anchor3["packages/bijux-canon-agent"]
     page --> anchor3
@@ -62,8 +62,8 @@ flowchart TB
 ## Concrete Anchors
 
 - `packages/bijux-canon-agent` as the package root
-- `packages/bijux-canon-agent/src/bijux_canon_agent` as the import boundary
-- `packages/bijux-canon-agent/tests` as the package proof surface
+- `packages/05-bijux-canon-agent/src/bijux_canon_agent` as the import boundary
+- `packages/05-bijux-canon-agent/tests` as the package proof surface
 
 ## Use This Page When
 

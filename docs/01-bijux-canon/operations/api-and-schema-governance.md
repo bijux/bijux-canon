@@ -66,11 +66,11 @@ flowchart TB
 
 ## Current Schema Roots
 
-- `apis/bijux-canon-agent/v1`
-- `apis/bijux-canon-index/v1`
-- `apis/bijux-canon-ingest/v1`
-- `apis/bijux-canon-reason/v1`
-- `apis/bijux-canon-runtime/v1`
+- `apis/05-bijux-canon-agent/v1`
+- `apis/03-bijux-canon-index/v1`
+- `apis/02-bijux-canon-ingest/v1`
+- `apis/04-bijux-canon-reason/v1`
+- `apis/06-bijux-canon-runtime/v1`
 
 ## Concrete Anchors
 

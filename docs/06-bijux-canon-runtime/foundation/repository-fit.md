@@ -41,11 +41,11 @@ flowchart LR
     page -.keeps outside.-> limit2
     limit3["repository tooling and release support"]
     page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-runtime/tests"]
+    anchor1["packages/06-bijux-canon-runtime/tests"]
     page --> anchor1
     anchor2["packages/bijux-canon-runtime"]
     page --> anchor2
-    anchor3["packages/bijux-canon-runtime/src/bijux_canon_runtime"]
+    anchor3["packages/06-bijux-canon-runtime/src/bijux_canon_runtime"]
     page --> anchor3
     class page page;
     class own1,own2,own3 positive;
@@ -61,14 +61,14 @@ flowchart LR
 ## Canonical Package Root
 
 - `packages/bijux-canon-runtime`
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime`
-- `packages/bijux-canon-runtime/tests`
+- `packages/06-bijux-canon-runtime/src/bijux_canon_runtime`
+- `packages/06-bijux-canon-runtime/tests`
 
 ## Concrete Anchors
 
 - `packages/bijux-canon-runtime` as the package root
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime` as the import boundary
-- `packages/bijux-canon-runtime/tests` as the package proof surface
+- `packages/06-bijux-canon-runtime/src/bijux_canon_runtime` as the import boundary
+- `packages/06-bijux-canon-runtime/tests` as the package proof surface
 
 ## Use This Page When
 

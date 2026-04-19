@@ -29,7 +29,7 @@ flowchart RL
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
     step1["HTTP app in src/bijux_canon_reason/api/v1"]
     step1 --> page
-    step2["packages/bijux-canon-reason/pyproject.toml"]
+    step2["packages/04-bijux-canon-reason/pyproject.toml"]
     step2 --> page
     step3["CLI app in src/bijux_canon_reason/interfaces/cli"]
     step3 --> page
@@ -53,15 +53,15 @@ flowchart RL
 
 ## Recovery Anchors
 
-- interface surfaces: CLI app in src/bijux_canon_reason/interfaces/cli, HTTP app in src/bijux_canon_reason/api/v1, schema files in apis/bijux-canon-reason/v1
+- interface surfaces: CLI app in src/bijux_canon_reason/interfaces/cli, HTTP app in src/bijux_canon_reason/api/v1, schema files in apis/04-bijux-canon-reason/v1
 - artifacts to inspect: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
 - tests to run: tests/unit for planning, reasoning, execution, verification, and interfaces, tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-reason/pyproject.toml` for package metadata
-- `packages/bijux-canon-reason/README.md` for local package framing
-- `packages/bijux-canon-reason/tests` for executable operational backstops
+- `packages/04-bijux-canon-reason/pyproject.toml` for package metadata
+- `packages/04-bijux-canon-reason/README.md` for local package framing
+- `packages/04-bijux-canon-reason/tests` for executable operational backstops
 
 ## Use This Page When
 

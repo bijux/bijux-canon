@@ -29,7 +29,7 @@ flowchart RL
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
     step1["HTTP boundaries under src/bijux_canon_ingest/interfaces"]
     step1 --> page
-    step2["packages/bijux-canon-ingest/pyproject.toml"]
+    step2["packages/02-bijux-canon-ingest/pyproject.toml"]
     step2 --> page
     step3["CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py"]
     step3 --> page
@@ -54,14 +54,14 @@ flowchart RL
 ## Boundary Facts
 
 - package root: `packages/bijux-canon-ingest`
-- public metadata: `packages/bijux-canon-ingest/pyproject.toml`
-- release notes: `packages/bijux-canon-ingest/CHANGELOG.md` when present
+- public metadata: `packages/02-bijux-canon-ingest/pyproject.toml`
+- release notes: `packages/02-bijux-canon-ingest/CHANGELOG.md` when present
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-ingest/pyproject.toml` for package metadata
-- `packages/bijux-canon-ingest/README.md` for local package framing
-- `packages/bijux-canon-ingest/tests` for executable operational backstops
+- `packages/02-bijux-canon-ingest/pyproject.toml` for package metadata
+- `packages/02-bijux-canon-ingest/README.md` for local package framing
+- `packages/02-bijux-canon-ingest/tests` for executable operational backstops
 
 ## Use This Page When
 

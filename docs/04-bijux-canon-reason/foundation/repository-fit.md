@@ -41,11 +41,11 @@ flowchart TB
     page -.keeps outside.-> limit2
     limit3["runtime persistence and replay authority"]
     page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-reason/tests"]
+    anchor1["packages/04-bijux-canon-reason/tests"]
     page --> anchor1
     anchor2["packages/bijux-canon-reason"]
     page --> anchor2
-    anchor3["packages/bijux-canon-reason/src/bijux_canon_reason"]
+    anchor3["packages/04-bijux-canon-reason/src/bijux_canon_reason"]
     page --> anchor3
     class page page;
     class own1,own2,own3 positive;
@@ -61,14 +61,14 @@ flowchart TB
 ## Canonical Package Root
 
 - `packages/bijux-canon-reason`
-- `packages/bijux-canon-reason/src/bijux_canon_reason`
-- `packages/bijux-canon-reason/tests`
+- `packages/04-bijux-canon-reason/src/bijux_canon_reason`
+- `packages/04-bijux-canon-reason/tests`
 
 ## Concrete Anchors
 
 - `packages/bijux-canon-reason` as the package root
-- `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
-- `packages/bijux-canon-reason/tests` as the package proof surface
+- `packages/04-bijux-canon-reason/src/bijux_canon_reason` as the import boundary
+- `packages/04-bijux-canon-reason/tests` as the package proof surface
 
 ## Use This Page When
 

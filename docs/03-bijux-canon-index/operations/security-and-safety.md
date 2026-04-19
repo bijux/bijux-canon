@@ -27,7 +27,7 @@ flowchart TB
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    step1["packages/bijux-canon-index/pyproject.toml"]
+    step1["packages/03-bijux-canon-index/pyproject.toml"]
     step1 --> page
     step2["CLI modules under src/bijux_canon_index/interfaces/cli"]
     step2 --> page
@@ -55,7 +55,7 @@ flowchart TB
 
 - CLI modules under src/bijux_canon_index/interfaces/cli
 - HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/bijux-canon-index/v1
+- OpenAPI schema files under apis/03-bijux-canon-index/v1
 
 ## Safety Rule
 
@@ -63,9 +63,9 @@ Any change that broadens package authority should update docs, tests, and releas
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-index/pyproject.toml` for package metadata
-- `packages/bijux-canon-index/README.md` for local package framing
-- `packages/bijux-canon-index/tests` for executable operational backstops
+- `packages/03-bijux-canon-index/pyproject.toml` for package metadata
+- `packages/03-bijux-canon-index/README.md` for local package framing
+- `packages/03-bijux-canon-index/tests` for executable operational backstops
 
 ## Use This Page When
 

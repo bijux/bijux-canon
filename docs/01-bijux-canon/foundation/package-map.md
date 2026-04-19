@@ -84,8 +84,8 @@ The canonical packages each own a distinct slice of the overall system:
 
 ## Shared Maintainer Packages
 
-- [bijux-canon-maintain](../../bijux-canon-maintain/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
-- [compatibility packages](../../compat-packages/index.md) for legacy distribution and import preservation
+- [bijux-canon-maintain](../../07-bijux-canon-maintain/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
+- [compatibility packages](../../08-compat-packages/index.md) for legacy distribution and import preservation
 
 ## Concrete Anchors
 

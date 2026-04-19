@@ -24,7 +24,7 @@ returns even when the directory tree still looks neat.
 - `repository handbook` means the root-level explanation of cross-package
   structure, governance, and decisions
 - `maintenance handbook` means the maintainer-facing documentation rooted at
-  `docs/bijux-canon-maintain/`
+  `docs/07-bijux-canon-maintain/`
 - `compatibility package` means a legacy-name bridge under `packages/compat-*`
   rather than a preferred long-term entrypoint
 - `root governance` means repository-wide rules such as docs structure, schema

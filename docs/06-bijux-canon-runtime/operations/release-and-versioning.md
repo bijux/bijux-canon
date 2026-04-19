@@ -30,7 +30,7 @@ flowchart RL
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
     step1["HTTP app in src/bijux_canon_runtime/api/v1"]
     step1 --> page
-    step2["packages/bijux-canon-runtime/pyproject.toml"]
+    step2["packages/06-bijux-canon-runtime/pyproject.toml"]
     step2 --> page
     step3["CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py"]
     step3 --> page
@@ -60,14 +60,14 @@ flowchart RL
 
 ## Versioning Anchors
 
-- version file: `packages/bijux-canon-runtime/src/bijux_canon_runtime/_version.py`
-- tag pattern is configured in `packages/bijux-canon-runtime/pyproject.toml`
+- version file: `packages/06-bijux-canon-runtime/src/bijux_canon_runtime/_version.py`
+- tag pattern is configured in `packages/06-bijux-canon-runtime/pyproject.toml`
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
-- `packages/bijux-canon-runtime/README.md` for local package framing
-- `packages/bijux-canon-runtime/tests` for executable operational backstops
+- `packages/06-bijux-canon-runtime/pyproject.toml` for package metadata
+- `packages/06-bijux-canon-runtime/README.md` for local package framing
+- `packages/06-bijux-canon-runtime/tests` for executable operational backstops
 
 ## Use This Page When
 

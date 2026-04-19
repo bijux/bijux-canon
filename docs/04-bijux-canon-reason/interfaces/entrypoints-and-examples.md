@@ -27,7 +27,7 @@ flowchart RL
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    surface1["schema files in apis/bijux-canon-reason/v1"]
+    surface1["schema files in apis/04-bijux-canon-reason/v1"]
     surface1 --> page
     surface2["CLI app in src/bijux_canon_reason/interfaces/cli"]
     surface2 --> page
@@ -35,9 +35,9 @@ flowchart RL
     surface3 --> page
     proof1["reasoning traces and replay diffs"]
     page --> proof1
-    proof2["apis/bijux-canon-reason/v1/schema.yaml"]
+    proof2["apis/04-bijux-canon-reason/v1/schema.yaml"]
     page --> proof2
-    proof3["apis/bijux-canon-reason/v1/pinned_openapi.json"]
+    proof3["apis/04-bijux-canon-reason/v1/pinned_openapi.json"]
     page --> proof3
     review1["tests/perf for retrieval benchmark coverage"]
     review1 -.raises compatibility pressure on.-> page
@@ -55,7 +55,7 @@ flowchart RL
 
 - CLI app in src/bijux_canon_reason/interfaces/cli
 - HTTP app in src/bijux_canon_reason/api/v1
-- schema files in apis/bijux-canon-reason/v1
+- schema files in apis/04-bijux-canon-reason/v1
 
 ## Example Anchors
 
@@ -66,8 +66,8 @@ flowchart RL
 
 - CLI app in src/bijux_canon_reason/interfaces/cli
 - HTTP app in src/bijux_canon_reason/api/v1
-- schema files in apis/bijux-canon-reason/v1
-- apis/bijux-canon-reason/v1/schema.yaml
+- schema files in apis/04-bijux-canon-reason/v1
+- apis/04-bijux-canon-reason/v1/schema.yaml
 
 ## Use This Page When
 

@@ -30,15 +30,15 @@ flowchart LR
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
     surface1["HTTP app in src/bijux_canon_reason/api/v1"]
     surface1 --> page
-    surface2["schema files in apis/bijux-canon-reason/v1"]
+    surface2["schema files in apis/04-bijux-canon-reason/v1"]
     surface2 --> page
     surface3["CLI app in src/bijux_canon_reason/interfaces/cli"]
     surface3 --> page
     proof1["reasoning traces and replay diffs"]
     page --> proof1
-    proof2["apis/bijux-canon-reason/v1/schema.yaml"]
+    proof2["apis/04-bijux-canon-reason/v1/schema.yaml"]
     page --> proof2
-    proof3["apis/bijux-canon-reason/v1/pinned_openapi.json"]
+    proof3["apis/04-bijux-canon-reason/v1/pinned_openapi.json"]
     page --> proof3
     review1["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
     review1 -.raises compatibility pressure on.-> page
@@ -66,8 +66,8 @@ Breaking changes must be visible in code, docs, and validation together.
 
 - CLI app in src/bijux_canon_reason/interfaces/cli
 - HTTP app in src/bijux_canon_reason/api/v1
-- schema files in apis/bijux-canon-reason/v1
-- apis/bijux-canon-reason/v1/schema.yaml
+- schema files in apis/04-bijux-canon-reason/v1
+- apis/04-bijux-canon-reason/v1/schema.yaml
 
 ## Use This Page When
 

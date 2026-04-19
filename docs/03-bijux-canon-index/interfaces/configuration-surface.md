@@ -28,7 +28,7 @@ flowchart RL
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    surface1["OpenAPI schema files under apis/bijux-canon-index/v1"]
+    surface1["OpenAPI schema files under apis/03-bijux-canon-index/v1"]
     surface1 --> page
     surface2["CLI modules under src/bijux_canon_index/interfaces/cli"]
     surface2 --> page
@@ -36,9 +36,9 @@ flowchart RL
     surface3 --> page
     proof1["vector execution result collections"]
     page --> proof1
-    proof2["apis/bijux-canon-index/v1/schema.yaml"]
+    proof2["apis/03-bijux-canon-index/v1/schema.yaml"]
     page --> proof2
-    proof3["apis/bijux-canon-index/v1/pinned_openapi.json"]
+    proof3["apis/03-bijux-canon-index/v1/pinned_openapi.json"]
     page --> proof3
     review1["tests/unit for API, application, contracts, domain, infra, and tooling"]
     review1 -.raises compatibility pressure on.-> page
@@ -56,7 +56,7 @@ flowchart RL
 
 - CLI modules under src/bijux_canon_index/interfaces/cli
 - HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/bijux-canon-index/v1
+- OpenAPI schema files under apis/03-bijux-canon-index/v1
 
 ## Review Rule
 
@@ -66,8 +66,8 @@ Configuration changes should update the operator docs, schema docs, and tests th
 
 - CLI modules under src/bijux_canon_index/interfaces/cli
 - HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/bijux-canon-index/v1
-- apis/bijux-canon-index/v1/schema.yaml
+- OpenAPI schema files under apis/03-bijux-canon-index/v1
+- apis/03-bijux-canon-index/v1/schema.yaml
 
 ## Use This Page When
 

@@ -31,7 +31,7 @@ flowchart LR
     step1 --> page
     step2["HTTP app under src/bijux_canon_index/api"]
     step2 --> page
-    step3["packages/bijux-canon-index/pyproject.toml"]
+    step3["packages/03-bijux-canon-index/pyproject.toml"]
     step3 --> page
     run1["tests/conformance and tests/compat_v01 for compatibility behavior"]
     page --> run1
@@ -54,14 +54,14 @@ flowchart LR
 ## Boundary Facts
 
 - package root: `packages/bijux-canon-index`
-- public metadata: `packages/bijux-canon-index/pyproject.toml`
-- release notes: `packages/bijux-canon-index/CHANGELOG.md` when present
+- public metadata: `packages/03-bijux-canon-index/pyproject.toml`
+- release notes: `packages/03-bijux-canon-index/CHANGELOG.md` when present
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-index/pyproject.toml` for package metadata
-- `packages/bijux-canon-index/README.md` for local package framing
-- `packages/bijux-canon-index/tests` for executable operational backstops
+- `packages/03-bijux-canon-index/pyproject.toml` for package metadata
+- `packages/03-bijux-canon-index/README.md` for local package framing
+- `packages/03-bijux-canon-index/tests` for executable operational backstops
 
 ## Use This Page When
 

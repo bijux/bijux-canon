@@ -31,7 +31,7 @@ flowchart LR
     step1 --> page
     step2["operator configuration under src/bijux_canon_agent/config"]
     step2 --> page
-    step3["packages/bijux-canon-agent/pyproject.toml"]
+    step3["packages/05-bijux-canon-agent/pyproject.toml"]
     step3 --> page
     run1["tests/unit for local behavior and utility coverage"]
     page --> run1
@@ -54,14 +54,14 @@ flowchart LR
 ## Boundary Facts
 
 - package root: `packages/bijux-canon-agent`
-- public metadata: `packages/bijux-canon-agent/pyproject.toml`
-- release notes: `packages/bijux-canon-agent/CHANGELOG.md` when present
+- public metadata: `packages/05-bijux-canon-agent/pyproject.toml`
+- release notes: `packages/05-bijux-canon-agent/CHANGELOG.md` when present
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-agent/pyproject.toml` for package metadata
-- `packages/bijux-canon-agent/README.md` for local package framing
-- `packages/bijux-canon-agent/tests` for executable operational backstops
+- `packages/05-bijux-canon-agent/pyproject.toml` for package metadata
+- `packages/05-bijux-canon-agent/README.md` for local package framing
+- `packages/05-bijux-canon-agent/tests` for executable operational backstops
 
 ## Use This Page When
 

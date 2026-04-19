@@ -34,7 +34,7 @@ flowchart TB
     surface2 --> page
     surface3["configuration modules under src/bijux_canon_ingest/config"]
     surface3 --> page
-    proof1["apis/bijux-canon-ingest/v1/schema.yaml"]
+    proof1["apis/02-bijux-canon-ingest/v1/schema.yaml"]
     page --> proof1
     proof2["normalized document trees"]
     page --> proof2
@@ -63,7 +63,7 @@ flowchart TB
 - CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py
 - HTTP boundaries under src/bijux_canon_ingest/interfaces
 - configuration modules under src/bijux_canon_ingest/config
-- apis/bijux-canon-ingest/v1/schema.yaml
+- apis/02-bijux-canon-ingest/v1/schema.yaml
 
 ## Use This Page When
 

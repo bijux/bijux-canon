@@ -35,7 +35,7 @@ flowchart RL
     surface3 --> page
     proof1["workflow graph execution records"]
     page --> proof1
-    proof2["apis/bijux-canon-agent/v1/schema.yaml"]
+    proof2["apis/05-bijux-canon-agent/v1/schema.yaml"]
     page --> proof2
     proof3["trace-backed final outputs"]
     page --> proof3
@@ -62,7 +62,7 @@ flowchart RL
 - CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py
 - operator configuration under src/bijux_canon_agent/config
 - HTTP-adjacent modules under src/bijux_canon_agent/api
-- apis/bijux-canon-agent/v1/schema.yaml
+- apis/05-bijux-canon-agent/v1/schema.yaml
 
 ## Use This Page When
 

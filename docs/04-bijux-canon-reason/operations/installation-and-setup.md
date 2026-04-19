@@ -28,7 +28,7 @@ flowchart TB
     classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
     classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
     classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    step1["packages/bijux-canon-reason/pyproject.toml"]
+    step1["packages/04-bijux-canon-reason/pyproject.toml"]
     step1 --> page
     step2["CLI app in src/bijux_canon_reason/interfaces/cli"]
     step2 --> page
@@ -55,8 +55,8 @@ flowchart TB
 ## Package Metadata Anchors
 
 - package root: `packages/bijux-canon-reason`
-- metadata file: `packages/bijux-canon-reason/pyproject.toml`
-- readme: `packages/bijux-canon-reason/README.md`
+- metadata file: `packages/04-bijux-canon-reason/pyproject.toml`
+- readme: `packages/04-bijux-canon-reason/README.md`
 
 ## Dependency Themes
 
@@ -66,9 +66,9 @@ flowchart TB
 
 ## Concrete Anchors
 
-- `packages/bijux-canon-reason/pyproject.toml` for package metadata
-- `packages/bijux-canon-reason/README.md` for local package framing
-- `packages/bijux-canon-reason/tests` for executable operational backstops
+- `packages/04-bijux-canon-reason/pyproject.toml` for package metadata
+- `packages/04-bijux-canon-reason/README.md` for local package framing
+- `packages/04-bijux-canon-reason/tests` for executable operational backstops
 
 ## Use This Page When
 

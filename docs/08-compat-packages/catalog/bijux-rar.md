@@ -20,7 +20,7 @@ installations should start with `bijux-canon-reason`.
 - distribution: `bijux-canon-reason`
 - Python import: `bijux_canon_reason`
 - command: `bijux-canon-reason`
-- package handbook: <https://bijux.io/bijux-canon/bijux-canon-reason/>
+- package handbook: <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
 
 ## What the compatibility package preserves
 
@@ -34,7 +34,7 @@ installations should start with `bijux-canon-reason`.
 - keep `bijux-rar` only while existing automation still depends on the legacy
   name
 - use the shared migration handbook for rename planning and retirement review:
-  <https://bijux.io/bijux-canon/compat-packages/migration/migration-guidance/>
+  <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
 
 ## Repository transition
 
