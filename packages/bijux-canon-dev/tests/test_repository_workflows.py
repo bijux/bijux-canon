@@ -13,10 +13,11 @@ WORKFLOW_URL_RE = re.compile(
     r"(?P<workflow>[A-Za-z0-9_.-]+)"
 )
 EXPECTED_WORKFLOWS = {
-    "bijux-std-checks.yml",
-    "build-release-artifacts.yml",
+    "automerge-pr.yml",
+    "bijux-std.yml",
     "ci-package.yml",
     "deploy-docs.yml",
+    "github-policy.yml",
     "publish.yml",
     "verify.yml",
 }
