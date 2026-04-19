@@ -5,21 +5,8 @@ on:
     branches:
       - main
       - master
-    paths:
-      - ".github/workflows/deploy-docs.yml"
-      - ".github/docs-deploy.env"
-      - "Makefile"
-      - "makes/**"
-      - "docs/**"
-      - "mkdocs.yml"
-      - "mkdocs.shared.yml"
-      - "configs/**"
-      - "pyproject.toml"
-      - "uv.lock"
-      - "package-lock.json"
-      - "package.json"
-      - ".bijux/shared/bijux-docs/**"
-      - ".bijux/shared/bijux-makes-py/**"
+    tags:
+      - "v*"
   workflow_dispatch:
 
 permissions:

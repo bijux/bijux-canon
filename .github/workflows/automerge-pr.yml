@@ -8,6 +8,9 @@ on:
   workflow_run:
     workflows: [bijux-std]
     types: [completed]
+    branches-ignore:
+      - main
+      - master
 
 permissions:
   contents: write
