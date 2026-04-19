@@ -210,6 +210,33 @@ jobs:
           SITE_URL: ${{ steps.config.outputs.site_url }}
         run: ${{ steps.config.outputs.build_command }}
 
+      - name: Build docs site fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          candidates=(
+            "${{ steps.config.outputs.site_dir }}"
+            "artifacts/tmp-site"
+            "artifacts/root/docs/build-site"
+            "artifacts/site/bijux-masterclass"
+            "artifacts/docs/site"
+            "artifacts/root/docs/site"
+          )
+
+          for dir in "${candidates[@]}"; do
+            if [[ -n "$dir" && -f "$dir/index.html" ]]; then
+              exit 0
+            fi
+          done
+
+          if [[ ! -f "mkdocs.yml" ]]; then
+            exit 0
+          fi
+
+          echo "No publishable docs artifact detected; running fallback mkdocs build."
+          mkdocs build --config-file mkdocs.yml --site-dir artifacts/tmp-site
+
       - name: Resolve docs artifact directory
         id: artifact
         shell: bash
