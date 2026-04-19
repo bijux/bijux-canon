@@ -1,0 +1,124 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Tag to publish (defaults to current ref)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+  packages: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build-${{ matrix.package_slug }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package_slug: bijux-canon-runtime
+            package_dir: packages/bijux-canon-runtime
+            artifacts_dir: artifacts/bijux-canon-runtime
+            build_targets: "build sbom"
+          - package_slug: bijux-canon-agent
+            package_dir: packages/bijux-canon-agent
+            artifacts_dir: artifacts/bijux-canon-agent
+            build_targets: "build sbom"
+          - package_slug: bijux-canon-ingest
+            package_dir: packages/bijux-canon-ingest
+            artifacts_dir: artifacts/bijux-canon-ingest
+            build_targets: "build sbom"
+          - package_slug: bijux-canon-reason
+            package_dir: packages/bijux-canon-reason
+            artifacts_dir: artifacts/bijux-canon-reason
+            build_targets: "build sbom"
+          - package_slug: bijux-canon-index
+            package_dir: packages/bijux-canon-index
+            artifacts_dir: artifacts/bijux-canon-index
+            build_targets: "build sbom"
+            dist_subdir: release
+          - package_slug: agentic-flows
+            package_dir: packages/compat-agentic-flows
+            artifacts_dir: artifacts/compat-agentic-flows
+            makefile_path: makes/packages/compat-package.mk
+            build_targets: "build sbom"
+          - package_slug: bijux-agent
+            package_dir: packages/compat-bijux-agent
+            artifacts_dir: artifacts/compat-bijux-agent
+            makefile_path: makes/packages/compat-package.mk
+            build_targets: "build sbom"
+          - package_slug: bijux-rag
+            package_dir: packages/compat-bijux-rag
+            artifacts_dir: artifacts/compat-bijux-rag
+            makefile_path: makes/packages/compat-package.mk
+            build_targets: "build sbom"
+          - package_slug: bijux-rar
+            package_dir: packages/compat-bijux-rar
+            artifacts_dir: artifacts/compat-bijux-rar
+            makefile_path: makes/packages/compat-package.mk
+            build_targets: "build sbom"
+          - package_slug: bijux-vex
+            package_dir: packages/compat-bijux-vex
+            artifacts_dir: artifacts/compat-bijux-vex
+            makefile_path: makes/packages/compat-package.mk
+            build_targets: "build sbom"
+    uses: ./.github/workflows/build-release-artifacts.yml
+    with:
+      package_slug: ${{ matrix.package_slug }}
+      package_dir: ${{ matrix.package_dir }}
+      artifacts_dir: ${{ matrix.artifacts_dir }}
+      makefile_path: ${{ matrix.makefile_path || '' }}
+      build_targets: ${{ matrix.build_targets || 'build' }}
+      dist_subdir: ${{ matrix.dist_subdir || 'build' }}
+
+  publish_pypi:
+    needs: build
+    uses: ./.github/workflows/release-pypi.yml
+    with:
+      enabled: true
+      mode: artifact
+      release_tag: ${{ github.event.inputs.release_tag || github.ref_name }}
+      package_matrix_json: >-
+        [{"package_slug":"bijux-canon-runtime"},{"package_slug":"bijux-canon-agent"},{"package_slug":"bijux-canon-ingest"},{"package_slug":"bijux-canon-reason"},{"package_slug":"bijux-canon-index"},{"package_slug":"agentic-flows"},{"package_slug":"bijux-agent"},{"package_slug":"bijux-rag"},{"package_slug":"bijux-rar"},{"package_slug":"bijux-vex"}]
+      skip_existing: true
+      publish_auth_default: trusted
+    secrets: inherit
+
+  publish_ghcr:
+    needs: build
+    uses: ./.github/workflows/release-ghcr.yml
+    with:
+      enabled: true
+      release_tag: ${{ github.event.inputs.release_tag || github.ref_name }}
+      package_matrix_json: >-
+        [{"package_slug":"bijux-canon-runtime"},{"package_slug":"bijux-canon-agent"},{"package_slug":"bijux-canon-ingest"},{"package_slug":"bijux-canon-reason"},{"package_slug":"bijux-canon-index"},{"package_slug":"agentic-flows"},{"package_slug":"bijux-agent"},{"package_slug":"bijux-rag"},{"package_slug":"bijux-rar"},{"package_slug":"bijux-vex"}]
+      push_latest: true
+    secrets: inherit
+
+  release_github:
+    needs:
+      - build
+      - publish_pypi
+      - publish_ghcr
+    uses: ./.github/workflows/release-github.yml
+    with:
+      enabled: true
+      release_tag: ${{ github.event.inputs.release_tag || github.ref_name }}
+      artifact_pattern: "*-release"
+      artifact_path: ".github/tmp/release-assets"
+      release_files_glob: ".github/tmp/release-assets/**/*"
+      delete_existing_release: true
+      fail_on_unmatched_files: true
+      generate_release_notes: true
+    secrets: inherit
