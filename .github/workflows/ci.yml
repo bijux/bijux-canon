@@ -1,4 +1,4 @@
-name: ci-package
+name: ci
 
 on:
   workflow_call:
@@ -38,7 +38,7 @@ concurrency:
 
 jobs:
   package:
-    uses: ./.github/workflows/reusable-ci-python-packages.yml
+    uses: bijux/bijux-std/.github/workflows/reusable-ci-python-packages.yml@288361b8a0304c903f0d66d6b267a4f9cd2d5bd7
     with:
       package_slug: ${{ inputs.package_slug }}
       package_dir: ${{ inputs.package_dir }}
