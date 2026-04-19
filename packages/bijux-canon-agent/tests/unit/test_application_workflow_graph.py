@@ -225,6 +225,6 @@ def test_workflow_graph_state_machine_transitions() -> None:
 def test_workflow_graph_default_trace_path_uses_artifacts_dir() -> None:
     """Default trace output should live under runtime artifacts, not source."""
     assert (
-        Path("artifacts/05-bijux-canon-agent/workflow-graph/run_trace.json")
+        Path("artifacts/bijux-canon-agent/workflow-graph/run_trace.json")
         == WorkflowOrchestrator.DEFAULT_TRACE_PATH
     )

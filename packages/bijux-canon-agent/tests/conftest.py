@@ -49,7 +49,7 @@ def _assert_within_allowed(path: Path) -> None:
     if any(segment in resolved.parts for segment in EXEMPT_PATH_SEGMENTS):
         return
     raise RuntimeError(
-        "Writes, temporary files, and artifacts must stay under 'artifacts/05-bijux-canon-agent/test/'"
+        "Writes, temporary files, and artifacts must stay under 'artifacts/bijux-canon-agent/test/'"
     )
 
 
@@ -158,11 +158,11 @@ def enforce_git_clean() -> Generator[None, None, None]:
     after = _git_untracked(MONOREPO_ROOT)
     new = after - before
     disallowed = [
-        path for path in new if not path.startswith("artifacts/05-bijux-canon-agent/test/")
+        path for path in new if not path.startswith("artifacts/bijux-canon-agent/test/")
     ]
     if disallowed:
         pytest.fail(
-            "Untracked paths appeared outside artifacts/05-bijux-canon-agent/test/: "
+            "Untracked paths appeared outside artifacts/bijux-canon-agent/test/: "
             + ", ".join(disallowed)
         )
 
