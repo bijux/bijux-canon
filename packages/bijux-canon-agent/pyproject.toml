@@ -69,10 +69,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/bijux-canon/bijux-canon-agent/"
+Homepage = "https://bijux.io/bijux-canon/05-bijux-canon-agent/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
-Documentation = "https://bijux.io/bijux-canon/bijux-canon-agent/"
+Documentation = "https://bijux.io/bijux-canon/05-bijux-canon-agent/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
