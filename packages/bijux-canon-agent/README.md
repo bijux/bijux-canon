@@ -52,7 +52,7 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 - previous import root: `bijux_agent`
 - previous command: `bijux-agent`
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: `bijux/bijux-agent` (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+- retired repository target: [https://github.com/bijux/bijux-agent](https://github.com/bijux/bijux-agent) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
 ## What this package owns
 

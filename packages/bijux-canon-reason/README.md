@@ -51,7 +51,7 @@ you are outside this package's boundary.
 - legacy import root: `bijux_rar`
 - legacy command: `bijux-rar`
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: `bijux/bijux-rar` (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+- retired repository target: [https://github.com/bijux/bijux-rar](https://github.com/bijux/bijux-rar) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
 ## What this package owns
 

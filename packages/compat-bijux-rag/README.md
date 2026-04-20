@@ -48,7 +48,7 @@ Its package handbook lives at
 - new installs should use `uv add bijux-canon-ingest`
 - existing automation can stay on `bijux-rag` while you update imports and commands
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: `bijux/bijux-rag` (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+- retired repository target: [https://github.com/bijux/bijux-rag](https://github.com/bijux/bijux-rag) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
 ## Publication status
 
