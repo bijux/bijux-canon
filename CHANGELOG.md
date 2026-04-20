@@ -10,11 +10,17 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
-## 0.3.6 - Unreleased
+## 0.3.6 - 2026-04-20
 
 ### Changed
 
-- Prepared repository-level release notes for the `0.3.6` line and aligned maintainer-facing README release-readiness guidance with changelog ownership.
+- Finalized repository-level `0.3.6` release notes and aligned maintainer-facing README release-readiness guidance with changelog ownership.
+- Synced governed GitHub standards outputs from `bijux-std` to keep release and policy automation aligned.
+- Finalized package-level `0.3.6` changelog entries across canonical and compatibility distributions.
+
+### Fixed
+
+- Removed stale release-readiness guidance from the root README so release intent is tracked only in changelogs and current automation documentation.
 
 ## 0.3.5 - 2026-04-19
 

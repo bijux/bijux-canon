@@ -5,11 +5,11 @@ All notable changes to `bijux-canon-ingest` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
-## [0.3.6] - Unreleased
+## [0.3.6] - 2026-04-20
 
 ### Changed
 
-- Prepared the package changelog for the upcoming `0.3.6` release line and aligned release-readiness notes in the package README.
+- Finalized the `0.3.6` package release entry and aligned release-readiness notes in the package README.
 
 ## [0.3.5] - 2026-04-19
 

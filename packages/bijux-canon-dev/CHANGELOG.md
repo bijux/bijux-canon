@@ -6,11 +6,15 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
-## 0.3.6 - Unreleased
+## 0.3.6 - 2026-04-20
 
 ### Changed
 
-- Prepared the package changelog for the upcoming `0.3.6` release line and aligned release-readiness notes in the package README.
+- Finalized the `0.3.6` package release entry and aligned release-readiness notes in the package README.
+
+### Fixed
+
+- Refreshed repository-workflow governance tests to match the current standards-sync and policy workflow contracts.
 
 ## 0.3.5 - 2026-04-19
 
