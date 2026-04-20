@@ -187,9 +187,3 @@ visible, and repository policy discoverable for both human readers and tooling.
 ## License
 
 This repository is licensed under the Apache License 2.0. Copyright 2026 Bijan Mousavi <bijan@bijux.io>. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
-
-## Release Readiness
-
-- upcoming release line: `0.3.6`
-- repository changelog: [`CHANGELOG.md`](CHANGELOG.md)
-- package changelogs: under [`packages/*/CHANGELOG.md`](packages)
