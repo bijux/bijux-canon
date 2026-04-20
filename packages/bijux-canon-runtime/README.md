@@ -29,11 +29,11 @@
 [![bijux-rar](https://img.shields.io/badge/bijux--rar-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
 [![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
-[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
-[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
-[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
-[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
-[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
+[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
+[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
+[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
+[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
 `bijux-canon-runtime` is the package that decides whether and how a flow runs,
@@ -50,8 +50,8 @@ here.
 - compatibility package: [`agentic-flows`](https://pypi.org/project/agentic-flows/)
 - legacy import root: `agentic_flows`
 - legacy command: `agentic-flows`
-- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
-- retired repository target: <https://github.com/bijux/agentic-flows>
+- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- retired repository target: `bijux/agentic-flows` (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
 ## What this package owns
 
@@ -77,11 +77,11 @@ here.
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon/bijux-canon-runtime/)
-- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-runtime/foundation/ownership-boundary/)
-- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-runtime/architecture/)
-- [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-runtime/interfaces/)
-- [Release and versioning](https://bijux.io/bijux-canon/bijux-canon-runtime/operations/release-and-versioning/)
+- [Package guide](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+- [Ownership boundary](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/)
+- [Interface contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/)
+- [Release and versioning](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/release-and-versioning/)
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md)
 

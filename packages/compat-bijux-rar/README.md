@@ -29,11 +29,11 @@
 [![bijux-rag](https://img.shields.io/badge/bijux--rag-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rag)
 [![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
-[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
-[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
-[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
-[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
-[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
+[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
+[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
+[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
+[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
 `bijux-rar` is the continuation of the published `bijux-rar` distribution on
@@ -41,14 +41,14 @@ PyPI. Each release keeps the legacy distribution, import, and command surfaces
 available while installing `bijux-canon-reason` at the same version.
 
 Its package handbook lives at
-<https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/>.
+[Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/).
 
 ## Migration note
 
 - new installs should use `uv add bijux-canon-reason`
 - existing automation can stay on `bijux-rar` while you update imports and commands
-- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
-- retired repository target: <https://github.com/bijux/bijux-rar>
+- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- retired repository target: `bijux/bijux-rar` (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
 ## Publication status
 
@@ -72,11 +72,11 @@ Its package handbook lives at
 
 Use `bijux-canon-reason` directly:
 
-- package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason>
-- legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/>
-- package docs: <https://bijux.io/bijux-canon/bijux-canon-reason/>
-- migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
-- changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md>
+- package directory: [Canonical package source directory](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason)
+- legacy package handbook: [Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/)
+- package docs: [Canonical package handbook](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
+- migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md)
 
 ## Primary entrypoint
 
@@ -84,10 +84,10 @@ Use `bijux-canon-reason` directly:
 
 ## Package contents
 
-- <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/pyproject.toml>
-- <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/hatch_build.py>
-- <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/overview.md>
-- <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md>
+- [`pyproject.toml`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/pyproject.toml)
+- [`hatch_build.py`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/hatch_build.py)
+- [`overview.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/overview.md)
+- [`CHANGELOG.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md)
 
 ## Release Readiness
 
