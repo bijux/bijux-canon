@@ -10,6 +10,12 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## 0.3.6 - Unreleased
+
+### Changed
+
+- Prepared repository-level release notes for the `0.3.6` line and aligned maintainer-facing README release-readiness guidance with changelog ownership.
+
 ## 0.3.5 - 2026-04-19
 
 ### Changed
