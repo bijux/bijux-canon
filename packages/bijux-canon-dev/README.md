@@ -40,3 +40,8 @@ repository healthy rather than to run the product, it should usually live here.
 - [Quality gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/quality-gates/)
 - [Release support](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/release-support/)
 - [Changelog](CHANGELOG.md)
+
+## Release Readiness
+
+- upcoming release line: `0.3.6`
+- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

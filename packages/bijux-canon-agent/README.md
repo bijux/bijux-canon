@@ -89,3 +89,8 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 ## Primary entrypoint
 
 - console script: `bijux-canon-agent`
+
+## Release Readiness
+
+- upcoming release line: `0.3.6`
+- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

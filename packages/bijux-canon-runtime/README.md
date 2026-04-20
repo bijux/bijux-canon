@@ -88,3 +88,8 @@ here.
 ## Primary entrypoint
 
 - console script: `bijux-canon-runtime`
+
+## Release Readiness
+
+- upcoming release line: `0.3.6`
+- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

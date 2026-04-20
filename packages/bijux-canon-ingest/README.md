@@ -89,3 +89,8 @@ This package should help a maintainer answer practical questions such as:
 ## Primary entrypoint
 
 - console script: `bijux-canon-ingest`
+
+## Release Readiness
+
+- upcoming release line: `0.3.6`
+- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

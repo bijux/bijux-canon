@@ -88,3 +88,8 @@ you are outside this package's boundary.
 ## Primary entrypoint
 
 - console script: `bijux-canon-reason`
+
+## Release Readiness
+
+- upcoming release line: `0.3.6`
+- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
