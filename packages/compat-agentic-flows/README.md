@@ -29,11 +29,11 @@
 [![bijux-rar](https://img.shields.io/badge/bijux--rar-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
 [![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
-[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
-[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
-[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
-[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
-[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
+[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
+[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
+[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
+[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
 `agentic-flows` is the continuation of the published `agentic-flows`
@@ -43,14 +43,14 @@ version.
 
 This package exists to reduce migration breakage, not to become the preferred
 entrypoint for new work. Its package handbook lives at
-<https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/>.
+[legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/).
 
 ## Migration note
 
 - new installs should use `uv add bijux-canon-runtime`
 - existing automation can stay on `agentic-flows` while you update imports and commands
-- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
-- retired repository target: <https://github.com/bijux/agentic-flows>
+- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- retired repository target: `bijux/agentic-flows` (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
 ## Publication status
 
@@ -74,11 +74,11 @@ entrypoint for new work. Its package handbook lives at
 
 Depend on `bijux-canon-runtime` directly and read the canonical docs there:
 
-- package directory: <https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime>
-- legacy package handbook: <https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/>
-- package docs: <https://bijux.io/bijux-canon/bijux-canon-runtime/>
-- migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
-- changelog: <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md>
+- package directory: [Canonical package source directory](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime)
+- legacy package handbook: [Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
+- package docs: [Canonical package handbook](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+- migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md)
 
 ## Primary entrypoint
 
@@ -86,10 +86,10 @@ Depend on `bijux-canon-runtime` directly and read the canonical docs there:
 
 ## Package contents
 
-- <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/pyproject.toml>
-- <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/hatch_build.py>
-- <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/overview.md>
-- <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md>
+- [`pyproject.toml`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/pyproject.toml)
+- [`hatch_build.py`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/hatch_build.py)
+- [`overview.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/overview.md)
+- [`CHANGELOG.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md)
 
 ## Release Readiness
 
