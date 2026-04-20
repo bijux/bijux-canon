@@ -29,11 +29,11 @@
 [![bijux-rar](https://img.shields.io/badge/bijux--rar-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-rar)
 [![bijux-vex](https://img.shields.io/badge/bijux--vex-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-vex)
 
-[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-agent/)
-[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-runtime/)
-[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-ingest/)
-[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-reason/)
-[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
+[![bijux-canon-agent docs](https://img.shields.io/badge/docs-agent-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
+[![bijux-canon-runtime docs](https://img.shields.io/badge/docs-runtime-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+[![bijux-canon-ingest docs](https://img.shields.io/badge/docs-ingest-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
+[![bijux-canon-reason docs](https://img.shields.io/badge/docs-reason-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
+[![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
 `bijux-canon-agent` is the package that turns a declared agent workflow into a
@@ -51,8 +51,8 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 - compatibility package: [`bijux-agent`](https://pypi.org/project/bijux-agent/)
 - previous import root: `bijux_agent`
 - previous command: `bijux-agent`
-- canonical migration guide: <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
-- retired repository target: <https://github.com/bijux/bijux-agent>
+- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- retired repository target: [https://github.com/bijux/bijux-agent](https://github.com/bijux/bijux-agent) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
 ## What this package owns
 
@@ -78,11 +78,11 @@ authority, you are probably looking for `bijux-canon-runtime` instead.
 
 ## Read this next
 
-- [Package guide](https://bijux.io/bijux-canon/bijux-canon-agent/)
-- [Ownership boundary](https://bijux.io/bijux-canon/bijux-canon-agent/foundation/ownership-boundary/)
-- [Architecture overview](https://bijux.io/bijux-canon/bijux-canon-agent/architecture/)
-- [Interface contracts](https://bijux.io/bijux-canon/bijux-canon-agent/interfaces/)
-- [Operator workflows](https://bijux.io/bijux-canon/bijux-canon-agent/interfaces/operator-workflows/)
+- [Package guide](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
+- [Ownership boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/)
+- [Architecture overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/)
+- [Interface contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/)
+- [Operator workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/operator-workflows/)
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md)
 
