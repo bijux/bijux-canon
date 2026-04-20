@@ -90,3 +90,8 @@ Depend on `bijux-canon-runtime` directly and read the canonical docs there:
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/hatch_build.py>
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/overview.md>
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md>
+
+## Release Readiness
+
+- upcoming release line: `0.3.6`
+- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

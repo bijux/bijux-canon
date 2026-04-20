@@ -88,3 +88,8 @@ Use `bijux-canon-ingest` directly:
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/hatch_build.py>
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/overview.md>
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md>
+
+## Release Readiness
+
+- upcoming release line: `0.3.6`
+- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

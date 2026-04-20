@@ -88,3 +88,8 @@ Use `bijux-canon-reason` directly:
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/hatch_build.py>
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/overview.md>
 - <https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md>
+
+## Release Readiness
+
+- upcoming release line: `0.3.6`
+- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

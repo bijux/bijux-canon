@@ -8,6 +8,12 @@ name while the canonical package lives at `bijux-canon-ingest`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
+## 0.3.6 - Unreleased
+
+### Changed
+
+- Prepared the package changelog for the upcoming `0.3.6` release line and aligned release-readiness notes in the package README.
+
 ## 0.3.5 - 2026-04-19
 
 ### Changed
