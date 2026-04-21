@@ -20,35 +20,12 @@ Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Extensibility Model<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    module1["execution, provenance, and request semantics"]
-    module1 --> page
-    module2["workflow coordination"]
-    module2 --> page
-    module3["backends, adapters, and runtime environment helpers"]
-    module3 --> page
-    code1["src/bijux_canon_index/application"]
-    page --> code1
-    code2["src/bijux_canon_index/infra"]
-    page --> code2
-    code3["src/bijux_canon_index/domain"]
-    page --> code3
-    pressure1["tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/conformance and tests/compat_v01 for compatibility behavior"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/unit for API, application, contracts, domain, infra, and tooling"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
+graph TD
+    A[Extensibility Model] --> B[Extension point]
+    B --> C[Contract guardrails]
+    C --> D[Adapter or backend plugin]
+    D --> E[Compatibility checks]
+    E --> F[Safe extension adoption]
 ```
 
 ## Likely Extension Areas
