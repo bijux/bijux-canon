@@ -18,35 +18,12 @@ Treat the foundation pages for `bijux-canon-index` as the package's durable self
 ## Visual Summary
 
 ```mermaid
-flowchart LR
-    page["Foundation<br/>clarifies: own the right work | name the boundary | compare neighbors"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    own1["provenance-aware result artifacts and replay-oriented comparison"]
-    own1 --> page
-    own2["plugin-backed vector store, embedding, and runner integration"]
-    own2 --> page
-    own3["vector execution semantics and backend orchestration"]
-    own3 --> page
-    limit1["repository maintenance automation"]
-    page -.keeps outside.-> limit1
-    limit2["document ingestion and normalization"]
-    page -.keeps outside.-> limit2
-    limit3["runtime-wide replay policy and execution governance"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-index/src/bijux_canon_index"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-index/tests"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-index"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+graph TD
+    A[Foundation] --> B[Index package identity]
+    B --> C[Retrieval and vector responsibilities]
+    C --> D[Ownership boundaries]
+    D --> E[Repository fit]
+    E --> F[Route to next section]
 ```
 
 ## Pages in This Section
