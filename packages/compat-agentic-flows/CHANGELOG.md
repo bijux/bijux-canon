@@ -9,6 +9,12 @@ Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed. Releases that shipped without a
 changelog update are reconstructed from tag annotations and release diffs.
 
+## 0.3.7 - 2026-04-21
+
+### Changed
+
+- Updated compatibility package README links to readable markdown hyperlink text and aligned migration/navigation targets with canonical runtime handbook routes.
+
 ## 0.3.6 - 2026-04-20
 
 ### Changed

@@ -6,6 +6,12 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
+## 0.3.7 - 2026-04-21
+
+### Changed
+
+- Refreshed maintainer-governance coverage for synchronized standards manifests, reusable CI pin updates, and policy-check workflow alignment.
+
 ## 0.3.6 - 2026-04-20
 
 ### Changed

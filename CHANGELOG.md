@@ -10,6 +10,19 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## 0.3.7 - 2026-04-21
+
+### Changed
+
+- Synchronized repository governance outputs from `bijux-std`, including shared standards manifests and reusable CI pin references.
+- Updated root and package README link text to readable markdown hyperlinks and aligned package docs URL contracts with canonical numbered handbook routes.
+- Reworked compatibility migration guidance into an actionable runbook under `docs/08-compat-packages/migration/`.
+
+### Fixed
+
+- Verify badge rendering now tracks the `main` branch badge signal instead of branch-agnostic display noise.
+- Repository docs and package metadata links now resolve canonical handbook paths without obsolete route references.
+
 ## 0.3.6 - 2026-04-20
 
 ### Changed
