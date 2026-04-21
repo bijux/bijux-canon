@@ -21,35 +21,12 @@ Treat the foundation pages for `bijux-canon-ingest` as the package's durable sel
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Ownership Boundary<br/>clarifies: own the right work | name the boundary | compare neighbors"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    own1["document cleaning, normalization, and chunking"]
-    own1 --> page
-    own2["ingest-local retrieval and indexing assembly"]
-    own2 --> page
-    own3["package-local CLI and HTTP boundaries"]
-    own3 --> page
-    limit1["runtime-wide replay authority and persistence"]
-    page -.keeps outside.-> limit1
-    limit2["cross-package vector execution semantics"]
-    page -.keeps outside.-> limit2
-    limit3["repository maintenance automation"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-ingest/tests"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-ingest"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-ingest/src/bijux_canon_ingest"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+graph TD
+    A[Ownership Boundary] --> B[Owned by ingest]
+    A --> C[Not owned by ingest]
+    B --> D[Processing and safeguards]
+    C --> E[Runtime governance and orchestration]
+    D --> F[Clear package authority]
 ```
 
 ## Owned Code Areas
