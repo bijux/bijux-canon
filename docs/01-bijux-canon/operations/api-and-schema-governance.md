@@ -22,40 +22,13 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["API and Schema Governance<br/>clarifies: see schema assets | see drift pressure | review contract changes"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    detail1["apis/"]
-    detail1 --> page
-    detail2["schema hashes"]
-    detail2 -.gives the reader orientation.-> page
-    detail3["OpenAPI and pinned artifacts"]
-    detail3 --> page
-    detail4["drift tooling"]
-    detail4 -.gives the reader orientation.-> page
-    detail5["package tests"]
-    detail5 --> page
-    detail6["repository validation paths"]
-    detail6 -.gives the reader orientation.-> page
-    detail7["see contract movement"]
-    detail7 --> page
-    detail8["avoid schema folklore"]
-    detail8 -.gives the reader orientation.-> page
-    detail9["tie prose back to tracked contract files"]
-    detail9 --> page
-    next1["schemas"]
-    page --> next1
-    next2["maintainer docs"]
-    page --> next2
-    next3["owning package docs"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+graph TD
+    A[Package API behavior] --> B[Schema files under apis]
+    B --> C[Pinned OpenAPI and schema hashes]
+    C --> D[CI drift checks]
+    D --> E{Contract change intentional}
+    E -- Yes --> F[Review and update docs and tests]
+    E -- No --> G[Fail fast and fix mismatch]
 ```
 
 ## Governance Rules

@@ -18,35 +18,12 @@ Treat the interfaces pages for `bijux-canon-ingest` as the bridge between implem
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Interfaces<br/>clarifies: identify contracts | see caller impact | review compatibility"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    surface1["configuration modules under src/bijux_canon_ingest/config"]
-    surface1 --> page
-    surface2["CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py"]
-    surface2 --> page
-    surface3["HTTP boundaries under src/bijux_canon_ingest/interfaces"]
-    surface3 --> page
-    proof1["chunk collections and retrieval-ready records"]
-    page --> proof1
-    proof2["apis/bijux-canon-ingest/v1/schema.yaml"]
-    page --> proof2
-    proof3["normalized document trees"]
-    page --> proof3
-    review1["tests/e2e for package boundary coverage"]
-    review1 -.raises compatibility pressure on.-> page
-    review2["tests/invariants for long-lived repository promises"]
-    review2 -.raises compatibility pressure on.-> page
-    review3["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
-    review3 -.raises compatibility pressure on.-> page
-    class page page;
-    class surface1,surface2,surface3 positive;
-    class proof1,proof2,proof3 anchor;
-    class review1,review2,review3 caution;
+graph TD
+    A[Interfaces] --> B[CLI and API surfaces]
+    B --> C[Configuration and data contracts]
+    C --> D[Artifact and output contracts]
+    D --> E[Public import boundaries]
+    E --> F[Compatibility commitments]
 ```
 
 ## Pages in This Section

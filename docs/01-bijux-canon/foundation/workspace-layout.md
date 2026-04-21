@@ -19,40 +19,16 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Workspace Layout<br/>clarifies: see directory intent | place work quickly | separate root from package"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    detail1["shared workspace automation"]
-    detail1 --> page
-    detail2["place the concern"]
-    detail2 -.gives the reader orientation.-> page
-    detail3["avoid root sprawl"]
-    detail3 --> page
-    detail4["keep ownership visible in the tree"]
-    detail4 -.gives the reader orientation.-> page
-    detail5["packages/"]
-    detail5 --> page
-    detail6["apis/"]
-    detail6 -.gives the reader orientation.-> page
-    detail7["publishable package seams"]
-    detail7 --> page
-    detail8["docs/"]
-    detail8 -.gives the reader orientation.-> page
-    detail9["Makefile and makes/"]
-    detail9 --> page
-    next1["maintainer docs"]
-    page --> next1
-    next2["owning package docs"]
-    page --> next2
-    next3["schemas"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+graph TD
+    A[Change request] --> B{Scope}
+    B -- Package-local --> C[packages/<owner>]
+    C --> D[Package tests and docs]
+    B -- Cross-package --> E[Root orchestration]
+    E --> F[Makefile and makes]
+    E --> G[apis and workflows]
+    D --> H[Reviewable result]
+    F --> H
+    G --> H
 ```
 
 ## Top-Level Directories

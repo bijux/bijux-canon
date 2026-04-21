@@ -22,40 +22,12 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Release and Versioning<br/>clarifies: see release mechanics | see package-version link | understand commit history role"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    detail1["commitizen"]
-    detail1 --> page
-    detail2["tag conventions"]
-    detail2 -.gives the reader orientation.-> page
-    detail3["durable commit intent"]
-    detail3 --> page
-    detail4["_version.py"]
-    detail4 -.gives the reader orientation.-> page
-    detail5["package metadata"]
-    detail5 --> page
-    detail6["release artifacts move with code"]
-    detail6 -.gives the reader orientation.-> page
-    detail7["understand version movement"]
-    detail7 --> page
-    detail8["read durable intent"]
-    detail8 -.gives the reader orientation.-> page
-    detail9["see what changed at package versus workspace level"]
-    detail9 --> page
-    next1["schemas"]
-    page --> next1
-    next2["maintainer docs"]
-    page --> next2
-    next3["owning package docs"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+graph TD
+    A[Conventional commit] --> B[Commitizen message captures intent]
+    B --> C[Tag and version resolved by Hatch VCS]
+    C --> D[Package _version.py updated]
+    D --> E[release workflows publish artifacts]
+    E --> F[Changelog and tags stay auditable]
 ```
 
 ## Shared Release Facts

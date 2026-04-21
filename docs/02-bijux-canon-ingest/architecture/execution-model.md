@@ -22,35 +22,12 @@ Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map o
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Execution Model<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    module1["package workflows"]
-    module1 --> page
-    module2["deterministic document transforms"]
-    module2 --> page
-    module3["retrieval-oriented models and assembly"]
-    module3 --> page
-    code1["src/bijux_canon_ingest/application"]
-    page --> code1
-    code2["src/bijux_canon_ingest/processing"]
-    page --> code2
-    code3["src/bijux_canon_ingest/retrieval"]
-    page --> code3
-    pressure1["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/e2e for package boundary coverage"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/invariants for long-lived repository promises"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
+graph TD
+    A[Execution Model] --> B[Request enters ingest]
+    B --> C[Validation and parse]
+    C --> D[Transform and segment]
+    D --> E[Build retrieval artifacts]
+    E --> F[Return deterministic outputs]
 ```
 
 ## Execution Anchors

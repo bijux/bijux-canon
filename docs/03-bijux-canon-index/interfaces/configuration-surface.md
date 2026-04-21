@@ -21,35 +21,12 @@ Treat the interfaces pages for `bijux-canon-index` as the bridge between impleme
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Configuration Surface<br/>clarifies: identify contracts | see caller impact | review compatibility"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    surface1["OpenAPI schema files under apis/bijux-canon-index/v1"]
-    surface1 --> page
-    surface2["CLI modules under src/bijux_canon_index/interfaces/cli"]
-    surface2 --> page
-    surface3["HTTP app under src/bijux_canon_index/api"]
-    surface3 --> page
-    proof1["vector execution result collections"]
-    page --> proof1
-    proof2["apis/bijux-canon-index/v1/schema.yaml"]
-    page --> proof2
-    proof3["apis/bijux-canon-index/v1/pinned_openapi.json"]
-    page --> proof3
-    review1["tests/unit for API, application, contracts, domain, infra, and tooling"]
-    review1 -.raises compatibility pressure on.-> page
-    review2["tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates"]
-    review2 -.raises compatibility pressure on.-> page
-    review3["tests/conformance and tests/compat_v01 for compatibility behavior"]
-    review3 -.raises compatibility pressure on.-> page
-    class page page;
-    class surface1,surface2,surface3 positive;
-    class proof1,proof2,proof3 anchor;
-    class review1,review2,review3 caution;
+graph TD
+    A[Configuration Surface] --> B[Config sources]
+    B --> C[Normalization and precedence]
+    C --> D[Validated runtime settings]
+    D --> E[Index behavior control]
+    E --> F[Reproducible configuration state]
 ```
 
 ## Configuration Anchors

@@ -37,40 +37,15 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Repository Handbook<br/>clarifies: see the whole system | find the right root page | move to package docs"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    detail1["coordination layer"]
-    detail1 --> page
-    detail2["shared rules only"]
-    detail2 -.gives the reader orientation.-> page
-    detail3["no shadow owner above packages"]
-    detail3 --> page
-    detail4["five canonical packages"]
-    detail4 -.gives the reader orientation.-> page
-    detail5["one accountable flow"]
-    detail5 --> page
-    detail6["clear ownership instead of overlap"]
-    detail6 -.gives the reader orientation.-> page
-    detail7["choose the right handbook"]
-    detail7 --> page
-    detail8["avoid boundary confusion"]
-    detail8 -.gives the reader orientation.-> page
-    detail9["start from the right proof surface"]
-    detail9 --> page
-    next1["owning package docs"]
-    page --> next1
-    next2["schemas"]
-    page --> next2
-    next3["maintainer docs"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+graph TD
+    A[Reader Question] --> B{Repository-wide concern}
+    B -- Yes --> C[Repository Handbook]
+    C --> D[Foundation pages]
+    C --> E[Operations pages]
+    D --> F[Root contracts and boundaries]
+    E --> F
+    B -- No --> G[Owning package handbook]
+    G --> H[Package code and tests]
 ```
 
 ## Sections

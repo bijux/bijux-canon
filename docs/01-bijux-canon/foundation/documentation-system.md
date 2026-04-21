@@ -27,40 +27,15 @@ behavior.
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Documentation System<br/>clarifies: see handbook layout | see honesty rule | understand reader promise"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    detail1["root index"]
-    detail1 --> page
-    detail2["section indexes"]
-    detail2 -.gives the reader orientation.-> page
-    detail3["topic pages that carry proof"]
-    detail3 --> page
-    detail4["bijux-pollenomics"]
-    detail4 -.gives the reader orientation.-> page
-    detail5["bijux-masterclass"]
-    detail5 --> page
-    detail6["shared Bijux docs language"]
-    detail6 -.gives the reader orientation.-> page
-    detail7["self-sufficient docs"]
-    detail7 --> page
-    detail8["less meeting debt"]
-    detail8 -.gives the reader orientation.-> page
-    detail9["diagrams and prose that actually orient readers"]
-    detail9 --> page
-    next1["owning package docs"]
-    page --> next1
-    next2["schemas"]
-    page --> next2
-    next3["maintainer docs"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+graph TD
+    A[Docs landing page] --> B[Repository handbook]
+    B --> C[Foundation section]
+    B --> D[Operations section]
+    C --> E[Design intent and boundaries]
+    D --> F[Workflows and validation paths]
+    E --> G[Concrete anchors in code and schemas]
+    F --> G
+    G --> H[Reviewer verifies claims quickly]
 ```
 
 ## Handbook Shape
