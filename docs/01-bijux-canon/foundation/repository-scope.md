@@ -23,40 +23,14 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-flowchart LR
-    page["Repository Scope<br/>clarifies: see root authority | see root limits | send work back down"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    detail1["shared schemas"]
-    detail1 --> page
-    detail2["workspace governance"]
-    detail2 -.gives the reader orientation.-> page
-    detail3["package-local behavior"]
-    detail3 --> page
-    detail4["shadow implementation"]
-    detail4 -.gives the reader orientation.-> page
-    detail5["hidden override paths"]
-    detail5 --> page
-    detail6["cross-package concern"]
-    detail6 -.gives the reader orientation.-> page
-    detail7["one-package concern"]
-    detail7 --> page
-    detail8["does this belong back in a package?"]
-    detail8 -.gives the reader orientation.-> page
-    detail9["shared workflows"]
-    detail9 --> page
-    next1["maintainer docs"]
-    page --> next1
-    next2["owning package docs"]
-    page --> next2
-    next3["schemas"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+graph TD
+    A[Proposed change] --> B{Cross-package rule}
+    B -- Yes --> C[Repository scope]
+    C --> D[Root assets: apis workflows docs rules]
+    C --> E[No shadow implementation]
+    B -- No --> F[Package scope]
+    F --> G[Owning package handbook and code]
+    F --> H[Keep behavior local]
 ```
 
 ## In Scope
