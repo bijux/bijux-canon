@@ -20,35 +20,12 @@ Treat the operations pages for `bijux-canon-index` as the package's explicit ope
 ## Visual Summary
 
 ```mermaid
-flowchart LR
-    page["Failure Recovery<br/>clarifies: repeat workflows | find diagnostics | release safely"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    step1["CLI modules under src/bijux_canon_index/interfaces/cli"]
-    step1 --> page
-    step2["HTTP app under src/bijux_canon_index/api"]
-    step2 --> page
-    step3["packages/bijux-canon-index/pyproject.toml"]
-    step3 --> page
-    run1["tests/unit for API, application, contracts, domain, infra, and tooling"]
-    page --> run1
-    run2["tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates"]
-    page --> run2
-    run3["tests/conformance and tests/compat_v01 for compatibility behavior"]
-    page --> run3
-    release1["pyproject.toml"]
-    run1 --> release1
-    release2["README.md"]
-    run2 --> release2
-    release3["CHANGELOG.md"]
-    run3 --> release3
-    class page page;
-    class step1,step2,step3 positive;
-    class run1,run2,run3 anchor;
-    class release1,release2,release3 action;
+graph TD
+    A[Failure Recovery] --> B[Detect failed run]
+    B --> C[Classify failure mode]
+    C --> D[Apply recovery path]
+    D --> E[Re-run with traceability]
+    E --> F[Restore stable operation]
 ```
 
 ## Recovery Anchors
