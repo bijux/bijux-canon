@@ -5,6 +5,12 @@ All notable changes to `bijux-canon-index` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## 0.3.7 - 2026-04-21
+
+### Changed
+
+- Updated package README link text to readable markdown hyperlinks and aligned handbook navigation targets with canonical `bijux-canon` routes.
+
 ## 0.3.6 - 2026-04-20
 
 ### Changed
