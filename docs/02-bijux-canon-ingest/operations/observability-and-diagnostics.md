@@ -19,35 +19,12 @@ Treat the operations pages for `bijux-canon-ingest` as the package's explicit op
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Observability and Diagnostics<br/>clarifies: repeat workflows | find diagnostics | release safely"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    step1["packages/bijux-canon-ingest/pyproject.toml"]
-    step1 --> page
-    step2["CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py"]
-    step2 --> page
-    step3["HTTP boundaries under src/bijux_canon_ingest/interfaces"]
-    step3 --> page
-    run1["tests/e2e for package boundary coverage"]
-    page --> run1
-    run2["tests/invariants for long-lived repository promises"]
-    page --> run2
-    run3["tests/unit for module-level behavior across processing, retrieval, and interfaces"]
-    page --> run3
-    release1["pyproject.toml"]
-    run1 --> release1
-    release2["README.md"]
-    run2 --> release2
-    release3["CHANGELOG.md"]
-    run3 --> release3
-    class page page;
-    class step1,step2,step3 positive;
-    class run1,run2,run3 anchor;
-    class release1,release2,release3 action;
+graph TD
+    A[Observability and Diagnostics] --> B[Collect logs and metrics]
+    B --> C[Correlate with ingest run]
+    C --> D[Diagnose failure or slowdown]
+    D --> E[Apply targeted fix]
+    E --> F[Verify improvement]
 ```
 
 ## Diagnostic Anchors
