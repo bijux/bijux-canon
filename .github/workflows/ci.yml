@@ -38,7 +38,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   package:
-    uses: bijux/bijux-std/.github/workflows/reusable-ci-python-packages.yml@c240e0629f69cabe675d4bb43f75e8a072e69cec
+    uses: bijux/bijux-std/.github/workflows/reusable-ci-python-packages.yml@ba0cb9422e16c0d152135bdb529b0e34461bbef7
     with:
       package_slug: "${{ inputs.package_slug }}"
       package_dir: "${{ inputs.package_dir }}"
