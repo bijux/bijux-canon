@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import sys
 import tomllib
@@ -621,19 +622,23 @@ def test_repository_docs_links_avoid_standalone_package_sites() -> None:
         "artifacts",
         "node_modules",
     }
+    allowed_suffixes = {".md", ".toml"}
 
-    for path in REPO_ROOT.rglob("*"):
-        if not path.is_file():
-            continue
-        if path.suffix not in {".md", ".toml"}:
-            continue
-        if any(part in excluded_roots for part in path.parts):
-            continue
-        text = path.read_text(encoding="utf-8")
-        for forbidden_url in FORBIDDEN_STANDALONE_DOC_URLS:
-            if forbidden_url in text:
-                failures.extend(
-                    [f"{path.relative_to(REPO_ROOT)}: contains {forbidden_url}"]
-                )
+    for root, dirs, files in os.walk(REPO_ROOT, topdown=True, followlinks=False):
+        dirs[:] = [entry for entry in dirs if entry not in excluded_roots]
+        root_path = Path(root)
+        for filename in files:
+            path = root_path / filename
+            if path.suffix not in allowed_suffixes:
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            for forbidden_url in FORBIDDEN_STANDALONE_DOC_URLS:
+                if forbidden_url in text:
+                    failures.append(
+                        f"{path.relative_to(REPO_ROOT)}: contains {forbidden_url}"
+                    )
 
     assert not failures, "repository docs URLs failed:\n" + "\n".join(failures)
