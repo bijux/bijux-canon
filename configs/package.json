@@ -6,6 +6,9 @@
     "node": ">=20"
   },
   "type": "commonjs",
+  "overrides": {
+    "postcss": "^8.5.10"
+  },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "2.31.1",
     "@redocly/cli": "2.29.2"
