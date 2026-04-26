@@ -11,6 +11,22 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-runtime` exists to decide when lower-package work becomes an acceptable, persistent, replayable run. It owns governed execution authority so the system can say why one run counts and another does not.
 
+## Role Model
+
+```mermaid
+flowchart LR
+    inputs["lower-package outputs and traces"]
+    runtime["runtime authority"]
+    accepted["accepted run records"]
+    downstream["reviewers and automation"]
+
+    inputs --> runtime --> accepted --> downstream
+```
+
+This page should make runtime feel like the acceptance layer for the whole
+chain. It is where prior work becomes a governed run, not where unresolved
+package-local semantics get renamed as execution policy.
+
 ## Boundary Verdict
 
 If the issue is about acceptance, replay, persistence, or governed execution authority, it belongs here. If it is about how a lower package produced its local output, runtime should consume that result rather than re-own the behavior.
@@ -33,6 +49,8 @@ If the issue is about acceptance, replay, persistence, or governed execution aut
 - `packages/bijux-canon-runtime/src/bijux_canon_runtime/observability` for replay and durable traces
 - `packages/bijux-canon-runtime/tests` for acceptance and persistence evidence
 
-## Bottom Line
+## Design Pressure
 
-If `bijux-canon-runtime` grows in a way that weakens this argument, the package is getting larger without getting clearer.
+The pressure on runtime is to apply authority without re-owning how lower
+packages produced their results. If acceptance policy becomes a hiding place
+for upstream ambiguity, the run record loses its meaning.
