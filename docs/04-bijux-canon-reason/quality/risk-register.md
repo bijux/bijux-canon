@@ -85,10 +85,3 @@ This page explains how `bijux-canon-reason` is supposed to earn trust, but it do
 - open architecture when the proof gap points to structural drift
 - open interfaces or operations when the proof question is really about a contract or workflow
 
-## Purpose
-
-This page keeps long-lived package risks visible to maintainers.
-
-## Stability
-
-Update it when the durable risk profile changes, not for routine day-to-day churn.

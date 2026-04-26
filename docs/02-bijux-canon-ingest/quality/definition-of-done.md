@@ -83,10 +83,3 @@ stop backing the story, the story has to change.
 - open architecture when the proof gap points to structural drift
 - open interfaces or operations when the proof question is really about a contract or workflow
 
-## Purpose
-
-This page shows the package's completion threshold.
-
-## Stability
-
-Keep it aligned with the package validation and release expectations.
