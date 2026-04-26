@@ -18,7 +18,7 @@ turn raw source material into chunks, records, and artifacts that downstream
 packages can index, reason over, and orchestrate without having to reinterpret
 the ingest step from scratch.
 
-## Open This Handbook When
+## Open This Package When
 
 - you need the package-level entrypoint for ingest docs
 - you are checking ingest workflows, chunking, or retrieval preparation
@@ -51,7 +51,7 @@ the ingest step from scratch.
 - open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof expectations, risk
   posture, or a review standard
 
-## Pages In This Handbook
+## Pages In This Package
 
 - [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/)

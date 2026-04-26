@@ -18,7 +18,7 @@ as reasoning rather than as raw search results. It owns the conversion from
 evidence into claims, verification steps, provenance-aware reasoning records,
 and reasoning-side artifacts that should survive review.
 
-## Open This Handbook When
+## Open This Package When
 
 - you need the package-level entrypoint for reasoning docs
 - you are checking reasoning behavior, verification, or provenance
@@ -51,7 +51,7 @@ and reasoning-side artifacts that should survive review.
 - open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is about trust, evidence,
   limitations, or review standards
 
-## Pages In This Handbook
+## Pages In This Package
 
 - [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/)

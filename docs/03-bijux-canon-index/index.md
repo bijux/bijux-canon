@@ -18,7 +18,7 @@ surfaces. It is where embedding execution, index persistence, and retrieval
 behavior need to become explicit enough for downstream reasoning and runtime
 flows to trust.
 
-## Open This Handbook When
+## Open This Package When
 
 - you need the package-level entrypoint for index docs
 - you are checking vector execution, retrieval, or replay-aware index behavior
@@ -51,7 +51,7 @@ flows to trust.
 - open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof expectations, risk
   posture, or review standards
 
-## Pages In This Handbook
+## Pages In This Package
 
 - [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/)

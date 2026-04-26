@@ -34,7 +34,7 @@ replayable, durable, and fit to keep.
 - open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the issue is whether runtime has proven
   a run acceptable rather than merely executable
 
-## Open This Handbook When
+## Open This Package When
 
 - you need the package-level entrypoint for runtime docs
 - you are checking execution, replay, or persistence behavior
@@ -77,7 +77,7 @@ replayable, durable, and fit to keep.
 - open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is about trust, risk,
   invariants, or review standards
 
-## Pages In This Handbook
+## Pages In This Package
 
 - [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/)

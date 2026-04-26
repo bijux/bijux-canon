@@ -19,7 +19,7 @@ workflows. It owns orchestration behavior that should stay deterministic,
 trace-producing, and inspectable enough that readers can tell what an agent did
 without confusing that orchestration layer with the deeper runtime authority.
 
-## Open This Handbook When
+## Open This Package When
 
 - you need the package-level entrypoint for agent docs
 - you are checking orchestration, agent APIs, or trace-producing workflows
@@ -52,7 +52,7 @@ without confusing that orchestration layer with the deeper runtime authority.
 - open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when you need trust posture, proof
   expectations, or review standards
 
-## Pages In This Handbook
+## Pages In This Package
 
 - [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/)
