@@ -9,15 +9,15 @@ last_reviewed: 2026-04-26
 
 # Migration
 
-Use this section to understand how legacy names should be retired
-responsibly instead of merely coexisting forever.
+The migration section covers how legacy names stay alive temporarily, how the
+canonical package family takes over, and what evidence is required before a
+compatibility package can disappear.
 
-It covers the full transition path: how canonical package names replace legacy
-names, what continuity must be preserved while both exist, what validation must
-run during the overlap, and what evidence is required before a compatibility
-package can disappear.
+Migration documentation should bias toward closure, not coexistence. The bridge
+is successful when the canonical package can carry the work alone without
+stranding supported environments.
 
-## Pages In This Section
+## Migration Pages
 
 - [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)
 - [Migration Guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
@@ -29,34 +29,28 @@ package can disappear.
 - [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/)
 - [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/)
 
-## Open This Section When
+## Start With
 
-- you are planning or reviewing a migration away from legacy package names
-- you need the shared rules for compatibility release and retirement decisions
-- you need the future posture of the compatibility layer rather than its current catalog entry
+- Open [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/)
+  when the first need is the exact destination package.
+- Open [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/)
+  when the risk is broken installs, imports, or commands.
+- Open [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/)
+  when the bridge has to be proven through tests, metadata, or repository-wide
+  search.
+- Open [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/)
+  and [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/)
+  when the bridge may be ready to disappear.
 
-## Open Another Section When
+## Proof Path
 
-- the only open question is which exact legacy surface is still preserved
-- the concern is already about current product behavior in a canonical package
-- the issue belongs to maintainer automation rather than compatibility policy
+- `packages/compat-*` for the shipped bridges
+- compatibility package `README.md` files for checked-in target routing
+- canonical handbooks for current behavior
+- release and validation surfaces that prove continuity is still real
 
-## Start Here
+## Completion Rule
 
-- open [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/) when the first need is the exact new package name
-- open [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/) when requirements, imports, or command preservation are the current risk
-- open [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/) when the migration must be proven through tests, metadata, or release checks
-- open [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/) or [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/) when the preserved bridge might be ready to disappear
-
-## Concrete Anchors
-
-- `packages/compat-*` for the shipping compatibility bridges
-- compatibility package `README.md` files for explicit canonical targets
-- canonical package docs under `docs/02-bijux-canon-ingest/` through `docs/06-bijux-canon-runtime/` for current behavior
-
-## Migration Standard
-
-Migration is complete only when preserved names are no longer needed for real
-dependent environments and the canonical package can carry the workload alone
-without hidden breakage. Until then, continuity and validation must stay more
-important than aesthetic cleanup.
+Migration is complete only when the supported environments that needed the
+legacy name no longer depend on it and the canonical package can carry the
+workload without hidden breakage.

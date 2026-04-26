@@ -4,68 +4,30 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Validation Strategy
 
-Compatibility packages are small, but they still need validation for import
-preservation, packaging metadata, and migration pointers.
-
-Small does not mean unimportant. These packages carry trust mainly through
-naming continuity, so the validation has to prove that the bridge still
-points to the right place.
+Compatibility packages are small, but they still need proof. Their trust comes
+from naming continuity, correct metadata, and clear routing to the canonical
+package, so validation has to check those exact surfaces.
 
 ## Validation Focus
 
 - import resolution
 - packaging metadata correctness
-- links and references to the canonical package docs
+- canonical target routing in docs and README files
+- repository-wide evidence that migration is moving forward
 
-## Concrete Anchors
+## Useful Checks
 
-- `packages/compat-*` for the preserved legacy packages
-- the compatibility package `README.md` files for canonical targets
-- the matching canonical package docs for current behavior and new work
+- repository-wide `rg` searches for legacy names
+- package tests or smoke checks that confirm preserved imports still resolve
+- release and metadata checks that keep canonical targets explicit
 
-## Open This Page When
+## First Proof Check
 
-- you are tracing a legacy package name back to its canonical replacement
-- you need migration guidance rather than product implementation detail
-- you are deciding whether a compatibility surface still deserves to exist
-
-## Decision Rule
-
-This page shows what evidence keeps a compatibility
-package trustworthy. If the only reason to keep a preserved name is habit
-rather than a supported dependent environment, plan migration or retirement
-instead.
-
-## What You Can Resolve Here
-
-- which validation signals keep the bridge trustworthy
-- when new work should open the canonical package instead
-- what evidence would justify retiring a compatibility package
-
-## Review Focus
-
-- compare legacy names here with the compatibility package metadata and README targets
-- check that migration advice still points at current canonical docs
-- confirm that compatibility language does not accidentally encourage new work to start here
-
-## Read Next
-
-- open the canonical package docs once the current target package is known:
-  `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
-  `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
-  `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,
-  `https://bijux.io/bijux-canon/05-bijux-canon-agent/`, or
-  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
-- inspect compatibility package metadata if the question is about what remains preserved
-- open `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
-  when validation shows the bridge may be ready for retirement
-
-## Limits
-
-This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
-
+- `packages/compat-*`
+- compatibility package `README.md` files
+- repository validation commands and search evidence

@@ -4,65 +4,32 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Command Surfaces
 
-Some compatibility packages also preserve historic command names so migration
-does not break operator scripts immediately.
+Some compatibility packages preserve legacy CLI names so migration does not
+break operator scripts immediately. A preserved command is a safety rail on the
+way to the canonical package, not a reason to keep new automation on the old
+name.
 
-A preserved command is a safety rail on the way to the canonical package, not a
-new invitation to stay on the old name forever.
+## Current Command Map
 
-## Command Rule
+- `agentic-flows` -> `bijux-canon-runtime`
+- `bijux-agent` -> `bijux-canon-agent`
+- `bijux-rag` -> `bijux-canon-ingest`
+- `bijux-rar` -> `bijux-canon-reason`
+- `bijux-vex` -> `bijux-canon-index`
 
-A compatibility command should only exist when the canonical package still
-provides a meaningful route behind it.
+## Review Rule
 
-## Concrete Anchors
+Keep a compatibility command only when a real supported environment still calls
+it. Once scripts and runbooks move to the canonical command, the compatibility
+name is retirement debt.
 
-- `packages/compat-*` for the preserved legacy packages
-- the compatibility package `README.md` files for canonical targets
-- the matching canonical package docs for current behavior and new work
+## First Proof Check
 
-## Open This Page When
-
-- you are tracing a legacy package name back to its canonical replacement
-- you need migration guidance rather than product implementation detail
-- you are deciding whether a compatibility surface still deserves to exist
-
-## Decision Rule
-
-This page shows whether a preserved command still
-serves a real migration need. If the only reason to keep it is habit rather
-than an identified dependent environment, plan migration or retirement instead.
-
-## What You Can Resolve Here
-
-- which legacy commands are still preserved
-- which canonical CLIs replace them
-- what evidence would justify retiring a compatibility command surface
-
-## Review Focus
-
-- compare legacy names here with the compatibility package metadata and README targets
-- check that migration advice still points at current canonical docs
-- confirm that compatibility language does not accidentally encourage new work to start here
-
-## Read Next
-
-- open the canonical package docs once the current target package is known:
-  `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
-  `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
-  `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,
-  `https://bijux.io/bijux-canon/05-bijux-canon-agent/`, or
-  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
-- inspect compatibility package metadata if the question is about what remains preserved
-- open `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
-  when the question turns into retirement readiness
-
-## Limits
-
-This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
-
+- `packages/compat-*`
+- compatibility package metadata and README files
+- repository-wide search for remaining legacy CLI usage

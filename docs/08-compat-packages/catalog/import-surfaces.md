@@ -4,68 +4,31 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Import Surfaces
 
-Compatibility imports exist only so older code can keep resolving package names
-during migration.
+Compatibility imports exist so older code can keep resolving package names while
+migration is underway. They are continuity aids, not first-class imports for
+new code.
 
-Preserved imports are a migration aid, not a sign that the legacy name regained
-first-class status.
+## Current Import Map
 
-## Current Import Roots
+- `agentic_flows` -> `bijux_canon_runtime`
+- `bijux_agent` -> `bijux_canon_agent`
+- `bijux_rag` -> `bijux_canon_ingest`
+- `bijux_rar` -> `bijux_canon_reason`
+- `bijux_vex` -> `bijux_canon_index`
 
-- `agentic_flows`
-- `bijux_agent`
-- `bijux_rag`
-- `bijux_rar`
-- `bijux_vex`
+## Review Rule
 
-## Concrete Anchors
+A preserved import is justified only while supported code still depends on it.
+New code should use canonical imports even if the compatibility import still
+resolves.
 
-- `packages/compat-*` for the preserved legacy packages
-- the compatibility package `README.md` files for canonical targets
-- the matching canonical package docs for current behavior and new work
+## First Proof Check
 
-## Open This Page When
-
-- you are tracing a legacy package name back to its canonical replacement
-- you need migration guidance rather than product implementation detail
-- you are deciding whether a compatibility surface still deserves to exist
-
-## Decision Rule
-
-This page shows whether a preserved import still serves
-a real migration need. If the only reason to keep it is habit rather than an
-identified dependent environment, plan migration or retirement instead.
-
-## What You Can Resolve Here
-
-- which legacy import roots are still preserved
-- which canonical import roots replace them
-- what evidence would justify retiring a compatibility import surface
-
-## Review Focus
-
-- compare legacy names here with the compatibility package metadata and README targets
-- check that migration advice still points at current canonical docs
-- confirm that compatibility language does not accidentally encourage new work to start here
-
-## Read Next
-
-- open the canonical package docs once the current target package is known:
-  `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
-  `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
-  `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,
-  `https://bijux.io/bijux-canon/05-bijux-canon-agent/`, or
-  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
-- inspect compatibility package metadata if the question is about what remains preserved
-- open `https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/`
-  when the question broadens from one import root to compatibility strategy
-
-## Limits
-
-This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
-
+- `packages/compat-*`
+- compatibility package `README.md` routing
+- repository-wide search for remaining legacy imports

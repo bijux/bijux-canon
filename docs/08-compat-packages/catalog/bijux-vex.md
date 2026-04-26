@@ -4,40 +4,44 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # bijux-vex
 
-`bijux-vex` remains published so existing environments can keep installing the
-legacy index distribution name while moving toward `bijux-canon-index`.
+`bijux-vex` remains published so existing environments can keep using the legacy
+index package name while migrating toward `bijux-canon-index`. New work should start at
+the canonical package, not here.
 
-It is a migration surface, not the preferred package for new work. New
-installations should start with `bijux-canon-index`.
-
-## Canonical replacement
+## Canonical Target
 
 - distribution: `bijux-canon-index`
 - Python import: `bijux_canon_index`
 - command: `bijux-canon-index`
-- package handbook: <https://bijux.io/bijux-canon/bijux-canon-index/>
+- package handbook: <https://bijux.io/bijux-canon/03-bijux-canon-index/>
 
-## What the compatibility package preserves
+## Preserved Surfaces
 
-- the published `bijux-vex` distribution name on PyPI
+- the published `bijux-vex` distribution name
 - the `bijux_vex` Python import surface
-- the `bijux-vex` console command
+- the `bijux-vex` command name
 
-## Migration direction
+## When To Keep It
 
-- install `bijux-canon-index` for new environments
-- keep `bijux-vex` only while existing automation still depends on the legacy
-  name
-- use the shared migration handbook for rename planning and retirement review:
-  <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
+Keep `bijux-vex` only while a documented dependent environment still relies on
+the legacy name. Once installs, imports, and command usage move to `bijux-canon-index`,
+the compatibility package becomes retirement debt.
 
-## Repository transition
+## First Proof Check
 
-The former standalone repository at <https://github.com/bijux/bijux-vex> is
-being retired in favor of the unified monorepo at
-<https://github.com/bijux/bijux-canon>.
+- `packages/compat-bijux-vex`
+- the compatibility package `README.md`
+- the canonical handbook at <https://bijux.io/bijux-canon/03-bijux-canon-index/>
+- shared retirement rules in
+  <https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/>
+
+## Repository Transition
+
+The former standalone repository at <https://github.com/bijux/bijux-vex> is retired in favor of
+<https://github.com/bijux/bijux-canon>. The legacy package remains only as a
+bridge to the canonical package inside the monorepo.
