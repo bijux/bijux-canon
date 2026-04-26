@@ -18,12 +18,27 @@ Treat the interfaces pages for `bijux-canon-ingest` as the bridge between implem
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Interfaces] --> B[CLI and API surfaces]
-    B --> C[Configuration and data contracts]
-    C --> D[Artifact and output contracts]
-    D --> E[Public import boundaries]
-    E --> F[Compatibility commitments]
+flowchart LR
+    caller["bijux-canon-ingest<br/>interface questions"]
+    cli["CLI and operator entrypoints"]
+    api["HTTP and schema surfaces"]
+    config["Configuration and data shapes"]
+    imports["Python import boundary"]
+    compatibility["What needs compatibility review"]
+    caller --> cli
+    caller --> api
+    caller --> config
+    caller --> imports
+    caller --> compatibility
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class caller page;
+    class cli,api positive;
+    class config,imports anchor;
+    class compatibility action;
 ```
 
 ## Pages in This Section

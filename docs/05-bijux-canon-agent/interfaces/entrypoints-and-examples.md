@@ -21,34 +21,20 @@ Treat the interfaces pages for `bijux-canon-agent` as the bridge between impleme
 
 ```mermaid
 flowchart LR
-    page["Entrypoints and Examples<br/>clarifies: identify contracts | see caller impact | review compatibility"]
+    reader["Reader wants a concrete example"]
+    entry["Entrypoint<br/>CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py"]
+    examples["Examples and fixtures<br/>tests/e2e and tests/fixtures as executable<br/>config/execution_policy.yaml as a concrete policy"]
+    proof["Executable proof<br/>tests/integration and tests/e2e for end-to-end"]
+    reader --> entry --> examples --> proof
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    surface1["operator configuration under src/bijux_canon_agent/config"]
-    surface1 --> page
-    surface2["HTTP-adjacent modules under src/bijux_canon_agent/api"]
-    surface2 --> page
-    surface3["CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py"]
-    surface3 --> page
-    proof1["apis/bijux-canon-agent/v1/schema.yaml"]
-    page --> proof1
-    proof2["trace-backed final outputs"]
-    page --> proof2
-    proof3["workflow graph execution records"]
-    page --> proof3
-    review1["tests/invariants for package promises that should not drift"]
-    review1 -.raises compatibility pressure on.-> page
-    review2["tests/unit for local behavior and utility coverage"]
-    review2 -.raises compatibility pressure on.-> page
-    review3["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    review3 -.raises compatibility pressure on.-> page
-    class page page;
-    class surface1,surface2,surface3 positive;
-    class proof1,proof2,proof3 anchor;
-    class review1,review2,review3 caution;
+    class reader page;
+    class entry positive;
+    class examples anchor;
+    class proof action;
 ```
 
 ## Entrypoints

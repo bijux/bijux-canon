@@ -21,12 +21,21 @@ Treat the interfaces pages for `bijux-canon-index` as the bridge between impleme
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Public Imports] --> B[Public import path]
-    B --> C[Supported symbols]
-    C --> D[Usage boundary]
-    D --> E[Deprecation or migration rule]
-    E --> F[Stable import contract]
+flowchart LR
+    caller["Python caller"]
+    root["Import root<br/>bijux_canon_index"]
+    boundary["Source boundary<br/>packages/bijux-canon-index/src/bijux_canon_index"]
+    proof["Compatibility proof<br/>tests/conformance and tests/compat_v01 for compatibility"]
+    caller --> root --> boundary --> proof
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class caller positive;
+    class root page;
+    class boundary anchor;
+    class proof action;
 ```
 
 ## Import Anchor

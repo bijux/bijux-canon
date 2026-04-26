@@ -21,12 +21,21 @@ Treat the interfaces pages for `bijux-canon-index` as the bridge between impleme
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Configuration Surface] --> B[Config sources]
-    B --> C[Normalization and precedence]
-    C --> D[Validated runtime settings]
-    D --> E[Index behavior control]
-    E --> F[Reproducible configuration state]
+flowchart LR
+    source["Config source<br/>CLI flags, env, or files"]
+    boundary["Boundary loader<br/>OpenAPI schema files under apis/bijux-canon-index/v1"]
+    behavior["Runtime behavior"]
+    review["Review with<br/>tests/unit for API, application, contracts"]
+    source --> boundary --> behavior --> review
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class source anchor;
+    class boundary page;
+    class behavior positive;
+    class review action;
 ```
 
 ## Configuration Anchors

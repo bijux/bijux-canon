@@ -21,12 +21,21 @@ Treat the interfaces pages for `bijux-canon-index` as the bridge between impleme
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Artifact Contracts] --> B[Index run output]
-    B --> C[Artifact shape and metadata]
-    C --> D[Hash and provenance fields]
-    D --> E[Consumer expectations]
-    E --> F[Auditable artifact contract]
+flowchart LR
+    run["Package run"]
+    artifact1["Artifact<br/>vector execution result collections"]
+    artifact2["Artifact<br/>provenance and replay comparison reports"]
+    consumers["Downstream reader, operator, or replay path"]
+    run --> artifact1 --> consumers
+    run --> artifact2 --> consumers
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class run page;
+    class artifact1,artifact2 positive;
+    class consumers action;
 ```
 
 ## Current Artifacts

@@ -20,12 +20,21 @@ Treat the interfaces pages for `bijux-canon-ingest` as the bridge between implem
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Entrypoints and Examples] --> B[Documented entrypoint]
-    B --> C[Example invocation]
-    C --> D[Expected inputs]
-    D --> E[Expected outputs]
-    E --> F[Executable understanding]
+flowchart LR
+    reader["Reader wants a concrete example"]
+    entry["Entrypoint<br/>CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py"]
+    examples["Examples and fixtures<br/>package README for entry framing<br/>tests/e2e fixtures for executable usage"]
+    proof["Executable proof<br/>tests/e2e for package boundary coverage"]
+    reader --> entry --> examples --> proof
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class reader page;
+    class entry positive;
+    class examples anchor;
+    class proof action;
 ```
 
 ## Entrypoints

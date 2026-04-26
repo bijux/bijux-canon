@@ -20,35 +20,21 @@ Treat the interfaces pages for `bijux-canon-agent` as the bridge between impleme
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Operator Workflows<br/>clarifies: identify contracts | see caller impact | review compatibility"]
+flowchart LR
+    operator["Operator task"]
+    entry["Entrypoint<br/>bijux-canon-agent<br/>operator configuration under src/bijux_canon_agent/config"]
+    output["Reviewable output<br/>trace-backed final outputs"]
+    validate["Validate with<br/>tests/integration and tests/e2e for end-to-end"]
+    operator --> entry --> output --> validate
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    surface1["HTTP-adjacent modules under src/bijux_canon_agent/api"]
-    surface1 --> page
-    surface2["CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py"]
-    surface2 --> page
-    surface3["operator configuration under src/bijux_canon_agent/config"]
-    surface3 --> page
-    proof1["workflow graph execution records"]
-    page --> proof1
-    proof2["apis/bijux-canon-agent/v1/schema.yaml"]
-    page --> proof2
-    proof3["trace-backed final outputs"]
-    page --> proof3
-    review1["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    review1 -.raises compatibility pressure on.-> page
-    review2["tests/invariants for package promises that should not drift"]
-    review2 -.raises compatibility pressure on.-> page
-    review3["tests/unit for local behavior and utility coverage"]
-    review3 -.raises compatibility pressure on.-> page
-    class page page;
-    class surface1,surface2,surface3 positive;
-    class proof1,proof2,proof3 anchor;
-    class review1,review2,review3 caution;
+    class operator page;
+    class entry positive;
+    class output action;
+    class validate anchor;
 ```
 
 ## Workflow Anchors

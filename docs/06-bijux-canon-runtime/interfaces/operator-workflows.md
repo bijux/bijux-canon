@@ -20,35 +20,21 @@ Treat the interfaces pages for `bijux-canon-runtime` as the bridge between imple
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Operator Workflows<br/>clarifies: identify contracts | see caller impact | review compatibility"]
+flowchart LR
+    operator["Operator task"]
+    entry["Entrypoint<br/>bijux-canon-runtime<br/>HTTP app in src/bijux_canon_runtime/api/v1"]
+    output["Reviewable output<br/>execution store records"]
+    validate["Validate with<br/>tests/e2e for governed flow behavior"]
+    operator --> entry --> output --> validate
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    surface1["CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py"]
-    surface1 --> page
-    surface2["HTTP app in src/bijux_canon_runtime/api/v1"]
-    surface2 --> page
-    surface3["schema files in apis/bijux-canon-runtime/v1"]
-    surface3 --> page
-    proof1["apis/bijux-canon-runtime/v1/schema.hash"]
-    page --> proof1
-    proof2["execution store records"]
-    page --> proof2
-    proof3["apis/bijux-canon-runtime/v1/schema.yaml"]
-    page --> proof3
-    review1["tests/e2e for governed flow behavior"]
-    review1 -.raises compatibility pressure on.-> page
-    review2["tests/regression and tests/smoke for replay and storage protection"]
-    review2 -.raises compatibility pressure on.-> page
-    review3["tests/unit for api, contracts, core, interfaces, model, and runtime"]
-    review3 -.raises compatibility pressure on.-> page
-    class page page;
-    class surface1,surface2,surface3 positive;
-    class proof1,proof2,proof3 anchor;
-    class review1,review2,review3 caution;
+    class operator page;
+    class entry positive;
+    class output action;
+    class validate anchor;
 ```
 
 ## Workflow Anchors

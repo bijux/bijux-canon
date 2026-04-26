@@ -21,34 +21,20 @@ Treat the interfaces pages for `bijux-canon-reason` as the bridge between implem
 
 ```mermaid
 flowchart LR
-    page["Operator Workflows<br/>clarifies: identify contracts | see caller impact | review compatibility"]
+    operator["Operator task"]
+    entry["Entrypoint<br/>bijux-canon-reason<br/>HTTP app in src/bijux_canon_reason/api/v1"]
+    output["Reviewable output<br/>reasoning traces and replay diffs"]
+    validate["Validate with<br/>tests/e2e for API, CLI, replay"]
+    operator --> entry --> output --> validate
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    surface1["HTTP app in src/bijux_canon_reason/api/v1"]
-    surface1 --> page
-    surface2["schema files in apis/bijux-canon-reason/v1"]
-    surface2 --> page
-    surface3["CLI app in src/bijux_canon_reason/interfaces/cli"]
-    surface3 --> page
-    proof1["reasoning traces and replay diffs"]
-    page --> proof1
-    proof2["apis/bijux-canon-reason/v1/schema.yaml"]
-    page --> proof2
-    proof3["apis/bijux-canon-reason/v1/pinned_openapi.json"]
-    page --> proof3
-    review1["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
-    review1 -.raises compatibility pressure on.-> page
-    review2["tests/perf for retrieval benchmark coverage"]
-    review2 -.raises compatibility pressure on.-> page
-    review3["tests/unit for planning, reasoning, execution, verification, and interfaces"]
-    review3 -.raises compatibility pressure on.-> page
-    class page page;
-    class surface1,surface2,surface3 positive;
-    class proof1,proof2,proof3 anchor;
-    class review1,review2,review3 caution;
+    class operator page;
+    class entry positive;
+    class output action;
+    class validate anchor;
 ```
 
 ## Workflow Anchors
