@@ -22,13 +22,21 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Package API behavior] --> B[Schema files under apis]
-    B --> C[Pinned OpenAPI and schema hashes]
-    C --> D[CI drift checks]
-    D --> E{Contract change intentional}
-    E -- Yes --> F[Review and update docs and tests]
-    E -- No --> G[Fail fast and fix mismatch]
+flowchart LR
+    code["Code changes"]
+    schema["Tracked schema in apis/"]
+    checks["Drift and validation checks"]
+    review["Review the contract delta"]
+    code --> schema --> checks --> review
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class code page;
+    class schema anchor;
+    class checks positive;
+    class review action;
 ```
 
 ## Governance Rules

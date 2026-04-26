@@ -27,15 +27,26 @@ behavior.
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Docs landing page] --> B[Repository handbook]
-    B --> C[Foundation section]
-    B --> D[Operations section]
-    C --> E[Design intent and boundaries]
-    D --> F[Workflows and validation paths]
-    E --> G[Concrete anchors in code and schemas]
-    F --> G
-    G --> H[Reviewer verifies claims quickly]
+flowchart TB
+    home["Home page"]
+    repo["Repository handbook"]
+    product["Five product handbooks"]
+    maintain["Maintenance handbook"]
+    compat["Compatibility handbook"]
+    home --> repo
+    home --> product
+    home --> maintain
+    home --> compat
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class home page;
+    class repo anchor;
+    class product positive;
+    class maintain action;
+    class compat caution;
 ```
 
 ## Handbook Shape

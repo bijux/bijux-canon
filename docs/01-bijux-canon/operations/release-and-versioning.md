@@ -22,12 +22,21 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Conventional commit] --> B[Commitizen message captures intent]
-    B --> C[Tag and version resolved by Hatch VCS]
-    C --> D[Package _version.py updated]
-    D --> E[release workflows publish artifacts]
-    E --> F[Changelog and tags stay auditable]
+flowchart LR
+    change["Release-ready change"]
+    notes["Update changelog and version metadata"]
+    workflows["Release workflows publish the result"]
+    packages["Package artifacts stay aligned"]
+    change --> notes --> workflows --> packages
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class change page;
+    class notes anchor;
+    class workflows action;
+    class packages positive;
 ```
 
 ## Shared Release Facts

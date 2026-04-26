@@ -26,12 +26,21 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Code or contract change] --> B[Package unit and integration tests]
-    B --> C[Package e2e and invariants]
-    C --> D[Repository-level checks]
-    D --> E[Schema drift and CI policy gates]
-    E --> F[Release-ready confidence]
+flowchart LR
+    change["Shared or cross-package change"]
+    package["Run package-local proof first"]
+    root["Run root checks for shared surfaces"]
+    review["Keep docs, schemas, and tests aligned"]
+    change --> package --> root --> review
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class change page;
+    class package positive;
+    class root anchor;
+    class review action;
 ```
 
 ## Validation Layers

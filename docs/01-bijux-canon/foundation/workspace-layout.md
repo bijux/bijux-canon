@@ -19,16 +19,27 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Change request] --> B{Scope}
-    B -- Package-local --> C[packages/<owner>]
-    C --> D[Package tests and docs]
-    B -- Cross-package --> E[Root orchestration]
-    E --> F[Makefile and makes]
-    E --> G[apis and workflows]
-    D --> H[Reviewable result]
-    F --> H
-    G --> H
+flowchart TB
+    root["Workspace root"]
+    docs["docs/<br/>published handbook source"]
+    packages["packages/<br/>publishable units"]
+    apis["apis/<br/>tracked API contracts"]
+    makes["makes/<br/>shared make modules"]
+    workflows[".github/workflows/<br/>verification and release"]
+    root --> docs
+    root --> packages
+    root --> apis
+    root --> makes
+    root --> workflows
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class root page;
+    class docs,apis anchor;
+    class packages positive;
+    class makes,workflows action;
 ```
 
 ## Top-Level Directories

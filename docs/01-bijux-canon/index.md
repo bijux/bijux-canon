@@ -37,15 +37,24 @@ These repository pages should explain the cross-package frame that no single pac
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Reader Question] --> B{Repository-wide concern}
-    B -- Yes --> C[Repository Handbook]
-    C --> D[Foundation pages]
-    C --> E[Operations pages]
-    D --> F[Root contracts and boundaries]
-    E --> F
-    B -- No --> G[Owning package handbook]
-    G --> H[Package code and tests]
+flowchart LR
+    question["Repository-wide question"]
+    foundation["Foundation<br/>split, scope, ownership, language"]
+    operations["Operations<br/>development, validation, release, review"]
+    packages["Product handbooks<br/>package-owned behavior"]
+    question --> foundation
+    question --> operations
+    foundation --> packages
+    operations --> packages
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class question page;
+    class foundation positive;
+    class operations anchor;
+    class packages action;
 ```
 
 ## Sections
