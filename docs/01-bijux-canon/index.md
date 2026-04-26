@@ -14,30 +14,26 @@ Open the repository handbook when the question belongs to the part of
 rules belong at the root, and how package handoffs stay explicit across the
 repository.
 
+The main repository mistake this handbook is meant to prevent is root creep.
+The root should coordinate package truth, not become a second product layer
+that quietly re-explains or overrides package ownership.
+
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
-Product behavior belongs in the publishable packages under `packages/`.
-The root only owns what is genuinely shared: workspace layout, schema
-governance, documentation rules, validation posture, and release
-coordination.</div>
+Product behavior belongs in the publishable packages under `packages/`. The
+root owns only what is genuinely shared: workspace layout, schema governance,
+documentation rules, validation posture, and release coordination.</div>
 
 ## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
 - open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
-- open a product handbook as soon as the behavior is clearly local to one canonical package
 - open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
 - open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
-
-## Start Here
-
-- [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for the repository split, ownership model,
-  shared language, and design rules that should stay stable over time
-- [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflows, validation,
-  release, automation, artifact handling, and shared review posture
+- leave this handbook as soon as the behavior is clearly local to one canonical package
 
 ## What This Handbook Owns
 
-- the reason the repository is split into canonical packages instead of one combined surface
+- why the repository is split into canonical packages instead of one combined surface
 - root-owned workflow, validation, release, artifact, and documentation rules
 - the seams where one package hands authority to another package or to a shared root rule
 
@@ -49,18 +45,26 @@ coordination.</div>
 
 ## Shared Package Map
 
-- `bijux-canon-ingest` prepares source material for deterministic downstream use.
-- `bijux-canon-index` executes retrieval and records provenance-rich result state.
-- `bijux-canon-reason` turns retrieved evidence into inspectable claims and verification outputs.
-- `bijux-canon-agent` coordinates role-based orchestration without hiding traces or package boundaries.
-- `bijux-canon-runtime` governs execution, replay, persistence, and final acceptability.
+- `bijux-canon-ingest` prepares source material for deterministic downstream use
+- `bijux-canon-index` executes retrieval and records provenance-rich result state
+- `bijux-canon-reason` turns retrieved evidence into inspectable claims and verification outputs
+- `bijux-canon-agent` coordinates role-based orchestration without hiding traces or package boundaries
+- `bijux-canon-runtime` governs execution, replay, persistence, and final acceptability
 
-## Check The Root Files
+## Boundary Example
 
-- `pyproject.toml` for workspace metadata and commit conventions
-- `Makefile` and `makes/` for root automation
-- `apis/` and `.github/workflows/` for schema and validation review
-- `packages/` for the product boundaries this handbook must not blur
+A schema pin under `apis/`, a workspace-level validation rule, or a handbook
+routing rule belongs here because it protects more than one package at once. A
+change to ingest chunking, runtime replay semantics, or reason-level claim
+formation does not belong here, even if the root automation or docs also have
+to move with it.
+
+## First Proof Checks
+
+- check `pyproject.toml` when the claim is about workspace structure or commit rules
+- check `Makefile`, `makes/`, and `.github/workflows/` when the claim is about shared automation or validation
+- check `apis/` when the claim is about shared schema storage or compatibility review
+- check `packages/` when the question is whether the root is starting to blur a package boundary
 
 ## Open This Handbook When
 
@@ -70,16 +74,9 @@ coordination.</div>
 
 ## Open Another Handbook When
 
-- the answer depends mostly on one package's local behavior, imports, or tests
+- the answer depends mostly on one package's local behavior, imports, tests, or interfaces
 - you need workflow automation internals rather than root-facing guidance
 - the work is explicitly about a legacy name and migration path
-
-## Read The Root This Way
-
-Treat the root as a coordination layer. Use these pages to understand why the
-split exists, which rules stay shared, and where authority changes hands.
-Once the behavior is package-local, open the owning package handbook instead
-of keeping the explanation at the root.
 
 ## Cross-Package Anchors
 
@@ -87,3 +84,9 @@ of keeping the explanation at the root.
 - `mkdocs.yml` defines the published handbook structure
 - `Makefile`, `makes/`, and `.github/workflows/` carry root-level operations
 - `packages/` carries the canonical product boundaries the root must not blur
+
+## Bottom Line
+
+Use these pages to understand why the split exists, which rules stay shared,
+and where authority changes hands. Once the behavior is package-local, open
+the owning package handbook instead of keeping the explanation at the root.
