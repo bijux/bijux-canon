@@ -40,7 +40,7 @@ or contracts.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/change-principles/)
 
-## Open Foundation When
+## Open This Section When
 
 - you need the durable ownership story behind embeddings, retrieval, and replay
 - you are deciding whether work belongs in index or in the packages before or
@@ -54,7 +54,7 @@ or contracts.
 - the real issue is operational, such as local setup, diagnostics, or release
 - you already know the boundary and need proof, risks, or validation instead
 
-## Read Across The Package
+## Across This Package
 
 - open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when you need the structural
   map behind domain, application, and infrastructure flow
@@ -73,7 +73,7 @@ or contracts.
 
 ## Bottom Line
 
-Open `Foundation` to answer the ownership question with integrity: index exists
+Open this section to answer the ownership question with integrity: index exists
 to make retrieval behavior explicit, replayable, and dependable enough for
 downstream packages to use. If a proposed change broadens the package without
 making that retrieval story clearer, it is probably crossing a boundary rather

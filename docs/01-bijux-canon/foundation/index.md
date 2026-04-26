@@ -35,7 +35,7 @@ would weaken that clarity.
 - [Change Principles](https://bijux.io/bijux-canon/01-bijux-canon/foundation/change-principles/)
 - [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/)
 
-## Open Foundation When
+## Open This Section When
 
 - you can see the repository shape but still need the design reason behind it
 - you need to decide whether work belongs at the root or in a package

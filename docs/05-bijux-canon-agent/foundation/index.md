@@ -38,7 +38,7 @@ rules that keep orchestration inspectable instead of magical.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/change-principles/)
 
-## Open Foundation When
+## Open This Section When
 
 - you need the package role before looking at APIs, modules, or workflows
 - you are deciding whether a feature is orchestration behavior or belongs in a
@@ -52,7 +52,7 @@ rules that keep orchestration inspectable instead of magical.
 - you are deciding whether a CLI, API, artifact, or import is a contract
 - the issue is procedural or proof-oriented rather than boundary-oriented
 
-## Read Across The Package
+## Across This Package
 
 - open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for module groups, execution
   flow, and dependency direction

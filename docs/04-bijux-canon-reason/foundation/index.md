@@ -39,7 +39,7 @@ why.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/change-principles/)
 
-## Open Foundation When
+## Open This Section When
 
 - you need the package role before looking at modules, commands, or tests
 - you are checking whether a behavior is really reasoning rather than retrieval,
@@ -54,7 +54,7 @@ why.
   contract
 - the main concern is operating the package or proving a change is safe
 
-## Read Across The Package
+## Across This Package
 
 - open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for module boundaries,
   execution flow, and persistence seams

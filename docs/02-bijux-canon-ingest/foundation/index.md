@@ -40,7 +40,7 @@ memory.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/change-principles/)
 
-## Open Foundation When
+## Open This Section When
 
 - you need the durable ownership story before reading code or command docs
 - you are deciding whether deterministic preparation belongs in ingest or
@@ -53,7 +53,7 @@ memory.
 - the real problem is operational, such as setup, diagnostics, or release flow
 - you already know the boundary and need proof, tests, or risk review instead
 
-## Read Across The Package
+## Across This Package
 
 - open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the structure
   behind ingest preparation and workflow flow
@@ -72,7 +72,7 @@ memory.
 
 ## Bottom Line
 
-Open `Foundation` to answer the ownership question with integrity: ingest exists
+Open this section to answer the ownership question with integrity: ingest exists
 to make source material predictable enough for downstream retrieval work to
 trust. If a proposal broadens ingest without making that preparation story
 clearer, the design has probably crossed the boundary rather than improved it.

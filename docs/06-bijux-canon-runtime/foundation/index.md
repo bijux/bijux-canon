@@ -43,7 +43,7 @@ feels blurry after this section, the authority story is not clear enough yet.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/change-principles/)
 
-## Open Foundation When
+## Open This Section When
 
 - you need the package idea before the implementation detail
 - you are deciding whether work belongs here or in a neighboring package
@@ -68,7 +68,7 @@ feels blurry after this section, the authority story is not clear enough yet.
 - `tests/unit/runtime/` and `tests/regression/` for the proof surface that this
   boundary still holds under drift pressure
 
-## Read Across The Package
+## Across This Package
 
 - open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when the question becomes how
   authority is implemented rather than why it exists
@@ -79,7 +79,7 @@ feels blurry after this section, the authority story is not clear enough yet.
 
 ## Bottom Line
 
-Open `Foundation` to decide whether a change makes runtime easier or harder to
+Open this section to decide whether a change makes runtime easier or harder to
 defend as the authority layer in the system. If the work makes the package
 broader without making that authority role clearer, stop and re-check the
 boundary before treating it as a local improvement.
