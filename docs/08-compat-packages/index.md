@@ -26,27 +26,21 @@ behavior and future design.
 
 ```mermaid
 flowchart LR
-    legacy["legacy name<br/>distribution, import, command"]
-    bridge["compat package<br/>thin bridge and warning surface"]
-    canonical["canonical package<br/>current behavior owner"]
-    validation["validation<br/>parity, release, migration checks"]
-    retire["retirement decision<br/>keep, narrow, or remove bridge"]
+    legacy["legacy name"]
+    bridge["compat package"]
+    canonical["canonical package"]
+    validation["migration checks"]
+    retire["retirement decision"]
 
     legacy --> bridge --> canonical
     bridge --> validation --> retire
-    canonical -. owns docs and future changes .-> retire
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef caution fill:#fff1f2,stroke:#dc2626,color:#6b1d1d;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class legacy caution;
-    class bridge anchor;
-    class canonical positive;
-    class validation page;
-    class retire action;
+    canonical --> retire
 ```
+
+Compatibility pages should make migration pressure visible. They are useful
+only when they shorten the path from an old name to the canonical owner and
+when they make it easier to judge whether a bridge still protects a real
+dependent environment.
 
 ## Handbook Sections
 
@@ -87,3 +81,9 @@ flowchart LR
 A preserved legacy name stays only when it protects a real dependent
 environment or a documented migration window. Habit, nostalgia, or naming
 symmetry are not enough.
+
+## Leave This Handbook When
+
+- the canonical target package is clear and you need current behavior details
+- the next step is a product interface, workflow, or test rather than migration policy
+- the bridge no longer protects a real dependent environment
