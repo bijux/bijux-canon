@@ -4,45 +4,56 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Operations
 
-This section explains how to install, run, diagnose, and release `bijux-canon-agent` from checked-in workflow guidance instead of team memory.
+Use this section when the question is procedural: how to install
+`bijux-canon-agent`, run orchestrated flows, inspect traces, diagnose provider
+or pipeline failures, and release the package without depending on private team
+habits.
 
-These pages are the checked-in operating memory for `bijux-canon-agent`. They should let a maintainer move from setup to diagnosis to release without relying on CI archaeology or private habits.
-
-Treat the operations pages for `bijux-canon-agent` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Operational mistakes in this package are costly because they can leave behind
+traces that look authoritative while hiding a broken orchestration path. The
+right workflow is the one that produces inspectable results and leaves
+diagnostics behind when something goes wrong.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    ops["bijux-canon-agent<br/>operator questions"]
-    install["Install and configure"]
-    dev["Develop and validate locally"]
-    diagnose["Observe and recover"]
-    release["Version and publish safely"]
-    security["Review authority and deployment boundaries"]
-    ops --> install
-    ops --> dev
-    ops --> diagnose
-    ops --> release
-    ops --> security
+    setup["install and configure the agent runtime"]
+    execute["run orchestration flows and capture outputs"]
+    replay["inspect traces and replay helpers"]
+    diagnose["debug provider, pipeline, or artifact failures"]
+    release["publish with contract awareness"]
+    reader["reader question<br/>which procedure keeps agent runs inspectable?"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class ops page;
-    class install positive;
-    class dev anchor;
-    class diagnose,security caution;
-    class release action;
+    class execute,page reader;
+    class setup,replay positive;
+    class diagnose,release anchor;
+    setup --> reader
+    execute --> reader
+    replay --> reader
+    diagnose --> reader
+    release --> reader
 ```
 
-## Pages in This Section
+## Start Here
+
+- open [Installation and Setup](installation-and-setup.md) for environment,
+  provider, and package bootstrap expectations
+- open [Common Workflows](common-workflows.md) when you need the normal run and
+  validation paths
+- open [Observability and Diagnostics](observability-and-diagnostics.md) or
+  [Failure Recovery](failure-recovery.md) when traces, providers, or pipelines
+  are behaving unexpectedly
+
+## Pages In This Section
 
 - [Installation and Setup](installation-and-setup.md)
 - [Local Development](local-development.md)
@@ -54,12 +65,19 @@ flowchart LR
 - [Security and Safety](security-and-safety.md)
 - [Deployment Boundaries](deployment-boundaries.md)
 
-## Read Across the Package
+## Use This Section When
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+- you need a repeatable procedure for running, tracing, diagnosing, or
+  releasing the package
+- you are responding to orchestration, provider, or artifact problems in local
+  work or CI
+- you need to know which workflow leaves behind trustworthy execution records
+
+## Do Not Use This Section When
+
+- the main question is package purpose or ownership
+- you are still deciding whether a command, schema, or artifact is a contract
+- the issue is primarily about proof sufficiency rather than workflow
 
 ## Concrete Anchors
 
@@ -67,42 +85,25 @@ flowchart LR
 - `packages/bijux-canon-agent/README.md` for local package framing
 - `packages/bijux-canon-agent/tests` for executable operational backstops
 
-## Use This Page When
+## Read Across The Package
 
-- you are installing, running, diagnosing, or releasing the package
-- you need repeatable operational anchors rather than architectural framing
-- you are responding to package behavior in local work, CI, or incident pressure
+- open [Foundation](../foundation/index.md) for package boundary and scope
+- open [Architecture](../architecture/index.md) when a workflow problem points
+  to a structural seam
+- open [Interfaces](../interfaces/index.md) when an operational path depends on
+  a CLI, API, trace, or artifact contract
+- open [Quality](../quality/index.md) when the real question becomes whether a
+  run has been validated hard enough
 
-## Decision Rule
+## Reader Takeaway
 
-Use `Operations` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. If a step works only because someone already knows the trick, the workflow is not documented clearly enough yet.
-
-## What This Page Answers
-
-- how `bijux-canon-agent` is installed, run, diagnosed, and released in practice
-- which checked-in files and tests anchor the operational story
-- where a maintainer should look first when the package behaves differently
-
-## Reviewer Lens
-
-- verify that setup, workflow, and release statements still match package metadata and current commands
-- check that operational guidance still points at real diagnostics and validation paths
-- confirm that maintainer advice still works under current local and CI expectations
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-agent` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
-
-## Next Checks
-
-- move to interfaces when the operational path depends on a specific surface contract
-- move to quality when the question becomes whether the workflow is sufficiently proven
-- move back to architecture when operational complexity suggests a structural problem
+Use `Operations` to find workflows a maintainer can rerun and defend. If a
+procedure cannot show how it leaves behind inspectable traces, diagnosable
+failures, and reviewable outputs, it is not ready to serve as the package’s
+operating memory.
 
 ## Purpose
 
-This page explains how to use the operations section for `bijux-canon-agent` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page introduces the agent operations handbook and routes readers to the
+pages that explain setup, execution, diagnostics, release, and safety
+procedures.
