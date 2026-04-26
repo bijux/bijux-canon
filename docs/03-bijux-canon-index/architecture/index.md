@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Use this section when the important question is how index is assembled:
+Open this section when the important question is how index is assembled:
 which layers own retrieval semantics, how application workflows coordinate
 queries and updates, and where backend infrastructure stops being the package's
 core logic.
@@ -99,13 +99,13 @@ flowchart LR
 
 ## Why Use Architecture
 
-Use `Architecture` to make retrieval structure legible enough that a reviewer
+Open `Architecture` to make retrieval structure legible enough that a reviewer
 can say which logic belongs to the domain, which belongs to workflow
 coordination, and which belongs to adapters. If that answer is blurry, the
 package is already accumulating architectural drift.
 
 ## What You Get
 
-This page gives you the module, execution, state, seam, and risk route
-through `bijux-canon-index` before you inspect a specific architectural
+Open this page when you need the module, execution, state, seam, and risk
+route through `bijux-canon-index` before you inspect a specific architectural
 topic.

@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Use this section when the question is structural: which modules own planning,
+Open this section when the question is structural: which modules own planning,
 retrieval, reasoning, verification, interfaces, and traces, and how a run
 flows through those pieces without smearing responsibilities together.
 
@@ -103,13 +103,13 @@ flowchart TB
 
 ## Why Use Architecture
 
-`Architecture` should make the package readable as a sequence of named
+Open `Architecture` when you need the package to read as a sequence of named
 responsibilities, not a tangle of utilities. If a change blurs planning,
 evidence shaping, claim logic, verification, and traces into one layer, the
 design is getting weaker even if tests still pass.
 
 ## What You Get
 
-This page gives you the module, dependency, execution, and durable-state
-route through `bijux-canon-reason` before you inspect a specific structural
-topic.
+Open this page when you need the module, dependency, execution, and
+durable-state route through `bijux-canon-reason` before you inspect a specific
+structural topic.

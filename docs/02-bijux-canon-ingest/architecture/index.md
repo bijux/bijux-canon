@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Use this section when the important question is how ingest is put together:
+Open this section when the important question is how ingest is put together:
 which modules shape source material, where deterministic transforms happen, and
 how prepared output reaches the retrieval handoff without hidden shortcuts.
 
@@ -93,11 +93,12 @@ flowchart LR
 
 ## Why Use Architecture
 
-Use `Architecture` to make the internal flow legible enough that a reviewer can
+Open `Architecture` to make the internal flow legible enough that a reviewer can
 say where ingest logic lives and why. If the code only works because the
 structure is hard to explain, the architecture has already started to drift.
 
 ## What You Get
 
-This page gives you the module, execution, seam, and risk route through
-`bijux-canon-ingest` before you dive into individual architectural topics.
+Open this page when you need the module, execution, seam, and risk route
+through `bijux-canon-ingest` before you dive into individual architectural
+topics.

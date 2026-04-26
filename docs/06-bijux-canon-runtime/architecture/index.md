@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Use this section to understand how `bijux_canon_runtime` is organized so a
+Open this section to understand how `bijux_canon_runtime` is organized so a
 reviewer can follow structure, dependency direction, and execution flow
 without guessing.
 
@@ -102,13 +102,13 @@ flowchart LR
 
 ## Why Use Architecture
 
-Use `Architecture` to decide whether a structural change makes runtime easier
+Open `Architecture` to decide whether a structural change makes runtime easier
 or harder to explain in terms of planning, governed execution, durable state,
 and replay analysis. If the change works only because the design becomes harder
 to read, redesign is safer than acceptance.
 
 ## What You Get
 
-This page gives you the module, dependency, execution, and durable-state
-route through `bijux-canon-runtime` before you inspect a specific structural
-topic.
+Open this page when you need the module, dependency, execution, and
+durable-state route through `bijux-canon-runtime` before you inspect a
+specific structural topic.
