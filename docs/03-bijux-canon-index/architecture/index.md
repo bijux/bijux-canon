@@ -11,6 +11,37 @@ last_reviewed: 2026-04-26
 
 Open this section when the question is structural: where retrieval behavior lives, how search flow is organized, and which modules make replay and provenance credible instead of accidental.
 
+## Structural Shape
+
+Index architecture is built around executable retrieval contracts. Application
+orchestration prepares the run, core runtime objects define the execution
+shape, infrastructure adapters talk to vector backends, and domain provenance
+modules keep replay and lineage reviewable after results leave the package.
+
+```mermaid
+flowchart LR
+    interfaces["interfaces<br/>CLI, API, schemas"]
+    application["application<br/>engine and orchestration"]
+    core["core runtime<br/>plans, sessions, determinism"]
+    infra["infra adapters<br/>vector stores, embeddings, run store"]
+    domain["domain<br/>requests, provenance, drift, artifacts"]
+    result["retrieval result<br/>matches, scores, lineage"]
+    reason["reason package<br/>evidence interpretation"]
+
+    interfaces --> application --> core --> infra --> result --> reason
+    core --> domain --> result
+    infra -. backend facts .-> domain
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class interfaces page;
+    class application,core,infra,domain positive;
+    class result anchor;
+    class reason action;
+```
+
 ## Read These First
 
 - open [Module Map](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/module-map/) first when you need the owning code area for a retrieval concern
@@ -23,9 +54,10 @@ The main architectural risk here is letting retrieval semantics disappear inside
 
 ## First Proof Check
 
-- `src/bijux_canon_index` for the owned retrieval implementation boundary
-- `apis` for contract pressure tied to structure
-- `tests` for replay and provenance evidence at the package seam
+- `packages/bijux-canon-index/src/bijux_canon_index/core/runtime` for retrieval execution plans and sessions
+- `packages/bijux-canon-index/src/bijux_canon_index/infra/adapters` for vector backend boundaries
+- `packages/bijux-canon-index/src/bijux_canon_index/domain/provenance` for audit, replay, and lineage logic
+- `packages/bijux-canon-index/tests` for replay and provenance evidence at the package seam
 
 
 ## Pages In This Section
