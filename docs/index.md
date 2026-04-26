@@ -87,39 +87,32 @@ whole system.
 
 ```mermaid
 flowchart TB
-    page["Bijux Canon<br/>clarifies: bijux-canon section | bijux-canon-maintain section | compatibility packages section"]
+    root["Bijux Canon<br/>deterministic system split into accountable package roles"]
+    repo["Repository handbook<br/>shared rules, governance, and cross-package context"]
+    ingest["Ingest<br/>prepare deterministic material"]
+    index["Index<br/>execute retrieval and capture provenance"]
+    reason["Reason<br/>turn evidence into inspectable claims"]
+    agent["Agent<br/>coordinate role-based work"]
+    runtime["Runtime<br/>govern execution, replay, and persistence"]
+    maintain["Maintenance handbook<br/>repository health, make surfaces, workflows"]
+    compat["Compatibility handbook<br/>legacy names, migration, retirement"]
+    root --> repo
+    root --> ingest
+    root --> index
+    root --> reason
+    root --> agent
+    root --> runtime
+    repo --> maintain
+    repo --> compat
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    detail1["why the split exists"]
-    detail1 --> page
-    detail2["where each package takes authority"]
-    detail2 -.gives the reader orientation.-> page
-    detail3["why the split protects clarity"]
-    detail3 --> page
-    detail4["repository handbook"]
-    detail4 -.gives the reader orientation.-> page
-    detail5["one product handbook"]
-    detail5 --> page
-    detail6["the fastest credible next section"]
-    detail6 -.gives the reader orientation.-> page
-    detail7["maintainer work"]
-    detail7 --> page
-    detail8["legacy-name migration"]
-    detail8 -.gives the reader orientation.-> page
-    detail9["questions that do not belong on the landing page"]
-    detail9 --> page
-    next1["interfaces next"]
-    page --> next1
-    next2["maintainer docs"]
-    page --> next2
-    next3["repository handbook"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+    class root page;
+    class repo anchor;
+    class ingest,index,reason,agent,runtime positive;
+    class maintain,compat action;
 ```
 
 ## Start Here
