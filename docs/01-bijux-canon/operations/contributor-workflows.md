@@ -12,6 +12,22 @@ last_reviewed: 2026-04-26
 Contributors should be able to move through the repository in a repeatable
 order.
 
+## Workflow Loop
+
+```mermaid
+flowchart LR
+    owner["find the owning surface"]
+    change["change the owned behavior"]
+    proof["update docs and proof together"]
+    checks["run narrow checks, then widen if needed"]
+
+    owner --> change --> proof --> checks
+```
+
+This page should show contribution as a routing problem first. The fastest
+useful workflow is the one that reaches the honest owner early and widens only
+when the work actually becomes shared.
+
 ## Default Workflow
 
 1. identify the owning package or shared root surface first
@@ -33,7 +49,8 @@ along. That path creates blurred ownership and extra rework.
 - `.github/workflows/` for repository verification and publication flow
 - the handbook sections under `docs/` for durable operational memory
 
-## Bottom Line
+## Design Pressure
 
-A healthy contributor workflow reaches the owning surface early and widens only
-when the change really becomes shared.
+Contributor workflow breaks down when the root becomes the default starting
+point for package-local work. That mistake creates extra validation, blurred
+ownership, and avoidable rework.
