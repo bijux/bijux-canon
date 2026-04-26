@@ -92,7 +92,7 @@ The canonical packages each own a distinct slice of the overall system:
 
 ## Decision Rule
 
-Use this page when the main question is which package owns a responsibility. If
+Open this page when the main question is which package owns a responsibility. If
 the answer depends mostly on one package's local behavior, continue in that
 package handbook instead of keeping the question at the repository root.
 

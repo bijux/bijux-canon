@@ -66,7 +66,7 @@ can detect its drift.
 
 ## Decision Rule
 
-Use this page when validation spans package boundaries, schemas, docs, or
+Open this page when validation spans package boundaries, schemas, docs, or
 release conventions. If the answer depends mostly on one package's local test
 behavior, move back to that package handbook instead.
 

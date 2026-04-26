@@ -67,7 +67,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when the main question is whether a concern belongs at the
+Open this page when the main question is whether a concern belongs at the
 repository root at all. If one package handbook can answer it honestly, that
 package should stay the owner.
 

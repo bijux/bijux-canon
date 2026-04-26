@@ -65,7 +65,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when a contract spans packages, schemas, and shared review
+Open this page when a contract spans packages, schemas, and shared review
 workflow. If the answer depends mostly on one package's local behavior, open
 that package handbook instead of treating the repository root as a second
 owner.

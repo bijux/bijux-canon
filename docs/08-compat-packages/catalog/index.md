@@ -9,7 +9,7 @@ last_reviewed: 2026-04-09
 
 # Catalog
 
-Use this section when the most direct compatibility question is which legacy
+Open this section when the most direct compatibility question is which legacy
 public names still exist and what they still preserve.
 
 This section is intentionally concrete. It should help a reader move quickly

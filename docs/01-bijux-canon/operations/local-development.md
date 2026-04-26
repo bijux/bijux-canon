@@ -60,7 +60,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when local work spans packages, schemas, or root automation. If
+Open this page when local work spans packages, schemas, or root automation. If
 the question stays inside one package's local setup or behavior, open that
 package handbook instead.
 

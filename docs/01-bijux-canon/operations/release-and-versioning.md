@@ -63,7 +63,7 @@ maintainer can understand them years later without opening the diff first.
 
 ## Decision Rule
 
-Use this page when release behavior depends on root conventions, shared
+Open this page when release behavior depends on root conventions, shared
 workflows, or version metadata that spans packages. If the answer depends
 mostly on one package's local release behavior, open that package handbook
 instead.

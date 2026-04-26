@@ -84,7 +84,7 @@ flowchart TB
 
 ## Decision Rule
 
-Use this page when the main question is where a topic belongs in the published
+Open this page when the main question is where a topic belongs in the published
 handbook. If the answer depends mostly on one package's local behavior, open
 that package handbook instead of expanding repository pages past their boundary.
 

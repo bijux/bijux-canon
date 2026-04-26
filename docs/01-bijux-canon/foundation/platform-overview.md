@@ -72,7 +72,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when the main need is understanding how the canonical packages
+Open this page when the main need is understanding how the canonical packages
 fit together. If the answer depends mostly on one package's local behavior,
 open that package handbook instead of stretching the repository overview
 past its boundary.

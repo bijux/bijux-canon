@@ -68,7 +68,7 @@ when it is about the workspace itself.
 
 ## Decision Rule
 
-Use this page when the main question is where a repository concern lives in the
+Open this page when the main question is where a repository concern lives in the
 tree. If the answer depends mostly on one package's internal layout, open
 that package handbook instead.
 
