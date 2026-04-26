@@ -11,6 +11,21 @@ last_reviewed: 2026-04-26
 
 The capability map for `bijux-canon-agent` should let a reviewer connect workflow promises to the code that coordinates roles and emits traces. If orchestration behavior cannot be mapped clearly, the package starts to look magical.
 
+## Capability Flow
+
+```mermaid
+flowchart LR
+    workflow["workflow promises"]
+    modules["application, role modules, services, interfaces, and artifacts"]
+    outputs["trace-bearing orchestration output"]
+
+    workflow --> modules --> outputs
+```
+
+This page should show orchestration capability as something a reviewer can
+locate, not something they have to trust. Workflow claims need a visible path
+through modules and traces.
+
 ## Capability To Code
 
 - `application/` and orchestration flows own role sequencing and workflow coordination
@@ -23,6 +38,8 @@ The capability map for `bijux-canon-agent` should let a reviewer connect workflo
 - role-specific outputs that remain attributable to a step and an order
 - agent-facing contracts that expose orchestration intentionally
 
-## Bottom Line
+## Design Pressure
 
-A capability is only real when a reviewer can trace it to code, tests, and outputs without guessing.
+Agent capability starts to look magical when role coordination and trace output
+cannot be tied back to named code areas. The package has to keep workflow
+promises grounded in visible modules and artifacts.
