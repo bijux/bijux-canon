@@ -21,28 +21,25 @@ to use without copying internal policy.
 ```mermaid
 flowchart LR
     caller["caller or reviewer"]
-    cli["CLI surface<br/>run and initialization"]
-    api["API surface<br/>run and item routes"]
-    serialization["serialization<br/>canonical JSON and trace JSONL"]
-    artifacts["artifact contracts<br/>claims, checks, evidence records"]
-    imports["public imports<br/>models and guardrails"]
-    downstream["agent or runtime<br/>workflow and acceptance"]
+    cli["CLI surface"]
+    api["API surface"]
+    artifacts["claims and checks"]
+    serialization["serialized outputs"]
+    imports["public imports"]
+    schema["tracked schema"]
+    downstream["agent or runtime"]
 
     caller --> cli --> artifacts
     caller --> api --> artifacts
     artifacts --> serialization --> downstream
-    imports -. stable model access .-> artifacts
-    api -. schema evidence .-> schema["apis/bijux-canon-reason/v1/schema.yaml"]
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class caller page;
-    class cli,api,serialization,artifacts,imports positive;
-    class schema anchor;
-    class downstream action;
+    imports --> artifacts
+    api --> schema
 ```
+
+Reason interfaces matter because other tools and reviewers consume the meaning
+they emit. The important promise is not only that a run can be started, but
+that claims, checks, and provenance can be serialized and reused without
+copying hidden package policy.
 
 ## Read These First
 
@@ -80,6 +77,8 @@ The main contract risk here is letting reviewer-facing reasoning artifacts drift
 - leave for [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a surface question reveals structural drift underneath it
 - leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) or [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the boundary is clear and the question becomes execution or proof
 
-## Bottom Line
+## Design Pressure
 
-A surface is not a real contract until the docs, code, and tests agree that it is one.
+If downstream tools treat a reasoning artifact as stable but this page does not
+name it, the contract has already escaped the docs. The interface surface has
+to state which outputs are intentionally reusable.
