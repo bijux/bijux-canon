@@ -17,7 +17,7 @@ Hidden maintenance logic erodes trust fast. Repository policy belongs in
 helper modules, tests, and documented integration points instead of being
 reconstructed from CI output or shell glue.
 
-## Pages In This Handbook
+## Pages In This Section
 
 - [Package Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/)
 - [Scope and Non-Goals](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals/)
@@ -29,7 +29,7 @@ reconstructed from CI output or shell glue.
 - [SBOM and Supply Chain](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain/)
 - [Operating Guidelines](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/operating-guidelines/)
 
-## Open This Handbook When
+## Open This Section When
 
 - the concern is inside the maintainer helper package itself
 - you need to understand which helper module or quality surface enforces a
@@ -37,7 +37,7 @@ reconstructed from CI output or shell glue.
 - the question is about schema drift, release support, quality gates, or
   supply-chain tooling
 
-## Open Another Handbook When
+## Open Another Section When
 
 - the question is really about a product package API, CLI, or runtime contract
 - the issue belongs to shared Make entrypoints or GitHub Actions trigger logic

@@ -49,7 +49,7 @@ engineering shell glue and CI output.
 - open [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) when the concern is GitHub Actions
   triggers, job trees, reusable workflows, or docs publication
 
-## Shared Maintenance Anchors
+## Concrete Anchors
 
 - `packages/bijux-canon-dev` for maintainer helper code
 - `makes/` for shared make entrypoints and composition
