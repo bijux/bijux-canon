@@ -18,6 +18,13 @@ The split is the design. Each package owns one operational promise strongly
 enough that you can follow the full system as a chain of accountable
 handoffs instead of treating the repository as one blurred codebase.
 
+One concrete reading path makes that split easier to trust. A source document
+is prepared by `bijux-canon-ingest`, turned into replayable retrieval behavior
+by `bijux-canon-index`, translated into inspectable claims by
+`bijux-canon-reason`, coordinated by `bijux-canon-agent`, and accepted or
+replayed under `bijux-canon-runtime`. The root owns the rules that keep those
+handoffs visible. It does not own the package behavior itself.
+
 <!-- bijux-canon-badges:generated:start -->
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
@@ -81,6 +88,16 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 - open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
 - open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name is still active
 
+## One Real Flow
+
+| Step | Owner | What changes hands |
+| --- | --- | --- |
+| source preparation | `bijux-canon-ingest` | normalized, deterministic material prepared for downstream use |
+| retrieval execution | `bijux-canon-index` | replayable retrieval behavior with provenance-rich result state |
+| reasoning and verification | `bijux-canon-reason` | inspectable claims tied back to retrieved evidence |
+| workflow coordination | `bijux-canon-agent` | role-based orchestration with explicit traces |
+| acceptance and replay | `bijux-canon-runtime` | governed execution, persistence, and final acceptability |
+
 ## Package Handbooks
 
 | Package | Owns | Open It When |
@@ -104,6 +121,14 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 - `docs/` for the handbook entry pages that route readers into the repository
 - `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` for the catalog tooling behind the handbook structure
 
+## First Proof Check
+
+Start with `packages/` if the main question is package ownership. Start with
+`mkdocs.yml` if the main question is documentation routing. Start with
+`Makefile`, `makes/`, or `.github/workflows/` if the claim is about shared
+verification or release behavior. If none of those surfaces can support the
+claim quickly, the docs should be treated as orientation rather than proof.
+
 ## How The Packages Split
 
 Ingest turns source material into deterministic preparation output. Index owns
@@ -125,6 +150,13 @@ until the canonical target is clear.
 - one product handbook already owns the behavior you need
 - the next step is a concrete interface, workflow, schema, or test surface
 - the work is already known to be a legacy-name migration issue
+
+## Root Boundary
+
+Stay at the site root only while you are choosing the right handbook. Leave it
+as soon as one package or shared handbook can answer the real question
+honestly. The homepage should shorten the route to an owner, not become a
+second explanation layer above the owning docs.
 
 ## Bottom Line
 
