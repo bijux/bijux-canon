@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Compatibility Packages
 
-Use this handbook when you need to understand how older distribution names,
+Open this handbook when you need to understand how older distribution names,
 import names, and command names map to the canonical `bijux-canon-*` package
 family.
 
@@ -55,7 +55,7 @@ flowchart TB
 - [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) for rename planning, dependency continuity,
   validation, release posture, and retirement decisions
 
-## Use This Section When
+## Open This Section When
 
 - you started from a legacy package, import, or command name and need to find
   the current canonical target
@@ -63,7 +63,7 @@ flowchart TB
   migration need
 - you need migration or retirement guidance rather than product implementation
 
-## Move On When
+## Open Another Handbook When
 
 - you already know the canonical package name and need current behavior docs
 - you are designing new product behavior or a new public contract
@@ -71,12 +71,12 @@ flowchart TB
 
 ## Choose A Section
 
-- use [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) when the immediate need is to identify which
+- open [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) when the immediate need is to identify which
   exact legacy surface is still preserved
-- use [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) when the immediate need is to plan
+- open [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) when the immediate need is to plan
   dependency continuity, validation, or retirement
-- move to the owning canonical package handbook once the current target package
-  is known and the question becomes product behavior rather than migration
+- open the owning canonical package handbook once the current target package is
+  known and the question becomes product behavior rather than migration
 
 ## Pages In Catalog
 
@@ -124,6 +124,6 @@ durable reason to keep compatibility packages shipping indefinitely.
 
 ## Compatibility Standard
 
-Each compatibility page should make the exit route obvious: the preserved name,
+Each compatibility page should show the exit route clearly: the preserved name,
 the canonical target, the validation posture that protects the transition, and
 the evidence required before the bridge can be retired.
