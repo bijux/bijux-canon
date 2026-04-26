@@ -9,25 +9,23 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Open this section when the question is procedural: how to install
-`bijux-canon-agent`, run orchestrated flows, inspect traces, diagnose provider
-or pipeline failures, and release the package without depending on private team
-habits.
+Open this section when you need to run agent work repeatably: install it, exercise workflows, diagnose trace drift, release it, or recover from failure without relying on who last touched the package.
 
-Operational mistakes in this package are costly because they can leave behind
-traces that look authoritative while hiding a broken orchestration path. The
-right workflow is the one that produces inspectable results and leaves
-diagnostics behind when something goes wrong.
+## Read These First
 
-## Start Here
+- open [Installation and Setup](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/installation-and-setup/) first when you need a clean package starting point
+- open [Observability and Diagnostics](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/observability-and-diagnostics/) when workflow traces or outputs no longer match expectation
+- open [Failure Recovery](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/failure-recovery/) when workflow execution has already gone wrong
 
-- open [Installation and Setup](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/installation-and-setup/) for environment,
-  provider, and package bootstrap expectations
-- open [Common Workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/common-workflows/) when you need the normal run and
-  validation paths
-- open [Observability and Diagnostics](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/observability-and-diagnostics/) or
-  [Failure Recovery](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/failure-recovery/) when traces, providers, or pipelines
-  are behaving unexpectedly
+## Operational Risk
+
+The main operational risk here is letting orchestration succeed only for people who already know the unwritten workflow path.
+
+## First Proof Check
+
+- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
+- `tests` and runnable workflows for evidence that the package can be operated repeatably
+- release notes and version metadata when the work changes caller expectations
 
 ## Pages In This Section
 
@@ -41,40 +39,12 @@ diagnostics behind when something goes wrong.
 - [Security and Safety](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/deployment-boundaries/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need a repeatable procedure for running, tracing, diagnosing, or
-  releasing the package
-- you are responding to orchestration, provider, or artifact problems in local
-  work or CI
-- you need to know which workflow leaves behind trustworthy execution records
-
-## Open Another Section When
-
-- the main question is package purpose or ownership
-- you are still deciding whether a command, schema, or artifact is a contract
-- the issue is primarily about proof sufficiency rather than workflow
-
-## Concrete Anchors
-
-- `packages/bijux-canon-agent/pyproject.toml` for package metadata
-- `packages/bijux-canon-agent/README.md` for local package framing
-- `packages/bijux-canon-agent/tests` for executable operational backstops
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package boundary and scope
-- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a workflow problem points
-  to a structural seam
-- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when an operational path depends on
-  a CLI, API, trace, or artifact contract
-- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the next question is whether a
-  run has been validated hard enough
+- leave for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the live problem is contract shape rather than package operation
+- leave for [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a workflow problem exposes structural drift underneath it
+- leave for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the package runs but the real question is whether the evidence is strong enough
 
 ## Bottom Line
 
-Open this section to find workflows a maintainer can rerun and defend. If a
-procedure cannot show how it leaves behind inspectable traces, diagnosable
-failures, and reviewable outputs, it is not ready to serve as the package’s
-operating memory.
-
+If the package cannot be operated from checked-in facts alone, the operational story is not done yet.

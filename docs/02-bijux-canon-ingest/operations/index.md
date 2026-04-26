@@ -9,25 +9,23 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Open this section when you need to run ingest work repeatably: installing the
-package, validating local changes, diagnosing output drift, and releasing or
-recovering without relying on private team habits.
+Open this section when you need to run ingest work repeatably: install it, change it, validate it, diagnose it, release it, or recover from failure without relying on private memory.
 
-These pages act as checked-in operating memory for a package that sits at the
-very front of the canonical flow. If ingest operations are vague, every
-downstream package inherits the confusion because prepared input is no longer
-reliably reproducible.
+## Read These First
 
-## Start Here
+- open [Installation and Setup](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/installation-and-setup/) first when you need a clean package starting point
+- open [Observability and Diagnostics](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/observability-and-diagnostics/) when prepared output no longer matches expectation
+- open [Failure Recovery](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/failure-recovery/) when a run or artifact has already gone wrong
 
-- open [Installation and Setup](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/installation-and-setup/) when you need a
-  clean local starting point
-- open [Common Workflows](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/common-workflows/) when the goal is to rerun or
-  update ingest behavior in a repeatable way
-- open [Observability and Diagnostics](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/observability-and-diagnostics/) when
-  ingest output or validation no longer matches expectation
-- open [Failure Recovery](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/failure-recovery/) when a run or generated output
-  has already gone wrong
+## Operational Risk
+
+The main operational risk here is making prepared input look reproducible when it actually depends on unstated setup, hidden diagnostics, or folk knowledge.
+
+## First Proof Check
+
+- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
+- `tests` and runnable workflows for evidence that the package can be operated repeatably
+- release notes and version metadata when the work changes caller expectations
 
 ## Pages In This Section
 
@@ -41,41 +39,12 @@ reliably reproducible.
 - [Security and Safety](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/deployment-boundaries/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need to run, rerun, validate, or release ingest behavior from checked-in
-  instructions
-- source preparation or generated output has drifted and you need the first
-  responsible recovery path
-- you are reviewing whether maintainer workflows are actually reproducible
-
-## Open Another Section When
-
-- the real question is which contract downstream packages are allowed to trust
-- you need package-boundary rationale or architectural flow before you can act
-- the issue is about evidence of correctness rather than the operating steps
-  themselves
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when operational trouble may really
-  be a boundary mistake
-- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when workflow pain reveals a
-  structural problem in processing or handoff flow
-- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when a run depends on a public
-  command, schema, or artifact contract
-- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the next question is whether the
-  workflow is sufficiently validated and reviewed
-
-## Concrete Anchors
-
-- `packages/bijux-canon-ingest/pyproject.toml` for package metadata
-- `packages/bijux-canon-ingest/README.md` for local package framing
-- `packages/bijux-canon-ingest/tests` for executable operational backstops
+- leave for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the live problem is contract shape rather than package operation
+- leave for [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when a workflow problem exposes structural drift underneath it
+- leave for [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the package runs but the real question is whether the evidence is strong enough
 
 ## Bottom Line
 
-Open this section when you need a maintainer path that can be repeated from the
-repository itself. If an ingest run only succeeds because somebody remembers an
-unstated trick, the workflow is not operationally trustworthy yet.
-
+If the package cannot be operated from checked-in facts alone, the operational story is not done yet.

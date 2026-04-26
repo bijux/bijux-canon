@@ -9,29 +9,23 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Open this section to install, run, diagnose, and release
-`bijux-canon-runtime` from checked-in workflow guidance instead of team
-memory.
+Open this section when you need to run runtime work repeatably: install it, reproduce governed runs, diagnose acceptance or replay drift, release it, or recover from failure without inventing authority rules on the spot.
 
-These pages are the checked-in operating memory for `bijux-canon-runtime`.
-They should let a maintainer move from setup to diagnosis to release without
-relying on CI archaeology or private habits.
+## Read These First
 
-Runtime operations are high-consequence because replay stores, verification
-policy, and durable traces can turn a sloppy rerun into a misleading record.
-This section shows how to operate the package carefully, not merely how
-to invoke it.
+- open [Installation and Setup](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/installation-and-setup/) first when you need a clean package starting point
+- open [Observability and Diagnostics](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/observability-and-diagnostics/) when governed run behavior no longer matches expectation
+- open [Failure Recovery](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/failure-recovery/) when acceptance, persistence, or replay has already gone wrong
 
-## Start Here
+## Operational Risk
 
-- open [Common Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/common-workflows/) when the real question is how to
-  run the governed path safely
-- open [Observability and Diagnostics](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/observability-and-diagnostics/) when
-  you need to inspect replay, store, or trace behavior
-- open [Failure Recovery](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/failure-recovery/) when a persisted or replayed run
-  has diverged
-- open [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/) before broadening runtime
-  authority or store access
+The main operational risk here is letting run authority depend on implicit environment state or undocumented recovery steps.
+
+## First Proof Check
+
+- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
+- `tests` and runnable workflows for evidence that the package can be operated repeatably
+- release notes and version metadata when the work changes caller expectations
 
 ## Pages In This Section
 
@@ -45,41 +39,12 @@ to invoke it.
 - [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/deployment-boundaries/)
 
-## Open This Section When
+## Leave This Section When
 
-- you are installing, running, diagnosing, or releasing the package
-- you need repeatable operational anchors rather than architectural framing
-- you are responding to package behavior in local work, CI, or incident pressure
-
-## Open Another Section When
-
-- the real question is why runtime has authority in the first place
-- you need schema or artifact contract detail rather than procedure
-- you are deciding whether the proof bar is high enough rather than how to run
-  it
-
-## Concrete Anchors
-
-- `packages/bijux-canon-runtime/pyproject.toml` for package metadata and
-  install surfaces
-- `src/bijux_canon_runtime/interfaces/cli/` for operator commands
-- `src/bijux_canon_runtime/observability/storage/` for store and schema
-  concerns that affect operations directly
-- `tests/e2e/` and `tests/regression/` for the repeatable operational backstops
-  that defend replay and recovery behavior
-
-## Across This Package
-
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when an operational question turns
-  into a CLI, API, or schema contract question
-- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a recovery question really
-  depends on execution or storage structure
-- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real issue is whether the
-  workflow is sufficiently defended and reviewed
+- leave for [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the live problem is contract shape rather than package operation
+- leave for [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a workflow problem exposes structural drift underneath it
+- leave for [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the package runs but the real question is whether the evidence is strong enough
 
 ## Bottom Line
 
-Open this section to decide whether a maintainer can repeat runtime workflow
-from checked-in assets instead of memory. If a step works only because someone
-already knows the trick, the package is not documented clearly enough yet.
-
+If the package cannot be operated from checked-in facts alone, the operational story is not done yet.

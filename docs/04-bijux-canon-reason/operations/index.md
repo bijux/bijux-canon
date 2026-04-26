@@ -9,23 +9,23 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Open this section when the question is procedural: how to install
-`bijux-canon-reason`, run CLI or API flows, inspect replayable artifacts,
-diagnose failures, and release the package without depending on team memory.
+Open this section when you need to run reasoning work repeatably: install it, reproduce claim behavior, diagnose provenance or verification drift, release it, or recover from failure with evidence instead of guesswork.
 
-Reasoning workflows are operationally sensitive because they generate evidence
-that may later be replayed or audited. A command that “mostly works” is not
-good enough if it leaves behind artifacts a reviewer cannot explain or trust.
+## Read These First
 
-## Start Here
+- open [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/) first when you need a clean package starting point
+- open [Observability and Diagnostics](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/observability-and-diagnostics/) when claims, checks, or artifacts no longer match expectation
+- open [Failure Recovery](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/failure-recovery/) when reasoning behavior has already failed or drifted
 
-- open [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/) for environment and
-  package bootstrap expectations
-- open [Common Workflows](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/common-workflows/) when you need the normal run and
-  validation paths
-- open [Observability and Diagnostics](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/observability-and-diagnostics/) or
-  [Failure Recovery](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/failure-recovery/) when a reasoning run is producing
-  suspect output or replay mismatches
+## Operational Risk
+
+The main operational risk here is making reasoning behavior look inspectable while the actual reproduction path depends on undocumented setup or recovery steps.
+
+## First Proof Check
+
+- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
+- `tests` and runnable workflows for evidence that the package can be operated repeatably
+- release notes and version metadata when the work changes caller expectations
 
 ## Pages In This Section
 
@@ -39,40 +39,12 @@ good enough if it leaves behind artifacts a reviewer cannot explain or trust.
 - [Security and Safety](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/deployment-boundaries/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need a repeatable procedure for running, replaying, diagnosing, or
-  releasing the package
-- you are responding to evidence, verification, or trace problems in local work
-  or CI
-- you need to know which operational path produces trustworthy reasoning
-  artifacts rather than just green commands
-
-## Open Another Section When
-
-- the main question is package purpose or ownership
-- you are still deciding whether a surface is a public contract
-- the issue is mainly about proof sufficiency rather than workflow
-
-## Concrete Anchors
-
-- `packages/bijux-canon-reason/pyproject.toml` for package metadata
-- `packages/bijux-canon-reason/README.md` for local package framing
-- `packages/bijux-canon-reason/tests` for executable operational backstops
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package boundary and scope
-- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a workflow problem points
-  to a structural seam
-- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when an operational path depends on
-  a CLI, API, schema, or artifact contract
-- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the next question is whether a
-  run has been validated hard enough
+- leave for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the live problem is contract shape rather than package operation
+- leave for [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a workflow problem exposes structural drift underneath it
+- leave for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the package runs but the real question is whether the evidence is strong enough
 
 ## Bottom Line
 
-Open this section to find procedures a maintainer can repeat and defend. If a
-workflow cannot explain how it produces inspectable traces, replayable output,
-or diagnosable failures, it is not ready to be trusted as operating memory.
-
+If the package cannot be operated from checked-in facts alone, the operational story is not done yet.
