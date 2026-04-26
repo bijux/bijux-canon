@@ -80,7 +80,10 @@ Use `Performance and Scaling` to decide whether a maintainer can repeat the pack
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-runtime` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
+This page shows how `bijux-canon-runtime` is operated, but it does not replace
+package metadata, actual runtime behavior, or validation in a real
+environment. A workflow is only trustworthy if a maintainer can still repeat
+it from the checked-in assets named here.
 
 ## Next Checks
 
@@ -90,7 +93,7 @@ This page explains how `bijux-canon-runtime` is expected to be operated, but it 
 
 ## Purpose
 
-This page records the posture for performance work in `bijux-canon-runtime`.
+This page shows the posture for performance work in `bijux-canon-runtime`.
 
 ## Stability
 

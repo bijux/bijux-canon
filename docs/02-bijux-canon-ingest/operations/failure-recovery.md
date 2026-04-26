@@ -11,9 +11,9 @@ last_reviewed: 2026-04-04
 
 Failure recovery starts with knowing which artifacts, interfaces, and tests expose the problem.
 
-This page should help a maintainer stabilize the situation before they try to
-improve it. The first question is not always how to fix the bug; it is how to
-locate the right evidence quickly.
+This page helps a maintainer stabilize the situation before trying to improve
+it. The first question is not always how to fix the bug; it is how to locate
+the right evidence quickly.
 
 Treat the operations pages for `bijux-canon-ingest` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
@@ -73,7 +73,10 @@ Use `Failure Recovery` to decide whether a maintainer can repeat the package wor
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-ingest` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
+This page shows how `bijux-canon-ingest` is operated, but it does not replace
+package metadata, actual runtime behavior, or validation in a real
+environment. A workflow is only trustworthy if a maintainer can still repeat
+it from the checked-in assets named here.
 
 ## Next Checks
 
@@ -83,7 +86,7 @@ This page explains how `bijux-canon-ingest` is expected to be operated, but it d
 
 ## Purpose
 
-This page gives maintainers a durable frame for triaging package failures.
+This page shows the durable frame readers can use to triage package failures.
 
 ## Stability
 

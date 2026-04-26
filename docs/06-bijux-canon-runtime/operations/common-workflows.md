@@ -11,9 +11,9 @@ last_reviewed: 2026-04-04
 
 Most work on `bijux-canon-runtime` follows one of a few recurring paths.
 
-This page should make those paths feel familiar and repeatable. Readers should
-not have to rediscover the same workflow from scratch every time they debug,
-extend, or review the package.
+This page makes those paths familiar and repeatable. Readers should not have
+to rediscover the same workflow from scratch every time they debug, extend, or
+review the package.
 
 Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
 
@@ -82,7 +82,10 @@ Use `Common Workflows` to decide whether a maintainer can repeat the package wor
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-runtime` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
+This page shows how `bijux-canon-runtime` is operated, but it does not replace
+package metadata, actual runtime behavior, or validation in a real
+environment. A workflow is only trustworthy if a maintainer can still repeat
+it from the checked-in assets named here.
 
 ## Next Checks
 
@@ -92,7 +95,8 @@ This page explains how `bijux-canon-runtime` is expected to be operated, but it 
 
 ## Purpose
 
-This page makes common package workflows easier to repeat consistently.
+This page shows the common package workflows readers should be able to repeat
+consistently.
 
 ## Stability
 
