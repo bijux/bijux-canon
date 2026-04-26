@@ -9,8 +9,8 @@ last_reviewed: 2026-04-09
 
 # CI Targets
 
-The CI make surface should be explicit enough that workflow files are not the
-only place where verification logic can be understood.
+The CI make surface stays explicit so workflow files are not the only place
+where verification logic can be understood.
 
 The repository groups CI-oriented make fragments under `makes/bijux-py/ci/`.
 Those files define target families for docs, lint, quality, sbom, security,
@@ -25,9 +25,17 @@ test, and build-related work.
 - `makes/bijux-py/ci/security.mk`
 - `makes/bijux-py/ci/test.mk`
 
+## Reader Route
+
+- read this page when the main question is where CI-oriented make targets live
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
+  for the workflow that calls repository and package verification
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
+  for the wider `makes/` tree layout
+
 ## Purpose
 
-This page explains where CI-oriented targets live in the make tree.
+This page shows where CI-oriented targets live in the make tree.
 
 ## Stability
 

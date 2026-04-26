@@ -21,9 +21,18 @@ package-specific files then bind to real repository packages.
 When package behavior is shared, encode it in a reusable make fragment instead
 of copying target logic across many package files.
 
+## Reader Route
+
+- read this page when the main question is where package-level make contracts
+  are defined and reused
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
+  for the wider `makes/` tree structure
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/`
+  when the question turns from make fragments to maintainer package ownership
+
 ## Purpose
 
-This page explains where package-level make contracts are defined and reused.
+This page shows where package-level make contracts are defined and reused.
 
 ## Stability
 

@@ -9,7 +9,7 @@ last_reviewed: 2026-04-09
 
 # Environment Model
 
-The make system should make environment assumptions visible.
+The make system keeps environment assumptions visible.
 
 Repository make behavior depends on shared environment fragments such as
 `makes/env.mk`, `makes/bijux-py/root/env.mk`, and
@@ -24,10 +24,18 @@ execution assumptions that later targets rely on.
 - name environment expectations clearly enough that CI and local runs are easy
   to compare
 
+## Reader Route
+
+- read this page when the main question is where shared make environment
+  assumptions live
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
+  for the wider `makes/` tree layout
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
+  when the question turns into CI-oriented target families
+
 ## Purpose
 
-This page explains where shared environment expectations live in the make
-system.
+This page shows where shared environment expectations live in the make system.
 
 ## Stability
 

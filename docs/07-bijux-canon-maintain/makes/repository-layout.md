@@ -25,9 +25,17 @@ logic lives under `makes/bijux-py/`, and package-facing entry files live under
 - `makes/bijux-py/ci/` for CI target families
 - `makes/packages/` for package-specific bindings
 
+## Reader Route
+
+- read this page when the main question is how the `makes/` tree is partitioned
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/environment-model/`
+  for shared environment fragments
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-contracts/`
+  for reusable package-level target contracts
+
 ## Purpose
 
-This page explains how the make tree is partitioned so readers can place new
+This page shows how the make tree is partitioned so readers can place new
 targets correctly.
 
 ## Stability
