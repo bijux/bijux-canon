@@ -9,9 +9,10 @@ last_reviewed: 2026-04-26
 
 # Repository Handbook
 
-Use the repository handbook when you need the part of `bijux-canon` that no
-single package owns alone: why the split exists, which rules belong at the
-root, and how package handoffs stay explicit across the repository.
+Open the repository handbook when the question belongs to the part of
+`bijux-canon` that no single package owns alone: why the split exists, which
+rules belong at the root, and how package handoffs stay explicit across the
+repository.
 
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
 Product behavior belongs in the publishable packages under `packages/`.
@@ -50,11 +51,11 @@ flowchart TB
 
 ## Start Here
 
-- use [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
-- use [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
-- move to a product handbook as soon as the behavior is clearly local to one canonical package
-- use the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
-- use the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
+- open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
+- open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
+- open a product handbook as soon as the behavior is clearly local to one canonical package
+- open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
+- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
 
 ## Choose A Section
 
@@ -90,13 +91,13 @@ flowchart TB
 - `apis/` and `.github/workflows/` for schema and validation review
 - `packages/` for the product boundaries this handbook must not blur
 
-## Use This Handbook When
+## Open This Handbook When
 
 - you are dealing with repository-wide seams rather than one package alone
 - you need shared workflow, schema, or governance context before changing code
 - you want the monorepo view that sits above the package handbooks
 
-## Move To Another Handbook When
+## Open Another Handbook When
 
 - the answer depends mostly on one package's local behavior, imports, or tests
 - you need workflow automation internals rather than root-facing guidance
@@ -106,8 +107,8 @@ flowchart TB
 
 Treat the root as a coordination layer. Use these pages to understand why the
 split exists, which rules stay shared, and where authority changes hands.
-Once the behavior is package-local, move to the owning package handbook
-instead of keeping the explanation at the root.
+Once the behavior is package-local, open the owning package handbook instead
+of keeping the explanation at the root.
 
 ## Cross-Package Anchors
 
