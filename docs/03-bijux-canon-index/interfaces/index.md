@@ -9,25 +9,24 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Open this section when you need to know which index-facing surfaces are real
-contracts: retrieval commands, APIs, schemas, imports, artifacts, and
-examples that other packages or operators can safely rely on.
+Open this section when the question is contractual: which index commands, APIs, retrieval outputs, artifacts, and imports callers may treat as stable enough to build on.
 
-These pages prevent accidental dependencies from forming around internal
-backend details or transient implementation choices. For index, that matters
-because once retrieval contracts spread into reasoning or runtime, later
-corrections become expensive.
+## Read These First
 
-## Start Here
+- open [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/) first when the contract question begins with a caller-visible schema or HTTP surface
+- open [Data Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/data-contracts/) when the dispute is about retrieval payloads or replay-visible record shape
+- open [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/) when search-surface changes may break downstream expectations
 
-- open [CLI Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/cli-surface/) when the issue begins with a query, build,
-  or replay command
-- open [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/) when the question is about HTTP or
-  retrieval-facing service boundaries
-- open [Data Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/data-contracts/) when schemas or payload shapes are
-  the real dependency
-- open [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/) when a change
-  may break a retrieval contract that others already trust
+## Contract Risk
+
+The main contract risk here is treating retrieval behavior as backend detail while callers quietly harden dependencies against it.
+
+## First Proof Check
+
+- `src/bijux_canon_index/interfaces` and `apis` for named caller-facing surfaces
+- tracked schemas and examples for contract visibility
+- `tests` for replay, provenance, and compatibility evidence
+
 
 ## Pages In This Section
 
@@ -41,41 +40,12 @@ corrections become expensive.
 - [Public Imports](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need to know which retrieval surfaces are intentional and supportable
-- downstream reasoning or runtime behavior depends on index commands, schemas,
-  artifacts, or imports
-- you are reviewing whether a change creates compatibility pressure on a public
-  surface
-
-## Open Another Section When
-
-- the real question is why retrieval ownership belongs in index at all
-- you need internal layering, state flow, or backend structure first
-- the problem is operational, such as setup, diagnostics, or release handling
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when a contract concern is really a
-  package-boundary concern
-- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the surface depends on
-  deeper retrieval structure or backend layering
-- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the contract question starts
-  with a repeatable maintainer workflow
-- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the real issue is whether the
-  documented contract is sufficiently defended
-
-## Concrete Anchors
-
-- CLI modules under `src/bijux_canon_index/interfaces/cli`
-- HTTP app under `src/bijux_canon_index/api`
-- OpenAPI schema files under `apis/bijux-canon-index/v1`
-- `apis/bijux-canon-index/v1/schema.yaml`
+- leave for [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the contract dispute is really a package-boundary dispute
+- leave for [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when a surface question reveals structural drift underneath it
+- leave for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) or [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the boundary is clear and the question becomes execution or proof
 
 ## Bottom Line
 
-Open this section to separate supported retrieval contracts from internal index
-visibility. If a dependency cannot be defended in terms of named commands,
-schemas, artifacts, examples, and tests, it is not yet a stable public surface.
-
+A surface is not a real contract until the docs, code, and tests agree that it is one.

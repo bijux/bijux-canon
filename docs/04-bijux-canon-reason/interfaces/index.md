@@ -9,24 +9,24 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Open this section when the question is what another package, tool, or operator
-can safely rely on from `bijux-canon-reason`: commands, HTTP routes, schema
-shapes, trace formats, artifacts, and public imports.
+Open this section when the question is contractual: which reasoning entrypoints, artifacts, payloads, and imports are real promises rather than merely visible implementation details.
 
-This package carries more contract pressure than an internal helper library
-because its outputs are designed to be inspected, replayed, and challenged. A
-reasoning trace or verification artifact is not just “something the code wrote”;
-it is part of the evidence a later reader may depend on.
+## Read These First
 
-## Start Here
+- open [Data Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/data-contracts/) first when the issue is about claim, check, or provenance payload shape
+- open [Artifact Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/artifact-contracts/) when downstream tools depend on stable reasoning outputs
+- open [Compatibility Commitments](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/compatibility-commitments/) when a reasoning-surface change may break reviewers or callers
 
-- open [CLI Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/cli-surface/) for operator-facing commands and replay
-  entrypoints
-- open [API Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/api-surface/) when the contract is HTTP-facing rather
-  than terminal-facing
-- open [Artifact Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/artifact-contracts/) and
-  [Data Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/data-contracts/) when the durable output shape matters
-  more than the call syntax
+## Contract Risk
+
+The main contract risk here is letting reviewer-facing reasoning artifacts drift without naming which shapes and entrypoints are actually supported.
+
+## First Proof Check
+
+- `src/bijux_canon_reason/interfaces` and package artifacts for the owned boundary surfaces
+- tracked schemas, examples, and README framing for contract visibility
+- `tests` for claim, provenance, and compatibility evidence
+
 
 ## Pages In This Section
 
@@ -40,41 +40,12 @@ it is part of the evidence a later reader may depend on.
 - [Public Imports](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/compatibility-commitments/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need to know whether a command, route, schema, trace file, or import is
-  meant to be stable
-- a change may affect replayability, artifact reading, or downstream contract
-  assumptions
-- a reviewer needs to separate explicit interfaces from incidental visibility
-
-## Open Another Section When
-
-- the real question is why the behavior belongs in reasoning at all
-- the concern is mainly how the package is organized internally
-- the issue is procedural or proof-oriented rather than contract-oriented
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
-- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for structural seams behind the
-  public surfaces
-- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, and release
-  procedures
-- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for compatibility evidence and review
-  pressure
-
-## Concrete Anchors
-
-- `src/bijux_canon_reason/interfaces/cli` for command entrypoints
-- `src/bijux_canon_reason/api/v1` for HTTP routes and models
-- `src/bijux_canon_reason/interfaces/serialization` for canonical JSON and
-  trace JSONL formats
-- `apis/bijux-canon-reason/v1/schema.yaml` for the published schema contract
+- leave for [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the contract dispute is really a package-boundary dispute
+- leave for [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a surface question reveals structural drift underneath it
+- leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) or [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the boundary is clear and the question becomes execution or proof
 
 ## Bottom Line
 
-Open this section to judge whether a dependency is defensible. In this package,
-the answer is not just “is there a function for it?” but also “can a reviewer
-trace the contract through commands, schemas, artifacts, examples, and tests?”
-
+A surface is not a real contract until the docs, code, and tests agree that it is one.
