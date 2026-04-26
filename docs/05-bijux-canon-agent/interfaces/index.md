@@ -40,7 +40,7 @@ when they assess agent behavior.
 - [Public Imports](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/compatibility-commitments/)
 
-## Open Interfaces When
+## Open This Section When
 
 - you need to know whether a command, route, trace file, config surface, or
   import is meant to be stable
@@ -53,7 +53,7 @@ when they assess agent behavior.
 - the concern is mostly structural rather than contract-facing
 - the issue is procedural or proof-oriented rather than about supported surfaces
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
 - open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for the structural seams behind
@@ -73,7 +73,7 @@ when they assess agent behavior.
 
 ## Bottom Line
 
-Open `Interfaces` to judge whether a dependency on the agent layer is
+Open this section to judge whether a dependency on the agent layer is
 defensible. The bar is not only that a command exists, but that commands,
 schemas, traces, artifacts, examples, and tests all agree about what the
 orchestration surface really promises.

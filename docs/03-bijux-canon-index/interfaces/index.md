@@ -41,7 +41,7 @@ corrections become expensive.
 - [Public Imports](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/)
 
-## Open Interfaces When
+## Open This Section When
 
 - you need to know which retrieval surfaces are intentional and supportable
 - downstream reasoning or runtime behavior depends on index commands, schemas,
@@ -55,7 +55,7 @@ corrections become expensive.
 - you need internal layering, state flow, or backend structure first
 - the problem is operational, such as setup, diagnostics, or release handling
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when a contract concern is really a
   package-boundary concern
@@ -75,7 +75,7 @@ corrections become expensive.
 
 ## Bottom Line
 
-Open `Interfaces` to separate supported retrieval contracts from internal index
+Open this section to separate supported retrieval contracts from internal index
 visibility. If a dependency cannot be defended in terms of named commands,
 schemas, artifacts, examples, and tests, it is not yet a stable public surface.
 

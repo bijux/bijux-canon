@@ -40,7 +40,7 @@ it is part of the evidence a later reader may depend on.
 - [Public Imports](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/compatibility-commitments/)
 
-## Open Interfaces When
+## Open This Section When
 
 - you need to know whether a command, route, schema, trace file, or import is
   meant to be stable
@@ -54,7 +54,7 @@ it is part of the evidence a later reader may depend on.
 - the concern is mainly how the package is organized internally
 - the issue is procedural or proof-oriented rather than contract-oriented
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
 - open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for structural seams behind the
@@ -74,7 +74,7 @@ it is part of the evidence a later reader may depend on.
 
 ## Bottom Line
 
-Open `Interfaces` to judge whether a dependency is defensible. In this package,
+Open this section to judge whether a dependency is defensible. In this package,
 the answer is not just “is there a function for it?” but also “can a reviewer
 trace the contract through commands, schemas, artifacts, examples, and tests?”
 

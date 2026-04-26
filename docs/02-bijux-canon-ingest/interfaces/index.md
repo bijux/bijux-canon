@@ -41,7 +41,7 @@ quickly once other packages start depending on them.
 - [Public Imports](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/)
 
-## Open Interfaces When
+## Open This Section When
 
 - you need to know which ingest surface is intentional rather than incidental
 - downstream retrieval or orchestration work depends on prepared ingest outputs
@@ -55,7 +55,7 @@ quickly once other packages start depending on them.
 - the issue is about setup, diagnostics, or release workflow rather than
   caller-facing contract surfaces
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when a contract question is really
   a package-boundary question
@@ -75,7 +75,7 @@ quickly once other packages start depending on them.
 
 ## Bottom Line
 
-Open `Interfaces` to separate what ingest truly promises from what merely
+Open this section to separate what ingest truly promises from what merely
 happens to be visible today. If a downstream dependency cannot be defended in
 terms of named commands, schemas, artifacts, examples, and tests, it is not yet
 a stable contract.

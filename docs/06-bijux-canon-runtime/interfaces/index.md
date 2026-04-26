@@ -44,7 +44,7 @@ artifacts, and imports are real promises.
 - [Public Imports](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/)
 
-## Open Interfaces When
+## Open This Section When
 
 - you need the public command, API, import, schema, or artifact surface
 - you are checking whether a caller can safely rely on a given entrypoint or shape
@@ -69,7 +69,7 @@ artifacts, and imports are real promises.
 - `tests/api/test_schema_stability.py` and `tests/unit/contracts/` for
   interface-facing proof
 
-## Read Across The Package
+## Across This Package
 
 - open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a surface question becomes
   a module or storage question
@@ -80,7 +80,7 @@ artifacts, and imports are real promises.
 
 ## Bottom Line
 
-Open `Interfaces` to decide whether a caller-facing surface is explicit enough to
+Open this section to decide whether a caller-facing surface is explicit enough to
 depend on. If the surface cannot be tied back to code, frozen schemas, named
 artifacts, examples, and tests, treat it as unstable until that evidence is
 visible.
