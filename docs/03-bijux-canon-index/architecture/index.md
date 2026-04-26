@@ -4,45 +4,55 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Architecture
 
-This section explains how `bijux_canon_index` is organized so a reviewer can follow structure, dependency direction, and execution flow without guessing.
+Use this section when the important question is how index is assembled:
+which layers own retrieval semantics, how application workflows coordinate
+queries and updates, and where backend infrastructure stops being the package's
+core logic.
 
-These pages turn `bijux-canon-index` from a directory tree into a readable design map. Use them when a structural change needs to be grounded in named modules and real execution paths.
-
-Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+These pages should let reviewers trace real retrieval flow through domain,
+application, and infrastructure layers without reconstructing the design from
+imports alone. The goal is to make architectural responsibility explicit enough
+to review and evolve.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    review["bijux-canon-index<br/>architecture review"]
-    modules["Module map<br/>which areas own behavior"]
-    deps["Dependency direction<br/>which layers may know each other"]
-    exec["Execution path<br/>how work moves through code"]
-    state["State boundary<br/>what becomes durable"]
-    seams["Integration seams<br/>where outside systems meet it"]
-    review --> modules
-    review --> deps
-    review --> exec
-    review --> state
-    review --> seams
+    request["retrieval request or index update"]
+    app["application workflows<br/>coordinate operations"]
+    domain["domain logic<br/>retrieval, provenance, replay rules"]
+    infra["infrastructure adapters<br/>backends and environment"]
+    state["durable index state"]
+    seams["integration seams<br/>ingest inputs and downstream consumers"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class review page;
-    class modules anchor;
-    class deps,exec positive;
-    class state action;
+    class request,page state;
+    class app,domain,infra positive;
     class seams caution;
+    request --> app --> domain --> infra --> state
+    request --> seams
+    state --> seams
 ```
 
-## Pages in This Section
+## Start Here
+
+- open [Module Map](module-map.md) for the fastest route to directory-level
+  architectural ownership
+- open [Execution Model](execution-model.md) when the real question is how
+  retrieval work moves through the package
+- open [State and Persistence](state-and-persistence.md) when index durability
+  and replay behavior are the hard part
+- open [Integration Seams](integration-seams.md) when a change might blur the
+  edges between ingest, index, and downstream consumers
+
+## Pages In This Section
 
 - [Module Map](module-map.md)
 - [Dependency Direction](dependency-direction.md)
@@ -54,55 +64,48 @@ flowchart LR
 - [Code Navigation](code-navigation.md)
 - [Architecture Risks](architecture-risks.md)
 
-## Read Across the Package
+## Use This Section When
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+- you need to trace retrieval structure before refactoring or extending the
+  package
+- you are checking whether backend integration still respects the intended layer
+  boundaries
+- you need to understand where replay and provenance logic really live
+
+## Do Not Use This Section When
+
+- the question is mainly about public commands, imports, schemas, or artifacts
+- the issue is operational, such as local setup, diagnostics, or release
+- you need tests, risks, or validation criteria more than a structural map
+
+## Read Across The Package
+
+- open [Foundation](../foundation/index.md) when the structural question is
+  really an ownership question
+- open [Interfaces](../interfaces/index.md) when architecture reaches a
+  caller-facing contract or retrieval surface
+- open [Operations](../operations/index.md) when structure affects repeatable
+  maintainer workflows
+- open [Quality](../quality/index.md) when you need proof that the documented
+  design is still defended in tests and review
 
 ## Concrete Anchors
 
-- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
+- `src/bijux_canon_index/domain` for execution, provenance, and request
+  semantics
 - `src/bijux_canon_index/application` for workflow coordination
-- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
+- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment
+  helpers
 
-## Use This Page When
+## Reader Takeaway
 
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Architecture` to decide whether a structural change makes `bijux-canon-index` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What This Page Answers
-
-- how `bijux-canon-index` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Reviewer Lens
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-index`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
+Use `Architecture` to make retrieval structure legible enough that a reviewer
+can say which logic belongs to the domain, which belongs to workflow
+coordination, and which belongs to adapters. If that answer is blurry, the
+package is already accumulating architectural drift.
 
 ## Purpose
 
-This page explains how to use the architecture section for `bijux-canon-index` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page introduces the architecture handbook for `bijux-canon-index` and
+routes readers to the module, execution, state, seam, and risk pages that
+explain how the package is organized.
