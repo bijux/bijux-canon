@@ -34,7 +34,7 @@ flowchart LR
     index --> reader
 ```
 
-## Use This Handbook When
+## Open This Handbook When
 
 - you need the package-level entrypoint for index docs
 - you are checking vector execution, retrieval, or replay-aware index behavior
@@ -56,15 +56,15 @@ flowchart LR
 
 ## Choose A Section
 
-- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when you need the package boundary,
+- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when you need the package boundary,
   vocabulary, or ownership story
-- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the question is about module
+- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the question is about module
   layout, dependency direction, or replay flow
-- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when you need commands, schemas,
+- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when you need commands, schemas,
   artifacts, or import surfaces
-- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, diagnostics,
+- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, diagnostics,
   local workflow, or release guidance
-- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof expectations, risk
+- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof expectations, risk
   posture, or review standards
 
 ## Pages In This Handbook

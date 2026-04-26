@@ -19,10 +19,9 @@ system. It owns acceptance policy, replay authority, persistence boundaries,
 and runtime-facing coordination that should remain explicit rather than hiding
 in whichever lower package happened to execute last.
 
-For many readers this is the page that explains whether a run counts at all.
-It should make the package role obvious quickly: lower packages can execute
-work, but runtime decides whether that work is acceptable, replayable, durable,
-and fit to keep.
+For many readers this page answers whether a run counts at all. Lower packages
+can execute work, but runtime decides whether that work is acceptable,
+replayable, durable, and fit to keep.
 
 ```mermaid
 flowchart LR
@@ -47,16 +46,16 @@ flowchart LR
 
 ## Start Here
 
-- use [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why runtime owns
+- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why runtime owns
   run authority instead of one lower package
-- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the execution and
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the execution and
   persistence structure
-- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about CLI, API,
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about CLI, API,
   schemas, or durable artifact contracts
-- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the issue is whether runtime has proven
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the issue is whether runtime has proven
   a run acceptable rather than merely executable
 
-## Use This Handbook When
+## Open This Handbook When
 
 - you need the package-level entrypoint for runtime docs
 - you are checking execution, replay, or persistence behavior
@@ -88,15 +87,15 @@ flowchart LR
 
 ## Choose A Section
 
-- use [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is about package
+- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is about package
   purpose, ownership, or vocabulary
-- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the module map,
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the module map,
   execution shape, or persistence structure
-- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands,
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- use [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need setup, diagnostics,
+- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need setup, diagnostics,
   workflow, or release guidance
-- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is about trust, risk,
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is about trust, risk,
   invariants, or review standards
 
 ## Pages In This Handbook

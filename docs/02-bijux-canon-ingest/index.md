@@ -34,7 +34,7 @@ flowchart LR
     source --> ingest --> index --> reason --> agent --> runtime
 ```
 
-## Use This Handbook When
+## Open This Handbook When
 
 - you need the package-level entrypoint for ingest docs
 - you are checking ingest workflows, chunking, or retrieval preparation
@@ -56,15 +56,15 @@ flowchart LR
 
 ## Choose A Section
 
-- use [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the real question is why ingest
+- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the real question is why ingest
   exists, where the boundary stops, or which language should stay stable
-- use [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the module map,
+- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the module map,
   dependency direction, or execution flow
-- use [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands,
+- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need setup, local workflow,
+- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need setup, local workflow,
   diagnostics, or release guidance
-- use [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof expectations, risk
+- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof expectations, risk
   posture, or a review standard
 
 ## Pages In This Handbook

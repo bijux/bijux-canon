@@ -34,7 +34,7 @@ flowchart LR
     reason --> reader
 ```
 
-## Use This Handbook When
+## Open This Handbook When
 
 - you need the package-level entrypoint for reasoning docs
 - you are checking reasoning behavior, verification, or provenance
@@ -56,15 +56,15 @@ flowchart LR
 
 ## Choose A Section
 
-- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the question is about package
+- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the question is about package
   purpose, language, or ownership
-- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when you need the module map,
+- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when you need the module map,
   execution flow, or dependency structure
-- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is about commands,
+- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when you need setup, diagnostics,
+- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when you need setup, diagnostics,
   local workflow, or release guidance
-- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is about trust, evidence,
+- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is about trust, evidence,
   limitations, or review standards
 
 ## Pages In This Handbook

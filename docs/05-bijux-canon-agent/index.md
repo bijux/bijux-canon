@@ -34,7 +34,7 @@ flowchart LR
     agent --> reader
 ```
 
-## Use This Handbook When
+## Open This Handbook When
 
 - you need the package-level entrypoint for agent docs
 - you are checking orchestration, agent APIs, or trace-producing workflows
@@ -56,15 +56,15 @@ flowchart LR
 
 ## Choose A Section
 
-- use [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the question is about package
+- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the question is about package
   purpose, language, or scope
-- use [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when you need module boundaries,
+- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when you need module boundaries,
   dependency direction, or execution flow
-- use [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is about commands,
+- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when you need setup, diagnostics,
+- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when you need setup, diagnostics,
   workflow, or release guidance
-- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when you need trust posture, proof
+- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when you need trust posture, proof
   expectations, or review standards
 
 ## Pages In This Handbook
@@ -79,4 +79,4 @@ flowchart LR
 
 Open this handbook when the meaningful question is how agent behavior is
 coordinated and traced. If the question is really about whether a run should be
-accepted, replayed, or persisted, move up to the runtime handbook instead.
+accepted, replayed, or persisted, open the runtime handbook instead.
