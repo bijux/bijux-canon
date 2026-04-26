@@ -80,7 +80,7 @@ Use `Module Map` to decide whether a structural change makes `bijux-canon-reason
 
 ## Limits
 
-This page describes the current structural model of `bijux-canon-reason`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
+Treat this page as a working structural map and keep it aligned with code and tests.
 
 ## Read Next
 

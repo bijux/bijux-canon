@@ -77,7 +77,7 @@ Use `Security and Safety` to decide whether a maintainer can repeat the package 
 
 ## Limits
 
-This page explains how `bijux-canon-runtime` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
+Checked-in commands, artifacts, and validation remain the source of truth for this workflow.
 
 ## Read Next
 

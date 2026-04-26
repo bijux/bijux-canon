@@ -80,7 +80,7 @@ Use `Change Principles` to decide whether a change makes `bijux-canon-index` eas
 
 ## Limits
 
-This page shows the intended boundary of `bijux-canon-index`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
+Code, tests, and neighboring package seams remain the proof of this boundary.
 
 ## Read Next
 

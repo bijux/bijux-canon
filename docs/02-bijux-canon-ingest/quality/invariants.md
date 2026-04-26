@@ -81,9 +81,7 @@ Use `Invariants` to decide whether `bijux-canon-ingest` has actually earned trus
 
 ## Limits
 
-This page shows how `bijux-canon-ingest` earns trust, but it does not claim
-that prose alone is enough. If the listed tests, checks, and review practice
-stop backing the story, the story has to change.
+Tests, checks, and review practice remain the proof for this package. If they drift, this page is wrong.
 
 ## Read Next
 
