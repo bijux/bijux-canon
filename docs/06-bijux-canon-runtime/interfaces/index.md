@@ -4,42 +4,55 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Interfaces
 
 This section explains which commands, APIs, imports, schemas, and artifacts `bijux-canon-runtime` is prepared to stand behind as real surfaces.
 
-These pages explain the public face of `bijux-canon-runtime`. They help a caller separate deliberate contracts from incidental visibility before a dependency hardens around the wrong surface.
+These pages explain the public face of `bijux-canon-runtime`. They help a
+caller separate deliberate contracts from incidental visibility before a
+dependency hardens around the wrong surface.
 
-Treat the interfaces pages for `bijux-canon-runtime` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+Runtime contracts matter because this package exposes governed execution and
+replay surfaces that other packages, tools, and reviewers may treat as
+authoritative. This section should make it obvious which commands, schemas,
+artifacts, and imports are real promises.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    caller["bijux-canon-runtime<br/>interface questions"]
+    reader["reader question<br/>what can I safely depend on?"]
     cli["CLI and operator entrypoints"]
     api["HTTP and schema surfaces"]
-    config["Configuration and data shapes"]
-    imports["Python import boundary"]
-    compatibility["What needs compatibility review"]
-    caller --> cli
-    caller --> api
-    caller --> config
-    caller --> imports
-    caller --> compatibility
+    artifacts["replay envelopes, stores, and output artifacts"]
+    imports["public Python imports"]
+    compatibility["what needs compatibility review"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class caller page;
-    class cli,api positive;
-    class config,imports anchor;
-    class compatibility action;
+    class reader page;
+    class cli,api,artifacts,imports positive;
+    class compatibility caution;
+    reader --> cli
+    reader --> api
+    reader --> artifacts
+    reader --> imports
+    reader --> compatibility
 ```
+
+## Start Here
+
+- open [CLI Surface](cli-surface.md) when the operator-facing run contract is
+  the real dependency
+- open [API Surface](api-surface.md) when the question is about HTTP behavior
+  or frozen schemas
+- open [Artifact Contracts](artifact-contracts.md) when durable run records or
+  replay outputs matter more than commands
+- open [Compatibility Commitments](compatibility-commitments.md) before
+  changing names, shapes, or schema surfaces that another package may depend on
 
 ## Pages in This Section
 
@@ -53,56 +66,49 @@ flowchart LR
 - [Public Imports](public-imports.md)
 - [Compatibility Commitments](compatibility-commitments.md)
 
-## Read Across the Package
-
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
-
-## Concrete Anchors
-
-- CLI entrypoint in src/bijux_canon_runtime/interfaces/cli/entrypoint.py
-- HTTP app in src/bijux_canon_runtime/api/v1
-- schema files in apis/bijux-canon-runtime/v1
-- apis/bijux-canon-runtime/v1/schema.yaml
-
 ## Use This Page When
 
 - you need the public command, API, import, schema, or artifact surface
 - you are checking whether a caller can safely rely on a given entrypoint or shape
 - you want the contract-facing side of the package before building on it
 
-## Decision Rule
+## Do Not Use This Section When
 
-Use `Interfaces` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
+- the real question is why runtime owns a behavior rather than a lower package
+- you need execution structure or storage layering before judging a surface
+- you are deciding whether the current proof is strong enough rather than which
+  contract exists
 
-## What This Page Answers
+## Concrete Anchors
 
-- which public or operator-facing surfaces `bijux-canon-runtime` is really asking readers to trust
-- which schemas, artifacts, imports, or commands behave like contracts
-- what compatibility pressure a change to this surface would create
+- `src/bijux_canon_runtime/interfaces/cli/entrypoint.py` and
+  `src/bijux_canon_runtime/interfaces/cli/parser.py` for operator entrypoints
+- `src/bijux_canon_runtime/api/v1/` plus `apis/bijux-canon-runtime/v1/` for
+  the HTTP and schema contract surface
+- `src/bijux_canon_runtime/contracts/` and
+  `src/bijux_canon_runtime/model/execution/replay_envelope.py` for durable
+  artifact and data contracts
+- `tests/api/test_schema_stability.py` and `tests/unit/contracts/` for
+  interface-facing proof
 
-## Reviewer Lens
+## Read Across The Package
 
-- compare commands, schemas, imports, and artifacts against the documented surface one by one
-- check whether a seemingly local change actually needs compatibility review
-- confirm that examples still point to real entrypoints and not to stale habits
+- open [Architecture](../architecture/index.md) when a surface question becomes
+  a module or storage question
+- open [Operations](../operations/index.md) when a contract depends on a
+  repeatable workflow, migration, or release path
+- open [Quality](../quality/index.md) when the real question is whether the
+  interface is sufficiently defended
 
-## Honesty Boundary
+## Reader Takeaway
 
-This page can identify the intended public surfaces of `bijux-canon-runtime`, but real compatibility depends on code, schemas, artifacts, examples, and tests staying aligned. If those disagree, the prose is wrong or incomplete.
-
-## Next Checks
-
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
+Use `Interfaces` to decide whether a caller-facing surface is explicit enough to
+depend on. If the surface cannot be tied back to code, frozen schemas, named
+artifacts, examples, and tests, treat it as unstable until that evidence is
+visible.
 
 ## Purpose
 
-This page explains how to use the interfaces section for `bijux-canon-runtime` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page explains how to use the interfaces section for
+`bijux-canon-runtime` without repeating the detail that belongs on the topic
+pages beneath it.
