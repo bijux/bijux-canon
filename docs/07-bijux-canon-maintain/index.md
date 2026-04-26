@@ -46,12 +46,12 @@ flowchart TB
 
 ## Sections
 
-- [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer package behavior,
+- [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) for maintainer package behavior,
   schema drift tooling, release support, SBOM helpers, and repository-health
   guardrails
-- [makes](makes/index.md) for the shared make entrypoints, package dispatch,
+- [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) for the shared make entrypoints, package dispatch,
   CI target families, and release-facing command surfaces
-- [gh-workflows](gh-workflows/index.md) for GitHub Actions verification,
+- [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) for GitHub Actions verification,
   publication, docs deployment, and reusable workflow contracts
 
 ## Use This Handbook When
@@ -69,11 +69,11 @@ flowchart TB
 
 ## Choose The Next Section By Question
 
-- open [bijux-canon-dev](bijux-canon-dev/index.md) when the concern is helper
+- open [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) when the concern is helper
   code, schema drift, supply chain, release support, or quality gates
-- open [makes](makes/index.md) when the concern is shared command surfaces,
+- open [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) when the concern is shared command surfaces,
   package dispatch, CI targets, or release entrypoints
-- open [gh-workflows](gh-workflows/index.md) when the concern is GitHub Actions
+- open [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) when the concern is GitHub Actions
   triggers, job trees, reusable workflows, or docs publication
 
 ## Shared Maintenance Anchors

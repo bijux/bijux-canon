@@ -50,9 +50,9 @@ flowchart TB
 
 ## Sections
 
-- [Catalog](catalog/index.md) for legacy package entries, preserved names, and
+- [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) for legacy package entries, preserved names, and
   the concrete surfaces each compatibility package still carries
-- [Migration](migration/index.md) for rename planning, dependency continuity,
+- [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) for rename planning, dependency continuity,
   validation, release posture, and retirement decisions
 
 ## Use This Section When
@@ -71,36 +71,36 @@ flowchart TB
 
 ## Choose The Next Section By Question
 
-- open [Catalog](catalog/index.md) when the immediate need is to identify which
+- open [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) when the immediate need is to identify which
   exact legacy surface is still preserved
-- open [Migration](migration/index.md) when the immediate need is to plan
+- open [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) when the immediate need is to plan
   dependency continuity, validation, or retirement
 - move to the owning canonical package handbook once the current target package
   is known and the question becomes product behavior rather than migration
 
 ## Pages In Catalog
 
-- [agentic-flows](catalog/agentic-flows.md)
-- [bijux-agent](catalog/bijux-agent.md)
-- [bijux-rag](catalog/bijux-rag.md)
-- [bijux-rar](catalog/bijux-rar.md)
-- [bijux-vex](catalog/bijux-vex.md)
-- [Legacy Name Map](catalog/legacy-name-map.md)
-- [Package Behavior](catalog/package-behavior.md)
-- [Import Surfaces](catalog/import-surfaces.md)
-- [Command Surfaces](catalog/command-surfaces.md)
+- [agentic-flows](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
+- [bijux-agent](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/)
+- [bijux-rag](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/)
+- [bijux-rar](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/)
+- [bijux-vex](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/)
+- [Legacy Name Map](https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/)
+- [Package Behavior](https://bijux.io/bijux-canon/08-compat-packages/catalog/package-behavior/)
+- [Import Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/import-surfaces/)
+- [Command Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/command-surfaces/)
 
 ## Pages In Migration
 
-- [Compatibility Overview](migration/compatibility-overview.md)
-- [Migration Guidance](migration/migration-guidance.md)
-- [Repository Consolidation](migration/repository-consolidation.md)
-- [Canonical Targets](migration/canonical-targets.md)
-- [Dependency Continuity](migration/dependency-continuity.md)
-- [Release Policy](migration/release-policy.md)
-- [Validation Strategy](migration/validation-strategy.md)
-- [Retirement Conditions](migration/retirement-conditions.md)
-- [Retirement Playbook](migration/retirement-playbook.md)
+- [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)
+- [Migration Guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- [Repository Consolidation](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/)
+- [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/)
+- [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/)
+- [Release Policy](https://bijux.io/bijux-canon/08-compat-packages/migration/release-policy/)
+- [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/)
+- [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/)
+- [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/)
 
 ## Retired Standalone Repositories
 

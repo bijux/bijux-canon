@@ -66,9 +66,9 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 </div>
 
 <div class="bijux-quicklinks">
-<a class="md-button md-button--primary" href="01-bijux-canon/">Open the repository handbook</a>
-<a class="md-button" href="07-bijux-canon-maintain/">Open maintenance docs</a>
-<a class="md-button" href="08-compat-packages/">Open compatibility docs</a>
+<a class="md-button md-button--primary" href="https://bijux.io/bijux-canon/01-bijux-canon/">Open the repository handbook</a>
+<a class="md-button" href="https://bijux.io/bijux-canon/07-bijux-canon-maintain/">Open maintenance docs</a>
+<a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
 
 ## Visual Summary
@@ -109,10 +109,10 @@ flowchart LR
 
 ## Start Here
 
-- open [Repository Handbook](01-bijux-canon/index.md) for cross-package seams, root rules, or shared repository behavior
+- open [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) for cross-package seams, root rules, or shared repository behavior
 - open one product handbook for package-local ownership, interfaces, operations, or proof
-- open [Maintainer Handbook](07-bijux-canon-maintain/index.md) for automation, Make routing, CI contracts, and repository health
-- open [Compatibility Handbook](08-compat-packages/index.md) only when an older distribution name, import, or command name still exists in the environment
+- open [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
+- open [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name still exists in the environment
 
 ## Canonical Package Responsibilities
 
@@ -126,9 +126,9 @@ flowchart LR
 
 ## Repository-Level Guides
 
-- [Repository Handbook](01-bijux-canon/index.md) explains the root-owned design boundary, shared workflow, and package seams
-- [Maintainer Handbook](07-bijux-canon-maintain/index.md) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
-- [Compatibility Handbook](08-compat-packages/index.md) documents preserved legacy names and the migration pressure away from them
+- [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) explains the root-owned design boundary, shared workflow, and package seams
+- [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
+- [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) documents preserved legacy names and the migration pressure away from them
 
 ## Concrete Anchors
 

@@ -56,24 +56,24 @@ flowchart LR
 
 ## Choose The Next Section By Question
 
-- open [Foundation](foundation/index.md) when you need the package boundary,
+- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when you need the package boundary,
   vocabulary, or ownership story
-- open [Architecture](architecture/index.md) when the question is about module
+- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the question is about module
   layout, dependency direction, or replay flow
-- open [Interfaces](interfaces/index.md) when you need commands, schemas,
+- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when you need commands, schemas,
   artifacts, or import surfaces
-- open [Operations](operations/index.md) when you need setup, diagnostics,
+- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, diagnostics,
   local workflow, or release guidance
-- open [Quality](quality/index.md) when you need proof expectations, risk
+- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof expectations, risk
   posture, or review standards
 
 ## Main Paths
 
-- [Foundation](foundation/index.md)
-- [Architecture](architecture/index.md)
-- [Interfaces](interfaces/index.md)
-- [Operations](operations/index.md)
-- [Quality](quality/index.md)
+- [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/)
+- [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/)
+- [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/)
+- [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/)
+- [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/)
 
 ## Reader Takeaway
 

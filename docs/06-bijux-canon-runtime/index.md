@@ -46,13 +46,13 @@ flowchart LR
 
 ## Start Here
 
-- open [Foundation](foundation/index.md) when the question is why runtime owns
+- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why runtime owns
   run authority instead of one lower package
-- open [Architecture](architecture/index.md) when you need the execution and
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the execution and
   persistence structure
-- open [Interfaces](interfaces/index.md) when the question is about CLI, API,
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about CLI, API,
   schemas, or durable artifact contracts
-- open [Quality](quality/index.md) when the issue is whether runtime has proven
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the issue is whether runtime has proven
   a run acceptable rather than merely executable
 
 ## Read This Section When
@@ -87,24 +87,24 @@ flowchart LR
 
 ## Choose The Next Section By Question
 
-- open [Foundation](foundation/index.md) when the question is about package
+- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is about package
   purpose, ownership, or vocabulary
-- open [Architecture](architecture/index.md) when you need the module map,
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the module map,
   execution shape, or persistence structure
-- open [Interfaces](interfaces/index.md) when the question is about commands,
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- open [Operations](operations/index.md) when you need setup, diagnostics,
+- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need setup, diagnostics,
   workflow, or release guidance
-- open [Quality](quality/index.md) when the question is about trust, risk,
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is about trust, risk,
   invariants, or review standards
 
 ## Main Paths
 
-- [Foundation](foundation/index.md)
-- [Architecture](architecture/index.md)
-- [Interfaces](interfaces/index.md)
-- [Operations](operations/index.md)
-- [Quality](quality/index.md)
+- [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/)
+- [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/)
+- [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/)
+- [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/)
+- [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/)
 
 ## Reader Takeaway
 

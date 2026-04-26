@@ -51,17 +51,17 @@ flowchart TB
 
 ## Start Here
 
-- open [Foundation](foundation/index.md) for repository shape, split logic, ownership boundaries, and shared terminology
-- open [Operations](operations/index.md) for contributor workflow, validation posture, release flow, and review rules
+- open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
+- open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
 - move to a product handbook when the concern is already local to one canonical package
-- move to [Maintainer Handbook](../07-bijux-canon-maintain/index.md) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
-- move to [Compatibility Handbook](../08-compat-packages/index.md) only when a legacy package name or migration question is still active
+- move to [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
+- move to [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
 
 ## Sections
 
-- [Foundation](foundation/index.md) for the repository split, ownership model,
+- [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for the repository split, ownership model,
   shared language, and design rules that should stay stable over time
-- [Operations](operations/index.md) for contributor workflows, validation,
+- [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflows, validation,
   release, automation, artifact handling, and shared review posture
 
 ## What This Handbook Owns

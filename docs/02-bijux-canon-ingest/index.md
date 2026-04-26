@@ -56,24 +56,24 @@ flowchart LR
 
 ## Choose The Next Section By Question
 
-- open [Foundation](foundation/index.md) when the real question is why ingest
+- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the real question is why ingest
   exists, where the boundary stops, or which language should stay stable
-- open [Architecture](architecture/index.md) when you need the module map,
+- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the module map,
   dependency direction, or execution flow
-- open [Interfaces](interfaces/index.md) when the question is about commands,
+- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- open [Operations](operations/index.md) when you need setup, local workflow,
+- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need setup, local workflow,
   diagnostics, or release guidance
-- open [Quality](quality/index.md) when you need proof expectations, risk
+- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof expectations, risk
   posture, or a review standard
 
 ## Main Paths
 
-- [Foundation](foundation/index.md)
-- [Architecture](architecture/index.md)
-- [Interfaces](interfaces/index.md)
-- [Operations](operations/index.md)
-- [Quality](quality/index.md)
+- [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/)
+- [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/)
+- [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/)
+- [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/)
+- [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/)
 
 ## Reader Takeaway
 
