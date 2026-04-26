@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # makes
 
-Use this section to understand the shared Make surface that ties repository
+Open this section to understand the shared Make surface that ties repository
 operations together.
 
 The make system is a real interface in this repository. It exposes local work,
@@ -49,7 +49,7 @@ flowchart TB
 - [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/)
 - [Authoring Rules](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/authoring-rules/)
 
-## Use makes When
+## Open makes When
 
 - the concern is about shared Make entrypoints rather than package code itself
 - you need to understand how local commands, CI targets, and release commands
@@ -57,7 +57,7 @@ flowchart TB
 - you are editing the repository command surface that other maintainers depend
   on
 
-## Move On When
+## Open Another Section When
 
 - the question is about GitHub Actions trigger logic instead of Make routing
 - the issue belongs to a product package contract rather than a shared command
@@ -66,13 +66,13 @@ flowchart TB
 
 ## Choose A Page
 
-- use [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/) for the broad structure
+- open [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/) for the broad structure
   first
-- use [Root Entrypoints](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/root-entrypoints/) when the concern starts at the
+- open [Root Entrypoints](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/root-entrypoints/) when the concern starts at the
   top-level command surface
-- use [Package Dispatch](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-dispatch/) when the question is how shared
+- open [Package Dispatch](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-dispatch/) when the question is how shared
   targets route into one package or many
-- use [CI Targets](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/) or [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/)
+- open [CI Targets](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/) or [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/)
   when the concern is automation-facing rather than developer-facing
 
 ## Concrete Anchors
@@ -85,6 +85,6 @@ flowchart TB
 
 ## Command Surface Standard
 
-The shared Make layer should make repository procedure easier to see, not
-harder. If a critical command path only makes sense after reading several
+The shared Make layer exists to keep repository procedure visible instead of
+hiding it. If a critical command path only makes sense after reading several
 include files in order, this section should expose that structure explicitly.

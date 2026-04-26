@@ -13,9 +13,9 @@ last_reviewed: 2026-04-26
 so schema drift checks, quality gates, supply-chain helpers, and release
 support have one clear home outside the end-user product surface.
 
-Hidden maintenance logic erodes trust fast. Repository policy should be
-traceable to helper modules, tests, and documented integration points rather
-than reconstructed from CI output or shell glue.
+Hidden maintenance logic erodes trust fast. Repository policy belongs in
+helper modules, tests, and documented integration points instead of being
+reconstructed from CI output or shell glue.
 
 ## Visual Summary
 
@@ -57,7 +57,7 @@ flowchart TB
 - [SBOM and Supply Chain](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain/)
 - [Operating Guidelines](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/operating-guidelines/)
 
-## Use This Handbook When
+## Open This Handbook When
 
 - the concern is inside the maintainer helper package itself
 - you need to understand which helper module or quality surface enforces a
@@ -65,7 +65,7 @@ flowchart TB
 - the question is about schema drift, release support, quality gates, or
   supply-chain tooling
 
-## Move On When
+## Open Another Handbook When
 
 - the question is really about a product package API, CLI, or runtime contract
 - the issue belongs to shared Make entrypoints or GitHub Actions trigger logic
@@ -73,17 +73,17 @@ flowchart TB
 
 ## Choose A Page
 
-- use [Package Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/) for the shortest description of
+- open [Package Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/) for the shortest description of
   why this maintainer package exists
-- use [Module Map](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/module-map/) when you need the concrete helper-module
+- open [Module Map](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/module-map/) when you need the concrete helper-module
   layout
-- use [Quality Gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/quality-gates/) or [Security Gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/security-gates/)
+- open [Quality Gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/quality-gates/) or [Security Gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/security-gates/)
   when the question is about policy enforcement
-- use [Schema Governance](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/schema-governance/) or
+- open [Schema Governance](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/schema-governance/) or
   [Release Support](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/release-support/) when the question is about repository
   publication discipline
-- use [SBOM and Supply Chain](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain/) when the concern is requirements output or provenance support
-- use [Operating Guidelines](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/operating-guidelines/) when the concern is safe maintainer use of these helpers
+- open [SBOM and Supply Chain](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain/) when the concern is requirements output or provenance support
+- open [Operating Guidelines](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/operating-guidelines/) when the concern is safe maintainer use of these helpers
 
 ## Module Map
 
@@ -104,12 +104,12 @@ flowchart TB
 ## Ownership Boundary
 
 `bijux-canon-dev` owns repository-health helper code, not product behavior. If
-the change would change ingest, index, reason, agent, or runtime semantics for
+the change would alter ingest, index, reason, agent, or runtime semantics for
 users, this section should stop at the integration point and hand the detail
 back to the owning product package.
 
 ## Maintainer Standard
 
-Each claimed maintenance rule should be visible in helper code, tests, or an
-explicit integration surface such as `apis/`, `Makefile`, or
+Each claimed maintenance rule belongs in helper code, tests, or an explicit
+integration surface such as `apis/`, `Makefile`, or
 `.github/workflows/`. Hidden policy is still undocumented policy.

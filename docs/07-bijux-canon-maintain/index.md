@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Maintenance Handbook
 
-Use this handbook to understand the repository-owned operational surfaces that
+Open this handbook to understand the repository-owned operational surfaces that
 do not belong in one product package handbook.
 
 Schema drift checks, supply-chain helpers, shared Make targets, and CI workflow
@@ -54,14 +54,14 @@ flowchart TB
 - [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) for GitHub Actions verification,
   publication, docs deployment, and reusable workflow contracts
 
-## Use This Handbook When
+## Open This Handbook When
 
 - the question is about repository automation, verification, release support,
   workflow fan-out, or maintainer-only tooling
 - you need to know which shared surface owns a repository-health rule
 - the answer should stay above one product package boundary
 
-## Move On When
+## Open Another Handbook When
 
 - the question is really about user-facing behavior in one canonical package
 - the concern belongs to ingest, index, reasoning, agent, or runtime semantics
@@ -69,11 +69,11 @@ flowchart TB
 
 ## Choose A Section
 
-- use [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) when the concern is helper
+- open [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) when the concern is helper
   code, schema drift, supply chain, release support, or quality gates
-- use [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) when the concern is shared command surfaces,
+- open [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) when the concern is shared command surfaces,
   package dispatch, CI targets, or release entrypoints
-- use [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) when the concern is GitHub Actions
+- open [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) when the concern is GitHub Actions
   triggers, job trees, reusable workflows, or docs publication
 
 ## Shared Maintenance Anchors
