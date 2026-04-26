@@ -13,6 +13,36 @@ last_reviewed: 2026-04-26
 
 The main failure this handbook prevents is letting orchestration blur into either reasoning semantics below or runtime governance above. When those lines drift, readers can no longer tell whether a surprising behavior came from a decision, a workflow, or a run policy.
 
+## What The Reader Should See First
+
+Agent is the workflow coordination layer. It decides how role-specific steps
+are ordered, how intermediate outputs are checked, and which trace proves what
+happened. It should make multi-step behavior visible without becoming the owner
+of retrieval truth, reasoning meaning, or final runtime acceptance.
+
+```mermaid
+flowchart LR
+    inputs["reasoning artifacts<br/>claims, checks, context"]
+    plan["execution plan<br/>roles, stages, stop rules"]
+    roles["agent roles<br/>planner, verifier, critique, summarizer"]
+    kernel["execution kernel<br/>ordered calls and lifecycle"]
+    trace["workflow trace<br/>events, hashes, replay fields"]
+    runtime["runtime package<br/>acceptance and replay authority"]
+
+    inputs --> plan --> roles --> kernel --> trace --> runtime
+    roles -. validated by .-> validation["trace validation"]
+    kernel -. emits .-> telemetry["telemetry and result artifacts"]
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class inputs page;
+    class plan,roles,kernel positive;
+    class trace,validation,telemetry anchor;
+    class runtime action;
+```
+
 ## What This Package Owns
 
 - coordination of agent roles, steps, and deterministic workflow progression
@@ -32,8 +62,10 @@ If the change decides how roles coordinate, which step runs next, or what trace 
 ## First Proof Check
 
 - `packages/bijux-canon-agent/src/bijux_canon_agent` for the orchestration implementation boundary
+- `packages/bijux-canon-agent/src/bijux_canon_agent/pipeline` for workflow planning, execution, convergence, and finalization
+- `packages/bijux-canon-agent/src/bijux_canon_agent/traces` for trace serialization and replayability
 - `packages/bijux-canon-agent/tests` for proof that coordination remains deterministic and inspectable
-- `packages/bijux-canon-agent/apis` for the tracked surfaces callers depend on
+- `apis/bijux-canon-agent/v1/schema.yaml` for the tracked caller-facing schema
 
 ## Start Here
 
