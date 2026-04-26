@@ -14,10 +14,10 @@ which layers own retrieval semantics, how application workflows coordinate
 queries and updates, and where backend infrastructure stops being the package's
 core logic.
 
-These pages should let reviewers trace real retrieval flow through domain,
-application, and infrastructure layers without reconstructing the design from
-imports alone. The goal is to make architectural responsibility explicit enough
-to review and evolve.
+These pages help you trace real retrieval flow through domain, application,
+and infrastructure layers without reconstructing the design from imports
+alone. The goal is to make architectural responsibility explicit enough to
+review and evolve.
 
 ## Visual Summary
 
@@ -43,28 +43,28 @@ flowchart LR
 
 ## Start Here
 
-- open [Module Map](module-map.md) for the fastest route to directory-level
+- use [Module Map](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/module-map/) for the fastest route to directory-level
   architectural ownership
-- open [Execution Model](execution-model.md) when the real question is how
+- use [Execution Model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/execution-model/) when the real question is how
   retrieval work moves through the package
-- open [State and Persistence](state-and-persistence.md) when index durability
+- use [State and Persistence](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/state-and-persistence/) when index durability
   and replay behavior are the hard part
-- open [Integration Seams](integration-seams.md) when a change might blur the
+- use [Integration Seams](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/integration-seams/) when a change might blur the
   edges between ingest, index, and downstream consumers
 
-## Pages In This Section
+## Pages In Architecture
 
-- [Module Map](module-map.md)
-- [Dependency Direction](dependency-direction.md)
-- [Execution Model](execution-model.md)
-- [State and Persistence](state-and-persistence.md)
-- [Integration Seams](integration-seams.md)
-- [Error Model](error-model.md)
-- [Extensibility Model](extensibility-model.md)
-- [Code Navigation](code-navigation.md)
-- [Architecture Risks](architecture-risks.md)
+- [Module Map](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/module-map/)
+- [Dependency Direction](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/dependency-direction/)
+- [Execution Model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/execution-model/)
+- [State and Persistence](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/state-and-persistence/)
+- [Integration Seams](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/integration-seams/)
+- [Error Model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/error-model/)
+- [Extensibility Model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/extensibility-model/)
+- [Code Navigation](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/code-navigation/)
+- [Architecture Risks](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/architecture-risks/)
 
-## Use This Section When
+## Use Architecture When
 
 - you need to trace retrieval structure before refactoring or extending the
   package
@@ -72,7 +72,7 @@ flowchart LR
   boundaries
 - you need to understand where replay and provenance logic really live
 
-## Do Not Use This Section When
+## Move On When
 
 - the question is mainly about public commands, imports, schemas, or artifacts
 - the issue is operational, such as local setup, diagnostics, or release
@@ -80,13 +80,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) when the structural question is
+- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the structural question is
   really an ownership question
-- open [Interfaces](../interfaces/index.md) when architecture reaches a
+- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when architecture reaches a
   caller-facing contract or retrieval surface
-- open [Operations](../operations/index.md) when structure affects repeatable
+- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when structure affects repeatable
   maintainer workflows
-- open [Quality](../quality/index.md) when you need proof that the documented
+- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof that the documented
   design is still defended in tests and review
 
 ## Concrete Anchors
@@ -97,15 +97,15 @@ flowchart LR
 - `src/bijux_canon_index/infra` for backends, adapters, and runtime environment
   helpers
 
-## Reader Takeaway
+## Why Use Architecture
 
 Use `Architecture` to make retrieval structure legible enough that a reviewer
 can say which logic belongs to the domain, which belongs to workflow
 coordination, and which belongs to adapters. If that answer is blurry, the
 package is already accumulating architectural drift.
 
-## Purpose
+## What You Get
 
-This page introduces the architecture handbook for `bijux-canon-index` and
-routes readers to the module, execution, state, seam, and risk pages that
-explain how the package is organized.
+This page gives you the module, execution, state, seam, and risk route
+through `bijux-canon-index` before you inspect a specific architectural
+topic.

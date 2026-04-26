@@ -14,10 +14,10 @@ replayable retrieval behavior. Use this section when the important question is
 why retrieval ownership lives here and where it stops before reasoning or
 runtime take over.
 
-These pages should help readers separate three different concerns that often get
-blurred together: ingest preparation, index execution, and reasoning over
-retrieved results. When this section is clear, the package boundary is easier
-to defend and easier to change responsibly.
+These pages help you separate three different concerns that often get blurred
+together: ingest preparation, index execution, and reasoning over retrieved
+results. Use them when you need a clear package boundary before changing code
+or contracts.
 
 ## Visual Summary
 
@@ -43,26 +43,26 @@ flowchart LR
 
 ## Start Here
 
-- open [Package Overview](package-overview.md) for the shortest explanation of
+- use [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/) for the shortest explanation of
   what the index package is for
-- open [Ownership Boundary](ownership-boundary.md) when retrieval behavior may
+- use [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/) when retrieval behavior may
   be confused with ingest preparation or reasoning semantics
-- open [Lifecycle Overview](lifecycle-overview.md) when the key question is how
+- use [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/) when the key question is how
   prepared material becomes a replayable retrieval surface
 
-## Pages In This Section
+## Pages In Foundation
 
-- [Package Overview](package-overview.md)
-- [Scope and Non-Goals](scope-and-non-goals.md)
-- [Ownership Boundary](ownership-boundary.md)
-- [Repository Fit](repository-fit.md)
-- [Capability Map](capability-map.md)
-- [Domain Language](domain-language.md)
-- [Lifecycle Overview](lifecycle-overview.md)
-- [Dependencies and Adjacencies](dependencies-and-adjacencies.md)
-- [Change Principles](change-principles.md)
+- [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/)
+- [Scope and Non-Goals](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/scope-and-non-goals/)
+- [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/)
+- [Repository Fit](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/repository-fit/)
+- [Capability Map](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/capability-map/)
+- [Domain Language](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/domain-language/)
+- [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/)
+- [Dependencies and Adjacencies](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/dependencies-and-adjacencies/)
+- [Change Principles](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/change-principles/)
 
-## Use This Section When
+## Use Foundation When
 
 - you need the durable ownership story behind embeddings, retrieval, and replay
 - you are deciding whether work belongs in index or in the packages before or
@@ -70,7 +70,7 @@ flowchart LR
 - you need shared package language for retrieval behavior before reading code or
   contracts
 
-## Do Not Use This Section When
+## Move On When
 
 - the question is already about a command, schema, artifact, or import surface
 - the real issue is operational, such as local setup, diagnostics, or release
@@ -78,13 +78,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Architecture](../architecture/index.md) when you need the structural
+- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when you need the structural
   map behind domain, application, and infrastructure flow
-- open [Interfaces](../interfaces/index.md) when the question is about public
+- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is about public
   retrieval contracts
-- open [Operations](../operations/index.md) when you need setup, local
+- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, local
   workflows, or release guidance
-- open [Quality](../quality/index.md) when you need evidence that replay and
+- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need evidence that replay and
   retrieval behavior are actually protected
 
 ## Concrete Anchors
@@ -93,7 +93,7 @@ flowchart LR
 - `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
 - `packages/bijux-canon-index/tests` as the proof surface for owned behavior
 
-## Reader Takeaway
+## Why Use Foundation
 
 Use `Foundation` to answer the ownership question with integrity: index exists
 to make retrieval behavior explicit, replayable, and dependable enough for
@@ -101,8 +101,8 @@ downstream packages to use. If a proposed change broadens the package without
 making that retrieval story clearer, it is probably crossing a boundary rather
 than improving the design.
 
-## Purpose
+## What You Get
 
-This page introduces the foundation handbook for `bijux-canon-index` and routes
-readers to the boundary, language, and lifecycle pages that explain why the
-package exists.
+This page gives you the boundary, language, and lifecycle route into
+`bijux-canon-index` before you move on to structure, contracts, operations,
+or proof.

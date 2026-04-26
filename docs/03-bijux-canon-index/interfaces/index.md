@@ -9,11 +9,11 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Use this section when the question is which index-facing surfaces are real
-contracts: retrieval commands, APIs, schemas, imports, artifacts, and examples
-that other packages or operators can safely rely on.
+Use this section when you need to know which index-facing surfaces are real
+contracts: retrieval commands, APIs, schemas, imports, artifacts, and
+examples that other packages or operators can safely rely on.
 
-These pages should prevent accidental dependencies from forming around internal
+These pages prevent accidental dependencies from forming around internal
 backend details or transient implementation choices. For index, that matters
 because once retrieval contracts spread into reasoning or runtime, later
 corrections become expensive.
@@ -46,28 +46,28 @@ flowchart LR
 
 ## Start Here
 
-- open [CLI Surface](cli-surface.md) when the issue begins with a query, build,
+- use [CLI Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/cli-surface/) when the issue begins with a query, build,
   or replay command
-- open [API Surface](api-surface.md) when the question is about HTTP or
+- use [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/) when the question is about HTTP or
   retrieval-facing service boundaries
-- open [Data Contracts](data-contracts.md) when schemas or payload shapes are
+- use [Data Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/data-contracts/) when schemas or payload shapes are
   the real dependency
-- open [Compatibility Commitments](compatibility-commitments.md) when a change
+- use [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/) when a change
   may break a retrieval contract that others already trust
 
-## Pages In This Section
+## Pages In Interfaces
 
-- [CLI Surface](cli-surface.md)
-- [API Surface](api-surface.md)
-- [Configuration Surface](configuration-surface.md)
-- [Data Contracts](data-contracts.md)
-- [Artifact Contracts](artifact-contracts.md)
-- [Entrypoints and Examples](entrypoints-and-examples.md)
-- [Operator Workflows](operator-workflows.md)
-- [Public Imports](public-imports.md)
-- [Compatibility Commitments](compatibility-commitments.md)
+- [CLI Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/cli-surface/)
+- [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/)
+- [Configuration Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/configuration-surface/)
+- [Data Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/data-contracts/)
+- [Artifact Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/artifact-contracts/)
+- [Entrypoints and Examples](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/entrypoints-and-examples/)
+- [Operator Workflows](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/operator-workflows/)
+- [Public Imports](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/public-imports/)
+- [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/)
 
-## Use This Section When
+## Use Interfaces When
 
 - you need to know which retrieval surfaces are intentional and supportable
 - downstream reasoning or runtime behavior depends on index commands, schemas,
@@ -75,7 +75,7 @@ flowchart LR
 - you are reviewing whether a change creates compatibility pressure on a public
   surface
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is why retrieval ownership belongs in index at all
 - you need internal layering, state flow, or backend structure first
@@ -83,13 +83,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) when a contract concern is really a
+- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when a contract concern is really a
   package-boundary concern
-- open [Architecture](../architecture/index.md) when the surface depends on
+- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the surface depends on
   deeper retrieval structure or backend layering
-- open [Operations](../operations/index.md) when the contract question starts
+- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the contract question starts
   with a repeatable maintainer workflow
-- open [Quality](../quality/index.md) when the real issue is whether the
+- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the real issue is whether the
   documented contract is sufficiently defended
 
 ## Concrete Anchors
@@ -99,14 +99,13 @@ flowchart LR
 - OpenAPI schema files under `apis/bijux-canon-index/v1`
 - `apis/bijux-canon-index/v1/schema.yaml`
 
-## Reader Takeaway
+## Why Use Interfaces
 
 Use `Interfaces` to separate supported retrieval contracts from internal index
 visibility. If a dependency cannot be defended in terms of named commands,
 schemas, artifacts, examples, and tests, it is not yet a stable public surface.
 
-## Purpose
+## What You Get
 
-This page introduces the interfaces handbook for `bijux-canon-index` and
-routes readers to the command, API, artifact, and compatibility pages that
-define the package's supported surfaces.
+This page gives you the command, API, artifact, and compatibility route
+through `bijux-canon-index` before you inspect a specific interface surface.

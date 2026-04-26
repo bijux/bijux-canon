@@ -10,8 +10,8 @@ last_reviewed: 2026-04-26
 # Index Handbook
 
 `bijux-canon-index` owns vector execution, provenance-aware retrieval, and
-replayable index behavior. Start here when the question is about vector-store
-behavior, retrieval execution, or index-side public contracts.
+replayable index behavior. Use this handbook when you need to understand
+vector-store behavior, retrieval execution, or index-side public contracts.
 
 This package turns ingest-ready artifacts into searchable, replayable retrieval
 surfaces. It is where embedding execution, index persistence, and retrieval
@@ -34,7 +34,7 @@ flowchart LR
     index --> reader
 ```
 
-## Read This Section When
+## Use This Handbook When
 
 - you need the package-level entrypoint for index docs
 - you are checking vector execution, retrieval, or replay-aware index behavior
@@ -54,20 +54,20 @@ flowchart LR
 - reasoning semantics, verification policy, or claim interpretation
 - top-level runtime governance above retrieval execution
 
-## Choose The Next Section By Question
+## Choose A Section
 
-- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when you need the package boundary,
+- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when you need the package boundary,
   vocabulary, or ownership story
-- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the question is about module
+- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the question is about module
   layout, dependency direction, or replay flow
-- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when you need commands, schemas,
+- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when you need commands, schemas,
   artifacts, or import surfaces
-- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, diagnostics,
+- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, diagnostics,
   local workflow, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof expectations, risk
+- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof expectations, risk
   posture, or review standards
 
-## Main Paths
+## Pages In This Handbook
 
 - [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/)
@@ -75,7 +75,7 @@ flowchart LR
 - [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/)
 - [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/)
 
-## Reader Takeaway
+## Why Start Here
 
 Use this handbook when the hard question is about retrieval behavior itself:
 what gets embedded, how replay works, and which index contracts downstream

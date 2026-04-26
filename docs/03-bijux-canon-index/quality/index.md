@@ -9,14 +9,14 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Use this section when the real question is whether index behavior can be
-trusted: which tests prove retrieval and replay behavior, which risks remain
-visible, and what "done" should mean before reasoning or runtime depend on the
-result.
+Use this section when you need to know whether index behavior can be trusted:
+which tests prove retrieval and replay behavior, which risks remain visible,
+and what "done" should mean before reasoning or runtime depend on the result.
 
-These pages should keep reviewers honest about the cost of being wrong in the
-retrieval layer. If index behavior drifts quietly, downstream packages can still
-look healthy while using stale, incomplete, or unreplayable retrieval results.
+These pages keep reviewers honest about the cost of being wrong in the
+retrieval layer. If index behavior drifts quietly, downstream packages can
+still look healthy while using stale, incomplete, or unreplayable retrieval
+results.
 
 ## Visual Summary
 
@@ -45,28 +45,28 @@ flowchart LR
 
 ## Start Here
 
-- open [Test Strategy](test-strategy.md) for the broad proof story behind
+- use [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/) for the broad proof story behind
   retrieval behavior
-- open [Invariants](invariants.md) when the key question is what must not drift
+- use [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/) when the key question is what must not drift
   across index state, provenance, or replay
-- open [Change Validation](change-validation.md) when you need the minimum
+- use [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/) when you need the minimum
   evidence for a safe retrieval change
-- open [Risk Register](risk-register.md) when backend limitations or tradeoffs
+- use [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/) when backend limitations or tradeoffs
   matter more than pass/fail status
 
-## Pages In This Section
+## Pages In Quality
 
-- [Test Strategy](test-strategy.md)
-- [Invariants](invariants.md)
-- [Review Checklist](review-checklist.md)
-- [Documentation Standards](documentation-standards.md)
-- [Definition of Done](definition-of-done.md)
-- [Dependency Governance](dependency-governance.md)
-- [Change Validation](change-validation.md)
-- [Known Limitations](known-limitations.md)
-- [Risk Register](risk-register.md)
+- [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/)
+- [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/)
+- [Review Checklist](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/review-checklist/)
+- [Documentation Standards](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/documentation-standards/)
+- [Definition of Done](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/definition-of-done/)
+- [Dependency Governance](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/dependency-governance/)
+- [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/)
+- [Known Limitations](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/known-limitations/)
+- [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/)
 
-## Use This Section When
+## Use Quality When
 
 - you need evidence that retrieval behavior is stable enough for downstream use
 - a change touches indexing, replay, provenance, or backend behavior that can
@@ -74,7 +74,7 @@ flowchart LR
 - you are reviewing whether green checks are actually sufficient for the
   contract being changed
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is which command, schema, or artifact surface exists
 - you need the package boundary or structural flow before you can judge proof
@@ -82,13 +82,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) when uncertainty about ownership is
+- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when uncertainty about ownership is
   masquerading as a quality issue
-- open [Architecture](../architecture/index.md) when missing proof points to
+- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when missing proof points to
   structural drift
-- open [Interfaces](../interfaces/index.md) when trust depends on a specific
+- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when trust depends on a specific
   retrieval contract
-- open [Operations](../operations/index.md) when the needed evidence is really a
+- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the needed evidence is really a
   repeatable replay or recovery workflow
 
 ## Concrete Anchors
@@ -98,15 +98,14 @@ flowchart LR
   gates
 - `README.md`
 
-## Reader Takeaway
+## Why Use Quality
 
 Use `Quality` to ask a stricter question than “did the suite pass?” In index,
 the real bar is whether retrieval behavior remains replayable, provenance-aware,
 and honest about backend limits before downstream packages treat it as stable
 ground.
 
-## Purpose
+## What You Get
 
-This page introduces the quality handbook for `bijux-canon-index` and routes
-readers to the proof, invariants, review, validation, and risk pages that show
-how trust is earned.
+This page gives you the proof, invariants, review, validation, and risk route
+through `bijux-canon-index` before you inspect a specific trust surface.
