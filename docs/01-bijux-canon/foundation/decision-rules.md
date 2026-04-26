@@ -14,6 +14,24 @@ The root should make ownership decisions faster, not more political.
 Use these rules when a change proposal could plausibly land in more than one
 surface and the repository needs one honest owner.
 
+## Decision Flow
+
+```mermaid
+flowchart LR
+    change["change proposal"]
+    package["one package can explain it honestly"]
+    shared["shared rule or shared surface"]
+    owner["root, maintenance, or compatibility owner"]
+
+    change --> package
+    package -->|yes| owner_pkg["keep it in the owning package"]
+    package -->|no| shared --> owner
+```
+
+This page should reduce argument time. A reader should be able to route a
+change proposal toward one honest owner instead of negotiating around
+convenience or habit.
+
 ## Yes Or No Tests
 
 Ask these questions in order:
@@ -48,7 +66,7 @@ also need updates.
 - maintainer automation begins to encode product behavior
 - compatibility logic starts being treated as the preferred package surface
 
-## Bottom Line
+## Design Pressure
 
-The root owns shared truth, not ambiguous overflow. If one package can defend
-the behavior clearly, that package should stay the owner.
+If the decision process starts rewarding the most visible surface instead of
+the clearest owner, the repository becomes easier to edit and harder to trust.
