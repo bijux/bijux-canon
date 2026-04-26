@@ -14,6 +14,24 @@ The compatibility layer exists to reduce migration breakage while the canonical
 Preserving an old public name is sometimes necessary, but it is still debt that
 should stay visible.
 
+## Bridge Model
+
+```mermaid
+flowchart LR
+    legacy["legacy names"]
+    bridge["compatibility layer"]
+    canon["canonical packages"]
+    proof["migration and validation evidence"]
+    retirement["retirement readiness"]
+
+    legacy --> bridge --> canon
+    bridge --> proof --> retirement
+```
+
+This page should make one idea obvious: compatibility is a controlled handoff,
+not a second product line. A preserved name is acceptable only when it still
+protects a supported environment on the way to the canonical package.
+
 ## Preserved Surfaces
 
 - legacy distribution names
@@ -31,3 +49,9 @@ an excuse to postpone migration indefinitely.
 - `packages/compat-*`
 - compatibility package `README.md` targets
 - migration validation and retirement pages
+
+## Design Pressure
+
+If this overview makes the legacy name feel comfortable instead of temporary,
+the reader loses sight of the real goal. The section has to keep the migration
+cost and the retirement path visible at the same time.
