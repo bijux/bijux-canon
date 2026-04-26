@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Runtime Handbook
 
-`bijux-canon-runtime` is the execution authority layer in `bijux-canon`. Use
+`bijux-canon-runtime` is the execution authority layer in `bijux-canon`. Open
 this handbook when the question is about run acceptance, replay policy,
 persistence, or runtime-facing boundaries that sit above the rest of the
 package family.
@@ -109,7 +109,7 @@ flowchart LR
 
 ## Why Start Here
 
-Use this handbook when the real issue is whether a run is governed,
+Open this handbook when the real issue is whether a run is governed,
 replay-aware, and durable enough to count as canonical runtime behavior rather
 than merely as lower-package execution. If the question stops at “did code run”
 rather than “can this run be accepted and replayed,” you are probably still in

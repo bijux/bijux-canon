@@ -10,7 +10,7 @@ last_reviewed: 2026-04-26
 # Reasoning Handbook
 
 `bijux-canon-reason` owns inspectable reasoning, verification, provenance, and
-reasoning-side run artifacts. Use this handbook when you need to understand
+reasoning-side run artifacts. Open this handbook when you need to understand
 how evidence becomes claims, checks, and durable reasoning output.
 
 This package is where retrieval output becomes something a reviewer can inspect
@@ -77,6 +77,6 @@ flowchart LR
 
 ## Why Start Here
 
-Use this handbook when the real issue is whether reasoning output is explicit,
+Open this handbook when the real issue is whether reasoning output is explicit,
 verifiable, and provenance-aware enough to support later orchestration and
 runtime decisions.

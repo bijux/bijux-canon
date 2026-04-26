@@ -10,7 +10,7 @@ last_reviewed: 2026-04-26
 # Ingest Handbook
 
 `bijux-canon-ingest` owns deterministic document preparation, chunking, and
-retrieval-ready shaping. Use this handbook when you need to understand how
+retrieval-ready shaping. Open this handbook when you need to understand how
 source material becomes stable ingest output.
 
 This package sits at the front of the canonical package family. Its job is to
@@ -77,7 +77,7 @@ flowchart LR
 
 ## Why Start Here
 
-Use this handbook when the important question is how material becomes
+Open this handbook when the important question is how material becomes
 ingest-ready in a deterministic way. If the question starts after chunked or
 prepared artifacts already exist, one of the downstream package handbooks is
 probably the better starting point.

@@ -10,7 +10,7 @@ last_reviewed: 2026-04-26
 # Index Handbook
 
 `bijux-canon-index` owns vector execution, provenance-aware retrieval, and
-replayable index behavior. Use this handbook when you need to understand
+replayable index behavior. Open this handbook when you need to understand
 vector-store behavior, retrieval execution, or index-side public contracts.
 
 This package turns ingest-ready artifacts into searchable, replayable retrieval
@@ -77,6 +77,6 @@ flowchart LR
 
 ## Why Start Here
 
-Use this handbook when the hard question is about retrieval behavior itself:
+Open this handbook when the hard question is about retrieval behavior itself:
 what gets embedded, how replay works, and which index contracts downstream
 packages are allowed to trust.

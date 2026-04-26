@@ -10,7 +10,7 @@ last_reviewed: 2026-04-26
 # Agent Handbook
 
 `bijux-canon-agent` owns deterministic agent orchestration, workflow
-coordination, and trace-producing execution surfaces. Use this handbook when
+coordination, and trace-producing execution surfaces. Open this handbook when
 you need to understand agent behavior rather than runtime governance around
 it.
 
@@ -77,6 +77,6 @@ flowchart LR
 
 ## Why Start Here
 
-Use this handbook when the meaningful question is how agent behavior is
+Open this handbook when the meaningful question is how agent behavior is
 coordinated and traced. If the question is really about whether a run should be
 accepted, replayed, or persisted, move up to the runtime handbook instead.
