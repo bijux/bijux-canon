@@ -18,6 +18,25 @@ That boundary matters. Hidden maintainer policy weakens trust quickly, so the
 package should make repository rules inspectable in helper modules, tests, and
 explicit integration points.
 
+## Package Model
+
+```mermaid
+flowchart LR
+    helpers["helper modules"]
+    gates["quality, security, schema, release gates"]
+    tests["maintainer tests"]
+    integration["make, workflows, apis"]
+    repo["repository health"]
+
+    helpers --> gates --> integration --> repo
+    tests --> gates
+```
+
+This page should make `bijux-canon-dev` feel like a real package with a clear
+operating role, not just a bin for repository glue. Helper modules define the
+rules, tests prove them, and checked-in integration points show where those
+rules actually get enforced.
+
 ## Package Pages
 
 - [Package Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/)
@@ -60,3 +79,9 @@ explicit integration points.
 would alter user-facing ingest, index, reason, agent, or runtime semantics,
 this section should stop at the integration seam and hand the explanation back
 to the owning package handbook.
+
+## Design Pressure
+
+If repository policy can only be found in workflow logs or shell fragments, the
+maintainer package is still too hidden. This section has to keep helper code,
+proof, and integration points visibly tied together.
