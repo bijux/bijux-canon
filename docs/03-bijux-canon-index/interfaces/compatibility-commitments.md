@@ -12,11 +12,8 @@ last_reviewed: 2026-04-04
 Compatibility in `bijux-canon-index` should be explicit: stable commands, tracked schemas,
 durable artifacts, and release notes that explain intentional breakage.
 
-This page should leave readers with a realistic sense of the compatibility bar.
-It is more valuable to be clear about what triggers review than to sound
-generously stable while leaving the real boundary ambiguous.
+A realistic sense of the compatibility bar matters more than sounding generously stable while leaving the real boundary ambiguous.
 
-Treat the interfaces pages for `bijux-canon-index` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Visual Summary
 
@@ -63,7 +60,7 @@ Breaking changes must be visible in code, docs, and validation together.
 
 ## Decision Rule
 
-Use `Compatibility Commitments` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
+Use this page when deciding whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
 
 ## What This Page Answers
 
@@ -83,13 +80,13 @@ This page can identify the intended public surfaces of `bijux-canon-index`, but 
 
 ## Next Checks
 
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
+- move to `https://bijux.io/bijux-canon/03-bijux-canon-index/operations/` when the caller-facing question becomes procedural or environmental
+- move to `https://bijux.io/bijux-canon/03-bijux-canon-index/quality/` when compatibility or evidence of protection becomes the real issue
+- move to `https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/` when a public-surface question reveals a deeper structural drift
 
 ## Purpose
 
-This page describes what should trigger compatibility review for the package.
+This page shows what should trigger compatibility review for the package.
 
 ## Stability
 
