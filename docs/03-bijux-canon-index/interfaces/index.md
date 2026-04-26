@@ -11,6 +11,38 @@ last_reviewed: 2026-04-26
 
 Open this section when the question is contractual: which index commands, APIs, retrieval outputs, artifacts, and imports callers may treat as stable enough to build on.
 
+## Contract Surface
+
+Index contracts sit between prepared data and evidence consumers. They include
+operator commands, HTTP routes, query payloads, execution artifacts, and replay
+records. The page should make clear which surfaces are stable promises and
+which backend details remain internal.
+
+```mermaid
+flowchart LR
+    caller["caller or operator"]
+    cli["CLI surface<br/>query, ingest, artifact, diagnostics"]
+    api["API surface<br/>read, query, mutation routes"]
+    request["request contracts<br/>execution plan, budget, scoring"]
+    artifact["artifact contracts<br/>result collection and provenance"]
+    replay["replay contracts<br/>audit, lineage, drift visibility"]
+    consumer["reason or runtime<br/>evidence consumer"]
+
+    caller --> cli --> request
+    caller --> api --> request
+    request --> artifact --> replay --> consumer
+    request -. schema evidence .-> schema["apis/bijux-canon-index/v1/schema.yaml"]
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class caller page;
+    class cli,api,request,artifact,replay positive;
+    class schema anchor;
+    class consumer action;
+```
+
 ## Read These First
 
 - open [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/) first when the contract question begins with a caller-visible schema or HTTP surface
@@ -23,9 +55,10 @@ The main contract risk here is treating retrieval behavior as backend detail whi
 
 ## First Proof Check
 
-- `src/bijux_canon_index/interfaces` and `apis` for named caller-facing surfaces
-- tracked schemas and examples for contract visibility
-- `tests` for replay, provenance, and compatibility evidence
+- `packages/bijux-canon-index/src/bijux_canon_index/interfaces` for CLI, schema, and error surfaces
+- `packages/bijux-canon-index/src/bijux_canon_index/api/v1` for HTTP routes and runtime app boundaries
+- `apis/bijux-canon-index/v1/schema.yaml` for tracked schema visibility
+- `packages/bijux-canon-index/tests` for replay, provenance, and compatibility evidence
 
 
 ## Pages In This Section
