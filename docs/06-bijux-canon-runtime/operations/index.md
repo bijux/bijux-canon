@@ -4,43 +4,55 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Operations
 
 This section explains how to install, run, diagnose, and release `bijux-canon-runtime` from checked-in workflow guidance instead of team memory.
 
-These pages are the checked-in operating memory for `bijux-canon-runtime`. They should let a maintainer move from setup to diagnosis to release without relying on CI archaeology or private habits.
+These pages are the checked-in operating memory for `bijux-canon-runtime`.
+They should let a maintainer move from setup to diagnosis to release without
+relying on CI archaeology or private habits.
 
-Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Runtime operations are high-consequence because replay stores, verification
+policy, and durable traces can turn a sloppy rerun into a misleading record.
+This section should show how to operate the package carefully, not merely how
+to invoke it.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    ops["bijux-canon-runtime<br/>operator questions"]
-    install["Install and configure"]
-    dev["Develop and validate locally"]
-    diagnose["Observe and recover"]
-    release["Version and publish safely"]
-    security["Review authority and deployment boundaries"]
-    ops --> install
-    ops --> dev
-    ops --> diagnose
-    ops --> release
-    ops --> security
+    reader["reader question<br/>which procedure keeps runtime trustworthy?"]
+    install["install and configure"]
+    validate["develop, validate, and inspect"]
+    diagnose["observe, recover, and compare runs"]
+    release["version and publish safely"]
+    safety["review authority, storage, and deployment boundaries"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class ops page;
-    class install positive;
-    class dev anchor;
-    class diagnose,security caution;
-    class release action;
+    class reader page;
+    class install,validate,release positive;
+    class diagnose,safety caution;
+    reader --> install
+    reader --> validate
+    reader --> diagnose
+    reader --> release
+    reader --> safety
 ```
+
+## Start Here
+
+- open [Common Workflows](common-workflows.md) when the real question is how to
+  run the governed path safely
+- open [Observability and Diagnostics](observability-and-diagnostics.md) when
+  you need to inspect replay, store, or trace behavior
+- open [Failure Recovery](failure-recovery.md) when a persisted or replayed run
+  has diverged
+- open [Security and Safety](security-and-safety.md) before broadening runtime
+  authority or store access
 
 ## Pages in This Section
 
@@ -54,55 +66,46 @@ flowchart LR
 - [Security and Safety](security-and-safety.md)
 - [Deployment Boundaries](deployment-boundaries.md)
 
-## Read Across the Package
-
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
-
-## Concrete Anchors
-
-- `packages/bijux-canon-runtime/pyproject.toml` for package metadata
-- `packages/bijux-canon-runtime/README.md` for local package framing
-- `packages/bijux-canon-runtime/tests` for executable operational backstops
-
 ## Use This Page When
 
 - you are installing, running, diagnosing, or releasing the package
 - you need repeatable operational anchors rather than architectural framing
 - you are responding to package behavior in local work, CI, or incident pressure
 
-## Decision Rule
+## Do Not Use This Section When
 
-Use `Operations` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. If a step works only because someone already knows the trick, the workflow is not documented clearly enough yet.
+- the real question is why runtime has authority in the first place
+- you need schema or artifact contract detail rather than procedure
+- you are deciding whether the proof bar is high enough rather than how to run
+  it
 
-## What This Page Answers
+## Concrete Anchors
 
-- how `bijux-canon-runtime` is installed, run, diagnosed, and released in practice
-- which checked-in files and tests anchor the operational story
-- where a maintainer should look first when the package behaves differently
+- `packages/bijux-canon-runtime/pyproject.toml` for package metadata and
+  install surfaces
+- `src/bijux_canon_runtime/interfaces/cli/` for operator commands
+- `src/bijux_canon_runtime/observability/storage/` for store and schema
+  concerns that affect operations directly
+- `tests/e2e/` and `tests/regression/` for the repeatable operational backstops
+  that defend replay and recovery behavior
 
-## Reviewer Lens
+## Read Across The Package
 
-- verify that setup, workflow, and release statements still match package metadata and current commands
-- check that operational guidance still points at real diagnostics and validation paths
-- confirm that maintainer advice still works under current local and CI expectations
+- open [Interfaces](../interfaces/index.md) when an operational question turns
+  into a CLI, API, or schema contract question
+- open [Architecture](../architecture/index.md) when a recovery question really
+  depends on execution or storage structure
+- open [Quality](../quality/index.md) when the real issue is whether the
+  workflow is sufficiently defended and reviewed
 
-## Honesty Boundary
+## Reader Takeaway
 
-This page explains how `bijux-canon-runtime` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
-
-## Next Checks
-
-- move to interfaces when the operational path depends on a specific surface contract
-- move to quality when the question becomes whether the workflow is sufficiently proven
-- move back to architecture when operational complexity suggests a structural problem
+Use `Operations` to decide whether a maintainer can repeat runtime workflow
+from checked-in assets instead of memory. If a step works only because someone
+already knows the trick, the package is not documented clearly enough yet.
 
 ## Purpose
 
-This page explains how to use the operations section for `bijux-canon-runtime` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page explains how to use the operations section for
+`bijux-canon-runtime` without repeating the detail that belongs on the topic
+pages beneath it.
