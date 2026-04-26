@@ -9,13 +9,12 @@ last_reviewed: 2026-04-26
 
 # Repository Handbook
 
-The repository handbook explains the part of `bijux-canon` that no single
-package can explain alone: why the split exists, which rules belong at the
-root, and how package handoffs stay explicit instead of collapsing back into a
-monolith.
+Use the repository handbook when you need the part of `bijux-canon` that no
+single package owns alone: why the split exists, which rules belong at the
+root, and how package handoffs stay explicit across the repository.
 
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
-Product behavior should stay inside the publishable packages under `packages/`.
+Product behavior belongs in the publishable packages under `packages/`.
 The root only owns what is genuinely shared: workspace layout, schema
 governance, documentation rules, validation posture, and release
 coordination.</div>
@@ -51,13 +50,13 @@ flowchart TB
 
 ## Start Here
 
-- open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
-- open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
-- move to a product handbook when the concern is already local to one canonical package
-- move to [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
-- move to [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
+- use [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
+- use [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
+- move to a product handbook as soon as the behavior is clearly local to one canonical package
+- use the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
+- use the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
 
-## Sections
+## Choose A Section
 
 - [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for the repository split, ownership model,
   shared language, and design rules that should stay stable over time
@@ -84,31 +83,31 @@ flowchart TB
 - `bijux-canon-agent` coordinates role-based orchestration without hiding traces or package boundaries.
 - `bijux-canon-runtime` governs execution, replay, persistence, and final acceptability.
 
-## Concrete Anchors
+## Check The Root Files
 
 - `pyproject.toml` for workspace metadata and commit conventions
 - `Makefile` and `makes/` for root automation
 - `apis/` and `.github/workflows/` for schema and validation review
 - `packages/` for the product boundaries this handbook must not blur
 
-## Use The Repository Handbook When
+## Use This Handbook When
 
 - you are dealing with repository-wide seams rather than one package alone
 - you need shared workflow, schema, or governance context before changing code
 - you want the monorepo view that sits above the package handbooks
 
-## Leave The Repository Handbook When
+## Move To Another Handbook When
 
 - the answer depends mostly on one package's local behavior, imports, or tests
 - you need workflow automation internals rather than root-facing guidance
-- the question is explicitly about a legacy name and migration path
+- the work is explicitly about a legacy name and migration path
 
 ## Read The Root This Way
 
-Treat the root as a coordination layer. The root should explain why the split
-exists, what rules stay shared, and where authority changes hands. When the
-behavior is package-local, the handbook should route straight to the owning
-package instead of trying to retain the explanation at the root.
+Treat the root as a coordination layer. Use these pages to understand why the
+split exists, which rules stay shared, and where authority changes hands.
+Once the behavior is package-local, move to the owning package handbook
+instead of keeping the explanation at the root.
 
 ## Cross-Package Anchors
 

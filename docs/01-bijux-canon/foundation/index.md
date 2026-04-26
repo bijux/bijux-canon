@@ -9,11 +9,11 @@ last_reviewed: 2026-04-26
 
 # Foundation
 
-The foundation section explains why the repository is split this way before it
-explains how the root is operated. These pages define the design boundary that
-keeps package ownership explicit: why the monorepo exists, where authority
-changes hands, which terms stay stable, and which changes would weaken that
-clarity.
+Use the foundation section to understand why the repository is split this way
+before you move into operational detail. These pages define the design
+boundary that keeps package ownership explicit: why the repository exists,
+where authority changes hands, which terms stay stable, and which changes
+would weaken that clarity.
 
 ## Visual Summary
 
@@ -34,31 +34,31 @@ flowchart LR
 
 ## Start Here
 
-- open [Platform Overview](platform-overview.md) for the shortest statement of the repository design
-- open [Repository Scope](repository-scope.md) when the question is what the root may document, enforce, or coordinate
-- open [Ownership Model](ownership-model.md) when the concern is where the root stops and a package begins
-- open [Package Map](package-map.md) when the split needs to be read as owned responsibilities instead of directory names
-- open [Decision Rules](decision-rules.md) before making a cross-package change that might blur authority
+- use [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/) for the shortest statement of the repository design
+- use [Repository Scope](https://bijux.io/bijux-canon/01-bijux-canon/foundation/repository-scope/) when you need to know what the root may document, enforce, or coordinate
+- use [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/) when you need the line between the root and a package
+- use [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/) when you want to read the split as owned responsibilities instead of directory names
+- use [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/) before making a cross-package change that might blur authority
 
-## Pages in This Section
+## Pages In Foundation
 
-- [Platform Overview](platform-overview.md)
-- [Repository Scope](repository-scope.md)
-- [Workspace Layout](workspace-layout.md)
-- [Package Map](package-map.md)
-- [Ownership Model](ownership-model.md)
-- [Domain Language](domain-language.md)
-- [Documentation System](documentation-system.md)
-- [Change Principles](change-principles.md)
-- [Decision Rules](decision-rules.md)
+- [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/)
+- [Repository Scope](https://bijux.io/bijux-canon/01-bijux-canon/foundation/repository-scope/)
+- [Workspace Layout](https://bijux.io/bijux-canon/01-bijux-canon/foundation/workspace-layout/)
+- [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/)
+- [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/)
+- [Domain Language](https://bijux.io/bijux-canon/01-bijux-canon/foundation/domain-language/)
+- [Documentation System](https://bijux.io/bijux-canon/01-bijux-canon/foundation/documentation-system/)
+- [Change Principles](https://bijux.io/bijux-canon/01-bijux-canon/foundation/change-principles/)
+- [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/)
 
-## Use This Section When
+## Use Foundation When
 
-- the monorepo shape is still clearer than the monorepo intent
+- you can see the repository shape but still need the design reason behind it
 - you need to decide whether work belongs at the root or in a package
 - you want the shortest route to the repository's enduring design logic
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is already about validation commands, release flow, or
   shared automation
@@ -68,17 +68,17 @@ flowchart LR
 ## Concrete Anchors
 
 - `pyproject.toml` for the declared workspace boundary
-- `packages/` for the product split this section explains
-- [Package Map](package-map.md) and [Ownership Model](ownership-model.md) for
+- `packages/` for the product split described in these pages
+- [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/) and [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/) for
   the clearest statement of authority changes
-- [Decision Rules](decision-rules.md) for the root-level test of whether a
+- [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/) for the root-level test of whether a
   proposed change strengthens or blurs the split
 
 ## Read Across The Repository
 
-- open [Operations](../operations/index.md) when the question becomes how to run, validate, release, or review shared work
-- open the owning product handbook when a boundary question resolves into one package's local behavior
-- open [Maintainer Handbook](../../07-bijux-canon-maintain/index.md) when the issue is repository-health automation rather than repository intent
+- use [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) when you need to run, validate, release, or review shared work
+- move to the owning product handbook when a boundary question resolves into one package's local behavior
+- use the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the issue is repository-health automation rather than repository intent
 
 ## Design Pressure
 
