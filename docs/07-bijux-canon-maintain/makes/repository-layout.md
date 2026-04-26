@@ -4,32 +4,32 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Repository Layout
 
-The make layout is part of the repository architecture.
+The `makes/` tree is part of repository architecture. Its layout separates
+repository assembly, reusable contracts, CI target families, and package
+bindings so the command surface stays reviewable.
 
-The `makes/` tree separates shared concepts instead of mixing every target into
-one file. Repository-wide fragments live near the root, reusable `bijux-py`
-logic lives under `makes/bijux-py/`, and package-facing entry files live under
-`makes/packages/`.
-
-## Layout Anchors
+## Layout Layers
 
 - `makes/root.mk`, `makes/env.mk`, and `makes/packages.mk` at the repository
   layer
-- `makes/bijux-py/root/` for root target groups
-- `makes/bijux-py/repository/` for repository contracts
+- `makes/bijux-py/root/` for root target groups and shared routing
+- `makes/bijux-py/repository/` for repository contract fragments
 - `makes/bijux-py/ci/` for CI target families
-- `makes/packages/` for package-specific bindings
+- `makes/packages/` for canonical and compatibility package bindings
 
-## Reader Route
+## Why Layout Is Policy
 
-- open this page when the main question is how the `makes/` tree is partitioned
-- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/environment-model/`
-  for shared environment fragments
-- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-contracts/`
-  for reusable package-level target contracts
+The directory split is not decorative. It tells the reviewer whether a change
+is introducing repository policy, a reusable contract, or a package binding.
+Mixing those layers makes target ownership less honest.
 
+## First Proof Check
+
+- `makes/bijux-py/repository/`
+- `makes/bijux-py/ci/`
+- `makes/packages/`

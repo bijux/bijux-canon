@@ -9,14 +9,15 @@ last_reviewed: 2026-04-26
 
 # makes
 
-Open this section to understand the shared Make surface that ties repository
-operations together.
+The `makes/` tree is the shared command interface for repository operations. It
+turns recurring work into named, checked-in entrypoints instead of leaving
+maintainers to reconstruct procedure from workflow YAML or shell history.
 
-The make system is a real interface in this repository. It exposes local work,
-CI checks, package dispatch, schema checks, and release-oriented automation
-through stable command surfaces instead of one-off shell habits.
+A good make surface is traceable. A maintainer should be able to start from a
+root command, find the owning fragment quickly, and see whether the rule is
+repository scope, package scope, CI scope, or release scope.
 
-## Pages In This Section
+## Section Pages
 
 - [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/)
 - [Root Entrypoints](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/root-entrypoints/)
@@ -28,42 +29,24 @@ through stable command surfaces instead of one-off shell habits.
 - [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/)
 - [Authoring Rules](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/authoring-rules/)
 
-## Open This Section When
+## Start With
 
-- the concern is about shared Make entrypoints rather than package code itself
-- you need to understand how local commands, CI targets, and release commands
-  are routed
-- you are editing the repository command surface that other maintainers depend
-  on
+- Open [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/) for the layered shape of the command tree.
+- Open [Root Entrypoints](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/root-entrypoints/) when the question begins at `Makefile`.
+- Open [Package Dispatch](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-dispatch/) when a shared target routes into one package or
+  many.
+- Open [CI Targets](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/) or [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/) when the concern is automation-facing.
 
-## Open Another Section When
+## Proof Path
 
-- the question is about GitHub Actions trigger logic instead of Make routing
-- the issue belongs to a product package contract rather than a shared command
-  layer
-- you only need one concrete target and already know which page documents it
+- `Makefile` is the top-level entrypoint.
+- `makes/root.mk`, `makes/env.mk`, and `makes/packages.mk` assemble the shared
+  tree.
+- `makes/bijux-py/` and `makes/packages/` show the reusable and package-bound
+  parts of the command surface.
 
-## Start Here
+## Boundary
 
-- open [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/) for the broad structure
-  first
-- open [Root Entrypoints](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/root-entrypoints/) when the concern starts at the
-  top-level command surface
-- open [Package Dispatch](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-dispatch/) when the question is how shared
-  targets route into one package or many
-- open [CI Targets](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/) or [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/)
-  when the concern is automation-facing rather than developer-facing
-
-## Concrete Anchors
-
-- `Makefile` for the top-level command surface
-- `makes/root.mk` and `makes/env.mk` for shared root composition
-- `makes/packages.mk` and `makes/packages/*.mk` for per-package routing
-- `makes/api-freeze.mk`, `makes/bijux-py/api.mk`, and related API includes for contract checks
-- `makes/publish.mk` and `makes/bijux-docs.mk` for publication-oriented surfaces
-
-## Command Surface Standard
-
-The shared Make layer exists to keep repository procedure visible instead of
-hiding it. If a critical command path only makes sense after reading several
-include files in order, this section should expose that structure explicitly.
+The make layer documents command routing and shared operational rules. It should
+not become a second product handbook. If understanding a target requires a deep
+product explanation, the product package docs still own that explanation.

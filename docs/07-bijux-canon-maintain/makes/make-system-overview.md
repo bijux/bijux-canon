@@ -4,28 +4,34 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Make System Overview
 
-The repository make system is the shared command language for maintenance work.
+The repository make system is the shared command language for local work, CI,
+package dispatch, and release preparation. It begins at `Makefile` and becomes
+more specific as responsibility moves into root fragments, reusable contracts,
+and package bindings.
 
-It starts at `Makefile`, which delegates immediately to `makes/root.mk`. From
-there the repository pulls in a layered set of make fragments: environment
-setup, repository-wide orchestration, package dispatch, shared `bijux-py`
-contracts, CI-oriented targets, and per-package definitions.
+## Core Layers
 
-## Core Shape
+- `Makefile` for the top-level entrypoint
+- `makes/root.mk` for repository assembly
+- `makes/env.mk` and `makes/packages.mk` for shared environment and package
+  catalog setup
+- `makes/bijux-py/` for reusable contracts and target families
+- `makes/packages/` for canonical and compatibility package bindings
 
-- `Makefile` is the top-level entrypoint
-- `makes/root.mk` assembles repository-wide includes
-- `makes/bijux-py/` carries reusable make contracts and target groups
-- `makes/packages/` maps shared target patterns onto repository packages
+## Why Layering Matters
 
-## Bottom Line
+A layered make tree keeps command ownership visible. A reviewer can tell whether
+a target is repository policy, reusable infrastructure, package dispatch, or a
+package-local binding instead of treating `make` as a bag of aliases.
 
-This structure keeps the command layer explicit. A target can be traced to the
-file that owns it, and a reviewer can tell whether a new target is repository
-scope, package scope, CI scope, or release scope.
+## First Proof Check
 
+- `Makefile`
+- `makes/root.mk`
+- `makes/bijux-py/`
+- `makes/packages/`

@@ -4,87 +4,35 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # SBOM and Supply Chain
 
-Supply-chain visibility is a repository maintenance concern, so SBOM helpers
-live in `bijux-canon-dev` instead of being duplicated by each package.
-
-The point is not just compliance. The point is to keep dependency and build
-provenance explainable at repository level without smearing that burden
-across every product package.
-
-## Visual Summary
-
-```mermaid
-flowchart LR
-    deps["Declared dependencies"]
-    sbom["SBOM and requirements helpers"]
-    review["Supply-chain visibility"]
-    release["Publication surfaces stay explainable"]
-    deps --> sbom --> review --> release
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class deps anchor;
-    class sbom page;
-    class review positive;
-    class release action;
-```
+Supply-chain visibility is a repository-health concern, so SBOM helpers live in
+`bijux-canon-dev` instead of being copied into every package. The point is not
+just compliance language. The point is to keep dependency and provenance claims
+backed by visible helpers and tests.
 
 ## Current Surfaces
 
-- `sbom/requirements_writer.py`
-- `tests/test_sbom_requirements_writer.py`
-- shared dependency metadata in package `pyproject.toml` files
+- `sbom/requirements_writer.py` for requirements and SBOM-related output
+- `tests/test_sbom_requirements_writer.py` for executable proof
+- package `pyproject.toml` files and release artifacts that consume the output
 
-## Concrete Anchors
+## Why Repository Scope Matters
 
-- `packages/bijux-canon-dev/src/bijux_canon_dev` for maintainer helpers
-- `packages/bijux-canon-dev/tests` for executable maintenance proof
-- `apis/` and root workflows for repository-level integration points
+Supply-chain documentation becomes weak when every package improvises its own
+rules. Shared helpers keep the generation path inspectable and reduce drift
+between package metadata, build artifacts, and release attachments.
 
-## Open This Page When
+## First Proof Check
 
-- you are changing repository automation, validation, or release support
-- you need maintainer-only context that should not live in product package docs
-- you are reviewing CI, schema drift, or supply-chain behavior
+- `packages/bijux-canon-dev/src/bijux_canon_dev/sbom`
+- `packages/bijux-canon-dev/tests/test_sbom_requirements_writer.py`
+- callers in build and release workflows
 
-## Decision Rule
+## Boundary
 
-This page shows how shared SBOM and supply-chain
-helpers support repository health. If the change would affect end-user
-behavior directly, open the owning product package instead.
-
-## What You Can Resolve Here
-
-- which shared supply-chain helpers live in `bijux-canon-dev`
-- which maintainer modules or tests support that concern
-- what a reviewer should confirm before changing repository automation
-
-## Review Focus
-
-- compare the described maintainer behavior with the actual helper modules and tests
-- check that maintainer-only guidance has not leaked into product-facing pages
-- confirm that repository automation still names its package impact explicitly
-
-## Read Next
-
-- open the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
-  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
-  question is user-facing behavior rather than repository health
-- open the relevant helper module or test after using this page to orient yourself
-- return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
-  when the maintainer issue turns out to be root policy instead
-
-## Limits
-
-This section can describe maintainer automation and repository health work, but
-it should never imply that maintainer tooling is part of the end-user product
-surface. Supply-chain claims still need visible helpers, tests, metadata, and
-workflow context to be trustworthy.
-
+This page documents shared provenance support. It does not claim that SBOM
+output alone proves package behavior, security quality, or runtime trust.

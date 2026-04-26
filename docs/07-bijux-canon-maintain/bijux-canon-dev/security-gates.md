@@ -4,87 +4,36 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Security Gates
 
-Security checks that are about repository health rather than product behavior
-live in `bijux-canon-dev`.
+Repository-health security checks live in `bijux-canon-dev` when they protect
+shared maintenance surfaces instead of one product package. That keeps the
+security posture inspectable from checked-in code rather than from vague policy
+language.
 
-This page is here to keep security work from becoming vague compliance
-theater. The useful question is always which checked-in tool or test is
-carrying the actual security expectation.
+## Current Gates
 
-## Visual Summary
+- `security/pip_audit_gate.py` for dependency audit enforcement
+- maintainer tests that prove the gate's expected behavior
+- CI entrypoints that run the security checks through shared target families
 
-```mermaid
-flowchart LR
-    surface["Security-sensitive repository surface"]
-    audit["Audit or policy gate"]
-    tests["Maintainer tests keep the gate honest"]
-    review["Review package impact before changing the gate"]
-    surface --> audit --> tests --> review
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class surface page;
-    class audit caution;
-    class tests anchor;
-    class review action;
-```
+## Review Rule
 
-## Current Security Surfaces
+Security documentation is only credible when it names the checked-in tool,
+where that tool is called, and what would count as a real regression. If the
+page cannot answer those three questions, it is documenting intent instead of
+behavior.
 
-- `security/pip_audit_gate.py`
-- package tests that confirm expected security tooling behavior
-- CI integration through root workflows
+## First Proof Check
 
-## Concrete Anchors
+- `packages/bijux-canon-dev/src/bijux_canon_dev/security`
+- `packages/bijux-canon-dev/tests`
+- callers in `makes/bijux-py/ci/security.mk` and workflow entrypoints
 
-- `packages/bijux-canon-dev/src/bijux_canon_dev` for maintainer helpers
-- `packages/bijux-canon-dev/tests` for executable maintenance proof
-- `apis/` and root workflows for repository-level integration points
+## Boundary
 
-## Open This Page When
-
-- you are changing repository automation, validation, or release support
-- you need maintainer-only context that should not live in product package docs
-- you are reviewing CI, schema drift, or supply-chain behavior
-
-## Decision Rule
-
-This page shows how repository-health security checks
-are implemented and reviewed. If the change would affect end-user behavior
-directly, open the owning product package instead.
-
-## What You Can Resolve Here
-
-- which repository-health security checks live in `bijux-canon-dev`
-- which maintainer modules or tests support that concern
-- what a reviewer should confirm before changing repository automation
-
-## Review Focus
-
-- compare the described maintainer behavior with the actual helper modules and tests
-- check that maintainer-only guidance has not leaked into product-facing pages
-- confirm that repository automation still names its package impact explicitly
-
-## Read Next
-
-- open the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
-  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
-  question is user-facing behavior rather than repository health
-- open the relevant helper module or test after using this page to orient yourself
-- return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
-  when the maintainer issue turns out to be root policy instead
-
-## Limits
-
-This section can describe maintainer automation and repository health work, but
-it should never imply that maintainer tooling is part of the end-user product
-surface. Security claims still need visible helpers, tests, and workflow
-context to be trustworthy.
-
+These gates protect repository health. They should not absorb product-specific
+security claims that belong in the canonical package handbooks.

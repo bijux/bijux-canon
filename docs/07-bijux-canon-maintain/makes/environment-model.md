@@ -4,32 +4,29 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Environment Model
 
-The make system keeps environment assumptions visible.
+The make system keeps environment assumptions visible so local and CI behavior
+can be compared without guesswork. Shared variables and execution defaults live
+in named fragments instead of being redefined opportunistically.
 
-Repository make behavior depends on shared environment fragments such as
-`makes/env.mk`, `makes/bijux-py/root/env.mk`, and
-`makes/bijux-py/repository/env.mk`. These files define the variables and
-execution assumptions that later targets rely on.
+## Shared Environment Files
 
-## Environment Rules
+- `makes/env.mk` for repository-wide defaults
+- `makes/bijux-py/root/env.mk` for shared Python-root assumptions
+- `makes/bijux-py/repository/env.mk` for repository contract environment setup
 
-- centralize shared variables instead of redefining them across many target
-  files
-- keep package-independent environment logic in shared fragments
-- name environment expectations clearly enough that CI and local runs are easy
-  to compare
+## Review Rule
 
-## Reader Route
+Environment logic should move upward into shared fragments when multiple targets
+depend on it. Repeating the same variable or shell assumption across target
+files makes failures harder to explain and easier to drift.
 
-- open this page when the main question is where shared make environment
-  assumptions live
-- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
-  for the wider `makes/` tree layout
-- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
-  when the question turns into CI-oriented target families
+## First Proof Check
 
+- `makes/env.mk`
+- `makes/bijux-py/root/env.mk`
+- `makes/bijux-py/repository/env.mk`

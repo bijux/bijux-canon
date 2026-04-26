@@ -4,88 +4,32 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Operating Guidelines
 
-Changes in `bijux-canon-dev` should be especially careful because they can
-affect multiple packages at once.
+Changes in `bijux-canon-dev` deserve extra caution because they can affect many
+packages at once. The right posture is explicit scope, explicit proof, and
+explicit package impact.
 
-That is why this section needs to be unusually honest. A small maintainer
-change can carry wide consequences, so the package should bias toward
-explicit scope, explicit tests, and explicit explanations.
+## Working Rules
 
-## Visual Summary
+- prefer checked-in helper code and tests over opaque shell glue
+- keep package impact visible whenever a shared rule fans out across the matrix
+- state the owning integration point when a helper is consumed by `make` or a
+  workflow
+- keep maintainer-only guidance here instead of leaking it into product pages
 
-```mermaid
-flowchart LR
-    change["Maintainer-surface change"]
-    scope["Keep package impact explicit"]
-    tests["Prefer testable helpers over opaque glue"]
-    docs["Document maintainer-only behavior here"]
-    change --> scope --> tests --> docs
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class change page;
-    class scope positive;
-    class tests anchor;
-    class docs action;
-```
+## Review Questions
 
-## Guidelines
+- does this helper protect a repository-wide rule or a package-local behavior
+- can a reviewer trace the rule from helper module to test to caller
+- would a product package handbook be the more honest place to explain the
+  behavior
 
-- prefer checks that are reviewable and testable over opaque shell glue
-- keep repository automation explicit about which packages it touches
-- document maintainer-only behavior in this section rather than in user-facing package pages
+## First Proof Check
 
-## Concrete Anchors
-
-- `packages/bijux-canon-dev/src/bijux_canon_dev` for maintainer helpers
-- `packages/bijux-canon-dev/tests` for executable maintenance proof
-- `apis/` and root workflows for repository-level integration points
-
-## Open This Page When
-
-- you are changing repository automation, validation, or release support
-- you need maintainer-only context that should not live in product package docs
-- you are reviewing CI, schema drift, or supply-chain behavior
-
-## Decision Rule
-
-This page shows understanding how maintainer changes should
-be handled. If the change would affect end-user behavior directly, keep it in
-the owning product package instead of treating maintainer automation as a
-shortcut layer.
-
-## What You Can Resolve Here
-
-- which working posture is expected for maintainer changes
-- which maintainer modules or tests support that concern
-- what a reviewer should confirm before changing repository automation
-
-## Review Focus
-
-- compare the described maintainer behavior with the actual helper modules and tests
-- check that maintainer-only guidance has not leaked into product-facing pages
-- confirm that repository automation still names its package impact explicitly
-
-## Read Next
-
-- open the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
-  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
-  question is user-facing behavior rather than repository health
-- open the relevant helper module or test after using this page to orient yourself
-- return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
-  when the maintainer issue turns out to be root policy instead
-
-## Limits
-
-This section can describe maintainer automation and repository health work, but
-it should never imply that maintainer tooling is part of the end-user product
-surface. Hidden scripts still need visible code, tests, and workflow context to
-be trustworthy.
-
+- helper modules under `src/bijux_canon_dev/`
+- tests under `packages/bijux-canon-dev/tests`
+- callers in `makes/`, `.github/workflows/`, and `apis/`

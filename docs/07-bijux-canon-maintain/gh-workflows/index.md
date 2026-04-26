@@ -9,58 +9,41 @@ last_reviewed: 2026-04-26
 
 # gh-workflows
 
-Open this section to understand the GitHub Actions entrypoints and reusable
-building blocks that verify, release, and document the repository.
+The workflow handbook covers the GitHub Actions surfaces that verify, publish,
+and deploy this repository. These files are part of the checked-in operational
+contract, even when some of them are standards-managed and generated.
 
-The top-level entrypoints are `verify.yml` for pushes and pull requests,
-`deploy-docs.yml` for handbook publication from `main`, and the release split
-workflows (`release-github.yml`, `release-pypi.yml`, `release-ghcr.yml`) for
-tag-driven publication. `ci.yml` and `release-artifacts.yml` are reusable
-workflows called by those entrypoints rather than standalone manual surfaces.
+The useful question here is not how Actions works in general. The useful
+question is which workflow owns a trigger, which reusable file carries shared
+execution logic, and where that behavior connects back to checked-in make or
+helper code.
 
-## Pages In gh-workflows
+## Workflow Pages
 
 - [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/)
 - [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/)
 - [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/)
 - [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/)
 
-## Open gh-workflows When
+## Start With
 
-- the concern is about workflow triggers, job trees, or reusable workflow
-  composition
-- you need to know which GitHub Actions file owns verification, docs
-  publication, or release automation
-- the answer should come from checked-in workflow contracts rather than CI
-  folklore
+- Open [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/) for day-to-day repository verification.
+- Open [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/) for handbook publication.
+- Open [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/) for tag-driven release publication.
+- Open [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/) when the question is about the shared
+  job contracts called by top-level workflows.
 
-## Open Another Section When
+## Checked-In Truth
 
-- the question is about Make target routing rather than GitHub Actions
-- the issue belongs to one product package contract instead of repository
-  automation
-- you only need maintainer helper code rather than workflow entrypoints
+- `.github/workflows/verify.yml`
+- `.github/workflows/deploy-docs.yml`
+- `.github/workflows/release-artifacts.yml`
+- `.github/workflows/release-github.yml`
+- `.github/workflows/release-pypi.yml`
+- `.github/workflows/release-ghcr.yml`
+- `.github/workflows/ci.yml`
 
-## Start Here
+## Boundary
 
-- open [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/) when the concern starts from pull request or push
-  verification
-- open [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/) when the concern is docs publication from
-  `main`
-- open [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/) when the concern is tag-driven
-  publication
-- open [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/) when the key question is job
-  reuse or nested workflow composition
-
-## Concrete Anchors
-
-- `.github/workflows/verify.yml` for verification entry logic
-- `.github/workflows/deploy-docs.yml` for published handbook deployment
-- `.github/workflows/release-github.yml`, `.github/workflows/release-pypi.yml`, and `.github/workflows/release-ghcr.yml` for release entrypoints
-- `.github/workflows/ci.yml` and `.github/workflows/release-artifacts.yml` for reusable execution trees
-
-## Workflow Standard
-
-Workflow ownership should be discoverable from the checked-in YAML files and
-their call graph. If a maintainer still has to infer the release or verify path
-from past Actions runs, the workflow surface is under-documented.
+Workflow documentation should explain triggers, callers, and job ownership. It
+should not absorb the deeper product behavior that workflows happen to invoke.

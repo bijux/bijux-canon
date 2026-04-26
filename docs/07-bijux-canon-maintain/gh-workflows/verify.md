@@ -4,34 +4,29 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-19
+last_reviewed: 2026-04-26
 ---
 
 # verify
 
-`verify.yml` is the main repository verification workflow.
+`verify.yml` is the main repository verification workflow. It is the broadest
+day-to-day CI truth because it checks shared repository contracts first, then
+fans out across the package matrix through reusable workflows.
 
-It is the workflow that decides whether repository automation contracts and the
-package matrix are healthy enough to trust on pushes and pull requests. It is
-therefore the broadest CI truth for day-to-day repository changes.
+## Entry Workflow
 
-The job tree is intentionally split. `repository` runs shared automation
-contracts first, `package` fans out by package through `ci.yml`, and
-each reusable package run splits again into package-scoped `tests`, `checks`,
-and `lint` jobs.
+`verify.yml` runs on pushes, pull requests, manual dispatch, and merge-group
+validation for changes touching repository code, docs, workflows, packages,
+make surfaces, or tracked configuration files.
 
-## Workflow Anchors
+## Job Shape
+
+- `repository` checks shared automation contracts first
+- `package` fans out by package and delegates to `.github/workflows/ci.yml`
+- package jobs carry package-scoped `tests`, `checks`, and `lint` work
+
+## First Proof Check
 
 - `.github/workflows/verify.yml`
-- repository contract checks driven from `make`
-- the package matrix that delegates to reusable package workflows
-
-## Reader Route
-
-- open this page when the main question is how repository verification runs on
-  pushes and pull requests
-- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/`
-  for the reusable workflow building blocks behind the package matrix
-- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
-  for the make-layer target families behind the workflow
-
+- `.github/workflows/ci.yml`
+- repository and CI targets under `makes/`

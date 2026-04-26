@@ -4,27 +4,31 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Root Entrypoints
 
 Root make entrypoints should be obvious enough that maintainers do not have to
-memorize hidden aliases.
+memorize hidden aliases. The command surface starts at a small number of files
+that define the shared environment and dispatch model.
 
-The main command surface starts with `Makefile`, `makes/root.mk`,
-`makes/env.mk`, and `makes/packages.mk`. Those files establish the repository’s
-top-level environment, package enumeration, and shared target routing.
-
-## Anchors
+## Root Entrypoints
 
 - `Makefile` includes `makes/root.mk`
-- `makes/root.mk` is the repository assembly point
-- `makes/env.mk` and `makes/packages.mk` provide shared variables and package
-  metadata
+- `makes/root.mk` assembles repository-level fragments
+- `makes/env.mk` defines shared environment assumptions
+- `makes/packages.mk` loads package metadata and bindings
 
-## Review Rule
+## What Starts Here
 
-If a top-level target cannot be traced quickly from these entrypoints, the make
-surface is becoming harder to maintain than it should be.
+These files decide how repository-wide targets become concrete package or CI
+work. If root entrypoints are unclear, every downstream fragment becomes harder
+to review.
 
+## First Proof Check
+
+- `Makefile`
+- `makes/root.mk`
+- `makes/env.mk`
+- `makes/packages.mk`

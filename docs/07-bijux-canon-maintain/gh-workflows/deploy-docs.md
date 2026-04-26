@@ -4,34 +4,29 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # deploy-docs
 
 `deploy-docs.yml` is the workflow that turns the checked-in handbook into the
-published site.
+published site. In this repository documentation is a maintained public surface,
+so the deployment path is part of the contract rather than an afterthought.
 
-It matters because documentation in this repository is treated as a maintained
-surface, not as an optional by-product. The deploy workflow is therefore part
-of the documentation contract, not a secondary convenience step.
+## Deployment Contract
 
-It runs on `main` when docs-related files change and can also be started
-manually. The job tree stays small on purpose: build the strict site, validate
-the published assets, then deploy the Pages artifact.
+The workflow resolves docs deploy configuration, sets up the required toolchain,
+runs the repository docs install and build commands, verifies the resulting
+site, then stages and deploys the Pages artifact.
 
-## Workflow Anchors
+## Trigger Surface
+
+`deploy-docs.yml` supports manual dispatch and workflow calls. The checked-in
+workflow also guards against accidental deploy expectations from the wrong ref
+and derives repository-specific site settings from repository configuration.
+
+## First Proof Check
 
 - `.github/workflows/deploy-docs.yml`
 - `mkdocs.yml` and `mkdocs.shared.yml`
 - `docs/` as the published source tree
-
-## Reader Route
-
-- open this page when the main question is how the checked-in handbook becomes
-  the published site
-- open `https://bijux.io/bijux-canon/01-bijux-canon/foundation/documentation-system/`
-  for the published handbook structure
-- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
-  when the question turns into verification rather than publication
-
