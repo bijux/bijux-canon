@@ -91,13 +91,13 @@ flowchart TB
 - `apis/` and `.github/workflows/` for schema and validation review
 - `packages/` for the product boundaries this handbook must not blur
 
-## Use This Page When
+## Use The Repository Handbook When
 
 - you are dealing with repository-wide seams rather than one package alone
 - you need shared workflow, schema, or governance context before changing code
 - you want the monorepo view that sits above the package handbooks
 
-## Do Not Use This Page When
+## Leave The Repository Handbook When
 
 - the answer depends mostly on one package's local behavior, imports, or tests
 - you need workflow automation internals rather than root-facing guidance

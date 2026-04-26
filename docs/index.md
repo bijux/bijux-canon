@@ -148,13 +148,13 @@ or durable run state. Stay in the repository handbook only for seams shared
 across packages. Stay in the maintainer handbook only for repository-health
 surfaces. Stay in compatibility docs only until the canonical target is known.
 
-## Use This Page When
+## Stay At The Root When
 
 - the owned package or handbook branch is still unclear
 - the concern might be cross-package, maintainer-only, or legacy-only
 - the published docs navigation needs to stay consistent with the real package split
 
-## Do Not Stay Here When
+## Leave The Root When
 
 - one product handbook already owns the behavior in question
 - the needed detail is a concrete interface, workflow, or test surface
