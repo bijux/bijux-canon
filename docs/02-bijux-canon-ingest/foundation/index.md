@@ -14,10 +14,10 @@ retrieval-ready output. Use this section when the important question is not
 which command to run, but why ingest owns this work at all and where that
 ownership stops.
 
-These pages should help readers distinguish source preparation from the
-downstream jobs that index, reason over, or orchestrate the prepared output.
-When this section is doing its job well, a scientist, developer, or maintainer
-can explain why ingest exists without falling back to repository tribal memory.
+These pages help you distinguish source preparation from the downstream jobs
+that index, reason over, or orchestrate the prepared output. Use them when
+you need a clear explanation of why ingest exists without relying on tribal
+memory.
 
 ## Visual Summary
 
@@ -43,33 +43,33 @@ flowchart LR
 
 ## Start Here
 
-- open [Package Overview](package-overview.md) for the shortest explanation of
+- use [Package Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/) for the shortest explanation of
   what ingest is for
-- open [Ownership Boundary](ownership-boundary.md) when the issue might belong
+- use [Ownership Boundary](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/ownership-boundary/) when the issue might belong
   in index, reason, agent, or runtime instead
-- open [Lifecycle Overview](lifecycle-overview.md) when the real question is
+- use [Lifecycle Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/lifecycle-overview/) when the real question is
   how source material moves through ingest before downstream packages pick it up
 
-## Pages In This Section
+## Pages In Foundation
 
-- [Package Overview](package-overview.md)
-- [Scope and Non-Goals](scope-and-non-goals.md)
-- [Ownership Boundary](ownership-boundary.md)
-- [Repository Fit](repository-fit.md)
-- [Capability Map](capability-map.md)
-- [Domain Language](domain-language.md)
-- [Lifecycle Overview](lifecycle-overview.md)
-- [Dependencies and Adjacencies](dependencies-and-adjacencies.md)
-- [Change Principles](change-principles.md)
+- [Package Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/)
+- [Scope and Non-Goals](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/scope-and-non-goals/)
+- [Ownership Boundary](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/ownership-boundary/)
+- [Repository Fit](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/repository-fit/)
+- [Capability Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/capability-map/)
+- [Domain Language](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/domain-language/)
+- [Lifecycle Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/lifecycle-overview/)
+- [Dependencies and Adjacencies](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/dependencies-and-adjacencies/)
+- [Change Principles](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/change-principles/)
 
-## Use This Section When
+## Use Foundation When
 
 - you need the durable ownership story before reading code or command docs
 - you are deciding whether deterministic preparation belongs in ingest or
   downstream retrieval behavior belongs elsewhere
 - you need shared package language for chunking, source shaping, and handoff
 
-## Do Not Use This Section When
+## Move On When
 
 - the question is already about public commands, schemas, or artifact contracts
 - the real problem is operational, such as setup, diagnostics, or release flow
@@ -77,13 +77,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Architecture](../architecture/index.md) when you need the structure
+- use [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the structure
   behind ingest preparation and workflow flow
-- open [Interfaces](../interfaces/index.md) when you need the contracts that
+- use [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when you need the contracts that
   callers and downstream packages rely on
-- open [Operations](../operations/index.md) when you need local workflow,
+- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need local workflow,
   validation, or release guidance
-- open [Quality](../quality/index.md) when you need evidence that deterministic
+- use [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need evidence that deterministic
   ingest behavior is actually protected
 
 ## Concrete Anchors
@@ -92,15 +92,14 @@ flowchart LR
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
 - `packages/bijux-canon-ingest/tests` as the proof surface for owned behavior
 
-## Reader Takeaway
+## Why Use Foundation
 
 Use `Foundation` to answer the ownership question with integrity: ingest exists
 to make source material predictable enough for downstream retrieval work to
 trust. If a proposal broadens ingest without making that preparation story
 clearer, the design has probably crossed the boundary rather than improved it.
 
-## Purpose
+## What You Get
 
-This page introduces the foundation handbook for `bijux-canon-ingest` and
-routes readers to the specific boundary, language, and lifecycle pages that
-explain why the package exists.
+This page gives you the boundary, language, and lifecycle route into
+`bijux-canon-ingest` before you move on to commands, structure, or proof.

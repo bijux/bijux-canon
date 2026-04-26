@@ -13,10 +13,9 @@ Use this section when the important question is how ingest is put together:
 which modules shape source material, where deterministic transforms happen, and
 how prepared output reaches the retrieval handoff without hidden shortcuts.
 
-These pages should help reviewers and maintainers trace real execution flow
-through named parts of the package instead of inferring architecture from file
-names alone. The goal is clarity about structure, not decorative system
-language.
+These pages help you trace real execution flow through named parts of the
+package instead of inferring architecture from file names alone. The goal is
+clarity about structure, not decorative system language.
 
 ## Visual Summary
 
@@ -42,26 +41,26 @@ flowchart LR
 
 ## Start Here
 
-- open [Module Map](module-map.md) for the shortest guide to which directory
+- use [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/) for the shortest guide to which directory
   owns which architectural responsibility
-- open [Execution Model](execution-model.md) when the hard question is how
+- use [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/) when the hard question is how
   source material moves from input to prepared output
-- open [Integration Seams](integration-seams.md) when a change might blur the
+- use [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/) when a change might blur the
   line between ingest and its upstream or downstream neighbors
 
-## Pages In This Section
+## Pages In Architecture
 
-- [Module Map](module-map.md)
-- [Dependency Direction](dependency-direction.md)
-- [Execution Model](execution-model.md)
-- [State and Persistence](state-and-persistence.md)
-- [Integration Seams](integration-seams.md)
-- [Error Model](error-model.md)
-- [Extensibility Model](extensibility-model.md)
-- [Code Navigation](code-navigation.md)
-- [Architecture Risks](architecture-risks.md)
+- [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/)
+- [Dependency Direction](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/dependency-direction/)
+- [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/)
+- [State and Persistence](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/state-and-persistence/)
+- [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/)
+- [Error Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/error-model/)
+- [Extensibility Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/extensibility-model/)
+- [Code Navigation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/code-navigation/)
+- [Architecture Risks](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/architecture-risks/)
 
-## Use This Section When
+## Use Architecture When
 
 - you need to trace structural ownership before refactoring ingest internals
 - you are checking whether dependency flow still supports deterministic
@@ -69,7 +68,7 @@ flowchart LR
 - you need to understand where artifact shaping ends and downstream retrieval
   behavior begins
 
-## Do Not Use This Section When
+## Move On When
 
 - the question is mainly about public commands, schemas, or import contracts
 - the real issue is operational, such as setup, release, or incident handling
@@ -77,13 +76,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) when the structural question is
+- use [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the structural question is
   really an ownership question
-- open [Interfaces](../interfaces/index.md) when architecture reaches a caller
+- use [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when architecture reaches a caller
   or artifact contract
-- open [Operations](../operations/index.md) when structural decisions affect
+- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when structural decisions affect
   repeatable maintainer workflows
-- open [Quality](../quality/index.md) when you need proof that the documented
+- use [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof that the documented
   design is still defended in tests and review
 
 ## Concrete Anchors
@@ -92,14 +91,13 @@ flowchart LR
 - `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
 - `src/bijux_canon_ingest/application` for package workflows
 
-## Reader Takeaway
+## Why Use Architecture
 
 Use `Architecture` to make the internal flow legible enough that a reviewer can
 say where ingest logic lives and why. If the code only works because the
 structure is hard to explain, the architecture has already started to drift.
 
-## Purpose
+## What You Get
 
-This page introduces the architecture handbook for `bijux-canon-ingest` and
-routes readers to the module, execution, seam, and risk pages that explain how
-the package is actually organized.
+This page gives you the module, execution, seam, and risk route through
+`bijux-canon-ingest` before you dive into individual architectural topics.

@@ -9,13 +9,13 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Use this section when the real question is whether ingest output can be
-trusted: which tests prove deterministic preparation, which risks stay visible,
-and what "done" should mean before downstream packages build on the result.
+Use this section when you need to know whether ingest output can be trusted:
+which tests prove deterministic preparation, which risks stay visible, and
+what "done" should mean before downstream packages build on the result.
 
-These pages should keep reviewers honest about the cost of being wrong at the
-front of the pipeline. If ingest silently drifts, index, reasoning, and runtime
-can all look healthy while building on unstable prepared data.
+These pages keep reviewers honest about the cost of being wrong at the front
+of the pipeline. If ingest silently drifts, index, reasoning, and runtime can
+all look healthy while building on unstable prepared data.
 
 ## Visual Summary
 
@@ -44,28 +44,28 @@ flowchart LR
 
 ## Start Here
 
-- open [Test Strategy](test-strategy.md) for the broad proof story behind
+- use [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) for the broad proof story behind
   ingest behavior
-- open [Invariants](invariants.md) when the key question is what must not drift
+- use [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/) when the key question is what must not drift
   across source preparation and chunking
-- open [Change Validation](change-validation.md) when you need the minimum
+- use [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/) when you need the minimum
   evidence for a safe ingest change
-- open [Risk Register](risk-register.md) when known limits or tradeoffs may
+- use [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/) when known limits or tradeoffs may
   matter more than pass/fail checks
 
-## Pages In This Section
+## Pages In Quality
 
-- [Test Strategy](test-strategy.md)
-- [Invariants](invariants.md)
-- [Review Checklist](review-checklist.md)
-- [Documentation Standards](documentation-standards.md)
-- [Definition of Done](definition-of-done.md)
-- [Dependency Governance](dependency-governance.md)
-- [Change Validation](change-validation.md)
-- [Known Limitations](known-limitations.md)
-- [Risk Register](risk-register.md)
+- [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/)
+- [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/)
+- [Review Checklist](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/review-checklist/)
+- [Documentation Standards](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/documentation-standards/)
+- [Definition of Done](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/definition-of-done/)
+- [Dependency Governance](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/dependency-governance/)
+- [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/)
+- [Known Limitations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/known-limitations/)
+- [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/)
 
-## Use This Section When
+## Use Quality When
 
 - you need evidence that ingest output is stable enough for downstream use
 - a change touches chunking, shaping, artifacts, or other behavior that can
@@ -73,7 +73,7 @@ flowchart LR
 - you are reviewing whether passing checks are actually sufficient for the
   surface being changed
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is which command, schema, or artifact contract exists
 - you need the package boundary or structural flow before you can judge proof
@@ -81,13 +81,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) when uncertainty about ownership is
+- use [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when uncertainty about ownership is
   masquerading as a quality concern
-- open [Architecture](../architecture/index.md) when missing proof points to
+- use [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when missing proof points to
   structural drift
-- open [Interfaces](../interfaces/index.md) when trust depends on a specific
+- use [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when trust depends on a specific
   caller-facing contract
-- open [Operations](../operations/index.md) when the needed evidence is really a
+- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the needed evidence is really a
   repeatable maintainer workflow
 
 ## Concrete Anchors
@@ -97,15 +97,14 @@ flowchart LR
 - `tests/e2e` for package boundary coverage
 - `README.md`
 
-## Reader Takeaway
+## Why Use Quality
 
 Use `Quality` to ask a stricter question than “did the tests pass?” In ingest,
 the real bar is whether prepared output remains deterministic, contract-aligned,
 and honest about its limits before any downstream package treats it as stable
 input.
 
-## Purpose
+## What You Get
 
-This page introduces the quality handbook for `bijux-canon-ingest` and routes
-readers to the proof, invariants, review, validation, and risk pages that show
-how trust is earned.
+This page gives you the proof, invariants, review, validation, and risk route
+through `bijux-canon-ingest` before you inspect a specific trust surface.

@@ -10,8 +10,8 @@ last_reviewed: 2026-04-26
 # Ingest Handbook
 
 `bijux-canon-ingest` owns deterministic document preparation, chunking, and
-retrieval-ready shaping. Start here when the question is about how source
-material becomes stable ingest output.
+retrieval-ready shaping. Use this handbook when you need to understand how
+source material becomes stable ingest output.
 
 This package sits at the front of the canonical package family. Its job is to
 turn raw source material into chunks, records, and artifacts that downstream
@@ -34,7 +34,7 @@ flowchart LR
     source --> ingest --> index --> reason --> agent --> runtime
 ```
 
-## Read This Section When
+## Use This Handbook When
 
 - you need the package-level entrypoint for ingest docs
 - you are checking ingest workflows, chunking, or retrieval preparation
@@ -54,20 +54,20 @@ flowchart LR
 - reasoning, verification, or claim-production semantics
 - cross-package runtime acceptance, persistence, and operator governance
 
-## Choose The Next Section By Question
+## Choose A Section
 
-- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the real question is why ingest
+- use [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the real question is why ingest
   exists, where the boundary stops, or which language should stay stable
-- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the module map,
+- use [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the module map,
   dependency direction, or execution flow
-- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands,
+- use [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need setup, local workflow,
+- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need setup, local workflow,
   diagnostics, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof expectations, risk
+- use [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof expectations, risk
   posture, or a review standard
 
-## Main Paths
+## Pages In This Handbook
 
 - [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/)
@@ -75,7 +75,7 @@ flowchart LR
 - [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/)
 - [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/)
 
-## Reader Takeaway
+## Why Start Here
 
 Use this handbook when the important question is how material becomes
 ingest-ready in a deterministic way. If the question starts after chunked or

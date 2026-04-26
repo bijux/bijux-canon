@@ -9,11 +9,11 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Use this section when the question is which ingest surfaces are real contracts:
-commands, schemas, imports, artifacts, and examples that callers or downstream
-packages can rely on without guessing.
+Use this section when you need to know which ingest surfaces are real
+contracts: commands, schemas, imports, artifacts, and examples that callers
+or downstream packages can rely on without guessing.
 
-These pages should stop accidental dependencies from hardening around incidental
+These pages keep accidental dependencies from hardening around incidental
 implementation details. For ingest, that matters because chunk shape,
 artifact layout, and operator entrypoints become downstream assumptions very
 quickly once other packages start depending on them.
@@ -46,35 +46,35 @@ flowchart LR
 
 ## Start Here
 
-- open [CLI Surface](cli-surface.md) when the issue begins with an ingest
+- use [CLI Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/cli-surface/) when the issue begins with an ingest
   command or operator entrypoint
-- open [Data Contracts](data-contracts.md) when the question is about chunk
+- use [Data Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/data-contracts/) when the question is about chunk
   shapes, records, or prepared payload structure
-- open [Artifact Contracts](artifact-contracts.md) when downstream work depends
+- use [Artifact Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/artifact-contracts/) when downstream work depends
   on specific ingest outputs staying stable
-- open [Compatibility Commitments](compatibility-commitments.md) when a change
+- use [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/) when a change
   might break an established ingest-facing contract
 
-## Pages In This Section
+## Pages In Interfaces
 
-- [CLI Surface](cli-surface.md)
-- [API Surface](api-surface.md)
-- [Configuration Surface](configuration-surface.md)
-- [Data Contracts](data-contracts.md)
-- [Artifact Contracts](artifact-contracts.md)
-- [Entrypoints and Examples](entrypoints-and-examples.md)
-- [Operator Workflows](operator-workflows.md)
-- [Public Imports](public-imports.md)
-- [Compatibility Commitments](compatibility-commitments.md)
+- [CLI Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/cli-surface/)
+- [API Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/api-surface/)
+- [Configuration Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/configuration-surface/)
+- [Data Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/data-contracts/)
+- [Artifact Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/artifact-contracts/)
+- [Entrypoints and Examples](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/entrypoints-and-examples/)
+- [Operator Workflows](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/operator-workflows/)
+- [Public Imports](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/public-imports/)
+- [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/)
 
-## Use This Section When
+## Use Interfaces When
 
 - you need to know which ingest surface is intentional rather than incidental
 - downstream retrieval or orchestration work depends on prepared ingest outputs
 - you are reviewing whether a change adds compatibility pressure to an exposed
   command, artifact, or schema
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is why ingest owns the work in the first place
 - you need internal structure, dependency direction, or execution flow
@@ -83,13 +83,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) when a contract question is really
+- use [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when a contract question is really
   a package-boundary question
-- open [Architecture](../architecture/index.md) when the surface depends on
+- use [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when the surface depends on
   structural flow through processing or retrieval modules
-- open [Operations](../operations/index.md) when you need repeatable commands,
+- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need repeatable commands,
   setup, or maintainer runbooks
-- open [Quality](../quality/index.md) when the real question is whether the
+- use [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the real question is whether the
   documented contract is sufficiently defended
 
 ## Concrete Anchors
@@ -99,15 +99,14 @@ flowchart LR
 - configuration modules under `src/bijux_canon_ingest/config`
 - `apis/bijux-canon-ingest/v1/schema.yaml`
 
-## Reader Takeaway
+## Why Use Interfaces
 
 Use `Interfaces` to separate what ingest truly promises from what merely
 happens to be visible today. If a downstream dependency cannot be defended in
 terms of named commands, schemas, artifacts, examples, and tests, it is not yet
 a stable contract.
 
-## Purpose
+## What You Get
 
-This page introduces the interfaces handbook for `bijux-canon-ingest` and
-routes readers to the command, contract, artifact, and compatibility pages that
-define the package's supported surfaces.
+This page gives you the command, contract, artifact, and compatibility route
+through `bijux-canon-ingest` before you inspect a specific interface surface.
