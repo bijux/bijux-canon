@@ -16,6 +16,22 @@ The root exists to coordinate package truth. When a root change makes package
 ownership harder to see, the repository gains short-term convenience at the
 cost of long-term review accuracy.
 
+## Change Model
+
+```mermaid
+flowchart LR
+    proposal["shared change proposal"]
+    owner["confirm the owning package or root surface"]
+    proof["move explanation, proof, and enforcement together"]
+    outcome["clearer repository behavior"]
+
+    proposal --> owner --> proof --> outcome
+```
+
+This page should make root-level change feel disciplined rather than broad. A
+good change clarifies one shared rule and leaves package ownership easier to
+see than before.
+
 ## Tie-Break Order
 
 When two plausible changes compete, prefer the option that:
@@ -44,8 +60,8 @@ honest.
 - `apis/` when the change claims to protect more than one package contract
 - neighboring package docs when the boundary feels arguable
 
-## Bottom Line
+## Design Pressure
 
-A good root change makes one shared rule clearer without creating a shadow
-product layer above the packages. If the change makes the root broader and the
-package story blurrier, reject it and send the work back down.
+The pressure on root change is always toward convenience. If a shared helper or
+policy starts absorbing package-local behavior, the repository gains motion and
+loses honesty at the same time.
