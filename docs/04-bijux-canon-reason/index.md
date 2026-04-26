@@ -38,7 +38,7 @@ and reasoning-side artifacts that should survive review.
 - agent orchestration policy above one reasoning step
 - runtime acceptance, persistence, or run-governance behavior
 
-## Choose A Section
+## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the question is about package
   purpose, language, or ownership
@@ -59,8 +59,3 @@ and reasoning-side artifacts that should survive review.
 - [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/)
 - [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/)
 
-## Why Start Here
-
-Open this handbook when the real issue is whether reasoning output is explicit,
-verifiable, and provenance-aware enough to support later orchestration and
-runtime decisions.

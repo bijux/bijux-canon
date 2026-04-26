@@ -38,7 +38,7 @@ the ingest step from scratch.
 - reasoning, verification, or claim-production semantics
 - cross-package runtime acceptance, persistence, and operator governance
 
-## Choose A Section
+## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the real question is why ingest
   exists, where the boundary stops, or which language should stay stable
@@ -59,9 +59,3 @@ the ingest step from scratch.
 - [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/)
 - [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/)
 
-## Why Start Here
-
-Open this handbook when the important question is how material becomes
-ingest-ready in a deterministic way. If the question starts after chunked or
-prepared artifacts already exist, one of the downstream package handbooks is
-probably the better starting point.

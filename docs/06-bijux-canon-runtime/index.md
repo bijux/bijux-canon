@@ -64,7 +64,7 @@ replayable, durable, and fit to keep.
 - `tests/e2e/` and `tests/regression/` for the highest-value proof that a run
   remains replayable and acceptable
 
-## Choose A Section
+## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is about package
   purpose, ownership, or vocabulary
@@ -85,10 +85,3 @@ replayable, durable, and fit to keep.
 - [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/)
 - [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/)
 
-## Why Start Here
-
-Open this handbook when the real issue is whether a run is governed,
-replay-aware, and durable enough to count as canonical runtime behavior rather
-than merely as lower-package execution. If the question stops at “did code run”
-rather than “can this run be accepted and replayed,” you are probably still in
-the wrong package.

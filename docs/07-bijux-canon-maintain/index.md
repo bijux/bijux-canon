@@ -40,7 +40,7 @@ engineering shell glue and CI output.
 - the concern belongs to ingest, index, reasoning, agent, or runtime semantics
 - you are tempted to treat maintainer tooling as the product surface itself
 
-## Choose A Section
+## Start Here
 
 - open [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) when the concern is helper
   code, schema drift, supply chain, release support, or quality gates

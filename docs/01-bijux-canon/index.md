@@ -28,7 +28,7 @@ coordination.</div>
 - open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
 - open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
 
-## Choose A Section
+## Start Here
 
 - [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for the repository split, ownership model,
   shared language, and design rules that should stay stable over time

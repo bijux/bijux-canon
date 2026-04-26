@@ -37,7 +37,7 @@ legacy name is a bridge to a canonical package, not an equal design center.
 - you are designing new product behavior or a new public contract
 - the question is about maintainer automation rather than compatibility
 
-## Choose A Section
+## Start Here
 
 - open [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) when the immediate need is to identify which
   exact legacy surface is still preserved

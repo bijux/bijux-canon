@@ -39,7 +39,7 @@ without confusing that orchestration layer with the deeper runtime authority.
 - top-level runtime acceptance, persistence, or replay authority
 - repository-wide maintainer governance above the package boundary
 
-## Choose A Section
+## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the question is about package
   purpose, language, or scope
@@ -60,8 +60,3 @@ without confusing that orchestration layer with the deeper runtime authority.
 - [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/)
 - [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/)
 
-## Why Start Here
-
-Open this handbook when the meaningful question is how agent behavior is
-coordinated and traced. If the question is really about whether a run should be
-accepted, replayed, or persisted, open the runtime handbook instead.

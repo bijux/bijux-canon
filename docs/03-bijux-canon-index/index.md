@@ -38,7 +38,7 @@ flows to trust.
 - reasoning semantics, verification policy, or claim interpretation
 - top-level runtime governance above retrieval execution
 
-## Choose A Section
+## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when you need the package boundary,
   vocabulary, or ownership story
@@ -59,8 +59,3 @@ flows to trust.
 - [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/)
 - [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/)
 
-## Why Start Here
-
-Open this handbook when the hard question is about retrieval behavior itself:
-what gets embedded, how replay works, and which index contracts downstream
-packages are allowed to trust.
