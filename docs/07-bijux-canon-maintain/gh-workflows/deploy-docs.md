@@ -13,6 +13,22 @@ last_reviewed: 2026-04-26
 published site. In this repository documentation is a maintained public surface,
 so the deployment path is part of the contract rather than an afterthought.
 
+## Deployment Flow
+
+```mermaid
+flowchart LR
+    trigger["dispatch or workflow call"]
+    config["resolve deploy configuration"]
+    build["install, build, and verify docs"]
+    publish["stage and deploy pages artifact"]
+
+    trigger --> config --> build --> publish
+```
+
+This page should make docs deployment feel like a governed publication path,
+not a hidden CI side effect. Readers should be able to name the steps from
+checked-in handbook to published site.
+
 ## Deployment Contract
 
 The workflow resolves docs deploy configuration, sets up the required toolchain,
@@ -30,3 +46,9 @@ and derives repository-specific site settings from repository configuration.
 - `.github/workflows/deploy-docs.yml`
 - `mkdocs.yml` and `mkdocs.shared.yml`
 - `docs/` as the published source tree
+
+## Design Pressure
+
+Docs deployment becomes risky when publishing steps are treated as incidental
+build glue. The workflow has to keep configuration, build, verification, and
+publication visible as one contract.
