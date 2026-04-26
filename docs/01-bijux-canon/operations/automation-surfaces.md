@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Automation Surfaces
@@ -12,40 +12,29 @@ last_reviewed: 2026-04-09
 Repository automation should be visible in named surfaces, not hidden behind
 tribal shortcuts.
 
-The repository already exposes its shared operational machinery through a small
-set of durable entrypoints. Keeping those surfaces explicit matters because they
-shape how contributors learn the workspace and how reviewers reason about the
-impact of shared changes.
+## Automation Order
 
-## Core Automation Surfaces
+Read shared automation in this order:
 
-- `Makefile` as the top-level repository entrypoint
-- `makes/` as the structured library of shared make fragments
-- `.github/workflows/` as the published CI, docs, and release automation
-- `packages/bijux-canon-dev` as the code-bearing home for maintainer helpers
+1. `Makefile` for the top-level entrypoint a maintainer is expected to start from
+2. `makes/` for the structured library behind shared commands
+3. `.github/workflows/` for published verification, docs, and release execution
+4. `packages/bijux-canon-dev` for code-bearing maintainer helpers
 
-## Automation Rule
+## Why The Order Matters
 
-If automation changes repository-wide behavior, it should be explainable from
-one or more of these surfaces without reading unrelated shell glue first.
+A top-level command is usually the fastest operational route. A workflow file is
+usually the fastest route when the question starts from CI. `bijux-canon-dev`
+should explain helper behavior, not hide the only honest owner of a repository
+rule.
 
-## Review Lens
+## Failure Signals
 
-- does the automation name what it touches
-- is the owning file obvious from the docs and the command shape
-- does the change keep package ownership visible instead of burying it in root
-  convenience logic
+- a contributor cannot tell which root command is canonical for common work
+- a workflow changes repository-wide behavior but the owning file is not easy to name
+- a helper script starts carrying product logic that belongs in one package
 
-## Open This Page When
+## Bottom Line
 
-- you need to locate the repository entrypoint behind a shared command,
-  workflow, or helper
-- you are checking whether automation belongs in a root surface or in a package
-- you want the shortest map of the repository's shared operational machinery
-
-## Decision Rule
-
-Keep shared automation in named, inspectable surfaces. If a workflow or helper
-changes repository-wide behavior, a reader should be able to trace it from one
-of the surfaces listed here without reverse-engineering stray shell glue first.
-
+Shared automation is healthy when a reader can name the owning surface quickly
+and trace the behavior without reverse-engineering stray shell glue first.

@@ -4,52 +4,37 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Change Management
 
-The repository makes change easier to reason about, not easier to hide.
+The repository should make change easier to reason about, not easier to hide.
 
-Change management here means keeping cross-package work understandable over
-time. That includes how diffs are split, how release-facing effects are made
-visible, and how documentation, proof, and implementation are kept in the same
-story instead of being updated on separate timelines.
+## Fail-Fast Gates
 
-## Expectations
+A cross-package change is not ready to merge until it passes all of these tests:
 
-- split repository-wide work into reviewable batches with durable commit intent
-- update the relevant handbook pages in the same change series as the behavior
-- keep file and directory names descriptive enough that later readers do not
-  need private project history to decode them
-- use redirects or explicit metadata updates when documentation paths move
+- the owner of each changed behavior is still easy to name
+- docs, proof, and implementation move in the same change series when they
+  describe the same rule
+- release-facing or compatibility effects are visible in the changed surfaces
+- the commit boundaries explain durable intent instead of bundling unrelated work
 
-## What Good Looks Like
+## Most Common Failure Mode
 
-- a maintainer can read the history and understand why each batch exists
-- later cleanup work is reduced because the original change closed the
-  documentation and proof loop at the same time
-- renamed pages or sections have an explicit continuity plan instead of silent
-  breakage
+The usual repository rework debt comes from changes that technically worked but
+left the reason for the split harder to explain. The cost appears later as
+cleanup, duplicated rules, or confused root ownership.
+
+## First Proof Checks
+
+- the changed handbook pages under `docs/`
+- the package or root surface that implements the behavior
+- the test, workflow, or schema check that proves the rule still holds
 
 ## Bottom Line
 
-Most repository rework debt comes from changes that “worked” but were never made
-fully legible. Good change management is the discipline that prevents that debt
-from accumulating again.
-
-## Open This Page When
-
-- you are planning a cross-package change series and need the repository
-  discipline for splitting it
-- you are reviewing history and want to understand what makes a batch durable
-  instead of merely convenient
-- you need the root expectation for keeping docs, proof, and implementation in
-  one story
-
-## Decision Rule
-
-Split shared work into reviewable batches with a visible reason for each one.
-If a change only makes sense when private memory fills the gaps, it is not yet
-packaged well enough for repository history.
-
+Good change management closes the explanation loop while the change is still in
+flight. If private memory is needed to explain why the batch exists, it is not
+yet packaged well enough for durable history.

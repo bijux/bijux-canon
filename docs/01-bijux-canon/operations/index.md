@@ -9,10 +9,13 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Use the operations section when the ownership model is already clear and you
-need the repeatable repository procedure that follows from it. These pages
-cover local setup, validation, schema review, artifact handling, release
-flow, and change acceptance across the package set.
+The operations section covers the shared procedures that keep the package split
+credible after code changes: local workflow, validation, schema review,
+artifact handling, release flow, and review discipline.
+
+The main mistake this section should prevent is operational folklore. Shared
+work should be discoverable from checked-in commands, workflows, schemas, and
+docs instead of from CI archaeology or private maintainer memory.
 
 ## Start Here
 
@@ -42,29 +45,19 @@ flow, and change acceptance across the package set.
 
 ## Open Another Section When
 
-- the real question is still why the split exists or where authority changes
-  hands
+- the real question is still why the split exists or where authority changes hands
 - you already know the issue belongs in one package's local operations docs
-- you need maintainer-helper implementation detail rather than repository
-  procedure
+- you need maintainer-helper implementation detail rather than repository procedure
 
-## Concrete Anchors
+## First Proof Checks
 
-- `Makefile` and `makes/` for shared command entrypoints
+- `Makefile` and `makes/` for shared command entrypoints and routing
 - `.github/workflows/` for repository-wide automation and release execution
 - `apis/` for schema governance surfaces that affect shared review
-- [Testing and Validation](https://bijux.io/bijux-canon/01-bijux-canon/operations/testing-and-validation/) and
-  [Artifact Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/artifact-governance/) for the highest-cost shared
-  review surfaces
+- the relevant package handbook once the action stops being truly shared
 
-## Read Across The Repository
+## Bottom Line
 
-- open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) when an operational problem is really a boundary problem
-- open the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the next step is workflow implementation, drift tooling, or maintainer helper code
-- open the owning package handbook when the operation is no longer truly shared
-
-## Operational Standard
-
-Shared procedure must be discoverable from checked-in rules, commands, and
-workflow files. If a repository-wide action still depends on CI archaeology or
-private habit, the operational surface is not documented strongly enough yet.
+These pages should tell a maintainer what shared procedure to trust, what file
+enforces it, and what proof should fail if it drifts. If the workflow still
+depends on memory, the repository procedure is not documented strongly enough.

@@ -4,46 +4,37 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # API and Schema Governance
 
 Shared API artifacts live under `apis/` so schema review does not depend on
-reading package source alone. This repository currently tracks schemas for
-ingest, index, reason, agent, and runtime.
+reading package source alone.
 
-That matters because the repository wants public surfaces to be reviewable in
-the open. A caller or reviewer should not need to reverse-engineer Python
-modules just to understand whether an HTTP or artifact contract changed.
+This page exists to answer one operational question clearly: when is a schema
+change just local code movement, and when is it a compatibility event that
+needs shared review.
 
-## Visual Summary
+## Compatibility Threshold
 
-```mermaid
-flowchart LR
-    code["Code changes"]
-    schema["Tracked schema in apis/"]
-    checks["Drift and validation checks"]
-    review["Review the contract delta"]
-    code --> schema --> checks --> review
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class code page;
-    class schema anchor;
-    class checks positive;
-    class review action;
-```
+Treat a change as a shared compatibility event when it changes any caller- or
+reader-facing contract that is tracked outside one module alone, including:
 
-## Governance Rules
+- request or response shapes in tracked OpenAPI material
+- pinned schema artifacts under `apis/`
+- field names, required fields, or semantics that more than one package or
+  external caller depends on
+- workflow checks whose purpose is to prove schema alignment
 
-- package code and tracked schema files must describe the same public behavior
-- drift checks belong in `bijux-canon-dev` or package tests, not in prose alone
-- schema hashes and pinned OpenAPI artifacts should move only with reviewable intent
+## First Proof Checks
 
-## Current Schema Roots
+- `apis/` for the tracked schema roots and pinned artifacts
+- the owning package interface docs for the public contract being changed
+- drift or validation checks under `.github/workflows/` and maintainer tooling
+  when the change claims to stay safe
+
+## Shared Schema Roots
 
 - `apis/bijux-canon-agent/v1`
 - `apis/bijux-canon-index/v1`
@@ -51,46 +42,8 @@ flowchart LR
 - `apis/bijux-canon-reason/v1`
 - `apis/bijux-canon-runtime/v1`
 
-## Concrete Anchors
+## Bottom Line
 
-- `pyproject.toml` for workspace metadata and commit conventions
-- `Makefile` and `makes/` for root automation
-- `apis/` and `.github/workflows/` for schema and validation review
-
-## Open This Page When
-
-- you are dealing with repository-wide seams rather than one package alone
-- you need shared workflow, schema, or governance context before changing code
-- you want the monorepo view that sits above the package handbooks
-
-## Decision Rule
-
-Open this page when a contract spans packages, schemas, and shared review
-workflow. If the answer depends mostly on one package's local behavior, open
-that package handbook instead of treating the repository root as a second
-owner.
-
-## What You Can Resolve Here
-
-- which repository-level schema decision is in scope
-- which shared assets or workflows deserve inspection
-- how repository governance stops before package-local ownership
-
-## Review Focus
-
-- compare the page claims with the real root files, workflows, or schema assets
-- check that repository guidance still stops where package ownership begins
-- confirm that any repository rule described here is still enforceable in code or automation
-
-## Limits
-
-Repository guidance here does not override package-local ownership. The real
-backstops are the referenced files, workflows, schemas, and checks.
-
-## Read Next
-
-- open the owning package docs when the question stops being repository-wide
-- check root files, schemas, or workflows named here before trusting prose alone
-- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
-  when the root issue is really about automation or drift tooling
-
+A schema change stops being ordinary maintenance as soon as a caller, another
+package, or a shared check would read it differently. At that point the change
+needs explicit compatibility review, not just code review.
