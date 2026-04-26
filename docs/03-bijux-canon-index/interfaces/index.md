@@ -21,27 +21,24 @@ which backend details remain internal.
 ```mermaid
 flowchart LR
     caller["caller or operator"]
-    cli["CLI surface<br/>query, ingest, artifact, diagnostics"]
-    api["API surface<br/>read, query, mutation routes"]
-    request["request contracts<br/>execution plan, budget, scoring"]
-    artifact["artifact contracts<br/>result collection and provenance"]
-    replay["replay contracts<br/>audit, lineage, drift visibility"]
-    consumer["reason or runtime<br/>evidence consumer"]
+    cli["CLI surface"]
+    api["API surface"]
+    request["request contracts"]
+    artifact["result artifacts"]
+    replay["replay records"]
+    schema["tracked schema"]
+    consumer["reason or runtime"]
 
     caller --> cli --> request
     caller --> api --> request
     request --> artifact --> replay --> consumer
-    request -. schema evidence .-> schema["apis/bijux-canon-index/v1/schema.yaml"]
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class caller page;
-    class cli,api,request,artifact,replay positive;
-    class schema anchor;
-    class consumer action;
+    request --> schema
 ```
+
+The interface story for index is really a retrieval accountability story.
+Callers need to know not only how to submit a query, but also what result,
+artifact, and replay surface they are allowed to depend on after the query
+finishes.
 
 ## Read These First
 
@@ -79,6 +76,9 @@ The main contract risk here is treating retrieval behavior as backend detail whi
 - leave for [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when a surface question reveals structural drift underneath it
 - leave for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) or [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the boundary is clear and the question becomes execution or proof
 
-## Bottom Line
+## Design Pressure
 
-A surface is not a real contract until the docs, code, and tests agree that it is one.
+If a replay-visible behavior is treated as an implementation detail here,
+downstream packages will still depend on it but without an explicit contract.
+The interface page should make those dependencies visible before they become
+surprises.
