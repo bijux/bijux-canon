@@ -11,6 +11,25 @@ last_reviewed: 2026-04-26
 
 Open this section when the question is contractual: which runtime commands, acceptance artifacts, schemas, and imports define what a governed run exposes to callers or operators.
 
+## Contract Model
+
+```mermaid
+flowchart LR
+    caller["caller or operator"]
+    surfaces["commands and APIs"]
+    policy["authority contracts"]
+    records["run artifacts and records"]
+    imports["public imports"]
+    consumers["reviewers or automation"]
+
+    caller --> surfaces --> policy --> records --> consumers
+    imports --> policy
+```
+
+Runtime interfaces are the visible edge of authority. The page should make
+clear which commands, schemas, and durable records callers may depend on once a
+governed run exists, and which details are still internal implementation.
+
 ## Read These First
 
 - open [Artifact Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/artifact-contracts/) first when the dispute is about durable run records or replay surfaces
@@ -46,6 +65,8 @@ The main contract risk here is exposing runtime authority through visible surfac
 - leave for [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a surface question reveals structural drift underneath it
 - leave for [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) or [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the boundary is clear and the question becomes execution or proof
 
-## Bottom Line
+## Design Pressure
 
-A surface is not a real contract until the docs, code, and tests agree that it is one.
+If authority is exposed through records and schemas that are never named as
+contracts, the package invites unsafe assumptions. This section has to make the
+governed-run surface explicit before callers build on it.
