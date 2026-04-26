@@ -9,15 +9,11 @@ last_reviewed: 2026-04-04
 
 # CLI Surface
 
-The CLI surface is the operator-facing command layer for `bijux-canon-reason`. It
-should tell a reader which commands are deliberate entrypoints and which ones
-are just local implementation detail.
+The CLI surface is the operator-facing command layer for `bijux-canon-reason`. It identifies which commands are deliberate entrypoints and which ones are local implementation detail.
 
 Command surfaces tend to become contracts early, because people script them,
-share them in tickets, and paste them into automation. This page should make
-that contract status visible instead of accidental.
+share them in tickets, and paste them into automation. That contract status should stay visible instead of accidental.
 
-Treat the interfaces pages for `bijux-canon-reason` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Visual Summary
 
@@ -59,7 +55,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use `CLI Surface` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
+Use this page when deciding whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
 
 ## What This Page Answers
 
@@ -79,13 +75,13 @@ This page can identify the intended public surfaces of `bijux-canon-reason`, but
 
 ## Next Checks
 
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
+- move to `https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/` when the caller-facing question becomes procedural or environmental
+- move to `https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/` when compatibility or evidence of protection becomes the real issue
+- move to `https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/` when a public-surface question reveals a deeper structural drift
 
 ## Purpose
 
-This page points maintainers toward the command entrypoints and their owning code.
+This page identifies the command entrypoints and their owning code.
 
 ## Stability
 

@@ -16,7 +16,6 @@ When configuration is documented well, maintainers can tell which behavior is
 meant to vary without editing code. When it is documented poorly, package
 behavior starts to feel magical or fragile.
 
-Treat the interfaces pages for `bijux-canon-runtime` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 
 ## Visual Summary
 
@@ -63,7 +62,7 @@ Configuration changes should update the operator docs, schema docs, and tests th
 
 ## Decision Rule
 
-Use `Configuration Surface` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
+Use this page when deciding whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
 
 ## What This Page Answers
 
@@ -83,13 +82,13 @@ This page can identify the intended public surfaces of `bijux-canon-runtime`, bu
 
 ## Next Checks
 
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
+- move to `https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/` when the caller-facing question becomes procedural or environmental
+- move to `https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/` when compatibility or evidence of protection becomes the real issue
+- move to `https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/` when a public-surface question reveals a deeper structural drift
 
 ## Purpose
 
-This page explains where configuration enters the package and how it should be reviewed.
+This page shows where configuration enters the package and how it should be reviewed.
 
 ## Stability
 
