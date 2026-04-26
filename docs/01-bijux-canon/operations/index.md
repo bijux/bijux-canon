@@ -14,28 +14,6 @@ need the repeatable repository procedure that follows from it. These pages
 cover local setup, validation, schema review, artifact handling, release
 flow, and change acceptance across the package set.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    change["repository change<br/>shared work at the root"]
-    setup["local development<br/>environment and command entrypoints"]
-    validation["validation<br/>tests, schemas, automation checks"]
-    release["release and artifacts<br/>versioning and publication"]
-    review["review posture<br/>acceptance and change management"]
-    change --> setup
-    setup --> validation
-    validation --> release
-    validation --> review
-    release --> review
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    class change page;
-    class setup,validation,release positive;
-    class review caution;
-```
-
 ## Start Here
 
 - open [Contributor Workflows](https://bijux.io/bijux-canon/01-bijux-canon/operations/contributor-workflows/) for the shortest route through normal repository work

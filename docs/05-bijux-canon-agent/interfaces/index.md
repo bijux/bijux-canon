@@ -18,30 +18,6 @@ invoke it; they also inspect what it orchestrated. Trace files, result
 artifacts, and schema-backed API shapes are part of what readers may depend on
 when they assess agent behavior.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    cli["CLI entrypoints and replay helpers"]
-    api["HTTP routes and OpenAPI schemas"]
-    config["operator config and defaults"]
-    artifacts["run results, traces, and emitted artifacts"]
-    imports["public Python imports"]
-    reader["reader question<br/>which agent surfaces are real contracts?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class cli,page reader;
-    class api,config positive;
-    class artifacts,imports anchor;
-    cli --> reader
-    api --> reader
-    config --> reader
-    artifacts --> reader
-    imports --> reader
-```
-
 ## Start Here
 
 - open [CLI Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/cli-surface/) for terminal-facing commands and replay

@@ -19,28 +19,6 @@ and infrastructure layers without reconstructing the design from imports
 alone. The goal is to make architectural responsibility explicit enough to
 review and evolve.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    request["retrieval request or index update"]
-    app["application workflows<br/>coordinate operations"]
-    domain["domain logic<br/>retrieval, provenance, replay rules"]
-    infra["infrastructure adapters<br/>backends and environment"]
-    state["durable index state"]
-    seams["integration seams<br/>ingest inputs and downstream consumers"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class request,page state;
-    class app,domain,infra positive;
-    class seams caution;
-    request --> app --> domain --> infra --> state
-    request --> seams
-    state --> seams
-```
-
 ## Start Here
 
 - open [Module Map](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/module-map/) for the fastest route to directory-level

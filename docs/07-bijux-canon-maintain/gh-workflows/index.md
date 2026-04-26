@@ -18,28 +18,6 @@ workflows (`release-github.yml`, `release-pypi.yml`, `release-ghcr.yml`) for
 tag-driven publication. `ci.yml` and `release-artifacts.yml` are reusable
 workflows called by those entrypoints rather than standalone manual surfaces.
 
-```mermaid
-flowchart TB
-    triggers["repository events<br/>push, pull request, tag, manual dispatch"]
-    verify["verify.yml<br/>verification entrypoint"]
-    docs["deploy-docs.yml<br/>docs publication from main"]
-    release["release-*.yml<br/>github, pypi, ghcr publication"]
-    reusable["ci.yml and release-artifacts.yml<br/>shared job trees"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class triggers page;
-    class verify anchor;
-    class docs,release positive;
-    class reusable action;
-    triggers --> verify
-    triggers --> docs
-    triggers --> release
-    verify --> reusable
-    release --> reusable
-```
-
 ## Pages In gh-workflows
 
 - [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/)

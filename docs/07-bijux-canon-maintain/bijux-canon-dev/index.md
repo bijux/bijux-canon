@@ -17,34 +17,6 @@ Hidden maintenance logic erodes trust fast. Repository policy belongs in
 helper modules, tests, and documented integration points instead of being
 reconstructed from CI output or shell glue.
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    dev["bijux-canon-dev<br/>repository health helpers"]
-    quality["quality<br/>deptry and repository policy checks"]
-    security["security and sbom<br/>audit gates and requirements output"]
-    schema["api governance<br/>freeze contracts and drift checks"]
-    release["release support<br/>version and publication guards"]
-    docs["docs support<br/>badge sync and mkdocs catalog logic"]
-    dev --> quality
-    dev --> security
-    dev --> schema
-    dev --> release
-    dev --> docs
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class dev page;
-    class quality positive;
-    class security caution;
-    class schema anchor;
-    class release action;
-    class docs positive;
-```
-
 ## Pages In This Handbook
 
 - [Package Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/)

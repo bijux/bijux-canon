@@ -20,27 +20,6 @@ seams legible.
 replayed under explicit policy instead of by convention. If the package still
 feels blurry after this section, the authority story is not clear enough yet.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    reader["reader question<br/>why does runtime have authority at all?"]
-    boundary["authority boundary<br/>what belongs here"]
-    lifecycle["run lifecycle<br/>prepare, execute, persist, replay"]
-    artifacts["durable traces, envelopes, and stores"]
-    neighbors["lower packages execute work<br/>runtime judges it"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    class reader page;
-    class boundary,lifecycle,artifacts positive;
-    class neighbors caution;
-    reader --> boundary
-    boundary --> lifecycle
-    lifecycle --> artifacts
-    boundary --> neighbors
-```
-
 ## Start Here
 
 - open [Package Overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/package-overview/) for the shortest durable

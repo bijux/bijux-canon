@@ -20,35 +20,6 @@ The root only owns what is genuinely shared: workspace layout, schema
 governance, documentation rules, validation posture, and release
 coordination.</div>
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    root["repository root<br/>shared governance and coordination"]
-    foundation["foundation<br/>split, scope, ownership, language"]
-    operations["operations<br/>workflow, validation, release, review"]
-    packages["canonical packages<br/>owned product behavior"]
-    maintain["maintainer handbook<br/>helper code, make, workflows"]
-    compat["compatibility handbook<br/>legacy names and migration"]
-    root --> foundation
-    root --> operations
-    foundation --> packages
-    operations --> packages
-    operations --> maintain
-    foundation --> compat
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class root page;
-    class foundation positive;
-    class operations anchor;
-    class packages action;
-    class maintain caution;
-    class compat caution;
-```
-
 ## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology

@@ -21,29 +21,6 @@ replay surfaces that other packages, tools, and reviewers may treat as
 authoritative. This section makes it obvious which commands, schemas,
 artifacts, and imports are real promises.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    reader["reader question<br/>what can I safely depend on?"]
-    cli["CLI and operator entrypoints"]
-    api["HTTP and schema surfaces"]
-    artifacts["replay envelopes, stores, and output artifacts"]
-    imports["public Python imports"]
-    compatibility["what needs compatibility review"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    class reader page;
-    class cli,api,artifacts,imports positive;
-    class compatibility caution;
-    reader --> cli
-    reader --> api
-    reader --> artifacts
-    reader --> imports
-    reader --> compatibility
-```
-
 ## Start Here
 
 - open [CLI Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/cli-surface/) when the operator-facing run contract is

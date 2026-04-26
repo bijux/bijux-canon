@@ -18,32 +18,6 @@ backend details or transient implementation choices. For index, that matters
 because once retrieval contracts spread into reasoning or runtime, later
 corrections become expensive.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    caller["reader or downstream caller"]
-    cli["CLI workflows<br/>query, build, replay"]
-    api["APIs and schemas<br/>retrieval-facing contracts"]
-    artifacts["artifact contracts<br/>index files and outputs"]
-    imports["public imports<br/>supported entrypoints"]
-    review["compatibility review<br/>what changes need extra care"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class caller,page review;
-    class cli,api,artifacts positive;
-    class imports anchor;
-    class review action;
-    caller --> cli
-    caller --> api
-    caller --> artifacts
-    caller --> imports
-    caller --> review
-```
-
 ## Start Here
 
 - open [CLI Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/cli-surface/) when the issue begins with a query, build,

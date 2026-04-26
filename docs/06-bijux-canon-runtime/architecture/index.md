@@ -22,29 +22,6 @@ flow. It plans, governs, records, stores, verifies, and replays that flow
 under explicit policy. The structure has to keep those concerns legible rather
 than letting them collapse into one giant executor.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    reader["reader question<br/>where does governed runtime behavior live?"]
-    app["application layer<br/>planning, execution, replay policy"]
-    runtime["runtime execution lifecycle<br/>prepare, step, finalize"]
-    observability["observability and storage<br/>trace, schema, analysis"]
-    model["models and contracts<br/>plans, traces, envelopes, verification"]
-    interfaces["CLI and API boundaries"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    class reader page;
-    class app,runtime,observability,model positive;
-    class interfaces caution;
-    reader --> app
-    app --> runtime
-    runtime --> observability
-    app --> model
-    interfaces --> app
-```
-
 ## Start Here
 
 - open [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/) for the shortest structural tour

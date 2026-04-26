@@ -17,29 +17,6 @@ This package is where one reasoning-capable step becomes coordinated work. It
 owns role-based agents, pipeline control, trace-bearing execution flow, and the
 rules that keep orchestration inspectable instead of magical.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    reason["reasoned steps and evidence-backed outputs"]
-    roles["role-local agents and capability boundaries"]
-    pipeline["pipeline control and orchestration flow"]
-    traces["trace records and replay-aware execution artifacts"]
-    runtime["runtime consumes governed run outcomes"]
-    reader["reader question<br/>what belongs in the agent layer?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class reason,page reader;
-    class roles,pipeline positive;
-    class traces,runtime anchor;
-    reason --> roles --> pipeline --> traces --> runtime
-    roles --> reader
-    pipeline --> reader
-    traces --> reader
-```
-
 ## Start Here
 
 - open [Package Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/package-overview/) for the shortest explanation of

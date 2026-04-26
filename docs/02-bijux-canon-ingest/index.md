@@ -18,22 +18,6 @@ turn raw source material into chunks, records, and artifacts that downstream
 packages can index, reason over, and orchestrate without having to reinterpret
 the ingest step from scratch.
 
-```mermaid
-flowchart LR
-    source["source documents and records"]
-    ingest["bijux-canon-ingest<br/>prepare, chunk, shape"]
-    index["bijux-canon-index<br/>vector execution and retrieval"]
-    reason["bijux-canon-reason<br/>claims, checks, provenance"]
-    agent["bijux-canon-agent<br/>workflow orchestration"]
-    runtime["bijux-canon-runtime<br/>run acceptance and persistence"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class source,page ingest;
-    class index,reason,agent,runtime positive;
-    source --> ingest --> index --> reason --> agent --> runtime
-```
-
 ## Open This Handbook When
 
 - you need the package-level entrypoint for ingest docs

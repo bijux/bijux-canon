@@ -74,42 +74,6 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 <a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    sources["source material<br/>documents and inputs"]
-    ingest["bijux-canon-ingest<br/>deterministic preparation"]
-    index["bijux-canon-index<br/>retrieval plus provenance"]
-    reason["bijux-canon-reason<br/>claims plus verification"]
-    agent["bijux-canon-agent<br/>role-based orchestration"]
-    runtime["bijux-canon-runtime<br/>governed execution and replay"]
-    repo["repository handbook<br/>shared boundaries and root rules"]
-    maintain["maintenance handbook<br/>automation, make, workflows"]
-    compat["compatibility packages<br/>legacy names under retirement pressure"]
-    sources --> ingest --> index --> reason --> agent --> runtime
-    repo --> ingest
-    repo --> index
-    repo --> reason
-    repo --> agent
-    repo --> runtime
-    maintain --> repo
-    compat --> ingest
-    compat --> index
-    compat --> reason
-    compat --> agent
-    compat --> runtime
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class ingest,index,reason,agent,runtime positive;
-    class sources,compat caution;
-    class maintain action;
-    class repo anchor;
-```
-
 ## Start Here
 
 - open the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) for package boundaries, shared rules, and repository-wide workflow

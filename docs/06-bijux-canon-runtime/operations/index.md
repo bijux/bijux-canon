@@ -22,29 +22,6 @@ policy, and durable traces can turn a sloppy rerun into a misleading record.
 This section shows how to operate the package carefully, not merely how
 to invoke it.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    reader["reader question<br/>which procedure keeps runtime trustworthy?"]
-    install["install and configure"]
-    validate["develop, validate, and inspect"]
-    diagnose["observe, recover, and compare runs"]
-    release["version and publish safely"]
-    safety["review authority, storage, and deployment boundaries"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    class reader page;
-    class install,validate,release positive;
-    class diagnose,safety caution;
-    reader --> install
-    reader --> validate
-    reader --> diagnose
-    reader --> release
-    reader --> safety
-```
-
 ## Start Here
 
 - open [Common Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/common-workflows/) when the real question is how to

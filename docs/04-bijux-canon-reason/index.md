@@ -18,22 +18,6 @@ as reasoning rather than as raw search results. It owns the conversion from
 evidence into claims, verification steps, provenance-aware reasoning records,
 and reasoning-side artifacts that should survive review.
 
-```mermaid
-flowchart LR
-    retrieval["retrieval evidence and replayable results"]
-    reason["bijux-canon-reason<br/>claims, checks, provenance"]
-    agent["bijux-canon-agent<br/>workflow coordination"]
-    runtime["bijux-canon-runtime<br/>run acceptance and persistence"]
-    reader["reader question<br/>what can this reasoning output actually justify?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class retrieval,page reason;
-    class agent,runtime,reader positive;
-    retrieval --> reason --> agent --> runtime
-    reason --> reader
-```
-
 ## Open This Handbook When
 
 - you need the package-level entrypoint for reasoning docs

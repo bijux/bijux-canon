@@ -19,21 +19,6 @@ workflows. It owns orchestration behavior that should stay deterministic,
 trace-producing, and inspectable enough that readers can tell what an agent did
 without confusing that orchestration layer with the deeper runtime authority.
 
-```mermaid
-flowchart LR
-    reason["reasoning results and checks"]
-    agent["bijux-canon-agent<br/>coordinate, trace, orchestrate"]
-    runtime["bijux-canon-runtime<br/>accept, persist, govern runs"]
-    reader["reader question<br/>what did the agent actually coordinate?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class reason,page agent;
-    class runtime,reader positive;
-    reason --> agent --> runtime
-    agent --> reader
-```
-
 ## Open This Handbook When
 
 - you need the package-level entrypoint for agent docs

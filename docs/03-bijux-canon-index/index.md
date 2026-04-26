@@ -18,22 +18,6 @@ surfaces. It is where embedding execution, index persistence, and retrieval
 behavior need to become explicit enough for downstream reasoning and runtime
 flows to trust.
 
-```mermaid
-flowchart LR
-    ingest["ingest-ready chunks and records"]
-    index["bijux-canon-index<br/>embed, store, retrieve, replay"]
-    reason["bijux-canon-reason<br/>claims and verification"]
-    runtime["bijux-canon-runtime<br/>run acceptance and persistence"]
-    reader["reader question<br/>how does retrieval actually work?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class ingest,page index;
-    class reason,runtime,reader positive;
-    ingest --> index --> reason --> runtime
-    index --> reader
-```
-
 ## Open This Handbook When
 
 - you need the package-level entrypoint for index docs

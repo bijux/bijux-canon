@@ -17,30 +17,6 @@ Reasoning workflows are operationally sensitive because they generate evidence
 that may later be replayed or audited. A command that “mostly works” is not
 good enough if it leaves behind artifacts a reviewer cannot explain or trust.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    setup["install the package and choose an entrypoint"]
-    execute["run CLI, API, or evaluation flows"]
-    replay["inspect traces and replay behavior"]
-    diagnose["debug verification or runtime failures"]
-    release["publish with contract awareness"]
-    reader["reader question<br/>which procedure keeps reasoning runs believable?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class execute,page reader;
-    class setup,replay positive;
-    class diagnose,release anchor;
-    setup --> reader
-    execute --> reader
-    replay --> reader
-    diagnose --> reader
-    release --> reader
-```
-
 ## Start Here
 
 - open [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/) for environment and

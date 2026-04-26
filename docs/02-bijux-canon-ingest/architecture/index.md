@@ -17,28 +17,6 @@ These pages help you trace real execution flow through named parts of the
 package instead of inferring architecture from file names alone. The goal is
 clarity about structure, not decorative system language.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    source["source material enters ingest"]
-    app["application workflows<br/>coordinate ingest runs"]
-    processing["processing modules<br/>transform and chunk"]
-    retrieval["retrieval-ready models<br/>shape downstream handoff"]
-    artifacts["durable ingest artifacts"]
-    seams["integration seams<br/>upstream documents and downstream index"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class source,page artifacts;
-    class app,processing,retrieval positive;
-    class seams caution;
-    source --> app --> processing --> retrieval --> artifacts
-    source --> seams
-    artifacts --> seams
-```
-
 ## Start Here
 
 - open [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/) for the shortest guide to which directory

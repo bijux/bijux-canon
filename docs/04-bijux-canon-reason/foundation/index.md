@@ -18,30 +18,6 @@ arguable. It owns planning, claim formation, verification, and the traceable
 artifacts that let a reviewer inspect what the reasoning layer concluded and
 why.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    evidence["retrieved evidence and corpus views"]
-    planning["planning intent and reasoning IR"]
-    claims["claims, supports, and insufficiency handling"]
-    verify["verification and provenance checks"]
-    traces["reasoning traces and durable artifacts"]
-    handoff["agent and runtime consume inspected output"]
-    reader["reader question<br/>what belongs in the reasoning layer?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class evidence,page reader;
-    class planning,claims,verify positive;
-    class traces,handoff anchor;
-    evidence --> planning --> claims --> verify --> traces --> handoff
-    planning --> reader
-    claims --> reader
-    verify --> reader
-```
-
 ## Start Here
 
 - open [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/) for the shortest description of

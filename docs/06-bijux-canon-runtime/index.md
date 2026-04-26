@@ -23,27 +23,6 @@ For many readers this page answers whether a run counts at all. Lower packages
 can execute work, but runtime decides whether that work is acceptable,
 replayable, durable, and fit to keep.
 
-```mermaid
-flowchart LR
-    reader["reader question<br/>what makes a run acceptable and durable?"]
-    ingest["ingest"]
-    index["index"]
-    reason["reason"]
-    agent["agent"]
-    runtime["bijux-canon-runtime<br/>accept, persist, replay, govern"]
-    artifacts["execution traces, envelopes, and durable state"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class reader page;
-    class ingest,index,reason,agent positive;
-    class runtime anchor;
-    class artifacts positive;
-    ingest --> index --> reason --> agent --> runtime
-    runtime --> artifacts
-    artifacts --> reader
-```
-
 ## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why runtime owns

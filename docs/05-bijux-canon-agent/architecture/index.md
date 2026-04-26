@@ -19,33 +19,6 @@ work in, pipeline modules coordinate execution, agent modules do role-local
 work, application policy and workflow graphs constrain behavior, and traces
 plus observability make the result inspectable.
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    entry["interfaces and entrypoints"]
-    pipeline["pipeline control and execution flow"]
-    agents["role-local agents and capabilities"]
-    policy["application workflow graphs and policy"]
-    traces["traces, replay, and result finalization"]
-    observe["observability and runtime metrics"]
-    reader["reader question<br/>where does this orchestration behavior live?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class entry,page reader;
-    class pipeline,agents,policy positive;
-    class traces,observe anchor;
-    entry --> pipeline --> agents --> traces
-    pipeline --> policy
-    policy --> traces
-    traces --> observe
-    pipeline --> reader
-    agents --> reader
-    policy --> reader
-```
-
 ## Start Here
 
 - open [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/) for the shortest route from directory names

@@ -16,27 +16,6 @@ The make system is a real interface in this repository. It exposes local work,
 CI checks, package dispatch, schema checks, and release-oriented automation
 through stable command surfaces instead of one-off shell habits.
 
-```mermaid
-flowchart TB
-    root["Makefile and makes/root.mk<br/>top-level entrypoints"]
-    env["env.mk<br/>shared environment contract"]
-    packages["packages.mk and makes/packages/*.mk<br/>package dispatch"]
-    apis["api-freeze.mk and bijux-py/api*.mk<br/>schema and contract checks"]
-    publish["publish.mk and bijux-docs.mk<br/>release and docs surfaces"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class root page;
-    class env,packages positive;
-    class apis anchor;
-    class publish action;
-    root --> env
-    root --> packages
-    root --> apis
-    root --> publish
-```
-
 ## Pages In makes
 
 - [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/)

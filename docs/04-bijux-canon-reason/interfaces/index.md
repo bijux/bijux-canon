@@ -18,30 +18,6 @@ because its outputs are designed to be inspected, replayed, and challenged. A
 reasoning trace or verification artifact is not just “something the code wrote”;
 it is part of the evidence a later reader may depend on.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    cli["CLI entrypoints and replay commands"]
-    api["HTTP routes and OpenAPI shapes"]
-    traces["canonical JSON and trace JSONL formats"]
-    artifacts["run artifacts and evidence outputs"]
-    imports["public Python imports"]
-    reader["reader question<br/>which reasoning surfaces are real contracts?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class cli,page reader;
-    class api,traces positive;
-    class artifacts,imports anchor;
-    class cli --> reader
-    api --> reader
-    traces --> reader
-    artifacts --> reader
-    imports --> reader
-```
-
 ## Start Here
 
 - open [CLI Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/cli-surface/) for operator-facing commands and replay

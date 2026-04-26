@@ -17,33 +17,6 @@ contracts are real repository surfaces. They need first-class documentation so
 repository health can be reviewed from checked-in rules instead of reverse
 engineering shell glue and CI output.
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    maintenance["repository health<br/>shared operational authority"]
-    dev["bijux-canon-dev<br/>helper code and policy enforcement"]
-    makes["makes/<br/>command routing and package dispatch"]
-    workflows["gh-workflows/<br/>verification, release, docs automation"]
-    packages["canonical packages<br/>surfaces affected by shared maintenance"]
-    maintenance --> dev
-    maintenance --> makes
-    maintenance --> workflows
-    dev --> packages
-    makes --> packages
-    workflows --> packages
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class maintenance page;
-    class dev positive;
-    class makes anchor;
-    class workflows action;
-    class packages caution;
-```
-
 ## Pages In This Handbook
 
 - [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) for maintainer package behavior,

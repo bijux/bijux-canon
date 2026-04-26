@@ -18,32 +18,6 @@ very front of the canonical flow. If ingest operations are vague, every
 downstream package inherits the confusion because prepared input is no longer
 reliably reproducible.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    source["source material changes"]
-    run["local ingest run"]
-    validate["validation and diagnostics"]
-    recover["failure recovery<br/>drift or bad output"]
-    release["version and release surfaces"]
-    boundary["deployment and safety boundaries"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class source,page release;
-    class run,validate positive;
-    class boundary caution;
-    class recover anchor;
-    class release action;
-    source --> run --> validate
-    validate --> recover
-    validate --> release
-    release --> boundary
-```
-
 ## Start Here
 
 - open [Installation and Setup](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/installation-and-setup/) when you need a

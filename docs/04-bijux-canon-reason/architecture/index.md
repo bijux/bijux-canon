@@ -19,31 +19,6 @@ retrieval assembles evidence views, execution and reasoning apply tools and
 claim semantics, verification challenges the result, and traces preserve what
 happened for replay or review.
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    intent["planning and IR"]
-    corpus["retrieval and corpus shaping"]
-    execs["execution runtime and tool dispatch"]
-    semantics["reasoning semantics and claim logic"]
-    checks["verification checks and contexts"]
-    traces["trace, replay, and artifact surfaces"]
-    reader["reader question<br/>where does this reasoning behavior actually live?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class intent,page reader;
-    class corpus,execs,semantics positive;
-    class checks,traces anchor;
-    intent --> corpus --> execs --> semantics --> checks --> traces
-    corpus --> reader
-    execs --> reader
-    semantics --> reader
-    checks --> reader
-```
-
 ## Start Here
 
 - open [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) for the shortest route from directory names

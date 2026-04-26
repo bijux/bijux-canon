@@ -18,32 +18,6 @@ implementation details. For ingest, that matters because chunk shape,
 artifact layout, and operator entrypoints become downstream assumptions very
 quickly once other packages start depending on them.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    caller["reader or downstream caller"]
-    cli["CLI workflows<br/>start ingest runs"]
-    schema["schemas and data contracts<br/>define prepared output"]
-    artifacts["artifact contracts<br/>what files downstream packages trust"]
-    imports["public imports<br/>supported Python entrypoints"]
-    review["compatibility review<br/>what changes need extra care"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class caller,page review;
-    class cli,schema,artifacts positive;
-    class imports anchor;
-    class review action;
-    caller --> cli
-    caller --> schema
-    caller --> artifacts
-    caller --> imports
-    caller --> review
-```
-
 ## Start Here
 
 - open [CLI Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/cli-surface/) when the issue begins with an ingest

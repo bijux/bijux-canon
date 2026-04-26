@@ -19,28 +19,6 @@ together: ingest preparation, index execution, and reasoning over retrieved
 results. Open them when you need a clear package boundary before changing code
 or contracts.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    ingest["prepared chunks and records"]
-    embed["embedding and index execution"]
-    retrieve["provenance-aware retrieval"]
-    replay["replayable retrieval behavior"]
-    boundary["boundary<br/>reasoning and orchestration start after retrieval"]
-    reader["reader question<br/>why does index own this step?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class ingest,page reader;
-    class embed,retrieve,replay positive;
-    class boundary caution;
-    ingest --> embed --> retrieve --> replay
-    replay --> boundary
-    replay --> reader
-```
-
 ## Start Here
 
 - open [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/) for the shortest explanation of

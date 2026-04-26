@@ -15,23 +15,6 @@ boundary that keeps package ownership explicit: why the repository exists,
 where authority changes hands, which terms stay stable, and which changes
 would weaken that clarity.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    split["repository split<br/>why these packages exist separately"]
-    scope["repository scope<br/>what the root can and cannot own"]
-    map["package map<br/>where authority changes hands"]
-    language["domain language<br/>shared terms with stable meaning"]
-    rules["decision rules<br/>changes that preserve or blur clarity"]
-    split --> scope --> map --> language --> rules
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    class split,scope,map,language positive;
-    class rules caution;
-```
-
 ## Start Here
 
 - open [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/) for the shortest statement of the repository design
