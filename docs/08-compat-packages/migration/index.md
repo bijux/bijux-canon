@@ -17,6 +17,25 @@ Migration documentation should bias toward closure, not coexistence. The bridge
 is successful when the canonical package can carry the work alone without
 stranding supported environments.
 
+## Bridge Lifecycle
+
+```mermaid
+flowchart LR
+    legacy["legacy name in the wild"]
+    bridge["compatibility package"]
+    target["canonical package"]
+    validation["continuity proof"]
+    retirement["retirement decision"]
+
+    legacy --> bridge --> target
+    bridge --> validation --> retirement
+```
+
+Migration docs should make the bridge feel temporary but well controlled. A
+reader needs to see where the old name still matters, where the canonical
+target already owns the real behavior, and what proof is required before the
+bridge can be removed.
+
 ## Migration Pages
 
 - [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)
@@ -54,3 +73,9 @@ stranding supported environments.
 Migration is complete only when the supported environments that needed the
 legacy name no longer depend on it and the canonical package can carry the
 workload without hidden breakage.
+
+## Design Pressure
+
+If this section starts describing compatibility as a standing product surface
+instead of a governed exit path, it stops helping readers decide when to
+finish the migration.
