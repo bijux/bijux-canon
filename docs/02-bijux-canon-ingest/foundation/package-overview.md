@@ -11,6 +11,22 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-ingest` exists to make source material predictable before retrieval begins. Its job is not to guess what downstream packages will want. Its job is to remove source ambiguity so later packages can work from stable prepared input.
 
+## Role Model
+
+```mermaid
+flowchart LR
+    source["source material"]
+    ingest["ingest preparation"]
+    prepared["prepared records and artifacts"]
+    downstream["index and later consumers"]
+
+    source --> ingest --> prepared --> downstream
+```
+
+This page should make ingest feel like one narrow promise: turn messy source
+material into stable prepared input without smuggling retrieval or reasoning
+policy into the handoff.
+
 ## Boundary Verdict
 
 If the work improves cleaning, normalization, chunking, or ingest-side record shaping before search starts, it belongs here. If it starts deciding retrieval quality, claim meaning, or run acceptance, it has crossed the boundary.
@@ -33,6 +49,8 @@ If the work improves cleaning, normalization, chunking, or ingest-side record sh
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for handoff-ready assembly
 - `packages/bijux-canon-ingest/tests` for proof that prepared output stays stable
 
-## Bottom Line
+## Design Pressure
 
-If `bijux-canon-ingest` grows in a way that weakens this argument, the package is getting larger without getting clearer.
+The pressure on ingest is to solve source instability without becoming the
+place where later-package ambiguity gets hidden. If the package starts making
+downstream decisions implicitly, the handoff stops being trustworthy.
