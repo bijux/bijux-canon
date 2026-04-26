@@ -11,6 +11,23 @@ last_reviewed: 2026-04-26
 
 The scope of `bijux-canon-runtime` is explicit authority over runs. It is not a convenient place for any code that happens late in execution.
 
+## Scope Map
+
+```mermaid
+flowchart LR
+    inputs["lower-package outputs"]
+    scope["runtime scope"]
+    records["durable governed runs"]
+    refuse["package-local semantics and maintainer automation stay out of scope"]
+
+    inputs --> scope --> records
+    scope --> refuse
+```
+
+This page should make runtime look narrow for a reason. It owns the verdict,
+the persistence model, and the replay contract, but it should stop before
+becoming a second home for whatever lower packages leave unresolved.
+
 ## In Scope
 
 - acceptance policy for governed runs
@@ -27,6 +44,8 @@ The scope of `bijux-canon-runtime` is explicit authority over runs. It is not a 
 
 If the change makes runtime broader without making run authority easier to explain, it is probably misplaced.
 
-## Bottom Line
+## Design Pressure
 
-A package boundary earns trust partly by the work it refuses to absorb. `bijux-canon-runtime` should stay narrow enough that its role can still be explained in one pass.
+If runtime grows by collecting every late-stage concern, authority becomes less
+explicit rather than more. The non-goals keep governed execution separate from
+both package-local behavior and repository operations.
