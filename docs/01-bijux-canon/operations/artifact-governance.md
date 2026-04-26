@@ -52,7 +52,7 @@ Keep tracked artifacts only when review depends on a stable checked history.
 Send transient workflow output to `artifacts/` instead of letting it blur into
 source.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which artifact classes are treated as durable repository evidence
 - where generated output belongs during local or CI validation

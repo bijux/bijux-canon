@@ -61,19 +61,19 @@ be handled. If the change would affect end-user behavior directly, keep it in
 the owning product package instead of treating maintainer automation as a
 shortcut layer.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which working posture is expected for maintainer changes
 - which maintainer modules or tests support that concern
 - what a reviewer should confirm before changing repository automation
 
-## Reviewer Lens
+## Review Focus
 
 - compare the described maintainer behavior with the actual helper modules and tests
 - check that maintainer-only guidance has not leaked into product-facing pages
 - confirm that repository automation still names its package impact explicitly
 
-## Next Checks
+## Read Next
 
 - open the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
   through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
@@ -82,7 +82,7 @@ shortcut layer.
 - return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
   when the maintainer issue turns out to be root policy instead
 
-## Honesty Boundary
+## Limits
 
 This section can describe maintainer automation and repository health work, but
 it should never imply that maintainer tooling is part of the end-user product

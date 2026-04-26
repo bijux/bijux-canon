@@ -96,24 +96,24 @@ Use this page when the main question is which package owns a responsibility. If
 the answer depends mostly on one package's local behavior, continue in that
 package handbook instead of keeping the question at the repository root.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which canonical package owns a responsibility
 - which shared sections exist for maintenance and compatibility work
 - how repository mapping differs from package-local ownership
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 This map routes readers to the right owner, but package-local docs, code,
 schemas, and tests still provide the detailed proof.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone

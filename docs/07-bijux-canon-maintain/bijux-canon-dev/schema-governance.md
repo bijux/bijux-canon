@@ -60,19 +60,19 @@ Use this page when the main question is how schema drift is checked and
 reviewed across the repository. If the change would affect end-user behavior
 directly, open the owning product package instead.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which schema-governance checks live in `bijux-canon-dev`
 - which maintainer modules or tests support that concern
 - what a reviewer should confirm before changing repository automation
 
-## Reviewer Lens
+## Review Focus
 
 - compare the described maintainer behavior with the actual helper modules and tests
 - check that maintainer-only guidance has not leaked into product-facing pages
 - confirm that repository automation still names its package impact explicitly
 
-## Next Checks
+## Read Next
 
 - open the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
   through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
@@ -81,7 +81,7 @@ directly, open the owning product package instead.
 - return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
   when the maintainer issue turns out to be root policy instead
 
-## Honesty Boundary
+## Limits
 
 This section can describe maintainer automation and repository health work, but
 it should never imply that maintainer tooling is part of the end-user product

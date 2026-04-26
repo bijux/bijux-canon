@@ -69,25 +69,25 @@ flowchart LR
 
 Use `Release Policy` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which legacy surface is still preserved
 - when new work should open the canonical package instead
 - what evidence would justify retiring a compatibility package
 
-## Reviewer Lens
+## Review Focus
 
 - compare legacy names here with the compatibility package metadata and README targets
 - check that migration advice still points at current canonical docs
 - confirm that compatibility language does not accidentally encourage new work to start here
 
-## Next Checks
+## Read Next
 
 - open the canonical package docs once the current target package is known
 - inspect compatibility package metadata if the question is about what remains preserved
 - use this section again only when evaluating migration progress or retirement readiness
 
-## Honesty Boundary
+## Limits
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
 

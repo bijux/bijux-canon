@@ -68,24 +68,24 @@ workflows, or version metadata that spans packages. If the answer depends
 mostly on one package's local release behavior, open that package handbook
 instead.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which shared release rule is in scope
 - which workflows and metadata deserve inspection
 - how repository release governance stops before package-local ownership
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 Repository guidance here does not replace the actual release workflows, package
 metadata, or package-local release proof.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone

@@ -71,24 +71,24 @@ Use this page when the main question is whether a concern belongs at the
 repository root at all. If one package handbook can answer it honestly, that
 package should stay the owner.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which concerns belong at the repository root
 - which shared assets and workflows justify root ownership
 - how repository scope differs from package-local ownership
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 This page sets the ownership boundary, but package-local docs, code, schemas,
 and tests still define the details on the package side of that boundary.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone

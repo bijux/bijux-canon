@@ -70,24 +70,24 @@ Use this page when validation spans package boundaries, schemas, docs, or
 release conventions. If the answer depends mostly on one package's local test
 behavior, move back to that package handbook instead.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which validation layers belong to packages and which belong to the repository
 - which shared assets or workflows deserve inspection
 - how repository proof differs from package-local proof
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 Repository guidance here does not replace executable proof. The real backstops
 are the referenced files, workflows, schemas, and checks.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone

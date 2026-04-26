@@ -77,24 +77,24 @@ fit together. If the answer depends mostly on one package's local behavior,
 open that package handbook instead of stretching the repository overview
 past its boundary.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which package owns which part of the system
 - which shared repository assets support the package split
 - how the repository overview differs from package-local ownership
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 This overview explains the split between packages, but package-local docs,
 code, schemas, and tests still provide the detailed proof.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone

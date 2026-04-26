@@ -80,19 +80,19 @@ Use this page when the main question is whether a preserved command still
 serves a real migration need. If the only reason to keep it is habit rather
 than an identified dependent environment, plan migration or retirement instead.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which legacy commands are still preserved
 - which canonical CLIs replace them
 - what evidence would justify retiring a compatibility command surface
 
-## Reviewer Lens
+## Review Focus
 
 - compare legacy names here with the compatibility package metadata and README targets
 - check that migration advice still points at current canonical docs
 - confirm that compatibility language does not accidentally encourage new work to start here
 
-## Next Checks
+## Read Next
 
 - open the canonical package docs once the current target package is known:
   `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
@@ -104,7 +104,7 @@ than an identified dependent environment, plan migration or retirement instead.
 - continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
   when the question turns into retirement readiness
 
-## Honesty Boundary
+## Limits
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
 

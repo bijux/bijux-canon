@@ -88,24 +88,24 @@ Use this page when the main question is where a topic belongs in the published
 handbook. If the answer depends mostly on one package's local behavior, open
 that package handbook instead of expanding repository pages past their boundary.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which handbook section owns a topic
 - which repository assets support the shared documentation model
 - how repository documentation stops before package-local ownership
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 The handbook organizes explanation, but it does not replace code, schemas,
 tests, or release assets as proof.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone

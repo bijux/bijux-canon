@@ -72,24 +72,24 @@ Use this page when the main question is where a repository concern lives in the
 tree. If the answer depends mostly on one package's internal layout, open
 that package handbook instead.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which top-level directories carry which kinds of repository concern
 - which shared assets deserve inspection for root-level work
 - how root layout differs from package-local ownership
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 This page maps the repository tree, but code, schemas, workflows, and package
 handbooks still define the detailed behavior inside each area.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone

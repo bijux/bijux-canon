@@ -63,23 +63,23 @@ flowchart LR
 
 Use `Observability and Diagnostics` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. If a step works only because someone already knows the trick, the workflow is not documented clearly enough yet.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - how `bijux-canon-ingest` is installed, run, diagnosed, and released in practice
 - which checked-in files and tests anchor the operational story
 - where a maintainer should look first when the package behaves differently
 
-## Reviewer Lens
+## Review Focus
 
 - verify that setup, workflow, and release statements still match package metadata and current commands
 - check that operational guidance still points at real diagnostics and validation paths
 - confirm that maintainer advice still works under current local and CI expectations
 
-## Honesty Boundary
+## Limits
 
 This page explains how `bijux-canon-ingest` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
 
-## Next Checks
+## Read Next
 
 - open interfaces when the operational path depends on a specific surface contract
 - open quality when the question becomes whether the workflow is sufficiently proven

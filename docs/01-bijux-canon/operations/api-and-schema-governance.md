@@ -70,24 +70,24 @@ workflow. If the answer depends mostly on one package's local behavior, open
 that package handbook instead of treating the repository root as a second
 owner.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which repository-level schema decision is in scope
 - which shared assets or workflows deserve inspection
 - how repository governance stops before package-local ownership
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 Repository guidance here does not override package-local ownership. The real
 backstops are the referenced files, workflows, schemas, and checks.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone

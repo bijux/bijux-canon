@@ -64,25 +64,25 @@ Use this page when local work spans packages, schemas, or root automation. If
 the question stays inside one package's local setup or behavior, open that
 package handbook instead.
 
-## What This Page Answers
+## What You Can Resolve Here
 
 - which repository-wide development posture is expected
 - which shared files support local cross-package work
 - how root orchestration differs from package-local setup
 
-## Reviewer Lens
+## Review Focus
 
 - compare the page claims with the real root files, workflows, or schema assets
 - check that repository guidance still stops where package ownership begins
 - confirm that any repository rule described here is still enforceable in code or automation
 
-## Honesty Boundary
+## Limits
 
 Repository guidance here does not replace package-local setup instructions or
 checks. The real backstops are the referenced root files, workflows, schemas,
 and package handbooks.
 
-## Next Checks
+## Read Next
 
 - open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
