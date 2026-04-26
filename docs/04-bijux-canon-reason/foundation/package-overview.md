@@ -4,92 +4,35 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Package Overview
 
-`bijux-canon-reason` exists so one durable part of the system can stay legible.
-Its job is to own deterministic evidence-aware reasoning, claim formation, verification, and traceable reasoning workflows.
+`bijux-canon-reason` exists to turn retrieved evidence into inspectable claims, checks, and reasoning artifacts. It owns the logic that makes conclusions reviewable instead of leaving meaning scattered across prompts, retrieval output, and workflow code.
 
-If a reader cannot explain this package in one or two sentences after skimming
-this page, the package boundary is still too fuzzy and later pages will inherit
-that confusion.
+## Boundary Verdict
 
-The foundation pages are the durable package description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
+If the disputed behavior decides what evidence means, how a claim is checked, or which reasoning artifact should exist after evaluation, it belongs here. If it only fetches evidence or coordinates multiple steps, it does not.
 
-## Visual Summary
+## What This Package Makes Possible
 
-```mermaid
-flowchart LR
-    package["bijux-canon-reason<br/>evidence-aware reasoning and verification"]
-    own1["Owns<br/>reasoning plans, claims, and evidence-aware reasoning"]
-    own2["Owns<br/>execution of reasoning steps and local"]
-    out1["Not owned<br/>runtime persistence and replay authority"]
-    handoff["Cross-package seam<br/>uses ingest evidence and index retrieval"]
-    package --> own1
-    package --> own2
-    package --> out1
-    package --> handoff
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class package page;
-    class own1,own2 positive;
-    class out1 caution;
-    class handoff anchor;
-```
+- reviewers can inspect how evidence became a claim instead of inferring intent from raw outputs
+- verification logic stays close to the reasoning decision it protects
+- agent and runtime layers can consume reasoning artifacts without re-owning reasoning policy
 
-## What It Owns
+## Tempting Mistakes
 
-- reasoning plans, claims, and evidence-aware reasoning models
-- execution of reasoning steps and local tool dispatch
-- verification and provenance checks that belong to reasoning itself
-- package-local CLI and API boundaries
+- hiding reasoning policy inside retrieval scoring or output shaping
+- letting orchestration code decide claim meaning because it is closer to the workflow
+- using runtime persistence as a substitute for reasoning clarity
 
-## What It Does Not Own
+## First Proof Check
 
-- runtime persistence and replay authority
-- ingest and index engines
-- repository tooling and release automation
+- `packages/bijux-canon-reason/src/bijux_canon_reason` for the reasoning boundary in code
+- `packages/bijux-canon-reason/tests` for claim, verification, and provenance evidence
+- `packages/bijux-canon-reason/README.md` for the public package contract
 
-## Concrete Anchors
+## Bottom Line
 
-- `packages/bijux-canon-reason` as the package root
-- `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
-- `packages/bijux-canon-reason/tests` as the package proof surface
-
-## Open This Page When
-
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Package Overview` to decide whether a change makes `bijux-canon-reason` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What You Can Resolve Here
-
-- what problem `bijux-canon-reason` owns on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Review Focus
-
-- compare the stated boundary with the modules, artifacts, and tests that uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Limits
-
-Code, tests, and neighboring package seams remain the proof of this boundary.
-
-## Read Next
-
-- open architecture when the question becomes structural rather than boundary-oriented
-- open interfaces when the question becomes contract-facing
-- open quality when the question becomes proof or review sufficiency
-
+If `bijux-canon-reason` grows in a way that weakens this argument, the package is getting larger without getting clearer.

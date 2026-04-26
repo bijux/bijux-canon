@@ -4,92 +4,35 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Package Overview
 
-`bijux-canon-ingest` exists so one durable part of the system can stay legible.
-Its job is to own deterministic document ingestion, chunking, retrieval assembly, and ingest-facing boundaries.
+`bijux-canon-ingest` exists to make source material predictable before retrieval begins. Its job is not to guess what downstream packages will want. Its job is to remove source ambiguity so later packages can work from stable prepared input.
 
-If a reader cannot explain this package in one or two sentences after skimming
-this page, the package boundary is still too fuzzy and later pages will inherit
-that confusion.
+## Boundary Verdict
 
-The foundation pages are the durable package description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
+If the work improves cleaning, normalization, chunking, or ingest-side record shaping before search starts, it belongs here. If it starts deciding retrieval quality, claim meaning, or run acceptance, it has crossed the boundary.
 
-## Visual Summary
+## What This Package Makes Possible
 
-```mermaid
-flowchart LR
-    package["bijux-canon-ingest<br/>document ingest and chunk assembly"]
-    own1["Owns<br/>document cleaning, normalization, and chunking"]
-    own2["Owns<br/>ingest-local retrieval and indexing assembly"]
-    out1["Not owned<br/>runtime-wide replay authority and persistence"]
-    handoff["Cross-package seam<br/>feeds prepared outputs toward index and reason"]
-    package --> own1
-    package --> own2
-    package --> out1
-    package --> handoff
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class package page;
-    class own1,own2 positive;
-    class out1 caution;
-    class handoff anchor;
-```
+- prepared source material becomes deterministic enough for indexing and reasoning to reuse without reinterpretation
+- ingest artifacts and records stay stable enough to act as a trustworthy handoff seam
+- source cleanup stays local instead of leaking into every later package
 
-## What It Owns
+## Tempting Mistakes
 
-- document cleaning, normalization, and chunking
-- ingest-local retrieval and indexing assembly
-- package-local CLI and HTTP boundaries
-- ingest-specific safeguards, adapters, and observability helpers
+- pulling retrieval ranking or vector behavior into ingest because it feels close to chunk preparation
+- hiding reasoning-time fixes inside document shaping so later packages appear simpler than they are
+- expanding ingest with workflow or authority logic that belongs to agent or runtime
 
-## What It Does Not Own
+## First Proof Check
 
-- runtime-wide replay authority and persistence
-- cross-package vector execution semantics
-- repository maintenance automation
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for preparation ownership
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for handoff-ready assembly
+- `packages/bijux-canon-ingest/tests` for proof that prepared output stays stable
 
-## Concrete Anchors
+## Bottom Line
 
-- `packages/bijux-canon-ingest` as the package root
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the package proof surface
-
-## Open This Page When
-
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Package Overview` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What You Can Resolve Here
-
-- what problem `bijux-canon-ingest` owns on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Review Focus
-
-- compare the stated boundary with the modules, artifacts, and tests that uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Limits
-
-Code, tests, and neighboring package seams remain the proof of this boundary.
-
-## Read Next
-
-- open architecture when the question becomes structural rather than boundary-oriented
-- open interfaces when the question becomes contract-facing
-- open quality when the question becomes proof or review sufficiency
-
+If `bijux-canon-ingest` grows in a way that weakens this argument, the package is getting larger without getting clearer.
