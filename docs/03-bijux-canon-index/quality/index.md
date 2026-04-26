@@ -4,45 +4,57 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Quality
 
-This section explains how `bijux-canon-index` earns trust: which proof surfaces matter, which risks stay visible, and what done should mean after a real change.
+Use this section when the real question is whether index behavior can be
+trusted: which tests prove retrieval and replay behavior, which risks remain
+visible, and what "done" should mean before reasoning or runtime depend on the
+result.
 
-These pages explain the proof story for `bijux-canon-index`. They should make trust, skepticism, and review pressure visible enough that passing checks do not get mistaken for sufficient evidence.
-
-Treat the quality pages for `bijux-canon-index` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+These pages should keep reviewers honest about the cost of being wrong in the
+retrieval layer. If index behavior drifts quietly, downstream packages can still
+look healthy while using stale, incomplete, or unreplayable retrieval results.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    trust["bijux-canon-index<br/>quality questions"]
-    strategy["What proof should exist?"]
-    invariants["What must not drift?"]
-    review["How should changes be reviewed?"]
-    done["When is work truly done?"]
-    risks["Which limitations stay visible?"]
-    trust --> strategy
-    trust --> invariants
-    trust --> review
-    trust --> done
-    trust --> risks
+    ingest["prepared ingest input"]
+    retrieval["retrieval proof<br/>query and result behavior"]
+    replay["replay proof<br/>state can be rebuilt and checked"]
+    review["review pressure<br/>what a safe retrieval change must show"]
+    risks["visible limitations<br/>backend tradeoffs and blind spots"]
+    downstream["downstream trust<br/>reasoning and runtime depend on this"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class trust page;
-    class strategy anchor;
-    class invariants,done positive;
+    class ingest,page downstream;
+    class retrieval,replay positive;
     class review action;
     class risks caution;
+    ingest --> retrieval --> replay --> downstream
+    retrieval --> review
+    replay --> review
+    review --> risks
 ```
 
-## Pages in This Section
+## Start Here
+
+- open [Test Strategy](test-strategy.md) for the broad proof story behind
+  retrieval behavior
+- open [Invariants](invariants.md) when the key question is what must not drift
+  across index state, provenance, or replay
+- open [Change Validation](change-validation.md) when you need the minimum
+  evidence for a safe retrieval change
+- open [Risk Register](risk-register.md) when backend limitations or tradeoffs
+  matter more than pass/fail status
+
+## Pages In This Section
 
 - [Test Strategy](test-strategy.md)
 - [Invariants](invariants.md)
@@ -54,55 +66,47 @@ flowchart LR
 - [Known Limitations](known-limitations.md)
 - [Risk Register](risk-register.md)
 
-## Read Across the Package
+## Use This Section When
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
+- you need evidence that retrieval behavior is stable enough for downstream use
+- a change touches indexing, replay, provenance, or backend behavior that can
+  drift quietly
+- you are reviewing whether green checks are actually sufficient for the
+  contract being changed
+
+## Do Not Use This Section When
+
+- the real question is which command, schema, or artifact surface exists
+- you need the package boundary or structural flow before you can judge proof
+- the issue is about how to run the package rather than how to trust it
+
+## Read Across The Package
+
+- open [Foundation](../foundation/index.md) when uncertainty about ownership is
+  masquerading as a quality issue
+- open [Architecture](../architecture/index.md) when missing proof points to
+  structural drift
+- open [Interfaces](../interfaces/index.md) when trust depends on a specific
+  retrieval contract
+- open [Operations](../operations/index.md) when the needed evidence is really a
+  repeatable replay or recovery workflow
 
 ## Concrete Anchors
 
-- tests/unit for API, application, contracts, domain, infra, and tooling
-- tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
-- README.md
+- `tests/unit` for API, application, contracts, domain, infra, and tooling
+- `tests/e2e` for CLI workflows, API smoke, determinism gates, and provenance
+  gates
+- `README.md`
 
-## Use This Page When
+## Reader Takeaway
 
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
-
-## Decision Rule
-
-Use `Quality` to decide whether `bijux-canon-index` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
-
-## What This Page Answers
-
-- what currently proves the `bijux-canon-index` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
-
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-index` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
+Use `Quality` to ask a stricter question than “did the suite pass?” In index,
+the real bar is whether retrieval behavior remains replayable, provenance-aware,
+and honest about backend limits before downstream packages treat it as stable
+ground.
 
 ## Purpose
 
-This page explains how to use the quality section for `bijux-canon-index` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page introduces the quality handbook for `bijux-canon-index` and routes
+readers to the proof, invariants, review, validation, and risk pages that show
+how trust is earned.
