@@ -17,6 +17,26 @@ These pages should be quick to scan and hard to misread. A reader should be
 able to land on an old name, find the current target immediately, and tell
 whether the compatibility layer is still thin enough to justify itself.
 
+## Catalog Model
+
+```mermaid
+flowchart LR
+    legacy["legacy package or surface"]
+    catalog["catalog page"]
+    target["canonical target"]
+    proof["checked preserved behavior"]
+    pressure["retire when the bridge is no longer needed"]
+
+    legacy --> catalog --> target
+    catalog --> proof
+    pressure --> catalog
+```
+
+The catalog only works when it answers the first practical question fast:
+what does this old name still point to now? After that, the page has to make
+the remaining bridge visible enough that readers can judge whether the
+compatibility surface is still honest or just lingering.
+
 ## Catalog Pages
 
 - [agentic-flows](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
@@ -51,3 +71,9 @@ whether the compatibility layer is still thin enough to justify itself.
 The catalog identifies what still exists. It does not justify keeping those
 surfaces forever. Retirement and continuity decisions belong in the migration
 section.
+
+## Design Pressure
+
+If a catalog page hides the canonical target, the preserved behavior, or the
+remaining migration cost, the compatibility layer starts looking permanent.
+This section has to stay closer to a ledger than a landing page.
