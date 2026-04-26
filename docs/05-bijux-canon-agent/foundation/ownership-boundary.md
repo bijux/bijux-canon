@@ -11,6 +11,23 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-agent` owns orchestration above reasoning and below runtime authority. Use it when workflow behavior could be mistaken for either deeper reasoning semantics or final run governance.
 
+## Boundary Map
+
+```mermaid
+flowchart LR
+    workflow["workflow coordination problem"]
+    agent["agent ownership"]
+    trace["trace-bearing orchestration output"]
+    neighbors["reasoning below and runtime authority above belong elsewhere"]
+
+    workflow --> agent --> trace
+    agent --> neighbors
+```
+
+This page should make agent read like a workflow boundary, not a place where
+any hard late-stage behavior gets parked. The package matters when coordination
+stays distinct from both claim policy and acceptance policy.
+
 ## Use This Boundary Test
 
 - keep the work here when it changes role coordination, workflow order, trace output, or step orchestration
@@ -27,6 +44,8 @@ A new role handoff rule belongs here. A new rule for whether a whole run should 
 - `packages/bijux-canon-agent/tests` for proof that the boundary survives change
 - neighboring handbook roots in reason and runtime when the work still looks plausible elsewhere
 
-## Bottom Line
+## Design Pressure
 
-A reviewer should be able to use this page to say not just why work belongs in `bijux-canon-agent`, but why it does not belong in the nearest tempting neighbor.
+The pressure on agent is to keep orchestration visible without absorbing either
+reasoning semantics or final run judgment. If traces stop being enough to
+explain the workflow, the boundary has started to drift.
