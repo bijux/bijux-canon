@@ -81,6 +81,45 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 <a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
 
+## System Map
+
+```mermaid
+flowchart LR
+    source["source material<br/>documents, records, corpora"]
+    ingest["bijux-canon-ingest<br/>prepare deterministic material"]
+    index["bijux-canon-index<br/>execute retrieval with provenance"]
+    reason["bijux-canon-reason<br/>turn evidence into claims"]
+    agent["bijux-canon-agent<br/>coordinate role-based work"]
+    runtime["bijux-canon-runtime<br/>govern execution and replay"]
+    accepted["accepted run<br/>durable, inspectable, replayable"]
+    repo["repository handbook<br/>boundaries, schemas, release rules"]
+    maintain["maintenance handbook<br/>make, helper code, workflows"]
+    compat["compatibility handbook<br/>legacy names under migration pressure"]
+
+    source --> ingest --> index --> reason --> agent --> runtime --> accepted
+    repo -. keeps boundaries visible .-> ingest
+    repo -. keeps boundaries visible .-> index
+    repo -. keeps boundaries visible .-> reason
+    repo -. keeps boundaries visible .-> agent
+    repo -. keeps boundaries visible .-> runtime
+    maintain --> repo
+    compat -. points old names to canonical owners .-> ingest
+    compat -. points old names to canonical owners .-> index
+    compat -. points old names to canonical owners .-> reason
+    compat -. points old names to canonical owners .-> agent
+    compat -. points old names to canonical owners .-> runtime
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef caution fill:#fff1f2,stroke:#dc2626,color:#6b1d1d;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class source,accepted page;
+    class ingest,index,reason,agent,runtime positive;
+    class repo anchor;
+    class maintain,compat action;
+```
+
 ## Start Here
 
 - open the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) for package boundaries, shared rules, and repository-wide workflow
@@ -88,15 +127,32 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 - open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
 - open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name is still active
 
-## One Real Flow
+## One Real Run
 
-| Step | Owner | What changes hands |
-| --- | --- | --- |
-| source preparation | `bijux-canon-ingest` | normalized, deterministic material prepared for downstream use |
-| retrieval execution | `bijux-canon-index` | replayable retrieval behavior with provenance-rich result state |
-| reasoning and verification | `bijux-canon-reason` | inspectable claims tied back to retrieved evidence |
-| workflow coordination | `bijux-canon-agent` | role-based orchestration with explicit traces |
-| acceptance and replay | `bijux-canon-runtime` | governed execution, persistence, and final acceptability |
+A useful mental model is a reviewable run. Each layer changes the question that
+the next layer is allowed to ask. Ingest asks whether source material is stable
+enough to hand forward. Index asks whether retrieval happened through an
+auditable contract. Reason asks what the retrieved evidence supports. Agent
+asks how the work should be coordinated. Runtime asks whether the full run can
+be accepted, persisted, and replayed.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Reader
+    participant Ingest
+    participant Index
+    participant Reason
+    participant Agent
+    participant Runtime
+
+    Reader->>Ingest: provide source material
+    Ingest-->>Index: deterministic chunks and preparation records
+    Index-->>Reason: retrieved evidence with provenance and replay data
+    Reason-->>Agent: claims, checks, and reasoning artifacts
+    Agent-->>Runtime: ordered workflow trace and final package outputs
+    Runtime-->>Reader: accepted, rejected, or replayable run verdict
+```
 
 ## Package Handbooks
 
