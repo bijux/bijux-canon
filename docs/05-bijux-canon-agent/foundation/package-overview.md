@@ -11,6 +11,22 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-agent` exists to coordinate role-based, multi-step behavior without hiding what happened. It owns deterministic orchestration, trace-bearing workflow progression, and agent-facing contracts that sit above reasoning and below runtime authority.
 
+## Role Model
+
+```mermaid
+flowchart LR
+    inputs["reasoning artifacts and commands"]
+    agent["workflow orchestration"]
+    trace["trace-bearing workflow output"]
+    downstream["runtime and operators"]
+
+    inputs --> agent --> trace --> downstream
+```
+
+This page should show agent as the workflow layer, not as a place where any
+hard late-stage problem gets parked. The package matters when it makes
+coordination visible and replayable rather than merely convenient.
+
 ## Boundary Verdict
 
 If the change decides how roles coordinate, which step runs next, or what trace a workflow must emit, it belongs here. If it decides what a claim means or whether a run counts, it belongs in another package.
@@ -33,6 +49,8 @@ If the change decides how roles coordinate, which step runs next, or what trace 
 - `packages/bijux-canon-agent/tests` for determinism and traceability evidence
 - `packages/bijux-canon-agent/apis` for tracked agent-facing surfaces
 
-## Bottom Line
+## Design Pressure
 
-If `bijux-canon-agent` grows in a way that weakens this argument, the package is getting larger without getting clearer.
+The pressure on agent is to keep orchestration distinct from both reasoning and
+runtime authority. If traces stop being enough to explain why a workflow moved,
+the package has absorbed too much hidden policy.
