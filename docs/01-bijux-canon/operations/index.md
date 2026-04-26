@@ -56,7 +56,7 @@ flowchart LR
 - [Review Expectations](https://bijux.io/bijux-canon/01-bijux-canon/operations/review-expectations/)
 - [Change Management](https://bijux.io/bijux-canon/01-bijux-canon/operations/change-management/)
 
-## Use Operations When
+## Open Operations When
 
 - you are performing repository-wide work instead of one package-local change
 - you need the operational truth for shared automation, release, or validation

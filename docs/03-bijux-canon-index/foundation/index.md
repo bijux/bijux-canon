@@ -62,7 +62,7 @@ flowchart LR
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/change-principles/)
 
-## Use Foundation When
+## Open Foundation When
 
 - you need the durable ownership story behind embeddings, retrieval, and replay
 - you are deciding whether work belongs in index or in the packages before or

@@ -52,7 +52,7 @@ flowchart LR
 - [Change Principles](https://bijux.io/bijux-canon/01-bijux-canon/foundation/change-principles/)
 - [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/)
 
-## Use Foundation When
+## Open Foundation When
 
 - you can see the repository shape but still need the design reason behind it
 - you need to decide whether work belongs at the root or in a package

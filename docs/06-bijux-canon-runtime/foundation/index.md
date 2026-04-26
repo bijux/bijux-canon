@@ -64,7 +64,7 @@ flowchart LR
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/change-principles/)
 
-## Use Foundation When
+## Open Foundation When
 
 - you need the package idea before the implementation detail
 - you are deciding whether work belongs here or in a neighboring package

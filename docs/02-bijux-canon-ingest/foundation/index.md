@@ -62,7 +62,7 @@ flowchart LR
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/change-principles/)
 
-## Use Foundation When
+## Open Foundation When
 
 - you need the durable ownership story before reading code or command docs
 - you are deciding whether deterministic preparation belongs in ingest or

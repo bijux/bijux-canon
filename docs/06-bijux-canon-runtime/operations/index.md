@@ -68,7 +68,7 @@ flowchart LR
 - [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/deployment-boundaries/)
 
-## Use Operations When
+## Open Operations When
 
 - you are installing, running, diagnosing, or releasing the package
 - you need repeatable operational anchors rather than architectural framing

@@ -67,7 +67,7 @@ flowchart LR
 - [Code Navigation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/architecture-risks/)
 
-## Use Architecture When
+## Open Architecture When
 
 - you are tracing structure, execution flow, or dependency pressure
 - you need to understand how modules fit before refactoring

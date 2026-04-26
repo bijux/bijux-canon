@@ -60,7 +60,7 @@ flowchart LR
 - [Code Navigation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/architecture-risks/)
 
-## Use Architecture When
+## Open Architecture When
 
 - you need to trace structural ownership before refactoring ingest internals
 - you are checking whether dependency flow still supports deterministic

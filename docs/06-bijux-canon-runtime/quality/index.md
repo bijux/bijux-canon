@@ -65,7 +65,7 @@ flowchart LR
 - [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
 
-## Use Quality When
+## Open Quality When
 
 - you are reviewing tests, invariants, limitations, or ongoing risks
 - you need evidence that the documented contract is actually defended

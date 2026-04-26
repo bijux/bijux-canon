@@ -64,7 +64,7 @@ flowchart LR
 - [Code Navigation](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/architecture-risks/)
 
-## Use Architecture When
+## Open Architecture When
 
 - you need to trace retrieval structure before refactoring or extending the
   package

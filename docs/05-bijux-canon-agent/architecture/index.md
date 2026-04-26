@@ -67,7 +67,7 @@ flowchart TB
 - [Code Navigation](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/architecture-risks/)
 
-## Use Architecture When
+## Open Architecture When
 
 - you need to know which structural slice owns a behavior before editing it
 - a review is about layering, orchestration flow, or module drift

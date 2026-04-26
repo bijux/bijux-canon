@@ -67,7 +67,7 @@ flowchart LR
 - [Security and Safety](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/deployment-boundaries/)
 
-## Use Operations When
+## Open Operations When
 
 - you need to run, rerun, validate, or release ingest behavior from checked-in
   instructions

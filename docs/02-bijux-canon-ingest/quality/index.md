@@ -65,7 +65,7 @@ flowchart LR
 - [Known Limitations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/)
 
-## Use Quality When
+## Open Quality When
 
 - you need evidence that ingest output is stable enough for downstream use
 - a change touches chunking, shaping, artifacts, or other behavior that can

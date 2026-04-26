@@ -67,7 +67,7 @@ flowchart LR
 - [Public Imports](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/)
 
-## Use Interfaces When
+## Open Interfaces When
 
 - you need to know which ingest surface is intentional rather than incidental
 - downstream retrieval or orchestration work depends on prepared ingest outputs

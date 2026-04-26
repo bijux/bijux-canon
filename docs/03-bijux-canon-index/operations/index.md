@@ -67,7 +67,7 @@ flowchart LR
 - [Security and Safety](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/deployment-boundaries/)
 
-## Use Operations When
+## Open Operations When
 
 - you need to run, rerun, validate, or release retrieval behavior from checked
   in instructions

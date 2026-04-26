@@ -67,7 +67,7 @@ flowchart LR
 - [Public Imports](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/)
 
-## Use Interfaces When
+## Open Interfaces When
 
 - you need the public command, API, import, schema, or artifact surface
 - you are checking whether a caller can safely rely on a given entrypoint or shape

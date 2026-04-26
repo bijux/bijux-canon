@@ -65,7 +65,7 @@ flowchart TB
 - [Code Navigation](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/architecture-risks/)
 
-## Use Architecture When
+## Open Architecture When
 
 - you need to know which module family owns a behavior before editing it
 - a review comment names structure, layering, or execution drift rather than a

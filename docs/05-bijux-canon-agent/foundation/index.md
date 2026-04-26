@@ -61,7 +61,7 @@ flowchart LR
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/change-principles/)
 
-## Use Foundation When
+## Open Foundation When
 
 - you need the package role before looking at APIs, modules, or workflows
 - you are deciding whether a feature is orchestration behavior or belongs in a

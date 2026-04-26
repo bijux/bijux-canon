@@ -64,7 +64,7 @@ flowchart LR
 - [Known Limitations](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/risk-register/)
 
-## Use Quality When
+## Open Quality When
 
 - you need to know what evidence should defend an orchestration change
 - a review is really about trace trust, layering discipline, or result quality

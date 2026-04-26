@@ -63,7 +63,7 @@ flowchart LR
 - [Security and Safety](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/deployment-boundaries/)
 
-## Use Operations When
+## Open Operations When
 
 - you need a repeatable procedure for running, replaying, diagnosing, or
   releasing the package

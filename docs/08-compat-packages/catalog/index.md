@@ -36,7 +36,7 @@ drifting into something larger.
 - which canonical package each legacy name now points to
 - which preserved surfaces remain intentionally supported
 
-## Use Catalog When
+## Open Catalog When
 
 - you already know the old package name and need the canonical replacement
 - you want the most concrete explanation of what a compatibility package still

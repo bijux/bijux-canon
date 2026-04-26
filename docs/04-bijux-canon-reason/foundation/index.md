@@ -63,7 +63,7 @@ flowchart LR
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/change-principles/)
 
-## Use Foundation When
+## Open Foundation When
 
 - you need the package role before looking at modules, commands, or tests
 - you are checking whether a behavior is really reasoning rather than retrieval,

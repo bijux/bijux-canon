@@ -66,7 +66,7 @@ flowchart LR
 - [Known Limitations](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/)
 
-## Use Quality When
+## Open Quality When
 
 - you need evidence that retrieval behavior is stable enough for downstream use
 - a change touches indexing, replay, provenance, or backend behavior that can

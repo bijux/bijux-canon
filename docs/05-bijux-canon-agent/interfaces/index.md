@@ -64,7 +64,7 @@ flowchart LR
 - [Public Imports](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/compatibility-commitments/)
 
-## Use Interfaces When
+## Open Interfaces When
 
 - you need to know whether a command, route, trace file, config surface, or
   import is meant to be stable

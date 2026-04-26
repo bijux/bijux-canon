@@ -67,7 +67,7 @@ flowchart LR
 - [Public Imports](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/public-imports/)
 - [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/)
 
-## Use Interfaces When
+## Open Interfaces When
 
 - you need to know which retrieval surfaces are intentional and supportable
 - downstream reasoning or runtime behavior depends on index commands, schemas,
