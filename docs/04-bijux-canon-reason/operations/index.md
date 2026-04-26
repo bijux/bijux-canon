@@ -11,6 +11,27 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to run reasoning work repeatably: install it, reproduce claim behavior, diagnose provenance or verification drift, release it, or recover from failure with evidence instead of guesswork.
 
+## Operating Loop
+
+```mermaid
+flowchart LR
+    setup["setup"]
+    run["run reasoning step"]
+    inspect["inspect claims and checks"]
+    recover["recover from drift"]
+    release["release package"]
+    proof["tests and artifacts"]
+
+    setup --> run --> inspect --> recover --> release
+    run --> proof
+    inspect --> proof
+```
+
+Reason operations should make interpretive behavior reproducible enough to
+audit. A maintainer needs a clear path to run the package, inspect the emitted
+claims and checks, and recover from provenance or verification drift without
+guessing which layer changed.
+
 ## Read These First
 
 - open [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/) first when you need a clean package starting point
@@ -45,6 +66,8 @@ The main operational risk here is making reasoning behavior look inspectable whi
 - leave for [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a workflow problem exposes structural drift underneath it
 - leave for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the package runs but the real question is whether the evidence is strong enough
 
-## Bottom Line
+## Design Pressure
 
-If the package cannot be operated from checked-in facts alone, the operational story is not done yet.
+If a reasoning drift incident can only be understood by memory or ad hoc
+inspection, the operating story is still too weak. This section has to make
+claim reproduction and recovery observable from checked-in practice.
