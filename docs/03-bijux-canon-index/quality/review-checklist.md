@@ -73,7 +73,9 @@ Use `Review Checklist` to decide whether `bijux-canon-index` has actually earned
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-index` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
+This page shows how `bijux-canon-index` earns trust, but it does not claim
+that prose alone is enough. If the listed tests, checks, and review practice
+stop backing the story, the story has to change.
 
 ## Next Checks
 
@@ -83,7 +85,7 @@ This page explains how `bijux-canon-index` is supposed to earn trust, but it doe
 
 ## Purpose
 
-This page records a compact review lens for package changes.
+This page shows a compact review lens for package changes.
 
 ## Stability
 

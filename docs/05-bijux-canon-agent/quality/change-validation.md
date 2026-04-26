@@ -79,7 +79,9 @@ Use `Change Validation` to decide whether `bijux-canon-agent` has actually earne
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-agent` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
+This page shows how `bijux-canon-agent` earns trust, but it does not claim
+that prose alone is enough. If the listed tests, checks, and review practice
+stop backing the story, the story has to change.
 
 ## Next Checks
 
@@ -89,7 +91,7 @@ This page explains how `bijux-canon-agent` is supposed to earn trust, but it doe
 
 ## Purpose
 
-This page records how to choose meaningful validation for package work.
+This page shows how to choose meaningful validation for package work.
 
 ## Stability
 

@@ -81,7 +81,9 @@ Use `Invariants` to decide whether `bijux-canon-agent` has actually earned trust
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-agent` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
+This page shows how `bijux-canon-agent` earns trust, but it does not claim
+that prose alone is enough. If the listed tests, checks, and review practice
+stop backing the story, the story has to change.
 
 ## Next Checks
 
@@ -91,7 +93,7 @@ This page explains how `bijux-canon-agent` is supposed to earn trust, but it doe
 
 ## Purpose
 
-This page records the kinds of promises that should not drift casually.
+This page shows the kinds of promises that should not drift casually.
 
 ## Stability
 

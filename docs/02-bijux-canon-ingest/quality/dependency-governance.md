@@ -12,7 +12,7 @@ last_reviewed: 2026-04-04
 Dependency changes in `bijux-canon-ingest` should be treated as contract changes when they
 alter package authority, operational risk, or public setup expectations.
 
-This page should keep dependency review from feeling bureaucratic. Dependencies
+This page keeps dependency review from feeling bureaucratic. Dependencies
 matter because they reshape what the package relies on, what it exposes, and
 what downstream maintainers must now trust.
 
@@ -77,7 +77,9 @@ Use `Dependency Governance` to decide whether `bijux-canon-ingest` has actually 
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-ingest` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
+This page shows how `bijux-canon-ingest` earns trust, but it does not claim
+that prose alone is enough. If the listed tests, checks, and review practice
+stop backing the story, the story has to change.
 
 ## Next Checks
 
@@ -87,7 +89,7 @@ This page explains how `bijux-canon-ingest` is supposed to earn trust, but it do
 
 ## Purpose
 
-This page explains why dependency review matters for the package.
+This page shows why dependency review matters for the package.
 
 ## Stability
 

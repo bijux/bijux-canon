@@ -81,7 +81,9 @@ Use `Invariants` to decide whether `bijux-canon-reason` has actually earned trus
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-reason` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
+This page shows how `bijux-canon-reason` earns trust, but it does not claim
+that prose alone is enough. If the listed tests, checks, and review practice
+stop backing the story, the story has to change.
 
 ## Next Checks
 
@@ -91,7 +93,7 @@ This page explains how `bijux-canon-reason` is supposed to earn trust, but it do
 
 ## Purpose
 
-This page records the kinds of promises that should not drift casually.
+This page shows the kinds of promises that should not drift casually.
 
 ## Stability
 

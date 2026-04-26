@@ -73,7 +73,9 @@ Use `Definition of Done` to decide whether `bijux-canon-ingest` has actually ear
 
 ## Honesty Boundary
 
-This page explains how `bijux-canon-ingest` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
+This page shows how `bijux-canon-ingest` earns trust, but it does not claim
+that prose alone is enough. If the listed tests, checks, and review practice
+stop backing the story, the story has to change.
 
 ## Next Checks
 
@@ -83,7 +85,7 @@ This page explains how `bijux-canon-ingest` is supposed to earn trust, but it do
 
 ## Purpose
 
-This page records the package's completion threshold.
+This page shows the package's completion threshold.
 
 ## Stability
 
