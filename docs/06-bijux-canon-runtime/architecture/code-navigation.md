@@ -4,96 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Code Navigation
 
-When you need to understand a change in `bijux-canon-runtime`, use this reading order:
+Code navigation should shorten the path from a runtime authority question to the owning files in `bijux-canon-runtime`. If readers still need exploratory digging, the navigation story is not specific enough.
 
-This page is intentionally practical. Its purpose is to shorten the path from a
-question in review to the files that actually explain the answer.
+## What To Check
 
-The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
+- start with `src/bijux_canon_runtime/application/execute_flow.py`, `model/`, and `observability/` for the main ownership seam
+- follow with `tests` for acceptance, replay, and persistence evidence when the question is whether the code still matches the structure
+- treat wide, unfocused navigation advice as a sign that the structure is not yet legible enough
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    question["Review question"]
-    boundary["Start here<br/>verification"]
-    owner["Then inspect<br/>runtime"]
-    core["Confirm rules in<br/>model"]
-    tests["Finish in tests<br/>tests/unit for api, contracts, core"]
-    question --> boundary --> owner --> core --> tests
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class question page;
-    class boundary anchor;
-    class owner,core positive;
-    class tests action;
-```
+- `src/bijux_canon_runtime/application/execute_flow.py`, `model/`, and `observability/` for the structural ownership boundary
+- `tests` for acceptance, replay, and persistence evidence for executable confirmation that the structure still holds
 
-## Reading Order
+## Bottom Line
 
-- start at the relevant interface or API module
-- move into the owning application or domain module
-- finish in the tests that protect the behavior
-
-## Concrete Anchors
-
-- `src/bijux_canon_runtime/model` for durable runtime models
-- `src/bijux_canon_runtime/runtime` for execution engines and lifecycle logic
-- `src/bijux_canon_runtime/application` for orchestration and replay coordination
-- `src/bijux_canon_runtime/verification` for runtime-level validation support
-- `src/bijux_canon_runtime/interfaces` for CLI surfaces and manifest loading
-- `src/bijux_canon_runtime/api` for HTTP application surfaces
-
-## Test Anchors
-
-- tests/unit for api, contracts, core, interfaces, model, and runtime
-- tests/e2e for governed flow behavior
-- tests/regression and tests/smoke for replay and storage protection
-- tests/golden for durable example fixtures
-
-## Concrete Anchors
-
-- `src/bijux_canon_runtime/model` for durable runtime models
-- `src/bijux_canon_runtime/runtime` for execution engines and lifecycle logic
-- `src/bijux_canon_runtime/application` for orchestration and replay coordination
-
-## Open This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Code Navigation` to decide whether a structural change makes `bijux-canon-runtime` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What You Can Resolve Here
-
-- how `bijux-canon-runtime` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Review Focus
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Limits
-
-Treat this page as a working structural map and keep it aligned with code and tests.
-
-## Read Next
-
-- open interfaces when the review reaches a public or operator-facing seam
-- open operations when the concern becomes repeatable runtime behavior
-- open quality when you need proof that the documented structure is still protected
-
+If `bijux-canon-runtime` needs hidden structure to defend acceptance, persistence, replay, and governed execution, the architecture is already too opaque.

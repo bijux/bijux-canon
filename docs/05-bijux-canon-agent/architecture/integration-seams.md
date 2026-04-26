@@ -4,91 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Integration Seams
 
-Integration seams are the points where `bijux-canon-agent` meets configuration, APIs,
-operators, or neighboring packages.
+Integration seams matter because `bijux-canon-agent` touches neighboring packages without becoming them. The handoff into and out of agent orchestration work should be explicit enough to survive review under change.
 
-This page exists so integration changes do not feel mysterious. A reviewer should
-be able to say which seams are intentional, which ones carry compatibility risk,
-and where the package expects outside systems to meet it.
+## What To Check
 
-The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
+- name the seam where work enters from reason and runtime
+- name the seam where `bijux-canon-agent` hands responsibility outward again
+- treat seam ambiguity as a design problem, not as a documentation gap only
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    callers["Callers"]
-    config["Configuration"]
-    package["bijux-canon-agent<br/>integration boundary"]
-    schemas["Schemas and artifacts<br/>apis/bijux-canon-agent/v1/schema.yaml<br/>trace-backed final outputs"]
-    neighbors["Neighbor packages and systems"]
-    callers --> package
-    config --> package
-    package --> schemas
-    package --> neighbors
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class callers positive;
-    class config anchor;
-    class package page;
-    class schemas action;
-    class neighbors caution;
-```
+- `src/bijux_canon_agent` and tracked workflow surfaces for the structural ownership boundary
+- `tests` for determinism and traceability evidence for executable confirmation that the structure still holds
 
-## Integration Surfaces
+## Bottom Line
 
-- CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py
-- operator configuration under src/bijux_canon_agent/config
-- HTTP-adjacent modules under src/bijux_canon_agent/api
-
-## Adjacent Systems
-
-- coordinates work that may call ingest, reason, and runtime components
-- leans on runtime for governed execution and replay acceptance
-
-## Concrete Anchors
-
-- `src/bijux_canon_agent/agents` for role-local behavior
-- `src/bijux_canon_agent/pipeline` for execution flow orchestration
-- `src/bijux_canon_agent/application` for workflow policy and graph logic
-
-## Open This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Integration Seams` to decide whether a structural change makes `bijux-canon-agent` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What You Can Resolve Here
-
-- how `bijux-canon-agent` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Review Focus
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Limits
-
-Treat this page as a working structural map and keep it aligned with code and tests.
-
-## Read Next
-
-- open interfaces when the review reaches a public or operator-facing seam
-- open operations when the concern becomes repeatable runtime behavior
-- open quality when you need proof that the documented structure is still protected
-
+If `bijux-canon-agent` needs hidden structure to defend role coordination, workflow order, and traces, the architecture is already too opaque.

@@ -4,82 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Execution Model
 
-`bijux-canon-agent` executes work by receiving inputs at its interfaces, coordinating policy
-and workflows in application code, and delegating specific responsibilities to
-owned modules.
+The execution model for `bijux-canon-agent` should tell one clear story from workflow input to trace-backed coordinated output. A reader should not need to reconstruct the main control path from filenames or logs.
 
-This page gives a reader one clean story about how work moves through the
-package. The goal is not to describe every branch, but to make the main path
-recognizable before someone opens the implementation.
+## What To Check
 
-The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
+- identify the entrypoints that start role coordination, workflow order, and traces
+- identify the core work that transforms the flow from workflow input to trace-backed coordinated output
+- identify the exact handoff where ownership moves to a neighbor or to a caller-visible output
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    input["Entrypoint<br/>CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py"]
-    workflow["Workflow<br/>pipeline<br/>execution flow orchestration"]
-    rules["Core decisions<br/>agents<br/>role-local behavior"]
-    output["Visible result<br/>trace-backed final outputs"]
-    input --> workflow --> rules --> output
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class input anchor;
-    class workflow positive;
-    class rules page;
-    class output action;
-```
+- `src/bijux_canon_agent` and tracked workflow surfaces for the structural ownership boundary
+- `tests` for determinism and traceability evidence for executable confirmation that the structure still holds
 
-## Execution Anchors
+## Bottom Line
 
-- entry surfaces: CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py, operator configuration under src/bijux_canon_agent/config, HTTP-adjacent modules under src/bijux_canon_agent/api
-- workflow modules: src/bijux_canon_agent/agents, src/bijux_canon_agent/pipeline, src/bijux_canon_agent/application
-- outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
-
-## Concrete Anchors
-
-- `src/bijux_canon_agent/agents` for role-local behavior
-- `src/bijux_canon_agent/pipeline` for execution flow orchestration
-- `src/bijux_canon_agent/application` for workflow policy and graph logic
-
-## Open This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Execution Model` to decide whether a structural change makes `bijux-canon-agent` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What You Can Resolve Here
-
-- how `bijux-canon-agent` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Review Focus
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Limits
-
-Treat this page as a working structural map and keep it aligned with code and tests.
-
-## Read Next
-
-- open interfaces when the review reaches a public or operator-facing seam
-- open operations when the concern becomes repeatable runtime behavior
-- open quality when you need proof that the documented structure is still protected
-
+If `bijux-canon-agent` needs hidden structure to defend role coordination, workflow order, and traces, the architecture is already too opaque.

@@ -4,82 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Execution Model
 
-`bijux-canon-reason` executes work by receiving inputs at its interfaces, coordinating policy
-and workflows in application code, and delegating specific responsibilities to
-owned modules.
+The execution model for `bijux-canon-reason` should tell one clear story from evidence input to inspectable reasoning output. A reader should not need to reconstruct the main control path from filenames or logs.
 
-This page shows one clean story about how work moves through the package. The
-goal is not to describe every branch, but to make the main path recognizable
-before someone opens the implementation.
+## What To Check
 
-The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
+- identify the entrypoints that start claim formation, checks, and reasoning artifacts
+- identify the core work that transforms the flow from evidence input to inspectable reasoning output
+- identify the exact handoff where ownership moves to a neighbor or to a caller-visible output
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    input["Entrypoint<br/>CLI app in src/bijux_canon_reason/interfaces/cli"]
-    workflow["Workflow<br/>reasoning<br/>claim and reasoning semantics"]
-    rules["Core decisions<br/>planning<br/>plan construction and intermediate"]
-    output["Visible result<br/>reasoning traces and replay diffs"]
-    input --> workflow --> rules --> output
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class input anchor;
-    class workflow positive;
-    class rules page;
-    class output action;
-```
+- `src/bijux_canon_reason` and reasoning artifacts for the structural ownership boundary
+- `tests` for claim, verification, and provenance evidence for executable confirmation that the structure still holds
 
-## Execution Anchors
+## Bottom Line
 
-- entry surfaces: CLI app in src/bijux_canon_reason/interfaces/cli, HTTP app in src/bijux_canon_reason/api/v1, schema files in apis/bijux-canon-reason/v1
-- workflow modules: src/bijux_canon_reason/planning, src/bijux_canon_reason/reasoning, src/bijux_canon_reason/execution
-- outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
-
-## Concrete Anchors
-
-- `src/bijux_canon_reason/planning` for plan construction and intermediate representation
-- `src/bijux_canon_reason/reasoning` for claim and reasoning semantics
-- `src/bijux_canon_reason/execution` for step execution and tool dispatch
-
-## Open This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Execution Model` to decide whether a structural change makes `bijux-canon-reason` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What You Can Resolve Here
-
-- how `bijux-canon-reason` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Review Focus
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Limits
-
-Treat this page as a working structural map and keep it aligned with code and tests.
-
-## Read Next
-
-- open interfaces when the review reaches a public or operator-facing seam
-- open operations when the concern becomes repeatable runtime behavior
-- open quality when you need proof that the documented structure is still protected
-
+If `bijux-canon-reason` needs hidden structure to defend claim formation, checks, and reasoning artifacts, the architecture is already too opaque.
