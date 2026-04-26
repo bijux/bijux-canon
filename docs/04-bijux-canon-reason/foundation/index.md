@@ -11,6 +11,26 @@ last_reviewed: 2026-04-26
 
 Open this section when the dispute is about what retrieved evidence means once it becomes a claim, check, or reasoning artifact. These pages should make `bijux-canon-reason` defensible as the place where evidence becomes inspectable conclusions rather than raw search output or agent choreography.
 
+## Boundary Model
+
+```mermaid
+flowchart LR
+    evidence["retrieved evidence"]
+    package["reason boundary"]
+    claim["claim and check logic"]
+    record["reasoning artifact"]
+    handoff["agent or runtime handoff"]
+    blur["retrieval or workflow blur"]
+
+    evidence --> package --> claim --> record --> handoff
+    package --> blur
+```
+
+The foundation pages for reason have to defend one sharp idea: this is where
+evidence becomes meaning that another reviewer can inspect. If that move is not
+clear here, later workflow and runtime docs will end up carrying reasoning
+policy they should never have inherited.
+
 ## Read These First
 
 - open [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/) first when the behavior could belong in retrieval below or orchestration above
@@ -45,6 +65,8 @@ The most common mistake here is burying reasoning policy inside retrieval artifa
 - leave this section for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the issue is a command, schema, artifact, or import surface
 - leave this section for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the reasoning boundary is understood and the open question is whether the package has earned trust
 
-## Bottom Line
+## Design Pressure
 
-If this section cannot tell a reviewer why a behavior is reasoning rather than retrieval or orchestration, the package claim is still too weak.
+If a page here starts sounding like search tuning or workflow coordination, the
+reason boundary is already undercut. This section has to keep interpretation
+separate from both retrieval below and orchestration above.
