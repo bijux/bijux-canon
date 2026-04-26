@@ -4,44 +4,55 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Interfaces
 
-This section explains which commands, APIs, imports, schemas, and artifacts `bijux-canon-reason` is prepared to stand behind as real surfaces.
+Use this section when the question is what another package, tool, or operator
+can safely rely on from `bijux-canon-reason`: commands, HTTP routes, schema
+shapes, trace formats, artifacts, and public imports.
 
-These pages explain the public face of `bijux-canon-reason`. They help a caller separate deliberate contracts from incidental visibility before a dependency hardens around the wrong surface.
-
-Treat the interfaces pages for `bijux-canon-reason` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+This package carries more contract pressure than an internal helper library
+because its outputs are designed to be inspected, replayed, and challenged. A
+reasoning trace or verification artifact is not just “something the code wrote”;
+it is part of the evidence a later reader may depend on.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    caller["bijux-canon-reason<br/>interface questions"]
-    cli["CLI and operator entrypoints"]
-    api["HTTP and schema surfaces"]
-    config["Configuration and data shapes"]
-    imports["Python import boundary"]
-    compatibility["What needs compatibility review"]
-    caller --> cli
-    caller --> api
-    caller --> config
-    caller --> imports
-    caller --> compatibility
+    cli["CLI entrypoints and replay commands"]
+    api["HTTP routes and OpenAPI shapes"]
+    traces["canonical JSON and trace JSONL formats"]
+    artifacts["run artifacts and evidence outputs"]
+    imports["public Python imports"]
+    reader["reader question<br/>which reasoning surfaces are real contracts?"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class caller page;
-    class cli,api positive;
-    class config,imports anchor;
-    class compatibility action;
+    class cli,page reader;
+    class api,traces positive;
+    class artifacts,imports anchor;
+    class cli --> reader
+    api --> reader
+    traces --> reader
+    artifacts --> reader
+    imports --> reader
 ```
 
-## Pages in This Section
+## Start Here
+
+- open [CLI Surface](cli-surface.md) for operator-facing commands and replay
+  entrypoints
+- open [API Surface](api-surface.md) when the contract is HTTP-facing rather
+  than terminal-facing
+- open [Artifact Contracts](artifact-contracts.md) and
+  [Data Contracts](data-contracts.md) when the durable output shape matters
+  more than the call syntax
+
+## Pages In This Section
 
 - [CLI Surface](cli-surface.md)
 - [API Surface](api-surface.md)
@@ -53,56 +64,46 @@ flowchart LR
 - [Public Imports](public-imports.md)
 - [Compatibility Commitments](compatibility-commitments.md)
 
-## Read Across the Package
+## Use This Section When
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+- you need to know whether a command, route, schema, trace file, or import is
+  meant to be stable
+- a change may affect replayability, artifact reading, or downstream contract
+  assumptions
+- a reviewer needs to separate explicit interfaces from incidental visibility
+
+## Do Not Use This Section When
+
+- the real question is why the behavior belongs in reasoning at all
+- the concern is mainly how the package is organized internally
+- the issue is procedural or proof-oriented rather than contract-oriented
+
+## Read Across The Package
+
+- open [Foundation](../foundation/index.md) for package purpose and ownership
+- open [Architecture](../architecture/index.md) for structural seams behind the
+  public surfaces
+- open [Operations](../operations/index.md) for install, replay, and release
+  procedures
+- open [Quality](../quality/index.md) for compatibility evidence and review
+  pressure
 
 ## Concrete Anchors
 
-- CLI app in src/bijux_canon_reason/interfaces/cli
-- HTTP app in src/bijux_canon_reason/api/v1
-- schema files in apis/bijux-canon-reason/v1
-- apis/bijux-canon-reason/v1/schema.yaml
+- `src/bijux_canon_reason/interfaces/cli` for command entrypoints
+- `src/bijux_canon_reason/api/v1` for HTTP routes and models
+- `src/bijux_canon_reason/interfaces/serialization` for canonical JSON and
+  trace JSONL formats
+- `apis/bijux-canon-reason/v1/schema.yaml` for the published schema contract
 
-## Use This Page When
+## Reader Takeaway
 
-- you need the public command, API, import, schema, or artifact surface
-- you are checking whether a caller can safely rely on a given entrypoint or shape
-- you want the contract-facing side of the package before building on it
-
-## Decision Rule
-
-Use `Interfaces` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
-
-## What This Page Answers
-
-- which public or operator-facing surfaces `bijux-canon-reason` is really asking readers to trust
-- which schemas, artifacts, imports, or commands behave like contracts
-- what compatibility pressure a change to this surface would create
-
-## Reviewer Lens
-
-- compare commands, schemas, imports, and artifacts against the documented surface one by one
-- check whether a seemingly local change actually needs compatibility review
-- confirm that examples still point to real entrypoints and not to stale habits
-
-## Honesty Boundary
-
-This page can identify the intended public surfaces of `bijux-canon-reason`, but real compatibility depends on code, schemas, artifacts, examples, and tests staying aligned. If those disagree, the prose is wrong or incomplete.
-
-## Next Checks
-
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
+Use `Interfaces` to judge whether a dependency is defensible. In this package,
+the answer is not just “is there a function for it?” but also “can a reviewer
+trace the contract through commands, schemas, artifacts, examples, and tests?”
 
 ## Purpose
 
-This page explains how to use the interfaces section for `bijux-canon-reason` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page introduces the reasoning interfaces handbook and routes readers to
+the pages that explain commands, APIs, artifacts, imports, and compatibility
+commitments.
