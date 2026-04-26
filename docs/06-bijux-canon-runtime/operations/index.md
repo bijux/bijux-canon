@@ -11,6 +11,27 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to run runtime work repeatably: install it, reproduce governed runs, diagnose acceptance or replay drift, release it, or recover from failure without inventing authority rules on the spot.
 
+## Operating Loop
+
+```mermaid
+flowchart LR
+    setup["setup"]
+    run["run governed flow"]
+    inspect["inspect verdict and record"]
+    recover["recover replay or persistence"]
+    release["release package"]
+    proof["tests and artifacts"]
+
+    setup --> run --> inspect --> recover --> release
+    run --> proof
+    inspect --> proof
+```
+
+Runtime operations should make governed execution repeatable under pressure. A
+maintainer needs a visible path from setup to run, from run to verdict
+inspection, and from drift back to recovery, with enough checked-in proof to
+show that authority was applied on purpose.
+
 ## Read These First
 
 - open [Installation and Setup](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/installation-and-setup/) first when you need a clean package starting point
@@ -45,6 +66,8 @@ The main operational risk here is letting run authority depend on implicit envir
 - leave for [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a workflow problem exposes structural drift underneath it
 - leave for [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the package runs but the real question is whether the evidence is strong enough
 
-## Bottom Line
+## Design Pressure
 
-If the package cannot be operated from checked-in facts alone, the operational story is not done yet.
+If runtime recovery depends on improvised authority judgments, the operating
+model is still too loose. This section has to make governed execution and
+replay recovery repeatable from checked-in practice.
