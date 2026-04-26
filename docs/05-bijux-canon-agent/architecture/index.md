@@ -20,27 +20,26 @@ and trace modules make the sequence inspectable by runtime and reviewers.
 
 ```mermaid
 flowchart LR
-    contracts["contracts<br/>runtime and agent models"]
-    pipeline["pipeline<br/>definition, orchestration, control"]
-    roles["agents<br/>planner, verifier, critique, summarizer"]
-    kernel["kernel and execution<br/>ordered lifecycle"]
-    convergence["convergence<br/>monitoring and stop conditions"]
-    traces["traces<br/>schema, replayability, serialization"]
-    runtime["runtime package<br/>authority above orchestration"]
+    contracts["contracts"]
+    pipeline["pipeline control"]
+    roles["agent roles"]
+    kernel["execution kernel"]
+    convergence["stop conditions"]
+    traces["trace records"]
+    validation["trace validation"]
+    observability["logs and metrics"]
+    runtime["runtime package"]
 
     contracts --> pipeline --> roles --> kernel --> convergence --> traces --> runtime
-    pipeline -. validates .-> validation["trace validation<br/>ordering and completeness"]
-    kernel -. emits .-> observability["observability<br/>logs and metrics"]
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class contracts page;
-    class pipeline,roles,kernel,convergence positive;
-    class traces,validation,observability anchor;
-    class runtime action;
+    pipeline --> validation
+    kernel --> observability
 ```
+
+Agent architecture should make one thing obvious: orchestration is a product
+surface with its own structure, not glue hidden between reasoning and runtime.
+Contracts describe the workflow shape, role modules perform bounded work, the
+kernel orders execution, and traces make the full sequence available to the
+next authority layer.
 
 ## Read These First
 
@@ -78,6 +77,8 @@ The main architectural risk here is letting workflow control become so distribut
 - leave for [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
 - leave for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
-## Bottom Line
+## Design Pressure
 
-A structure that cannot be explained in one pass is already carrying too much hidden policy.
+If workflow control is distributed so widely that no reader can locate the
+sequencing decision, the package stops being inspectable. The architecture
+page has to keep role execution, convergence, and trace responsibility clear.
