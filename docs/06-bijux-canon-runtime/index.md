@@ -13,6 +13,36 @@ last_reviewed: 2026-04-26
 
 The main failure this handbook prevents is treating runtime as a miscellaneous bucket for late-stage plumbing. Runtime exists to own acceptance, replay, persistence, and governed execution authority. If those decisions leak downward, no one can say why one run counts and another does not.
 
+## What The Reader Should See First
+
+Runtime is where a run becomes governable. Lower packages can prepare,
+retrieve, reason, and orchestrate correctly, but runtime decides whether the
+combined execution satisfies policy, whether its artifacts can be persisted,
+and whether another reviewer can replay or compare it later.
+
+```mermaid
+flowchart LR
+    trace["agent trace<br/>ordered package outputs"]
+    policy["runtime policy<br/>budget, determinism, acceptance rules"]
+    authority["authority check<br/>accept, reject, observe, replay"]
+    store["artifact store<br/>durable execution records"]
+    analysis["replay and drift analysis<br/>diffs, fingerprints, canaries"]
+    verdict["run verdict<br/>accepted, rejected, replayable"]
+
+    trace --> policy --> authority --> verdict
+    authority --> store --> analysis --> verdict
+    trace -. captured as .-> store
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class trace page;
+    class policy,authority positive;
+    class store,analysis anchor;
+    class verdict action;
+```
+
 ## What This Package Owns
 
 - run acceptance and replay policy above the lower package family
@@ -33,6 +63,8 @@ If the issue is whether a run should be accepted, persisted, replayed, or reject
 
 - `packages/bijux-canon-runtime/src/bijux_canon_runtime/application/execute_flow.py` for governed execution entrypoints
 - `packages/bijux-canon-runtime/src/bijux_canon_runtime/observability` for durable replay and trace surfaces
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime/core/authority.py` for explicit runtime authority rules
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime/model/execution` for replay envelopes, traces, verdicts, and run modes
 - `packages/bijux-canon-runtime/tests` for acceptance, replay, and persistence evidence
 
 ## Start Here
