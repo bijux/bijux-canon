@@ -11,6 +11,27 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to run ingest work repeatably: install it, change it, validate it, diagnose it, release it, or recover from failure without relying on private memory.
 
+## Operating Loop
+
+```mermaid
+flowchart LR
+    setup["setup"]
+    run["prepare and inspect"]
+    diagnose["diagnose drift"]
+    recover["recover output"]
+    release["release package"]
+    proof["tests and artifacts"]
+
+    setup --> run --> diagnose --> recover --> release
+    run --> proof
+    diagnose --> proof
+```
+
+Operational guidance here should feel like a repeatable loop, not a static list
+of topics. A maintainer needs a clean start, a normal working path, a visible
+diagnostic route, and a recovery path that still points back to checked-in
+proof.
+
 ## Read These First
 
 - open [Installation and Setup](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/installation-and-setup/) first when you need a clean package starting point
@@ -45,6 +66,8 @@ The main operational risk here is making prepared input look reproducible when i
 - leave for [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when a workflow problem exposes structural drift underneath it
 - leave for [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the package runs but the real question is whether the evidence is strong enough
 
-## Bottom Line
+## Design Pressure
 
-If the package cannot be operated from checked-in facts alone, the operational story is not done yet.
+If a maintainer has to rediscover the safe operating path from logs or habit,
+this section is still too weak. The package should be runnable and recoverable
+from the checked-in story alone.
