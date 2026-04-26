@@ -28,10 +28,3 @@ top-level environment, package enumeration, and shared target routing.
 If a top-level target cannot be traced quickly from these entrypoints, the make
 surface is becoming harder to maintain than it should be.
 
-## Purpose
-
-This page records the root entry files that define the repository make surface.
-
-## Stability
-
-Keep it aligned with the root include graph.

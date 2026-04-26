@@ -24,10 +24,3 @@ artifact directories.
 - `makes/bijux-py/package-catalog.mk` and related package fragments for shared
   package metadata
 
-## Purpose
-
-This page records how package-specific target routing is assembled.
-
-## Stability
-
-Keep it aligned with the package dispatch files that currently exist.

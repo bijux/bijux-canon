@@ -100,11 +100,3 @@ instead.
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
 
-## Purpose
-
-This page shows what counts as sufficient validation for the compatibility
-layer.
-
-## Stability
-
-Keep it aligned with the actual compatibility package tests or maintenance checks.

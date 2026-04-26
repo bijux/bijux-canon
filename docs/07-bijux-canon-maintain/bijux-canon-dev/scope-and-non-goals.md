@@ -96,10 +96,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Hidden scripts still need visible code, tests, and workflow context to
 be trustworthy.
 
-## Purpose
-
-This page prevents maintenance code from becoming an unbounded dumping ground.
-
-## Stability
-
-Update this page only when ownership truly moves into or out of the maintenance package.

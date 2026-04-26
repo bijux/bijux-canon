@@ -39,11 +39,3 @@ explicit so it does not quietly turn into a parallel product line.
 - continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
   when the question turns into when continuity is no longer needed
 
-## Purpose
-
-This page shows the dependency continuity model that keeps compatibility
-packages narrow and honest.
-
-## Stability
-
-Keep it aligned with the actual package dependency and metadata strategy.

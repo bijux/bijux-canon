@@ -33,10 +33,3 @@ execution assumptions that later targets rely on.
 - continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
   when the question turns into CI-oriented target families
 
-## Purpose
-
-This page shows where shared environment expectations live in the make system.
-
-## Stability
-
-Keep it aligned with the actual environment fragments under `makes/`.

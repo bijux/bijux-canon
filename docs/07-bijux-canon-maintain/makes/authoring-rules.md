@@ -29,10 +29,3 @@ structure the existing tree is trying to preserve.
 - can a maintainer trace the target from the root entrypoint to the owning
   fragment without guesswork
 
-## Purpose
-
-This page records the authoring discipline that keeps the make system coherent.
-
-## Stability
-
-Update it when the repository’s actual make authoring rules change.

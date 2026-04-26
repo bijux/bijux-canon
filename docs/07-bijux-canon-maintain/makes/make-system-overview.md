@@ -29,11 +29,3 @@ This structure keeps the command layer explicit. A target can be traced to the
 file that owns it, and a reviewer can tell whether a new target is repository
 scope, package scope, CI scope, or release scope.
 
-## Purpose
-
-This page gives the shortest honest explanation of how the make system is
-organized.
-
-## Stability
-
-Keep it aligned with the actual include structure rooted at `Makefile`.

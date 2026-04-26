@@ -87,11 +87,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Quality claims still need visible helpers, tests, and workflow context
 to be trustworthy.
 
-## Purpose
-
-This page shows how the package participates in repository-wide correctness and
-consistency.
-
-## Stability
-
-Keep it aligned with the actual quality checks that run in tests or CI.

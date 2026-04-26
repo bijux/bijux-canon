@@ -33,10 +33,3 @@ test, and build-related work.
 - continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
   for the wider `makes/` tree layout
 
-## Purpose
-
-This page shows where CI-oriented targets live in the make tree.
-
-## Stability
-
-Keep it aligned with the actual CI fragment set under `makes/bijux-py/ci/`.

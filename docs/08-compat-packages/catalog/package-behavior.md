@@ -91,10 +91,3 @@ Use `Package Behavior` to decide whether a preserved legacy name is still servin
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
 
-## Purpose
-
-This page describes the intended minimalism of the compatibility layer.
-
-## Stability
-
-Keep it aligned with the actual package contents in `packages/compat-*`.

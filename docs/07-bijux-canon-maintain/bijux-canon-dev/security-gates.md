@@ -88,10 +88,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Security claims still need visible helpers, tests, and workflow
 context to be trustworthy.
 
-## Purpose
-
-This page marks the boundary between maintenance security tooling and product runtime security behavior.
-
-## Stability
-
-Keep it aligned with the actual checks we can execute and verify.

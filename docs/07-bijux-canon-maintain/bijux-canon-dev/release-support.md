@@ -88,10 +88,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Release claims still need visible helpers, tests, metadata, and
 workflow context to be trustworthy.
 
-## Purpose
-
-This page records the maintenance package role in release preparation.
-
-## Stability
-
-Keep it aligned with the real release support code and the actual versioning workflow.

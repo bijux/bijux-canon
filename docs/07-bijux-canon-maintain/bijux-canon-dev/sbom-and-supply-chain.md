@@ -88,10 +88,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Supply-chain claims still need visible helpers, tests, metadata, and
 workflow context to be trustworthy.
 
-## Purpose
-
-This page shows the home for supply-chain oriented repository tooling.
-
-## Stability
-
-Keep it aligned with the checked-in SBOM helpers and tests.

@@ -88,10 +88,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Schema claims still need visible helpers, tests, tracked artifacts,
 and workflow context to be trustworthy.
 
-## Purpose
-
-This page shows why schema drift detection belongs in the maintainer package.
-
-## Stability
-
-Keep it aligned with the actual drift tooling and tracked schema files.

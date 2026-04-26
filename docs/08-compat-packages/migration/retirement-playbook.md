@@ -32,10 +32,3 @@ from “we have enough evidence to remove it without stranding supported users.�
 - migration guidance that has already been published and maintained
 - validation that no supported automation still depends on the legacy package
 
-## Purpose
-
-This page records the practical retirement process for compatibility packages.
-
-## Stability
-
-Update it when the repository’s actual retirement process changes.

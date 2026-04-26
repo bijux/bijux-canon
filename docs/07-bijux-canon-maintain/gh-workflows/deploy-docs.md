@@ -35,12 +35,3 @@ the published assets, then deploy the Pages artifact.
 - continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
   when the question turns into verification rather than publication
 
-## Purpose
-
-This page shows when documentation publication runs and which site inputs it
-validates before deploy.
-
-## Stability
-
-Keep it aligned with the docs deployment workflow and the published handbook
-inputs it relies on.

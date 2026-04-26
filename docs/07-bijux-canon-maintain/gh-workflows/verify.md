@@ -35,12 +35,3 @@ and `lint` jobs.
 - continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
   for the make-layer target families behind the workflow
 
-## Purpose
-
-This page shows when verification runs and how it branches from repository
-checks into package-level jobs.
-
-## Stability
-
-Keep it aligned with the real trigger paths, repository job, and package matrix
-declared in `verify.yml`.

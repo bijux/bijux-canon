@@ -30,10 +30,3 @@ of copying target logic across many package files.
 - continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/`
   when the question turns from make fragments to maintainer package ownership
 
-## Purpose
-
-This page shows where package-level make contracts are defined and reused.
-
-## Stability
-
-Keep it aligned with the shared package contract fragments that currently exist.

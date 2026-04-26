@@ -89,10 +89,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Hidden scripts still need visible code, tests, and workflow context to
 be trustworthy.
 
-## Purpose
-
-This page records the expected maintenance posture for the package.
-
-## Stability
-
-Update these guidelines only when the repository operating model genuinely changes.

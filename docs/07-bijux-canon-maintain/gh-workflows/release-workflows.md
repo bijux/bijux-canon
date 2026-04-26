@@ -46,12 +46,3 @@ The split keeps each publication surface explicit:
 - continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/release-support/`
   for the maintainer package helpers that support release behavior
 
-## Purpose
-
-This page shows which release surfaces are published and how the tag-driven
-workflow split is organized.
-
-## Stability
-
-Keep it aligned with the three release workflows and their shared artifact and
-release configuration contracts.

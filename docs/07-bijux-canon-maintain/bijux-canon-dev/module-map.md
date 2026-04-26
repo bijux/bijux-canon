@@ -92,10 +92,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Hidden scripts still need visible code, tests, and workflow context to
 be trustworthy.
 
-## Purpose
-
-This page is the shortest code-navigation aid for `bijux-canon-dev`.
-
-## Stability
-
-Keep it aligned with actual package modules and remove retired directories promptly.

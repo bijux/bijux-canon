@@ -33,11 +33,3 @@ logic lives under `makes/bijux-py/`, and package-facing entry files live under
 - continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-contracts/`
   for reusable package-level target contracts
 
-## Purpose
-
-This page shows how the make tree is partitioned so readers can place new
-targets correctly.
-
-## Stability
-
-Update it when the directory responsibilities of `makes/` genuinely change.

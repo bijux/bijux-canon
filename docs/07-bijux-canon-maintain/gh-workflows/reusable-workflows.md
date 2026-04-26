@@ -35,11 +35,3 @@ actually ran.
 - continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/`
   for tag-driven publication flow
 
-## Purpose
-
-This page identifies which workflows are reusable building blocks and which
-top-level workflows call them.
-
-## Stability
-
-Keep it aligned with the reusable workflow files and their current callers.

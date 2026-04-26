@@ -104,10 +104,3 @@ identified dependent environment, plan migration or retirement instead.
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
 
-## Purpose
-
-This page shows which Python import names remain preserved.
-
-## Stability
-
-Keep it aligned with the `src/` roots inside the compatibility packages.

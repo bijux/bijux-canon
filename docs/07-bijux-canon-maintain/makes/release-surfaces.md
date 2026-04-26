@@ -23,11 +23,3 @@ behavior understandable outside the workflow YAML that eventually invokes them.
 - `makes/bijux-py/ci/build.mk`
 - `makes/bijux-py/ci/sbom.mk`
 
-## Purpose
-
-This page records the main make files that influence release preparation and
-publication behavior.
-
-## Stability
-
-Keep it aligned with the repository’s actual release-facing make surfaces.

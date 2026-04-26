@@ -108,10 +108,3 @@ than an identified dependent environment, plan migration or retirement instead.
 
 This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
 
-## Purpose
-
-This page records the intent behind legacy command preservation.
-
-## Stability
-
-Keep it aligned with the command declarations in compatibility package metadata.

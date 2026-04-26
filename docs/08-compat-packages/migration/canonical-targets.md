@@ -31,11 +31,3 @@ and the target docs are the place where new work is expected to begin.
 - compatibility packages should point readers toward the owning canonical
   package without ambiguity
 
-## Purpose
-
-This page records the canonical destinations that compatibility guidance should
-keep reinforcing.
-
-## Stability
-
-Update it only when a compatibility package’s target genuinely changes.

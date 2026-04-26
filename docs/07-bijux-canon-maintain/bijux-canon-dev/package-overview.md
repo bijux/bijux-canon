@@ -96,10 +96,3 @@ it should never imply that maintainer tooling is part of the end-user product
 surface. Hidden scripts still need visible code, tests, and workflow context to
 be trustworthy.
 
-## Purpose
-
-This page gives the shortest description of why the package exists.
-
-## Stability
-
-Keep this page aligned with real maintainer behavior, not aspirational tooling that does not yet exist.
