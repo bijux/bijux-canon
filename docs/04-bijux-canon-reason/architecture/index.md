@@ -4,45 +4,56 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Architecture
 
-This section explains how `bijux_canon_reason` is organized so a reviewer can follow structure, dependency direction, and execution flow without guessing.
+Use this section when the question is structural: which modules own planning,
+retrieval, reasoning, verification, interfaces, and traces, and how a run
+flows through those pieces without smearing responsibilities together.
 
-These pages turn `bijux-canon-reason` from a directory tree into a readable design map. Use them when a structural change needs to be grounded in named modules and real execution paths.
-
-Treat the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+`bijux-canon-reason` is easiest to read when you treat it as a pipeline of
+responsibility rather than as a flat package tree. Planning shapes intent,
+retrieval assembles evidence views, execution and reasoning apply tools and
+claim semantics, verification challenges the result, and traces preserve what
+happened for replay or review.
 
 ## Visual Summary
 
 ```mermaid
-flowchart LR
-    review["bijux-canon-reason<br/>architecture review"]
-    modules["Module map<br/>which areas own behavior"]
-    deps["Dependency direction<br/>which layers may know each other"]
-    exec["Execution path<br/>how work moves through code"]
-    state["State boundary<br/>what becomes durable"]
-    seams["Integration seams<br/>where outside systems meet it"]
-    review --> modules
-    review --> deps
-    review --> exec
-    review --> state
-    review --> seams
+flowchart TB
+    intent["planning and IR"]
+    corpus["retrieval and corpus shaping"]
+    execs["execution runtime and tool dispatch"]
+    semantics["reasoning semantics and claim logic"]
+    checks["verification checks and contexts"]
+    traces["trace, replay, and artifact surfaces"]
+    reader["reader question<br/>where does this reasoning behavior actually live?"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class review page;
-    class modules anchor;
-    class deps,exec positive;
-    class state action;
-    class seams caution;
+    class intent,page reader;
+    class corpus,execs,semantics positive;
+    class checks,traces anchor;
+    intent --> corpus --> execs --> semantics --> checks --> traces
+    corpus --> reader
+    execs --> reader
+    semantics --> reader
+    checks --> reader
 ```
 
-## Pages in This Section
+## Start Here
+
+- open [Module Map](module-map.md) for the shortest route from directory names
+  to owned behavior
+- open [Execution Model](execution-model.md) when you need the reasoning
+  lifecycle from plan to verified output
+- open [State and Persistence](state-and-persistence.md) when the question is
+  which records become replayable or durable
+
+## Pages In This Section
 
 - [Module Map](module-map.md)
 - [Dependency Direction](dependency-direction.md)
@@ -54,55 +65,51 @@ flowchart LR
 - [Code Navigation](code-navigation.md)
 - [Architecture Risks](architecture-risks.md)
 
-## Read Across the Package
+## Use This Section When
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+- you need to know which module family owns a behavior before editing it
+- a review comment names structure, layering, or execution drift rather than a
+  single bug
+- you need to explain how planning, retrieval, reasoning, verification, and
+  trace code relate
+
+## Do Not Use This Section When
+
+- the main question is why the package owns the behavior at all
+- you are deciding whether a CLI, API, or trace file is a supported contract
+- the real concern is how to run, validate, or release the package
+
+## Read Across The Package
+
+- open [Foundation](../foundation/index.md) for package purpose and ownership
+  boundaries
+- open [Interfaces](../interfaces/index.md) for CLI, API, schema, and artifact
+  contracts
+- open [Operations](../operations/index.md) for install, replay, diagnostics,
+  and release procedures
+- open [Quality](../quality/index.md) for invariants, tests, and structural
+  risk pressure
 
 ## Concrete Anchors
 
-- `src/bijux_canon_reason/planning` for plan construction and intermediate representation
-- `src/bijux_canon_reason/reasoning` for claim and reasoning semantics
-- `src/bijux_canon_reason/execution` for step execution and tool dispatch
+- `src/bijux_canon_reason/planning` for plan construction and intermediate
+  representation
+- `src/bijux_canon_reason/retrieval` for corpus, chunking, and BM25-backed
+  evidence shaping
+- `src/bijux_canon_reason/execution` for step execution, runtime, and tool
+  dispatch
+- `src/bijux_canon_reason/reasoning`, `verification`, and `traces` for claim
+  semantics, checks, and replayable records
 
-## Use This Page When
+## Reader Takeaway
 
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Architecture` to decide whether a structural change makes `bijux-canon-reason` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What This Page Answers
-
-- how `bijux-canon-reason` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Reviewer Lens
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-reason`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
+`Architecture` should make the package readable as a sequence of named
+responsibilities, not a tangle of utilities. If a change blurs planning,
+evidence shaping, claim logic, verification, and traces into one layer, the
+design is getting weaker even if tests still pass.
 
 ## Purpose
 
-This page explains how to use the architecture section for `bijux-canon-reason` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page introduces the reasoning architecture handbook and routes readers to
+the pages that explain module groups, dependency direction, execution flow, and
+durable state.
