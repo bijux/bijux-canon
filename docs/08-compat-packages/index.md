@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Compatibility Packages
@@ -60,6 +60,29 @@ flowchart LR
 - [Migration](migration/index.md) for rename planning, dependency continuity,
   validation, release posture, and retirement decisions
 
+## Use This Section When
+
+- you started from a legacy package, import, or command name and need to find
+  the current canonical target
+- you are checking whether a compatibility surface still serves a real
+  migration need
+- you need migration or retirement guidance rather than product implementation
+
+## Do Not Start Here When
+
+- you already know the canonical package name and need current behavior docs
+- you are designing new product behavior or a new public contract
+- the question is about maintainer automation rather than compatibility
+
+## Choose The Next Section By Question
+
+- open [Catalog](catalog/index.md) when the immediate need is to identify which
+  exact legacy surface is still preserved
+- open [Migration](migration/index.md) when the immediate need is to plan
+  dependency continuity, validation, or retirement
+- move to the owning canonical package handbook once the current target package
+  is known and the question becomes product behavior rather than migration
+
 ## Pages In Catalog
 
 - [agentic-flows](catalog/agentic-flows.md)
@@ -91,6 +114,12 @@ flowchart LR
 - `https://github.com/bijux/bijux-rag`
 - `https://github.com/bijux/bijux-rar`
 - `https://github.com/bijux/bijux-vex`
+
+## Reader Takeaway
+
+This handbook is a migration bridge, not a product starting point. Its job is
+to help readers exit legacy naming with less confusion, not to persuade them to
+keep building on the preserved names indefinitely.
 
 ## Concrete Anchors
 
