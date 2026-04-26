@@ -13,6 +13,36 @@ last_reviewed: 2026-04-26
 
 The main failure this handbook prevents is treating ingest like a convenient place for every upstream cleanup, retrieval tweak, or workflow shortcut. Ingest should only grow when the change makes prepared source material more predictable, not when another package wants to offload its own complexity.
 
+## What The Reader Should See First
+
+Ingest is the preparation gate. It takes source material that may be noisy,
+partial, duplicated, or inconsistently shaped and produces material that later
+packages can treat as intentional input. The value is not that ingest does
+everything near documents. The value is that it stops uncertainty from leaking
+into retrieval, reasoning, and runtime review.
+
+```mermaid
+flowchart LR
+    source["source material<br/>files, text, records"]
+    config["ingest configuration<br/>parsing, cleaning, chunking rules"]
+    processing["processing pipeline<br/>normalize, deduplicate, chunk"]
+    retrieval["retrieval-ready records<br/>chunks, metadata, indexes"]
+    downstream["downstream packages<br/>index, reason, agent, runtime"]
+
+    source --> config --> processing --> retrieval --> downstream
+    processing -. proves determinism .-> tests["tests and invariants"]
+    retrieval -. exposes caller surface .-> interfaces["CLI, HTTP, serialization"]
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class source page;
+    class config,processing,retrieval positive;
+    class tests,interfaces anchor;
+    class downstream action;
+```
+
 ## What This Package Owns
 
 - document cleaning, normalization, and chunking before retrieval
@@ -32,7 +62,8 @@ If the question is still about making source material predictable before any vec
 ## First Proof Check
 
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for deterministic preparation logic
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for handoff-ready records and assembly
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for retrieval-ready records and assembly owned before index handoff
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/interfaces` for CLI, HTTP, serialization, and caller-facing boundaries
 - `packages/bijux-canon-ingest/tests` for the proof that prepared output stays stable under change
 
 ## Start Here
