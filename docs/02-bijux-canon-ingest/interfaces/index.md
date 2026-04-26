@@ -21,28 +21,25 @@ This section should name those promises before a reader has to inspect code.
 ```mermaid
 flowchart LR
     caller["caller or operator"]
-    cli["CLI surface<br/>commands and options"]
-    api["API surface<br/>HTTP models and routes"]
-    config["configuration<br/>ingest, parsing, cleaning"]
-    data["data contracts<br/>chunks, metadata, envelopes"]
-    artifacts["artifact contracts<br/>prepared outputs"]
-    downstream["downstream package<br/>index handoff"]
+    cli["CLI surface"]
+    api["API surface"]
+    config["configuration"]
+    data["prepared records"]
+    artifacts["artifact contracts"]
+    schema["tracked schema"]
+    downstream["index handoff"]
 
     caller --> cli --> data
     caller --> api --> data
     caller --> config --> data
     data --> artifacts --> downstream
-    data -. schema evidence .-> schema["apis/bijux-canon-ingest/v1/schema.yaml"]
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class caller page;
-    class cli,api,config,data,artifacts positive;
-    class schema anchor;
-    class downstream action;
+    data --> schema
 ```
+
+The key contract idea is that ingest promises prepared material, not just
+commands. CLI, API, and configuration are only different entry doors into the
+same contract surface: deterministic records that another package can consume
+without guessing how they were shaped.
 
 ## Read These First
 
@@ -80,6 +77,8 @@ The main contract risk here is letting downstream packages rely on visible inges
 - leave for [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when a surface question reveals structural drift underneath it
 - leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) or [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the boundary is clear and the question becomes execution or proof
 
-## Bottom Line
+## Design Pressure
 
-A surface is not a real contract until the docs, code, and tests agree that it is one.
+If callers can only learn what the package promises by reading implementation
+detail, the contract page is too weak. The stable record shapes and artifacts
+have to be visible here before they are convenient anywhere else.
