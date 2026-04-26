@@ -41,7 +41,7 @@ and backend guesswork.
 - [Security and Safety](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/deployment-boundaries/)
 
-## Open Operations When
+## Open This Section When
 
 - you need to run, rerun, validate, or release retrieval behavior from checked
   in instructions
@@ -56,7 +56,7 @@ and backend guesswork.
 - the issue is about proof of correctness rather than the operating steps
   themselves
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when operational pain may really be
   a boundary problem
@@ -75,7 +75,7 @@ and backend guesswork.
 
 ## Bottom Line
 
-Open `Operations` when you need a retrieval workflow that can be repeated from
+Open this section when you need a retrieval workflow that can be repeated from
 the repository itself. If replay, validation, or recovery succeeds only because
 somebody remembers an undocumented backend trick, the operational story is not
 trustworthy yet.

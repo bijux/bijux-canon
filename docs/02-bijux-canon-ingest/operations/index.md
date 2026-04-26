@@ -41,7 +41,7 @@ reliably reproducible.
 - [Security and Safety](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/deployment-boundaries/)
 
-## Open Operations When
+## Open This Section When
 
 - you need to run, rerun, validate, or release ingest behavior from checked-in
   instructions
@@ -56,7 +56,7 @@ reliably reproducible.
 - the issue is about evidence of correctness rather than the operating steps
   themselves
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when operational trouble may really
   be a boundary mistake
@@ -75,7 +75,7 @@ reliably reproducible.
 
 ## Bottom Line
 
-Open `Operations` when you need a maintainer path that can be repeated from the
+Open this section when you need a maintainer path that can be repeated from the
 repository itself. If an ingest run only succeeds because somebody remembers an
 unstated trick, the workflow is not operationally trustworthy yet.
 

@@ -39,7 +39,7 @@ good enough if it leaves behind artifacts a reviewer cannot explain or trust.
 - [Security and Safety](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/deployment-boundaries/)
 
-## Open Operations When
+## Open This Section When
 
 - you need a repeatable procedure for running, replaying, diagnosing, or
   releasing the package
@@ -60,7 +60,7 @@ good enough if it leaves behind artifacts a reviewer cannot explain or trust.
 - `packages/bijux-canon-reason/README.md` for local package framing
 - `packages/bijux-canon-reason/tests` for executable operational backstops
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package boundary and scope
 - open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a workflow problem points
@@ -72,7 +72,7 @@ good enough if it leaves behind artifacts a reviewer cannot explain or trust.
 
 ## Bottom Line
 
-Open `Operations` to find procedures a maintainer can repeat and defend. If a
+Open this section to find procedures a maintainer can repeat and defend. If a
 workflow cannot explain how it produces inspectable traces, replayable output,
 or diagnosable failures, it is not ready to be trusted as operating memory.
 

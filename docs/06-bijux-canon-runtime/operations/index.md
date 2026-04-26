@@ -45,7 +45,7 @@ to invoke it.
 - [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/deployment-boundaries/)
 
-## Open Operations When
+## Open This Section When
 
 - you are installing, running, diagnosing, or releasing the package
 - you need repeatable operational anchors rather than architectural framing
@@ -68,7 +68,7 @@ to invoke it.
 - `tests/e2e/` and `tests/regression/` for the repeatable operational backstops
   that defend replay and recovery behavior
 
-## Read Across The Package
+## Across This Package
 
 - open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when an operational question turns
   into a CLI, API, or schema contract question
@@ -79,7 +79,7 @@ to invoke it.
 
 ## Bottom Line
 
-Open `Operations` to decide whether a maintainer can repeat runtime workflow
+Open this section to decide whether a maintainer can repeat runtime workflow
 from checked-in assets instead of memory. If a step works only because someone
 already knows the trick, the package is not documented clearly enough yet.
 

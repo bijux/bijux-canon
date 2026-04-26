@@ -34,7 +34,7 @@ flow, and change acceptance across the package set.
 - [Review Expectations](https://bijux.io/bijux-canon/01-bijux-canon/operations/review-expectations/)
 - [Change Management](https://bijux.io/bijux-canon/01-bijux-canon/operations/change-management/)
 
-## Open Operations When
+## Open This Section When
 
 - you are performing repository-wide work instead of one package-local change
 - you need the operational truth for shared automation, release, or validation

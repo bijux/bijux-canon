@@ -41,7 +41,7 @@ diagnostics behind when something goes wrong.
 - [Security and Safety](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/security-and-safety/)
 - [Deployment Boundaries](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/deployment-boundaries/)
 
-## Open Operations When
+## Open This Section When
 
 - you need a repeatable procedure for running, tracing, diagnosing, or
   releasing the package
@@ -61,7 +61,7 @@ diagnostics behind when something goes wrong.
 - `packages/bijux-canon-agent/README.md` for local package framing
 - `packages/bijux-canon-agent/tests` for executable operational backstops
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package boundary and scope
 - open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a workflow problem points
@@ -73,7 +73,7 @@ diagnostics behind when something goes wrong.
 
 ## Bottom Line
 
-Open `Operations` to find workflows a maintainer can rerun and defend. If a
+Open this section to find workflows a maintainer can rerun and defend. If a
 procedure cannot show how it leaves behind inspectable traces, diagnosable
 failures, and reviewable outputs, it is not ready to serve as the package’s
 operating memory.
