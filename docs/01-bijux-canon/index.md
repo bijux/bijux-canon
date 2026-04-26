@@ -4,15 +4,14 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Repository Handbook
 
 The repository handbook explains the shared story above the package level:
-why this repository is split, which rules genuinely live at the root, and
-how the packages stay coordinated without collapsing back into one blurry
-codebase.
+why this repository is split, which rules genuinely live at the root, and how
+the packages stay coordinated without collapsing back into one blurry codebase.
 
 `bijux-canon` is easiest to understand if you start from intent instead of
 from filenames. The repository exists to keep several deterministic,
@@ -32,30 +31,48 @@ The root only owns what is genuinely shared: workspace layout, schema
 governance, documentation rules, validation posture, and release
 coordination.</div>
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
+These repository pages should explain the cross-package frame that no single
+package can explain alone. They are strongest when they make the monorepo
+easier to understand without turning the root into a second owner of package
+behavior.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    question["Repository-wide question"]
+    reader["reader question<br/>is this rule shared or package-local?"]
     foundation["Foundation<br/>split, scope, ownership, language"]
     operations["Operations<br/>development, validation, release, review"]
     packages["Product handbooks<br/>package-owned behavior"]
-    question --> foundation
-    question --> operations
+    maintain["Maintainer handbook<br/>repository automation and drift control"]
+    reader --> foundation
+    reader --> operations
     foundation --> packages
     operations --> packages
+    operations --> maintain
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class question page;
+    class reader page;
     class foundation positive;
     class operations anchor;
     class packages action;
+    class maintain caution;
 ```
+
+## Start Here
+
+- open [Foundation](foundation/index.md) when the question is why the split
+  exists or where authority changes hands
+- open [Operations](operations/index.md) when the question is how repository
+  work is validated, released, or reviewed
+- move straight to a product handbook when the real issue is already local to
+  one package boundary
+- move to [Maintainer Handbook](../07-bijux-canon-maintain/index.md) when the
+  concern is CI, workflow fan-out, generated docs checks, or repository-health
+  automation
 
 ## Sections
 
@@ -64,29 +81,18 @@ flowchart LR
 - [Operations](operations/index.md) for contributor workflows, validation,
   release, automation, artifact handling, and shared review posture
 
-## Pages In Foundation
+## What This Handbook Owns
 
-- [Platform Overview](foundation/platform-overview.md)
-- [Repository Scope](foundation/repository-scope.md)
-- [Workspace Layout](foundation/workspace-layout.md)
-- [Package Map](foundation/package-map.md)
-- [Ownership Model](foundation/ownership-model.md)
-- [Domain Language](foundation/domain-language.md)
-- [Documentation System](foundation/documentation-system.md)
-- [Change Principles](foundation/change-principles.md)
-- [Decision Rules](foundation/decision-rules.md)
+- the shared explanation of why the root exists at all
+- repository-wide workflow, validation, release, and artifact rules
+- the seams where one package hands authority to another
 
-## Pages In Operations
+## What This Handbook Does Not Own
 
-- [Local Development](operations/local-development.md)
-- [Testing and Validation](operations/testing-and-validation.md)
-- [Release and Versioning](operations/release-and-versioning.md)
-- [API and Schema Governance](operations/api-and-schema-governance.md)
-- [Contributor Workflows](operations/contributor-workflows.md)
-- [Automation Surfaces](operations/automation-surfaces.md)
-- [Artifact Governance](operations/artifact-governance.md)
-- [Review Expectations](operations/review-expectations.md)
-- [Change Management](operations/change-management.md)
+- ingest, index, reason, agent, or runtime behavior inside the package docs
+- maintainer-helper implementation detail that belongs in the maintainer
+  handbook
+- legacy package naming that belongs in compatibility docs
 
 ## Shared Package Map
 
@@ -101,6 +107,7 @@ flowchart LR
 - `pyproject.toml` for workspace metadata and commit conventions
 - `Makefile` and `makes/` for root automation
 - `apis/` and `.github/workflows/` for schema and validation review
+- `packages/` for the product boundaries this handbook must not blur
 
 ## Use This Page When
 
@@ -108,31 +115,19 @@ flowchart LR
 - you need shared workflow, schema, or governance context before changing code
 - you want the monorepo view that sits above the package handbooks
 
-## Decision Rule
+## Do Not Use This Page When
 
-Use `Repository Handbook` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+- the answer depends mostly on one package's local behavior, imports, or tests
+- you need workflow automation internals rather than root-facing guidance
+- the question is explicitly about a legacy name and migration path
 
-## What This Page Answers
+## Read The Root This Way
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+Treat the root as a coordination layer, not a shadow product. The repository handbook should tell you why the split exists, what rules stay shared, and when to leave the root immediately because the real authority lives inside a package. If the root starts to explain package behavior in detail, the handbook is crossing its own boundary.
 
-## Reviewer Lens
+## Reader Takeaway
 
-- compare the page claims with the real root files, workflows, or schema assets
-- check that repository guidance still stops where package ownership begins
-- confirm that any repository rule described here is still enforceable in code or automation
-
-## Honesty Boundary
-
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
-
-## Next Checks
-
-- move to the owning package docs when the question stops being repository-wide
-- check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+Use this handbook when the question is genuinely shared across package boundaries. If the current issue can be explained honestly inside one product handbook, this root should route you there instead of trying to keep you.
 
 ## Purpose
 
