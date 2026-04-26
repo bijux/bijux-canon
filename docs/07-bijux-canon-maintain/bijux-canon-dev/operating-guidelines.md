@@ -56,7 +56,7 @@ flowchart LR
 
 ## Decision Rule
 
-This page answers one need: understanding how maintainer changes should
+This page shows understanding how maintainer changes should
 be handled. If the change would affect end-user behavior directly, keep it in
 the owning product package instead of treating maintainer automation as a
 shortcut layer.

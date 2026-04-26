@@ -63,7 +63,7 @@ flowchart LR
 
 ## Decision Rule
 
-This page answers one question: whether work belongs in maintainer
+This page shows whether work belongs in maintainer
 tooling at all. If the change would affect end-user behavior directly, keep it
 in the owning product package instead of moving it into repository-health
 automation.

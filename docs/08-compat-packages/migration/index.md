@@ -41,7 +41,7 @@ package can disappear.
 - the concern is already about current product behavior in a canonical package
 - the issue belongs to maintainer automation rather than compatibility policy
 
-## Choose A Page
+## Start Here
 
 - open [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/) when the first need is the exact new package name
 - open [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/) when requirements, imports, or command preservation are the current risk

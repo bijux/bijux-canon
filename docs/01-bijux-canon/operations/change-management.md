@@ -32,7 +32,7 @@ story instead of being updated on separate timelines.
 - renamed pages or sections have an explicit continuity plan instead of silent
   breakage
 
-## Why It Matters
+## Bottom Line
 
 Most repository rework debt comes from changes that “worked” but were never made
 fully legible. Good change management is the discipline that prevents that debt

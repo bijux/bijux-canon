@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Use this section when the question is structural: which modules own role-local
+Open this section when the question is structural: which modules own role-local
 agents, pipeline control, workflow policy, interfaces, traces, and
 observability, and how those parts cooperate without collapsing into one
 omnipotent orchestration layer.

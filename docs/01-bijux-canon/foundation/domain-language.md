@@ -40,7 +40,7 @@ returns even when the directory tree still looks neat.
 - avoid creating synonyms for the same repository boundary unless there is a
   real semantic difference
 
-## Why It Matters
+## Bottom Line
 
 When names are stable, reviewers can move from a discussion to a file or a
 test quickly. When names are unstable, every change starts with translation

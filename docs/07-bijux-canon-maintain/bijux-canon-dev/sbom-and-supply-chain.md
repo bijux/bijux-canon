@@ -56,7 +56,7 @@ flowchart LR
 
 ## Decision Rule
 
-This page answers one question: how shared SBOM and supply-chain
+This page shows how shared SBOM and supply-chain
 helpers support repository health. If the change would affect end-user
 behavior directly, open the owning product package instead.
 

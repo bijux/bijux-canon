@@ -23,7 +23,7 @@ contracts, CI-oriented targets, and per-package definitions.
 - `makes/bijux-py/` carries reusable make contracts and target groups
 - `makes/packages/` maps shared target patterns onto repository packages
 
-## Why It Matters
+## Bottom Line
 
 This structure keeps the command layer explicit. A target can be traced to the
 file that owns it, and a reviewer can tell whether a new target is repository

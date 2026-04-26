@@ -60,7 +60,7 @@ flowchart LR
 
 ## Decision Rule
 
-This page answers one need: finding the maintainer module that owns a
+This page shows finding the maintainer module that owns a
 repository-health concern. If the change would affect end-user behavior
 directly, open the owning product package instead.
 

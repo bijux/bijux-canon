@@ -41,7 +41,7 @@ workflows called by those entrypoints rather than standalone manual surfaces.
   automation
 - you only need maintainer helper code rather than workflow entrypoints
 
-## Choose A Page
+## Start Here
 
 - open [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/) when the concern starts from pull request or push
   verification

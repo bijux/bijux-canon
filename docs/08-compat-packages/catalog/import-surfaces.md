@@ -37,7 +37,7 @@ first-class status.
 
 ## Decision Rule
 
-This page answers one question: whether a preserved import still serves
+This page shows whether a preserved import still serves
 a real migration need. If the only reason to keep it is habit rather than an
 identified dependent environment, plan migration or retirement instead.
 

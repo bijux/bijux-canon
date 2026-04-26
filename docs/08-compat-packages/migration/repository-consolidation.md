@@ -42,7 +42,7 @@ The consolidated source of truth for all of them is now:
 - `bijux-rar` -> `bijux-canon-reason`
 - `bijux-vex` -> `bijux-canon-index`
 
-## Why This Page Exists
+## Bottom Line
 
 Readers landing on a legacy package page should be able to answer three
 questions immediately:

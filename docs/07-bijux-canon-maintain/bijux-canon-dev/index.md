@@ -43,7 +43,7 @@ reconstructed from CI output or shell glue.
 - the issue belongs to shared Make entrypoints or GitHub Actions trigger logic
 - you are looking for end-user behavior rather than repository-health helpers
 
-## Choose A Page
+## Start Here
 
 - open [Package Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/) for the shortest description of
   why this maintainer package exists

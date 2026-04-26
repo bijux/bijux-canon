@@ -16,7 +16,7 @@ The make system is a real interface in this repository. It exposes local work,
 CI checks, package dispatch, schema checks, and release-oriented automation
 through stable command surfaces instead of one-off shell habits.
 
-## Pages In makes
+## Pages In This Section
 
 - [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/)
 - [Root Entrypoints](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/root-entrypoints/)
@@ -28,7 +28,7 @@ through stable command surfaces instead of one-off shell habits.
 - [Release Surfaces](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/release-surfaces/)
 - [Authoring Rules](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/authoring-rules/)
 
-## Open makes When
+## Open This Section When
 
 - the concern is about shared Make entrypoints rather than package code itself
 - you need to understand how local commands, CI targets, and release commands
@@ -43,7 +43,7 @@ through stable command surfaces instead of one-off shell habits.
   layer
 - you only need one concrete target and already know which page documents it
 
-## Choose A Page
+## Start Here
 
 - open [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/) for the broad structure
   first
