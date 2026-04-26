@@ -15,7 +15,7 @@ This page helps readers see the broad proof shape of the package rather
 than treating the test tree like a bag of unrelated checks. A good strategy page
 explains why these tests exist, not just where they live.
 
-Treat the quality pages for `bijux-canon-runtime` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+The quality pages show how trust is earned and where skepticism still belongs.
 
 ## Test Areas
 

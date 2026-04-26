@@ -16,7 +16,7 @@ The point is not to prescribe one favorite workflow. It is to keep local work
 close enough to the owning package that changes remain easy to explain and easy
 to validate before they spread outward.
 
-Treat the operations pages for `bijux-canon-agent` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
+The operations pages make common tasks repeatable without relearning workflows from logs or oral history.
 
 ## Visual Summary
 

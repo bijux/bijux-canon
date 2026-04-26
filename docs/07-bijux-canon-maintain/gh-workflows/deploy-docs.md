@@ -28,10 +28,10 @@ the published assets, then deploy the Pages artifact.
 
 ## Reader Route
 
-- read this page when the main question is how the checked-in handbook becomes
+- open this page when the main question is how the checked-in handbook becomes
   the published site
-- continue to `https://bijux.io/bijux-canon/01-bijux-canon/foundation/documentation-system/`
+- open `https://bijux.io/bijux-canon/01-bijux-canon/foundation/documentation-system/`
   for the published handbook structure
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
   when the question turns into verification rather than publication
 

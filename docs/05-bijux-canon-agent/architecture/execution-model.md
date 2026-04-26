@@ -17,7 +17,7 @@ This page gives a reader one clean story about how work moves through the
 package. The goal is not to describe every branch, but to make the main path
 recognizable before someone opens the implementation.
 
-Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
 
 ## Visual Summary
 

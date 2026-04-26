@@ -14,7 +14,7 @@ Validation after a change should target the package surfaces that were actually 
 This page is about choosing proof that matches the real risk. Strong validation
 is not just more testing; it is testing and review aimed at the seam that moved.
 
-Treat the quality pages for `bijux-canon-agent` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+The quality pages show how trust is earned and where skepticism still belongs.
 
 ## Validation Targets
 

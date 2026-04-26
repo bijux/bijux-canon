@@ -32,10 +32,10 @@ explicit so it does not quietly turn into a parallel product line.
 
 ## Reader Route
 
-- read this page when the main question is how compatibility packages keep
+- open this page when the main question is how compatibility packages keep
   installs, imports, or command names continuous during migration
-- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/`
+- open `https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/`
   for the broader compatibility model
-- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
+- open `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
   when the question turns into when continuity is no longer needed
 

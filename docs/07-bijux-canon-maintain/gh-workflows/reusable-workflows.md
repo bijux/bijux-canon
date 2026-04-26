@@ -28,10 +28,10 @@ actually ran.
 
 ## Reader Route
 
-- read this page when the main question is which workflows act as reusable
+- open this page when the main question is which workflows act as reusable
   building blocks rather than top-level entrypoints
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
   for the main verification flow
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/`
   for tag-driven publication flow
 

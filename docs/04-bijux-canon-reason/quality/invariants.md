@@ -15,7 +15,7 @@ This page names the truths the package is trying hardest not to lose. If an
 invariant changes, that should feel more like a design event than a routine code
 edit.
 
-Treat the quality pages for `bijux-canon-reason` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+The quality pages show how trust is earned and where skepticism still belongs.
 
 ## Invariant Anchors
 

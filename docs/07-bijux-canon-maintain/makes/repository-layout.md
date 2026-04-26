@@ -27,9 +27,9 @@ logic lives under `makes/bijux-py/`, and package-facing entry files live under
 
 ## Reader Route
 
-- read this page when the main question is how the `makes/` tree is partitioned
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/environment-model/`
+- open this page when the main question is how the `makes/` tree is partitioned
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/environment-model/`
   for shared environment fragments
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-contracts/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/package-contracts/`
   for reusable package-level target contracts
 

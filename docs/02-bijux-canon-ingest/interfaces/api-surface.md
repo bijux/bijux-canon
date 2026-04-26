@@ -16,7 +16,7 @@ The goal of this page is clarity before code-reading. A reviewer should be able
 to see which API assets matter, where they live, and why a caller would treat
 them as stable enough to depend on.
 
-Treat the interfaces pages for `bijux-canon-ingest` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+The interface pages define what the package is prepared to defend before a dependency forms.
 
 ## Visual Summary
 

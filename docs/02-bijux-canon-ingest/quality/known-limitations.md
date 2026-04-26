@@ -15,7 +15,7 @@ This page protects credibility by keeping the current limits visible. Readers
 should be able to tell what the package does not promise without mining issue
 threads or learning the hard way in production.
 
-Treat the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+The quality pages show how trust is earned and where skepticism still belongs.
 
 ## Honest Boundaries
 
@@ -53,7 +53,7 @@ Use `Known Limitations` to decide whether `bijux-canon-ingest` has actually earn
 
 ## Limits
 
-This page explains how `bijux-canon-ingest` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
+Tests, checks, and review practice remain the proof for `bijux-canon-ingest`. If they drift, this page is wrong.
 
 ## Read Next
 

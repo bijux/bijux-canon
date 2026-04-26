@@ -15,7 +15,7 @@ is still unclear or unprotected.
 This page is where the package draws the line against false confidence. Done
 should mean that behavior, explanation, and proof all move together.
 
-Treat the quality pages for `bijux-canon-reason` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+The quality pages show how trust is earned and where skepticism still belongs.
 
 ## Done Means
 

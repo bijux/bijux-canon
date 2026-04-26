@@ -13,10 +13,9 @@ The public Python surface of `bijux-canon-index` starts at the package import ro
 intentionally exported modules beneath it.
 
 This page keeps import visibility honest. Not every importable symbol is public,
-and not every public symbol should be left implicit. Readers should be able to
-tell what the package is prepared to support as a Python-facing boundary.
+and not every public symbol should be left implicit. This page shows what the package is prepared to support as a Python-facing boundary.
 
-Treat the interfaces pages for `bijux-canon-index` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+The interface pages define what the package is prepared to defend before a dependency forms.
 
 ## Visual Summary
 

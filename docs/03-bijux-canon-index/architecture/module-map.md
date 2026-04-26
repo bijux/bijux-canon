@@ -16,9 +16,8 @@ likely to answer it.
 
 When this page is useful, code reading becomes targeted rather than exploratory.
 
-Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map
-of structure and flow. They shorten code reading instead of trying to replace
-it.
+This page is a reviewer-facing map of structure and flow. It shortens code
+reading instead of trying to replace it.
 
 ## Visual Summary
 
@@ -87,4 +86,3 @@ Treat this page as a working structural map and keep it aligned with code and te
 - open interfaces when the review reaches a public or operator-facing seam
 - open operations when the concern becomes repeatable runtime behavior
 - open quality when you need proof that the documented structure is still protected
-

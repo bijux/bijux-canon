@@ -16,7 +16,7 @@ This is not only an aesthetic preference. Clear dependency direction keeps
 refactors cheaper because reviewers can still tell which layers are allowed to
 know about which other layers.
 
-Treat the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
 
 ## Visual Summary
 

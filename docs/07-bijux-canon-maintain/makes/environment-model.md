@@ -26,10 +26,10 @@ execution assumptions that later targets rely on.
 
 ## Reader Route
 
-- read this page when the main question is where shared make environment
+- open this page when the main question is where shared make environment
   assumptions live
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
   for the wider `makes/` tree layout
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
   when the question turns into CI-oriented target families
 

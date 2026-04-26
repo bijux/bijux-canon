@@ -14,7 +14,7 @@ Diagnostics make it easier to explain what `bijux-canon-agent` did, not merely t
 Good diagnostics shorten both incidents and reviews. They give maintainers a
 way to connect visible outputs back to the package behavior that produced them.
 
-Treat the operations pages for `bijux-canon-agent` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
+The operations pages make common tasks repeatable without relearning workflows from logs or oral history.
 
 ## Visual Summary
 

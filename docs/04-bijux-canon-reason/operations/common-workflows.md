@@ -15,7 +15,7 @@ This page makes those paths familiar and repeatable. Readers should not have
 to rediscover the same workflow from scratch every time they debug, extend, or
 review the package.
 
-Treat the operations pages for `bijux-canon-reason` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
+The operations pages make common tasks repeatable without relearning workflows from logs or oral history.
 
 ## Visual Summary
 

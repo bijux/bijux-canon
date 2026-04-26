@@ -14,7 +14,7 @@ When you need to understand a change in `bijux-canon-reason`, use this reading o
 This page is intentionally practical. Its purpose is to shorten the path from a
 question in review to the files that actually explain the answer.
 
-Treat the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
 
 ## Visual Summary
 

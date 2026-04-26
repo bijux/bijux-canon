@@ -13,11 +13,9 @@ Every package run follows a simple lifecycle: inputs enter through interfaces, d
 application code coordinate the work, and durable artifacts or responses leave
 the package.
 
-The value of this page is speed. A reader should be able to skim it and leave
-with one coherent story about how work moves through `bijux-canon-runtime` from
-entrypoint to result.
+This page is built for speed. It gives one coherent story about how work moves through `bijux-canon-runtime` from entrypoint to result.
 
-Read the foundation pages as the durable package description for `bijux-canon-runtime`. If the package still feels blurry after this section, the boundary story is not clear enough yet.
+The foundation pages are the durable package description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Visual Summary
 

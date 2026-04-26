@@ -17,7 +17,7 @@ together.
 This page is here to answer a simple but important question: why is this work a
 package at all, instead of just another folder inside a single giant project?
 
-Read the foundation pages as the durable package description for `bijux-canon-reason`. If the package still feels blurry after this section, the boundary story is not clear enough yet.
+The foundation pages are the durable package description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
 
 ## Visual Summary
 

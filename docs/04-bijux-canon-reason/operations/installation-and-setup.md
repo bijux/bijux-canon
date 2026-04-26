@@ -16,7 +16,7 @@ This page exists to keep setup honest. A maintainer should be able to tell which
 files actually define installation truth and which dependencies are merely
 present in the environment for unrelated reasons.
 
-Treat the operations pages for `bijux-canon-reason` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
+The operations pages make common tasks repeatable without relearning workflows from logs or oral history.
 
 ## Visual Summary
 

@@ -15,7 +15,7 @@ with concrete examples.
 Examples are doing real work here. They let an impatient reader test whether the
 package story is credible without reconstructing usage from source alone.
 
-Treat the interfaces pages for `bijux-canon-agent` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+The interface pages define what the package is prepared to defend before a dependency forms.
 
 ## Visual Summary
 

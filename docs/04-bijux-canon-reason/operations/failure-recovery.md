@@ -15,7 +15,7 @@ This page helps a maintainer stabilize the situation before trying to improve
 it. The first question is not always how to fix the bug; it is how to locate
 the right evidence quickly.
 
-Treat the operations pages for `bijux-canon-reason` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
+The operations pages make common tasks repeatable without relearning workflows from logs or oral history.
 
 ## Visual Summary
 

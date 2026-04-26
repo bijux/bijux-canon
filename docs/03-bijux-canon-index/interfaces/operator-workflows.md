@@ -11,11 +11,9 @@ last_reviewed: 2026-04-04
 
 Operator workflows should start from documented package entrypoints and end in reviewable outputs.
 
-This page connects interface prose to real use. A reader should leave with a
-picture of how commands, APIs, inputs, and outputs hang together in a workflow
-an operator can actually repeat.
+This page connects interface prose to real use by showing how commands, APIs, inputs, and outputs hang together in a workflow an operator can actually repeat.
 
-Treat the interfaces pages for `bijux-canon-index` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+The interface pages define what the package is prepared to defend before a dependency forms.
 
 ## Visual Summary
 

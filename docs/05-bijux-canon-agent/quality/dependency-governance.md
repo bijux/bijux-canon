@@ -16,7 +16,7 @@ This page keeps dependency review from feeling bureaucratic. Dependencies
 matter because they reshape what the package relies on, what it exposes, and
 what downstream maintainers must now trust.
 
-Treat the quality pages for `bijux-canon-agent` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+The quality pages show how trust is earned and where skepticism still belongs.
 
 ## Current Dependency Themes
 

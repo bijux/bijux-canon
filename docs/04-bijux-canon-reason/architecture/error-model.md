@@ -16,7 +16,7 @@ Good error explanations reduce two kinds of waste at once: operator confusion in
 the moment and architectural confusion during later review. The package should
 fail in ways that still preserve the boundary story.
 
-Treat the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
 
 ## Visual Summary
 

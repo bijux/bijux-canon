@@ -60,7 +60,7 @@ close the gap instead of guessing.
   `https://bijux.io/bijux-canon/05-bijux-canon-agent/`, or
   `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
 - inspect compatibility package metadata if the question is about what remains preserved
-- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/`
+- open `https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/`
   when the question turns back to why continuity still matters
 
 ## Limits

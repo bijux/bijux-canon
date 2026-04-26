@@ -27,9 +27,9 @@ test, and build-related work.
 
 ## Reader Route
 
-- read this page when the main question is where CI-oriented make targets live
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
+- open this page when the main question is where CI-oriented make targets live
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
   for the workflow that calls repository and package verification
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/repository-layout/`
   for the wider `makes/` tree layout
 

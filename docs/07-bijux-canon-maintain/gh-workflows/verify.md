@@ -28,10 +28,10 @@ and `lint` jobs.
 
 ## Reader Route
 
-- read this page when the main question is how repository verification runs on
+- open this page when the main question is how repository verification runs on
   pushes and pull requests
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/`
   for the reusable workflow building blocks behind the package matrix
-- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
+- open `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
   for the make-layer target families behind the workflow
 

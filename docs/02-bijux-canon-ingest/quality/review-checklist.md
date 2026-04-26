@@ -15,7 +15,7 @@ The checklist is not here to slow people down with ceremony. It is here to stop
 fast review from becoming shallow review when a change touches boundaries,
 contracts, or proof.
 
-Treat the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+The quality pages show how trust is earned and where skepticism still belongs.
 
 ## Checklist
 

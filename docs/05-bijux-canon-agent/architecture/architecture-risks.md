@@ -15,7 +15,7 @@ This page keeps risk language concrete. The right risks are the ones that
 would make the package harder to reason about even if the current implementation
 still appears to work.
 
-Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+The architecture pages are a reviewer-facing map of structure and flow. They shorten code reading instead of replacing it.
 
 ## Visual Summary
 
