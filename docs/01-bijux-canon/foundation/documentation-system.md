@@ -4,111 +4,48 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Documentation System
 
-The root documentation site is the canonical handbook for repository and
-package behavior. It uses one landing page, section indexes, and stable topic
-pages so readers can move from orientation into checked-in proof without
-guesswork.
+The `bijux-canon` handbook exists to solve three reader problems quickly:
+choosing the right owner, finding the proof behind a claim, and seeing where a
+documentation page stops making claims.
 
-The goal is reader trust. The handbook should help a reviewer understand the
-design quickly, help a maintainer find the concrete anchors behind a claim, and
-stay explicit about what docs can explain versus what code, schemas, tests, and
-release assets must still prove.
+The site is organized around one landing page, one repository handbook, one
+five-branch handbook for each canonical product package, one maintenance
+handbook, and one compatibility handbook. That structure is useful only if it
+reduces routing mistakes and shortens the path from prose to checked-in proof.
 
-## Visual Summary
+## What This System Prevents
 
-```mermaid
-flowchart TB
-    home["Home page"]
-    repo["Repository handbook"]
-    product["Five product handbooks"]
-    maintain["Maintenance handbook"]
-    compat["Compatibility handbook"]
-    home --> repo
-    home --> product
-    home --> maintain
-    home --> compat
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class home page;
-    class repo anchor;
-    class product positive;
-    class maintain action;
-    class compat caution;
-```
+- root pages that drift into package-local product explanation
+- package pages that hide their ownership boundary behind generic prose
+- maintainer pages that look like product docs
+- compatibility pages that quietly feel canonical instead of transitional
 
-## Handbook Shape
+## Current Proof Model
 
-- one landing page that explains the split and routes readers quickly
-- one repository handbook for cross-package rules and shared assets
-- one five-category handbook per canonical product package
-- one maintainer handbook for repository-health automation
-- one compatibility handbook for legacy names and migration pressure
+- `mkdocs.yml` defines the published structure readers actually navigate
+- `docs/` carries the handbook entry surfaces and topic pages
+- `packages/`, `apis/`, `Makefile`, `makes/`, and `.github/workflows/` supply
+  the concrete proof behind most cross-page claims
 
-## Published Handbook Sections
+## Fix The Weakest Surface First
 
-- `https://bijux.io/bijux-canon/01-bijux-canon/` for repository-wide rules and
-  shared assets
-- `https://bijux.io/bijux-canon/02-bijux-canon-ingest/` through
-  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` for package handbooks
-- `https://bijux.io/bijux-canon/07-bijux-canon-maintain/` for repository-health
-  automation
-- `https://bijux.io/bijux-canon/08-compat-packages/` for legacy names and
-  migration guidance
-
-## Documentation Rules
-
-- use stable filenames that describe durable intent
-- keep package handbooks on the same five-category spine
-- separate product docs, maintainer docs, and legacy-compat docs
-- update docs in the same change series that changes the underlying behavior
-
-## Concrete Anchors
-
-- `pyproject.toml` for workspace metadata and commit conventions
-- `Makefile` and `makes/` for root automation
-- `apis/` and `.github/workflows/` for schema and validation review
+Improve the page that most often sends readers to the wrong owner, not the page
+that already reads well. In this repository that usually means fixing a blurred
+boundary, a missing proof path, or a route block that sends readers in circles.
 
 ## Open This Page When
 
-- you are dealing with repository-wide seams rather than one package alone
-- you need shared workflow, schema, or governance context before changing code
-- you want the monorepo view that sits above the package handbooks
+- the main question is where a topic belongs in the published handbook
+- a page is starting to blur repository, package, maintenance, or compatibility ownership
+- the docs structure itself is under review rather than one package behavior
 
-## Decision Rule
+## Bottom Line
 
-Open this page when the main question is where a topic belongs in the published
-handbook. If the answer depends mostly on one package's local behavior, open
-that package handbook instead of expanding repository pages past their boundary.
-
-## What You Can Resolve Here
-
-- which handbook section owns a topic
-- which repository assets support the shared documentation model
-- how repository documentation stops before package-local ownership
-
-## Review Focus
-
-- compare the page claims with the real root files, workflows, or schema assets
-- check that repository guidance still stops where package ownership begins
-- confirm that any repository rule described here is still enforceable in code or automation
-
-## Limits
-
-The handbook organizes explanation, but it does not replace code, schemas,
-tests, or release assets as proof.
-
-## Read Next
-
-- open the owning package docs when the question stops being repository-wide
-- check root files, schemas, or workflows named here before trusting prose alone
-- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
-  when the root issue is really about automation or drift tooling
-
+The handbook earns trust only when it shortens the path from orientation to
+proof. If a page explains itself well but still sends readers to the wrong
+surface, the system is not doing its job yet.

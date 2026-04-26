@@ -4,95 +4,47 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Workspace Layout
 
-The repository layout is intentionally direct so maintainers can see where a
-concern belongs before they open any code. The directory tree is part of the
-design language: it should reinforce the package split instead of making it
-harder to see.
+The repository layout is part of the design language. A good top-level layout
+makes it obvious where a concern belongs before a reader opens implementation
+detail.
 
-## Visual Summary
+## Top-Level Areas
 
-```mermaid
-flowchart TB
-    root["Workspace root"]
-    docs["docs/<br/>published handbook source"]
-    packages["packages/<br/>publishable units"]
-    apis["apis/<br/>tracked API contracts"]
-    makes["makes/<br/>shared make modules"]
-    workflows[".github/workflows/<br/>verification and release"]
-    root --> docs
-    root --> packages
-    root --> apis
-    root --> makes
-    root --> workflows
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class root page;
-    class docs,apis anchor;
-    class packages positive;
-    class makes,workflows action;
-```
-
-## Top-Level Directories
-
-- `packages/` for publishable Python distributions
+- `packages/` for publishable Python distributions and their owned behavior
 - `apis/` for shared schema sources and pinned artifacts
-- `docs/` for the canonical handbook
-- `makes/` and `Makefile` for workspace automation
-- `artifacts/` for generated or checked validation outputs
+- `docs/` for the canonical handbook that routes readers into owners
+- `makes/` and `Makefile` for shared automation and command routing
+- `.github/workflows/` for verification and release execution
+- `artifacts/` for generated or checked validation output
 - `configs/` for root-managed tool configuration
 
-## Layout Rule
+## Governed Versus Local
 
-A concern should live at the root only when it serves more than one package or
-when it is about the workspace itself.
+Treat `apis/`, `docs/`, `Makefile`, `makes/`, and `.github/workflows/` as
+shared root surfaces. Treat `packages/` as the place where product behavior and
+package-local contracts should stay visible.
 
-## Concrete Anchors
+## Skepticism Signals
 
-- `pyproject.toml` for workspace metadata and commit conventions
-- `Makefile` and `makes/` for root automation
-- `apis/` and `.github/workflows/` for schema and validation review
+Be cautious when a change:
 
-## Open This Page When
+- introduces product logic under root automation instead of in a package
+- writes proof output into an ad hoc location rather than a governed surface
+- adds a top-level directory without making the ownership reason obvious
 
-- you are dealing with repository-wide seams rather than one package alone
-- you need shared workflow, schema, or governance context before changing code
-- you want the monorepo view that sits above the package handbooks
+## First Proof Checks
 
-## Decision Rule
+- `packages/` to confirm package-local ownership
+- `Makefile`, `makes/`, and `.github/workflows/` for shared automation claims
+- `apis/` and `docs/` for shared schema or documentation structure claims
 
-Open this page when the main question is where a repository concern lives in the
-tree. If the answer depends mostly on one package's internal layout, open
-that package handbook instead.
+## Bottom Line
 
-## What You Can Resolve Here
-
-- which top-level directories carry which kinds of repository concern
-- which shared assets deserve inspection for root-level work
-- how root layout differs from package-local ownership
-
-## Review Focus
-
-- compare the page claims with the real root files, workflows, or schema assets
-- check that repository guidance still stops where package ownership begins
-- confirm that any repository rule described here is still enforceable in code or automation
-
-## Limits
-
-This page maps the repository tree, but code, schemas, workflows, and package
-handbooks still define the detailed behavior inside each area.
-
-## Read Next
-
-- open the owning package docs when the question stops being repository-wide
-- check root files, schemas, or workflows named here before trusting prose alone
-- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
-  when the issue is really about automation or drift tooling
-
+A top-level layout is working when it reinforces the package split instead of
+hiding it. If the tree makes a concern harder to place, the layout is sending
+the wrong signal.

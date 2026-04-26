@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Ownership Model
@@ -12,18 +12,10 @@ last_reviewed: 2026-04-09
 The repository is easiest to trust when ownership can be stated in layers
 without hesitation.
 
-The canonical packages own product behavior. They define the domain surfaces
-that end users and downstream code are meant to depend on. The repository root
-owns only what truly crosses package boundaries: shared documentation structure,
-schema governance, build and validation coordination, and the release framing
-that keeps the package family understandable as one system.
-
-The maintenance handbook exists for repository health, not product behavior.
-That distinction matters because maintainer tooling can affect many packages at
-once. It should therefore explain and enforce repository rules without becoming
-a second product layer above the packages. Compatibility material exists for a
-different reason again: preserving legacy names while clearly pointing readers
-toward the canonical package family.
+The canonical packages own product behavior. The repository root owns only what
+truly crosses package boundaries. The maintenance handbook owns repository
+health tooling. Compatibility material owns legacy continuity while it still
+points readers back toward the canonical package family.
 
 ## Ownership Layers
 
@@ -34,16 +26,22 @@ toward the canonical package family.
 - legacy continuity belongs in `packages/compat-*` and the compatibility
   handbook
 
-## Boundary Rule
+## Conflict Case
 
-If a change can be explained honestly from one package handbook, it usually
-does not belong at the root. The root should absorb only cross-package truth,
-never convenience.
+If a release check needs to enforce one rule across ingest, index, and runtime,
+the rule belongs at the root or in maintenance. If a helper script starts
+encoding ingest-local retrieval preparation, that logic belongs back in
+`bijux-canon-ingest` even if the script lives under root tooling today.
 
-## Review Questions
+## What Would Change This Model
 
-- does this work change a package contract or a repository rule
-- would a package reader still understand the behavior without opening a root
-  document
-- is maintainer tooling clarifying package truth or quietly overriding it
+The model should change only when a responsibility is genuinely shared across
+more than one package and can be proven from shared code, schemas, workflows,
+or release assets. Convenience, history, or contributor familiarity are not
+enough.
 
+## Bottom Line
+
+The root should absorb cross-package truth, not overflow. If one package can
+own a behavior honestly, the ownership model is stronger when that package keeps
+it.

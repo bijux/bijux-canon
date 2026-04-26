@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Repository Scope
@@ -13,33 +13,6 @@ The repository root is intentionally narrow. It exists to coordinate packages
 that must move together, not to become a second implementation layer above
 them.
 
-A good scope test is simple: if a question can be answered honestly from one
-package handbook, it probably does not belong at the root. Root scope should
-stay reserved for rules, assets, and workflows that genuinely sit across
-package boundaries.
-
-## Visual Summary
-
-```mermaid
-flowchart LR
-    root["Root ownership"]
-    shared["Shared only<br/>layout, docs rules, schema governance"]
-    packages["Product packages<br/>behavior and public contracts"]
-    maintain["Maintenance surfaces<br/>automation and repository health"]
-    root --> shared
-    root --> packages
-    root --> maintain
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class root page;
-    class shared positive;
-    class packages caution;
-    class maintain anchor;
-```
-
 ## In Scope
 
 - workspace-level build and test orchestration
@@ -47,51 +20,32 @@ flowchart LR
 - API schema storage and drift checks that involve multiple packages
 - release tagging and versioning conventions shared across packages
 
-## Out of Scope
+## Out Of Scope
 
 - package-local domain behavior that belongs inside a package handbook
 - hidden root logic that bypasses package APIs
 - undocumented exceptions to the published package boundaries
 
-## Concrete Anchors
+## Tempting But Wrong
 
-- `pyproject.toml` for workspace metadata and commit conventions
-- `Makefile` and `makes/` for root automation
-- `apis/` and `.github/workflows/` for schema and validation review
+A reusable script that seems helpful because it knows how reason forms claims or
+how ingest assembles retrieval-ready output still belongs in the owning package.
+The root may call into that package behavior, but it should not become the new
+owner of it.
 
-## Open This Page When
+## Hard Stop Rule
 
-- you are dealing with repository-wide seams rather than one package alone
-- you need shared workflow, schema, or governance context before changing code
-- you want the monorepo view that sits above the package handbooks
+If one package handbook can answer the question honestly, the root should stop
+expanding and send the reader there.
 
-## Decision Rule
+## First Proof Checks
 
-Open this page when the main question is whether a concern belongs at the
-repository root at all. If one package handbook can answer it honestly, that
-package should stay the owner.
+- `packages/` when ownership is in doubt
+- `apis/` when the concern is shared schema truth
+- `Makefile`, `makes/`, and `.github/workflows/` when the concern is shared
+  workflow or validation enforcement
 
-## What You Can Resolve Here
+## Bottom Line
 
-- which concerns belong at the repository root
-- which shared assets and workflows justify root ownership
-- how repository scope differs from package-local ownership
-
-## Review Focus
-
-- compare the page claims with the real root files, workflows, or schema assets
-- check that repository guidance still stops where package ownership begins
-- confirm that any repository rule described here is still enforceable in code or automation
-
-## Limits
-
-This page sets the ownership boundary, but package-local docs, code, schemas,
-and tests still define the details on the package side of that boundary.
-
-## Read Next
-
-- open the owning package docs when the question stops being repository-wide
-- check root files, schemas, or workflows named here before trusting prose alone
-- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
-  when the issue is really about automation or drift tooling
-
+The root is for shared rules, assets, and workflows that genuinely cross
+package boundaries. Anything less should stay with the owning package.
