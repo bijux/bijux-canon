@@ -16,38 +16,6 @@ family.
 Their job is migration continuity, not long-term product growth. A preserved
 legacy name is a bridge to a canonical package, not an equal design center.
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    legacyDist["legacy distribution<br/>name in requirements"]
-    legacyImport["legacy import<br/>name in code"]
-    legacyCommand["legacy command<br/>name in scripts"]
-    compat["compatibility package<br/>preserved entry surface"]
-    catalog["catalog<br/>exact legacy-to-canonical mapping"]
-    migration["migration<br/>continuity, validation, retirement"]
-    canon["canonical package<br/>current owned behavior"]
-    retire["retirement review<br/>remove bridge when dependency ends"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    legacyDist --> compat
-    legacyImport --> compat
-    legacyCommand --> compat
-    compat --> catalog
-    compat --> migration
-    catalog --> canon
-    migration --> canon
-    migration --> retire
-    class compat page;
-    class canon positive;
-    class legacyDist,legacyImport,legacyCommand caution;
-    class catalog,migration anchor;
-    class retire action;
-```
-
 ## Pages In This Handbook
 
 - [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) for legacy package entries, preserved names, and

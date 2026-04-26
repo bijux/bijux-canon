@@ -18,26 +18,6 @@ what downstream maintainers must now trust.
 
 Treat the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    dep["Dependency change"]
-    authority["Does it broaden package authority?"]
-    setup["Does it change setup or runtime risk?"]
-    validate["Re-check package proof<br/>tests/unit for module-level behavior across"]
-    dep --> authority --> setup --> validate
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class dep page;
-    class authority caution;
-    class setup positive;
-    class validate anchor;
-```
-
 ## Current Dependency Themes
 
 - pydantic

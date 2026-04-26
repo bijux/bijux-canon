@@ -18,30 +18,6 @@ This package cannot hide behind generic green builds. It has to show that
 claim formation stays deterministic, verification remains meaningful, and trace
 artifacts still support replay and audit instead of only looking complete.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    units["unit tests across planning, retrieval, reasoning, verification"]
-    e2e["end-to-end CLI, API, and replay scenarios"]
-    perf["retrieval performance and benchmark pressure"]
-    invariants["determinism, trace integrity, and evidence safety"]
-    limits["known limits and explicit risk register"]
-    reader["reader question<br/>what evidence makes this reasoning output trustworthy?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class units,page reader;
-    class e2e,invariants positive;
-    class perf,limits caution;
-    units --> reader
-    e2e --> reader
-    perf --> reader
-    invariants --> reader
-    limits --> reader
-```
-
 ## Start Here
 
 - open [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/) for the proof layers that matter most

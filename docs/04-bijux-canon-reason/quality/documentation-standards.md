@@ -17,26 +17,6 @@ more important than uniformity for its own sake.
 
 Treat the quality pages for `bijux-canon-reason` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    change["Package behavior changes"]
-    docs["Update the handbook in the same change series"]
-    anchors["Point to real code, artifacts, and tests"]
-    shape["Keep structure stable for readers"]
-    change --> docs --> anchors --> shape
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class change page;
-    class docs positive;
-    class anchors anchor;
-    class shape action;
-```
-
 ## Standards
 
 - use the shared five-category package spine

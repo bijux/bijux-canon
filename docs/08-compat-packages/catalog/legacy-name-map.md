@@ -17,34 +17,6 @@ last_reviewed: 2026-04-04
 
 These compatibility pages make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    legacyFlows["agentic-flows"]
-    legacyAgent["bijux-agent"]
-    legacyRag["bijux-rag"]
-    legacyRar["bijux-rar"]
-    legacyVex["bijux-vex"]
-    canonRuntime["bijux-canon-runtime"]
-    canonAgent["bijux-canon-agent"]
-    canonIngest["bijux-canon-ingest"]
-    canonReason["bijux-canon-reason"]
-    canonIndex["bijux-canon-index"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    legacyFlows --> canonRuntime
-    legacyAgent --> canonAgent
-    legacyRag --> canonIngest
-    legacyRar --> canonReason
-    legacyVex --> canonIndex
-    class legacyFlows,legacyAgent,legacyRag,legacyRar,legacyVex caution;
-    class canonRuntime,canonAgent,canonIngest,canonReason,canonIndex positive;
-```
-
 ## Concrete Anchors
 
 - `packages/compat-*` for the preserved legacy packages

@@ -16,33 +16,6 @@ The compatibility layer is a bridge with a cost. Preserving old names is
 sometimes necessary, but it is still a debt that should stay visible and
 justified.
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    legacy["Existing environments<br/>still use legacy names"]
-    compat["Compatibility packages<br/>preserve those names"]
-    canon["Canonical packages<br/>remain the current destination"]
-    newWork["New development<br/>goes directly to canonical packages"]
-    cost["Every preserved alias<br/>adds maintenance debt"]
-    review["Review whether the bridge<br/>still serves a supported need"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    legacy --> compat
-    compat --> canon
-    newWork --> canon
-    compat --> cost
-    cost --> review
-    canon --> review
-    class compat page;
-    class canon,newWork positive;
-    class legacy caution;
-    class cost,review action;
-```
-
 ## Preserved Surfaces
 
 - legacy distribution names

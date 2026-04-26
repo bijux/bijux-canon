@@ -15,41 +15,6 @@ during migration.
 Preserved imports are a migration aid, not a sign that the legacy name regained
 first-class status.
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    legacy1["agentic_flows"]
-    legacy2["bijux_agent"]
-    legacy3["bijux_rag"]
-    legacy4["bijux_rar"]
-    legacy5["bijux_vex"]
-    canon1["bijux_canon_runtime"]
-    canon2["bijux_canon_agent"]
-    canon3["bijux_canon_ingest"]
-    canon4["bijux_canon_reason"]
-    canon5["bijux_canon_index"]
-    note["Older code keeps importing<br/>the old module name during migration"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    legacy1 --> canon1
-    legacy2 --> canon2
-    legacy3 --> canon3
-    legacy4 --> canon4
-    legacy5 --> canon5
-    note --> legacy1
-    note --> legacy2
-    note --> legacy3
-    note --> legacy4
-    note --> legacy5
-    class canon1,canon2,canon3,canon4,canon5 positive;
-    class legacy1,legacy2,legacy3,legacy4,legacy5 caution;
-    class note anchor;
-```
-
 ## Current Import Roots
 
 - `agentic_flows`

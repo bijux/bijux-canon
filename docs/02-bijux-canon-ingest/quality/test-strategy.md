@@ -17,26 +17,6 @@ explains why these tests exist, not just where they live.
 
 Treat the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    change["Change touches the package"]
-    unit["Fast proof<br/>tests/unit for module-level behavior across"]
-    endtoend["Boundary proof<br/>tests/e2e for package boundary coverage"]
-    deeper["Long-lived proof<br/>tests/eval for corpus-backed behavior checks"]
-    change --> unit --> endtoend --> deeper
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class change page;
-    class unit anchor;
-    class endtoend positive;
-    class deeper action;
-```
-
 ## Test Areas
 
 - tests/unit for module-level behavior across processing, retrieval, and interfaces

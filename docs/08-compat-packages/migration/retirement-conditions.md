@@ -15,33 +15,6 @@ that still need it are understood and the retirement path is documented.
 Retirement is where honesty matters most. A package should not survive on
 vague anxiety, and it should not disappear on untested optimism.
 
-## Visual Summary
-
-```mermaid
-flowchart TB
-    evidence1["No supported consumers<br/>still depend on the old name"]
-    evidence2["Migration guidance has been published<br/>and used long enough to be credible"]
-    evidence3["Automation and packaging changes<br/>have been tested"]
-    gate["All retirement evidence is verified"]
-    retire["Approve retirement"]
-    wait["If any evidence is missing,<br/>keep the package temporarily and close the gap"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    evidence1 --> gate
-    evidence2 --> gate
-    evidence3 --> gate
-    gate -- yes --> retire
-    gate -- no --> wait
-    class retire positive;
-    class evidence1 caution;
-    class evidence2 anchor;
-    class evidence3,gate page;
-    class wait action;
-```
-
 ## Retirement Signals
 
 - no remaining supported consumers depend on the legacy name

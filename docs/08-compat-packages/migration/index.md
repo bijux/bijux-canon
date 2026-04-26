@@ -17,29 +17,6 @@ names, what continuity must be preserved while both exist, what validation must
 run during the overlap, and what evidence is required before a compatibility
 package can disappear.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    legacy["legacy dependency<br/>name still in use"]
-    target["canonical target<br/>current package family"]
-    continuity["continuity work<br/>imports, commands, requirements"]
-    validation["validation posture<br/>prove migration safety"]
-    retirement["retirement decision<br/>remove preserved package"]
-    legacy --> target
-    target --> continuity
-    continuity --> validation
-    validation --> retirement
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class legacy page;
-    class target,continuity positive;
-    class validation anchor;
-    class retirement caution;
-```
-
 ## Pages In Migration
 
 - [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)

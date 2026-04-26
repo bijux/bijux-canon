@@ -17,26 +17,6 @@ should mean that behavior, explanation, and proof all move together.
 
 Treat the quality pages for `bijux-canon-index` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    code["Code agrees with the new behavior"]
-    docs["Docs explain the same behavior"]
-    tests["Tests protect the same behavior"]
-    release["Release-facing impact is visible"]
-    code --> docs --> tests --> release
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class code positive;
-    class docs anchor;
-    class tests page;
-    class release action;
-```
-
 ## Done Means
 
 - code, docs, and tests agree on the new behavior

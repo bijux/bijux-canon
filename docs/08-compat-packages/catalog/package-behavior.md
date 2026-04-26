@@ -18,35 +18,6 @@ become a parallel product line with its own growing surface area.
 
 These compatibility pages make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    metadata["Package metadata<br/>keeps the old distribution name"]
-    imports["Legacy import root<br/>re-exports canonical code"]
-    command["Legacy command<br/>points at canonical CLI when present"]
-    docs["README and overview<br/>point readers to the right package"]
-    compat["Compatibility package<br/>stays intentionally thin"]
-    canon["Canonical package<br/>holds the real implementation"]
-    reject["No feature growth<br/>inside the compatibility layer"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    metadata --> compat
-    imports --> compat
-    command --> compat
-    docs --> compat
-    compat --> canon
-    compat --> reject
-    class compat page;
-    class canon positive;
-    class metadata,imports,command caution;
-    class docs anchor;
-    class reject action;
-```
-
 ## Expected Behavior
 
 - preserve name-based compatibility

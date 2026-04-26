@@ -19,30 +19,6 @@ role behavior, pipeline control, trace integrity, schema contracts, and result
 assembly still line up under unit, invariant, API, end-to-end, and sometimes
 live-provider pressure.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    units["unit tests for agents, pipeline, traces, and results"]
-    invariants["invariant tests for layering and package discipline"]
-    api["API and schema contract tests"]
-    e2e["end-to-end orchestration scenarios"]
-    live["optional live-provider and integration pressure"]
-    reader["reader question<br/>what evidence makes this orchestrated run trustworthy?"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class units,page reader;
-    class invariants,api,e2e positive;
-    class live caution;
-    units --> reader
-    invariants --> reader
-    api --> reader
-    e2e --> reader
-    live --> reader
-```
-
 ## Start Here
 
 - open [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/) for the proof layers that matter most

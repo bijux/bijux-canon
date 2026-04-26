@@ -21,27 +21,6 @@ Runtime quality is not only about unit correctness. It is also about whether
 execution traces, replay behavior, verification arbitration, and persistence
 rules still justify trusting a governed run.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    reader["reader question<br/>what evidence makes a runtime change believable?"]
-    strategy["proof layers<br/>unit, contracts, api, e2e, regression"]
-    invariants["what must not drift<br/>replay, determinism, persistence"]
-    review["review bars<br/>verification and acceptability"]
-    risks["limits and remaining uncertainty"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    class reader page;
-    class strategy,invariants,review positive;
-    class risks caution;
-    reader --> strategy
-    reader --> invariants
-    reader --> review
-    reader --> risks
-```
-
 ## Start Here
 
 - open [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/) for the shortest explanation of the

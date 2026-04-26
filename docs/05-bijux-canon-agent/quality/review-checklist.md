@@ -17,26 +17,6 @@ contracts, or proof.
 
 Treat the quality pages for `bijux-canon-agent` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    review["Review a package change"]
-    boundary["Did ownership stay correct?"]
-    docs["Did docs and tests move with behavior?"]
-    names["Will the naming age well?"]
-    review --> boundary --> docs --> names
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class review page;
-    class boundary positive;
-    class docs anchor;
-    class names action;
-```
-
 ## Checklist
 
 - did ownership stay inside the correct package boundary

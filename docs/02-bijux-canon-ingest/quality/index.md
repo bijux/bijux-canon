@@ -17,31 +17,6 @@ These pages keep reviewers honest about the cost of being wrong at the front
 of the pipeline. If ingest silently drifts, index, reasoning, and runtime can
 all look healthy while building on unstable prepared data.
 
-## Visual Summary
-
-```mermaid
-flowchart LR
-    source["source material changes"]
-    determinism["determinism proof<br/>same inputs, same prepared output"]
-    contracts["contract proof<br/>chunks, records, artifacts stay aligned"]
-    review["review pressure<br/>what a safe change must show"]
-    risks["visible limitations<br/>known blind spots and tradeoffs"]
-    downstream["downstream trust<br/>index and runtime depend on this"]
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class source,page downstream;
-    class determinism,contracts positive;
-    class review action;
-    class risks caution;
-    source --> determinism --> contracts --> downstream
-    determinism --> review
-    contracts --> review
-    review --> risks
-```
-
 ## Start Here
 
 - open [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) for the broad proof story behind
