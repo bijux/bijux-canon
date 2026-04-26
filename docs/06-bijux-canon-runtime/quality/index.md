@@ -9,7 +9,9 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-This section explains how `bijux-canon-runtime` earns trust: which proof surfaces matter, which risks stay visible, and what done should mean after a real change.
+Use this section to understand how `bijux-canon-runtime` earns trust: which
+proof surfaces matter, which risks stay visible, and what done should mean
+after a real change.
 
 These pages explain the proof story for `bijux-canon-runtime`. They should make
 trust, skepticism, and review pressure visible enough that passing checks do
@@ -42,34 +44,34 @@ flowchart LR
 
 ## Start Here
 
-- open [Test Strategy](test-strategy.md) for the shortest explanation of the
+- use [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/) for the shortest explanation of the
   runtime proof stack
-- open [Invariants](invariants.md) when a change could disturb replay,
+- use [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/) when a change could disturb replay,
   persistence, or determinism claims
-- open [Change Validation](change-validation.md) when the question is what to
+- use [Change Validation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/change-validation/) when the question is what to
   run for one concrete runtime change
-- open [Known Limitations](known-limitations.md) and [Risk Register](risk-register.md)
+- use [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
   before claiming the package proves more than it currently does
 
-## Pages in This Section
+## Pages In Quality
 
-- [Test Strategy](test-strategy.md)
-- [Invariants](invariants.md)
-- [Review Checklist](review-checklist.md)
-- [Documentation Standards](documentation-standards.md)
-- [Definition of Done](definition-of-done.md)
-- [Dependency Governance](dependency-governance.md)
-- [Change Validation](change-validation.md)
-- [Known Limitations](known-limitations.md)
-- [Risk Register](risk-register.md)
+- [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/)
+- [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/)
+- [Review Checklist](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/review-checklist/)
+- [Documentation Standards](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/documentation-standards/)
+- [Definition of Done](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/definition-of-done/)
+- [Dependency Governance](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/dependency-governance/)
+- [Change Validation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/change-validation/)
+- [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/)
+- [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
 
-## Use This Page When
+## Use Quality When
 
 - you are reviewing tests, invariants, limitations, or ongoing risks
 - you need evidence that the documented contract is actually defended
 - you are deciding whether a change is truly done rather than merely implemented
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is still why runtime owns a behavior at all
 - you need module layout or procedure before you can evaluate the proof
@@ -89,20 +91,20 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Interfaces](../interfaces/index.md) when the proof question becomes
+- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the proof question becomes
   about a named CLI, API, schema, or artifact contract
-- open [Operations](../operations/index.md) when the needed evidence depends on
+- use [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the needed evidence depends on
   a repeatable runtime workflow
-- open [Architecture](../architecture/index.md) when the proof gap points to
+- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when the proof gap points to
   structural drift rather than missing checks
 
-## Reader Takeaway
+## Why Use Quality
 
 Use `Quality` to decide whether runtime has actually earned trust after a
 change. If one narrow green check hides a wider replay, persistence, contract,
 or validation gap, the work is not done yet.
 
-## Purpose
+## What You Get
 
-This page explains how to use the quality section for `bijux-canon-runtime`
-without repeating the detail that belongs on the topic pages beneath it.
+This page gives you the tests, invariants, review, validation, and risk route
+through `bijux-canon-runtime` before you inspect a specific trust surface.

@@ -9,7 +9,9 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-This section explains how to install, run, diagnose, and release `bijux-canon-runtime` from checked-in workflow guidance instead of team memory.
+Use this section to install, run, diagnose, and release
+`bijux-canon-runtime` from checked-in workflow guidance instead of team
+memory.
 
 These pages are the checked-in operating memory for `bijux-canon-runtime`.
 They should let a maintainer move from setup to diagnosis to release without
@@ -45,34 +47,34 @@ flowchart LR
 
 ## Start Here
 
-- open [Common Workflows](common-workflows.md) when the real question is how to
+- use [Common Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/common-workflows/) when the real question is how to
   run the governed path safely
-- open [Observability and Diagnostics](observability-and-diagnostics.md) when
+- use [Observability and Diagnostics](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/observability-and-diagnostics/) when
   you need to inspect replay, store, or trace behavior
-- open [Failure Recovery](failure-recovery.md) when a persisted or replayed run
+- use [Failure Recovery](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/failure-recovery/) when a persisted or replayed run
   has diverged
-- open [Security and Safety](security-and-safety.md) before broadening runtime
+- use [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/) before broadening runtime
   authority or store access
 
-## Pages in This Section
+## Pages In Operations
 
-- [Installation and Setup](installation-and-setup.md)
-- [Local Development](local-development.md)
-- [Common Workflows](common-workflows.md)
-- [Observability and Diagnostics](observability-and-diagnostics.md)
-- [Performance and Scaling](performance-and-scaling.md)
-- [Failure Recovery](failure-recovery.md)
-- [Release and Versioning](release-and-versioning.md)
-- [Security and Safety](security-and-safety.md)
-- [Deployment Boundaries](deployment-boundaries.md)
+- [Installation and Setup](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/installation-and-setup/)
+- [Local Development](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/local-development/)
+- [Common Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/common-workflows/)
+- [Observability and Diagnostics](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/observability-and-diagnostics/)
+- [Performance and Scaling](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/performance-and-scaling/)
+- [Failure Recovery](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/failure-recovery/)
+- [Release and Versioning](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/release-and-versioning/)
+- [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/)
+- [Deployment Boundaries](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/deployment-boundaries/)
 
-## Use This Page When
+## Use Operations When
 
 - you are installing, running, diagnosing, or releasing the package
 - you need repeatable operational anchors rather than architectural framing
 - you are responding to package behavior in local work, CI, or incident pressure
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is why runtime has authority in the first place
 - you need schema or artifact contract detail rather than procedure
@@ -91,21 +93,21 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Interfaces](../interfaces/index.md) when an operational question turns
+- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when an operational question turns
   into a CLI, API, or schema contract question
-- open [Architecture](../architecture/index.md) when a recovery question really
+- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a recovery question really
   depends on execution or storage structure
-- open [Quality](../quality/index.md) when the real issue is whether the
+- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real issue is whether the
   workflow is sufficiently defended and reviewed
 
-## Reader Takeaway
+## Why Use Operations
 
 Use `Operations` to decide whether a maintainer can repeat runtime workflow
 from checked-in assets instead of memory. If a step works only because someone
 already knows the trick, the package is not documented clearly enough yet.
 
-## Purpose
+## What You Get
 
-This page explains how to use the operations section for
-`bijux-canon-runtime` without repeating the detail that belongs on the topic
-pages beneath it.
+This page gives you the setup, execution, diagnostics, release, and safety
+route through `bijux-canon-runtime` before you open a specific operating
+page.

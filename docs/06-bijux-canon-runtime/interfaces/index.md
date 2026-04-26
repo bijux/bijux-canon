@@ -9,7 +9,8 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-This section explains which commands, APIs, imports, schemas, and artifacts `bijux-canon-runtime` is prepared to stand behind as real surfaces.
+Use this section to understand which commands, APIs, imports, schemas, and
+artifacts `bijux-canon-runtime` is prepared to stand behind as real surfaces.
 
 These pages explain the public face of `bijux-canon-runtime`. They help a
 caller separate deliberate contracts from incidental visibility before a
@@ -45,34 +46,34 @@ flowchart LR
 
 ## Start Here
 
-- open [CLI Surface](cli-surface.md) when the operator-facing run contract is
+- use [CLI Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/cli-surface/) when the operator-facing run contract is
   the real dependency
-- open [API Surface](api-surface.md) when the question is about HTTP behavior
+- use [API Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/api-surface/) when the question is about HTTP behavior
   or frozen schemas
-- open [Artifact Contracts](artifact-contracts.md) when durable run records or
+- use [Artifact Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/artifact-contracts/) when durable run records or
   replay outputs matter more than commands
-- open [Compatibility Commitments](compatibility-commitments.md) before
+- use [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/) before
   changing names, shapes, or schema surfaces that another package may depend on
 
-## Pages in This Section
+## Pages In Interfaces
 
-- [CLI Surface](cli-surface.md)
-- [API Surface](api-surface.md)
-- [Configuration Surface](configuration-surface.md)
-- [Data Contracts](data-contracts.md)
-- [Artifact Contracts](artifact-contracts.md)
-- [Entrypoints and Examples](entrypoints-and-examples.md)
-- [Operator Workflows](operator-workflows.md)
-- [Public Imports](public-imports.md)
-- [Compatibility Commitments](compatibility-commitments.md)
+- [CLI Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/cli-surface/)
+- [API Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/api-surface/)
+- [Configuration Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/configuration-surface/)
+- [Data Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/data-contracts/)
+- [Artifact Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/artifact-contracts/)
+- [Entrypoints and Examples](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/entrypoints-and-examples/)
+- [Operator Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/operator-workflows/)
+- [Public Imports](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/public-imports/)
+- [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/)
 
-## Use This Page When
+## Use Interfaces When
 
 - you need the public command, API, import, schema, or artifact surface
 - you are checking whether a caller can safely rely on a given entrypoint or shape
 - you want the contract-facing side of the package before building on it
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is why runtime owns a behavior rather than a lower package
 - you need execution structure or storage layering before judging a surface
@@ -93,22 +94,22 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Architecture](../architecture/index.md) when a surface question becomes
+- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a surface question becomes
   a module or storage question
-- open [Operations](../operations/index.md) when a contract depends on a
+- use [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when a contract depends on a
   repeatable workflow, migration, or release path
-- open [Quality](../quality/index.md) when the real question is whether the
+- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real question is whether the
   interface is sufficiently defended
 
-## Reader Takeaway
+## Why Use Interfaces
 
 Use `Interfaces` to decide whether a caller-facing surface is explicit enough to
 depend on. If the surface cannot be tied back to code, frozen schemas, named
 artifacts, examples, and tests, treat it as unstable until that evidence is
 visible.
 
-## Purpose
+## What You Get
 
-This page explains how to use the interfaces section for
-`bijux-canon-runtime` without repeating the detail that belongs on the topic
-pages beneath it.
+This page gives you the command, API, artifact, import, and compatibility
+route through `bijux-canon-runtime` before you inspect a specific contract
+surface.

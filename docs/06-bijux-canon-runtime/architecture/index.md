@@ -9,8 +9,9 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-This section explains how `bijux_canon_runtime` is organized so a reviewer can
-follow structure, dependency direction, and execution flow without guessing.
+Use this section to understand how `bijux_canon_runtime` is organized so a
+reviewer can follow structure, dependency direction, and execution flow
+without guessing.
 
 These pages turn `bijux-canon-runtime` from a directory tree into a readable
 design map. Use them when a structural change needs to be grounded in named
@@ -46,33 +47,33 @@ flowchart LR
 
 ## Start Here
 
-- open [Module Map](module-map.md) for the shortest structural tour
-- open [Execution Model](execution-model.md) when you need the plan-to-replay
+- use [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/) for the shortest structural tour
+- use [Execution Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/execution-model/) when you need the plan-to-replay
   path rather than a directory listing
-- open [State and Persistence](state-and-persistence.md) when the real question
+- use [State and Persistence](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/state-and-persistence/) when the real question
   is what becomes durable and where it is stored
-- open [Integration Seams](integration-seams.md) before broadening runtime's
+- use [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/) before broadening runtime's
   dependencies on lower packages or outside systems
 
-## Pages in This Section
+## Pages In Architecture
 
-- [Module Map](module-map.md)
-- [Dependency Direction](dependency-direction.md)
-- [Execution Model](execution-model.md)
-- [State and Persistence](state-and-persistence.md)
-- [Integration Seams](integration-seams.md)
-- [Error Model](error-model.md)
-- [Extensibility Model](extensibility-model.md)
-- [Code Navigation](code-navigation.md)
-- [Architecture Risks](architecture-risks.md)
+- [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/)
+- [Dependency Direction](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/dependency-direction/)
+- [Execution Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/execution-model/)
+- [State and Persistence](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/state-and-persistence/)
+- [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/)
+- [Error Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/error-model/)
+- [Extensibility Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/extensibility-model/)
+- [Code Navigation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/code-navigation/)
+- [Architecture Risks](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/architecture-risks/)
 
-## Use This Page When
+## Use Architecture When
 
 - you are tracing structure, execution flow, or dependency pressure
 - you need to understand how modules fit before refactoring
 - you are reviewing design drift rather than one isolated bug
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is why runtime should own a behavior at all
 - you need CLI, API, schema, or artifact contract detail more than module
@@ -92,22 +93,22 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) when a structural issue is really a
+- use [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when a structural issue is really a
   boundary issue
-- open [Interfaces](../interfaces/index.md) when architecture reaches a public
+- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when architecture reaches a public
   CLI, API, schema, or artifact seam
-- open [Quality](../quality/index.md) when the question becomes whether the
+- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question becomes whether the
   structure is adequately defended by tests and invariants
 
-## Reader Takeaway
+## Why Use Architecture
 
 Use `Architecture` to decide whether a structural change makes runtime easier
 or harder to explain in terms of planning, governed execution, durable state,
 and replay analysis. If the change works only because the design becomes harder
 to read, redesign is safer than acceptance.
 
-## Purpose
+## What You Get
 
-This page explains how to use the architecture section for
-`bijux-canon-runtime` without repeating the detail that belongs on the topic
-pages beneath it.
+This page gives you the module, dependency, execution, and durable-state
+route through `bijux-canon-runtime` before you inspect a specific structural
+topic.

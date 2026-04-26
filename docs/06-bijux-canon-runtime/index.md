@@ -9,9 +9,10 @@ last_reviewed: 2026-04-26
 
 # Runtime Handbook
 
-`bijux-canon-runtime` is the execution authority layer in `bijux-canon`. Start
-here when the question is about run acceptance, replay policy, persistence, or
-runtime-facing boundaries that sit above the rest of the package family.
+`bijux-canon-runtime` is the execution authority layer in `bijux-canon`. Use
+this handbook when the question is about run acceptance, replay policy,
+persistence, or runtime-facing boundaries that sit above the rest of the
+package family.
 
 This package is the place where the package family becomes governable as a run
 system. It owns acceptance policy, replay authority, persistence boundaries,
@@ -46,16 +47,16 @@ flowchart LR
 
 ## Start Here
 
-- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why runtime owns
+- use [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why runtime owns
   run authority instead of one lower package
-- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the execution and
+- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the execution and
   persistence structure
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about CLI, API,
+- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about CLI, API,
   schemas, or durable artifact contracts
-- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the issue is whether runtime has proven
+- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the issue is whether runtime has proven
   a run acceptable rather than merely executable
 
-## Read This Section When
+## Use This Handbook When
 
 - you need the package-level entrypoint for runtime docs
 - you are checking execution, replay, or persistence behavior
@@ -85,20 +86,20 @@ flowchart LR
 - `tests/e2e/` and `tests/regression/` for the highest-value proof that a run
   remains replayable and acceptable
 
-## Choose The Next Section By Question
+## Choose A Section
 
-- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is about package
+- use [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is about package
   purpose, ownership, or vocabulary
-- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the module map,
+- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the module map,
   execution shape, or persistence structure
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands,
+- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need setup, diagnostics,
+- use [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need setup, diagnostics,
   workflow, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is about trust, risk,
+- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is about trust, risk,
   invariants, or review standards
 
-## Main Paths
+## Pages In This Handbook
 
 - [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/)
@@ -106,7 +107,7 @@ flowchart LR
 - [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/)
 - [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/)
 
-## Reader Takeaway
+## Why Start Here
 
 Use this handbook when the real issue is whether a run is governed,
 replay-aware, and durable enough to count as canonical runtime behavior rather
