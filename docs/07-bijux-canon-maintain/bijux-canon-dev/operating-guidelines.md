@@ -16,8 +16,6 @@ That is why this section needs to be unusually honest. A small maintainer
 change can carry wide consequences, so the package should bias toward
 explicit scope, explicit tests, and explicit explanations.
 
-These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
-
 ## Visual Summary
 
 ```mermaid
@@ -58,11 +56,14 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Operating Guidelines` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use this page when the main need is understanding how maintainer changes should
+be handled. If the change would affect end-user behavior directly, keep it in
+the owning product package instead of treating maintainer automation as a
+shortcut layer.
 
 ## What This Page Answers
 
-- which repository maintenance concern this page explains
+- which working posture is expected for maintainer changes
 - which maintainer modules or tests support that concern
 - what a reviewer should confirm before changing repository automation
 
@@ -74,13 +75,19 @@ Use `Operating Guidelines` to decide whether a change belongs to maintainer auto
 
 ## Next Checks
 
-- move to product package docs if the question is user-facing behavior rather than repository health
+- move to the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
+  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
+  question is user-facing behavior rather than repository health
 - open the relevant helper module or test after using this page to orient yourself
-- return to repository handbook pages when the maintainer issue turns out to be root policy instead
+- return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
+  when the maintainer issue turns out to be root policy instead
 
 ## Honesty Boundary
 
-This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.
+This section can describe maintainer automation and repository health work, but
+it should never imply that maintainer tooling is part of the end-user product
+surface. Hidden scripts still need visible code, tests, and workflow context to
+be trustworthy.
 
 ## Purpose
 

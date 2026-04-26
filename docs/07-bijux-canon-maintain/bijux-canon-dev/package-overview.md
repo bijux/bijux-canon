@@ -14,10 +14,8 @@ the package that keeps the monorepo honest when schemas drift, security
 tooling falls behind, or release metadata becomes inconsistent.
 
 A good maintainer package should reduce mystery, not create a new layer of
-it. This page should help readers see why the automation exists and why it
-does not belong in the product packages themselves.
-
-These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
+it. The automation belongs here because it serves repository health across
+packages rather than product behavior inside one package.
 
 ## Visual Summary
 
@@ -65,11 +63,14 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Package Overview` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use this page when the main question is whether a change belongs in maintainer
+automation or in a product package contract. If the change would affect
+end-user behavior directly, move to the owning product package instead of
+letting maintainer scope sprawl.
 
 ## What This Page Answers
 
-- which repository maintenance concern this page explains
+- which repository-health concerns `bijux-canon-dev` owns
 - which maintainer modules or tests support that concern
 - what a reviewer should confirm before changing repository automation
 
@@ -81,17 +82,23 @@ Use `Package Overview` to decide whether a change belongs to maintainer automati
 
 ## Next Checks
 
-- move to product package docs if the question is user-facing behavior rather than repository health
+- move to the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
+  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
+  question is user-facing behavior rather than repository health
 - open the relevant helper module or test after using this page to orient yourself
-- return to repository handbook pages when the maintainer issue turns out to be root policy instead
+- return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
+  when the maintainer issue turns out to be root policy instead
 
 ## Honesty Boundary
 
-This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.
+This section can describe maintainer automation and repository health work, but
+it should never imply that maintainer tooling is part of the end-user product
+surface. Hidden scripts still need visible code, tests, and workflow context to
+be trustworthy.
 
 ## Purpose
 
-This page gives the shortest honest description of why the package exists.
+This page gives the shortest description of why the package exists.
 
 ## Stability
 
