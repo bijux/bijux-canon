@@ -22,27 +22,23 @@ of evidence was returned.
 
 ```mermaid
 flowchart LR
-    prepared["prepared ingest output<br/>chunks, metadata, source identity"]
-    plan["execution plan<br/>query, backend, budget, mode"]
-    backend["vector backend<br/>ANN, metadata, scoring"]
-    result["retrieval result<br/>matches, scores, provenance"]
-    replay["replay record<br/>execution id, lineage, drift checks"]
-    reason["reasoning package<br/>evidence becomes claims"]
+    prepared["prepared ingest output"]
+    plan["execution plan"]
+    backend["vector backend"]
+    result["retrieval result"]
+    replay["replay record"]
+    reason["reasoning package"]
 
     prepared --> plan --> backend --> result --> reason
     plan --> replay
     backend --> replay
     result --> replay
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class prepared page;
-    class plan,backend,result positive;
-    class replay anchor;
-    class reason action;
 ```
+
+Index earns trust by making retrieval inspectable after the fact. The point is
+not just to return matches. The point is to make it obvious which prepared
+inputs, query choices, and backend behavior produced those matches so later
+reasoning does not have to guess how evidence was found.
 
 ## What This Package Owns
 
@@ -58,7 +54,9 @@ flowchart LR
 
 ## Boundary Test
 
-If the disputed behavior decides what gets embedded, stored, retrieved, compared, or replayed during search, it belongs here. If it decides what a claim means or whether a run is acceptable to keep, it does not.
+If the disputed behavior decides what gets embedded, stored, retrieved,
+compared, or replayed during search, it belongs here. If it decides what a
+claim means or whether a run is acceptable to keep, it does not.
 
 ## First Proof Check
 
@@ -83,6 +81,8 @@ If the disputed behavior decides what gets embedded, stored, retrieved, compared
 - [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/)
 - [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/)
 
-## Bottom Line
+## Leave This Handbook When
 
-If a proposed change makes `bijux-canon-index` broader without making its owned role easier to defend, the change is probably crossing a package boundary rather than improving the design.
+- the question is now about what evidence means rather than how it was found
+- the next step is a concrete interface, workflow, benchmark, or replay test
+- the concern belongs to ingest preparation below or runtime authority above
