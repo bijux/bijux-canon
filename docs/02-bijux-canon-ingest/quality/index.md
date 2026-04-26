@@ -40,7 +40,7 @@ all look healthy while building on unstable prepared data.
 - [Known Limitations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/)
 
-## Open Quality When
+## Open This Section When
 
 - you need evidence that ingest output is stable enough for downstream use
 - a change touches chunking, shaping, artifacts, or other behavior that can
@@ -54,7 +54,7 @@ all look healthy while building on unstable prepared data.
 - you need the package boundary or structural flow before you can judge proof
 - the issue is about how to operate the package rather than how to trust it
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when uncertainty about ownership is
   masquerading as a quality concern
@@ -74,7 +74,7 @@ all look healthy while building on unstable prepared data.
 
 ## Bottom Line
 
-Open `Quality` to ask a stricter question than “did the tests pass?” In ingest,
+Open this section to ask a stricter question than “did the tests pass?” In ingest,
 the real bar is whether prepared output remains deterministic, contract-aligned,
 and honest about its limits before any downstream package treats it as stable
 input.

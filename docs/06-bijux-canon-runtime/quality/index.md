@@ -44,7 +44,7 @@ rules still justify trusting a governed run.
 - [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
 
-## Open Quality When
+## Open This Section When
 
 - you are reviewing tests, invariants, limitations, or ongoing risks
 - you need evidence that the documented contract is actually defended
@@ -68,7 +68,7 @@ rules still justify trusting a governed run.
   `src/bijux_canon_runtime/observability/schema.sql` for two of the highest
   value frozen surfaces quality must defend
 
-## Read Across The Package
+## Across This Package
 
 - open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the proof question becomes
   about a named CLI, API, schema, or artifact contract
@@ -79,7 +79,7 @@ rules still justify trusting a governed run.
 
 ## Bottom Line
 
-Open `Quality` to decide whether runtime has actually earned trust after a
+Open this section to decide whether runtime has actually earned trust after a
 change. If one narrow green check hides a wider replay, persistence, contract,
 or validation gap, the work is not done yet.
 

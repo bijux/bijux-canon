@@ -41,7 +41,7 @@ results.
 - [Known Limitations](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/)
 
-## Open Quality When
+## Open This Section When
 
 - you need evidence that retrieval behavior is stable enough for downstream use
 - a change touches indexing, replay, provenance, or backend behavior that can
@@ -55,7 +55,7 @@ results.
 - you need the package boundary or structural flow before you can judge proof
 - the issue is about how to run the package rather than how to trust it
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when uncertainty about ownership is
   masquerading as a quality issue
@@ -75,7 +75,7 @@ results.
 
 ## Bottom Line
 
-Open `Quality` to ask a stricter question than “did the suite pass?” In index,
+Open this section to ask a stricter question than “did the suite pass?” In index,
 the real bar is whether retrieval behavior remains replayable, provenance-aware,
 and honest about backend limits before downstream packages treat it as stable
 ground.

@@ -40,7 +40,7 @@ live-provider pressure.
 - [Known Limitations](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/risk-register/)
 
-## Open Quality When
+## Open This Section When
 
 - you need to know what evidence should defend an orchestration change
 - a review is really about trace trust, layering discipline, or result quality
@@ -61,7 +61,7 @@ live-provider pressure.
 - `tests/api`, `tests/e2e`, and `tests/integration/test_deepseek_live.py` for
   contract, scenario, and live-provider pressure
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and trust
   boundaries
@@ -74,7 +74,7 @@ live-provider pressure.
 
 ## Bottom Line
 
-Open `Quality` to ask whether the agent layer earned trust, not whether it
+Open this section to ask whether the agent layer earned trust, not whether it
 merely produced a run. The real bar is layering discipline, trace integrity,
 schema and API stability, and clear limits that remain visible after the
 change.

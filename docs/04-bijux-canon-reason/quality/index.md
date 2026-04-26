@@ -39,7 +39,7 @@ artifacts still support replay and audit instead of only looking complete.
 - [Known Limitations](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/risk-register/)
 
-## Open Quality When
+## Open This Section When
 
 - you need to know what evidence should defend a reasoning change
 - a review is really about replay trust, determinism, or verification rigor
@@ -59,7 +59,7 @@ artifacts still support replay and audit instead of only looking complete.
 - `tests/perf/test_retrieval_benchmark.py` for benchmark pressure around
   retrieval behavior
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and trust
   boundaries
@@ -72,7 +72,7 @@ artifacts still support replay and audit instead of only looking complete.
 
 ## Bottom Line
 
-Open `Quality` to ask whether the reasoning layer has earned belief, not whether
+Open this section to ask whether the reasoning layer has earned belief, not whether
 it merely produced output. The real bar is determinism, verification strength,
 trace integrity, and explicit limits that remain visible after the change.
 
