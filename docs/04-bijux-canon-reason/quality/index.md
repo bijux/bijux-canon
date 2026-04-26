@@ -11,6 +11,24 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to decide whether claims, checks, and reasoning artifacts are proven strongly enough for reviewers and downstream packages to trust.
 
+## Trust Model
+
+```mermaid
+flowchart LR
+    strategy["test strategy"]
+    invariants["reasoning invariants"]
+    validation["change validation"]
+    limits["limitations and risk"]
+    trust["trust decision"]
+
+    strategy --> invariants --> validation --> limits --> trust
+```
+
+Reason quality has to justify interpretation, not only execution. A reviewer
+should be able to see how claim behavior is tested, what must not drift in the
+checks and artifacts, and where the package still names limits instead of
+pretending that explanation alone is proof.
+
 ## Read These First
 
 - open [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/) first when you need the broad proof shape behind reasoning behavior
@@ -45,6 +63,8 @@ The main quality risk here is looking explainable on paper while the actual reas
 - leave for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is what the contract is rather than whether it is defended
 - leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
-## Bottom Line
+## Design Pressure
 
-A passing check is not enough if the package still cannot explain why the surface should be trusted.
+If reasoning trust is reduced to formal checks without explaining what they
+protect, the section becomes shallow again. Proof here has to connect behavior,
+verification, and explicit limits.
