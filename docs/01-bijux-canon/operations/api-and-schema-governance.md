@@ -16,6 +16,22 @@ This page exists to answer one operational question clearly: when is a schema
 change just local code movement, and when is it a compatibility event that
 needs shared review.
 
+## Governance Flow
+
+```mermaid
+flowchart LR
+    change["schema or api change"]
+    roots["tracked schema roots under apis/"]
+    proof["package interface docs and shared checks"]
+    review["explicit compatibility review"]
+
+    change --> roots --> proof --> review
+```
+
+This page should make schema governance feel procedural rather than implicit.
+A reader needs to see when a change crosses the line from local implementation
+movement into shared compatibility review.
+
 ## Compatibility Threshold
 
 Treat a change as a shared compatibility event when it changes any caller- or
@@ -42,8 +58,8 @@ reader-facing contract that is tracked outside one module alone, including:
 - `apis/bijux-canon-reason/v1`
 - `apis/bijux-canon-runtime/v1`
 
-## Bottom Line
+## Design Pressure
 
-A schema change stops being ordinary maintenance as soon as a caller, another
-package, or a shared check would read it differently. At that point the change
-needs explicit compatibility review, not just code review.
+Schema drift becomes expensive when local code changes look harmless but alter
+what another package, caller, or shared check will read. Governance has to make
+that threshold obvious before review falls back to guesswork.
