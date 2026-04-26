@@ -38,9 +38,24 @@ Most repository rework debt comes from changes that “worked” but were never 
 fully legible. Good change management is the discipline that prevents that debt
 from accumulating again.
 
+## Use This Page When
+
+- you are planning a cross-package change series and need the repository
+  discipline for splitting it
+- you are reviewing history and want to understand what makes a batch durable
+  instead of merely convenient
+- you need the root expectation for keeping docs, proof, and implementation in
+  one story
+
+## Decision Rule
+
+Split shared work into reviewable batches with a visible reason for each one.
+If a change only makes sense when private memory fills the gaps, it is not yet
+packaged well enough for repository history.
+
 ## Purpose
 
-This page explains how shared repository changes should be packaged and carried
+This page shows how shared repository changes should be packaged and carried
 through to completion.
 
 ## Stability

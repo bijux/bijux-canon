@@ -19,11 +19,6 @@ design quickly, help a maintainer find the concrete anchors behind a claim, and
 stay explicit about what docs can explain versus what code, schemas, tests, and
 release assets must still prove.
 
-These repository pages explain the cross-package frame that no single package
-can explain alone. They are strongest when they make the monorepo easier to
-understand without turning the root into a second owner of package-local
-behavior.
-
 ## Visual Summary
 
 ```mermaid
@@ -57,6 +52,17 @@ flowchart TB
 - one maintainer handbook for repository-health automation
 - one compatibility handbook for legacy names and migration pressure
 
+## Published Handbook Sections
+
+- `https://bijux.io/bijux-canon/01-bijux-canon/` for repository-wide rules and
+  shared assets
+- `https://bijux.io/bijux-canon/02-bijux-canon-ingest/` through
+  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` for package handbooks
+- `https://bijux.io/bijux-canon/07-bijux-canon-maintain/` for repository-health
+  automation
+- `https://bijux.io/bijux-canon/08-compat-packages/` for legacy names and
+  migration guidance
+
 ## Documentation Rules
 
 - use stable filenames that describe durable intent
@@ -78,13 +84,15 @@ flowchart TB
 
 ## Decision Rule
 
-Use `Documentation System` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use this page when the main question is where a topic belongs in the published
+handbook. If the answer depends mostly on one package's local behavior, move to
+that package handbook instead of expanding repository pages past their boundary.
 
 ## What This Page Answers
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+- which handbook section owns a topic
+- which repository assets support the shared documentation model
+- how repository documentation stops before package-local ownership
 
 ## Reviewer Lens
 
@@ -94,18 +102,20 @@ Use `Documentation System` to decide whether the current question is genuinely r
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
+The handbook organizes explanation, but it does not replace code, schemas,
+tests, or release assets as proof.
 
 ## Next Checks
 
 - move to the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
+  when the root issue is really about automation or drift tooling
 
 ## Purpose
 
-Use this page to understand how the handbook is organized, which section should
-own a question, and where repository guidance should stop.
+This page maps the published handbook so readers can route a question to the
+right section quickly.
 
 ## Stability
 

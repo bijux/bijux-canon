@@ -17,8 +17,6 @@ That matters because the repository wants public surfaces to be reviewable in
 the open. A caller or reviewer should not need to reverse-engineer Python
 modules just to understand whether an HTTP or artifact contract changed.
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
 ## Visual Summary
 
 ```mermaid
@@ -67,13 +65,16 @@ flowchart LR
 
 ## Decision Rule
 
-Use `API and Schema Governance` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use this page when a contract spans packages, schemas, and shared review
+workflow. If the answer depends mostly on one package's local behavior, move to
+that package handbook instead of treating the repository root as a second
+owner.
 
 ## What This Page Answers
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+- which repository-level schema decision is in scope
+- which shared assets or workflows deserve inspection
+- how repository governance stops before package-local ownership
 
 ## Reviewer Lens
 
@@ -83,17 +84,21 @@ Use `API and Schema Governance` to decide whether the current question is genuin
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
+Repository guidance here does not override package-local ownership. The real
+backstops are the referenced files, workflows, schemas, and checks.
 
 ## Next Checks
 
 - move to the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
+  when the root issue is really about automation or drift tooling
 
 ## Purpose
 
-This page explains why schemas are first-class repository assets rather than incidental package outputs.
+Schemas are first-class repository assets here because cross-package review
+depends on them being visible, diffable, and validated outside package source
+alone.
 
 ## Stability
 

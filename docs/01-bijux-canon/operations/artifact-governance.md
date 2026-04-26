@@ -37,10 +37,31 @@ stale.
 - `artifacts/` for generated workflow output
 - package `CHANGELOG.md` and build outputs for release-facing evidence
 
+## Use This Page When
+
+- you need to decide whether an artifact belongs in source control or in
+  generated output
+- you are reviewing generated files and need to know whether they are durable
+  evidence or disposable run products
+- you want the repository rule that separates checked reference artifacts from
+  local validation output
+
+## Decision Rule
+
+Keep tracked artifacts only when review depends on a stable checked history.
+Send transient workflow output to `artifacts/` instead of letting it blur into
+source.
+
+## What This Page Answers
+
+- which artifact classes are treated as durable repository evidence
+- where generated output belongs during local or CI validation
+- how to tell reference artifacts apart from disposable run products
+
 ## Purpose
 
-This page explains how the repository distinguishes durable reference artifacts
-from generated workflow output.
+This page distinguishes durable reference artifacts from generated workflow
+output so readers can tell what belongs in review history.
 
 ## Stability
 

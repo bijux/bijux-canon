@@ -21,8 +21,6 @@ The deeper reason for this layout is that trust has to be local before it can
 be global. Each package proves its own promises first. The repository then
 proves that the packages still fit together honestly.
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
 ## Visual Summary
 
 ```mermaid
@@ -68,13 +66,15 @@ can detect its drift.
 
 ## Decision Rule
 
-Use `Testing and Validation` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use this page when validation spans package boundaries, schemas, docs, or
+release conventions. If the answer depends mostly on one package's local test
+behavior, move back to that package handbook instead.
 
 ## What This Page Answers
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+- which validation layers belong to packages and which belong to the repository
+- which shared assets or workflows deserve inspection
+- how repository proof differs from package-local proof
 
 ## Reviewer Lens
 
@@ -84,17 +84,19 @@ Use `Testing and Validation` to decide whether the current question is genuinely
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
+Repository guidance here does not replace executable proof. The real backstops
+are the referenced files, workflows, schemas, and checks.
 
 ## Next Checks
 
 - move to the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
+  when the root issue is really about automation or drift tooling
 
 ## Purpose
 
-This page explains the relationship between package truth and repository truth.
+This page shows how package truth and repository truth reinforce each other.
 
 ## Stability
 
