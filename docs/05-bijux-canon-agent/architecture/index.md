@@ -9,24 +9,24 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Open this section when the question is structural: which modules own role-local
-agents, pipeline control, workflow policy, interfaces, traces, and
-observability, and how those parts cooperate without collapsing into one
-omnipotent orchestration layer.
+Open this section when the question is structural: where orchestration lives, how roles and steps coordinate, and how the package keeps workflows traceable instead of magical.
 
-`bijux-canon-agent` is easiest to read as a control system. Interfaces bring
-work in, pipeline modules coordinate execution, agent modules do role-local
-work, application policy and workflow graphs constrain behavior, and traces
-plus observability make the result inspectable.
+## Read These First
 
-## Start Here
+- open [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/) first when you need the owning code area for a workflow concern
+- open [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/) when you need the real path from workflow input to trace-backed output
+- open [Integration Seams](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/integration-seams/) when a change could pull reasoning or runtime authority into orchestration
 
-- open [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/) for the shortest route from directory names
-  to owned behavior
-- open [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/) when you need the lifecycle of an
-  orchestrated run
-- open [State and Persistence](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/state-and-persistence/) when the question is
-  which results, traces, or replay data become durable
+## Structural Risk
+
+The main architectural risk here is letting workflow control become so distributed that a reader can no longer tell which module made a role or sequencing decision.
+
+## First Proof Check
+
+- `src/bijux_canon_agent` for the orchestration ownership boundary
+- `tests` for determinism and traceability evidence
+- `apis` for surfaces where structure becomes caller-visible contract
+
 
 ## Pages In This Section
 
@@ -40,42 +40,12 @@ plus observability make the result inspectable.
 - [Code Navigation](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/architecture-risks/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need to know which structural slice owns a behavior before editing it
-- a review is about layering, orchestration flow, or module drift
-- you need to explain how interfaces, pipeline control, role agents, and traces
-  fit together
-
-## Open Another Section When
-
-- the main question is why the behavior belongs in agent orchestration at all
-- you are deciding whether a command, schema, or artifact is a public contract
-- the issue is mainly procedural or evidentiary rather than structural
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
-- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import
-  contracts
-- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
-  procedures
-- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for invariants, tests, and architecture
-  risk pressure
-
-## Concrete Anchors
-
-- `src/bijux_canon_agent/agents` for role-local behavior
-- `src/bijux_canon_agent/pipeline` for execution flow orchestration
-- `src/bijux_canon_agent/application` for workflow graph policy and orchestrator
-  logic
-- `src/bijux_canon_agent/traces` and `observability` for replay and inspection
-  seams
+- leave for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the structural question is already a public contract question
+- leave for [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
+- leave for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
 ## Bottom Line
 
-`Architecture` makes the agent package readable as a control flow with
-named responsibilities. If interfaces, pipeline logic, role agents, and trace
-handling start blending together, the orchestration story gets harder to trust
-even before tests fail.
-
+A structure that cannot be explained in one pass is already carrying too much hidden policy.

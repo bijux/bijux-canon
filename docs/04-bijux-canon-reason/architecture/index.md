@@ -9,24 +9,24 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Open this section when the question is structural: which modules own planning,
-retrieval, reasoning, verification, interfaces, and traces, and how a run
-flows through those pieces without smearing responsibilities together.
+Open this section when the question is structural: where claims and checks are formed, how reasoning steps flow through the package, and how the code keeps meaning visible instead of scattering it.
 
-`bijux-canon-reason` is easiest to read when you treat it as a pipeline of
-responsibility rather than as a flat package tree. Planning shapes intent,
-retrieval assembles evidence views, execution and reasoning apply tools and
-claim semantics, verification challenges the result, and traces preserve what
-happened for replay or review.
+## Read These First
 
-## Start Here
+- open [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) first when you need the owning code area for a reasoning concern
+- open [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/) when you need the path from evidence input to reasoning output
+- open [Integration Seams](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/integration-seams/) when a change could blur retrieval, orchestration, or runtime boundaries
 
-- open [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) for the shortest route from directory names
-  to owned behavior
-- open [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/) when you need the reasoning
-  lifecycle from plan to verified output
-- open [State and Persistence](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/state-and-persistence/) when the question is
-  which records become replayable or durable
+## Structural Risk
+
+The main architectural risk here is hiding reasoning policy in the wrong layer until no one can point to the module that actually decided what a claim means.
+
+## First Proof Check
+
+- `src/bijux_canon_reason` for the owned reasoning implementation boundary
+- `tests` for proof that claims, checks, and provenance stay aligned
+- `README.md` for the package contract that the structure is supposed to support
+
 
 ## Pages In This Section
 
@@ -40,46 +40,12 @@ happened for replay or review.
 - [Code Navigation](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/architecture-risks/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need to know which module family owns a behavior before editing it
-- a review comment names structure, layering, or execution drift rather than a
-  single bug
-- you need to explain how planning, retrieval, reasoning, verification, and
-  trace code relate
-
-## Open Another Section When
-
-- the main question is why the package owns the behavior at all
-- you are deciding whether a CLI, API, or trace file is a supported contract
-- the real concern is how to run, validate, or release the package
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
-  boundaries
-- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) for CLI, API, schema, and artifact
-  contracts
-- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, diagnostics,
-  and release procedures
-- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for invariants, tests, and structural
-  risk pressure
-
-## Concrete Anchors
-
-- `src/bijux_canon_reason/planning` for plan construction and intermediate
-  representation
-- `src/bijux_canon_reason/retrieval` for corpus, chunking, and BM25-backed
-  evidence shaping
-- `src/bijux_canon_reason/execution` for step execution, runtime, and tool
-  dispatch
-- `src/bijux_canon_reason/reasoning`, `verification`, and `traces` for claim
-  semantics, checks, and replayable records
+- leave for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the structural question is already a public contract question
+- leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
+- leave for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
 ## Bottom Line
 
-Open this section when you need the package to read as a sequence of named
-responsibilities, not a tangle of utilities. If a change blurs planning,
-evidence shaping, claim logic, verification, and traces into one layer, the
-design is getting weaker even if tests still pass.
-
+A structure that cannot be explained in one pass is already carrying too much hidden policy.

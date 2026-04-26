@@ -9,28 +9,24 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Open this section to understand how `bijux_canon_runtime` is organized so a
-reviewer can follow structure, dependency direction, and execution flow
-without guessing.
+Open this section when the question is structural: where run authority lives, how acceptance and persistence flow through the package, and how runtime stays narrower than “whatever happens last.”
 
-These pages turn `bijux-canon-runtime` from a directory tree into a readable
-design map. Use them when a structural change needs to be grounded in named
-modules and real execution paths.
+## Read These First
 
-Runtime architecture matters because this package does not merely execute a
-flow. It plans, governs, records, stores, verifies, and replays that flow
-under explicit policy. The structure has to keep those concerns legible rather
-than letting them collapse into one giant executor.
+- open [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/) first when you need the owning code area for a runtime authority concern
+- open [Execution Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/execution-model/) when you need the real path from lower-package output to governed run artifact
+- open [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/) when a change could blur lower-package semantics with final authority
 
-## Start Here
+## Structural Risk
 
-- open [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/) for the shortest structural tour
-- open [Execution Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/execution-model/) when you need the plan-to-replay
-  path rather than a directory listing
-- open [State and Persistence](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/state-and-persistence/) when the real question
-  is what becomes durable and where it is stored
-- open [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/) before broadening runtime's
-  dependencies on lower packages or outside systems
+The main architectural risk here is broadening runtime until execution order replaces explicit authority design.
+
+## First Proof Check
+
+- `src/bijux_canon_runtime/application/execute_flow.py` for authority entrypoints
+- `src/bijux_canon_runtime/observability` for replay and durable traces
+- `tests` for acceptance, replay, and persistence evidence
+
 
 ## Pages In This Section
 
@@ -44,43 +40,12 @@ than letting them collapse into one giant executor.
 - [Code Navigation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/architecture-risks/)
 
-## Open This Section When
+## Leave This Section When
 
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Open Another Section When
-
-- the real question is why runtime should own a behavior at all
-- you need CLI, API, schema, or artifact contract detail more than module
-  layout
-- you are deciding whether the proof surface is strong enough rather than how
-  the design is shaped
-
-## Concrete Anchors
-
-- `src/bijux_canon_runtime/application/` for planning, replay support, and
-  execution authority
-- `src/bijux_canon_runtime/runtime/execution/` for the governed lifecycle
-- `src/bijux_canon_runtime/observability/storage/` and `analysis/` for durable
-  recording and replay inspection
-- `src/bijux_canon_runtime/model/` and `contracts/` for the structural
-  language the rest of the package must obey
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when a structural issue is really a
-  boundary issue
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when architecture reaches a public
-  CLI, API, schema, or artifact seam
-- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question becomes whether the
-  structure is adequately defended by tests and invariants
+- leave for [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the structural question is already a public contract question
+- leave for [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
+- leave for [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
 ## Bottom Line
 
-Open this section to decide whether a structural change makes runtime easier
-or harder to explain in terms of planning, governed execution, durable state,
-and replay analysis. If the change works only because the design becomes harder
-to read, redesign is safer than acceptance.
-
+A structure that cannot be explained in one pass is already carrying too much hidden policy.

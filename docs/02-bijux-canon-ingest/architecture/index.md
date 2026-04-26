@@ -9,22 +9,24 @@ last_reviewed: 2026-04-26
 
 # Architecture
 
-Open this section when the important question is how ingest is put together:
-which modules shape source material, where deterministic transforms happen, and
-how prepared output reaches the retrieval handoff without hidden shortcuts.
+Open this section when the question is structural: where ingest logic lives, how preparation flows through modules, and where the package stops before retrieval semantics take over.
 
-These pages help you trace real execution flow through named parts of the
-package instead of inferring architecture from file names alone. The goal is
-clarity about structure, not decorative system language.
+## Read These First
 
-## Start Here
+- open [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/) first when you need the fastest route from a behavior question to the owning code area
+- open [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/) when you need the real path from source input to prepared output
+- open [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/) when a change could blur the handoff into downstream packages
 
-- open [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/) for the shortest guide to which directory
-  owns which architectural responsibility
-- open [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/) when the hard question is how
-  source material moves from input to prepared output
-- open [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/) when a change might blur the
-  line between ingest and its upstream or downstream neighbors
+## Structural Risk
+
+The main architectural risk here is letting preparation behavior leak into retrieval behavior because the handoff seam is weak or poorly named.
+
+## First Proof Check
+
+- `src/bijux_canon_ingest/processing` for core preparation flow
+- `src/bijux_canon_ingest/retrieval` for handoff-ready assembly
+- `tests` for proof that the structure still defends deterministic preparation
+
 
 ## Pages In This Section
 
@@ -38,40 +40,12 @@ clarity about structure, not decorative system language.
 - [Code Navigation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/architecture-risks/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need to trace structural ownership before refactoring ingest internals
-- you are checking whether dependency flow still supports deterministic
-  preparation
-- you need to understand where artifact shaping ends and downstream retrieval
-  behavior begins
-
-## Open Another Section When
-
-- the question is mainly about public commands, schemas, or import contracts
-- the real issue is operational, such as setup, release, or incident handling
-- you need proof and risk posture more than structure and dependency logic
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the structural question is
-  really an ownership question
-- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when architecture reaches a caller
-  or artifact contract
-- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when structural decisions affect
-  repeatable maintainer workflows
-- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof that the documented
-  design is still defended in tests and review
-
-## Concrete Anchors
-
-- `src/bijux_canon_ingest/processing` for deterministic document transforms
-- `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
-- `src/bijux_canon_ingest/application` for package workflows
+- leave for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the structural question is already a public contract question
+- leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
+- leave for [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
 ## Bottom Line
 
-Open this section to make the internal flow legible enough that a reviewer can
-say where ingest logic lives and why. If the code only works because the
-structure is hard to explain, the architecture has already started to drift.
-
+A structure that cannot be explained in one pass is already carrying too much hidden policy.
