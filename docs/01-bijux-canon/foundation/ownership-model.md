@@ -17,7 +17,23 @@ truly crosses package boundaries. The maintenance handbook owns repository
 health tooling. Compatibility material owns legacy continuity while it still
 points readers back toward the canonical package family.
 
-## Ownership Layers
+## Layer Model
+
+```mermaid
+flowchart LR
+    packages["canonical packages own product behavior"]
+    root["repository root owns shared truth"]
+    maintain["maintenance owns repository health tooling"]
+    compat["compatibility owns legacy continuity"]
+
+    root --> packages
+    maintain --> root
+    compat --> packages
+```
+
+This page should let a reader name the repository layers without hesitation.
+The model is working only when each layer explains a distinct kind of
+responsibility rather than acting as overflow for the others.
 
 - product behavior belongs in `packages/bijux-canon-*`
 - shared governance belongs in the repository handbook and root automation
@@ -40,8 +56,8 @@ more than one package and can be proven from shared code, schemas, workflows,
 or release assets. Convenience, history, or contributor familiarity are not
 enough.
 
-## Bottom Line
+## Design Pressure
 
-The root should absorb cross-package truth, not overflow. If one package can
-own a behavior honestly, the ownership model is stronger when that package keeps
-it.
+Ownership models decay when convenience beats clarity. If one layer starts
+collecting work simply because it is nearby, every later review pays for that
+shortcut.
