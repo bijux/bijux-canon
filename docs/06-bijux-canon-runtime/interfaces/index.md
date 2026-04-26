@@ -46,13 +46,13 @@ flowchart LR
 
 ## Start Here
 
-- use [CLI Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/cli-surface/) when the operator-facing run contract is
+- open [CLI Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/cli-surface/) when the operator-facing run contract is
   the real dependency
-- use [API Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/api-surface/) when the question is about HTTP behavior
+- open [API Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/api-surface/) when the question is about HTTP behavior
   or frozen schemas
-- use [Artifact Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/artifact-contracts/) when durable run records or
+- open [Artifact Contracts](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/artifact-contracts/) when durable run records or
   replay outputs matter more than commands
-- use [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/) before
+- open [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/) before
   changing names, shapes, or schema surfaces that another package may depend on
 
 ## Pages In Interfaces
@@ -94,11 +94,11 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a surface question becomes
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a surface question becomes
   a module or storage question
-- use [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when a contract depends on a
+- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when a contract depends on a
   repeatable workflow, migration, or release path
-- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real question is whether the
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real question is whether the
   interface is sufficiently defended
 
 ## Why Use Interfaces

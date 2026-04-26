@@ -42,11 +42,11 @@ flowchart LR
 
 ## Start Here
 
-- use [Package Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/package-overview/) for the shortest explanation of
+- open [Package Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/package-overview/) for the shortest explanation of
   the orchestration role
-- use [Ownership Boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/) when the question is whether
+- open [Ownership Boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/) when the question is whether
   behavior belongs in reasoning, agent coordination, or runtime governance
-- use [Lifecycle Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/lifecycle-overview/) when you need the package
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/lifecycle-overview/) when you need the package
   story from agent input through traceable output
 
 ## Pages In Foundation
@@ -77,13 +77,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for module groups, execution
+- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for module groups, execution
   flow, and dependency direction
-- use [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import
+- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import
   contracts
-- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
+- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
   procedures
-- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for trust posture, invariants, and review
+- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for trust posture, invariants, and review
   standards
 
 ## Concrete Anchors

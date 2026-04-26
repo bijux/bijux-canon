@@ -46,13 +46,13 @@ flowchart LR
 
 ## Start Here
 
-- use [Installation and Setup](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/installation-and-setup/) when you need a
+- open [Installation and Setup](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/installation-and-setup/) when you need a
   clean local index environment
-- use [Common Workflows](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/common-workflows/) when the goal is to build,
+- open [Common Workflows](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/common-workflows/) when the goal is to build,
   refresh, or replay index behavior repeatably
-- use [Observability and Diagnostics](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/observability-and-diagnostics/) when
+- open [Observability and Diagnostics](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/observability-and-diagnostics/) when
   backend or retrieval behavior no longer matches expectation
-- use [Failure Recovery](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/failure-recovery/) when index state or replay output
+- open [Failure Recovery](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/failure-recovery/) when index state or replay output
   has already gone wrong
 
 ## Pages In Operations
@@ -84,13 +84,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when operational pain may really be
+- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when operational pain may really be
   a boundary problem
-- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when workflow pain reveals a
+- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when workflow pain reveals a
   structural issue in retrieval or replay flow
-- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when a run depends on a public
+- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when a run depends on a public
   command, schema, or artifact contract
-- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the next question is whether the
+- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the next question is whether the
   workflow is sufficiently validated and reviewed
 
 ## Concrete Anchors

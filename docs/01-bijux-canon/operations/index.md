@@ -38,11 +38,11 @@ flowchart LR
 
 ## Start Here
 
-- use [Contributor Workflows](https://bijux.io/bijux-canon/01-bijux-canon/operations/contributor-workflows/) for the shortest route through normal repository work
-- use [Testing and Validation](https://bijux.io/bijux-canon/01-bijux-canon/operations/testing-and-validation/) when you need to know which shared proof must run before acceptance
-- use [API and Schema Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/api-and-schema-governance/) when the concern is contract drift or reviewed schema change
-- use [Release and Versioning](https://bijux.io/bijux-canon/01-bijux-canon/operations/release-and-versioning/) when the concern is tag behavior, package publication, or release discipline
-- use [Automation Surfaces](https://bijux.io/bijux-canon/01-bijux-canon/operations/automation-surfaces/) when you need to know which shared root automation owns the current action
+- open [Contributor Workflows](https://bijux.io/bijux-canon/01-bijux-canon/operations/contributor-workflows/) for the shortest route through normal repository work
+- open [Testing and Validation](https://bijux.io/bijux-canon/01-bijux-canon/operations/testing-and-validation/) when you need to know which shared proof must run before acceptance
+- open [API and Schema Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/api-and-schema-governance/) when the concern is contract drift or reviewed schema change
+- open [Release and Versioning](https://bijux.io/bijux-canon/01-bijux-canon/operations/release-and-versioning/) when the concern is tag behavior, package publication, or release discipline
+- open [Automation Surfaces](https://bijux.io/bijux-canon/01-bijux-canon/operations/automation-surfaces/) when you need to know which shared root automation owns the current action
 
 ## Pages In Operations
 
@@ -81,8 +81,8 @@ flowchart LR
 
 ## Read Across The Repository
 
-- use [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) when an operational problem is really a boundary problem
-- use the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the next step is workflow implementation, drift tooling, or maintainer helper code
+- open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) when an operational problem is really a boundary problem
+- open the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the next step is workflow implementation, drift tooling, or maintainer helper code
 - move to the owning package handbook when the operation is no longer truly shared
 
 ## Operational Standard

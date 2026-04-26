@@ -46,11 +46,11 @@ flowchart TB
 
 ## Start Here
 
-- use [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) for the shortest route from directory names
+- open [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) for the shortest route from directory names
   to owned behavior
-- use [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/) when you need the reasoning
+- open [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/) when you need the reasoning
   lifecycle from plan to verified output
-- use [State and Persistence](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/state-and-persistence/) when the question is
+- open [State and Persistence](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/state-and-persistence/) when the question is
   which records become replayable or durable
 
 ## Pages In Architecture
@@ -81,13 +81,13 @@ flowchart TB
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
+- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
   boundaries
-- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) for CLI, API, schema, and artifact
+- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) for CLI, API, schema, and artifact
   contracts
-- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, diagnostics,
+- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, diagnostics,
   and release procedures
-- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for invariants, tests, and structural
+- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for invariants, tests, and structural
   risk pressure
 
 ## Concrete Anchors

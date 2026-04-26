@@ -66,10 +66,10 @@ flowchart LR
 
 ## Choose A Page
 
-- use [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/) when the first need is the exact new package name
-- use [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/) when requirements, imports, or command preservation are the current risk
-- use [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/) when the migration must be proven through tests, metadata, or release checks
-- use [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/) or [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/) when the preserved bridge might be ready to disappear
+- open [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/) when the first need is the exact new package name
+- open [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/) when requirements, imports, or command preservation are the current risk
+- open [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/) when the migration must be proven through tests, metadata, or release checks
+- open [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/) or [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/) when the preserved bridge might be ready to disappear
 
 ## Concrete Anchors
 

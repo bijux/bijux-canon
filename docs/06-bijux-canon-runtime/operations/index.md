@@ -47,13 +47,13 @@ flowchart LR
 
 ## Start Here
 
-- use [Common Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/common-workflows/) when the real question is how to
+- open [Common Workflows](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/common-workflows/) when the real question is how to
   run the governed path safely
-- use [Observability and Diagnostics](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/observability-and-diagnostics/) when
+- open [Observability and Diagnostics](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/observability-and-diagnostics/) when
   you need to inspect replay, store, or trace behavior
-- use [Failure Recovery](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/failure-recovery/) when a persisted or replayed run
+- open [Failure Recovery](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/failure-recovery/) when a persisted or replayed run
   has diverged
-- use [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/) before broadening runtime
+- open [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/) before broadening runtime
   authority or store access
 
 ## Pages In Operations
@@ -93,11 +93,11 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when an operational question turns
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when an operational question turns
   into a CLI, API, or schema contract question
-- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a recovery question really
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when a recovery question really
   depends on execution or storage structure
-- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real issue is whether the
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real issue is whether the
   workflow is sufficiently defended and reviewed
 
 ## Why Use Operations

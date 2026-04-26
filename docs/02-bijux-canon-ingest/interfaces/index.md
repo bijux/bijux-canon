@@ -46,13 +46,13 @@ flowchart LR
 
 ## Start Here
 
-- use [CLI Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/cli-surface/) when the issue begins with an ingest
+- open [CLI Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/cli-surface/) when the issue begins with an ingest
   command or operator entrypoint
-- use [Data Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/data-contracts/) when the question is about chunk
+- open [Data Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/data-contracts/) when the question is about chunk
   shapes, records, or prepared payload structure
-- use [Artifact Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/artifact-contracts/) when downstream work depends
+- open [Artifact Contracts](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/artifact-contracts/) when downstream work depends
   on specific ingest outputs staying stable
-- use [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/) when a change
+- open [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/) when a change
   might break an established ingest-facing contract
 
 ## Pages In Interfaces
@@ -83,13 +83,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when a contract question is really
+- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when a contract question is really
   a package-boundary question
-- use [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when the surface depends on
+- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when the surface depends on
   structural flow through processing or retrieval modules
-- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need repeatable commands,
+- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need repeatable commands,
   setup, or maintainer runbooks
-- use [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the real question is whether the
+- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the real question is whether the
   documented contract is sufficiently defended
 
 ## Concrete Anchors

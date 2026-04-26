@@ -45,11 +45,11 @@ flowchart LR
 
 ## Start Here
 
-- use [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/) for the proof layers that matter most
+- open [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/) for the proof layers that matter most
   in this package
-- use [Change Validation](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/change-validation/) when you need the validation
+- open [Change Validation](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/change-validation/) when you need the validation
   bar for a real orchestration change
-- use [Known Limitations](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/risk-register/)
+- open [Known Limitations](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/risk-register/)
   before assuming agent output proves more than it actually does
 
 ## Pages In Quality
@@ -87,13 +87,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and trust
+- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and trust
   boundaries
-- use [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a proof gap points to
+- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a proof gap points to
   structural drift
-- use [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the evidence needs to defend a
+- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the evidence needs to defend a
   contract
-- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the validation bar depends on
+- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the validation bar depends on
   a repeatable workflow
 
 ## Why Use Quality

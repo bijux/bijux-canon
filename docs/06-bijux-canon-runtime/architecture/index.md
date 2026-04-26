@@ -47,12 +47,12 @@ flowchart LR
 
 ## Start Here
 
-- use [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/) for the shortest structural tour
-- use [Execution Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/execution-model/) when you need the plan-to-replay
+- open [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/) for the shortest structural tour
+- open [Execution Model](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/execution-model/) when you need the plan-to-replay
   path rather than a directory listing
-- use [State and Persistence](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/state-and-persistence/) when the real question
+- open [State and Persistence](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/state-and-persistence/) when the real question
   is what becomes durable and where it is stored
-- use [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/) before broadening runtime's
+- open [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/) before broadening runtime's
   dependencies on lower packages or outside systems
 
 ## Pages In Architecture
@@ -93,11 +93,11 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when a structural issue is really a
+- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when a structural issue is really a
   boundary issue
-- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when architecture reaches a public
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when architecture reaches a public
   CLI, API, schema, or artifact seam
-- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question becomes whether the
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question becomes whether the
   structure is adequately defended by tests and invariants
 
 ## Why Use Architecture

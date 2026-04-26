@@ -44,13 +44,13 @@ flowchart LR
 
 ## Start Here
 
-- use [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) for the broad proof story behind
+- open [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) for the broad proof story behind
   ingest behavior
-- use [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/) when the key question is what must not drift
+- open [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/) when the key question is what must not drift
   across source preparation and chunking
-- use [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/) when you need the minimum
+- open [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/) when you need the minimum
   evidence for a safe ingest change
-- use [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/) when known limits or tradeoffs may
+- open [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/) when known limits or tradeoffs may
   matter more than pass/fail checks
 
 ## Pages In Quality
@@ -81,13 +81,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when uncertainty about ownership is
+- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when uncertainty about ownership is
   masquerading as a quality concern
-- use [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when missing proof points to
+- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when missing proof points to
   structural drift
-- use [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when trust depends on a specific
+- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when trust depends on a specific
   caller-facing contract
-- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the needed evidence is really a
+- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the needed evidence is really a
   repeatable maintainer workflow
 
 ## Concrete Anchors

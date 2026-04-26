@@ -43,13 +43,13 @@ flowchart LR
 
 ## Start Here
 
-- use [Module Map](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/module-map/) for the fastest route to directory-level
+- open [Module Map](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/module-map/) for the fastest route to directory-level
   architectural ownership
-- use [Execution Model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/execution-model/) when the real question is how
+- open [Execution Model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/execution-model/) when the real question is how
   retrieval work moves through the package
-- use [State and Persistence](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/state-and-persistence/) when index durability
+- open [State and Persistence](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/state-and-persistence/) when index durability
   and replay behavior are the hard part
-- use [Integration Seams](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/integration-seams/) when a change might blur the
+- open [Integration Seams](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/integration-seams/) when a change might blur the
   edges between ingest, index, and downstream consumers
 
 ## Pages In Architecture
@@ -80,13 +80,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the structural question is
+- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the structural question is
   really an ownership question
-- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when architecture reaches a
+- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when architecture reaches a
   caller-facing contract or retrieval surface
-- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when structure affects repeatable
+- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when structure affects repeatable
   maintainer workflows
-- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof that the documented
+- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need proof that the documented
   design is still defended in tests and review
 
 ## Concrete Anchors

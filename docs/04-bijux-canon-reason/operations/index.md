@@ -43,11 +43,11 @@ flowchart LR
 
 ## Start Here
 
-- use [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/) for environment and
+- open [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/) for environment and
   package bootstrap expectations
-- use [Common Workflows](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/common-workflows/) when you need the normal run and
+- open [Common Workflows](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/common-workflows/) when you need the normal run and
   validation paths
-- use [Observability and Diagnostics](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/observability-and-diagnostics/) or
+- open [Observability and Diagnostics](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/observability-and-diagnostics/) or
   [Failure Recovery](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/failure-recovery/) when a reasoning run is producing
   suspect output or replay mismatches
 
@@ -86,12 +86,12 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package boundary and scope
-- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a workflow problem points
+- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package boundary and scope
+- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a workflow problem points
   to a structural seam
-- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when an operational path depends on
+- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when an operational path depends on
   a CLI, API, schema, or artifact contract
-- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the next question is whether a
+- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the next question is whether a
   run has been validated hard enough
 
 ## Why Use Operations

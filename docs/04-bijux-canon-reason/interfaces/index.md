@@ -44,11 +44,11 @@ flowchart LR
 
 ## Start Here
 
-- use [CLI Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/cli-surface/) for operator-facing commands and replay
+- open [CLI Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/cli-surface/) for operator-facing commands and replay
   entrypoints
-- use [API Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/api-surface/) when the contract is HTTP-facing rather
+- open [API Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/api-surface/) when the contract is HTTP-facing rather
   than terminal-facing
-- use [Artifact Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/artifact-contracts/) and
+- open [Artifact Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/artifact-contracts/) and
   [Data Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/data-contracts/) when the durable output shape matters
   more than the call syntax
 
@@ -80,12 +80,12 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
-- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for structural seams behind the
+- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
+- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for structural seams behind the
   public surfaces
-- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, and release
+- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, and release
   procedures
-- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for compatibility evidence and review
+- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for compatibility evidence and review
   pressure
 
 ## Concrete Anchors

@@ -44,13 +44,13 @@ flowchart LR
 
 ## Start Here
 
-- use [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/) for the shortest explanation of the
+- open [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/) for the shortest explanation of the
   runtime proof stack
-- use [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/) when a change could disturb replay,
+- open [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/) when a change could disturb replay,
   persistence, or determinism claims
-- use [Change Validation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/change-validation/) when the question is what to
+- open [Change Validation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/change-validation/) when the question is what to
   run for one concrete runtime change
-- use [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
+- open [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
   before claiming the package proves more than it currently does
 
 ## Pages In Quality
@@ -91,11 +91,11 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the proof question becomes
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the proof question becomes
   about a named CLI, API, schema, or artifact contract
-- use [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the needed evidence depends on
+- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the needed evidence depends on
   a repeatable runtime workflow
-- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when the proof gap points to
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when the proof gap points to
   structural drift rather than missing checks
 
 ## Why Use Quality

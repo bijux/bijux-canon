@@ -45,13 +45,13 @@ flowchart LR
 
 ## Start Here
 
-- use [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/) for the broad proof story behind
+- open [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/) for the broad proof story behind
   retrieval behavior
-- use [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/) when the key question is what must not drift
+- open [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/) when the key question is what must not drift
   across index state, provenance, or replay
-- use [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/) when you need the minimum
+- open [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/) when you need the minimum
   evidence for a safe retrieval change
-- use [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/) when backend limitations or tradeoffs
+- open [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/) when backend limitations or tradeoffs
   matter more than pass/fail status
 
 ## Pages In Quality
@@ -82,13 +82,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when uncertainty about ownership is
+- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when uncertainty about ownership is
   masquerading as a quality issue
-- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when missing proof points to
+- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when missing proof points to
   structural drift
-- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when trust depends on a specific
+- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when trust depends on a specific
   retrieval contract
-- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the needed evidence is really a
+- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the needed evidence is really a
   repeatable replay or recovery workflow
 
 ## Concrete Anchors

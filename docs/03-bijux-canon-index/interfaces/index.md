@@ -46,13 +46,13 @@ flowchart LR
 
 ## Start Here
 
-- use [CLI Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/cli-surface/) when the issue begins with a query, build,
+- open [CLI Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/cli-surface/) when the issue begins with a query, build,
   or replay command
-- use [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/) when the question is about HTTP or
+- open [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/) when the question is about HTTP or
   retrieval-facing service boundaries
-- use [Data Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/data-contracts/) when schemas or payload shapes are
+- open [Data Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/data-contracts/) when schemas or payload shapes are
   the real dependency
-- use [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/) when a change
+- open [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/) when a change
   may break a retrieval contract that others already trust
 
 ## Pages In Interfaces
@@ -83,13 +83,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when a contract concern is really a
+- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when a contract concern is really a
   package-boundary concern
-- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the surface depends on
+- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when the surface depends on
   deeper retrieval structure or backend layering
-- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the contract question starts
+- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the contract question starts
   with a repeatable maintainer workflow
-- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the real issue is whether the
+- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the real issue is whether the
   documented contract is sufficiently defended
 
 ## Concrete Anchors

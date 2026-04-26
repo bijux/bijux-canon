@@ -48,11 +48,11 @@ flowchart TB
 
 ## Start Here
 
-- use [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/) for the shortest route from directory names
+- open [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/) for the shortest route from directory names
   to owned behavior
-- use [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/) when you need the lifecycle of an
+- open [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/) when you need the lifecycle of an
   orchestrated run
-- use [State and Persistence](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/state-and-persistence/) when the question is
+- open [State and Persistence](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/state-and-persistence/) when the question is
   which results, traces, or replay data become durable
 
 ## Pages In Architecture
@@ -82,12 +82,12 @@ flowchart TB
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
-- use [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import
+- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
+- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import
   contracts
-- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
+- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
   procedures
-- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for invariants, tests, and architecture
+- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for invariants, tests, and architecture
   risk pressure
 
 ## Concrete Anchors

@@ -44,11 +44,11 @@ flowchart LR
 
 ## Start Here
 
-- use [CLI Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/cli-surface/) for terminal-facing commands and replay
+- open [CLI Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/cli-surface/) for terminal-facing commands and replay
   entrypoints
-- use [API Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/api-surface/) when the contract is HTTP-facing rather
+- open [API Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/api-surface/) when the contract is HTTP-facing rather
   than CLI-facing
-- use [Artifact Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/artifact-contracts/) and
+- open [Artifact Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/artifact-contracts/) and
   [Data Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/data-contracts/) when trace or result shape matters more
   than invocation syntax
 
@@ -79,12 +79,12 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
-- use [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for the structural seams behind
+- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
+- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for the structural seams behind
   the public surfaces
-- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
+- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
   procedures
-- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for compatibility evidence and review
+- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for compatibility evidence and review
   pressure
 
 ## Concrete Anchors

@@ -41,11 +41,11 @@ flowchart LR
 
 ## Start Here
 
-- use [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/) for the shortest guide to which directory
+- open [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/) for the shortest guide to which directory
   owns which architectural responsibility
-- use [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/) when the hard question is how
+- open [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/) when the hard question is how
   source material moves from input to prepared output
-- use [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/) when a change might blur the
+- open [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/) when a change might blur the
   line between ingest and its upstream or downstream neighbors
 
 ## Pages In Architecture
@@ -76,13 +76,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the structural question is
+- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the structural question is
   really an ownership question
-- use [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when architecture reaches a caller
+- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when architecture reaches a caller
   or artifact contract
-- use [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when structural decisions affect
+- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when structural decisions affect
   repeatable maintainer workflows
-- use [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof that the documented
+- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof that the documented
   design is still defended in tests and review
 
 ## Concrete Anchors
