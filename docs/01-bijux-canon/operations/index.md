@@ -10,45 +10,39 @@ last_reviewed: 2026-04-26
 # Operations
 
 The operations section explains how the repository is run, reviewed, and kept
-coherent after the foundation has already made the ownership model clear.
-
-These pages are about repeatable repository work rather than package-local
-behavior. They should help a maintainer move from a question about setup,
-validation, release flow, automation, or review posture to the concrete files
-that carry that work today. The point is not to create ceremony. The point is
-to keep operational memory checked in and inspectable.
+coherent once the ownership model is already clear. These pages cover
+repeatable root-level procedure: local setup, validation, schema review,
+artifact handling, release flow, and change acceptance across the package set.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    reader["reader question<br/>how is shared repository work carried out?"]
-    setup["setup and contributor workflow"]
-    validation["testing, validation, and schema governance"]
-    release["release and artifact handling"]
-    review["review posture and change management"]
+    change["repository change<br/>shared work at the root"]
+    setup["local development<br/>environment and command entrypoints"]
+    validation["validation<br/>tests, schemas, automation checks"]
+    release["release and artifacts<br/>versioning and publication"]
+    review["review posture<br/>acceptance and change management"]
+    change --> setup
+    setup --> validation
+    validation --> release
+    validation --> review
+    release --> review
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    class reader page;
+    class change page;
     class setup,validation,release positive;
     class review caution;
-    reader --> setup
-    reader --> validation
-    reader --> release
-    reader --> review
 ```
 
 ## Start Here
 
-- open [Testing and Validation](testing-and-validation.md) when the question is
-  what shared proof must run before accepting a change
-- open [Contributor Workflows](contributor-workflows.md) for the shortest route
-  through normal repository work
-- open [Release and Versioning](release-and-versioning.md) when the question is
-  tag, package, or published artifact behavior
-- open [Automation Surfaces](automation-surfaces.md) when the real issue is
-  which shared automation owns the current action
+- open [Contributor Workflows](contributor-workflows.md) for the shortest route through normal repository work
+- open [Testing and Validation](testing-and-validation.md) when the question is which shared proof must run before acceptance
+- open [API and Schema Governance](api-and-schema-governance.md) when the concern is contract drift or reviewed schema change
+- open [Release and Versioning](release-and-versioning.md) when the concern is tag behavior, package publication, or release discipline
+- open [Automation Surfaces](automation-surfaces.md) when the question is which shared root automation owns the current action
 
 ## Pages in This Section
 
@@ -87,21 +81,12 @@ flowchart LR
 
 ## Read Across The Repository
 
-- open [Foundation](../foundation/index.md) when an operational problem is
-  really a boundary problem
-- open [Maintainer Handbook](../../07-bijux-canon-maintain/index.md) when the
-  question becomes workflow implementation, drift tooling, or maintainer helper
-  code
+- open [Foundation](../foundation/index.md) when an operational problem is really a boundary problem
+- open [Maintainer Handbook](../../07-bijux-canon-maintain/index.md) when the question becomes workflow implementation, drift tooling, or maintainer helper code
 - open the owning package handbook when the operation is no longer truly shared
 
-## Reader Takeaway
+## Operational Standard
 
-Use `Operations` when the issue is how the repository behaves as a shared
-system. If a workflow only makes sense through private habit, CI archaeology,
-or package-local tribal knowledge, the shared operational story is not yet
-strong enough.
-
-## Purpose
-
-This page gives maintainers the shortest route into the repository’s operational
-guidance without forcing them to infer it from CI logs or Make targets first.
+Shared procedure must be discoverable from checked-in rules, commands, and
+workflow files. If a repository-wide action still depends on CI archaeology or
+private habit, the operational surface is not documented strongly enough yet.
