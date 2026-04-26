@@ -35,7 +35,7 @@ vague anxiety, and it should not disappear on untested optimism.
 
 ## Decision Rule
 
-Use this page when the main question is whether a compatibility package is
+This page answers one question: whether a compatibility package is
 ready to retire. If evidence is still missing, keep the package temporarily and
 close the gap instead of guessing.
 

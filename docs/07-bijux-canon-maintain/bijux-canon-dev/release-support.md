@@ -56,7 +56,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when the main question is how shared release helpers support the
+This page answers one question: how shared release helpers support the
 repository. If the change would affect end-user behavior directly, open the
 owning product package instead.
 

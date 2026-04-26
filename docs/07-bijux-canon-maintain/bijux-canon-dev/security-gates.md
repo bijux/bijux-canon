@@ -56,7 +56,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when the main question is how repository-health security checks
+This page answers one question: how repository-health security checks
 are implemented and reviewed. If the change would affect end-user behavior
 directly, open the owning product package instead.
 

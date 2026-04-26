@@ -56,7 +56,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when the main question is how schema drift is checked and
+This page answers one question: how schema drift is checked and
 reviewed across the repository. If the change would affect end-user behavior
 directly, open the owning product package instead.
 

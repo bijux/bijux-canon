@@ -55,7 +55,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when the main question is how repository-wide quality checks are
+This page answers one question: how repository-wide quality checks are
 implemented and reviewed. If the change would affect end-user behavior
 directly, open the owning product package instead.
 

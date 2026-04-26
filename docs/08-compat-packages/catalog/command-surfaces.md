@@ -34,7 +34,7 @@ provides a meaningful route behind it.
 
 ## Decision Rule
 
-Use this page when the main question is whether a preserved command still
+This page answers one question: whether a preserved command still
 serves a real migration need. If the only reason to keep it is habit rather
 than an identified dependent environment, plan migration or retirement instead.
 

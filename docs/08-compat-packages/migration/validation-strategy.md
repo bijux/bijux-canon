@@ -36,7 +36,7 @@ points to the right place.
 
 ## Decision Rule
 
-Use this page when the main question is what evidence keeps a compatibility
+This page answers one question: what evidence keeps a compatibility
 package trustworthy. If the only reason to keep a preserved name is habit
 rather than a supported dependent environment, plan migration or retirement
 instead.

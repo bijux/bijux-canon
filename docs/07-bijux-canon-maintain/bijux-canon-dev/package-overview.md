@@ -63,7 +63,7 @@ flowchart LR
 
 ## Decision Rule
 
-Use this page when the main question is whether a change belongs in maintainer
+This page answers one question: whether a change belongs in maintainer
 automation or in a product package contract. If the change would affect
 end-user behavior directly, open the owning product package instead of
 letting maintainer scope sprawl.
