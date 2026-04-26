@@ -11,6 +11,27 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to run agent work repeatably: install it, exercise workflows, diagnose trace drift, release it, or recover from failure without relying on who last touched the package.
 
+## Operating Loop
+
+```mermaid
+flowchart LR
+    setup["setup"]
+    run["run workflow"]
+    inspect["inspect trace"]
+    recover["recover execution"]
+    release["release package"]
+    proof["tests and artifacts"]
+
+    setup --> run --> inspect --> recover --> release
+    run --> proof
+    inspect --> proof
+```
+
+Agent operations should make workflow behavior teachable from the repository.
+A maintainer needs one path to execute a flow, inspect the emitted trace, and
+recover when orchestration drifts, without depending on whoever most recently
+debugged the package.
+
 ## Read These First
 
 - open [Installation and Setup](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/installation-and-setup/) first when you need a clean package starting point
@@ -45,6 +66,8 @@ The main operational risk here is letting orchestration succeed only for people 
 - leave for [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a workflow problem exposes structural drift underneath it
 - leave for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the package runs but the real question is whether the evidence is strong enough
 
-## Bottom Line
+## Design Pressure
 
-If the package cannot be operated from checked-in facts alone, the operational story is not done yet.
+If workflow recovery depends on tribal knowledge about trace interpretation,
+the package is not operationally ready. This section has to turn agent
+execution into a repeatable, inspectable routine.
