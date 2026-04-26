@@ -21,27 +21,23 @@ decisions.
 
 ```mermaid
 flowchart LR
-    contracts["contracts<br/>flow, step, dataset, artifact"]
-    model["execution model<br/>plans, traces, run modes, verdicts"]
-    execution["runtime execution<br/>step, retrieval, reasoning, agent executors"]
-    policy["policy and authority<br/>budget, nondeterminism, acceptance"]
-    observability["observability<br/>capture, storage, analysis"]
-    verification["verification<br/>rules, arbitration, contradictions"]
-    verdict["governed run<br/>accepted, rejected, replayable"]
+    contracts["contracts"]
+    model["execution model"]
+    execution["runtime execution"]
+    policy["authority policy"]
+    observability["capture and storage"]
+    verification["verification rules"]
+    verdict["governed run verdict"]
 
     contracts --> model --> execution --> policy --> verification --> verdict
     execution --> observability --> verification
-    policy -. records decisions .-> observability
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class contracts page;
-    class model,execution,policy,verification positive;
-    class observability anchor;
-    class verdict action;
+    policy --> observability
 ```
+
+Runtime architecture should explain how authority is applied, not just how code
+is arranged. Contracts define what a run can contain, execution resolves the
+lower-package work, policy records the governing decisions, observability keeps
+the evidence durable, and verification turns that record into a verdict.
 
 ## Read These First
 
@@ -80,6 +76,8 @@ The main architectural risk here is broadening runtime until execution order rep
 - leave for [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
 - leave for [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
-## Bottom Line
+## Design Pressure
 
-A structure that cannot be explained in one pass is already carrying too much hidden policy.
+If runtime is described only as the place where everything ends, it will
+gradually absorb behavior that should stay elsewhere. The architecture page has
+to keep execution, policy, observability, and verification visibly distinct.
