@@ -14,7 +14,7 @@ names to canonical `bijux-canon-*` package names.
 
 Use it when you are actively changing real code, dependency manifests, CI
 commands, or deployment configs. If you only need mapping context, start with
-[Legacy Name Map](../catalog/legacy-name-map.md).
+[Legacy Name Map](https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/).
 
 ## Migration Goal
 
@@ -26,11 +26,11 @@ commands, or deployment configs. If you only need mapping context, start with
 
 | Legacy distribution | Canonical distribution | Canonical import | Canonical command | Canonical package docs |
 | --- | --- | --- | --- | --- |
-| `agentic-flows` | `bijux-canon-runtime` | `bijux_canon_runtime` | `bijux-canon-runtime` | [Runtime overview](../../06-bijux-canon-runtime/index.md) |
-| `bijux-agent` | `bijux-canon-agent` | `bijux_canon_agent` | `bijux-canon-agent` | [Agent overview](../../05-bijux-canon-agent/index.md) |
-| `bijux-rag` | `bijux-canon-ingest` | `bijux_canon_ingest` | `bijux-canon-ingest` | [Ingest overview](../../02-bijux-canon-ingest/index.md) |
-| `bijux-rar` | `bijux-canon-reason` | `bijux_canon_reason` | `bijux-canon-reason` | [Reason overview](../../04-bijux-canon-reason/index.md) |
-| `bijux-vex` | `bijux-canon-index` | `bijux_canon_index` | `bijux-canon-index` | [Index overview](../../03-bijux-canon-index/index.md) |
+| `agentic-flows` | `bijux-canon-runtime` | `bijux_canon_runtime` | `bijux-canon-runtime` | [Runtime overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/) |
+| `bijux-agent` | `bijux-canon-agent` | `bijux_canon_agent` | `bijux-canon-agent` | [Agent overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/) |
+| `bijux-rag` | `bijux-canon-ingest` | `bijux_canon_ingest` | `bijux-canon-ingest` | [Ingest overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/) |
+| `bijux-rar` | `bijux-canon-reason` | `bijux_canon_reason` | `bijux-canon-reason` | [Reason overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/) |
+| `bijux-vex` | `bijux-canon-index` | `bijux_canon_index` | `bijux-canon-index` | [Index overview](https://bijux.io/bijux-canon/03-bijux-canon-index/) |
 
 ## Step-By-Step Migration
 
@@ -127,8 +127,8 @@ Bias toward retirement when:
 - internal code and automation already use canonical names
 - compatibility package releases exist only to mirror canonical releases
 
-Use [Retirement Conditions](retirement-conditions.md) and
-[Retirement Playbook](retirement-playbook.md) for closure planning.
+Use [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/) and
+[Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/) for closure planning.
 
 ## Common Failure Modes
 
@@ -139,8 +139,8 @@ Use [Retirement Conditions](retirement-conditions.md) and
 
 ## Related References
 
-- [Compatibility Overview](compatibility-overview.md)
-- [Canonical Targets](canonical-targets.md)
-- [Dependency Continuity](dependency-continuity.md)
-- [Validation Strategy](validation-strategy.md)
-- [Repository Consolidation](repository-consolidation.md)
+- [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)
+- [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/)
+- [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/)
+- [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/)
+- [Repository Consolidation](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/)

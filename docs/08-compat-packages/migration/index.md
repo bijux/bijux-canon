@@ -9,8 +9,8 @@ last_reviewed: 2026-04-26
 
 # Migration
 
-The migration section explains how legacy names should be retired responsibly
-instead of merely coexisting forever.
+Use this section to understand how legacy names should be retired
+responsibly instead of merely coexisting forever.
 
 It covers the full transition path: how canonical package names replace legacy
 names, what continuity must be preserved while both exist, what validation must
@@ -40,17 +40,17 @@ flowchart LR
     class retirement caution;
 ```
 
-## Pages in This Section
+## Pages In Migration
 
-- [Compatibility Overview](compatibility-overview.md)
-- [Migration Guidance](migration-guidance.md)
-- [Repository Consolidation](repository-consolidation.md)
-- [Canonical Targets](canonical-targets.md)
-- [Dependency Continuity](dependency-continuity.md)
-- [Release Policy](release-policy.md)
-- [Validation Strategy](validation-strategy.md)
-- [Retirement Conditions](retirement-conditions.md)
-- [Retirement Playbook](retirement-playbook.md)
+- [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)
+- [Migration Guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- [Repository Consolidation](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/)
+- [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/)
+- [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/)
+- [Release Policy](https://bijux.io/bijux-canon/08-compat-packages/migration/release-policy/)
+- [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/)
+- [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/)
+- [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/)
 
 ## Use This Section When
 
@@ -58,18 +58,18 @@ flowchart LR
 - you need the shared rules for compatibility release and retirement decisions
 - you need the future posture of the compatibility layer rather than its current catalog entry
 
-## Do Not Use This Section When
+## Move On When
 
 - the only open question is which exact legacy surface is still preserved
 - the concern is already about current product behavior in a canonical package
 - the issue belongs to maintainer automation rather than compatibility policy
 
-## Choose The Next Page By Question
+## Choose A Page
 
-- open [Canonical Targets](canonical-targets.md) when the first need is the exact new package name
-- open [Dependency Continuity](dependency-continuity.md) when requirements, imports, or command preservation are the current risk
-- open [Validation Strategy](validation-strategy.md) when the migration must be proven through tests, metadata, or release checks
-- open [Retirement Conditions](retirement-conditions.md) or [Retirement Playbook](retirement-playbook.md) when the preserved bridge might be ready to disappear
+- use [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/) when the first need is the exact new package name
+- use [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/) when requirements, imports, or command preservation are the current risk
+- use [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/) when the migration must be proven through tests, metadata, or release checks
+- use [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/) or [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/) when the preserved bridge might be ready to disappear
 
 ## Concrete Anchors
 

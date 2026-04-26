@@ -9,8 +9,8 @@ last_reviewed: 2026-04-09
 
 # Catalog
 
-The catalog section answers the most direct compatibility question: which
-legacy public names still exist, and what exactly do they preserve.
+Use this section when the most direct compatibility question is which legacy
+public names still exist and what they still preserve.
 
 This section is intentionally concrete. It should help a reader move quickly
 from an old distribution or import name to the canonical package that now owns
@@ -18,17 +18,17 @@ the behavior. It also records the narrow compatibility surfaces that remain so
 reviewers can tell whether a legacy package is still doing its intended job or
 drifting into something larger.
 
-## Pages in This Section
+## Pages In Catalog
 
-- [agentic-flows](agentic-flows.md)
-- [bijux-agent](bijux-agent.md)
-- [bijux-rag](bijux-rag.md)
-- [bijux-rar](bijux-rar.md)
-- [bijux-vex](bijux-vex.md)
-- [Legacy Name Map](legacy-name-map.md)
-- [Package Behavior](package-behavior.md)
-- [Import Surfaces](import-surfaces.md)
-- [Command Surfaces](command-surfaces.md)
+- [agentic-flows](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
+- [bijux-agent](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/)
+- [bijux-rag](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/)
+- [bijux-rar](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/)
+- [bijux-vex](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/)
+- [Legacy Name Map](https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/)
+- [Package Behavior](https://bijux.io/bijux-canon/08-compat-packages/catalog/package-behavior/)
+- [Import Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/import-surfaces/)
+- [Command Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/command-surfaces/)
 
 ## What This Section Covers
 
@@ -36,7 +36,7 @@ drifting into something larger.
 - which canonical package each legacy name now points to
 - which preserved surfaces remain intentionally supported
 
-## Read This Section When
+## Use Catalog When
 
 - you already know the old package name and need the canonical replacement
 - you want the most concrete explanation of what a compatibility package still
@@ -44,9 +44,10 @@ drifting into something larger.
 - you are checking whether a legacy surface is still thin enough to justify its
   existence
 
-## Purpose
+## What You Get
 
-This page provides a section-level route into the compatibility package catalog.
+This page gives you the fastest route from a legacy package name to the
+canonical package and the preserved surfaces that still matter.
 
 ## Stability
 

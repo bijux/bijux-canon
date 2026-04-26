@@ -9,9 +9,9 @@ last_reviewed: 2026-04-26
 
 # Compatibility Packages
 
-The compatibility packages preserve older distribution names, import names,
-and command names while the canonical package family now lives under the
-`bijux-canon-*` naming system.
+Use this handbook when you need to understand how older distribution names,
+import names, and command names map to the canonical `bijux-canon-*` package
+family.
 
 Their job is migration continuity, not long-term product growth. A preserved
 legacy name is a bridge to a canonical package, not an equal design center.
@@ -48,7 +48,7 @@ flowchart TB
     class retire action;
 ```
 
-## Sections
+## Pages In This Handbook
 
 - [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) for legacy package entries, preserved names, and
   the concrete surfaces each compatibility package still carries
@@ -63,17 +63,17 @@ flowchart TB
   migration need
 - you need migration or retirement guidance rather than product implementation
 
-## Do Not Start Here When
+## Move On When
 
 - you already know the canonical package name and need current behavior docs
 - you are designing new product behavior or a new public contract
 - the question is about maintainer automation rather than compatibility
 
-## Choose The Next Section By Question
+## Choose A Section
 
-- open [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) when the immediate need is to identify which
+- use [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) when the immediate need is to identify which
   exact legacy surface is still preserved
-- open [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) when the immediate need is to plan
+- use [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) when the immediate need is to plan
   dependency continuity, validation, or retirement
 - move to the owning canonical package handbook once the current target package
   is known and the question becomes product behavior rather than migration
