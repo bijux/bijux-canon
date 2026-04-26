@@ -4,44 +4,55 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Interfaces
 
-This section explains which commands, APIs, imports, schemas, and artifacts `bijux-canon-agent` is prepared to stand behind as real surfaces.
+Use this section when the question is what another package, tool, or operator
+can safely rely on from `bijux-canon-agent`: commands, HTTP routes, schemas,
+config surfaces, orchestration artifacts, trace outputs, and public imports.
 
-These pages explain the public face of `bijux-canon-agent`. They help a caller separate deliberate contracts from incidental visibility before a dependency hardens around the wrong surface.
-
-Treat the interfaces pages for `bijux-canon-agent` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+This package has unusually high contract pressure because callers do not only
+invoke it; they also inspect what it orchestrated. Trace files, result
+artifacts, and schema-backed API shapes are part of what readers may depend on
+when they assess agent behavior.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    caller["bijux-canon-agent<br/>interface questions"]
-    cli["CLI and operator entrypoints"]
-    api["HTTP and schema surfaces"]
-    config["Configuration and data shapes"]
-    imports["Python import boundary"]
-    compatibility["What needs compatibility review"]
-    caller --> cli
-    caller --> api
-    caller --> config
-    caller --> imports
-    caller --> compatibility
+    cli["CLI entrypoints and replay helpers"]
+    api["HTTP routes and OpenAPI schemas"]
+    config["operator config and defaults"]
+    artifacts["run results, traces, and emitted artifacts"]
+    imports["public Python imports"]
+    reader["reader question<br/>which agent surfaces are real contracts?"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class caller page;
-    class cli,api positive;
-    class config,imports anchor;
-    class compatibility action;
+    class cli,page reader;
+    class api,config positive;
+    class artifacts,imports anchor;
+    cli --> reader
+    api --> reader
+    config --> reader
+    artifacts --> reader
+    imports --> reader
 ```
 
-## Pages in This Section
+## Start Here
+
+- open [CLI Surface](cli-surface.md) for terminal-facing commands and replay
+  entrypoints
+- open [API Surface](api-surface.md) when the contract is HTTP-facing rather
+  than CLI-facing
+- open [Artifact Contracts](artifact-contracts.md) and
+  [Data Contracts](data-contracts.md) when trace or result shape matters more
+  than invocation syntax
+
+## Pages In This Section
 
 - [CLI Surface](cli-surface.md)
 - [API Surface](api-surface.md)
@@ -53,56 +64,46 @@ flowchart LR
 - [Public Imports](public-imports.md)
 - [Compatibility Commitments](compatibility-commitments.md)
 
-## Read Across the Package
+## Use This Section When
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+- you need to know whether a command, route, trace file, config surface, or
+  import is meant to be stable
+- a change may affect downstream orchestration expectations or trace readers
+- a reviewer needs to separate explicit interfaces from incidental visibility
+
+## Do Not Use This Section When
+
+- the main question is why the behavior belongs in the agent layer at all
+- the concern is mostly structural rather than contract-facing
+- the issue is procedural or proof-oriented rather than about supported surfaces
+
+## Read Across The Package
+
+- open [Foundation](../foundation/index.md) for package purpose and ownership
+- open [Architecture](../architecture/index.md) for the structural seams behind
+  the public surfaces
+- open [Operations](../operations/index.md) for setup, diagnostics, and release
+  procedures
+- open [Quality](../quality/index.md) for compatibility evidence and review
+  pressure
 
 ## Concrete Anchors
 
-- CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py
-- operator configuration under src/bijux_canon_agent/config
-- HTTP-adjacent modules under src/bijux_canon_agent/api
-- apis/bijux-canon-agent/v1/schema.yaml
+- `src/bijux_canon_agent/interfaces/cli/entrypoint.py` for CLI entrypoints
+- `src/bijux_canon_agent/api/v1` for HTTP routes and schema-backed handlers
+- `src/bijux_canon_agent/config` for operator configuration surfaces
+- `src/bijux_canon_agent/traces` and `interfaces/cli/result_artifacts.py` for
+  trace and artifact contracts
 
-## Use This Page When
+## Reader Takeaway
 
-- you need the public command, API, import, schema, or artifact surface
-- you are checking whether a caller can safely rely on a given entrypoint or shape
-- you want the contract-facing side of the package before building on it
-
-## Decision Rule
-
-Use `Interfaces` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
-
-## What This Page Answers
-
-- which public or operator-facing surfaces `bijux-canon-agent` is really asking readers to trust
-- which schemas, artifacts, imports, or commands behave like contracts
-- what compatibility pressure a change to this surface would create
-
-## Reviewer Lens
-
-- compare commands, schemas, imports, and artifacts against the documented surface one by one
-- check whether a seemingly local change actually needs compatibility review
-- confirm that examples still point to real entrypoints and not to stale habits
-
-## Honesty Boundary
-
-This page can identify the intended public surfaces of `bijux-canon-agent`, but real compatibility depends on code, schemas, artifacts, examples, and tests staying aligned. If those disagree, the prose is wrong or incomplete.
-
-## Next Checks
-
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
+Use `Interfaces` to judge whether a dependency on the agent layer is
+defensible. The bar is not only that a command exists, but that commands,
+schemas, traces, artifacts, examples, and tests all agree about what the
+orchestration surface really promises.
 
 ## Purpose
 
-This page explains how to use the interfaces section for `bijux-canon-agent` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page introduces the agent interfaces handbook and routes readers to the
+pages that explain commands, APIs, artifacts, imports, and compatibility
+commitments.
