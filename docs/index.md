@@ -104,16 +104,15 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 - `docs/` for the handbook entry pages that route readers into the repository
 - `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` for the catalog tooling behind the handbook structure
 
-## Read The Package Flow
+## How The Packages Split
 
-Start with ingest when the work begins at source material or deterministic
-preparation. Open index when retrieval behavior or provenance becomes the
-focus. Open reason when the question is about claims, verification, or
-evidence interpretation. Open agent when you need orchestration, traces, or
-role-based coordination. Open runtime when the question is whether a run is
-acceptable, replayable, and durable. Stay at the repository level only for
-shared seams, in maintenance pages only for repository health, and in
-compatibility pages only until the canonical target is clear.
+Ingest turns source material into deterministic preparation output. Index owns
+retrieval behavior and provenance-rich search results. Reason owns claims,
+verification, and evidence-aware conclusions. Agent owns orchestration and
+trace-backed multi-step workflows. Runtime owns acceptance, replay, and
+durable execution. Stay at the repository level only for shared seams, in
+maintenance pages only for repository health, and in compatibility pages only
+until the canonical target is clear.
 
 ## Open This Page When
 
@@ -129,6 +128,6 @@ compatibility pages only until the canonical target is clear.
 
 ## Bottom Line
 
-`bijux-canon` stays understandable because each package carries one main
-promise and hands authority to the next layer explicitly. Open the handbook
-that owns the behavior, then let that package carry the detailed contract.
+Open this site root when you still need the owning handbook. Once one package
+clearly owns the behavior, that handbook should carry the detailed contract,
+workflow, and proof.
