@@ -91,7 +91,7 @@ flowchart LR
 - `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
 - `src/bijux_canon_ingest/application` for package workflows
 
-## Why Use Architecture
+## Bottom Line
 
 Open `Architecture` to make the internal flow legible enough that a reviewer can
 say where ingest logic lives and why. If the code only works because the

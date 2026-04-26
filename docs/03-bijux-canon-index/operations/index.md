@@ -99,7 +99,7 @@ flowchart LR
 - `packages/bijux-canon-index/README.md` for local package framing
 - `packages/bijux-canon-index/tests` for executable operational backstops
 
-## Why Use Operations
+## Bottom Line
 
 Open `Operations` when you need a retrieval workflow that can be repeated from
 the repository itself. If replay, validation, or recovery succeeds only because

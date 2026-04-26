@@ -100,7 +100,7 @@ flowchart LR
 - open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real issue is whether the
   workflow is sufficiently defended and reviewed
 
-## Why Use Operations
+## Bottom Line
 
 Open `Operations` to decide whether a maintainer can repeat runtime workflow
 from checked-in assets instead of memory. If a step works only because someone

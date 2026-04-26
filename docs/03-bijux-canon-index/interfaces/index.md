@@ -99,7 +99,7 @@ flowchart LR
 - OpenAPI schema files under `apis/bijux-canon-index/v1`
 - `apis/bijux-canon-index/v1/schema.yaml`
 
-## Why Use Interfaces
+## Bottom Line
 
 Open `Interfaces` to separate supported retrieval contracts from internal index
 visibility. If a dependency cannot be defended in terms of named commands,

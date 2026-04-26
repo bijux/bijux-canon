@@ -97,7 +97,7 @@ flowchart LR
 - `src/bijux_canon_index/infra` for backends, adapters, and runtime environment
   helpers
 
-## Why Use Architecture
+## Bottom Line
 
 Open `Architecture` to make retrieval structure legible enough that a reviewer
 can say which logic belongs to the domain, which belongs to workflow

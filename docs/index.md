@@ -163,7 +163,7 @@ compatibility pages only until the canonical target is clear.
 - the next step is a concrete interface, workflow, schema, or test surface
 - the work is already known to be a legacy-name migration issue
 
-## Reader Takeaway
+## Bottom Line
 
 `bijux-canon` stays understandable because each package carries one main
 promise and hands authority to the next layer explicitly. Open the handbook

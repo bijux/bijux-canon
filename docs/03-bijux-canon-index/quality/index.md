@@ -73,7 +73,7 @@ results.
   gates
 - `README.md`
 
-## Why Use Quality
+## Bottom Line
 
 Open `Quality` to ask a stricter question than “did the suite pass?” In index,
 the real bar is whether retrieval behavior remains replayable, provenance-aware,

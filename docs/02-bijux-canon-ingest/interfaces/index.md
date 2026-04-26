@@ -99,7 +99,7 @@ flowchart LR
 - configuration modules under `src/bijux_canon_ingest/config`
 - `apis/bijux-canon-ingest/v1/schema.yaml`
 
-## Why Use Interfaces
+## Bottom Line
 
 Open `Interfaces` to separate what ingest truly promises from what merely
 happens to be visible today. If a downstream dependency cannot be defended in

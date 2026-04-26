@@ -70,7 +70,7 @@ artifacts still support replay and audit instead of only looking complete.
 - open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the validation bar depends on
   a repeatable workflow
 
-## Why Use Quality
+## Bottom Line
 
 Open `Quality` to ask whether the reasoning layer has earned belief, not whether
 it merely produced output. The real bar is determinism, verification strength,

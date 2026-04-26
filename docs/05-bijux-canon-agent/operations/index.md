@@ -95,7 +95,7 @@ flowchart LR
 - open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the next question is whether a
   run has been validated hard enough
 
-## Why Use Operations
+## Bottom Line
 
 Open `Operations` to find workflows a maintainer can rerun and defend. If a
 procedure cannot show how it leaves behind inspectable traces, diagnosable

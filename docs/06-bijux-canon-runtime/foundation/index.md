@@ -98,7 +98,7 @@ flowchart LR
 - open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real question is whether runtime
   has proven that authority strongly enough
 
-## Why Open Foundation
+## Bottom Line
 
 Open `Foundation` to decide whether a change makes runtime easier or harder to
 defend as the authority layer in the system. If the work makes the package

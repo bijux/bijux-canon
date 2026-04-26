@@ -77,7 +77,7 @@ rules still justify trusting a governed run.
 - open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when the proof gap points to
   structural drift rather than missing checks
 
-## Why Use Quality
+## Bottom Line
 
 Open `Quality` to decide whether runtime has actually earned trust after a
 change. If one narrow green check hides a wider replay, persistence, contract,

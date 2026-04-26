@@ -93,7 +93,7 @@ flowchart LR
 - `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
 - `packages/bijux-canon-index/tests` as the proof surface for owned behavior
 
-## Why Open Foundation
+## Bottom Line
 
 Open `Foundation` to answer the ownership question with integrity: index exists
 to make retrieval behavior explicit, replayable, and dependable enough for

@@ -99,7 +99,7 @@ flowchart LR
 - `packages/bijux-canon-ingest/README.md` for local package framing
 - `packages/bijux-canon-ingest/tests` for executable operational backstops
 
-## Why Use Operations
+## Bottom Line
 
 Open `Operations` when you need a maintainer path that can be repeated from the
 repository itself. If an ingest run only succeeds because somebody remembers an

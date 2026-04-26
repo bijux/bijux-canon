@@ -72,7 +72,7 @@ live-provider pressure.
 - open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the validation bar depends on
   a repeatable workflow
 
-## Why Use Quality
+## Bottom Line
 
 Open `Quality` to ask whether the agent layer earned trust, not whether it
 merely produced a run. The real bar is layering discipline, trace integrity,

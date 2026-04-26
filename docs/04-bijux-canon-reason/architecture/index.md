@@ -101,7 +101,7 @@ flowchart TB
 - `src/bijux_canon_reason/reasoning`, `verification`, and `traces` for claim
   semantics, checks, and replayable records
 
-## Why Use Architecture
+## Bottom Line
 
 Open `Architecture` when you need the package to read as a sequence of named
 responsibilities, not a tangle of utilities. If a change blurs planning,

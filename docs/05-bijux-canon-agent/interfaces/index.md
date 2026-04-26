@@ -95,7 +95,7 @@ flowchart LR
 - `src/bijux_canon_agent/traces` and `interfaces/cli/result_artifacts.py` for
   trace and artifact contracts
 
-## Why Use Interfaces
+## Bottom Line
 
 Open `Interfaces` to judge whether a dependency on the agent layer is
 defensible. The bar is not only that a command exists, but that commands,

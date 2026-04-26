@@ -92,7 +92,7 @@ flowchart LR
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
 - `packages/bijux-canon-ingest/tests` as the proof surface for owned behavior
 
-## Why Open Foundation
+## Bottom Line
 
 Open `Foundation` to answer the ownership question with integrity: ingest exists
 to make source material predictable enough for downstream retrieval work to

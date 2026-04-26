@@ -100,7 +100,7 @@ flowchart LR
 - open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question becomes whether the
   structure is adequately defended by tests and invariants
 
-## Why Use Architecture
+## Bottom Line
 
 Open `Architecture` to decide whether a structural change makes runtime easier
 or harder to explain in terms of planning, governed execution, durable state,

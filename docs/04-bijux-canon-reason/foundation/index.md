@@ -95,7 +95,7 @@ flowchart LR
 - `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
 - `packages/bijux-canon-reason/tests` as the package proof surface
 
-## Why Open Foundation
+## Bottom Line
 
 `Foundation` leaves leave no doubt about the package boundary: retrieval finds
 evidence, reasoning turns it into inspectable claims and checks, agent

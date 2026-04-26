@@ -72,7 +72,7 @@ all look healthy while building on unstable prepared data.
 - `tests/e2e` for package boundary coverage
 - `README.md`
 
-## Why Use Quality
+## Bottom Line
 
 Open `Quality` to ask a stricter question than “did the tests pass?” In ingest,
 the real bar is whether prepared output remains deterministic, contract-aligned,

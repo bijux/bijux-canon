@@ -92,7 +92,7 @@ flowchart LR
 - `packages/bijux-canon-agent/src/bijux_canon_agent` as the import boundary
 - `packages/bijux-canon-agent/tests` as the package proof surface
 
-## Why Use Foundation
+## Bottom Line
 
 `Foundation` should leave no doubt about the package boundary: reasoning
 produces inspectable content, agent coordination turns that into role-based and

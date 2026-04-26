@@ -99,7 +99,7 @@ flowchart TB
 - `src/bijux_canon_agent/traces` and `observability` for replay and inspection
   seams
 
-## Why Use Architecture
+## Bottom Line
 
 `Architecture` makes the agent package readable as a control flow with
 named responsibilities. If interfaces, pipeline logic, role agents, and trace

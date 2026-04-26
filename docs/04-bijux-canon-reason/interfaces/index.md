@@ -96,7 +96,7 @@ flowchart LR
   trace JSONL formats
 - `apis/bijux-canon-reason/v1/schema.yaml` for the published schema contract
 
-## Why Use Interfaces
+## Bottom Line
 
 Open `Interfaces` to judge whether a dependency is defensible. In this package,
 the answer is not just “is there a function for it?” but also “can a reviewer

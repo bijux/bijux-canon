@@ -101,7 +101,7 @@ flowchart LR
 - open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real question is whether the
   interface is sufficiently defended
 
-## Why Use Interfaces
+## Bottom Line
 
 Open `Interfaces` to decide whether a caller-facing surface is explicit enough to
 depend on. If the surface cannot be tied back to code, frozen schemas, named
