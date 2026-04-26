@@ -17,8 +17,6 @@ The wording of the commit history matters here because the repository is meant
 to stay understandable years later. A good commit message should explain
 durable intent, not just what happened to be touched in one diff.
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
 ## Visual Summary
 
 ```mermaid
@@ -65,13 +63,16 @@ maintainer can understand them years later without opening the diff first.
 
 ## Decision Rule
 
-Use `Release and Versioning` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use this page when release behavior depends on root conventions, shared
+workflows, or version metadata that spans packages. If the answer depends
+mostly on one package's local release behavior, move to that package handbook
+instead.
 
 ## What This Page Answers
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+- which shared release rule is in scope
+- which workflows and metadata deserve inspection
+- how repository release governance stops before package-local ownership
 
 ## Reviewer Lens
 
@@ -81,17 +82,19 @@ Use `Release and Versioning` to decide whether the current question is genuinely
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
+Repository guidance here does not replace the actual release workflows, package
+metadata, or package-local release proof.
 
 ## Next Checks
 
 - move to the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
+  when the issue is really about release automation or drift tooling
 
 ## Purpose
 
-This page connects the root commit conventions to the package release mechanism.
+This page connects root commit conventions to the package release mechanism.
 
 ## Stability
 

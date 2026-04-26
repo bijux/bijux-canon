@@ -23,8 +23,6 @@ Read that list as a sequence of responsibilities, not as branding. The
 package names matter because they let the system tell the truth about where a
 concern belongs when code, interfaces, and tests evolve over time.
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
 ## Visual Summary
 
 ```mermaid
@@ -75,8 +73,10 @@ The canonical packages each own a distinct slice of the overall system:
 
 ## Shared Maintainer Packages
 
-- [bijux-canon-maintain](../../07-bijux-canon-maintain/index.md) for repository automation, schema drift checks, SBOM support, and quality gates
-- [compatibility packages](../../08-compat-packages/index.md) for legacy distribution and import preservation
+- `https://bijux.io/bijux-canon/07-bijux-canon-maintain/` for repository
+  automation, schema drift checks, SBOM support, and quality gates
+- `https://bijux.io/bijux-canon/08-compat-packages/` for legacy distribution
+  and import preservation
 
 ## Concrete Anchors
 
@@ -92,13 +92,15 @@ The canonical packages each own a distinct slice of the overall system:
 
 ## Decision Rule
 
-Use `Package Map` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use this page when the main question is which package owns a responsibility. If
+the answer depends mostly on one package's local behavior, continue in that
+package handbook instead of keeping the question at the repository root.
 
 ## What This Page Answers
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+- which canonical package owns a responsibility
+- which shared sections exist for maintenance and compatibility work
+- how repository mapping differs from package-local ownership
 
 ## Reviewer Lens
 
@@ -108,17 +110,20 @@ Use `Package Map` to decide whether the current question is genuinely repository
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
+This map routes readers to the right owner, but package-local docs, code,
+schemas, and tests still provide the detailed proof.
 
 ## Next Checks
 
 - move to the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
+  when the issue is really about automation or drift tooling
 
 ## Purpose
 
-This page lets a reader see the whole system shape from one place before diving into package-local detail.
+This page lets a reader see the whole system shape from one place before diving
+into package-local detail.
 
 ## Stability
 

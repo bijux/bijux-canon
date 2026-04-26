@@ -14,8 +14,6 @@ orchestration commands that keep the repository consistent. The goal is not to
 make every task happen at the root; it is to make cross-package work visible
 when it truly becomes cross-package.
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
 ## Visual Summary
 
 ```mermaid
@@ -62,13 +60,15 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Local Development` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use this page when local work spans packages, schemas, or root automation. If
+the question stays inside one package's local setup or behavior, move to that
+package handbook instead.
 
 ## What This Page Answers
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+- which repository-wide development posture is expected
+- which shared files support local cross-package work
+- how root orchestration differs from package-local setup
 
 ## Reviewer Lens
 
@@ -78,17 +78,21 @@ Use `Local Development` to decide whether the current question is genuinely repo
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
+Repository guidance here does not replace package-local setup instructions or
+checks. The real backstops are the referenced root files, workflows, schemas,
+and package handbooks.
 
 ## Next Checks
 
 - move to the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
+  when the issue is really about automation or drift tooling
 
 ## Purpose
 
-This page records the preferred development posture for the workspace without repeating package-specific setup details.
+This page records the preferred development posture for the workspace without
+repeating package-specific setup details.
 
 ## Stability
 

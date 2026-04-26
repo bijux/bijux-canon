@@ -18,8 +18,6 @@ package handbook, it probably does not belong at the root. Root scope should
 stay reserved for rules, assets, and workflows that genuinely sit across
 package boundaries.
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
 ## Visual Summary
 
 ```mermaid
@@ -69,13 +67,15 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Repository Scope` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use this page when the main question is whether a concern belongs at the
+repository root at all. If one package handbook can answer it honestly, that
+package should stay the owner.
 
 ## What This Page Answers
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+- which concerns belong at the repository root
+- which shared assets and workflows justify root ownership
+- how repository scope differs from package-local ownership
 
 ## Reviewer Lens
 
@@ -85,13 +85,15 @@ Use `Repository Scope` to decide whether the current question is genuinely repos
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
+This page sets the ownership boundary, but package-local docs, code, schemas,
+and tests still define the details on the package side of that boundary.
 
 ## Next Checks
 
 - move to the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+- use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
+  when the issue is really about automation or drift tooling
 
 ## Purpose
 

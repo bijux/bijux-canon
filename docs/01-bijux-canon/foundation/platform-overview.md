@@ -26,8 +26,6 @@ evidence, orchestrating work, or governing runtime outcomes? The repository
 is healthier when that question has one obvious answer instead of five partial
 ones.
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
 ## Visual Summary
 
 ```mermaid
@@ -74,13 +72,16 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Platform Overview` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+Use this page when the main need is understanding how the canonical packages
+fit together. If the answer depends mostly on one package's local behavior,
+move to that package handbook instead of stretching the repository overview
+past its boundary.
 
 ## What This Page Answers
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
+- which package owns which part of the system
+- which shared repository assets support the package split
+- how the repository overview differs from package-local ownership
 
 ## Reviewer Lens
 
@@ -90,17 +91,21 @@ Use `Platform Overview` to decide whether the current question is genuinely repo
 
 ## Honesty Boundary
 
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
+This overview explains the split between packages, but package-local docs,
+code, schemas, and tests still provide the detailed proof.
 
 ## Next Checks
 
 - move to the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
+- use the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
+  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` when the
+  question narrows to one package
 
 ## Purpose
 
-This page gives the shortest description of what the repository is and why it is organized as a monorepo rather than a single distribution.
+This page gives the shortest description of what the repository is and why it
+is organized as a monorepo rather than a single distribution.
 
 ## Stability
 
