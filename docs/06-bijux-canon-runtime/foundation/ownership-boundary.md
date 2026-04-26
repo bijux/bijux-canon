@@ -11,6 +11,23 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-runtime` owns governed execution authority above the lower package family. Use it when a behavior looks close enough to local execution below that runtime might absorb work it should merely govern.
 
+## Boundary Map
+
+```mermaid
+flowchart LR
+    run["run acceptance problem"]
+    runtime["runtime ownership"]
+    records["governed run records"]
+    neighbors["lower-package semantics and maintainer automation belong elsewhere"]
+
+    run --> runtime --> records
+    runtime --> neighbors
+```
+
+This page should make runtime feel like the authority layer for the package
+chain. The boundary works only when runtime can judge prior work without
+re-owning how lower packages produced it.
+
 ## Use This Boundary Test
 
 - keep the work here when it changes acceptance, persistence, replay, execution authority, or run governance
@@ -27,6 +44,8 @@ A new persistence acceptance rule belongs here. A new agent-specific retry polic
 - `packages/bijux-canon-runtime/tests` for proof that the boundary survives change
 - neighboring handbook roots in agent and the lower canonical packages when the work still looks plausible elsewhere
 
-## Bottom Line
+## Design Pressure
 
-A reviewer should be able to use this page to say not just why work belongs in `bijux-canon-runtime`, but why it does not belong in the nearest tempting neighbor.
+The pressure on runtime is to apply authority without swallowing package-local
+semantics or repository automation. If acceptance policy becomes a vague excuse
+for late-stage code placement, the boundary has already failed.
