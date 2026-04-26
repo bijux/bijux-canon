@@ -18,6 +18,28 @@ five-branch handbook for each canonical product package, one maintenance
 handbook, and one compatibility handbook. That structure is useful only if it
 reduces routing mistakes and shortens the path from prose to checked-in proof.
 
+## Documentation Model
+
+```mermaid
+flowchart LR
+    landing["landing and repository handbook"]
+    packages["canonical package handbooks"]
+    maintain["maintenance handbook"]
+    compat["compatibility handbook"]
+    proof["code, tests, schemas, workflows, and metadata"]
+
+    landing --> packages
+    landing --> maintain
+    landing --> compat
+    packages --> proof
+    maintain --> proof
+    compat --> proof
+```
+
+This page should show the handbook as a routing system, not just a pile of
+pages. Each branch exists to move readers toward the right owner and the right
+proof surface quickly.
+
 ## What This System Prevents
 
 - root pages that drift into package-local product explanation
@@ -44,8 +66,8 @@ boundary, a missing proof path, or a route block that sends readers in circles.
 - a page is starting to blur repository, package, maintenance, or compatibility ownership
 - the docs structure itself is under review rather than one package behavior
 
-## Bottom Line
+## Design Pressure
 
-The handbook earns trust only when it shortens the path from orientation to
-proof. If a page explains itself well but still sends readers to the wrong
-surface, the system is not doing its job yet.
+If the docs system optimizes for page polish instead of routing accuracy, it
+starts producing beautiful detours. The structure has to keep readers moving
+toward the right owner and the right proof.
