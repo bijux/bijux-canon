@@ -22,26 +22,22 @@ and whether another reviewer can replay or compare it later.
 
 ```mermaid
 flowchart LR
-    trace["agent trace<br/>ordered package outputs"]
-    policy["runtime policy<br/>budget, determinism, acceptance rules"]
-    authority["authority check<br/>accept, reject, observe, replay"]
-    store["artifact store<br/>durable execution records"]
-    analysis["replay and drift analysis<br/>diffs, fingerprints, canaries"]
-    verdict["run verdict<br/>accepted, rejected, replayable"]
+    trace["agent trace"]
+    policy["runtime policy"]
+    authority["authority check"]
+    store["artifact store"]
+    analysis["replay and drift analysis"]
+    verdict["run verdict"]
 
     trace --> policy --> authority --> verdict
     authority --> store --> analysis --> verdict
-    trace -. captured as .-> store
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class trace page;
-    class policy,authority positive;
-    class store,analysis anchor;
-    class verdict action;
+    trace --> store
 ```
+
+Runtime is the first layer allowed to say whether the whole run counts. The
+handbook should therefore emphasize authority, persistence, and replay over
+late-stage plumbing. If a reader cannot tell why one run is acceptable and
+another is only observable or replayable, the runtime story is still weak.
 
 ## What This Package Owns
 
@@ -57,7 +53,10 @@ flowchart LR
 
 ## Boundary Test
 
-If the issue is whether a run should be accepted, persisted, replayed, or rejected under explicit policy, it belongs here. If the issue is how a lower package produced its local result, runtime should consume that result rather than re-own the behavior.
+If the issue is whether a run should be accepted, persisted, replayed, or
+rejected under explicit policy, it belongs here. If the issue is how a lower
+package produced its local result, runtime should consume that result rather
+than re-own the behavior.
 
 ## First Proof Check
 
@@ -83,6 +82,8 @@ If the issue is whether a run should be accepted, persisted, replayed, or reject
 - [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/)
 - [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/)
 
-## Bottom Line
+## Leave This Handbook When
 
-If a proposed change makes `bijux-canon-runtime` broader without making its owned role easier to defend, the change is probably crossing a package boundary rather than improving the design.
+- the disputed behavior is really local to ingest, index, reason, or agent
+- the next step is a concrete interface, policy model, replay surface, or test
+- the issue belongs to repository-health automation rather than execution authority
