@@ -10,13 +10,13 @@ last_reviewed: 2026-04-26
 # Foundation
 
 `bijux-canon-index` exists to turn ingest-ready material into searchable,
-replayable retrieval behavior. Use this section when the important question is
+replayable retrieval behavior. Open this section when the important question is
 why retrieval ownership lives here and where it stops before reasoning or
 runtime take over.
 
 These pages help you separate three different concerns that often get blurred
 together: ingest preparation, index execution, and reasoning over retrieved
-results. Use them when you need a clear package boundary before changing code
+results. Open them when you need a clear package boundary before changing code
 or contracts.
 
 ## Visual Summary
@@ -43,11 +43,11 @@ flowchart LR
 
 ## Start Here
 
-- use [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/) for the shortest explanation of
+- open [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/) for the shortest explanation of
   what the index package is for
-- use [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/) when retrieval behavior may
+- open [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/) when retrieval behavior may
   be confused with ingest preparation or reasoning semantics
-- use [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/) when the key question is how
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/) when the key question is how
   prepared material becomes a replayable retrieval surface
 
 ## Pages In Foundation
@@ -78,13 +78,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when you need the structural
+- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when you need the structural
   map behind domain, application, and infrastructure flow
-- use [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is about public
+- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is about public
   retrieval contracts
-- use [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, local
+- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, local
   workflows, or release guidance
-- use [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need evidence that replay and
+- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need evidence that replay and
   retrieval behavior are actually protected
 
 ## Concrete Anchors
@@ -93,9 +93,9 @@ flowchart LR
 - `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
 - `packages/bijux-canon-index/tests` as the proof surface for owned behavior
 
-## Why Use Foundation
+## Why Open Foundation
 
-Use `Foundation` to answer the ownership question with integrity: index exists
+Open `Foundation` to answer the ownership question with integrity: index exists
 to make retrieval behavior explicit, replayable, and dependable enough for
 downstream packages to use. If a proposed change broadens the package without
 making that retrieval story clearer, it is probably crossing a boundary rather
@@ -103,6 +103,6 @@ than improving the design.
 
 ## What You Get
 
-This page gives you the boundary, language, and lifecycle route into
+Open this page when you need the boundary, language, and lifecycle route into
 `bijux-canon-index` before you move on to structure, contracts, operations,
 or proof.

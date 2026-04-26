@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Foundation
 
-Use this section when you need the durable answer to a simple question: why
+Open this section when you need the durable answer to a simple question: why
 does `bijux-canon-reason` exist as its own package between retrieval below and
 agent or runtime control above?
 
@@ -44,11 +44,11 @@ flowchart LR
 
 ## Start Here
 
-- use [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/) for the shortest description of
+- open [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/) for the shortest description of
   the package role
-- use [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/) when the question is whether
+- open [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/) when the question is whether
   logic belongs in retrieval, reasoning, agent orchestration, or runtime
-- use [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/) when you need the
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/) when you need the
   end-to-end shape from evidence intake to verified reasoning output
 
 ## Pages In Foundation
@@ -80,13 +80,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for module boundaries,
+- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for module boundaries,
   execution flow, and persistence seams
-- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) for CLI, API, trace, and schema
+- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) for CLI, API, trace, and schema
   contracts
-- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, diagnostics,
+- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, diagnostics,
   and release procedures
-- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for proof surfaces, invariants, and known
+- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for proof surfaces, invariants, and known
   limitations
 
 ## Concrete Anchors
@@ -95,15 +95,15 @@ flowchart LR
 - `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
 - `packages/bijux-canon-reason/tests` as the package proof surface
 
-## Why Use Foundation
+## Why Open Foundation
 
-`Foundation` should leave no doubt about the package boundary: retrieval finds
+`Foundation` leaves leave no doubt about the package boundary: retrieval finds
 evidence, reasoning turns it into inspectable claims and checks, agent
 coordinates multi-step work, and runtime decides what becomes durable and
 acceptable.
 
 ## What You Get
 
-This page gives you the purpose, scope, vocabulary, lifecycle, and boundary
+Open this page when you need the purpose, scope, vocabulary, lifecycle, and boundary
 route into `bijux-canon-reason` before you move on to structure, contracts,
 operations, or proof.

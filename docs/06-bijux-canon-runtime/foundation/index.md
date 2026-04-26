@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Foundation
 
-Use this section to understand why `bijux-canon-runtime` exists, what it owns
+Open this section to understand why `bijux-canon-runtime` exists, what it owns
 on purpose, and where its boundary stops.
 
 Read this section first when you need the durable package story before code
@@ -43,13 +43,13 @@ flowchart LR
 
 ## Start Here
 
-- use [Package Overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/package-overview/) for the shortest durable
+- open [Package Overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/package-overview/) for the shortest durable
   statement of the runtime role
-- use [Ownership Boundary](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/ownership-boundary/) when the real question is
+- open [Ownership Boundary](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/ownership-boundary/) when the real question is
   whether a behavior belongs in runtime or in a lower package
-- use [Lifecycle Overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/lifecycle-overview/) when you need the governed
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/lifecycle-overview/) when you need the governed
   run path before reading modules or schemas
-- use [Dependencies and Adjacencies](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/dependencies-and-adjacencies/) before
+- open [Dependencies and Adjacencies](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/dependencies-and-adjacencies/) before
   broadening the package into a neighbor's responsibility
 
 ## Pages In Foundation
@@ -91,22 +91,22 @@ flowchart LR
 
 ## Read Across The Package
 
-- use [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when the question becomes how
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when the question becomes how
   authority is implemented rather than why it exists
-- use [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the runtime role reaches a
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the runtime role reaches a
   CLI, API, schema, or durable artifact contract
-- use [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real question is whether runtime
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the real question is whether runtime
   has proven that authority strongly enough
 
-## Why Use Foundation
+## Why Open Foundation
 
-Use `Foundation` to decide whether a change makes runtime easier or harder to
+Open `Foundation` to decide whether a change makes runtime easier or harder to
 defend as the authority layer in the system. If the work makes the package
 broader without making that authority role clearer, stop and re-check the
 boundary before treating it as a local improvement.
 
 ## What You Get
 
-This page gives you the purpose, scope, vocabulary, lifecycle, and boundary
+Open this page when you need the purpose, scope, vocabulary, lifecycle, and boundary
 route into `bijux-canon-runtime` before you move on to structure, contracts,
 operations, or proof.
