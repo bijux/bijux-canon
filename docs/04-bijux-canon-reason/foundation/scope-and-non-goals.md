@@ -11,6 +11,23 @@ last_reviewed: 2026-04-26
 
 The scope of `bijux-canon-reason` is to make conclusions inspectable. It is not a fallback place for any logic that feels “smart.”
 
+## Scope Map
+
+```mermaid
+flowchart LR
+    evidence["retrieved evidence"]
+    scope["reason scope"]
+    artifacts["inspectable claims and checks"]
+    refuse["search execution, orchestration, and run authority stay out of scope"]
+
+    evidence --> scope --> artifacts
+    scope --> refuse
+```
+
+This page should make the reasoning scope feel exact, not mystical. The package
+owns meaning and verification only when those outputs stay inspectable enough
+to stand without workflow or runtime explanation.
+
 ## In Scope
 
 - turning retrieved evidence into claims, checks, and reasoning artifacts
@@ -27,6 +44,8 @@ The scope of `bijux-canon-reason` is to make conclusions inspectable. It is not 
 
 If the change adds cleverness without making claims easier to inspect or verify, it is probably not reasoning ownership.
 
-## Bottom Line
+## Design Pressure
 
-A package boundary earns trust partly by the work it refuses to absorb. `bijux-canon-reason` should stay narrow enough that its role can still be explained in one pass.
+If “smart behavior” becomes an excuse to absorb neighboring responsibilities,
+reason turns into a blur instead of a contract. The non-goals keep the package
+honest about what reasoning actually owns.
