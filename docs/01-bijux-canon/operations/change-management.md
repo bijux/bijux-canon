@@ -11,6 +11,22 @@ last_reviewed: 2026-04-26
 
 The repository should make change easier to reason about, not easier to hide.
 
+## Change Loop
+
+```mermaid
+flowchart LR
+    intent["change intent"]
+    owner["confirm the owner of each behavior"]
+    series["move docs, proof, and implementation together"]
+    history["durable commit history"]
+
+    intent --> owner --> series --> history
+```
+
+This page should frame change management as packaging explanation and proof
+while the work is still moving. A change series is healthy when the ownership
+story gets clearer as the edits accumulate.
+
 ## Fail-Fast Gates
 
 A cross-package change is not ready to merge until it passes all of these tests:
@@ -33,8 +49,8 @@ cleanup, duplicated rules, or confused root ownership.
 - the package or root surface that implements the behavior
 - the test, workflow, or schema check that proves the rule still holds
 
-## Bottom Line
+## Design Pressure
 
-Good change management closes the explanation loop while the change is still in
-flight. If private memory is needed to explain why the batch exists, it is not
-yet packaged well enough for durable history.
+The repository pays later for changes that were easy to merge but hard to
+describe. If the explanation loop stays open until after merge, the history is
+already losing information.
