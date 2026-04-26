@@ -23,7 +23,7 @@ legacy name is a bridge to a canonical package, not an equal design center.
 - [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) for rename planning, dependency continuity,
   validation, release posture, and retirement decisions
 
-## Open This Section When
+## Open This Handbook When
 
 - you started from a legacy package, import, or command name and need to find
   the current canonical target
@@ -46,7 +46,7 @@ legacy name is a bridge to a canonical package, not an equal design center.
 - open the owning canonical package handbook once the current target package is
   known and the question becomes product behavior rather than migration
 
-## Pages In This Section
+## Pages In Catalog
 
 - [agentic-flows](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
 - [bijux-agent](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/)
@@ -58,7 +58,7 @@ legacy name is a bridge to a canonical package, not an equal design center.
 - [Import Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/import-surfaces/)
 - [Command Surfaces](https://bijux.io/bijux-canon/08-compat-packages/catalog/command-surfaces/)
 
-## Pages In This Section
+## Pages In Migration
 
 - [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)
 - [Migration Guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
