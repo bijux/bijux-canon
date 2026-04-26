@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Maintenance Handbook
@@ -56,6 +56,32 @@ flowchart LR
 - [SBOM and Supply Chain](sbom-and-supply-chain.md)
 - [Operating Guidelines](operating-guidelines.md)
 
+## Use This Section When
+
+- the concern is inside the maintainer helper package itself
+- you need to understand which helper module or quality surface enforces a
+  repository-health rule
+- the question is about schema drift, release support, quality gates, or
+  supply-chain tooling
+
+## Do Not Use This Section When
+
+- the question is really about a product package API, CLI, or runtime contract
+- the issue belongs to shared Make entrypoints or GitHub Actions trigger logic
+- you are looking for end-user behavior rather than repository-health helpers
+
+## Choose The Next Page By Question
+
+- open [Package Overview](package-overview.md) for the shortest description of
+  why this maintainer package exists
+- open [Module Map](module-map.md) when you need the concrete helper-module
+  layout
+- open [Quality Gates](quality-gates.md) or [Security Gates](security-gates.md)
+  when the question is about policy enforcement
+- open [Schema Governance](schema-governance.md) or
+  [Release Support](release-support.md) when the question is about repository
+  publication discipline
+
 ## Module Map
 
 - `src/bijux_canon_dev/quality` for repository quality checks
@@ -70,6 +96,12 @@ flowchart LR
 - `packages/bijux-canon-dev/src/bijux_canon_dev` for maintainer helpers
 - `packages/bijux-canon-dev/tests` for executable maintenance proof
 - `apis/` and root workflows for repository-level integration points
+
+## Reader Takeaway
+
+Use `bijux-canon-dev` when the repository-health concern is implemented as
+helper code. If the question is really about shared command routing or workflow
+triggering, move sideways to `makes/` or `gh-workflows/` instead.
 
 ## Use This Page When
 
