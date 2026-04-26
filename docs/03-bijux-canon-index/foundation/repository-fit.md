@@ -11,6 +11,21 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-index` is a separate package because retrieval behavior creates its own contract pressure. Keeping that pressure visible at the package boundary prevents search semantics from becoming invisible infrastructure.
 
+## Fit Model
+
+```mermaid
+flowchart LR
+    seam["retrieval contract seam"]
+    package["bijux-canon-index package boundary"]
+    proof["metadata, apis, tests, and handbook"]
+
+    seam --> package --> proof
+```
+
+This page should explain why retrieval is not just another backend detail in
+the monorepo. The fit is real only when the package makes search semantics more
+explicit, more publishable, and easier to defend.
+
 ## Why This Is A Package
 
 - `packages/bijux-canon-index/src/bijux_canon_index` makes retrieval ownership visible in code
@@ -27,6 +42,7 @@ last_reviewed: 2026-04-26
 
 If the package only exists as a technical convenience for backend adapters, the retrieval seam is no longer being documented honestly.
 
-## Bottom Line
+## Design Pressure
 
-The repository should make the `bijux-canon-index` seam easier to defend, not easier to forget.
+If index is defended only as a technical layer for adapters, the repository has
+already stopped documenting retrieval as a real contract surface.
