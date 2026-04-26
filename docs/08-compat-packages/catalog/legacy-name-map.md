@@ -13,6 +13,22 @@ The legacy-name map is the shortest route from an old public name to its
 canonical replacement. It exists to remove ambiguity, not to make the old names
 feel equally current.
 
+## Mapping Model
+
+```mermaid
+flowchart LR
+    legacy["legacy public name"]
+    compat["compatibility package"]
+    canon["canonical package"]
+    handbook["canonical handbook"]
+
+    legacy --> compat --> canon --> handbook
+```
+
+This page should answer the mapping question immediately. Once the reader knows
+the old name, the canonical package and current handbook route should be
+visible without any additional interpretation.
+
 ## Current Map
 
 - `agentic-flows` -> `bijux-canon-runtime`
@@ -33,3 +49,9 @@ feel equally current.
 - compatibility package `README.md` files
 - canonical handbooks under `docs/02-bijux-canon-ingest/` through
   `docs/06-bijux-canon-runtime/`
+
+## Design Pressure
+
+If the map leaves room to wonder whether the legacy name is still a peer to the
+canonical package, it has failed. The whole point is to collapse ambiguity, not
+to preserve nostalgia.
