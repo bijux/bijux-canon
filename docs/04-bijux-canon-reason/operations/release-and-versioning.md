@@ -87,10 +87,3 @@ This page explains how `bijux-canon-reason` is expected to be operated, but it d
 - open quality when the question becomes whether the workflow is sufficiently proven
 - move back to architecture when operational complexity suggests a structural problem
 
-## Purpose
-
-This page ties package-local release mechanics to the wider repository release model.
-
-## Stability
-
-Keep it aligned with the package metadata and current versioning configuration.

@@ -53,11 +53,3 @@ Split shared work into reviewable batches with a visible reason for each one.
 If a change only makes sense when private memory fills the gaps, it is not yet
 packaged well enough for repository history.
 
-## Purpose
-
-This page shows how shared repository changes should be packaged and carried
-through to completion.
-
-## Stability
-
-Update this page only when the repository’s change discipline genuinely shifts.

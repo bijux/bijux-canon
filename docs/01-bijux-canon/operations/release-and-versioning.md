@@ -92,10 +92,3 @@ metadata, or package-local release proof.
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about release automation or drift tooling
 
-## Purpose
-
-This page connects root commit conventions to the package release mechanism.
-
-## Stability
-
-Keep this page aligned with the release tooling that is actually configured in the repository.

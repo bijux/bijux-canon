@@ -94,12 +94,3 @@ backstops are the referenced files, workflows, schemas, and checks.
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the root issue is really about automation or drift tooling
 
-## Purpose
-
-Schemas are first-class repository assets here because cross-package review
-depends on them being visible, diffable, and validated outside package source
-alone.
-
-## Stability
-
-Keep this page aligned with the actual schema directories and the validation tooling that protects them.

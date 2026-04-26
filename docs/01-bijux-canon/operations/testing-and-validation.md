@@ -94,10 +94,3 @@ are the referenced files, workflows, schemas, and checks.
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the root issue is really about automation or drift tooling
 
-## Purpose
-
-This page shows how package truth and repository truth reinforce each other.
-
-## Stability
-
-Keep it aligned with the current test layout and CI workflows instead of aspirational future checks.

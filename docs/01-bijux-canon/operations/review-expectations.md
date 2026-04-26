@@ -38,10 +38,3 @@ pressure visible.
 - the change is easy to apply but hard to describe at the repository boundary
 - review confidence depends on memory instead of checked-in proof
 
-## Purpose
-
-This page records the review bar for repository-wide changes.
-
-## Stability
-
-Keep this page aligned with the actual root review posture and proof surfaces.

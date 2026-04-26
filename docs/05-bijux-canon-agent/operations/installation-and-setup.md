@@ -93,10 +93,3 @@ This page explains how `bijux-canon-agent` is expected to be operated, but it do
 - open quality when the question becomes whether the workflow is sufficiently proven
 - move back to architecture when operational complexity suggests a structural problem
 
-## Purpose
-
-This page tells maintainers where setup truth actually lives for the package.
-
-## Stability
-
-Keep it aligned with `pyproject.toml` and the checked-in package metadata.

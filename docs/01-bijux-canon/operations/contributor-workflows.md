@@ -38,11 +38,3 @@ boundaries. The root should help that path feel consistent rather than magical.
 - maintainer-only workflow knowledge lives mostly in chat history or CI output
 - the same cross-package procedure is being rediscovered from scratch
 
-## Purpose
-
-This page records the normal repository workflow shape so contributors can move
-through shared work with less guesswork.
-
-## Stability
-
-Update this page when the checked-in contributor path really changes.

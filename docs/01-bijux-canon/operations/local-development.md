@@ -89,11 +89,3 @@ and package handbooks.
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about automation or drift tooling
 
-## Purpose
-
-This page records the preferred development posture for the workspace without
-repeating package-specific setup details.
-
-## Stability
-
-Keep this page aligned with the root automation files that actually exist.

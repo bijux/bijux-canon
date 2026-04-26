@@ -84,10 +84,3 @@ it from the checked-in assets named here.
 - open quality when the question becomes whether the workflow is sufficiently proven
 - move back to architecture when operational complexity suggests a structural problem
 
-## Purpose
-
-This page shows the durable frame readers can use to triage package failures.
-
-## Stability
-
-Keep it aligned with the package entrypoints and diagnostic outputs.

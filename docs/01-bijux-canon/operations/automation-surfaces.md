@@ -49,12 +49,3 @@ Keep shared automation in named, inspectable surfaces. If a workflow or helper
 changes repository-wide behavior, a reader should be able to trace it from one
 of the surfaces listed here without reverse-engineering stray shell glue first.
 
-## Purpose
-
-This page shows where repository automation lives so shared behavior stays
-inspectable and reviewable.
-
-## Stability
-
-Keep it aligned with the actual automation surfaces that contributors are
-expected to use.

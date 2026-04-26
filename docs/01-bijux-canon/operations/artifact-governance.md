@@ -58,12 +58,3 @@ source.
 - where generated output belongs during local or CI validation
 - how to tell reference artifacts apart from disposable run products
 
-## Purpose
-
-This page distinguishes durable reference artifacts from generated workflow
-output so readers can tell what belongs in review history.
-
-## Stability
-
-Update this page when the repository meaning of a tracked artifact class
-changes.
