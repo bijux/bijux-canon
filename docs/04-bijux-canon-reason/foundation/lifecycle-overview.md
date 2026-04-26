@@ -11,6 +11,22 @@ last_reviewed: 2026-04-26
 
 The reasoning lifecycle starts when retrieved evidence reaches a reasoning entrypoint and ends when claims and checks are explicit enough for a reviewer or downstream package to inspect.
 
+## Lifecycle Flow
+
+```mermaid
+flowchart LR
+    evidence["retrieved evidence"]
+    entry["reasoning entrypoints"]
+    evaluation["claim formation and checks"]
+    artifacts["reasoning artifacts"]
+
+    evidence --> entry --> evaluation --> artifacts
+```
+
+This page should make the reasoning lifecycle legible as the point where
+evidence becomes explicit claims. A reader should be able to follow that
+transition without needing orchestration or runtime language to finish it.
+
 ## Lifecycle Shape
 
 - evidence reaches the package through controlled interfaces and reasoning inputs
@@ -21,6 +37,8 @@ The reasoning lifecycle starts when retrieved evidence reaches a reasoning entry
 
 The lifecycle stops before role coordination and run authority. Agent and runtime own those next layers.
 
-## Bottom Line
+## Design Pressure
 
-The lifecycle should stop exactly where package ownership stops. If the story needs another package to finish explaining itself, the boundary is already blurred.
+If the lifecycle needs agent or runtime concepts to explain what a claim means,
+reason has stopped owning its own semantics. The package has to end with
+inspectable reasoning output, not with deferred interpretation.
