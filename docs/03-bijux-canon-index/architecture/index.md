@@ -42,7 +42,7 @@ review and evolve.
 - [Code Navigation](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/architecture-risks/)
 
-## Open Architecture When
+## Open This Section When
 
 - you need to trace retrieval structure before refactoring or extending the
   package
@@ -56,7 +56,7 @@ review and evolve.
 - the issue is operational, such as local setup, diagnostics, or release
 - you need tests, risks, or validation criteria more than a structural map
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the structural question is
   really an ownership question
@@ -77,7 +77,7 @@ review and evolve.
 
 ## Bottom Line
 
-Open `Architecture` to make retrieval structure legible enough that a reviewer
+Open this section to make retrieval structure legible enough that a reviewer
 can say which logic belongs to the domain, which belongs to workflow
 coordination, and which belongs to adapters. If that answer is blurry, the
 package is already accumulating architectural drift.

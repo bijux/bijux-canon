@@ -44,7 +44,7 @@ than letting them collapse into one giant executor.
 - [Code Navigation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/architecture-risks/)
 
-## Open Architecture When
+## Open This Section When
 
 - you are tracing structure, execution flow, or dependency pressure
 - you need to understand how modules fit before refactoring
@@ -68,7 +68,7 @@ than letting them collapse into one giant executor.
 - `src/bijux_canon_runtime/model/` and `contracts/` for the structural
   language the rest of the package must obey
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when a structural issue is really a
   boundary issue
@@ -79,7 +79,7 @@ than letting them collapse into one giant executor.
 
 ## Bottom Line
 
-Open `Architecture` to decide whether a structural change makes runtime easier
+Open this section to decide whether a structural change makes runtime easier
 or harder to explain in terms of planning, governed execution, durable state,
 and replay analysis. If the change works only because the design becomes harder
 to read, redesign is safer than acceptance.

@@ -38,7 +38,7 @@ clarity about structure, not decorative system language.
 - [Code Navigation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/architecture-risks/)
 
-## Open Architecture When
+## Open This Section When
 
 - you need to trace structural ownership before refactoring ingest internals
 - you are checking whether dependency flow still supports deterministic
@@ -52,7 +52,7 @@ clarity about structure, not decorative system language.
 - the real issue is operational, such as setup, release, or incident handling
 - you need proof and risk posture more than structure and dependency logic
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the structural question is
   really an ownership question
@@ -71,7 +71,7 @@ clarity about structure, not decorative system language.
 
 ## Bottom Line
 
-Open `Architecture` to make the internal flow legible enough that a reviewer can
+Open this section to make the internal flow legible enough that a reviewer can
 say where ingest logic lives and why. If the code only works because the
 structure is hard to explain, the architecture has already started to drift.
 

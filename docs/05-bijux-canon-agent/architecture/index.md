@@ -40,7 +40,7 @@ plus observability make the result inspectable.
 - [Code Navigation](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/architecture-risks/)
 
-## Open Architecture When
+## Open This Section When
 
 - you need to know which structural slice owns a behavior before editing it
 - a review is about layering, orchestration flow, or module drift
@@ -53,7 +53,7 @@ plus observability make the result inspectable.
 - you are deciding whether a command, schema, or artifact is a public contract
 - the issue is mainly procedural or evidentiary rather than structural
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
 - open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import

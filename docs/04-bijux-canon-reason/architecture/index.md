@@ -40,7 +40,7 @@ happened for replay or review.
 - [Code Navigation](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/code-navigation/)
 - [Architecture Risks](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/architecture-risks/)
 
-## Open Architecture When
+## Open This Section When
 
 - you need to know which module family owns a behavior before editing it
 - a review comment names structure, layering, or execution drift rather than a
@@ -54,7 +54,7 @@ happened for replay or review.
 - you are deciding whether a CLI, API, or trace file is a supported contract
 - the real concern is how to run, validate, or release the package
 
-## Read Across The Package
+## Across This Package
 
 - open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
   boundaries
@@ -78,7 +78,7 @@ happened for replay or review.
 
 ## Bottom Line
 
-Open `Architecture` when you need the package to read as a sequence of named
+Open this section when you need the package to read as a sequence of named
 responsibilities, not a tangle of utilities. If a change blurs planning,
 evidence shaping, claim logic, verification, and traces into one layer, the
 design is getting weaker even if tests still pass.
