@@ -11,6 +11,26 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to decide whether a behavior belongs to orchestration itself rather than to reasoning semantics below or runtime authority above. These pages should make `bijux-canon-agent` defensible as a coordination layer instead of a vague place where cross-package work happens.
 
+## Boundary Model
+
+```mermaid
+flowchart LR
+    artifacts["reasoning artifacts"]
+    package["agent boundary"]
+    workflow["workflow coordination"]
+    trace["trace-backed sequence"]
+    handoff["runtime handoff"]
+    blur["reasoning or authority blur"]
+
+    artifacts --> package --> workflow --> trace --> handoff
+    package --> blur
+```
+
+The foundation story for agent has to prove that orchestration is a real owned
+surface. Inputs arrive as reasoning artifacts, coordination happens here, a
+trace leaves for runtime, and neither reasoning semantics nor final authority
+gets silently absorbed into the middle.
+
 ## Read These First
 
 - open [Ownership Boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/) first when a feature could belong in reasoning logic or runtime governance instead
@@ -45,6 +65,8 @@ The most common mistake here is calling any multi-step behavior an agent concern
 - leave this section for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the live question is a caller-facing contract
 - leave this section for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the boundary is clear and the real issue is proof, invariants, or review gates
 
-## Bottom Line
+## Design Pressure
 
-If this section cannot tell a reviewer why the work belongs to orchestration itself, the package is still absorbing behavior it cannot justify.
+If “agent” becomes a label for any cross-package behavior, the package loses
+all discipline. This section has to keep coordination, traceability, and
+handoff authority visibly separate.
