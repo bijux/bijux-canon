@@ -13,6 +13,28 @@ The repository layout is part of the design language. A good top-level layout
 makes it obvious where a concern belongs before a reader opens implementation
 detail.
 
+## Layout Map
+
+```mermaid
+flowchart LR
+    root["repository root"]
+    packages["packages"]
+    docs["docs"]
+    apis["apis"]
+    automation["Makefile, makes, and workflows"]
+    governed["governed generated artifacts and configs"]
+
+    root --> packages
+    root --> docs
+    root --> apis
+    root --> automation
+    root --> governed
+```
+
+This page should help a reader place a concern before reading code. The layout
+works when the tree itself reinforces the package split and the shared
+surfaces, instead of forcing readers to guess.
+
 ## Top-Level Areas
 
 - `packages/` for publishable Python distributions and their owned behavior
@@ -43,8 +65,8 @@ Be cautious when a change:
 - `Makefile`, `makes/`, and `.github/workflows/` for shared automation claims
 - `apis/` and `docs/` for shared schema or documentation structure claims
 
-## Bottom Line
+## Design Pressure
 
-A top-level layout is working when it reinforces the package split instead of
-hiding it. If the tree makes a concern harder to place, the layout is sending
-the wrong signal.
+Top-level trees drift when convenience directories appear faster than ownership
+rules. If a new path makes placement harder instead of easier, the layout is
+already teaching the wrong lesson.
