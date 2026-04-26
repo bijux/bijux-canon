@@ -23,34 +23,20 @@ Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of
 
 ```mermaid
 flowchart LR
-    page["Execution Model<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
+    input["Entrypoint<br/>CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py"]
+    workflow["Workflow<br/>pipeline<br/>execution flow orchestration"]
+    rules["Core decisions<br/>agents<br/>role-local behavior"]
+    output["Visible result<br/>trace-backed final outputs"]
+    input --> workflow --> rules --> output
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    module1["execution flow orchestration"]
-    module1 --> page
-    module2["workflow policy and graph logic"]
-    module2 --> page
-    module3["role-local behavior"]
-    module3 --> page
-    code1["src/bijux_canon_agent/application"]
-    page --> code1
-    code2["src/bijux_canon_agent/agents"]
-    page --> code2
-    code3["src/bijux_canon_agent/pipeline"]
-    page --> code3
-    pressure1["tests/invariants for package promises that should not drift"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/unit for local behavior and utility coverage"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
+    class input anchor;
+    class workflow positive;
+    class rules page;
+    class output action;
 ```
 
 ## Execution Anchors

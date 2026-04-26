@@ -21,12 +21,22 @@ Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map o
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Module Map] --> B[Processing modules]
-    B --> C[Retrieval prep modules]
-    C --> D[Interface modules]
-    D --> E[Infra modules]
-    E --> F[Test coverage mapping]
+flowchart LR
+    entry["Boundary<br/>infra<br/>local adapters and infrastructure"]
+    app["Workflow<br/>retrieval<br/>retrieval-oriented models and assembly"]
+    domain["Core responsibility<br/>processing<br/>deterministic document transforms"]
+    infra["Support edge<br/>application<br/>package workflows"]
+    entry --> app --> domain
+    app --> infra
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class entry anchor;
+    class app positive;
+    class domain page;
+    class infra caution;
 ```
 
 ## Major Modules

@@ -19,12 +19,22 @@ Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Code Navigation] --> B[Start from package entrypoints]
-    B --> C[Follow domain and application]
-    C --> D[Inspect interfaces and infra]
-    D --> E[Trace to tests]
-    E --> F[Confirm behavior in code]
+flowchart LR
+    question["Review question"]
+    boundary["Start here<br/>interfaces"]
+    owner["Then inspect<br/>application"]
+    core["Confirm rules in<br/>domain"]
+    tests["Finish in tests<br/>tests/unit for API, application, contracts"]
+    question --> boundary --> owner --> core --> tests
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class question page;
+    class boundary anchor;
+    class owner,core positive;
+    class tests action;
 ```
 
 ## Reading Order

@@ -21,12 +21,26 @@ Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Integration Seams] --> B[Inbound retrieval contracts]
-    B --> C[Index internal boundaries]
-    C --> D[Outbound result contracts]
-    D --> E[Reason-runtime seams]
-    E --> F[Stable integration behavior]
+flowchart LR
+    callers["Callers"]
+    config["Configuration"]
+    package["bijux-canon-index<br/>integration boundary"]
+    schemas["Schemas and artifacts<br/>apis/bijux-canon-index/v1/schema.yaml<br/>vector execution result collections"]
+    neighbors["Neighbor packages and systems"]
+    callers --> package
+    config --> package
+    package --> schemas
+    package --> neighbors
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class callers positive;
+    class config anchor;
+    class package page;
+    class schemas action;
+    class neighbors caution;
 ```
 
 ## Integration Surfaces

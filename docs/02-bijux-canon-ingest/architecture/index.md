@@ -18,12 +18,28 @@ Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map o
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Architecture] --> B[Module topology]
-    B --> C[Dependency direction]
-    C --> D[Execution path]
-    D --> E[State boundaries]
-    E --> F[Integration seams]
+flowchart LR
+    review["bijux-canon-ingest<br/>architecture review"]
+    modules["Module map<br/>which areas own behavior"]
+    deps["Dependency direction<br/>which layers may know each other"]
+    exec["Execution path<br/>how work moves through code"]
+    state["State boundary<br/>what becomes durable"]
+    seams["Integration seams<br/>where outside systems meet it"]
+    review --> modules
+    review --> deps
+    review --> exec
+    review --> state
+    review --> seams
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class review page;
+    class modules anchor;
+    class deps,exec positive;
+    class state action;
+    class seams caution;
 ```
 
 ## Pages in This Section

@@ -22,12 +22,21 @@ Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Execution Model] --> B[Index request enters]
-    B --> C[Validation and planning]
-    C --> D[Vector backend call]
-    D --> E[Result ranking and shaping]
-    E --> F[Deterministic retrieval response]
+flowchart LR
+    input["Entrypoint<br/>CLI modules under src/bijux_canon_index/interfaces/cli"]
+    workflow["Workflow<br/>application<br/>workflow coordination"]
+    rules["Core decisions<br/>domain<br/>execution, provenance, and request"]
+    output["Visible result<br/>vector execution result collections"]
+    input --> workflow --> rules --> output
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class input anchor;
+    class workflow positive;
+    class rules page;
+    class output action;
 ```
 
 ## Execution Anchors

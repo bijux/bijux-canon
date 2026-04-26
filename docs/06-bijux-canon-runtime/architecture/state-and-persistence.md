@@ -21,35 +21,22 @@ Treat the architecture pages for `bijux-canon-runtime` as a reviewer-facing map 
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["State and Persistence<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
+flowchart LR
+    request["Transient request state"]
+    workflow["In-flight coordination<br/>runtime"]
+    store["Durable outputs<br/>execution store records<br/>replay decision artifacts"]
+    inspect["Where to inspect<br/>application<br/>model"]
+    request --> workflow --> store
+    workflow --> inspect
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    module1["durable runtime models"]
-    module1 --> page
-    module2["execution engines and lifecycle logic"]
-    module2 --> page
-    module3["orchestration and replay coordination"]
-    module3 --> page
-    code1["src/bijux_canon_runtime/runtime"]
-    page --> code1
-    code2["src/bijux_canon_runtime/application"]
-    page --> code2
-    code3["src/bijux_canon_runtime/model"]
-    page --> code3
-    pressure1["tests/e2e for governed flow behavior"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/regression and tests/smoke for replay and storage protection"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/unit for api, contracts, core, interfaces, model, and runtime"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
+    class request positive;
+    class workflow page;
+    class store action;
+    class inspect anchor;
 ```
 
 ## Durable Surfaces

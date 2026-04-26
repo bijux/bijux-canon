@@ -21,12 +21,26 @@ Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map o
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Error Model] --> B[Detect failure type]
-    B --> C[Map to structured error]
-    C --> D[Attach context and provenance]
-    D --> E[Emit predictable failure surface]
-    E --> F[Support recovery and debugging]
+flowchart TB
+    input["Caller input"]
+    validation["Boundary validation"]
+    workflow["Workflow failure"]
+    dependency["Dependency or adapter failure"]
+    proof["Backstops<br/>tests/unit for module-level behavior across<br/>tests/e2e for package boundary coverage"]
+    input --> validation
+    validation --> workflow
+    workflow --> dependency
+    validation --> proof
+    workflow --> proof
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class input page;
+    class validation positive;
+    class workflow,dependency caution;
+    class proof anchor;
 ```
 
 ## Review Anchors

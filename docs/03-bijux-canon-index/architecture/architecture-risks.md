@@ -20,12 +20,24 @@ Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Architecture Risks] --> B[Identify structural risk]
-    B --> C[Map impact surface]
-    C --> D[Define mitigation]
-    D --> E[Back with tests and checks]
-    E --> F[Track residual risk]
+flowchart LR
+    package["bijux-canon-index<br/>architectural trust"]
+    overlap["Boundary overlap"]
+    drift["Dependency drift"]
+    mismatch["Artifact and schema mismatch"]
+    proof["Detect early in<br/>tests/e2e for CLI workflows, API"]
+    overlap --> package
+    drift --> package
+    mismatch --> package
+    package --> proof
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class package page;
+    class overlap,drift,mismatch caution;
+    class proof anchor;
 ```
 
 ## Risk Signals

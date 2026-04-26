@@ -21,12 +21,22 @@ Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map o
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[State and Persistence] --> B[Input state]
-    B --> C[Transient processing state]
-    C --> D[Materialized artifacts]
-    D --> E[Persistent references]
-    E --> F[Replayable ingest state]
+flowchart LR
+    request["Transient request state"]
+    workflow["In-flight coordination<br/>retrieval"]
+    store["Durable outputs<br/>normalized document trees<br/>chunk collections and retrieval-ready records"]
+    inspect["Where to inspect<br/>application<br/>processing"]
+    request --> workflow --> store
+    workflow --> inspect
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class request positive;
+    class workflow page;
+    class store action;
+    class inspect anchor;
 ```
 
 ## Durable Surfaces

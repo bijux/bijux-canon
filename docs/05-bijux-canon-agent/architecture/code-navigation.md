@@ -20,34 +20,21 @@ Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of
 
 ```mermaid
 flowchart LR
-    page["Code Navigation<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
+    question["Review question"]
+    boundary["Start here<br/>llm"]
+    owner["Then inspect<br/>pipeline"]
+    core["Confirm rules in<br/>agents"]
+    tests["Finish in tests<br/>tests/unit for local behavior"]
+    question --> boundary --> owner --> core --> tests
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    module1["execution flow orchestration"]
-    module1 --> page
-    module2["workflow policy and graph logic"]
-    module2 --> page
-    module3["role-local behavior"]
-    module3 --> page
-    code1["src/bijux_canon_agent/application"]
-    page --> code1
-    code2["src/bijux_canon_agent/agents"]
-    page --> code2
-    code3["src/bijux_canon_agent/pipeline"]
-    page --> code3
-    pressure1["tests/unit for local behavior and utility coverage"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/invariants for package promises that should not drift"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
+    class question page;
+    class boundary anchor;
+    class owner,core positive;
+    class tests action;
 ```
 
 ## Reading Order

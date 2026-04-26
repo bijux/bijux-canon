@@ -19,34 +19,27 @@ Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of
 
 ```mermaid
 flowchart LR
-    page["Architecture<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
+    review["bijux-canon-agent<br/>architecture review"]
+    modules["Module map<br/>which areas own behavior"]
+    deps["Dependency direction<br/>which layers may know each other"]
+    exec["Execution path<br/>how work moves through code"]
+    state["State boundary<br/>what becomes durable"]
+    seams["Integration seams<br/>where outside systems meet it"]
+    review --> modules
+    review --> deps
+    review --> exec
+    review --> state
+    review --> seams
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    module1["execution flow orchestration"]
-    module1 --> page
-    module2["workflow policy and graph logic"]
-    module2 --> page
-    module3["role-local behavior"]
-    module3 --> page
-    code1["src/bijux_canon_agent/agents"]
-    page --> code1
-    code2["src/bijux_canon_agent/pipeline"]
-    page --> code2
-    code3["src/bijux_canon_agent/application"]
-    page --> code3
-    pressure1["tests/invariants for package promises that should not drift"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/unit for local behavior and utility coverage"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
+    class review page;
+    class modules anchor;
+    class deps,exec positive;
+    class state action;
+    class seams caution;
 ```
 
 ## Pages in This Section
