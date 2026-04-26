@@ -11,6 +11,21 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-ingest` is a separate publishable package because prepared input is a real system seam. The repository gains review clarity by keeping that seam visible in package layout, metadata, tests, and release surfaces.
 
+## Fit Model
+
+```mermaid
+flowchart LR
+    seam["prepared-input seam"]
+    package["bijux-canon-ingest package boundary"]
+    proof["metadata, readme, tests, and handbook"]
+
+    seam --> package --> proof
+```
+
+This page should justify why ingest exists as its own package instead of as a
+utility layer buried in the repository. The fit is good only when the seam is
+visible in publishable identity, proof, and reader framing.
+
 ## Why This Is A Package
 
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest` keeps implementation ownership explicit
@@ -27,6 +42,8 @@ last_reviewed: 2026-04-26
 
 If the package can only be justified as “the place this code ended up,” the repository has lost a meaningful seam.
 
-## Bottom Line
+## Design Pressure
 
-The repository should make the `bijux-canon-ingest` seam easier to defend, not easier to forget.
+Package seams decay when they can be justified only by code placement. Ingest
+has to keep its publishable identity tied to the real prepared-input boundary
+or the repository split becomes decorative.
