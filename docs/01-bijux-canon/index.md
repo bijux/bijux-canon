@@ -9,21 +9,10 @@ last_reviewed: 2026-04-26
 
 # Repository Handbook
 
-The repository handbook explains the shared story above the package level:
-why this repository is split, which rules genuinely live at the root, and how
-the packages stay coordinated without collapsing back into one blurry codebase.
-
-`bijux-canon` is easiest to understand if you start from intent instead of
-from filenames. The repository exists to keep several deterministic,
-reviewable surfaces moving together: ingest prepares evidence, index makes
-retrieval executable, reason makes claims inspectable, agent turns role-based
-work into orchestrated runs, and runtime decides what execution and replay
-results are acceptable.
-
-The repository is therefore less like a toolbox and more like a chain of
-accountable boundaries. Each package is meant to carry one kind of promise
-clearly enough that readers do not have to reverse-engineer the whole tree to
-understand where authority lives.
+The repository handbook explains the part of `bijux-canon` that no single
+package can explain alone: why the split exists, which rules belong at the
+root, and how package handoffs stay explicit instead of collapsing back into a
+monolith.
 
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
 Product behavior should stay inside the publishable packages under `packages/`.
@@ -31,48 +20,42 @@ The root only owns what is genuinely shared: workspace layout, schema
 governance, documentation rules, validation posture, and release
 coordination.</div>
 
-These repository pages should explain the cross-package frame that no single
-package can explain alone. They are strongest when they make the monorepo
-easier to understand without turning the root into a second owner of package
-behavior.
-
 ## Visual Summary
 
 ```mermaid
-flowchart LR
-    reader["reader question<br/>is this rule shared or package-local?"]
-    foundation["Foundation<br/>split, scope, ownership, language"]
-    operations["Operations<br/>development, validation, release, review"]
-    packages["Product handbooks<br/>package-owned behavior"]
-    maintain["Maintainer handbook<br/>repository automation and drift control"]
-    reader --> foundation
-    reader --> operations
+flowchart TB
+    root["repository root<br/>shared governance and coordination"]
+    foundation["foundation<br/>split, scope, ownership, language"]
+    operations["operations<br/>workflow, validation, release, review"]
+    packages["canonical packages<br/>owned product behavior"]
+    maintain["maintainer handbook<br/>helper code, make, workflows"]
+    compat["compatibility handbook<br/>legacy names and migration"]
+    root --> foundation
+    root --> operations
     foundation --> packages
     operations --> packages
     operations --> maintain
+    foundation --> compat
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class reader page;
+    class root page;
     class foundation positive;
     class operations anchor;
     class packages action;
     class maintain caution;
+    class compat caution;
 ```
 
 ## Start Here
 
-- open [Foundation](foundation/index.md) when the question is why the split
-  exists or where authority changes hands
-- open [Operations](operations/index.md) when the question is how repository
-  work is validated, released, or reviewed
-- move straight to a product handbook when the real issue is already local to
-  one package boundary
-- move to [Maintainer Handbook](../07-bijux-canon-maintain/index.md) when the
-  concern is CI, workflow fan-out, generated docs checks, or repository-health
-  automation
+- open [Foundation](foundation/index.md) for repository shape, split logic, ownership boundaries, and shared terminology
+- open [Operations](operations/index.md) for contributor workflow, validation posture, release flow, and review rules
+- move to a product handbook when the concern is already local to one canonical package
+- move to [Maintainer Handbook](../07-bijux-canon-maintain/index.md) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
+- move to [Compatibility Handbook](../08-compat-packages/index.md) only when a legacy package name or migration question is still active
 
 ## Sections
 
@@ -83,24 +66,23 @@ flowchart LR
 
 ## What This Handbook Owns
 
-- the shared explanation of why the root exists at all
-- repository-wide workflow, validation, release, and artifact rules
-- the seams where one package hands authority to another
+- the reason the repository is split into canonical packages instead of one combined surface
+- root-owned workflow, validation, release, artifact, and documentation rules
+- the seams where one package hands authority to another package or to a shared root rule
 
 ## What This Handbook Does Not Own
 
-- ingest, index, reason, agent, or runtime behavior inside the package docs
-- maintainer-helper implementation detail that belongs in the maintainer
-  handbook
-- legacy package naming that belongs in compatibility docs
+- ingest, index, reason, agent, or runtime behavior inside the product handbooks
+- helper implementation detail that belongs in the maintainer handbook
+- legacy-name migration policy that belongs in the compatibility handbook
 
 ## Shared Package Map
 
-- `bijux-canon-ingest` for deterministic document ingestion, chunking, retrieval assembly, and ingest-facing boundaries.
-- `bijux-canon-index` for contract-driven vector execution with replay-aware determinism, audited backend behavior, and provenance-rich result handling.
-- `bijux-canon-reason` for deterministic evidence-aware reasoning, claim formation, verification, and traceable reasoning workflows.
-- `bijux-canon-agent` for deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
-- `bijux-canon-runtime` for governed execution and replay authority with auditable non-determinism handling, persistence, and package-to-package coordination.
+- `bijux-canon-ingest` prepares source material for deterministic downstream use.
+- `bijux-canon-index` executes retrieval and records provenance-rich result state.
+- `bijux-canon-reason` turns retrieved evidence into inspectable claims and verification outputs.
+- `bijux-canon-agent` coordinates role-based orchestration without hiding traces or package boundaries.
+- `bijux-canon-runtime` governs execution, replay, persistence, and final acceptability.
 
 ## Concrete Anchors
 
@@ -123,16 +105,14 @@ flowchart LR
 
 ## Read The Root This Way
 
-Treat the root as a coordination layer, not a shadow product. The repository handbook should tell you why the split exists, what rules stay shared, and when to leave the root immediately because the real authority lives inside a package. If the root starts to explain package behavior in detail, the handbook is crossing its own boundary.
+Treat the root as a coordination layer. The root should explain why the split
+exists, what rules stay shared, and where authority changes hands. When the
+behavior is package-local, the handbook should route straight to the owning
+package instead of trying to retain the explanation at the root.
 
-## Reader Takeaway
+## Cross-Package Anchors
 
-Use this handbook when the question is genuinely shared across package boundaries. If the current issue can be explained honestly inside one product handbook, this root should route you there instead of trying to keep you.
-
-## Purpose
-
-This page gives the shortest credible explanation of why the monorepo exists and what kind of questions belong in the repository handbook instead of a package handbook.
-
-## Stability
-
-This page is part of the canonical docs spine. Keep it aligned with the current repository layout and the actual package set declared in `pyproject.toml`.
+- `pyproject.toml` declares the workspace and package set
+- `mkdocs.yml` defines the published handbook structure
+- `Makefile`, `makes/`, and `.github/workflows/` carry root-level operations
+- `packages/` carries the canonical product boundaries the root must not blur
