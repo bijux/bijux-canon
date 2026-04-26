@@ -13,6 +13,23 @@ last_reviewed: 2026-04-26
 reasoning, orchestration, and runtime governance become easier to review when
 they stay distinct.
 
+## Platform Chain
+
+```mermaid
+flowchart LR
+    ingest["ingest prepares source material"]
+    index["index makes retrieval explicit"]
+    reason["reason turns evidence into claims"]
+    agent["agent coordinates traceable work"]
+    runtime["runtime decides governed acceptance"]
+
+    ingest --> index --> reason --> agent --> runtime
+```
+
+The platform claim only holds if each package can be understood as one
+defensible handoff in that chain. Readers should leave this page with the
+sequence in mind before they open any local package section.
+
 ## One End-To-End Scenario
 
 A source document is prepared into deterministic material by ingest. Index
@@ -40,8 +57,8 @@ legible.
 - `Makefile`, `makes/`, and `.github/workflows/` for shared enforcement
 - `docs/` for the handbook structure that mirrors the split
 
-## Bottom Line
+## Design Pressure
 
-The platform claim is earned only when each stage stays explainable on its own
-and the handoff to the next stage stays explicit. If that chain blurs, the
-repository is harder to trust even if the code still runs.
+If a package starts absorbing its neighbors' meaning, the platform stops being
+a reviewable chain and becomes a pile of late-stage convenience. This page has
+to keep the package split legible enough that readers can challenge drift.
