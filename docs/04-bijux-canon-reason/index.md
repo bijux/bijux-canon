@@ -22,26 +22,22 @@ or compare the reasoning later.
 
 ```mermaid
 flowchart LR
-    evidence["retrieved evidence<br/>chunks, citations, provenance"]
-    plan["reasoning plan<br/>question, tools, expected artifacts"]
-    claim["claim formation<br/>extract, compose, explain"]
-    checks["verification checks<br/>structural and provenance rules"]
-    record["reasoning record<br/>claims, checks, trace metadata"]
-    agent["agent package<br/>coordinate next workflow step"]
+    evidence["retrieved evidence"]
+    plan["reasoning plan"]
+    claim["claim formation"]
+    checks["verification checks"]
+    record["reasoning record"]
+    agent["agent package"]
 
     evidence --> plan --> claim --> checks --> record --> agent
-    evidence -. anchors .-> checks
-    plan -. replay input .-> record
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class evidence page;
-    class plan,claim,checks positive;
-    class record anchor;
-    class agent action;
+    evidence --> checks
+    plan --> record
 ```
+
+Reason is where the system stops being about retrieval success and starts being
+about interpretive accountability. A good page here should let a reviewer see
+how evidence becomes claims, which checks constrain that move, and which record
+lets another person inspect the same reasoning later.
 
 ## What This Package Owns
 
@@ -57,7 +53,10 @@ flowchart LR
 
 ## Boundary Test
 
-If the issue is about what evidence means, how a claim is verified, or which reasoning artifact should exist after evaluation, it belongs here. If the issue is about how evidence was fetched or how multiple steps are coordinated, it does not.
+If the issue is about what evidence means, how a claim is verified, or which
+reasoning artifact should exist after evaluation, it belongs here. If the
+issue is about how evidence was fetched or how multiple steps are coordinated,
+it does not.
 
 ## First Proof Check
 
@@ -83,6 +82,8 @@ If the issue is about what evidence means, how a claim is verified, or which rea
 - [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/)
 - [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/)
 
-## Bottom Line
+## Leave This Handbook When
 
-If a proposed change makes `bijux-canon-reason` broader without making its owned role easier to defend, the change is probably crossing a package boundary rather than improving the design.
+- the question is now about orchestration across steps rather than one reasoning step
+- the next stop is a concrete interface, verification rule, or reasoning test
+- the real concern belongs to retrieval below or runtime authority above
