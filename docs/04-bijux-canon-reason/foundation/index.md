@@ -9,23 +9,23 @@ last_reviewed: 2026-04-26
 
 # Foundation
 
-Open this section when you need the durable answer to a simple question: why
-does `bijux-canon-reason` exist as its own package between retrieval below and
-agent or runtime control above?
+Open this section when the dispute is about what retrieved evidence means once it becomes a claim, check, or reasoning artifact. These pages should make `bijux-canon-reason` defensible as the place where evidence becomes inspectable conclusions rather than raw search output or agent choreography.
 
-This package is where evidence stops being only retrievable and starts becoming
-arguable. It owns planning, claim formation, verification, and the traceable
-artifacts that let a reviewer inspect what the reasoning layer concluded and
-why.
+## Read These First
 
-## Start Here
+- open [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/) first when the behavior could belong in retrieval below or orchestration above
+- open [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/) when you need the shortest stable description of the package role
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/) when the question is how evidence turns into verified reasoning output
 
-- open [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/) for the shortest description of
-  the package role
-- open [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/) when the question is whether
-  logic belongs in retrieval, reasoning, agent orchestration, or runtime
-- open [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/) when you need the
-  end-to-end shape from evidence intake to verified reasoning output
+## The Mistake This Section Prevents
+
+The most common mistake here is burying reasoning policy inside retrieval artifacts or workflow code until no one can explain which layer actually made the decision.
+
+## First Proof Check
+
+- `packages/bijux-canon-reason/src/bijux_canon_reason` for the owned reasoning boundary in code
+- `packages/bijux-canon-reason/tests` for proof that claims, checks, and provenance stay aligned
+- `packages/bijux-canon-reason/README.md` for the public package contract readers encounter first
 
 ## Pages In This Section
 
@@ -39,42 +39,12 @@ why.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/change-principles/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need the package role before looking at modules, commands, or tests
-- you are checking whether a behavior is really reasoning rather than retrieval,
-  orchestration, or runtime governance
-- a reader needs one page that explains why this package exists without reading
-  the whole tree
-
-## Open Another Section When
-
-- the real question is where a module lives or how control flows through code
-- you are deciding whether a CLI, API, schema, or artifact is a supported
-  contract
-- the main concern is operating the package or proving a change is safe
-
-## Across This Package
-
-- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for module boundaries,
-  execution flow, and persistence seams
-- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) for CLI, API, trace, and schema
-  contracts
-- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, diagnostics,
-  and release procedures
-- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for proof surfaces, invariants, and known
-  limitations
-
-## Concrete Anchors
-
-- `packages/bijux-canon-reason` as the package root
-- `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
-- `packages/bijux-canon-reason/tests` as the package proof surface
+- leave this section for [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when the question is already about modules or execution flow
+- leave this section for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the issue is a command, schema, artifact, or import surface
+- leave this section for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the reasoning boundary is understood and the open question is whether the package has earned trust
 
 ## Bottom Line
 
-`Foundation` leaves leave no doubt about the package boundary: retrieval finds
-evidence, reasoning turns it into inspectable claims and checks, agent
-coordinates multi-step work, and runtime decides what becomes durable and
-acceptable.
-
+If this section cannot tell a reviewer why a behavior is reasoning rather than retrieval or orchestration, the package claim is still too weak.

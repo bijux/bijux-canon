@@ -9,22 +9,23 @@ last_reviewed: 2026-04-26
 
 # Foundation
 
-Open this section when you need the durable answer to a simple question: why
-does `bijux-canon-agent` exist between reasoning outputs below and runtime
-authority above?
+Open this section when you need to decide whether a behavior belongs to orchestration itself rather than to reasoning semantics below or runtime authority above. These pages should make `bijux-canon-agent` defensible as a coordination layer instead of a vague place where cross-package work happens.
 
-This package is where one reasoning-capable step becomes coordinated work. It
-owns role-based agents, pipeline control, trace-bearing execution flow, and the
-rules that keep orchestration inspectable instead of magical.
+## Read These First
 
-## Start Here
+- open [Ownership Boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/) first when a feature could belong in reasoning logic or runtime governance instead
+- open [Package Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/package-overview/) when you need the shortest stable description of the package role
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/lifecycle-overview/) when the question is how role-based work becomes a traceable workflow
 
-- open [Package Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/package-overview/) for the shortest explanation of
-  the orchestration role
-- open [Ownership Boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/) when the question is whether
-  behavior belongs in reasoning, agent coordination, or runtime governance
-- open [Lifecycle Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/lifecycle-overview/) when you need the package
-  story from agent input through traceable output
+## The Mistake This Section Prevents
+
+The most common mistake here is calling any multi-step behavior an agent concern even when the real ownership sits in reasoning policy or runtime acceptance.
+
+## First Proof Check
+
+- `packages/bijux-canon-agent/src/bijux_canon_agent` for the orchestration boundary in code
+- `packages/bijux-canon-agent/tests` for proof that workflow coordination remains deterministic and inspectable
+- `packages/bijux-canon-agent/apis` for tracked agent-facing contracts
 
 ## Pages In This Section
 
@@ -38,41 +39,12 @@ rules that keep orchestration inspectable instead of magical.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/change-principles/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need the package role before looking at APIs, modules, or workflows
-- you are deciding whether a feature is orchestration behavior or belongs in a
-  lower or higher package
-- a reader needs one page that explains why this package exists without reading
-  the whole handbook
-
-## Open Another Section When
-
-- the main question is where a module or execution path lives
-- you are deciding whether a CLI, API, artifact, or import is a contract
-- the issue is procedural or proof-oriented rather than boundary-oriented
-
-## Across This Package
-
-- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for module groups, execution
-  flow, and dependency direction
-- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import
-  contracts
-- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
-  procedures
-- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for trust posture, invariants, and review
-  standards
-
-## Concrete Anchors
-
-- `packages/bijux-canon-agent` as the package root
-- `packages/bijux-canon-agent/src/bijux_canon_agent` as the import boundary
-- `packages/bijux-canon-agent/tests` as the package proof surface
+- leave this section for [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when you need the module or control-flow map
+- leave this section for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the live question is a caller-facing contract
+- leave this section for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the boundary is clear and the real issue is proof, invariants, or review gates
 
 ## Bottom Line
 
-`Foundation` should leave no doubt about the package boundary: reasoning
-produces inspectable content, agent coordination turns that into role-based and
-trace-backed workflow behavior, and runtime decides what becomes governed and
-durable.
-
+If this section cannot tell a reviewer why the work belongs to orchestration itself, the package is still absorbing behavior it cannot justify.

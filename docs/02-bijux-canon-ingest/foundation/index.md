@@ -9,24 +9,23 @@ last_reviewed: 2026-04-26
 
 # Foundation
 
-`bijux-canon-ingest` exists to turn raw source material into deterministic,
-retrieval-ready output. Open this section when the important question is not
-which command to run, but why ingest owns this work at all and where that
-ownership stops.
+Open this section when the hard question is why `bijux-canon-ingest` owns the work before retrieval begins. These pages should settle whether a proposed change makes prepared source material more predictable or merely pushes another package problem upstream.
 
-These pages help you distinguish source preparation from the downstream jobs
-that index, reason over, or orchestrate the prepared output. Open them when
-you need a clear explanation of why ingest exists without relying on tribal
-memory.
+## Read These First
 
-## Start Here
+- open [Ownership Boundary](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/ownership-boundary/) first when a change could belong in index, reason, agent, or runtime instead
+- open [Package Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/) when you need the shortest stable description of the package role
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/lifecycle-overview/) when the question is how raw source material becomes prepared handoff output
 
-- open [Package Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/) for the shortest explanation of
-  what ingest is for
-- open [Ownership Boundary](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/ownership-boundary/) when the issue might belong
-  in index, reason, agent, or runtime instead
-- open [Lifecycle Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/lifecycle-overview/) when the real question is
-  how source material moves through ingest before downstream packages pick it up
+## The Mistake This Section Prevents
+
+The most common mistake here is expanding ingest to hide uncertainty that really belongs in retrieval, reasoning, or runtime policy.
+
+## First Proof Check
+
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for source preparation ownership
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for the handoff seam into downstream work
+- `packages/bijux-canon-ingest/tests` for evidence that the boundary still holds under change
 
 ## Pages In This Section
 
@@ -40,40 +39,12 @@ memory.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/change-principles/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need the durable ownership story before reading code or command docs
-- you are deciding whether deterministic preparation belongs in ingest or
-  downstream retrieval behavior belongs elsewhere
-- you need shared package language for chunking, source shaping, and handoff
-
-## Open Another Section When
-
-- the question is already about public commands, schemas, or artifact contracts
-- the real problem is operational, such as setup, diagnostics, or release flow
-- you already know the boundary and need proof, tests, or risk review instead
-
-## Across This Package
-
-- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the structure
-  behind ingest preparation and workflow flow
-- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when you need the contracts that
-  callers and downstream packages rely on
-- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need local workflow,
-  validation, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need evidence that deterministic
-  ingest behavior is actually protected
-
-## Concrete Anchors
-
-- `packages/bijux-canon-ingest` as the package root
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the proof surface for owned behavior
+- leave this section for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the dispute is already about a CLI, schema, artifact, or import surface
+- leave this section for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the real problem is setup, diagnostics, release, or recovery
+- leave this section for [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the boundary is already understood and the open question is proof
 
 ## Bottom Line
 
-Open this section to answer the ownership question with integrity: ingest exists
-to make source material predictable enough for downstream retrieval work to
-trust. If a proposal broadens ingest without making that preparation story
-clearer, the design has probably crossed the boundary rather than improved it.
-
+If this section cannot tell a reviewer why the work stops at prepared ingest output, the package boundary is not clear enough yet.

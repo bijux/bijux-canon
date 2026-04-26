@@ -9,24 +9,23 @@ last_reviewed: 2026-04-26
 
 # Foundation
 
-`bijux-canon-index` exists to turn ingest-ready material into searchable,
-replayable retrieval behavior. Open this section when the important question is
-why retrieval ownership lives here and where it stops before reasoning or
-runtime take over.
+Open this section when you need the durable answer to why `bijux-canon-index` owns retrieval behavior instead of leaving search semantics smeared across ingest, reasoning, or runtime. These pages should make the search boundary easy to defend before anyone argues about code shape.
 
-These pages help you separate three different concerns that often get blurred
-together: ingest preparation, index execution, and reasoning over retrieved
-results. Open them when you need a clear package boundary before changing code
-or contracts.
+## Read These First
 
-## Start Here
+- open [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/) first when retrieval logic could be confused with ingest preparation or reasoning meaning
+- open [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/) when you need the shortest stable description of the package role
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/) when the question is how prepared input becomes replayable retrieval output
 
-- open [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/) for the shortest explanation of
-  what the index package is for
-- open [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/) when retrieval behavior may
-  be confused with ingest preparation or reasoning semantics
-- open [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/) when the key question is how
-  prepared material becomes a replayable retrieval surface
+## The Mistake This Section Prevents
+
+The most common mistake here is treating vector execution as a background implementation detail instead of a contract-defining package responsibility.
+
+## First Proof Check
+
+- `packages/bijux-canon-index/src/bijux_canon_index` for the owned retrieval implementation boundary
+- `packages/bijux-canon-index/apis` for the schema surfaces tied to caller expectations
+- `packages/bijux-canon-index/tests` for replay and provenance proof
 
 ## Pages In This Section
 
@@ -40,42 +39,12 @@ or contracts.
 - [Dependencies and Adjacencies](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/dependencies-and-adjacencies/)
 - [Change Principles](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/change-principles/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need the durable ownership story behind embeddings, retrieval, and replay
-- you are deciding whether work belongs in index or in the packages before or
-  after it
-- you need shared package language for retrieval behavior before reading code or
-  contracts
-
-## Open Another Section When
-
-- the question is already about a command, schema, artifact, or import surface
-- the real issue is operational, such as local setup, diagnostics, or release
-- you already know the boundary and need proof, risks, or validation instead
-
-## Across This Package
-
-- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when you need the structural
-  map behind domain, application, and infrastructure flow
-- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is about public
-  retrieval contracts
-- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need setup, local
-  workflows, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you need evidence that replay and
-  retrieval behavior are actually protected
-
-## Concrete Anchors
-
-- `packages/bijux-canon-index` as the package root
-- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/bijux-canon-index/tests` as the proof surface for owned behavior
+- leave this section for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the live question is a command, API, artifact, or import contract
+- leave this section for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the issue is running, diagnosing, or releasing the package
+- leave this section for [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you are already convinced about the boundary and need proof that it survives change
 
 ## Bottom Line
 
-Open this section to answer the ownership question with integrity: index exists
-to make retrieval behavior explicit, replayable, and dependable enough for
-downstream packages to use. If a proposed change broadens the package without
-making that retrieval story clearer, it is probably crossing a boundary rather
-than improving the design.
-
+If this section cannot explain why retrieval behavior belongs here and not elsewhere, the package is still too blurry for safe change.
