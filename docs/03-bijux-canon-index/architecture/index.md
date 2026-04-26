@@ -20,27 +20,23 @@ modules keep replay and lineage reviewable after results leave the package.
 
 ```mermaid
 flowchart LR
-    interfaces["interfaces<br/>CLI, API, schemas"]
-    application["application<br/>engine and orchestration"]
-    core["core runtime<br/>plans, sessions, determinism"]
-    infra["infra adapters<br/>vector stores, embeddings, run store"]
-    domain["domain<br/>requests, provenance, drift, artifacts"]
-    result["retrieval result<br/>matches, scores, lineage"]
-    reason["reason package<br/>evidence interpretation"]
+    interfaces["interfaces"]
+    application["application engine"]
+    core["runtime plan and session"]
+    infra["backend adapters"]
+    domain["provenance and drift rules"]
+    result["retrieval result"]
+    reason["reason package"]
 
     interfaces --> application --> core --> infra --> result --> reason
     core --> domain --> result
-    infra -. backend facts .-> domain
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class interfaces page;
-    class application,core,infra,domain positive;
-    class result anchor;
-    class reason action;
+    infra --> domain
 ```
+
+This architecture only works if retrieval stays explainable at the moment it
+happens. Application and runtime layers decide how a search is run, backend
+adapters execute it, and domain provenance logic records enough context for a
+later reviewer to understand why the result exists at all.
 
 ## Read These First
 
@@ -78,6 +74,8 @@ The main architectural risk here is letting retrieval semantics disappear inside
 - leave for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
 - leave for [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
-## Bottom Line
+## Design Pressure
 
-A structure that cannot be explained in one pass is already carrying too much hidden policy.
+If retrieval behavior disappears into adapters or backend terminology, the
+package stops being auditable from its own structure. The architecture page
+has to keep search intent, execution, and provenance visibly connected.
