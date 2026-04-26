@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Use this section when the question is what another package, tool, or operator
+Open this section when the question is what another package, tool, or operator
 can safely rely on from `bijux-canon-agent`: commands, HTTP routes, schemas,
 config surfaces, orchestration artifacts, trace outputs, and public imports.
 
@@ -97,13 +97,13 @@ flowchart LR
 
 ## Why Use Interfaces
 
-Use `Interfaces` to judge whether a dependency on the agent layer is
+Open `Interfaces` to judge whether a dependency on the agent layer is
 defensible. The bar is not only that a command exists, but that commands,
 schemas, traces, artifacts, examples, and tests all agree about what the
 orchestration surface really promises.
 
 ## What You Get
 
-This page gives you the command, API, artifact, import, and compatibility
-route through `bijux-canon-agent` before you inspect a specific contract
-surface.
+Open this page when you need the command, API, artifact, import, and
+compatibility route through `bijux-canon-agent` before you inspect a specific
+contract surface.

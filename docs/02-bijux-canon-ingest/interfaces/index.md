@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Use this section when you need to know which ingest surfaces are real
+Open this section when you need to know which ingest surfaces are real
 contracts: commands, schemas, imports, artifacts, and examples that callers
 or downstream packages can rely on without guessing.
 
@@ -101,12 +101,13 @@ flowchart LR
 
 ## Why Use Interfaces
 
-Use `Interfaces` to separate what ingest truly promises from what merely
+Open `Interfaces` to separate what ingest truly promises from what merely
 happens to be visible today. If a downstream dependency cannot be defended in
 terms of named commands, schemas, artifacts, examples, and tests, it is not yet
 a stable contract.
 
 ## What You Get
 
-This page gives you the command, contract, artifact, and compatibility route
-through `bijux-canon-ingest` before you inspect a specific interface surface.
+Open this page when you need the command, contract, artifact, and
+compatibility route through `bijux-canon-ingest` before you inspect a
+specific interface surface.

@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Use this section to understand which commands, APIs, imports, schemas, and
+Open this section to understand which commands, APIs, imports, schemas, and
 artifacts `bijux-canon-runtime` is prepared to stand behind as real surfaces.
 
 These pages explain the public face of `bijux-canon-runtime`. They help a
@@ -103,13 +103,13 @@ flowchart LR
 
 ## Why Use Interfaces
 
-Use `Interfaces` to decide whether a caller-facing surface is explicit enough to
+Open `Interfaces` to decide whether a caller-facing surface is explicit enough to
 depend on. If the surface cannot be tied back to code, frozen schemas, named
 artifacts, examples, and tests, treat it as unstable until that evidence is
 visible.
 
 ## What You Get
 
-This page gives you the command, API, artifact, import, and compatibility
-route through `bijux-canon-runtime` before you inspect a specific contract
-surface.
+Open this page when you need the command, API, artifact, import, and
+compatibility route through `bijux-canon-runtime` before you inspect a
+specific contract surface.

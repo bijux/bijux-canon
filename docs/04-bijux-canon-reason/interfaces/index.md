@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Use this section when the question is what another package, tool, or operator
+Open this section when the question is what another package, tool, or operator
 can safely rely on from `bijux-canon-reason`: commands, HTTP routes, schema
 shapes, trace formats, artifacts, and public imports.
 
@@ -98,12 +98,12 @@ flowchart LR
 
 ## Why Use Interfaces
 
-Use `Interfaces` to judge whether a dependency is defensible. In this package,
+Open `Interfaces` to judge whether a dependency is defensible. In this package,
 the answer is not just “is there a function for it?” but also “can a reviewer
 trace the contract through commands, schemas, artifacts, examples, and tests?”
 
 ## What You Get
 
-This page gives you the command, API, artifact, import, and compatibility
-route through `bijux-canon-reason` before you inspect a specific contract
-surface.
+Open this page when you need the command, API, artifact, import, and
+compatibility route through `bijux-canon-reason` before you inspect a specific
+contract surface.

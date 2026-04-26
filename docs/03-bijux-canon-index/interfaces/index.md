@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Interfaces
 
-Use this section when you need to know which index-facing surfaces are real
+Open this section when you need to know which index-facing surfaces are real
 contracts: retrieval commands, APIs, schemas, imports, artifacts, and
 examples that other packages or operators can safely rely on.
 
@@ -101,11 +101,12 @@ flowchart LR
 
 ## Why Use Interfaces
 
-Use `Interfaces` to separate supported retrieval contracts from internal index
+Open `Interfaces` to separate supported retrieval contracts from internal index
 visibility. If a dependency cannot be defended in terms of named commands,
 schemas, artifacts, examples, and tests, it is not yet a stable public surface.
 
 ## What You Get
 
-This page gives you the command, API, artifact, and compatibility route
-through `bijux-canon-index` before you inspect a specific interface surface.
+Open this page when you need the command, API, artifact, and compatibility
+route through `bijux-canon-index` before you inspect a specific interface
+surface.
