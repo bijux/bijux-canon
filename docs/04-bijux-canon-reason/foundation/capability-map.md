@@ -11,6 +11,21 @@ last_reviewed: 2026-04-26
 
 The capability map for `bijux-canon-reason` should let a reviewer tie reasoning claims to the code that forms, checks, and records them. If the package promise cannot be mapped to named reasoning areas, auditability is already slipping.
 
+## Capability Flow
+
+```mermaid
+flowchart LR
+    reasoning["reasoning promises"]
+    modules["application, domain, services, interfaces, and artifacts"]
+    outputs["claims, checks, and provenance-rich reasoning output"]
+
+    reasoning --> modules --> outputs
+```
+
+This page should make reasoning capability feel grounded instead of mystical.
+A reviewer should be able to name where claim formation, verification, and
+artifact output actually live.
+
 ## Capability To Code
 
 - `application/` and reasoning workflows own how evaluation steps are coordinated inside the package boundary
@@ -23,6 +38,8 @@ The capability map for `bijux-canon-reason` should let a reviewer tie reasoning 
 - provenance-rich reasoning artifacts
 - reviewable package outputs that agent and runtime can consume
 
-## Bottom Line
+## Design Pressure
 
-A capability is only real when a reviewer can trace it to code, tests, and outputs without guessing.
+Auditability fades quickly when reasoning promises are detached from named code
+areas and explicit outputs. The package has to keep meaning, verification, and
+artifacts visibly connected.
