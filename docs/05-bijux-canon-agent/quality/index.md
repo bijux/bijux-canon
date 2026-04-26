@@ -11,6 +11,24 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to decide whether workflow and trace behavior is proven strongly enough for operators and callers to trust deterministic orchestration.
 
+## Trust Model
+
+```mermaid
+flowchart LR
+    strategy["test strategy"]
+    invariants["workflow invariants"]
+    validation["change validation"]
+    limits["limitations and risk"]
+    trust["trust decision"]
+
+    strategy --> invariants --> validation --> limits --> trust
+```
+
+Agent quality has to defend more than successful runs. It has to show why
+workflow ordering, traces, and deterministic coordination are still trustworthy
+under change, and where the package is still honest about risk or limit
+surfaces.
+
 ## Read These First
 
 - open [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/) first when you need the broad proof shape behind workflow behavior
@@ -45,6 +63,8 @@ The main quality risk here is workflow success that still leaves traces or revie
 - leave for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is what the contract is rather than whether it is defended
 - leave for [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
-## Bottom Line
+## Design Pressure
 
-A passing check is not enough if the package still cannot explain why the surface should be trusted.
+If a workflow only looks deterministic because the trace is not reviewed hard
+enough, this section is too weak. Quality here has to keep execution evidence,
+trace invariants, and residual risk in one frame.
