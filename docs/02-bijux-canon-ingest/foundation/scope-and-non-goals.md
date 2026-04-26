@@ -11,6 +11,23 @@ last_reviewed: 2026-04-26
 
 The scope of `bijux-canon-ingest` is narrower than “anything near the front of the pipeline.” It owns preparation work that makes later packages less ambiguous, not work that makes them less inconvenient.
 
+## Scope Map
+
+```mermaid
+flowchart LR
+    source["messy source material"]
+    scope["ingest scope"]
+    handoff["prepared downstream input"]
+    refuse["retrieval quality, claim meaning, and run authority stay out of scope"]
+
+    source --> scope --> handoff
+    scope --> refuse
+```
+
+This page should show ingest as a narrowing step, not as a general prelude to
+the whole platform. The scope stays healthy when it produces stable prepared
+input and then stops.
+
 ## In Scope
 
 - cleaning, normalization, and chunking before search begins
@@ -27,6 +44,8 @@ The scope of `bijux-canon-ingest` is narrower than “anything near the front of
 
 If the change makes later packages depend on ingest for anything beyond prepared input, the package is growing past its job.
 
-## Bottom Line
+## Design Pressure
 
-A package boundary earns trust partly by the work it refuses to absorb. `bijux-canon-ingest` should stay narrow enough that its role can still be explained in one pass.
+If ingest starts absorbing work because downstream packages would rather not own
+their own ambiguity, the package becomes broader without becoming clearer. The
+non-goals have to stay explicit enough to resist that pull.
