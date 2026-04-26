@@ -11,6 +11,27 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to run index work repeatably: install it, exercise retrieval flows, diagnose replay drift, release it, or recover from failure without guessing what the package expected.
 
+## Operating Loop
+
+```mermaid
+flowchart LR
+    setup["setup"]
+    query["run retrieval flow"]
+    inspect["inspect replay output"]
+    recover["recover from drift"]
+    release["release package"]
+    proof["tests and artifacts"]
+
+    setup --> query --> inspect --> recover --> release
+    query --> proof
+    inspect --> proof
+```
+
+Index operations need to make replayability practical, not rhetorical. A
+maintainer should be able to move from a clean setup to a reproducible query
+path, inspect the replay evidence, and recover from drift without treating the
+backend as a black box.
+
 ## Read These First
 
 - open [Installation and Setup](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/installation-and-setup/) first when you need a clean package starting point
@@ -45,6 +66,8 @@ The main operational risk here is hiding retrieval and replay assumptions in env
 - leave for [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when a workflow problem exposes structural drift underneath it
 - leave for [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the package runs but the real question is whether the evidence is strong enough
 
-## Bottom Line
+## Design Pressure
 
-If the package cannot be operated from checked-in facts alone, the operational story is not done yet.
+If replay drift can only be diagnosed by backend intuition or private habits,
+the package is not operationally honest enough yet. The checked-in workflow
+needs to expose how search behavior is examined and recovered.
