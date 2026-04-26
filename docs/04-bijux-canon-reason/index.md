@@ -9,47 +9,39 @@ last_reviewed: 2026-04-26
 
 # Reasoning Handbook
 
-`bijux-canon-reason` owns inspectable reasoning, verification, provenance, and
-reasoning-side run artifacts. Open this handbook when you need to understand
-how evidence becomes claims, checks, and durable reasoning output.
+`bijux-canon-reason` owns inspectable reasoning, verification, provenance, and reasoning-side run artifacts. It is where retrieved evidence becomes claims, checks, and reviewer-facing reasoning records instead of raw search results.
 
-This package is where retrieval output becomes something a reviewer can inspect
-as reasoning rather than as raw search results. It owns the conversion from
-evidence into claims, verification steps, provenance-aware reasoning records,
-and reasoning-side artifacts that should survive review.
-
-## Open This Package When
-
-- you need the package-level entrypoint for reasoning docs
-- you are checking reasoning behavior, verification, or provenance
-- you want the shortest route into the owned reasoning documentation
-- you need to separate reasoning semantics from retrieval mechanics or runtime
-  governance
+The main failure this handbook prevents is hiding reasoning policy inside retrieval output or orchestration flow. If this package does not say clearly how evidence turns into claims and checks, the system becomes hard to audit even when every lower layer technically works.
 
 ## What This Package Owns
 
-- claim formation and reasoning-side verification behavior
-- provenance-aware reasoning artifacts and durable reasoning records
-- the reasoning contracts that agent and runtime layers depend on
+- claim formation, reasoning-side verification, and provenance-aware reasoning records
+- logic that turns retrieval output into inspectable conclusions and supporting checks
+- reasoning artifacts that agent and runtime layers can consume without reinterpreting intent
 
 ## What This Package Does Not Own
 
-- ingest preparation or index execution behavior below the reasoning boundary
-- agent orchestration policy above one reasoning step
-- runtime acceptance, persistence, or run-governance behavior
+- document preparation and retrieval execution below the reasoning boundary
+- multi-step orchestration policy above one reasoning-capable step
+- runtime acceptance, persistence, and final replay authority for whole runs
+
+## Boundary Test
+
+If the issue is about what evidence means, how a claim is verified, or which reasoning artifact should exist after evaluation, it belongs here. If the issue is about how evidence was fetched or how multiple steps are coordinated, it does not.
+
+## First Proof Check
+
+- `packages/bijux-canon-reason/src/bijux_canon_reason` for the owned reasoning implementation boundary
+- `packages/bijux-canon-reason/tests` for proof that claims, verification, and provenance stay aligned
+- `packages/bijux-canon-reason/README.md` for the package-level contract readers see before code
 
 ## Start Here
 
-- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the question is about package
-  purpose, language, or ownership
-- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when you need the module map,
-  execution flow, or dependency structure
-- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is about commands,
-  schemas, artifacts, or import surfaces
-- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when you need setup, diagnostics,
-  local workflow, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is about trust, evidence,
-  limitations, or review standards
+- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the question is why this package exists or where its ownership stops
+- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when you need module boundaries, dependency flow, or execution shape
+- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
+- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when you need local workflow, diagnostics, release, or recovery guidance
+- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is whether the package has proved its promises strongly enough
 
 ## Pages In This Package
 
@@ -59,3 +51,6 @@ and reasoning-side artifacts that should survive review.
 - [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/)
 - [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/)
 
+## Bottom Line
+
+If a proposed change makes `bijux-canon-reason` broader without making its owned role easier to defend, the change is probably crossing a package boundary rather than improving the design.

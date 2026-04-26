@@ -9,73 +9,39 @@ last_reviewed: 2026-04-26
 
 # Runtime Handbook
 
-`bijux-canon-runtime` is the execution authority layer in `bijux-canon`. Open
-this handbook when the question is about run acceptance, replay policy,
-persistence, or runtime-facing boundaries that sit above the rest of the
-package family.
+`bijux-canon-runtime` is the execution authority layer in `bijux-canon`. It decides when lower-package work becomes an acceptable, replayable, durable run instead of a merely successful execution trace.
 
-This package is the place where the package family becomes governable as a run
-system. It owns acceptance policy, replay authority, persistence boundaries,
-and runtime-facing coordination that should remain explicit rather than hiding
-in whichever lower package happened to execute last.
-
-For many readers this page answers whether a run counts at all. Lower packages
-can execute work, but runtime decides whether that work is acceptable,
-replayable, durable, and fit to keep.
-
-## Start Here
-
-- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why runtime owns
-  run authority instead of one lower package
-- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the execution and
-  persistence structure
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about CLI, API,
-  schemas, or durable artifact contracts
-- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the issue is whether runtime has proven
-  a run acceptable rather than merely executable
-
-## Open This Package When
-
-- you need the package-level entrypoint for runtime docs
-- you are checking execution, replay, or persistence behavior
-- you want the shortest route into the owned runtime documentation
-- you need to separate runtime authority from lower-package execution behavior
+The main failure this handbook prevents is treating runtime as a miscellaneous bucket for late-stage plumbing. Runtime exists to own acceptance, replay, persistence, and governed execution authority. If those decisions leak downward, no one can say why one run counts and another does not.
 
 ## What This Package Owns
 
 - run acceptance and replay policy above the lower package family
 - runtime persistence boundaries and durable runtime-facing artifacts
-- the execution authority surface that sits above agent coordination
+- execution authority that governs agent coordination rather than replacing it
 
 ## What This Package Does Not Own
 
-- ingest, index, reasoning, or agent-specific semantics inside their own
-  package boundaries
-- repository-wide maintainer automation that belongs in the maintenance
-  handbook
+- ingest, index, reasoning, or agent-specific semantics inside their own packages
+- repository-wide maintainer automation that belongs in the maintenance handbook
+- package-local convenience behavior that never affects governed runs
 
-## Concrete Anchors
+## Boundary Test
 
-- `src/bijux_canon_runtime/application/execute_flow.py` for the main execution
-  authority entrypoint
-- `src/bijux_canon_runtime/runtime/execution/` for governed run lifecycle work
-- `src/bijux_canon_runtime/observability/` for replay, trace, and durable
-  runtime records
-- `tests/e2e/` and `tests/regression/` for the highest-value proof that a run
-  remains replayable and acceptable
+If the issue is whether a run should be accepted, persisted, replayed, or rejected under explicit policy, it belongs here. If the issue is how a lower package produced its local result, runtime should consume that result rather than re-own the behavior.
+
+## First Proof Check
+
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime/application/execute_flow.py` for governed execution entrypoints
+- `packages/bijux-canon-runtime/src/bijux_canon_runtime/observability` for durable replay and trace surfaces
+- `packages/bijux-canon-runtime/tests` for acceptance, replay, and persistence evidence
 
 ## Start Here
 
-- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is about package
-  purpose, ownership, or vocabulary
-- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need the module map,
-  execution shape, or persistence structure
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands,
-  schemas, artifacts, or import surfaces
-- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need setup, diagnostics,
-  workflow, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is about trust, risk,
-  invariants, or review standards
+- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why this package exists or where its ownership stops
+- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need module boundaries, dependency flow, or execution shape
+- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
+- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need local workflow, diagnostics, release, or recovery guidance
+- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is whether the package has proved its promises strongly enough
 
 ## Pages In This Package
 
@@ -85,3 +51,6 @@ replayable, durable, and fit to keep.
 - [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/)
 - [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/)
 
+## Bottom Line
+
+If a proposed change makes `bijux-canon-runtime` broader without making its owned role easier to defend, the change is probably crossing a package boundary rather than improving the design.

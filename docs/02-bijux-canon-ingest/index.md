@@ -9,47 +9,39 @@ last_reviewed: 2026-04-26
 
 # Ingest Handbook
 
-`bijux-canon-ingest` owns deterministic document preparation, chunking, and
-retrieval-ready shaping. Open this handbook when you need to understand how
-source material becomes stable ingest output.
+`bijux-canon-ingest` owns deterministic document preparation, chunking, and retrieval-ready shaping. It is the package that turns raw source material into stable inputs the rest of the system can trust.
 
-This package sits at the front of the canonical package family. Its job is to
-turn raw source material into chunks, records, and artifacts that downstream
-packages can index, reason over, and orchestrate without having to reinterpret
-the ingest step from scratch.
-
-## Open This Package When
-
-- you need the package-level entrypoint for ingest docs
-- you are checking ingest workflows, chunking, or retrieval preparation
-- you want the shortest route into the owned ingest documentation
-- you need to decide whether a concern belongs in ingest or in a downstream
-  package
+The main failure this handbook prevents is treating ingest like a convenient place for every upstream cleanup, retrieval tweak, or workflow shortcut. Ingest should only grow when the change makes prepared source material more predictable, not when another package wants to offload its own complexity.
 
 ## What This Package Owns
 
-- deterministic preparation of source material before retrieval
-- chunking, record shaping, and ingest-side artifact generation
-- ingest workflows that downstream packages can rely on as stable input
+- document cleaning, normalization, and chunking before retrieval
+- ingest-side records and artifacts that downstream packages accept as prepared input
+- deterministic preparation workflows that remove source ambiguity before indexing
 
 ## What This Package Does Not Own
 
-- vector-store execution and replayable retrieval behavior
-- reasoning, verification, or claim-production semantics
-- cross-package runtime acceptance, persistence, and operator governance
+- vector execution, retrieval replay, and backend index behavior
+- claim formation, reasoning policy, or multi-step orchestration semantics
+- runtime acceptance, persistence, and governed replay authority
+
+## Boundary Test
+
+If the question is still about making source material predictable before any vector store or reasoning step touches it, it belongs here. If the question starts with retrieval quality, claim behavior, agent coordination, or run acceptance, it belongs somewhere else.
+
+## First Proof Check
+
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for deterministic preparation logic
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for handoff-ready records and assembly
+- `packages/bijux-canon-ingest/tests` for the proof that prepared output stays stable under change
 
 ## Start Here
 
-- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the real question is why ingest
-  exists, where the boundary stops, or which language should stay stable
-- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need the module map,
-  dependency direction, or execution flow
-- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands,
-  schemas, artifacts, or import surfaces
-- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need setup, local workflow,
-  diagnostics, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when you need proof expectations, risk
-  posture, or a review standard
+- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the question is why this package exists or where its ownership stops
+- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need module boundaries, dependency flow, or execution shape
+- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
+- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need local workflow, diagnostics, release, or recovery guidance
+- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the question is whether the package has proved its promises strongly enough
 
 ## Pages In This Package
 
@@ -59,3 +51,6 @@ the ingest step from scratch.
 - [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/)
 - [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/)
 
+## Bottom Line
+
+If a proposed change makes `bijux-canon-ingest` broader without making its owned role easier to defend, the change is probably crossing a package boundary rather than improving the design.
