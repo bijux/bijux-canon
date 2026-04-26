@@ -19,6 +19,36 @@ product semantics. If a change alters ingest, index, reasoning, agent, or
 runtime behavior for users, the owning package handbook still owns the real
 explanation.
 
+## Maintenance System
+
+Maintenance work should be easy to audit because each automation surface has a
+checked-in owner. The helper package provides repository-health logic, `makes/`
+turns that logic into repeatable local commands, and GitHub workflows run the
+same contract in CI and release paths.
+
+```mermaid
+flowchart LR
+    maintainer["maintainer question<br/>drift, release, docs, checks"]
+    dev["bijux-canon-dev<br/>helper code and catalog logic"]
+    makes["makes<br/>local command contracts"]
+    workflows["GitHub workflows<br/>CI, release, docs deploy"]
+    evidence["evidence<br/>logs, artifacts, schemas, package reports"]
+    product["product handbooks<br/>package behavior stays owned elsewhere"]
+
+    maintainer --> dev --> makes --> workflows --> evidence
+    dev -. catalog and policy .-> evidence
+    workflows -. when behavior changes .-> product
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class maintainer page;
+    class dev,makes,workflows positive;
+    class evidence anchor;
+    class product action;
+```
+
 ## Handbook Sections
 
 - [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) for repository-health helper code,
@@ -42,6 +72,7 @@ explanation.
 - `packages/bijux-canon-dev/` is the maintainer helper package.
 - `makes/` is the checked-in command surface.
 - `.github/workflows/` is the checked-in workflow contract.
+- `artifacts/` is the default destination for local check output and generated run products.
 
 ## Boundary
 
