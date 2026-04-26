@@ -23,6 +23,49 @@ Product behavior belongs in the publishable packages under `packages/`. The
 root owns only what is genuinely shared: workspace layout, schema governance,
 documentation rules, validation posture, and release coordination.</div>
 
+## Reader Contract
+
+This handbook should answer three questions before a reviewer touches code:
+
+- is the concern genuinely repository-wide, or does one package own it
+- which shared file, schema, workflow, or rule backs the claim
+- where should the reader go next when the root no longer has authority
+
+```mermaid
+flowchart TD
+    question["reader question"]
+    root{"does the question cross package boundaries?"}
+    package["open the owning package handbook"]
+    foundation["foundation pages<br/>scope, layout, ownership, language"]
+    operations["operations pages<br/>development, validation, release, review"]
+    maintain{"is it maintainer machinery?"}
+    compat{"is it a legacy name?"}
+    devdocs["maintenance handbook"]
+    compatdocs["compatibility handbook"]
+    proof["proof surface<br/>pyproject, mkdocs, apis, makes, workflows"]
+
+    question --> root
+    root -- no --> package
+    root -- yes --> maintain
+    maintain -- yes --> devdocs
+    maintain -- no --> compat
+    compat -- yes --> compatdocs
+    compat -- no --> foundation
+    compat -- no --> operations
+    foundation --> proof
+    operations --> proof
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef caution fill:#fff1f2,stroke:#dc2626,color:#6b1d1d;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class question,proof page;
+    class root,maintain,compat anchor;
+    class foundation,operations positive;
+    class package,devdocs,compatdocs action;
+```
+
 ## Start Here
 
 - open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
@@ -45,11 +88,13 @@ documentation rules, validation posture, and release coordination.</div>
 
 ## Shared Package Map
 
-- `bijux-canon-ingest` prepares source material for deterministic downstream use
-- `bijux-canon-index` executes retrieval and records provenance-rich result state
-- `bijux-canon-reason` turns retrieved evidence into inspectable claims and verification outputs
-- `bijux-canon-agent` coordinates role-based orchestration without hiding traces or package boundaries
-- `bijux-canon-runtime` governs execution, replay, persistence, and final acceptability
+| Canonical package | Repository-level promise | Root-level proof to inspect |
+| --- | --- | --- |
+| `bijux-canon-ingest` | source material becomes deterministic preparation output before downstream use | package entry in `pyproject.toml`, handbook route in `mkdocs.yml`, package code under `packages/bijux-canon-ingest` |
+| `bijux-canon-index` | retrieval executes through auditable contracts rather than hidden search behavior | API schema under `apis/bijux-canon-index`, package tests, handbook route |
+| `bijux-canon-reason` | retrieved evidence becomes claims, checks, and reasoning artifacts | API schema under `apis/bijux-canon-reason`, package tests, handbook route |
+| `bijux-canon-agent` | role-based orchestration emits traces instead of swallowing decisions | API schema under `apis/bijux-canon-agent`, package tests, handbook route |
+| `bijux-canon-runtime` | the full run is accepted, rejected, persisted, or replayed under explicit policy | API schema under `apis/bijux-canon-runtime`, runtime regression tests, handbook route |
 
 ## Boundary Example
 
