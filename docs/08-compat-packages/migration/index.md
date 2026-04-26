@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Migration
@@ -12,10 +12,33 @@ last_reviewed: 2026-04-09
 The migration section explains how legacy names should be retired responsibly
 instead of merely coexisting forever.
 
-This section is about movement: how readers should adopt canonical package
-names, what repository consolidation means in practice, how release and
-validation posture should support the transition, and what evidence is needed
-before a compatibility package can disappear.
+It covers the full transition path: how canonical package names replace legacy
+names, what continuity must be preserved while both exist, what validation must
+run during the overlap, and what evidence is required before a compatibility
+package can disappear.
+
+## Visual Summary
+
+```mermaid
+flowchart LR
+    legacy["legacy dependency<br/>name still in use"]
+    target["canonical target<br/>current package family"]
+    continuity["continuity work<br/>imports, commands, requirements"]
+    validation["validation posture<br/>prove migration safety"]
+    retirement["retirement decision<br/>remove preserved package"]
+    legacy --> target
+    target --> continuity
+    continuity --> validation
+    validation --> retirement
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    class legacy page;
+    class target,continuity positive;
+    class validation anchor;
+    class retirement caution;
+```
 
 ## Pages in This Section
 
@@ -29,24 +52,34 @@ before a compatibility package can disappear.
 - [Retirement Conditions](retirement-conditions.md)
 - [Retirement Playbook](retirement-playbook.md)
 
-## What This Section Covers
-
-- how to move from legacy package names to canonical package names
-- how release, dependency, and validation choices support that move
-- what a credible retirement path looks like for a compatibility package
-
-## Read This Section When
+## Use This Section When
 
 - you are planning or reviewing a migration away from legacy package names
 - you need the shared rules for compatibility release and retirement decisions
-- you want the compatibility layer’s future posture rather than its current
-  catalog entry
+- you need the future posture of the compatibility layer rather than its current catalog entry
 
-## Purpose
+## Do Not Use This Section When
 
-This page provides the route into the compatibility migration guidance.
+- the only open question is which exact legacy surface is still preserved
+- the concern is already about current product behavior in a canonical package
+- the issue belongs to maintainer automation rather than compatibility policy
 
-## Stability
+## Choose The Next Page By Question
 
-Keep this page aligned with the migration, validation, and retirement material
-that the repository currently stands behind.
+- open [Canonical Targets](canonical-targets.md) when the first need is the exact new package name
+- open [Dependency Continuity](dependency-continuity.md) when requirements, imports, or command preservation are the current risk
+- open [Validation Strategy](validation-strategy.md) when the migration must be proven through tests, metadata, or release checks
+- open [Retirement Conditions](retirement-conditions.md) or [Retirement Playbook](retirement-playbook.md) when the preserved bridge might be ready to disappear
+
+## Concrete Anchors
+
+- `packages/compat-*` for the shipping compatibility bridges
+- compatibility package `README.md` files for explicit canonical targets
+- canonical package docs under `docs/02-bijux-canon-ingest/` through `docs/06-bijux-canon-runtime/` for current behavior
+
+## Migration Standard
+
+Migration is complete only when preserved names are no longer needed for real
+dependent environments and the canonical package can carry the workload alone
+without hidden breakage. Until then, continuity and validation must stay more
+important than aesthetic cleanup.
