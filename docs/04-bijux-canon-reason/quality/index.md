@@ -9,23 +9,23 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Open this section when the question is how `bijux-canon-reason` earns trust:
-which tests and replay checks matter, which invariants must survive a change,
-which risks stay visible, and what counts as enough evidence before a reasoning
-result is allowed to look believable.
+Open this section when you need to decide whether claims, checks, and reasoning artifacts are proven strongly enough for reviewers and downstream packages to trust.
 
-This package cannot hide behind generic green builds. It has to show that
-claim formation stays deterministic, verification remains meaningful, and trace
-artifacts still support replay and audit instead of only looking complete.
+## Read These First
 
-## Start Here
+- open [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/) first when you need the broad proof shape behind reasoning behavior
+- open [Invariants](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/invariants/) when the question is what must not drift across claim and verification behavior
+- open [Change Validation](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/change-validation/) when you need the minimum proof for a safe reasoning change
 
-- open [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/) for the proof layers that matter most
-  in this package
-- open [Change Validation](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/change-validation/) when you need the concrete
-  validation bar for a real change
-- open [Known Limitations](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/risk-register/)
-  before assuming the reasoning layer proves more than it actually does
+## Trust Risk
+
+The main quality risk here is looking explainable on paper while the actual reasoning proof path is too weak to defend under review.
+
+## First Proof Check
+
+- `tests` and package-local validation surfaces for executable evidence
+- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
+- release notes and caller-facing docs when the change alters what readers may safely assume
 
 ## Pages In This Section
 
@@ -39,40 +39,12 @@ artifacts still support replay and audit instead of only looking complete.
 - [Known Limitations](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/risk-register/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need to know what evidence should defend a reasoning change
-- a review is really about replay trust, determinism, or verification rigor
-- you need to decide whether a result is merely produced or actually justified
-
-## Open Another Section When
-
-- the main problem is package ownership or boundary confusion
-- you are still locating modules or public contracts
-- the issue is mainly procedural rather than evidentiary
-
-## Concrete Anchors
-
-- `tests/unit` for planning, retrieval, reasoning, execution, verification,
-  trace, and interface behavior
-- `tests/e2e` for CLI, API, replay-gate, and retrieval-to-reasoning scenarios
-- `tests/perf/test_retrieval_benchmark.py` for benchmark pressure around
-  retrieval behavior
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and trust
-  boundaries
-- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a proof gap points to
-  structural drift
-- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the evidence needs to defend a
-  contract
-- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the validation bar depends on
-  a repeatable workflow
+- leave for [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the doubt is really about package ownership rather than proof
+- leave for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is what the contract is rather than whether it is defended
+- leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
 ## Bottom Line
 
-Open this section to ask whether the reasoning layer has earned belief, not whether
-it merely produced output. The real bar is determinism, verification strength,
-trace integrity, and explicit limits that remain visible after the change.
-
+A passing check is not enough if the package still cannot explain why the surface should be trusted.

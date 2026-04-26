@@ -9,28 +9,23 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Open this section to understand how `bijux-canon-runtime` earns trust: which
-proof surfaces matter, which risks stay visible, and what done should mean
-after a real change.
+Open this section when you need to decide whether governed run behavior is proven strongly enough for acceptance, persistence, and replay to be trusted as authority rather than habit.
 
-These pages explain the proof story for `bijux-canon-runtime`. They make
-trust, skepticism, and review pressure visible enough that passing checks do
-not get mistaken for sufficient evidence.
+## Read These First
 
-Runtime quality is not only about unit correctness. It is also about whether
-execution traces, replay behavior, verification arbitration, and persistence
-rules still justify trusting a governed run.
+- open [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/) first when you need the broad proof shape behind runtime authority
+- open [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/) when the question is what must not drift across acceptance and replay behavior
+- open [Change Validation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/change-validation/) when you need the minimum proof for a safe runtime change
 
-## Start Here
+## Trust Risk
 
-- open [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/) for the shortest explanation of the
-  runtime proof stack
-- open [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/) when a change could disturb replay,
-  persistence, or determinism claims
-- open [Change Validation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/change-validation/) when the question is what to
-  run for one concrete runtime change
-- open [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
-  before claiming the package proves more than it currently does
+The main quality risk here is accepting or replaying runs under rules that are weaker in practice than the docs imply.
+
+## First Proof Check
+
+- `tests` and package-local validation surfaces for executable evidence
+- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
+- release notes and caller-facing docs when the change alters what readers may safely assume
 
 ## Pages In This Section
 
@@ -44,42 +39,12 @@ rules still justify trusting a governed run.
 - [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
 
-## Open This Section When
+## Leave This Section When
 
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
-
-## Open Another Section When
-
-- the real question is still why runtime owns a behavior at all
-- you need module layout or procedure before you can evaluate the proof
-- you are still deciding what the public contract is rather than whether it is
-  defended
-
-## Concrete Anchors
-
-- `tests/unit/runtime/`, `tests/unit/contracts/`, and `tests/unit/api/` for
-  the narrow contract and model proof layers
-- `tests/e2e/` for governed execution behavior
-- `tests/regression/` for replay, persistence, determinism, and compatibility
-  drift protection
-- `apis/bijux-canon-runtime/v1/schema.yaml` and
-  `src/bijux_canon_runtime/observability/schema.sql` for two of the highest
-  value frozen surfaces quality must defend
-
-## Across This Package
-
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the proof question becomes
-  about a named CLI, API, schema, or artifact contract
-- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the needed evidence depends on
-  a repeatable runtime workflow
-- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when the proof gap points to
-  structural drift rather than missing checks
+- leave for [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the doubt is really about package ownership rather than proof
+- leave for [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is what the contract is rather than whether it is defended
+- leave for [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
 ## Bottom Line
 
-Open this section to decide whether runtime has actually earned trust after a
-change. If one narrow green check hides a wider replay, persistence, contract,
-or validation gap, the work is not done yet.
-
+A passing check is not enough if the package still cannot explain why the surface should be trusted.

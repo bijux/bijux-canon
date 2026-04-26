@@ -9,25 +9,23 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Open this section when you need to know whether index behavior can be trusted:
-which tests prove retrieval and replay behavior, which risks remain visible,
-and what "done" should mean before reasoning or runtime depend on the result.
+Open this section when you need to decide whether retrieval behavior is proven strongly enough for callers and downstream packages to trust replay, provenance, and search results.
 
-These pages keep reviewers honest about the cost of being wrong in the
-retrieval layer. If index behavior drifts quietly, downstream packages can
-still look healthy while using stale, incomplete, or unreplayable retrieval
-results.
+## Read These First
 
-## Start Here
+- open [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/) first when you need the broad proof shape behind retrieval behavior
+- open [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/) when the question is what must not drift across search and replay behavior
+- open [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/) when you need the minimum proof for a safe index change
 
-- open [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/) for the broad proof story behind
-  retrieval behavior
-- open [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/) when the key question is what must not drift
-  across index state, provenance, or replay
-- open [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/) when you need the minimum
-  evidence for a safe retrieval change
-- open [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/) when backend limitations or tradeoffs
-  matter more than pass/fail status
+## Trust Risk
+
+The main quality risk here is green tests that still allow replay or provenance meaning to drift unnoticed.
+
+## First Proof Check
+
+- `tests` and package-local validation surfaces for executable evidence
+- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
+- release notes and caller-facing docs when the change alters what readers may safely assume
 
 ## Pages In This Section
 
@@ -41,42 +39,12 @@ results.
 - [Known Limitations](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need evidence that retrieval behavior is stable enough for downstream use
-- a change touches indexing, replay, provenance, or backend behavior that can
-  drift quietly
-- you are reviewing whether green checks are actually sufficient for the
-  contract being changed
-
-## Open Another Section When
-
-- the real question is which command, schema, or artifact surface exists
-- you need the package boundary or structural flow before you can judge proof
-- the issue is about how to run the package rather than how to trust it
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when uncertainty about ownership is
-  masquerading as a quality issue
-- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when missing proof points to
-  structural drift
-- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when trust depends on a specific
-  retrieval contract
-- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the needed evidence is really a
-  repeatable replay or recovery workflow
-
-## Concrete Anchors
-
-- `tests/unit` for API, application, contracts, domain, infra, and tooling
-- `tests/e2e` for CLI workflows, API smoke, determinism gates, and provenance
-  gates
-- `README.md`
+- leave for [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the doubt is really about package ownership rather than proof
+- leave for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is what the contract is rather than whether it is defended
+- leave for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
 ## Bottom Line
 
-Open this section to ask a stricter question than “did the suite pass?” In index,
-the real bar is whether retrieval behavior remains replayable, provenance-aware,
-and honest about backend limits before downstream packages treat it as stable
-ground.
-
+A passing check is not enough if the package still cannot explain why the surface should be trusted.

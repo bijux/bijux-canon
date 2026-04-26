@@ -9,24 +9,23 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Open this section when you need to know whether ingest output can be trusted:
-which tests prove deterministic preparation, which risks stay visible, and
-what "done" should mean before downstream packages build on the result.
+Open this section when you need to decide whether prepared ingest output is trustworthy enough for downstream packages to build on without inheriting hidden drift.
 
-These pages keep reviewers honest about the cost of being wrong at the front
-of the pipeline. If ingest silently drifts, index, reasoning, and runtime can
-all look healthy while building on unstable prepared data.
+## Read These First
 
-## Start Here
+- open [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) first when you need the broad proof shape behind ingest behavior
+- open [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/) when the question is what must not drift across source preparation and chunking
+- open [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/) when you need the minimum proof for a safe ingest change
 
-- open [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) for the broad proof story behind
-  ingest behavior
-- open [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/) when the key question is what must not drift
-  across source preparation and chunking
-- open [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/) when you need the minimum
-  evidence for a safe ingest change
-- open [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/) when known limits or tradeoffs may
-  matter more than pass/fail checks
+## Trust Risk
+
+The main quality risk here is letting unstable prepared input look healthy because later packages still pass on top of it.
+
+## First Proof Check
+
+- `tests` and package-local validation surfaces for executable evidence
+- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
+- release notes and caller-facing docs when the change alters what readers may safely assume
 
 ## Pages In This Section
 
@@ -40,42 +39,12 @@ all look healthy while building on unstable prepared data.
 - [Known Limitations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/known-limitations/)
 - [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/)
 
-## Open This Section When
+## Leave This Section When
 
-- you need evidence that ingest output is stable enough for downstream use
-- a change touches chunking, shaping, artifacts, or other behavior that can
-  drift silently
-- you are reviewing whether passing checks are actually sufficient for the
-  surface being changed
-
-## Open Another Section When
-
-- the real question is which command, schema, or artifact contract exists
-- you need the package boundary or structural flow before you can judge proof
-- the issue is about how to operate the package rather than how to trust it
-
-## Across This Package
-
-- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when uncertainty about ownership is
-  masquerading as a quality concern
-- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when missing proof points to
-  structural drift
-- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when trust depends on a specific
-  caller-facing contract
-- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the needed evidence is really a
-  repeatable maintainer workflow
-
-## Concrete Anchors
-
-- `tests/unit` for module-level behavior across processing, retrieval, and
-  interfaces
-- `tests/e2e` for package boundary coverage
-- `README.md`
+- leave for [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the doubt is really about package ownership rather than proof
+- leave for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is what the contract is rather than whether it is defended
+- leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
 ## Bottom Line
 
-Open this section to ask a stricter question than “did the tests pass?” In ingest,
-the real bar is whether prepared output remains deterministic, contract-aligned,
-and honest about its limits before any downstream package treats it as stable
-input.
-
+A passing check is not enough if the package still cannot explain why the surface should be trusted.
