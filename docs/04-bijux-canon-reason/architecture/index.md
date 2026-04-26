@@ -11,6 +11,37 @@ last_reviewed: 2026-04-26
 
 Open this section when the question is structural: where claims and checks are formed, how reasoning steps flow through the package, and how the code keeps meaning visible instead of scattering it.
 
+## Structural Shape
+
+Reason architecture centers on explicit reasoning artifacts. Core models define
+claims, plans, traces, and verification results; execution modules run steps
+and tools; verification modules check structure and provenance; trace modules
+make the result replayable rather than just plausible.
+
+```mermaid
+flowchart LR
+    evidence["evidence input<br/>retrieved chunks and context"]
+    core["core models<br/>claims, plans, verification, traces"]
+    execution["execution<br/>runtime, tools, step executor"]
+    reasoning["reasoning<br/>extractive and backend logic"]
+    verification["verification<br/>structural and provenance checks"]
+    traces["traces<br/>checksum, replay, diff"]
+    output["reasoning artifact<br/>claims, checks, metadata"]
+
+    evidence --> core --> execution --> reasoning --> verification --> output
+    execution --> traces --> output
+    core -. schemas meaning .-> output
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class evidence page;
+    class core,execution,reasoning,verification positive;
+    class traces anchor;
+    class output action;
+```
+
 ## Read These First
 
 - open [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) first when you need the owning code area for a reasoning concern
@@ -23,9 +54,10 @@ The main architectural risk here is hiding reasoning policy in the wrong layer u
 
 ## First Proof Check
 
-- `src/bijux_canon_reason` for the owned reasoning implementation boundary
-- `tests` for proof that claims, checks, and provenance stay aligned
-- `README.md` for the package contract that the structure is supposed to support
+- `packages/bijux-canon-reason/src/bijux_canon_reason/core/models` for claims, planning, trace, and verification models
+- `packages/bijux-canon-reason/src/bijux_canon_reason/execution` for runtime and tool execution boundaries
+- `packages/bijux-canon-reason/src/bijux_canon_reason/verification` for checks that keep claims reviewable
+- `packages/bijux-canon-reason/tests` for proof that claims, checks, and provenance stay aligned
 
 
 ## Pages In This Section
