@@ -107,8 +107,3 @@ or harder to explain in terms of planning, governed execution, durable state,
 and replay analysis. If the change works only because the design becomes harder
 to read, redesign is safer than acceptance.
 
-## What You Get
-
-Open this page when you need the module, dependency, execution, and
-durable-state route through `bijux-canon-runtime` before you inspect a
-specific structural topic.

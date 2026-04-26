@@ -97,8 +97,3 @@ Open `Architecture` to make the internal flow legible enough that a reviewer can
 say where ingest logic lives and why. If the code only works because the
 structure is hard to explain, the architecture has already started to drift.
 
-## What You Get
-
-Open this page when you need the module, execution, seam, and risk route
-through `bijux-canon-ingest` before you dive into individual architectural
-topics.

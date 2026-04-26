@@ -106,8 +106,3 @@ happens to be visible today. If a downstream dependency cannot be defended in
 terms of named commands, schemas, artifacts, examples, and tests, it is not yet
 a stable contract.
 
-## What You Get
-
-Open this page when you need the command, contract, artifact, and
-compatibility route through `bijux-canon-ingest` before you inspect a
-specific interface surface.

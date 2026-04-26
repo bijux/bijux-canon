@@ -79,8 +79,3 @@ merely produced a run. The real bar is layering discipline, trace integrity,
 schema and API stability, and clear limits that remain visible after the
 change.
 
-## What You Get
-
-Open this page when you need the tests, invariants, review, validation, and
-risk route through `bijux-canon-agent` before you inspect a specific trust
-surface.

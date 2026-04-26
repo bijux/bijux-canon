@@ -101,8 +101,3 @@ downstream packages to use. If a proposed change broadens the package without
 making that retrieval story clearer, it is probably crossing a boundary rather
 than improving the design.
 
-## What You Get
-
-Open this page when you need the boundary, language, and lifecycle route into
-`bijux-canon-index` before you move on to structure, contracts, operations,
-or proof.

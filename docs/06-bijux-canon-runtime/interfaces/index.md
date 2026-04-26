@@ -108,8 +108,3 @@ depend on. If the surface cannot be tied back to code, frozen schemas, named
 artifacts, examples, and tests, treat it as unstable until that evidence is
 visible.
 
-## What You Get
-
-Open this page when you need the command, API, artifact, import, and
-compatibility route through `bijux-canon-runtime` before you inspect a
-specific contract surface.

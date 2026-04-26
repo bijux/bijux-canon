@@ -100,8 +100,3 @@ Open `Operations` to find procedures a maintainer can repeat and defend. If a
 workflow cannot explain how it produces inspectable traces, replayable output,
 or diagnosable failures, it is not ready to be trusted as operating memory.
 
-## What You Get
-
-Open this page when you need the setup, execution, diagnostics, release, and
-safety route through `bijux-canon-reason` before you open a specific operating
-page.

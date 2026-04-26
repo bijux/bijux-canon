@@ -102,8 +102,3 @@ procedure cannot show how it leaves behind inspectable traces, diagnosable
 failures, and reviewable outputs, it is not ready to serve as the package’s
 operating memory.
 
-## What You Get
-
-Open this page when you need the setup, execution, diagnostics, release, and
-safety route through `bijux-canon-agent` before you open a specific operating
-page.

@@ -44,12 +44,3 @@ drifting into something larger.
 - you are checking whether a legacy surface is still thin enough to justify its
   existence
 
-## What You Get
-
-This page gives you the fastest route from a legacy package name to the
-canonical package and the preserved surfaces that still matter.
-
-## Stability
-
-Keep this page aligned with the legacy package entries that remain published and
-documented.

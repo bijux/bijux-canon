@@ -76,8 +76,3 @@ Open `Quality` to ask whether the reasoning layer has earned belief, not whether
 it merely produced output. The real bar is determinism, verification strength,
 trace integrity, and explicit limits that remain visible after the change.
 
-## What You Get
-
-Open this page when you need the tests, invariants, review, validation, and
-risk route through `bijux-canon-reason` before you inspect a specific trust
-surface.

@@ -106,8 +106,3 @@ Open `Operations` to decide whether a maintainer can repeat runtime workflow
 from checked-in assets instead of memory. If a step works only because someone
 already knows the trick, the package is not documented clearly enough yet.
 
-## What You Get
-
-Open this page when you need the setup, execution, diagnostics, release, and
-safety route through `bijux-canon-runtime` before you open a specific
-operating page.

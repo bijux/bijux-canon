@@ -105,8 +105,3 @@ Open `Interfaces` to separate supported retrieval contracts from internal index
 visibility. If a dependency cannot be defended in terms of named commands,
 schemas, artifacts, examples, and tests, it is not yet a stable public surface.
 
-## What You Get
-
-Open this page when you need the command, API, artifact, and compatibility
-route through `bijux-canon-index` before you inspect a specific interface
-surface.

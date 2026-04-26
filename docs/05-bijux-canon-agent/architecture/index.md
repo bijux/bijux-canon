@@ -106,8 +106,3 @@ named responsibilities. If interfaces, pipeline logic, role agents, and trace
 handling start blending together, the orchestration story gets harder to trust
 even before tests fail.
 
-## What You Get
-
-This page gives you the module, dependency, execution, and durable-state
-route through `bijux-canon-agent` before you inspect a specific structural
-topic.

@@ -80,8 +80,3 @@ the real bar is whether retrieval behavior remains replayable, provenance-aware,
 and honest about backend limits before downstream packages treat it as stable
 ground.
 
-## What You Get
-
-Open this page when you need the proof, invariants, review, validation, and
-risk route through `bijux-canon-index` before you inspect a specific trust
-surface.

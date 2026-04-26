@@ -102,8 +102,3 @@ evidence, reasoning turns it into inspectable claims and checks, agent
 coordinates multi-step work, and runtime decides what becomes durable and
 acceptable.
 
-## What You Get
-
-Open this page when you need the purpose, scope, vocabulary, lifecycle, and boundary
-route into `bijux-canon-reason` before you move on to structure, contracts,
-operations, or proof.

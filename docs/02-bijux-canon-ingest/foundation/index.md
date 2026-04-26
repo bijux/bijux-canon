@@ -99,7 +99,3 @@ to make source material predictable enough for downstream retrieval work to
 trust. If a proposal broadens ingest without making that preparation story
 clearer, the design has probably crossed the boundary rather than improved it.
 
-## What You Get
-
-Open this page when you need the boundary, language, and lifecycle route into
-`bijux-canon-ingest` before you move on to commands, structure, or proof.

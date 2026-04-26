@@ -99,8 +99,3 @@ produces inspectable content, agent coordination turns that into role-based and
 trace-backed workflow behavior, and runtime decides what becomes governed and
 durable.
 
-## What You Get
-
-This page gives you the purpose, scope, vocabulary, lifecycle, and boundary
-route into `bijux-canon-agent` before you move on to structure, contracts,
-operations, or proof.

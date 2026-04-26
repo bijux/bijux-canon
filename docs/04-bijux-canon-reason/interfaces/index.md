@@ -102,8 +102,3 @@ Open `Interfaces` to judge whether a dependency is defensible. In this package,
 the answer is not just “is there a function for it?” but also “can a reviewer
 trace the contract through commands, schemas, artifacts, examples, and tests?”
 
-## What You Get
-
-Open this page when you need the command, API, artifact, import, and
-compatibility route through `bijux-canon-reason` before you inspect a specific
-contract surface.

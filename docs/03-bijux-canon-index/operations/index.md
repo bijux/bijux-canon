@@ -106,8 +106,3 @@ the repository itself. If replay, validation, or recovery succeeds only because
 somebody remembers an undocumented backend trick, the operational story is not
 trustworthy yet.
 
-## What You Get
-
-Open this page when you need the setup, workflow, diagnostics, recovery, and
-release route through `bijux-canon-index` before you open a specific operating
-page.

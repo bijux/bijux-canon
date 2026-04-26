@@ -79,8 +79,3 @@ the real bar is whether prepared output remains deterministic, contract-aligned,
 and honest about its limits before any downstream package treats it as stable
 input.
 
-## What You Get
-
-Open this page when you need the proof, invariants, review, validation, and
-risk route through `bijux-canon-ingest` before you inspect a specific trust
-surface.

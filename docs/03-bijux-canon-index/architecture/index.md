@@ -104,8 +104,3 @@ can say which logic belongs to the domain, which belongs to workflow
 coordination, and which belongs to adapters. If that answer is blurry, the
 package is already accumulating architectural drift.
 
-## What You Get
-
-Open this page when you need the module, execution, state, seam, and risk
-route through `bijux-canon-index` before you inspect a specific architectural
-topic.

@@ -102,8 +102,3 @@ defensible. The bar is not only that a command exists, but that commands,
 schemas, traces, artifacts, examples, and tests all agree about what the
 orchestration surface really promises.
 
-## What You Get
-
-Open this page when you need the command, API, artifact, import, and
-compatibility route through `bijux-canon-agent` before you inspect a specific
-contract surface.

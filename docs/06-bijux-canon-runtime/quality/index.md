@@ -83,8 +83,3 @@ Open `Quality` to decide whether runtime has actually earned trust after a
 change. If one narrow green check hides a wider replay, persistence, contract,
 or validation gap, the work is not done yet.
 
-## What You Get
-
-Open this page when you need the tests, invariants, review, validation, and
-risk route through `bijux-canon-runtime` before you inspect a specific trust
-surface.

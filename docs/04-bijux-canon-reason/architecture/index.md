@@ -108,8 +108,3 @@ responsibilities, not a tangle of utilities. If a change blurs planning,
 evidence shaping, claim logic, verification, and traces into one layer, the
 design is getting weaker even if tests still pass.
 
-## What You Get
-
-Open this page when you need the module, dependency, execution, and
-durable-state route through `bijux-canon-reason` before you inspect a specific
-structural topic.

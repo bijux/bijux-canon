@@ -105,8 +105,3 @@ Open `Operations` when you need a maintainer path that can be repeated from the
 repository itself. If an ingest run only succeeds because somebody remembers an
 unstated trick, the workflow is not operationally trustworthy yet.
 
-## What You Get
-
-Open this page when you need the setup, workflow, diagnostics, recovery, and
-release route through `bijux-canon-ingest` before you open a specific
-operating page.

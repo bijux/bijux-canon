@@ -105,8 +105,3 @@ defend as the authority layer in the system. If the work makes the package
 broader without making that authority role clearer, stop and re-check the
 boundary before treating it as a local improvement.
 
-## What You Get
-
-Open this page when you need the purpose, scope, vocabulary, lifecycle, and boundary
-route into `bijux-canon-runtime` before you move on to structure, contracts,
-operations, or proof.
