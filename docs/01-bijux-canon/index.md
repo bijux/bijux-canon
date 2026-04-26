@@ -34,15 +34,15 @@ This handbook should answer three questions before a reviewer touches code:
 ```mermaid
 flowchart TD
     question["reader question"]
-    root{"does the question cross package boundaries?"}
-    package["open the owning package handbook"]
-    foundation["foundation pages<br/>scope, layout, ownership, language"]
-    operations["operations pages<br/>development, validation, release, review"]
-    maintain{"is it maintainer machinery?"}
-    compat{"is it a legacy name?"}
+    root{"cross-package concern?"}
+    package["owning package handbook"]
+    maintain{"maintainer machinery?"}
+    compat{"legacy name?"}
+    foundation["foundation pages"]
+    operations["operations pages"]
     devdocs["maintenance handbook"]
     compatdocs["compatibility handbook"]
-    proof["proof surface<br/>pyproject, mkdocs, apis, makes, workflows"]
+    proof["root proof surfaces"]
 
     question --> root
     root -- no --> package
@@ -54,17 +54,12 @@ flowchart TD
     compat -- no --> operations
     foundation --> proof
     operations --> proof
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef caution fill:#fff1f2,stroke:#dc2626,color:#6b1d1d;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class question,proof page;
-    class root,maintain,compat anchor;
-    class foundation,operations positive;
-    class package,devdocs,compatdocs action;
 ```
+
+The repository handbook is strongest when it routes quickly and then stops. It
+should make the shared root logic legible, show where package authority begins,
+and point to the concrete files that back the claim instead of trying to
+re-explain package behavior from above.
 
 ## Start Here
 
@@ -111,18 +106,6 @@ to move with it.
 - check `apis/` when the claim is about shared schema storage or compatibility review
 - check `packages/` when the question is whether the root is starting to blur a package boundary
 
-## Open This Handbook When
-
-- you are dealing with repository-wide seams rather than one package alone
-- you need shared workflow, schema, or governance context before changing code
-- you want the monorepo view that sits above the package handbooks
-
-## Open Another Handbook When
-
-- the answer depends mostly on one package's local behavior, imports, tests, or interfaces
-- you need workflow automation internals rather than root-facing guidance
-- the work is explicitly about a legacy name and migration path
-
 ## Cross-Package Anchors
 
 - `pyproject.toml` declares the workspace and package set
@@ -130,8 +113,8 @@ to move with it.
 - `Makefile`, `makes/`, and `.github/workflows/` carry root-level operations
 - `packages/` carries the canonical product boundaries the root must not blur
 
-## Bottom Line
+## Leave This Handbook When
 
-Use these pages to understand why the split exists, which rules stay shared,
-and where authority changes hands. Once the behavior is package-local, open
-the owning package handbook instead of keeping the explanation at the root.
+- the behavior is already local to one package's interfaces, workflows, or tests
+- the question is really about maintainer automation internals
+- the real work is a legacy-name migration rather than a root-owned rule
