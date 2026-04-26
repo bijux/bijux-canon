@@ -22,35 +22,35 @@ These compatibility pages should make legacy names understandable without romant
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Compatibility Packages<br/>clarifies: map old names | choose migration | judge retirement"]
+flowchart LR
+    legacyDist["Legacy distribution<br/>name in requirements"]
+    legacyImport["Legacy import<br/>name in code"]
+    legacyCommand["Legacy command<br/>name in scripts"]
+    compat["Compatibility packages<br/>preserve old entry names"]
+    catalog["Catalog pages<br/>identify the exact target"]
+    migration["Migration pages<br/>decide keep, migrate, or retire"]
+    canon["Canonical packages<br/>carry current behavior"]
+    newWork["New work starts here<br/>not in compatibility packages"]
+    retire["Retirement review<br/>removes no-longer-needed bridges"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    legacy1["command names"]
-    legacy1 --> page
-    legacy2["distribution names"]
-    legacy2 --> page
-    legacy3["import names"]
-    legacy3 --> page
-    canon1["current handbook surfaces"]
-    page --> canon1
-    canon2["current packages"]
-    page --> canon2
-    canon3["new work"]
-    page --> canon3
-    pressure1["migration pressure"]
-    pressure1 -.should shorten the life of.-> page
-    pressure2["retirement readiness"]
-    pressure2 -.should shorten the life of.-> page
-    pressure3["do not normalize the old name"]
-    pressure3 -.should shorten the life of.-> page
-    class page page;
-    class legacy1,legacy2,legacy3 caution;
-    class canon1,canon2,canon3 positive;
-    class pressure1,pressure2,pressure3 action;
+    legacyDist --> compat
+    legacyImport --> compat
+    legacyCommand --> compat
+    compat --> catalog
+    compat --> migration
+    catalog --> canon
+    migration --> canon
+    canon --> newWork
+    migration --> retire
+    class compat page;
+    class canon,newWork positive;
+    class legacyDist,legacyImport,legacyCommand caution;
+    class catalog,migration anchor;
+    class retire action;
 ```
 
 ## Sections

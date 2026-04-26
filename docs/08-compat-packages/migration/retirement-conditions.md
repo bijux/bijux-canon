@@ -21,34 +21,27 @@ These compatibility pages should make legacy names understandable without romant
 
 ```mermaid
 flowchart TB
-    page["Retirement Conditions<br/>clarifies: map old names | choose migration | judge retirement"]
+    evidence1["No supported consumers<br/>still depend on the old name"]
+    evidence2["Migration guidance has been published<br/>and used long enough to be credible"]
+    evidence3["Automation and packaging changes<br/>have been tested"]
+    gate["All retirement evidence is verified"]
+    retire["Approve retirement"]
+    wait["If any evidence is missing,<br/>keep the package temporarily and close the gap"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    legacy1["distribution names"]
-    legacy1 --> page
-    legacy2["import names"]
-    legacy2 --> page
-    legacy3["command names"]
-    legacy3 --> page
-    canon1["new work"]
-    page --> canon1
-    canon2["current handbook surfaces"]
-    page --> canon2
-    canon3["current packages"]
-    page --> canon3
-    pressure1["migration pressure"]
-    pressure1 -.should shorten the life of.-> page
-    pressure2["retirement readiness"]
-    pressure2 -.should shorten the life of.-> page
-    pressure3["do not normalize the old name"]
-    pressure3 -.should shorten the life of.-> page
-    class page page;
-    class legacy1,legacy2,legacy3 caution;
-    class canon1,canon2,canon3 positive;
-    class pressure1,pressure2,pressure3 action;
+    evidence1 --> gate
+    evidence2 --> gate
+    evidence3 --> gate
+    gate -- yes --> retire
+    gate -- no --> wait
+    class retire positive;
+    class evidence1 caution;
+    class evidence2 anchor;
+    class evidence3,gate page;
+    class wait action;
 ```
 
 ## Retirement Signals

@@ -22,34 +22,35 @@ These compatibility pages should make legacy names understandable without romant
 
 ```mermaid
 flowchart TB
-    page["Import Surfaces<br/>clarifies: map old names | choose migration | judge retirement"]
+    legacy1["agentic_flows"]
+    legacy2["bijux_agent"]
+    legacy3["bijux_rag"]
+    legacy4["bijux_rar"]
+    legacy5["bijux_vex"]
+    canon1["bijux_canon_runtime"]
+    canon2["bijux_canon_agent"]
+    canon3["bijux_canon_ingest"]
+    canon4["bijux_canon_reason"]
+    canon5["bijux_canon_index"]
+    note["Older code keeps importing<br/>the old module name during migration"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    legacy1["distribution names"]
-    legacy1 --> page
-    legacy2["import names"]
-    legacy2 --> page
-    legacy3["command names"]
-    legacy3 --> page
-    canon1["new work"]
-    page --> canon1
-    canon2["current handbook surfaces"]
-    page --> canon2
-    canon3["current packages"]
-    page --> canon3
-    pressure1["migration pressure"]
-    pressure1 -.should shorten the life of.-> page
-    pressure2["retirement readiness"]
-    pressure2 -.should shorten the life of.-> page
-    pressure3["do not normalize the old name"]
-    pressure3 -.should shorten the life of.-> page
-    class page page;
-    class legacy1,legacy2,legacy3 caution;
-    class canon1,canon2,canon3 positive;
-    class pressure1,pressure2,pressure3 action;
+    legacy1 --> canon1
+    legacy2 --> canon2
+    legacy3 --> canon3
+    legacy4 --> canon4
+    legacy5 --> canon5
+    note --> legacy1
+    note --> legacy2
+    note --> legacy3
+    note --> legacy4
+    note --> legacy5
+    class canon1,canon2,canon3,canon4,canon5 positive;
+    class legacy1,legacy2,legacy3,legacy4,legacy5 caution;
+    class note anchor;
 ```
 
 ## Current Import Roots
