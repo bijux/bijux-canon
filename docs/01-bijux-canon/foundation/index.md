@@ -27,27 +27,24 @@ package family from slow boundary drift.
 
 ```mermaid
 flowchart LR
-    intent["platform intent<br/>why split the system"]
-    scope["repository scope<br/>what the root may own"]
-    layout["workspace layout<br/>where ownership appears on disk"]
-    packages["package map<br/>how authority moves"]
-    language["domain language<br/>terms that keep reviews precise"]
-    decisions["decision rules<br/>how changes stay narrow"]
+    intent["platform intent"]
+    scope["repository scope"]
+    layout["workspace layout"]
+    packages["package map"]
+    language["domain language"]
+    decisions["decision rules"]
+    package["owning package handbook"]
+    blur["root creep"]
 
     intent --> scope --> layout --> packages --> language --> decisions
-    scope -. sends local behavior to .-> package["owning package handbook"]
-    decisions -. rejects .-> blur["root creep and vague ownership"]
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef caution fill:#fff1f2,stroke:#dc2626,color:#6b1d1d;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class intent page;
-    class scope,layout,packages,language,decisions positive;
-    class package action;
-    class blur caution;
+    scope --> package
+    decisions --> blur
 ```
+
+Foundation pages should help a reviewer defend the split out loud. They are not
+there to decorate the repository with theory. They exist to answer why the
+root owns anything at all, where that authority stops, and which terms or rules
+must stay stable if package boundaries are going to remain believable.
 
 ## Start Here
 
@@ -68,19 +65,6 @@ flowchart LR
 - [Documentation System](https://bijux.io/bijux-canon/01-bijux-canon/foundation/documentation-system/)
 - [Change Principles](https://bijux.io/bijux-canon/01-bijux-canon/foundation/change-principles/)
 - [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/)
-
-## Open This Section When
-
-- you can see the repository shape but still need the design reason behind it
-- you need to decide whether work belongs at the root or in a package
-- you want the shortest route to the repository's enduring design logic
-
-## Open Another Section When
-
-- the real question is already about validation commands, release flow, or
-  shared automation
-- you need one package's interfaces, workflows, or tests instead of root logic
-- you are already in maintainer-only workflow territory
 
 ## Concrete Anchors
 
@@ -104,8 +88,8 @@ proposal simplifies one local task only by making ownership boundaries harder
 to explain, the proposal is weakening the repository even if it reduces
 short-term friction.
 
-## Bottom Line
+## Leave This Section When
 
-Open these pages when the question is why the root owns anything at all. Leave
-them when the answer has narrowed to one package contract, one workflow, or one
-proof surface.
+- the question has narrowed to one package contract, workflow, or proof surface
+- the concern is operational enforcement rather than repository intent
+- the issue lives in maintainer-only automation instead of root-owned design logic
