@@ -14,7 +14,7 @@ or replay workflow depends on them.
 
 That means artifacts are not just outputs. They are promises about names,
 layout, or semantics that downstream readers may already rely on. This page
-should make those promises visible.
+makes those promises visible.
 
 Treat the interfaces pages for `bijux-canon-agent` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
 

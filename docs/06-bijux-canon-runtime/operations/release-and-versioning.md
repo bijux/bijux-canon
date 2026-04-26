@@ -13,10 +13,10 @@ Release work for `bijux-canon-runtime` depends on package metadata, tracked rele
 the repository's commit conventions.
 
 The release path is part of the product story because it determines how readers
-learn what changed and what stayed stable. This page should make package-local
+learn what changed and what stayed stable. This page makes package-local
 release mechanics understandable without separating them from repository rules.
 
-Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Visual Summary
 

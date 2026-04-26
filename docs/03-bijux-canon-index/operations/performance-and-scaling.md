@@ -15,7 +15,7 @@ This page keeps optimization work honest. A package is not healthier if it gets
 faster by becoming harder to reason about, harder to replay, or easier to break
 for downstream readers.
 
-Treat the operations pages for `bijux-canon-index` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Treat the operations pages for `bijux-canon-index` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Visual Summary
 

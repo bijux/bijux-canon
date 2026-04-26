@@ -9,12 +9,12 @@ last_reviewed: 2026-04-04
 
 # Observability and Diagnostics
 
-Diagnostics should make it easier to explain what `bijux-canon-reason` did, not merely that it ran.
+Diagnostics make it easier to explain what `bijux-canon-reason` did, not merely that it ran.
 
 Good diagnostics shorten both incidents and reviews. They give maintainers a
 way to connect visible outputs back to the package behavior that produced them.
 
-Treat the operations pages for `bijux-canon-reason` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Treat the operations pages for `bijux-canon-reason` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Visual Summary
 

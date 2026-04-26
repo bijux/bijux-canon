@@ -15,7 +15,7 @@ last_reviewed: 2026-04-04
 - `bijux-rar` maps to `bijux-canon-reason`
 - `bijux-vex` maps to `bijux-canon-index`
 
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
+These compatibility pages make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
 ## Visual Summary
 

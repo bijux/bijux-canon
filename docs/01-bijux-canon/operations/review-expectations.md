@@ -13,8 +13,8 @@ Repository review should be sharper at the root than it is in purely local code.
 
 The reason is simple: root changes alter how the whole package family is built,
 read, verified, or released. That means a “small” root edit can carry wider
-consequences than a larger package-local edit. Review expectations should make
-that pressure visible.
+consequences than a larger package-local edit. Review expectations make that
+pressure visible.
 
 ## Root Review Expectations
 

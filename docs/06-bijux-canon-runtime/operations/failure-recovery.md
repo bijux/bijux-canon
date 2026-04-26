@@ -15,7 +15,7 @@ This page helps a maintainer stabilize the situation before trying to improve
 it. The first question is not always how to fix the bug; it is how to locate
 the right evidence quickly.
 
-Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Visual Summary
 

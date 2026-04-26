@@ -16,7 +16,7 @@ canonical replacement.
 Thinness is the design goal here. These packages should preserve a path, not
 become a parallel product line with its own growing surface area.
 
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
+These compatibility pages make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
 ## Visual Summary
 

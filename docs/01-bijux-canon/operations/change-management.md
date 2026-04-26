@@ -9,7 +9,7 @@ last_reviewed: 2026-04-09
 
 # Change Management
 
-The repository should make change easier to reason about, not easier to hide.
+The repository makes change easier to reason about, not easier to hide.
 
 Change management here means keeping cross-package work understandable over
 time. That includes how diffs are split, how release-facing effects are made

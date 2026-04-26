@@ -15,7 +15,7 @@ This page keeps safety work concrete. A useful security discussion starts from
 the actual interfaces, artifacts, and authority the package holds, not from
 generic caution language detached from the codebase.
 
-Treat the operations pages for `bijux-canon-agent` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Treat the operations pages for `bijux-canon-agent` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Visual Summary
 

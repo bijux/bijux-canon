@@ -13,7 +13,7 @@ Release-facing make behavior should be visible before it is triggered from CI.
 
 The repository keeps release-related make logic in places such as
 `makes/publish.mk`, `makes/bijux-py/repository/publish.mk`, and the build and
-sbom fragments that shape artifact creation. These surfaces should make release
+sbom fragments that shape artifact creation. These surfaces make release
 behavior understandable outside the workflow YAML that eventually invokes them.
 
 ## Release Anchors

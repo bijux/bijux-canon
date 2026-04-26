@@ -18,7 +18,7 @@ dependency hardens around the wrong surface.
 
 Runtime contracts matter because this package exposes governed execution and
 replay surfaces that other packages, tools, and reviewers may treat as
-authoritative. This section should make it obvious which commands, schemas,
+authoritative. This section makes it obvious which commands, schemas,
 artifacts, and imports are real promises.
 
 ## Visual Summary

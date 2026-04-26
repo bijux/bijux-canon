@@ -15,7 +15,7 @@ The point of this page is to protect the idea that packages are publishable
 units. Even inside a monorepo, deployment assumptions should stay narrow enough
 that the package can still be understood and operated as its own surface.
 
-Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Visual Summary
 

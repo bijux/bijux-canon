@@ -17,7 +17,7 @@ A compatibility release should feel justified, narrow, and temporary. If the
 release story starts sounding like ordinary feature delivery, the layer is
 drifting away from its purpose.
 
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
+These compatibility pages make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
 
 ## Visual Summary
 

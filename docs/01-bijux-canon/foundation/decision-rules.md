@@ -9,7 +9,7 @@ last_reviewed: 2026-04-09
 
 # Decision Rules
 
-The root should make decisions easier, not more political.
+The root makes decisions easier, not more political.
 
 This page turns the repository philosophy into a small set of routing rules. A
 reader should be able to use these rules when a change proposal feels plausible

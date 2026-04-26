@@ -15,7 +15,7 @@ This page makes those paths familiar and repeatable. Readers should not have
 to rediscover the same workflow from scratch every time they debug, extend, or
 review the package.
 
-Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
+Treat the operations pages for `bijux-canon-runtime` as the package's explicit operating memory. They make common tasks repeatable without relearning the workflow from logs or oral history.
 
 ## Visual Summary
 

@@ -101,7 +101,7 @@ flowchart TB
 
 ## Why Use Architecture
 
-`Architecture` should make the agent package readable as a control flow with
+`Architecture` makes the agent package readable as a control flow with
 named responsibilities. If interfaces, pipeline logic, role agents, and trace
 handling start blending together, the orchestration story gets harder to trust
 even before tests fail.

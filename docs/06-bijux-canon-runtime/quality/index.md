@@ -13,7 +13,7 @@ Open this section to understand how `bijux-canon-runtime` earns trust: which
 proof surfaces matter, which risks stay visible, and what done should mean
 after a real change.
 
-These pages explain the proof story for `bijux-canon-runtime`. They should make
+These pages explain the proof story for `bijux-canon-runtime`. They make
 trust, skepticism, and review pressure visible enough that passing checks do
 not get mistaken for sufficient evidence.
 

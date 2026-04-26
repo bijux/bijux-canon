@@ -19,7 +19,7 @@ relying on CI archaeology or private habits.
 
 Runtime operations are high-consequence because replay stores, verification
 policy, and durable traces can turn a sloppy rerun into a misleading record.
-This section should show how to operate the package carefully, not merely how
+This section shows how to operate the package carefully, not merely how
 to invoke it.
 
 ## Visual Summary

@@ -10,13 +10,15 @@ last_reviewed: 2026-04-04
 # Module Map
 
 The architecture of `bijux-canon-index` becomes readable when its major module
-groups are treated as responsibilities instead of as folders. This page should
-help a reviewer move from a question about behavior to the part of the package
-most likely to answer it.
+groups are treated as responsibilities instead of as folders. This page helps a
+reviewer move from a question about behavior to the part of the package most
+likely to answer it.
 
 When this page is useful, code reading becomes targeted rather than exploratory.
 
-Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map
+of structure and flow. They shorten code reading instead of trying to replace
+it.
 
 ## Visual Summary
 
