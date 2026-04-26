@@ -74,7 +74,7 @@ flowchart LR
 
 Use this page when the main need is understanding how the canonical packages
 fit together. If the answer depends mostly on one package's local behavior,
-move to that package handbook instead of stretching the repository overview
+open that package handbook instead of stretching the repository overview
 past its boundary.
 
 ## What This Page Answers
@@ -96,7 +96,7 @@ code, schemas, and tests still provide the detailed proof.
 
 ## Next Checks
 
-- move to the owning package docs when the question stops being repository-wide
+- open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
 - use the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
   through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` when the

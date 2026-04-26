@@ -61,7 +61,7 @@ flowchart LR
 ## Decision Rule
 
 Use this page when local work spans packages, schemas, or root automation. If
-the question stays inside one package's local setup or behavior, move to that
+the question stays inside one package's local setup or behavior, open that
 package handbook instead.
 
 ## What This Page Answers
@@ -84,7 +84,7 @@ and package handbooks.
 
 ## Next Checks
 
-- move to the owning package docs when the question stops being repository-wide
+- open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about automation or drift tooling

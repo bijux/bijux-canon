@@ -70,7 +70,7 @@ than an identified dependent environment, plan migration or retirement instead.
 ## What This Page Answers
 
 - which legacy surfaces are still preserved
-- when new work should move to the canonical packages instead
+- when new work should open the canonical packages instead
 - what evidence would justify retiring a compatibility package
 
 ## Reviewer Lens
@@ -81,7 +81,7 @@ than an identified dependent environment, plan migration or retirement instead.
 
 ## Next Checks
 
-- move to the canonical package docs once the current target package is known:
+- open the canonical package docs once the current target package is known:
   `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
   `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
   `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,

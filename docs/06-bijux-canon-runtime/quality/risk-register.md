@@ -81,9 +81,9 @@ This page explains how `bijux-canon-runtime` is supposed to earn trust, but it d
 
 ## Next Checks
 
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
+- open foundation when the risk appears to be boundary confusion rather than missing tests
+- open architecture when the proof gap points to structural drift
+- open interfaces or operations when the proof question is really about a contract or workflow
 
 ## Purpose
 

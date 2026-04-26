@@ -90,7 +90,7 @@ and tests still define the details on the package side of that boundary.
 
 ## Next Checks
 
-- move to the owning package docs when the question stops being repository-wide
+- open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about automation or drift tooling

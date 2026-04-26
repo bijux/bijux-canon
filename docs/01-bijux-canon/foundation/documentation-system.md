@@ -85,7 +85,7 @@ flowchart TB
 ## Decision Rule
 
 Use this page when the main question is where a topic belongs in the published
-handbook. If the answer depends mostly on one package's local behavior, move to
+handbook. If the answer depends mostly on one package's local behavior, open
 that package handbook instead of expanding repository pages past their boundary.
 
 ## What This Page Answers
@@ -107,7 +107,7 @@ tests, or release assets as proof.
 
 ## Next Checks
 
-- move to the owning package docs when the question stops being repository-wide
+- open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the root issue is really about automation or drift tooling

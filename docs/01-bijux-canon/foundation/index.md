@@ -77,7 +77,7 @@ flowchart LR
 ## Read Across The Repository
 
 - open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) when you need to run, validate, release, or review shared work
-- move to the owning product handbook when a boundary question resolves into one package's local behavior
+- open the owning product handbook when a boundary question resolves into one package's local behavior
 - open the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the issue is repository-health automation rather than repository intent
 
 ## Design Pressure

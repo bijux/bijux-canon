@@ -89,7 +89,7 @@ are the referenced files, workflows, schemas, and checks.
 
 ## Next Checks
 
-- move to the owning package docs when the question stops being repository-wide
+- open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the root issue is really about automation or drift tooling

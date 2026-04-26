@@ -65,7 +65,7 @@ flowchart LR
 
 Use this page when the main question is whether a change belongs in maintainer
 automation or in a product package contract. If the change would affect
-end-user behavior directly, move to the owning product package instead of
+end-user behavior directly, open the owning product package instead of
 letting maintainer scope sprawl.
 
 ## What This Page Answers
@@ -82,7 +82,7 @@ letting maintainer scope sprawl.
 
 ## Next Checks
 
-- move to the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
+- open the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
   through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
   question is user-facing behavior rather than repository health
 - open the relevant helper module or test after using this page to orient yourself

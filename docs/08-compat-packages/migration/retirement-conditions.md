@@ -69,7 +69,7 @@ close the gap instead of guessing.
 ## What This Page Answers
 
 - which retirement signals need to be verified
-- when new work should move to the canonical package instead
+- when new work should open the canonical package instead
 - what evidence would justify removing a compatibility package
 
 ## Reviewer Lens
@@ -80,7 +80,7 @@ close the gap instead of guessing.
 
 ## Next Checks
 
-- move to the canonical package docs once the current target package is known:
+- open the canonical package docs once the current target package is known:
   `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
   `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
   `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,

@@ -72,7 +72,7 @@ Use `Release Policy` to decide whether a preserved legacy name is still serving 
 ## What This Page Answers
 
 - which legacy surface is still preserved
-- when new work should move to the canonical package instead
+- when new work should open the canonical package instead
 - what evidence would justify retiring a compatibility package
 
 ## Reviewer Lens
@@ -83,7 +83,7 @@ Use `Release Policy` to decide whether a preserved legacy name is still serving 
 
 ## Next Checks
 
-- move to the canonical package docs once the current target package is known
+- open the canonical package docs once the current target package is known
 - inspect compatibility package metadata if the question is about what remains preserved
 - use this section again only when evaluating migration progress or retirement readiness
 

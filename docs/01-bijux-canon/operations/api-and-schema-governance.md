@@ -66,7 +66,7 @@ flowchart LR
 ## Decision Rule
 
 Use this page when a contract spans packages, schemas, and shared review
-workflow. If the answer depends mostly on one package's local behavior, move to
+workflow. If the answer depends mostly on one package's local behavior, open
 that package handbook instead of treating the repository root as a second
 owner.
 
@@ -89,7 +89,7 @@ backstops are the referenced files, workflows, schemas, and checks.
 
 ## Next Checks
 
-- move to the owning package docs when the question stops being repository-wide
+- open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the root issue is really about automation or drift tooling

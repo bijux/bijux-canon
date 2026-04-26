@@ -80,9 +80,9 @@ This page can identify the intended public surfaces of `bijux-canon-reason`, but
 
 ## Next Checks
 
-- move to `https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/` when the caller-facing question becomes procedural or environmental
-- move to `https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/` when compatibility or evidence of protection becomes the real issue
-- move to `https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/` when a public-surface question reveals a deeper structural drift
+- open `https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/` when the caller-facing question becomes procedural or environmental
+- open `https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/` when compatibility or evidence of protection becomes the real issue
+- open `https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/` when a public-surface question reveals a deeper structural drift
 
 ## Purpose
 

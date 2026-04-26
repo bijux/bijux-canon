@@ -69,7 +69,7 @@ when it is about the workspace itself.
 ## Decision Rule
 
 Use this page when the main question is where a repository concern lives in the
-tree. If the answer depends mostly on one package's internal layout, move to
+tree. If the answer depends mostly on one package's internal layout, open
 that package handbook instead.
 
 ## What This Page Answers
@@ -91,7 +91,7 @@ handbooks still define the detailed behavior inside each area.
 
 ## Next Checks
 
-- move to the owning package docs when the question stops being repository-wide
+- open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about automation or drift tooling

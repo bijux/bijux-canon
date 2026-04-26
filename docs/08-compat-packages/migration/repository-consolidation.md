@@ -29,8 +29,8 @@ The consolidated source of truth for all of them is now:
 
 ## What Should Change
 
-- dependency declarations should move to the canonical `bijux-canon-*` package
-- import paths should move to the canonical Python package names
+- dependency declarations should open the canonical `bijux-canon-*` package
+- import paths should open the canonical Python package names
 - links in docs, issue templates, and onboarding material should point to
   `bijux-canon` rather than the retired standalone repositories
 

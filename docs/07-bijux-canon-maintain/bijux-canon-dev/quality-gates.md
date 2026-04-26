@@ -57,7 +57,7 @@ flowchart LR
 
 Use this page when the main question is how repository-wide quality checks are
 implemented and reviewed. If the change would affect end-user behavior
-directly, move to the owning product package instead.
+directly, open the owning product package instead.
 
 ## What This Page Answers
 
@@ -73,7 +73,7 @@ directly, move to the owning product package instead.
 
 ## Next Checks
 
-- move to the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
+- open the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
   through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
   question is user-facing behavior rather than repository health
 - open the relevant helper module or test after using this page to orient yourself

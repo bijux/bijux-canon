@@ -65,7 +65,7 @@ maintainer can understand them years later without opening the diff first.
 
 Use this page when release behavior depends on root conventions, shared
 workflows, or version metadata that spans packages. If the answer depends
-mostly on one package's local release behavior, move to that package handbook
+mostly on one package's local release behavior, open that package handbook
 instead.
 
 ## What This Page Answers
@@ -87,7 +87,7 @@ metadata, or package-local release proof.
 
 ## Next Checks
 
-- move to the owning package docs when the question stops being repository-wide
+- open the owning package docs when the question stops being repository-wide
 - check root files, schemas, or workflows named here before trusting prose alone
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about release automation or drift tooling

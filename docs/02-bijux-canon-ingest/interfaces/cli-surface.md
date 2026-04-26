@@ -75,9 +75,9 @@ This page can identify the intended public surfaces of `bijux-canon-ingest`, but
 
 ## Next Checks
 
-- move to `https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/` when the caller-facing question becomes procedural or environmental
-- move to `https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/` when compatibility or evidence of protection becomes the real issue
-- move to `https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/` when a public-surface question reveals a deeper structural drift
+- open `https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/` when the caller-facing question becomes procedural or environmental
+- open `https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/` when compatibility or evidence of protection becomes the real issue
+- open `https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/` when a public-surface question reveals a deeper structural drift
 
 ## Purpose
 

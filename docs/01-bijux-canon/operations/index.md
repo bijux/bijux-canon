@@ -83,7 +83,7 @@ flowchart LR
 
 - open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) when an operational problem is really a boundary problem
 - open the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the next step is workflow implementation, drift tooling, or maintainer helper code
-- move to the owning package handbook when the operation is no longer truly shared
+- open the owning package handbook when the operation is no longer truly shared
 
 ## Operational Standard
 

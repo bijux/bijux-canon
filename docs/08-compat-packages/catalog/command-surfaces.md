@@ -94,7 +94,7 @@ than an identified dependent environment, plan migration or retirement instead.
 
 ## Next Checks
 
-- move to the canonical package docs once the current target package is known:
+- open the canonical package docs once the current target package is known:
   `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
   `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
   `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,
