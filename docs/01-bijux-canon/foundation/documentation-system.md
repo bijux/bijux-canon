@@ -112,11 +112,3 @@ tests, or release assets as proof.
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the root issue is really about automation or drift tooling
 
-## Purpose
-
-This page maps the published handbook so readers can route a question to the
-right section quickly.
-
-## Stability
-
-Keep this page aligned with the actual docs tree and the layout rules enforced by this documentation catalog.

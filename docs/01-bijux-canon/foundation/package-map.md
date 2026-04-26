@@ -120,11 +120,3 @@ schemas, and tests still provide the detailed proof.
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about automation or drift tooling
 
-## Purpose
-
-This page lets a reader see the whole system shape from one place before diving
-into package-local detail.
-
-## Stability
-
-Update this page only when package ownership changes, not for ordinary internal refactors.

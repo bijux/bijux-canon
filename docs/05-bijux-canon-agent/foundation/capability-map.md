@@ -101,10 +101,3 @@ This page can explain the intended boundary of `bijux-canon-agent`, but it canno
 - open interfaces when the question becomes contract-facing
 - open quality when the question becomes proof or review sufficiency
 
-## Purpose
-
-This page helps a reader quickly map package claims to code areas.
-
-## Stability
-
-Keep it aligned with the real package modules and generated outputs.

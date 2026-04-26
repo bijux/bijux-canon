@@ -95,10 +95,3 @@ and tests still define the details on the package side of that boundary.
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about automation or drift tooling
 
-## Purpose
-
-This page keeps the repository from becoming a vague catch-all layer above the packages.
-
-## Stability
-
-Update this page only when ownership truly moves between the repository and one of the packages.

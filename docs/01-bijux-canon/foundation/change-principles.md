@@ -42,12 +42,3 @@ maintenance shadow if it weakens the ownership model.
 - the proof surfaces move together with the explanation
 - the resulting tree is more teachable to a new reader than it was before
 
-## Purpose
-
-This page records the principles that should guide repository-wide changes when
-shared boundaries, names, or governance are involved.
-
-## Stability
-
-Update these principles only when the repository operating model changes in a
-real way.

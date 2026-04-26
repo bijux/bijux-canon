@@ -40,12 +40,3 @@ most recently.
 - a maintainer script begins to encode product behavior
 - compatibility logic is treated as if it were the preferred package surface
 
-## Purpose
-
-This page gives maintainers durable decision rules for routing work to the
-right repository layer.
-
-## Stability
-
-Keep these rules aligned with how authority is actually divided across the
-repository.

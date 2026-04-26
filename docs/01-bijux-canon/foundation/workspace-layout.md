@@ -96,10 +96,3 @@ handbooks still define the detailed behavior inside each area.
 - use the maintainer handbook at `https://bijux.io/bijux-canon/07-bijux-canon-maintain/`
   when the issue is really about automation or drift tooling
 
-## Purpose
-
-This page provides the shortest file-system map for the repository.
-
-## Stability
-
-Keep this page aligned with the real root directories and remove any mention of retired roots.

@@ -93,10 +93,3 @@ This page shows the intended boundary of `bijux-canon-runtime`, but it cannot pr
 - open interfaces when the question becomes contract-facing
 - open quality when the question becomes proof or review sufficiency
 
-## Purpose
-
-This page shows which surrounding tools and packages `bijux-canon-runtime` depends on to do its job.
-
-## Stability
-
-Keep it aligned with `pyproject.toml` and the actual package seams.

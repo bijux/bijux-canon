@@ -46,12 +46,3 @@ When names are stable, reviewers can move from a discussion to a file or a
 test quickly. When names are unstable, every change starts with translation
 work instead of understanding.
 
-## Purpose
-
-This page records the vocabulary that should remain consistent across docs,
-code, metadata, and review conversations.
-
-## Stability
-
-Change this page only when the repository meaning of a term actually changes,
-not when a new wording happens to sound fashionable.

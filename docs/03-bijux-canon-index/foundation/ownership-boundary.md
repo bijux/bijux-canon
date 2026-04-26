@@ -93,10 +93,3 @@ This page shows the intended boundary of `bijux-canon-index`, but it cannot prov
 - open interfaces when the question becomes contract-facing
 - open quality when the question becomes proof or review sufficiency
 
-## Purpose
-
-This page ties package ownership to concrete directories instead of abstract slogans.
-
-## Stability
-
-Keep it aligned with the current module layout.

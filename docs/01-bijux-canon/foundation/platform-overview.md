@@ -102,11 +102,3 @@ code, schemas, and tests still provide the detailed proof.
   through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` when the
   question narrows to one package
 
-## Purpose
-
-This page gives the shortest description of what the repository is and why it
-is organized as a monorepo rather than a single distribution.
-
-## Stability
-
-Keep this page aligned with the real package set and the root-level automation that currently exists in the repository.

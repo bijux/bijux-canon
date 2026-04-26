@@ -47,12 +47,3 @@ never convenience.
   document
 - is maintainer tooling clarifying package truth or quietly overriding it
 
-## Purpose
-
-This page names the ownership layers that keep repository rules, product code,
-maintainer tooling, and compatibility work from blurring together.
-
-## Stability
-
-Update this page only when authority genuinely moves between the repository,
-the canonical packages, the maintenance layer, or the compatibility layer.

@@ -88,10 +88,3 @@ This page shows the intended boundary of `bijux-canon-runtime`, but it cannot pr
 - open interfaces when the question becomes contract-facing
 - open quality when the question becomes proof or review sufficiency
 
-## Purpose
-
-This page shows the package-specific contribution posture.
-
-## Stability
-
-Update these principles only when the package operating model truly changes.
