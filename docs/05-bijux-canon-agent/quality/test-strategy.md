@@ -4,61 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Test Strategy
 
-The tests for `bijux-canon-agent` are the executable proof of its package contract.
+The test strategy for `bijux-canon-agent` should show how executable evidence is supposed to defend workflow and trace behavior. A pile of checks is not yet a strategy unless it says what each layer proves.
 
-This page helps readers see the broad proof shape of the package rather
-than treating the test tree like a bag of unrelated checks. A good strategy page
-explains why these tests exist, not just where they live.
+## What To Check
 
-The quality pages show how trust is earned and where skepticism still belongs.
+- separate fast local checks from broader contract or regression checks
+- tie each test layer back to a real package promise
+- treat green checks that miss the main risk as false reassurance
 
-## Test Areas
+## First Proof Check
 
-- tests/unit for local behavior and utility coverage
-- tests/integration and tests/e2e for end-to-end workflow behavior
-- tests/invariants for package promises that should not drift
-- tests/api for HTTP-facing validation
+- `tests` and package-local validation surfaces for executable evidence
+- caller-facing docs, limits, and risks for the trust story readers actually receive
+- release notes and change records when the work alters what others may safely assume
 
-## Concrete Anchors
+## Bottom Line
 
-- tests/unit for local behavior and utility coverage
-- tests/integration and tests/e2e for end-to-end workflow behavior
-- README.md
-
-## Open This Page When
-
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
-
-## Decision Rule
-
-Use `Test Strategy` to decide whether `bijux-canon-agent` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
-
-## What You Can Resolve Here
-
-- what currently proves the `bijux-canon-agent` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
-
-## Review Focus
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Limits
-
-Tests, checks, and review practice remain the proof for this package. If they drift, this page is wrong.
-
-## Read Next
-
-- open foundation when the risk appears to be boundary confusion rather than missing tests
-- open architecture when the proof gap points to structural drift
-- open interfaces or operations when the proof question is really about a contract or workflow
-
+If `bijux-canon-agent` cannot explain why `workflow and trace behavior` should be trusted after a change, the quality work is still incomplete.

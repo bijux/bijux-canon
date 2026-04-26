@@ -4,60 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Known Limitations
 
-No package is improved by pretending its limitations do not exist.
+Known limitations keep `bijux-canon-ingest` credible by naming what it does not promise. Trust improves when limits are explicit enough that readers do not have to discover them the hard way.
 
-This page protects credibility by keeping the current limits visible. Readers
-should be able to tell what the package does not promise without mining issue
-threads or learning the hard way in production.
+## What To Check
 
-The quality pages show how trust is earned and where skepticism still belongs.
+- name the limits that still affect prepared ingest behavior
+- separate honest limits from temporary bugs or one-off breakages
+- treat omitted limitations as quality debt because they mislead callers about trust boundaries
 
-## Honest Boundaries
+## First Proof Check
 
-- runtime-wide replay authority and persistence
-- cross-package vector execution semantics
-- repository maintenance automation
+- `tests` and package-local validation surfaces for executable evidence
+- caller-facing docs, limits, and risks for the trust story readers actually receive
+- release notes and change records when the work alters what others may safely assume
 
-## Concrete Anchors
+## Bottom Line
 
-- tests/unit for module-level behavior across processing, retrieval, and interfaces
-- tests/e2e for package boundary coverage
-- README.md
-
-## Open This Page When
-
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
-
-## Decision Rule
-
-Use `Known Limitations` to decide whether `bijux-canon-ingest` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
-
-## What You Can Resolve Here
-
-- what currently proves the `bijux-canon-ingest` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
-
-## Review Focus
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Limits
-
-Tests, checks, and review practice remain the proof for `bijux-canon-ingest`. If they drift, this page is wrong.
-
-## Read Next
-
-- open foundation when the risk appears to be boundary confusion rather than missing tests
-- open architecture when the proof gap points to structural drift
-- open interfaces or operations when the proof question is really about a contract or workflow
-
+If `bijux-canon-ingest` cannot explain why `prepared ingest behavior` should be trusted after a change, the quality work is still incomplete.
