@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # gh-workflows
 
-The workflow section explains the GitHub Actions entrypoints and reusable
+Use this section to understand the GitHub Actions entrypoints and reusable
 building blocks that verify, release, and document the repository.
 
 The top-level entrypoints are `verify.yml` for pushes and pull requests,
@@ -40,14 +40,14 @@ flowchart TB
     release --> reusable
 ```
 
-## Pages in This Section
+## Pages In gh-workflows
 
-- [verify](verify.md)
-- [reusable-workflows](reusable-workflows.md)
-- [deploy-docs](deploy-docs.md)
-- [release-workflows](release-workflows.md)
+- [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/)
+- [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/)
+- [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/)
+- [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/)
 
-## Use This Section When
+## Use gh-workflows When
 
 - the concern is about workflow triggers, job trees, or reusable workflow
   composition
@@ -56,22 +56,22 @@ flowchart TB
 - the answer should come from checked-in workflow contracts rather than CI
   folklore
 
-## Do Not Use This Section When
+## Move On When
 
 - the question is about Make target routing rather than GitHub Actions
 - the issue belongs to one product package contract instead of repository
   automation
 - you only need maintainer helper code rather than workflow entrypoints
 
-## Choose The Next Page By Question
+## Choose A Page
 
-- open [verify](verify.md) when the concern starts from pull request or push
+- use [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/) when the concern starts from pull request or push
   verification
-- open [deploy-docs](deploy-docs.md) when the concern is docs publication from
+- use [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/) when the concern is docs publication from
   `main`
-- open [release-workflows](release-workflows.md) when the concern is tag-driven
+- use [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/) when the concern is tag-driven
   publication
-- open [reusable-workflows](reusable-workflows.md) when the key question is job
+- use [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/) when the key question is job
   reuse or nested workflow composition
 
 ## Concrete Anchors
