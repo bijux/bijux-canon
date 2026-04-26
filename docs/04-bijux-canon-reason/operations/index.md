@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Use this section when the question is procedural: how to install
+Open this section when the question is procedural: how to install
 `bijux-canon-reason`, run CLI or API flows, inspect replayable artifacts,
 diagnose failures, and release the package without depending on team memory.
 
@@ -96,11 +96,12 @@ flowchart LR
 
 ## Why Use Operations
 
-Use `Operations` to find procedures a maintainer can repeat and defend. If a
+Open `Operations` to find procedures a maintainer can repeat and defend. If a
 workflow cannot explain how it produces inspectable traces, replayable output,
 or diagnosable failures, it is not ready to be trusted as operating memory.
 
 ## What You Get
 
-This page gives you the setup, execution, diagnostics, release, and safety
-route through `bijux-canon-reason` before you open a specific operating page.
+Open this page when you need the setup, execution, diagnostics, release, and
+safety route through `bijux-canon-reason` before you open a specific operating
+page.

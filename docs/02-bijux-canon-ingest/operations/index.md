@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Use this section when you need to run ingest work repeatably: installing the
+Open this section when you need to run ingest work repeatably: installing the
 package, validating local changes, diagnosing output drift, and releasing or
 recovering without relying on private team habits.
 
@@ -101,11 +101,12 @@ flowchart LR
 
 ## Why Use Operations
 
-Use `Operations` when you need a maintainer path that can be repeated from the
+Open `Operations` when you need a maintainer path that can be repeated from the
 repository itself. If an ingest run only succeeds because somebody remembers an
 unstated trick, the workflow is not operationally trustworthy yet.
 
 ## What You Get
 
-This page gives you the setup, workflow, diagnostics, recovery, and release
-route through `bijux-canon-ingest` before you open a specific operating page.
+Open this page when you need the setup, workflow, diagnostics, recovery, and
+release route through `bijux-canon-ingest` before you open a specific
+operating page.

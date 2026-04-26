@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Use this section when you need to run index work repeatably: installing the
+Open this section when you need to run index work repeatably: installing the
 package, building or replaying retrieval state, diagnosing backend drift, and
 releasing safely from checked-in instructions.
 
@@ -101,12 +101,13 @@ flowchart LR
 
 ## Why Use Operations
 
-Use `Operations` when you need a retrieval workflow that can be repeated from
+Open `Operations` when you need a retrieval workflow that can be repeated from
 the repository itself. If replay, validation, or recovery succeeds only because
 somebody remembers an undocumented backend trick, the operational story is not
 trustworthy yet.
 
 ## What You Get
 
-This page gives you the setup, workflow, diagnostics, recovery, and release
-route through `bijux-canon-index` before you open a specific operating page.
+Open this page when you need the setup, workflow, diagnostics, recovery, and
+release route through `bijux-canon-index` before you open a specific operating
+page.

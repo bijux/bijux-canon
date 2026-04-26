@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Operations
 
-Use this section when the question is procedural: how to install
+Open this section when the question is procedural: how to install
 `bijux-canon-agent`, run orchestrated flows, inspect traces, diagnose provider
 or pipeline failures, and release the package without depending on private team
 habits.
@@ -97,12 +97,13 @@ flowchart LR
 
 ## Why Use Operations
 
-Use `Operations` to find workflows a maintainer can rerun and defend. If a
+Open `Operations` to find workflows a maintainer can rerun and defend. If a
 procedure cannot show how it leaves behind inspectable traces, diagnosable
 failures, and reviewable outputs, it is not ready to serve as the package’s
 operating memory.
 
 ## What You Get
 
-This page gives you the setup, execution, diagnostics, release, and safety
-route through `bijux-canon-agent` before you open a specific operating page.
+Open this page when you need the setup, execution, diagnostics, release, and
+safety route through `bijux-canon-agent` before you open a specific operating
+page.
