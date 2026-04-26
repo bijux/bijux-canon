@@ -19,26 +19,34 @@ orchestration, and runtime authority from collapsing into one vague layer.
 
 ```mermaid
 flowchart LR
-    raw["raw source<br/>messy, contextual, ambiguous"]
-    prepared["prepared material<br/>normalized, chunked, stable"]
-    retrieved["retrieval result<br/>scored, traced, provenance-rich"]
-    claims["reasoning artifact<br/>claims, checks, evidence links"]
-    trace["agent trace<br/>ordered roles, steps, decisions"]
-    verdict["runtime verdict<br/>accepted, rejected, replayable"]
+    raw["raw source"]
+    prepared["prepared material"]
+    retrieved["retrieval result"]
+    claims["reasoning artifact"]
+    trace["agent trace"]
+    verdict["runtime verdict"]
+    maintain["maintenance handbook"]
+    compat["compatibility handbook"]
 
     raw -->|bijux-canon-ingest| prepared
     prepared -->|bijux-canon-index| retrieved
     retrieved -->|bijux-canon-reason| claims
     claims -->|bijux-canon-agent| trace
     trace -->|bijux-canon-runtime| verdict
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class raw page;
-    class prepared,retrieved,claims,trace positive;
-    class verdict action;
+    maintain --> verdict
+    compat --> prepared
+    compat --> retrieved
+    compat --> claims
+    compat --> trace
+    compat --> verdict
 ```
+
+Read the package family as a pressure-tested handoff chain. Every package
+narrows the meaning of the next step. Ingest makes input stable enough to use.
+Index makes retrieval explainable. Reason makes evidence interpretable. Agent
+makes workflow order inspectable. Runtime decides whether the whole run counts.
+The maintainer and compatibility handbooks matter only because they protect or
+route that chain without becoming substitute product owners.
 
 ## Responsibility Chain
 
@@ -75,7 +83,8 @@ flowchart LR
 - `Makefile`, `makes/`, and `.github/workflows/` only when the question is
   about shared enforcement rather than package behavior
 
-## Bottom Line
+## Leave This Page When
 
-Read the package family as a chain of owned responsibilities, not as taxonomy.
-The map is useful only if it helps a reviewer put a change in one owner faster.
+- one package clearly owns the behavior under review
+- the next step is a package-local contract, workflow, or test surface
+- the question is really about shared enforcement rather than package ownership
