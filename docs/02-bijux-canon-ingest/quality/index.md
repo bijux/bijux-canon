@@ -11,6 +11,24 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to decide whether prepared ingest output is trustworthy enough for downstream packages to build on without inheriting hidden drift.
 
+## Trust Model
+
+```mermaid
+flowchart LR
+    strategy["test strategy"]
+    invariants["ingest invariants"]
+    validation["change validation"]
+    limits["limitations and risk"]
+    trust["trust decision"]
+
+    strategy --> invariants --> validation --> limits --> trust
+```
+
+Quality pages should tell a reviewer why prepared ingest output deserves to be
+trusted by later packages. Tests matter, but only when they are connected to
+the invariants that keep source preparation stable and to the limits that still
+need to be read honestly.
+
 ## Read These First
 
 - open [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) first when you need the broad proof shape behind ingest behavior
@@ -45,6 +63,8 @@ The main quality risk here is letting unstable prepared input look healthy becau
 - leave for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is what the contract is rather than whether it is defended
 - leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
-## Bottom Line
+## Design Pressure
 
-A passing check is not enough if the package still cannot explain why the surface should be trusted.
+If quality here is reduced to green checks alone, unstable prepared input can
+still leak forward. This section has to tie proofs, invariants, and residual
+limits into one trust story.
