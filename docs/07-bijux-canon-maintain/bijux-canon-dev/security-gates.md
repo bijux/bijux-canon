@@ -21,40 +21,21 @@ These maintainer pages should read like explicit operational memory for reposito
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Security Gates<br/>clarifies: explain automation | see repository-health scope | review package impact"]
+flowchart LR
+    surface["Security-sensitive repository surface"]
+    audit["Audit or policy gate"]
+    tests["Maintainer tests keep the gate honest"]
+    review["Review package impact before changing the gate"]
+    surface --> audit --> tests --> review
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    detail1["package-aware automation"]
-    detail1 --> page
-    detail2["release clarity"]
-    detail2 --> page
-    detail3["package consistency"]
-    detail3 --> page
-    detail4["less CI archaeology"]
-    detail4 --> page
-    detail5["quality gates"]
-    detail5 --> page
-    detail6["security gates"]
-    detail6 --> page
-    detail7["release support"]
-    detail7 --> page
-    detail8["schema integrity"]
-    detail8 --> page
-    detail9["supply-chain visibility"]
-    detail9 --> page
-    next1["open the relevant helper module or test after using this page to orient yourself"]
-    page --> next1
-    next2["return to repository handbook pages when the maintainer issue turns out to be root policy instead"]
-    page --> next2
-    next3["move to product package docs if the question is user-facing behavior rather than repository health"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+    class surface page;
+    class audit caution;
+    class tests anchor;
+    class review action;
 ```
 
 ## Current Security Surfaces

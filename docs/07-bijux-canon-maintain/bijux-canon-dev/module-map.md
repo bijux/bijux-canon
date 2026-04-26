@@ -27,39 +27,25 @@ These maintainer pages should read like explicit operational memory for reposito
 
 ```mermaid
 flowchart LR
-    page["Module Map<br/>clarifies: explain automation | see repository-health scope | review package impact"]
+    quality["quality/<br/>dependency and repository checks"]
+    security["security/<br/>audit gates"]
+    schema["api/<br/>schema drift helpers"]
+    release["release/<br/>version and publication support"]
+    packages["packages/<br/>package-specific helpers"]
+    quality --> schema
+    security --> schema
+    schema --> release
+    release --> packages
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    detail1["supply-chain visibility"]
-    detail1 --> page
-    detail2["package-aware automation"]
-    detail2 --> page
-    detail3["release clarity"]
-    detail3 --> page
-    detail4["package consistency"]
-    detail4 --> page
-    detail5["less CI archaeology"]
-    detail5 --> page
-    detail6["quality gates"]
-    detail6 --> page
-    detail7["security gates"]
-    detail7 --> page
-    detail8["release support"]
-    detail8 --> page
-    detail9["schema integrity"]
-    detail9 --> page
-    next1["return to repository handbook pages when the maintainer issue turns out to be root policy instead"]
-    page --> next1
-    next2["move to product package docs if the question is user-facing behavior rather than repository health"]
-    page --> next2
-    next3["open the relevant helper module or test after using this page to orient yourself"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+    class quality positive;
+    class security caution;
+    class schema page;
+    class release action;
+    class packages anchor;
 ```
 
 ## Concrete Anchors

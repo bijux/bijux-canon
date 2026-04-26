@@ -27,26 +27,22 @@ rules they affect.
 
 ```mermaid
 flowchart LR
-    page["Maintenance Handbook<br/>clarifies: maintenance scope | shared automation | workflow contracts"]
+    handbook["Maintenance handbook"]
+    dev["bijux-canon-dev<br/>maintainer helper code"]
+    makes["makes/<br/>shared command surfaces"]
+    workflows["gh-workflows/<br/>CI and release contracts"]
+    handbook --> dev
+    handbook --> makes
+    handbook --> workflows
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    anchor1["packages/bijux-canon-dev"]
-    anchor2["makes/"]
-    anchor3[".github/workflows/"]
-    anchor1 --> page
-    anchor2 --> page
-    anchor3 --> page
-    next1["open the dev-package section for maintainer helper code"]
-    next2["open the make section for shared command surfaces"]
-    next3["open the workflow section for CI and release contracts"]
-    page --> next1
-    page --> next2
-    page --> next3
-    class page page;
-    class anchor1,anchor2,anchor3 anchor;
-    class next1,next2,next3 action;
+    class handbook page;
+    class dev positive;
+    class makes anchor;
+    class workflows action;
 ```
 
 ## Sections
