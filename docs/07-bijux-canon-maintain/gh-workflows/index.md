@@ -12,10 +12,6 @@ last_reviewed: 2026-04-26
 The workflow section explains the GitHub Actions entrypoints and reusable
 building blocks that verify, release, and document the repository.
 
-Use these pages when you need to know which workflow starts on push, pull
-request, tag, or manual dispatch, and how that entrypoint fans out into
-repository checks, package matrices, or documentation publication.
-
 The top-level entrypoints are `verify.yml` for pushes and pull requests,
 `deploy-docs.yml` for handbook publication from `main`, and the release split
 workflows (`release-github.yml`, `release-pypi.yml`, `release-ghcr.yml`) for
@@ -23,21 +19,25 @@ tag-driven publication. `ci.yml` and `release-artifacts.yml` are reusable
 workflows called by those entrypoints rather than standalone manual surfaces.
 
 ```mermaid
-flowchart LR
-    verify["verify.yml<br/>push and pull request checks"]
-    docs["deploy-docs.yml<br/>publish handbook"]
-    release["release workflows<br/>github, pypi, ghcr"]
-    reusable["reusable workflows<br/>ci.yml and release-artifacts.yml"]
-    reader["reader question<br/>which workflow owns this automation path?"]
+flowchart TB
+    triggers["repository events<br/>push, pull request, tag, manual dispatch"]
+    verify["verify.yml<br/>verification entrypoint"]
+    docs["deploy-docs.yml<br/>docs publication from main"]
+    release["release-*.yml<br/>github, pypi, ghcr publication"]
+    reusable["ci.yml and release-artifacts.yml<br/>shared job trees"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class verify,page reader;
-    class docs,release,reusable positive;
-    verify --> reader
-    docs --> reader
-    release --> reader
-    reusable --> reader
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class triggers page;
+    class verify anchor;
+    class docs,release positive;
+    class reusable action;
+    triggers --> verify
+    triggers --> docs
+    triggers --> release
+    verify --> reusable
+    release --> reusable
 ```
 
 ## Pages in This Section
@@ -74,11 +74,15 @@ flowchart LR
 - open [reusable-workflows](reusable-workflows.md) when the key question is job
   reuse or nested workflow composition
 
-## Purpose
+## Concrete Anchors
 
-Use this section to find the workflow file, trigger, and job tree behind a
-repository automation concern.
+- `.github/workflows/verify.yml` for verification entry logic
+- `.github/workflows/deploy-docs.yml` for published handbook deployment
+- `.github/workflows/release-github.yml`, `.github/workflows/release-pypi.yml`, and `.github/workflows/release-ghcr.yml` for release entrypoints
+- `.github/workflows/ci.yml` and `.github/workflows/release-artifacts.yml` for reusable execution trees
 
-## Stability
+## Workflow Standard
 
-Keep it aligned with the actual workflow files in `.github/workflows/`.
+Workflow ownership should be discoverable from the checked-in YAML files and
+their call graph. If a maintainer still has to infer the release or verify path
+from past Actions runs, the workflow surface is under-documented.
