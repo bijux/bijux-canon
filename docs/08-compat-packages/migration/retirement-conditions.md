@@ -15,8 +15,6 @@ that still need it are understood and the retirement path is documented.
 Retirement is where honesty matters most. A package should not survive on
 vague anxiety, and it should not disappear on untested optimism.
 
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
-
 ## Visual Summary
 
 ```mermaid
@@ -64,13 +62,15 @@ flowchart TB
 
 ## Decision Rule
 
-Use `Retirement Conditions` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
+Use this page when the main question is whether a compatibility package is
+ready to retire. If evidence is still missing, keep the package temporarily and
+close the gap instead of guessing.
 
 ## What This Page Answers
 
-- which legacy surface is still preserved
+- which retirement signals need to be verified
 - when new work should move to the canonical package instead
-- what evidence would justify retiring a compatibility package
+- what evidence would justify removing a compatibility package
 
 ## Reviewer Lens
 
@@ -80,9 +80,15 @@ Use `Retirement Conditions` to decide whether a preserved legacy name is still s
 
 ## Next Checks
 
-- move to the canonical package docs once the current target package is known
+- move to the canonical package docs once the current target package is known:
+  `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
+  `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
+  `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,
+  `https://bijux.io/bijux-canon/05-bijux-canon-agent/`, or
+  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
 - inspect compatibility package metadata if the question is about what remains preserved
-- use this section again only when evaluating migration progress or retirement readiness
+- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/`
+  when the question turns back to why continuity still matters
 
 ## Honesty Boundary
 
@@ -90,7 +96,7 @@ This section documents preserved legacy surfaces, but it does not claim those le
 
 ## Purpose
 
-This page explains the threshold for removing a compatibility package.
+This page shows the threshold for removing a compatibility package.
 
 ## Stability
 

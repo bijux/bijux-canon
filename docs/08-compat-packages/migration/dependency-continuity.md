@@ -30,9 +30,18 @@ explicit so it does not quietly turn into a parallel product line.
 - is the canonical target still obvious from package metadata and docs
 - is continuity being used as a bridge or as an excuse to avoid migration work
 
+## Reader Route
+
+- read this page when the main question is how compatibility packages keep
+  installs, imports, or command names continuous during migration
+- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/`
+  for the broader compatibility model
+- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
+  when the question turns into when continuity is no longer needed
+
 ## Purpose
 
-This page explains the dependency continuity model that keeps compatibility
+This page shows the dependency continuity model that keeps compatibility
 packages narrow and honest.
 
 ## Stability

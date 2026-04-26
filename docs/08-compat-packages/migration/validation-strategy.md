@@ -16,8 +16,6 @@ Small does not mean unimportant. These packages carry trust mainly through
 naming continuity, so the validation has to prove that the bridge still
 points to the right place.
 
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
-
 ## Visual Summary
 
 ```mermaid
@@ -69,11 +67,14 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Validation Strategy` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
+Use this page when the main question is what evidence keeps a compatibility
+package trustworthy. If the only reason to keep a preserved name is habit
+rather than a supported dependent environment, plan migration or retirement
+instead.
 
 ## What This Page Answers
 
-- which legacy surface is still preserved
+- which validation signals keep the bridge trustworthy
 - when new work should move to the canonical package instead
 - what evidence would justify retiring a compatibility package
 
@@ -85,9 +86,15 @@ Use `Validation Strategy` to decide whether a preserved legacy name is still ser
 
 ## Next Checks
 
-- move to the canonical package docs once the current target package is known
+- move to the canonical package docs once the current target package is known:
+  `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
+  `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
+  `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,
+  `https://bijux.io/bijux-canon/05-bijux-canon-agent/`, or
+  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
 - inspect compatibility package metadata if the question is about what remains preserved
-- use this section again only when evaluating migration progress or retirement readiness
+- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
+  when validation shows the bridge may be ready for retirement
 
 ## Honesty Boundary
 
@@ -95,7 +102,8 @@ This section documents preserved legacy surfaces, but it does not claim those le
 
 ## Purpose
 
-This page explains what counts as sufficient validation for the compatibility layer.
+This page shows what counts as sufficient validation for the compatibility
+layer.
 
 ## Stability
 
