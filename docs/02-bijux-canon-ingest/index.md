@@ -23,25 +23,23 @@ into retrieval, reasoning, and runtime review.
 
 ```mermaid
 flowchart LR
-    source["source material<br/>files, text, records"]
-    config["ingest configuration<br/>parsing, cleaning, chunking rules"]
-    processing["processing pipeline<br/>normalize, deduplicate, chunk"]
-    retrieval["retrieval-ready records<br/>chunks, metadata, indexes"]
-    downstream["downstream packages<br/>index, reason, agent, runtime"]
+    source["source material"]
+    config["ingest configuration"]
+    processing["processing pipeline"]
+    retrieval["retrieval-ready records"]
+    tests["tests and invariants"]
+    interfaces["caller surfaces"]
+    downstream["downstream packages"]
 
     source --> config --> processing --> retrieval --> downstream
-    processing -. proves determinism .-> tests["tests and invariants"]
-    retrieval -. exposes caller surface .-> interfaces["CLI, HTTP, serialization"]
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class source page;
-    class config,processing,retrieval positive;
-    class tests,interfaces anchor;
-    class downstream action;
+    processing --> tests
+    retrieval --> interfaces
 ```
+
+Readers should come away with one clear picture: ingest is where messy source
+material stops being tolerated as-is. The package earns its place by making
+preparation reproducible enough that every later package can assume the input
+was shaped on purpose rather than by accident.
 
 ## What This Package Owns
 
@@ -57,7 +55,10 @@ flowchart LR
 
 ## Boundary Test
 
-If the question is still about making source material predictable before any vector store or reasoning step touches it, it belongs here. If the question starts with retrieval quality, claim behavior, agent coordination, or run acceptance, it belongs somewhere else.
+If the question is still about making source material predictable before any
+vector store or reasoning step touches it, it belongs here. If the question
+starts with retrieval quality, claim behavior, agent coordination, or run
+acceptance, it belongs somewhere else.
 
 ## First Proof Check
 
@@ -82,6 +83,8 @@ If the question is still about making source material predictable before any vec
 - [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/)
 - [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/)
 
-## Bottom Line
+## Leave This Handbook When
 
-If a proposed change makes `bijux-canon-ingest` broader without making its owned role easier to defend, the change is probably crossing a package boundary rather than improving the design.
+- the question is now about retrieval execution rather than preparation
+- the next stop is a concrete caller contract, workflow, or test surface
+- the behavior is really owned by reasoning, orchestration, or runtime
