@@ -12,29 +12,29 @@ last_reviewed: 2026-04-26
 The `makes/` section explains the shared Make surface that ties repository
 operations together.
 
-The make system is a real interface in this repository. It is how local work,
-CI checks, package dispatch, and release-oriented automation are exposed in a
-repeatable way. These pages should help a maintainer see the structure behind
-those targets instead of treating the make layer as a flat bag of commands.
+The make system is a real interface in this repository. It exposes local work,
+CI checks, package dispatch, schema checks, and release-oriented automation
+through stable command surfaces instead of one-off shell habits.
 
 ```mermaid
-flowchart LR
-    root["root entrypoints"]
-    env["environment model"]
-    dispatch["package dispatch"]
-    ci["CI targets"]
-    release["release surfaces"]
-    reader["reader question<br/>which make surface should I touch?"]
+flowchart TB
+    root["Makefile and makes/root.mk<br/>top-level entrypoints"]
+    env["env.mk<br/>shared environment contract"]
+    packages["packages.mk and makes/packages/*.mk<br/>package dispatch"]
+    apis["api-freeze.mk and bijux-py/api*.mk<br/>schema and contract checks"]
+    publish["publish.mk and bijux-docs.mk<br/>release and docs surfaces"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    class root,page reader;
-    class env,dispatch,ci,release positive;
-    root --> reader
-    env --> reader
-    dispatch --> reader
-    ci --> reader
-    release --> reader
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class root page;
+    class env,packages positive;
+    class apis anchor;
+    class publish action;
+    root --> env
+    root --> packages
+    root --> apis
+    root --> publish
 ```
 
 ## Pages in This Section
@@ -75,12 +75,16 @@ flowchart LR
 - open [CI Targets](ci-targets.md) or [Release Surfaces](release-surfaces.md)
   when the concern is automation-facing rather than developer-facing
 
-## Purpose
+## Concrete Anchors
 
-This page routes maintainers into the make-system documentation without forcing
-them to infer the structure from file names alone.
+- `Makefile` for the top-level command surface
+- `makes/root.mk` and `makes/env.mk` for shared root composition
+- `makes/packages.mk` and `makes/packages/*.mk` for per-package routing
+- `makes/api-freeze.mk`, `makes/bijux-py/api.mk`, and related API includes for contract checks
+- `makes/publish.mk` and `makes/bijux-docs.mk` for publication-oriented surfaces
 
-## Stability
+## Command Surface Standard
 
-Keep it aligned with the actual make surfaces the repository expects people and
-automation to use.
+The shared Make layer should make repository procedure easier to see, not
+harder. If a critical command path only makes sense after reading several
+include files in order, this section should expose that structure explicitly.
