@@ -60,7 +60,7 @@ Breaking changes must be visible in code, docs, and validation together.
 
 ## Decision Rule
 
-Use this page when deciding whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
+A caller-facing surface is explicit enough to depend on only when it can be tied back to concrete code, schemas, artifacts, examples, and tests. Without that evidence, treat it as unstable.
 
 ## What You Can Resolve Here
 
