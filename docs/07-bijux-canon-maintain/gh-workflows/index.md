@@ -18,6 +18,24 @@ question is which workflow owns a trigger, which reusable file carries shared
 execution logic, and where that behavior connects back to checked-in make or
 helper code.
 
+## Workflow Model
+
+```mermaid
+flowchart LR
+    trigger["GitHub trigger"]
+    workflow["top-level workflow"]
+    reusable["reusable workflow"]
+    commands["make and helper code"]
+    result["verification or release result"]
+
+    trigger --> workflow --> reusable --> commands --> result
+```
+
+The workflow handbook should explain ownership, not just list YAML files. A
+reader needs to see how a trigger lands in a top-level workflow, where shared
+job logic is reused, and which checked-in command surface actually performs the
+real work.
+
 ## Workflow Pages
 
 - [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/)
@@ -47,3 +65,9 @@ helper code.
 
 Workflow documentation should explain triggers, callers, and job ownership. It
 should not absorb the deeper product behavior that workflows happen to invoke.
+
+## Design Pressure
+
+If a workflow can only be understood by reading raw job YAML without knowing
+where execution is delegated, the page is still too shallow. This section has
+to keep triggers, reuse, and command ownership visibly connected.
