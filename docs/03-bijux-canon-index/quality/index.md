@@ -11,6 +11,24 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to decide whether retrieval behavior is proven strongly enough for callers and downstream packages to trust replay, provenance, and search results.
 
+## Trust Model
+
+```mermaid
+flowchart LR
+    strategy["test strategy"]
+    invariants["retrieval invariants"]
+    validation["change validation"]
+    limits["limitations and risk"]
+    trust["trust decision"]
+
+    strategy --> invariants --> validation --> limits --> trust
+```
+
+The quality story for index has to explain why retrieval results are more than
+plausible output. Reviewers need to see how replay, provenance, and search
+behavior are constrained, what proof backs them, and where the remaining trust
+limits still sit.
+
 ## Read These First
 
 - open [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/) first when you need the broad proof shape behind retrieval behavior
@@ -45,6 +63,8 @@ The main quality risk here is green tests that still allow replay or provenance 
 - leave for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is what the contract is rather than whether it is defended
 - leave for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
-## Bottom Line
+## Design Pressure
 
-A passing check is not enough if the package still cannot explain why the surface should be trusted.
+If replay and provenance trust are treated as side effects of passing tests,
+the package will look stronger than it is. This section has to keep proof,
+drift boundaries, and known limits visibly connected.
