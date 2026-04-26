@@ -42,26 +42,26 @@ flowchart LR
 
 ## Start Here
 
-- open [Package Overview](package-overview.md) for the shortest explanation of
+- use [Package Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/package-overview/) for the shortest explanation of
   the orchestration role
-- open [Ownership Boundary](ownership-boundary.md) when the question is whether
+- use [Ownership Boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/) when the question is whether
   behavior belongs in reasoning, agent coordination, or runtime governance
-- open [Lifecycle Overview](lifecycle-overview.md) when you need the package
+- use [Lifecycle Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/lifecycle-overview/) when you need the package
   story from agent input through traceable output
 
-## Pages In This Section
+## Pages In Foundation
 
-- [Package Overview](package-overview.md)
-- [Scope and Non-Goals](scope-and-non-goals.md)
-- [Ownership Boundary](ownership-boundary.md)
-- [Repository Fit](repository-fit.md)
-- [Capability Map](capability-map.md)
-- [Domain Language](domain-language.md)
-- [Lifecycle Overview](lifecycle-overview.md)
-- [Dependencies and Adjacencies](dependencies-and-adjacencies.md)
-- [Change Principles](change-principles.md)
+- [Package Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/package-overview/)
+- [Scope and Non-Goals](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/scope-and-non-goals/)
+- [Ownership Boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/)
+- [Repository Fit](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/repository-fit/)
+- [Capability Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/capability-map/)
+- [Domain Language](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/domain-language/)
+- [Lifecycle Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/lifecycle-overview/)
+- [Dependencies and Adjacencies](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/dependencies-and-adjacencies/)
+- [Change Principles](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/change-principles/)
 
-## Use This Section When
+## Use Foundation When
 
 - you need the package role before looking at APIs, modules, or workflows
 - you are deciding whether a feature is orchestration behavior or belongs in a
@@ -69,7 +69,7 @@ flowchart LR
 - a reader needs one page that explains why this package exists without reading
   the whole handbook
 
-## Do Not Use This Section When
+## Move On When
 
 - the main question is where a module or execution path lives
 - you are deciding whether a CLI, API, artifact, or import is a contract
@@ -77,13 +77,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Architecture](../architecture/index.md) for module groups, execution
+- use [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for module groups, execution
   flow, and dependency direction
-- open [Interfaces](../interfaces/index.md) for CLI, API, artifact, and import
+- use [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import
   contracts
-- open [Operations](../operations/index.md) for setup, diagnostics, and release
+- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
   procedures
-- open [Quality](../quality/index.md) for trust posture, invariants, and review
+- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for trust posture, invariants, and review
   standards
 
 ## Concrete Anchors
@@ -92,14 +92,15 @@ flowchart LR
 - `packages/bijux-canon-agent/src/bijux_canon_agent` as the import boundary
 - `packages/bijux-canon-agent/tests` as the package proof surface
 
-## Reader Takeaway
+## Why Use Foundation
 
 `Foundation` should leave no doubt about the package boundary: reasoning
 produces inspectable content, agent coordination turns that into role-based and
 trace-backed workflow behavior, and runtime decides what becomes governed and
 durable.
 
-## Purpose
+## What You Get
 
-This page introduces the agent foundation handbook and routes readers to the
-pages that explain purpose, scope, vocabulary, lifecycle, and boundaries.
+This page gives you the purpose, scope, vocabulary, lifecycle, and boundary
+route into `bijux-canon-agent` before you move on to structure, contracts,
+operations, or proof.

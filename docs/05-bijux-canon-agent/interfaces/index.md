@@ -44,34 +44,34 @@ flowchart LR
 
 ## Start Here
 
-- open [CLI Surface](cli-surface.md) for terminal-facing commands and replay
+- use [CLI Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/cli-surface/) for terminal-facing commands and replay
   entrypoints
-- open [API Surface](api-surface.md) when the contract is HTTP-facing rather
+- use [API Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/api-surface/) when the contract is HTTP-facing rather
   than CLI-facing
-- open [Artifact Contracts](artifact-contracts.md) and
-  [Data Contracts](data-contracts.md) when trace or result shape matters more
+- use [Artifact Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/artifact-contracts/) and
+  [Data Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/data-contracts/) when trace or result shape matters more
   than invocation syntax
 
-## Pages In This Section
+## Pages In Interfaces
 
-- [CLI Surface](cli-surface.md)
-- [API Surface](api-surface.md)
-- [Configuration Surface](configuration-surface.md)
-- [Data Contracts](data-contracts.md)
-- [Artifact Contracts](artifact-contracts.md)
-- [Entrypoints and Examples](entrypoints-and-examples.md)
-- [Operator Workflows](operator-workflows.md)
-- [Public Imports](public-imports.md)
-- [Compatibility Commitments](compatibility-commitments.md)
+- [CLI Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/cli-surface/)
+- [API Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/api-surface/)
+- [Configuration Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/configuration-surface/)
+- [Data Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/data-contracts/)
+- [Artifact Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/artifact-contracts/)
+- [Entrypoints and Examples](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/entrypoints-and-examples/)
+- [Operator Workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/operator-workflows/)
+- [Public Imports](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/public-imports/)
+- [Compatibility Commitments](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/compatibility-commitments/)
 
-## Use This Section When
+## Use Interfaces When
 
 - you need to know whether a command, route, trace file, config surface, or
   import is meant to be stable
 - a change may affect downstream orchestration expectations or trace readers
 - a reviewer needs to separate explicit interfaces from incidental visibility
 
-## Do Not Use This Section When
+## Move On When
 
 - the main question is why the behavior belongs in the agent layer at all
 - the concern is mostly structural rather than contract-facing
@@ -79,12 +79,12 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) for package purpose and ownership
-- open [Architecture](../architecture/index.md) for the structural seams behind
+- use [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
+- use [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) for the structural seams behind
   the public surfaces
-- open [Operations](../operations/index.md) for setup, diagnostics, and release
+- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
   procedures
-- open [Quality](../quality/index.md) for compatibility evidence and review
+- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for compatibility evidence and review
   pressure
 
 ## Concrete Anchors
@@ -95,15 +95,15 @@ flowchart LR
 - `src/bijux_canon_agent/traces` and `interfaces/cli/result_artifacts.py` for
   trace and artifact contracts
 
-## Reader Takeaway
+## Why Use Interfaces
 
 Use `Interfaces` to judge whether a dependency on the agent layer is
 defensible. The bar is not only that a command exists, but that commands,
 schemas, traces, artifacts, examples, and tests all agree about what the
 orchestration surface really promises.
 
-## Purpose
+## What You Get
 
-This page introduces the agent interfaces handbook and routes readers to the
-pages that explain commands, APIs, artifacts, imports, and compatibility
-commitments.
+This page gives you the command, API, artifact, import, and compatibility
+route through `bijux-canon-agent` before you inspect a specific contract
+surface.

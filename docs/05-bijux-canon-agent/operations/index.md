@@ -45,27 +45,27 @@ flowchart LR
 
 ## Start Here
 
-- open [Installation and Setup](installation-and-setup.md) for environment,
+- use [Installation and Setup](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/installation-and-setup/) for environment,
   provider, and package bootstrap expectations
-- open [Common Workflows](common-workflows.md) when you need the normal run and
+- use [Common Workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/common-workflows/) when you need the normal run and
   validation paths
-- open [Observability and Diagnostics](observability-and-diagnostics.md) or
-  [Failure Recovery](failure-recovery.md) when traces, providers, or pipelines
+- use [Observability and Diagnostics](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/observability-and-diagnostics/) or
+  [Failure Recovery](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/failure-recovery/) when traces, providers, or pipelines
   are behaving unexpectedly
 
-## Pages In This Section
+## Pages In Operations
 
-- [Installation and Setup](installation-and-setup.md)
-- [Local Development](local-development.md)
-- [Common Workflows](common-workflows.md)
-- [Observability and Diagnostics](observability-and-diagnostics.md)
-- [Performance and Scaling](performance-and-scaling.md)
-- [Failure Recovery](failure-recovery.md)
-- [Release and Versioning](release-and-versioning.md)
-- [Security and Safety](security-and-safety.md)
-- [Deployment Boundaries](deployment-boundaries.md)
+- [Installation and Setup](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/installation-and-setup/)
+- [Local Development](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/local-development/)
+- [Common Workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/common-workflows/)
+- [Observability and Diagnostics](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/observability-and-diagnostics/)
+- [Performance and Scaling](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/performance-and-scaling/)
+- [Failure Recovery](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/failure-recovery/)
+- [Release and Versioning](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/release-and-versioning/)
+- [Security and Safety](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/security-and-safety/)
+- [Deployment Boundaries](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/deployment-boundaries/)
 
-## Use This Section When
+## Use Operations When
 
 - you need a repeatable procedure for running, tracing, diagnosing, or
   releasing the package
@@ -73,7 +73,7 @@ flowchart LR
   work or CI
 - you need to know which workflow leaves behind trustworthy execution records
 
-## Do Not Use This Section When
+## Move On When
 
 - the main question is package purpose or ownership
 - you are still deciding whether a command, schema, or artifact is a contract
@@ -87,23 +87,22 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) for package boundary and scope
-- open [Architecture](../architecture/index.md) when a workflow problem points
+- use [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package boundary and scope
+- use [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a workflow problem points
   to a structural seam
-- open [Interfaces](../interfaces/index.md) when an operational path depends on
+- use [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when an operational path depends on
   a CLI, API, trace, or artifact contract
-- open [Quality](../quality/index.md) when the real question becomes whether a
+- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the next question is whether a
   run has been validated hard enough
 
-## Reader Takeaway
+## Why Use Operations
 
 Use `Operations` to find workflows a maintainer can rerun and defend. If a
 procedure cannot show how it leaves behind inspectable traces, diagnosable
 failures, and reviewable outputs, it is not ready to serve as the package’s
 operating memory.
 
-## Purpose
+## What You Get
 
-This page introduces the agent operations handbook and routes readers to the
-pages that explain setup, execution, diagnostics, release, and safety
-procedures.
+This page gives you the setup, execution, diagnostics, release, and safety
+route through `bijux-canon-agent` before you open a specific operating page.

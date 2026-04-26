@@ -48,33 +48,33 @@ flowchart TB
 
 ## Start Here
 
-- open [Module Map](module-map.md) for the shortest route from directory names
+- use [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/) for the shortest route from directory names
   to owned behavior
-- open [Execution Model](execution-model.md) when you need the lifecycle of an
+- use [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/) when you need the lifecycle of an
   orchestrated run
-- open [State and Persistence](state-and-persistence.md) when the question is
+- use [State and Persistence](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/state-and-persistence/) when the question is
   which results, traces, or replay data become durable
 
-## Pages In This Section
+## Pages In Architecture
 
-- [Module Map](module-map.md)
-- [Dependency Direction](dependency-direction.md)
-- [Execution Model](execution-model.md)
-- [State and Persistence](state-and-persistence.md)
-- [Integration Seams](integration-seams.md)
-- [Error Model](error-model.md)
-- [Extensibility Model](extensibility-model.md)
-- [Code Navigation](code-navigation.md)
-- [Architecture Risks](architecture-risks.md)
+- [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/)
+- [Dependency Direction](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/dependency-direction/)
+- [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/)
+- [State and Persistence](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/state-and-persistence/)
+- [Integration Seams](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/integration-seams/)
+- [Error Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/error-model/)
+- [Extensibility Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/extensibility-model/)
+- [Code Navigation](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/code-navigation/)
+- [Architecture Risks](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/architecture-risks/)
 
-## Use This Section When
+## Use Architecture When
 
 - you need to know which structural slice owns a behavior before editing it
 - a review is about layering, orchestration flow, or module drift
 - you need to explain how interfaces, pipeline control, role agents, and traces
   fit together
 
-## Do Not Use This Section When
+## Move On When
 
 - the main question is why the behavior belongs in agent orchestration at all
 - you are deciding whether a command, schema, or artifact is a public contract
@@ -82,12 +82,12 @@ flowchart TB
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) for package purpose and ownership
-- open [Interfaces](../interfaces/index.md) for CLI, API, artifact, and import
+- use [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) for package purpose and ownership
+- use [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) for CLI, API, artifact, and import
   contracts
-- open [Operations](../operations/index.md) for setup, diagnostics, and release
+- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) for setup, diagnostics, and release
   procedures
-- open [Quality](../quality/index.md) for invariants, tests, and architecture
+- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) for invariants, tests, and architecture
   risk pressure
 
 ## Concrete Anchors
@@ -99,15 +99,15 @@ flowchart TB
 - `src/bijux_canon_agent/traces` and `observability` for replay and inspection
   seams
 
-## Reader Takeaway
+## Why Use Architecture
 
 `Architecture` should make the agent package readable as a control flow with
 named responsibilities. If interfaces, pipeline logic, role agents, and trace
 handling start blending together, the orchestration story gets harder to trust
 even before tests fail.
 
-## Purpose
+## What You Get
 
-This page introduces the agent architecture handbook and routes readers to the
-pages that explain module groups, dependency direction, execution flow, and
-durable state.
+This page gives you the module, dependency, execution, and durable-state
+route through `bijux-canon-agent` before you inspect a specific structural
+topic.

@@ -10,8 +10,9 @@ last_reviewed: 2026-04-26
 # Agent Handbook
 
 `bijux-canon-agent` owns deterministic agent orchestration, workflow
-coordination, and trace-producing execution surfaces. Start here when the
-question is about agent behavior rather than runtime governance around it.
+coordination, and trace-producing execution surfaces. Use this handbook when
+you need to understand agent behavior rather than runtime governance around
+it.
 
 This package is where reasoning-capable steps become coordinated agent
 workflows. It owns orchestration behavior that should stay deterministic,
@@ -33,7 +34,7 @@ flowchart LR
     agent --> reader
 ```
 
-## Read This Section When
+## Use This Handbook When
 
 - you need the package-level entrypoint for agent docs
 - you are checking orchestration, agent APIs, or trace-producing workflows
@@ -53,20 +54,20 @@ flowchart LR
 - top-level runtime acceptance, persistence, or replay authority
 - repository-wide maintainer governance above the package boundary
 
-## Choose The Next Section By Question
+## Choose A Section
 
-- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the question is about package
+- use [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the question is about package
   purpose, language, or scope
-- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when you need module boundaries,
+- use [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when you need module boundaries,
   dependency direction, or execution flow
-- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is about commands,
+- use [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when you need setup, diagnostics,
+- use [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when you need setup, diagnostics,
   workflow, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when you need trust posture, proof
+- use [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when you need trust posture, proof
   expectations, or review standards
 
-## Main Paths
+## Pages In This Handbook
 
 - [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/)
@@ -74,7 +75,7 @@ flowchart LR
 - [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/)
 - [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/)
 
-## Reader Takeaway
+## Why Start Here
 
 Use this handbook when the meaningful question is how agent behavior is
 coordinated and traced. If the question is really about whether a run should be
