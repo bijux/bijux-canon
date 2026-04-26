@@ -12,6 +12,22 @@ last_reviewed: 2026-04-26
 Repository automation should be visible in named surfaces, not hidden behind
 tribal shortcuts.
 
+## Automation Stack
+
+```mermaid
+flowchart LR
+    makefile["Makefile"]
+    makes["makes/"]
+    workflows[".github/workflows/"]
+    helpers["bijux-canon-dev helpers"]
+
+    makefile --> makes --> workflows --> helpers
+```
+
+This page should make shared automation traceable in one pass. A maintainer
+needs to know where a command starts, where it delegates, and where shared code
+begins without reverse-engineering shell glue.
+
 ## Automation Order
 
 Read shared automation in this order:
@@ -34,7 +50,8 @@ rule.
 - a workflow changes repository-wide behavior but the owning file is not easy to name
 - a helper script starts carrying product logic that belongs in one package
 
-## Bottom Line
+## Design Pressure
 
-Shared automation is healthy when a reader can name the owning surface quickly
-and trace the behavior without reverse-engineering stray shell glue first.
+Automation becomes opaque when helpers, workflows, and commands can no longer
+be named in order. Once the execution path is guesswork, root tooling starts
+hiding the very behavior it is supposed to make reviewable.
