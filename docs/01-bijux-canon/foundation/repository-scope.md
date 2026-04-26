@@ -13,6 +13,24 @@ The repository root is intentionally narrow. It exists to coordinate packages
 that must move together, not to become a second implementation layer above
 them.
 
+## Scope Map
+
+```mermaid
+flowchart LR
+    shared["shared rules and assets"]
+    root["repository scope"]
+    packages["package-local behavior"]
+    stop["stop when one package can answer honestly"]
+
+    shared --> root
+    root --> stop
+    root --> packages
+```
+
+This page should make the root feel bounded on purpose. The repository earns
+its central position only by refusing to become a shadow product layer above
+the packages.
+
 ## In Scope
 
 - workspace-level build and test orchestration
@@ -45,7 +63,7 @@ expanding and send the reader there.
 - `Makefile`, `makes/`, and `.github/workflows/` when the concern is shared
   workflow or validation enforcement
 
-## Bottom Line
+## Design Pressure
 
-The root is for shared rules, assets, and workflows that genuinely cross
-package boundaries. Anything less should stay with the owning package.
+The root is always tempting because it is visible to everyone. If that
+visibility starts deciding ownership, the scope has already slipped.
