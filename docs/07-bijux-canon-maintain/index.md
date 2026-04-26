@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Maintenance Handbook
@@ -55,11 +55,39 @@ flowchart LR
 - [gh-workflows](gh-workflows/index.md) for GitHub Actions verification,
   publication, docs deployment, and reusable workflow contracts
 
+## Use This Handbook When
+
+- the question is about repository automation, verification, release support,
+  workflow fan-out, or maintainer-only tooling
+- you need to know which shared surface owns a repository-health rule
+- the answer should stay above one product package boundary
+
+## Do Not Start Here When
+
+- the question is really about user-facing behavior in one canonical package
+- the concern belongs to ingest, index, reasoning, agent, or runtime semantics
+- you are tempted to treat maintainer tooling as the product surface itself
+
+## Choose The Next Section By Question
+
+- open [bijux-canon-dev](bijux-canon-dev/index.md) when the concern is helper
+  code, schema drift, supply chain, release support, or quality gates
+- open [makes](makes/index.md) when the concern is shared command surfaces,
+  package dispatch, CI targets, or release entrypoints
+- open [gh-workflows](gh-workflows/index.md) when the concern is GitHub Actions
+  triggers, job trees, reusable workflows, or docs publication
+
 ## Shared Maintenance Anchors
 
 - `packages/bijux-canon-dev` for maintainer helper code
 - `makes/` for shared make entrypoints and composition
 - `.github/workflows/` for CI, docs, and publication workflow truth
+
+## Reader Takeaway
+
+This handbook is where repository-health behavior becomes explicit and
+reviewable. It should help a maintainer find the right shared surface quickly,
+without letting maintenance scope blur into product behavior.
 
 ## Use This Page When
 
