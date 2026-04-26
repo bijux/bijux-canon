@@ -21,28 +21,28 @@ semantics.
 
 ```mermaid
 flowchart LR
-    cli["interfaces<br/>CLI, HTTP, serialization"]
-    app["application<br/>pipeline definitions and services"]
-    config["config<br/>parsing, cleaning, ingest rules"]
-    processing["processing<br/>stages, chunking, streaming"]
-    retrieval["retrieval<br/>indexes, embedders, handoff records"]
-    downstream["index package<br/>retrieval execution owner"]
+    interfaces["interfaces"]
+    application["application services"]
+    config["config"]
+    processing["processing stages"]
+    retrieval["retrieval handoff"]
+    observability["pipeline records"]
+    infra["storage and adapters"]
+    downstream["index package"]
 
-    cli --> app
-    config --> app
-    app --> processing --> retrieval --> downstream
-    processing -. observes .-> obs["observability<br/>pipeline records"]
-    retrieval -. stores through .-> infra["infra adapters<br/>storage, clocks, loggers"]
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class cli page;
-    class app,config,processing,retrieval positive;
-    class obs,infra anchor;
-    class downstream action;
+    interfaces --> application
+    config --> application
+    application --> processing --> retrieval --> downstream
+    processing --> observability
+    retrieval --> infra
 ```
+
+The architectural story here should let a reader follow one preparation run
+without reading code first. Interfaces admit the input, application code
+assembles the run, processing makes the content stable, and retrieval surfaces
+shape the handoff into index. Observability and storage matter because they
+let that pipeline stay inspectable without moving retrieval ownership upward
+into ingest.
 
 ## Read These First
 
@@ -80,6 +80,8 @@ The main architectural risk here is letting preparation behavior leak into retri
 - leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
 - leave for [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
-## Bottom Line
+## Design Pressure
 
-A structure that cannot be explained in one pass is already carrying too much hidden policy.
+If an architectural explanation here starts to sound like retrieval semantics,
+the package boundary is already drifting. Ingest stays strong by making the
+handoff to index cleaner, not by quietly absorbing search ownership.
