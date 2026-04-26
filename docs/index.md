@@ -85,47 +85,43 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 
 ```mermaid
 flowchart LR
-    source["source material<br/>documents, records, corpora"]
-    ingest["bijux-canon-ingest<br/>prepare deterministic material"]
-    index["bijux-canon-index<br/>execute retrieval with provenance"]
-    reason["bijux-canon-reason<br/>turn evidence into claims"]
-    agent["bijux-canon-agent<br/>coordinate role-based work"]
-    runtime["bijux-canon-runtime<br/>govern execution and replay"]
-    accepted["accepted run<br/>durable, inspectable, replayable"]
-    repo["repository handbook<br/>boundaries, schemas, release rules"]
-    maintain["maintenance handbook<br/>make, helper code, workflows"]
-    compat["compatibility handbook<br/>legacy names under migration pressure"]
+    source["source material"]
+    ingest["ingest"]
+    index["index"]
+    reason["reason"]
+    agent["agent"]
+    runtime["runtime"]
+    accepted["accepted run"]
+    repository["repository handbook"]
+    maintain["maintenance handbook"]
+    compat["compatibility handbook"]
 
     source --> ingest --> index --> reason --> agent --> runtime --> accepted
-    repo -. keeps boundaries visible .-> ingest
-    repo -. keeps boundaries visible .-> index
-    repo -. keeps boundaries visible .-> reason
-    repo -. keeps boundaries visible .-> agent
-    repo -. keeps boundaries visible .-> runtime
-    maintain --> repo
-    compat -. points old names to canonical owners .-> ingest
-    compat -. points old names to canonical owners .-> index
-    compat -. points old names to canonical owners .-> reason
-    compat -. points old names to canonical owners .-> agent
-    compat -. points old names to canonical owners .-> runtime
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef caution fill:#fff1f2,stroke:#dc2626,color:#6b1d1d;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class source,accepted page;
-    class ingest,index,reason,agent,runtime positive;
-    class repo anchor;
-    class maintain,compat action;
+    repository --> ingest
+    repository --> index
+    repository --> reason
+    repository --> agent
+    repository --> runtime
+    maintain --> repository
+    compat --> ingest
+    compat --> index
+    compat --> reason
+    compat --> agent
+    compat --> runtime
 ```
+
+Read the homepage like a chain of ownership. The product story moves left to
+right through the five canonical packages. The repository handbook explains the
+shared boundary rules around that chain. The maintenance handbook proves how
+the repository enforces those rules. The compatibility handbook exists only to
+route old names back to their canonical owners.
 
 ## Start Here
 
-- open the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) for package boundaries, shared rules, and repository-wide workflow
+- open the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) when the question crosses package boundaries or touches shared root rules
 - open one product handbook when the behavior already belongs to ingest, index, reason, agent, or runtime
 - open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
-- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name is still active
+- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution, import, or command name is still in play
 
 ## One Real Run
 
@@ -170,52 +166,21 @@ sequenceDiagram
 - [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
 - [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) documents preserved legacy names and the migration pressure away from them
 
-## Concrete Anchors
+## Proof Surfaces
 
 - `mkdocs.yml` for the published navigation source
 - `packages/` for the package split this page is introducing
 - `docs/` for the handbook entry pages that route readers into the repository
 - `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` for the catalog tooling behind the handbook structure
 
-## First Proof Check
-
 Start with `packages/` if the main question is package ownership. Start with
 `mkdocs.yml` if the main question is documentation routing. Start with
 `Makefile`, `makes/`, or `.github/workflows/` if the claim is about shared
 verification or release behavior. If none of those surfaces can support the
-claim quickly, the docs should be treated as orientation rather than proof.
+claim quickly, the homepage should be treated as orientation rather than proof.
 
-## How The Packages Split
+## Leave This Page When
 
-Ingest turns source material into deterministic preparation output. Index owns
-retrieval behavior and provenance-rich search results. Reason owns claims,
-verification, and evidence-aware conclusions. Agent owns orchestration and
-trace-backed multi-step workflows. Runtime owns acceptance, replay, and
-durable execution. Stay at the repository level only for shared seams, in
-maintenance pages only for repository health, and in compatibility pages only
-until the canonical target is clear.
-
-## Open This Page When
-
-- you are still deciding which handbook owns the topic
-- the concern may be cross-package, maintainer-only, or legacy-only
-- you want the shortest route from the site homepage to the right handbook branch
-
-## Open A Deeper Handbook When
-
-- one product handbook already owns the behavior you need
-- the next step is a concrete interface, workflow, schema, or test surface
-- the work is already known to be a legacy-name migration issue
-
-## Root Boundary
-
-Stay at the site root only while you are choosing the right handbook. Leave it
-as soon as one package or shared handbook can answer the real question
-honestly. The homepage should shorten the route to an owner, not become a
-second explanation layer above the owning docs.
-
-## Bottom Line
-
-Open this site root when you still need the owning handbook. Once one package
-clearly owns the behavior, that handbook should carry the detailed contract,
-workflow, and proof.
+- one package or shared handbook clearly owns the question
+- the next step is a concrete interface, workflow, schema, test, or release surface
+- the issue is known to be maintainer-only or legacy-only
