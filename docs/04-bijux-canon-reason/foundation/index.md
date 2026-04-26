@@ -71,7 +71,7 @@ flowchart LR
 - a reader needs one page that explains why this package exists without reading
   the whole tree
 
-## Move On When
+## Open Another Section When
 
 - the real question is where a module lives or how control flows through code
 - you are deciding whether a CLI, API, schema, or artifact is a supported

@@ -58,7 +58,7 @@ flowchart LR
 - you need to decide whether work belongs at the root or in a package
 - you want the shortest route to the repository's enduring design logic
 
-## Move On When
+## Open Another Section When
 
 - the real question is already about validation commands, release flow, or
   shared automation

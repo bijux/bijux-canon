@@ -73,7 +73,7 @@ flowchart LR
   work or CI
 - you need to know which workflow leaves behind trustworthy execution records
 
-## Move On When
+## Open Another Section When
 
 - the main question is package purpose or ownership
 - you are still deciding whether a command, schema, or artifact is a contract

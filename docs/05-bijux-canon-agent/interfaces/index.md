@@ -71,7 +71,7 @@ flowchart LR
 - a change may affect downstream orchestration expectations or trace readers
 - a reviewer needs to separate explicit interfaces from incidental visibility
 
-## Move On When
+## Open Another Section When
 
 - the main question is why the behavior belongs in the agent layer at all
 - the concern is mostly structural rather than contract-facing

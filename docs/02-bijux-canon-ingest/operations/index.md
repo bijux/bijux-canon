@@ -75,7 +75,7 @@ flowchart LR
   responsible recovery path
 - you are reviewing whether maintainer workflows are actually reproducible
 
-## Move On When
+## Open Another Section When
 
 - the real question is which contract downstream packages are allowed to trust
 - you need package-boundary rationale or architectural flow before you can act

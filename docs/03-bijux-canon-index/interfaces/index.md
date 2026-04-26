@@ -75,7 +75,7 @@ flowchart LR
 - you are reviewing whether a change creates compatibility pressure on a public
   surface
 
-## Move On When
+## Open Another Section When
 
 - the real question is why retrieval ownership belongs in index at all
 - you need internal layering, state flow, or backend structure first

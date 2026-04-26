@@ -75,7 +75,7 @@ flowchart LR
   need the first responsible recovery path
 - you are reviewing whether index maintainer workflows are actually reproducible
 
-## Move On When
+## Open Another Section When
 
 - the real question is which retrieval contracts callers may rely on
 - you need package-boundary rationale or architectural layering before acting

@@ -73,7 +73,7 @@ flowchart LR
 - you need to understand how modules fit before refactoring
 - you are reviewing design drift rather than one isolated bug
 
-## Move On When
+## Open Another Section When
 
 - the real question is why runtime should own a behavior at all
 - you need CLI, API, schema, or artifact contract detail more than module

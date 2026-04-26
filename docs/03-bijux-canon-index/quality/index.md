@@ -74,7 +74,7 @@ flowchart LR
 - you are reviewing whether green checks are actually sufficient for the
   contract being changed
 
-## Move On When
+## Open Another Section When
 
 - the real question is which command, schema, or artifact surface exists
 - you need the package boundary or structural flow before you can judge proof

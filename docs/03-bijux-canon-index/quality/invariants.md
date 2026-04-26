@@ -57,7 +57,7 @@ flowchart LR
 - tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
 - README.md
 
-## Use This Page When
+## Open This Page When
 
 - you are reviewing tests, invariants, limitations, or ongoing risks
 - you need evidence that the documented contract is actually defended

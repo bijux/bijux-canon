@@ -70,7 +70,7 @@ flowchart LR
 - you are deciding whether work belongs here or in a neighboring package
 - you want the shortest honest explanation of what this package is for
 
-## Move On When
+## Open Another Section When
 
 - the real question is already about module layout, execution flow, or store
   structure

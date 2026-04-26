@@ -69,7 +69,7 @@ flowchart LR
 - a review is really about replay trust, determinism, or verification rigor
 - you need to decide whether a result is merely produced or actually justified
 
-## Move On When
+## Open Another Section When
 
 - the main problem is package ownership or boundary confusion
 - you are still locating modules or public contracts

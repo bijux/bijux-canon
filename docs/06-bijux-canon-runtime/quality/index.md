@@ -71,7 +71,7 @@ flowchart LR
 - you need evidence that the documented contract is actually defended
 - you are deciding whether a change is truly done rather than merely implemented
 
-## Move On When
+## Open Another Section When
 
 - the real question is still why runtime owns a behavior at all
 - you need module layout or procedure before you can evaluate the proof

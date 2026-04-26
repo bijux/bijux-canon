@@ -73,7 +73,7 @@ flowchart TB
 - you need to explain how planning, retrieval, reasoning, verification, and
   trace code relate
 
-## Move On When
+## Open Another Section When
 
 - the main question is why the package owns the behavior at all
 - you are deciding whether a CLI, API, or trace file is a supported contract

@@ -72,7 +72,7 @@ flowchart LR
 - you need to know which operational path produces trustworthy reasoning
   artifacts rather than just green commands
 
-## Move On When
+## Open Another Section When
 
 - the main question is package purpose or ownership
 - you are still deciding whether a surface is a public contract

@@ -38,7 +38,7 @@ Most repository rework debt comes from changes that “worked” but were never 
 fully legible. Good change management is the discipline that prevents that debt
 from accumulating again.
 
-## Use This Page When
+## Open This Page When
 
 - you are planning a cross-package change series and need the repository
   discipline for splitting it

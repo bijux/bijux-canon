@@ -47,7 +47,7 @@ flowchart LR
 - `packages/bijux-canon-dev/tests` for executable maintenance proof
 - `apis/` and root workflows for repository-level integration points
 
-## Use This Page When
+## Open This Page When
 
 - you are changing repository automation, validation, or release support
 - you need maintainer-only context that should not live in product package docs

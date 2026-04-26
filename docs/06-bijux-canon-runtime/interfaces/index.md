@@ -73,7 +73,7 @@ flowchart LR
 - you are checking whether a caller can safely rely on a given entrypoint or shape
 - you want the contract-facing side of the package before building on it
 
-## Move On When
+## Open Another Section When
 
 - the real question is why runtime owns a behavior rather than a lower package
 - you need execution structure or storage layering before judging a surface

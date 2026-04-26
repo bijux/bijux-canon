@@ -50,7 +50,7 @@ flowchart LR
 - schema files in apis/bijux-canon-reason/v1
 - apis/bijux-canon-reason/v1/schema.yaml
 
-## Use This Page When
+## Open This Page When
 
 - you need the public command, API, import, schema, or artifact surface
 - you are checking whether a caller can safely rely on a given entrypoint or shape

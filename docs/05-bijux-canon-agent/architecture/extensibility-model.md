@@ -58,7 +58,7 @@ Add extension points where the package already expects variation, and document t
 - `src/bijux_canon_agent/pipeline` for execution flow orchestration
 - `src/bijux_canon_agent/application` for workflow policy and graph logic
 
-## Use This Page When
+## Open This Page When
 
 - you are tracing structure, execution flow, or dependency pressure
 - you need to understand how modules fit before refactoring

@@ -56,7 +56,7 @@ flowchart LR
 - `packages/bijux-canon-runtime/README.md` for local package framing
 - `packages/bijux-canon-runtime/tests` for executable operational backstops
 
-## Use This Page When
+## Open This Page When
 
 - you are installing, running, diagnosing, or releasing the package
 - you need repeatable operational anchors rather than architectural framing

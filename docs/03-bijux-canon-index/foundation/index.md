@@ -70,7 +70,7 @@ flowchart LR
 - you need shared package language for retrieval behavior before reading code or
   contracts
 
-## Move On When
+## Open Another Section When
 
 - the question is already about a command, schema, artifact, or import surface
 - the real issue is operational, such as local setup, diagnostics, or release

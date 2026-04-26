@@ -55,7 +55,7 @@ maintainer can understand them years later without opening the diff first.
 - `Makefile` and `makes/` for root automation
 - `apis/` and `.github/workflows/` for schema and validation review
 
-## Use This Page When
+## Open This Page When
 
 - you are dealing with repository-wide seams rather than one package alone
 - you need shared workflow, schema, or governance context before changing code

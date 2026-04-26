@@ -69,7 +69,7 @@ flowchart LR
 - a reader needs one page that explains why this package exists without reading
   the whole handbook
 
-## Move On When
+## Open Another Section When
 
 - the main question is where a module or execution path lives
 - you are deciding whether a CLI, API, artifact, or import is a contract

@@ -52,13 +52,13 @@ flowchart LR
 - [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/)
 - [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/)
 
-## Use This Section When
+## Open This Section When
 
 - you are planning or reviewing a migration away from legacy package names
 - you need the shared rules for compatibility release and retirement decisions
 - you need the future posture of the compatibility layer rather than its current catalog entry
 
-## Move On When
+## Open Another Section When
 
 - the only open question is which exact legacy surface is still preserved
 - the concern is already about current product behavior in a canonical package

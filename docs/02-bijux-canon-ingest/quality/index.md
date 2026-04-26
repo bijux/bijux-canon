@@ -73,7 +73,7 @@ flowchart LR
 - you are reviewing whether passing checks are actually sufficient for the
   surface being changed
 
-## Move On When
+## Open Another Section When
 
 - the real question is which command, schema, or artifact contract exists
 - you need the package boundary or structural flow before you can judge proof

@@ -74,7 +74,7 @@ flowchart LR
 - you need repeatable operational anchors rather than architectural framing
 - you are responding to package behavior in local work, CI, or incident pressure
 
-## Move On When
+## Open Another Section When
 
 - the real question is why runtime has authority in the first place
 - you need schema or artifact contract detail rather than procedure

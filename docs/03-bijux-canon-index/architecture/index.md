@@ -72,7 +72,7 @@ flowchart LR
   boundaries
 - you need to understand where replay and provenance logic really live
 
-## Move On When
+## Open Another Section When
 
 - the question is mainly about public commands, imports, schemas, or artifacts
 - the issue is operational, such as local setup, diagnostics, or release

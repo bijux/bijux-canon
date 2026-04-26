@@ -74,7 +74,7 @@ flowchart TB
 - you need to explain how interfaces, pipeline control, role agents, and traces
   fit together
 
-## Move On When
+## Open Another Section When
 
 - the main question is why the behavior belongs in agent orchestration at all
 - you are deciding whether a command, schema, or artifact is a public contract

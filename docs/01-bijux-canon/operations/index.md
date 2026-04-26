@@ -62,7 +62,7 @@ flowchart LR
 - you need the operational truth for shared automation, release, or validation
 - you are checking whether a proposed workflow is explicit enough to maintain
 
-## Move On When
+## Open Another Section When
 
 - the real question is still why the split exists or where authority changes
   hands

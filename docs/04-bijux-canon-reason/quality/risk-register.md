@@ -53,7 +53,7 @@ flowchart LR
 - tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
 - README.md
 
-## Use This Page When
+## Open This Page When
 
 - you are reviewing tests, invariants, limitations, or ongoing risks
 - you need evidence that the documented contract is actually defended

@@ -51,7 +51,7 @@ flowchart LR
 - `src/bijux_canon_reason/reasoning` for claim and reasoning semantics
 - `src/bijux_canon_reason/execution` for step execution and tool dispatch
 
-## Use This Page When
+## Open This Page When
 
 - you are tracing structure, execution flow, or dependency pressure
 - you need to understand how modules fit before refactoring

@@ -74,7 +74,7 @@ flowchart LR
 - you are reviewing whether a change adds compatibility pressure to an exposed
   command, artifact, or schema
 
-## Move On When
+## Open Another Section When
 
 - the real question is why ingest owns the work in the first place
 - you need internal structure, dependency direction, or execution flow

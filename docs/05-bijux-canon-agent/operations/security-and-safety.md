@@ -53,7 +53,7 @@ Any change that broadens package authority should update docs, tests, and releas
 - `packages/bijux-canon-agent/README.md` for local package framing
 - `packages/bijux-canon-agent/tests` for executable operational backstops
 
-## Use This Page When
+## Open This Page When
 
 - you are installing, running, diagnosing, or releasing the package
 - you need repeatable operational anchors rather than architectural framing

@@ -68,7 +68,7 @@ flowchart LR
 - you need to understand where artifact shaping ends and downstream retrieval
   behavior begins
 
-## Move On When
+## Open Another Section When
 
 - the question is mainly about public commands, schemas, or import contracts
 - the real issue is operational, such as setup, release, or incident handling

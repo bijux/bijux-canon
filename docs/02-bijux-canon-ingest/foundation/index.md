@@ -69,7 +69,7 @@ flowchart LR
   downstream retrieval behavior belongs elsewhere
 - you need shared package language for chunking, source shaping, and handoff
 
-## Move On When
+## Open Another Section When
 
 - the question is already about public commands, schemas, or artifact contracts
 - the real problem is operational, such as setup, diagnostics, or release flow

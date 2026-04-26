@@ -72,7 +72,7 @@ flowchart LR
   assumptions
 - a reviewer needs to separate explicit interfaces from incidental visibility
 
-## Move On When
+## Open Another Section When
 
 - the real question is why the behavior belongs in reasoning at all
 - the concern is mainly how the package is organized internally

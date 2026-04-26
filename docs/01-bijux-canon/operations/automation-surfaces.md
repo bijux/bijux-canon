@@ -36,7 +36,7 @@ one or more of these surfaces without reading unrelated shell glue first.
 - does the change keep package ownership visible instead of burying it in root
   convenience logic
 
-## Use This Page When
+## Open This Page When
 
 - you need to locate the repository entrypoint behind a shared command,
   workflow, or helper

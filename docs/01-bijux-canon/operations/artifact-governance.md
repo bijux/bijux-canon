@@ -37,7 +37,7 @@ stale.
 - `artifacts/` for generated workflow output
 - package `CHANGELOG.md` and build outputs for release-facing evidence
 
-## Use This Page When
+## Open This Page When
 
 - you need to decide whether an artifact belongs in source control or in
   generated output

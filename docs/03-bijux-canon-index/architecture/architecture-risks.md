@@ -61,7 +61,7 @@ flowchart LR
 - `src/bijux_canon_index/application` for workflow coordination
 - `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
 
-## Use This Page When
+## Open This Page When
 
 - you are tracing structure, execution flow, or dependency pressure
 - you need to understand how modules fit before refactoring

@@ -70,7 +70,7 @@ flowchart LR
 - a review is really about trace trust, layering discipline, or result quality
 - you need to decide whether a run is merely complete or actually believable
 
-## Move On When
+## Open Another Section When
 
 - the main problem is package ownership or boundary confusion
 - you are still locating modules or public contracts

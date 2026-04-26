@@ -53,7 +53,7 @@ flowchart LR
 - tests/integration and tests/e2e for end-to-end workflow behavior
 - README.md
 
-## Use This Page When
+## Open This Page When
 
 - you are reviewing tests, invariants, limitations, or ongoing risks
 - you need evidence that the documented contract is actually defended
