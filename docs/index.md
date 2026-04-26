@@ -81,9 +81,9 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 - open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
 - open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name is still active
 
-## Choose A Package
+## Package Handbooks
 
-| Package | Owns | Use It When |
+| Package | Owns | Open It When |
 | --- | --- | --- |
 | `bijux-canon-ingest` | document preparation, chunking, and ingest-facing boundaries | you need to understand how raw inputs become deterministic material |
 | `bijux-canon-index` | vector execution, backend integration, and provenance-rich retrieval results | you are reviewing search or retrieval behavior rather than document preparation |
@@ -91,7 +91,7 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 | `bijux-canon-agent` | role-based orchestration and trace-backed agent workflows | you are reviewing how multi-step agent work is coordinated and explained |
 | `bijux-canon-runtime` | governed execution, replay, persistence, and final acceptability | you need the authority layer that decides whether a run is acceptable and durable |
 
-## Repository-Level Guides
+## Shared Handbooks
 
 - [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) explains the root-owned design boundary, shared workflow, and package seams
 - [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
