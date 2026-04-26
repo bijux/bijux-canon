@@ -26,10 +26,19 @@ actually ran.
 - `.github/workflows/release-artifacts.yml`
 - the package matrix callers in `verify.yml` and the release workflows
 
+## Reader Route
+
+- read this page when the main question is which workflows act as reusable
+  building blocks rather than top-level entrypoints
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
+  for the main verification flow
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/`
+  for tag-driven publication flow
+
 ## Purpose
 
-Use this page to see which workflows are building blocks and which top-level
-workflows call them.
+This page identifies which workflows are reusable building blocks and which
+top-level workflows call them.
 
 ## Stability
 

@@ -26,10 +26,19 @@ the published assets, then deploy the Pages artifact.
 - `mkdocs.yml` and `mkdocs.shared.yml`
 - `docs/` as the published source tree
 
+## Reader Route
+
+- read this page when the main question is how the checked-in handbook becomes
+  the published site
+- continue to `https://bijux.io/bijux-canon/01-bijux-canon/foundation/documentation-system/`
+  for the published handbook structure
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/`
+  when the question turns into verification rather than publication
+
 ## Purpose
 
-Use this page to understand when documentation publication runs and which site
-inputs it validates before deploy.
+This page shows when documentation publication runs and which site inputs it
+validates before deploy.
 
 ## Stability
 

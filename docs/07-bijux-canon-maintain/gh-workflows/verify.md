@@ -26,10 +26,19 @@ and `lint` jobs.
 - repository contract checks driven from `make`
 - the package matrix that delegates to reusable package workflows
 
+## Reader Route
+
+- read this page when the main question is how repository verification runs on
+  pushes and pull requests
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/`
+  for the reusable workflow building blocks behind the package matrix
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/ci-targets/`
+  for the make-layer target families behind the workflow
+
 ## Purpose
 
-Use this page to understand when verification runs and how it branches from
-repository checks into package-level jobs.
+This page shows when verification runs and how it branches from repository
+checks into package-level jobs.
 
 ## Stability
 

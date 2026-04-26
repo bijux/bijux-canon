@@ -37,10 +37,19 @@ The split keeps each publication surface explicit:
 - `release-ghcr.yml`: `resolve` + per-package GHCR artifact publication
 - `release-github.yml`: release planning + GitHub Release publication
 
+## Reader Route
+
+- read this page when the main question is which release surfaces are published
+  and how tag-driven release flow is split
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/`
+  for the reusable workflow layer behind publication
+- continue to `https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/release-support/`
+  for the maintainer package helpers that support release behavior
+
 ## Purpose
 
-Use this page to understand which release surfaces are published and how the
-tag-driven workflow split is organized.
+This page shows which release surfaces are published and how the tag-driven
+workflow split is organized.
 
 ## Stability
 
