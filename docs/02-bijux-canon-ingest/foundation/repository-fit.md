@@ -4,91 +4,29 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Repository Fit
 
-`bijux-canon-ingest` is one publishable part of a larger system. It sits in the
-monorepo with its own `src/`, tests, metadata, and release history because the
-repository wants package ownership to stay visible even when the packages evolve
-together.
+`bijux-canon-ingest` is a separate publishable package because prepared input is a real system seam. The repository gains review clarity by keeping that seam visible in package layout, metadata, tests, and release surfaces.
 
-This page is here to answer a simple but important question: why is this work a
-package at all, instead of just another folder inside a single giant project?
+## Why This Is A Package
 
-The foundation pages are the durable package description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` keeps implementation ownership explicit
+- `packages/bijux-canon-ingest/tests` proves the handoff stays stable under change
+- the handbook and package root together explain why downstream packages may trust ingest output
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    root["packages/bijux-canon-ingest"]
-    src["src/bijux_canon_ingest<br/>implementation boundary"]
-    tests["tests<br/>executable proof"]
-    readme["README + handbook<br/>reader framing"]
-    seam["Repository seam<br/>stays under runtime governance"]
-    root --> src
-    root --> tests
-    root --> readme
-    root --> seam
-    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
-    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
-    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
-    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class root page;
-    class src,tests anchor;
-    class readme positive;
-    class seam action;
-```
+- `packages/bijux-canon-ingest/pyproject.toml` for publishable package identity
+- `packages/bijux-canon-ingest/README.md` for package-level reader framing
+- `packages/bijux-canon-ingest/tests` for executable proof that the seam still matters
 
-## Repository Relationships
+## Fit Warning
 
-- feeds prepared material toward bijux-canon-index and bijux-canon-reason
-- stays under runtime governance instead of defining replay authority itself
+If the package can only be justified as “the place this code ended up,” the repository has lost a meaningful seam.
 
-## Canonical Package Root
+## Bottom Line
 
-- `packages/bijux-canon-ingest`
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest`
-- `packages/bijux-canon-ingest/tests`
-
-## Concrete Anchors
-
-- `packages/bijux-canon-ingest` as the package root
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the package proof surface
-
-## Open This Page When
-
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Repository Fit` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What You Can Resolve Here
-
-- what problem `bijux-canon-ingest` owns on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Review Focus
-
-- compare the stated boundary with the modules, artifacts, and tests that uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Limits
-
-Code, tests, and neighboring package seams remain the proof of this boundary.
-
-## Read Next
-
-- open architecture when the question becomes structural rather than boundary-oriented
-- open interfaces when the question becomes contract-facing
-- open quality when the question becomes proof or review sufficiency
-
+The repository should make the `bijux-canon-ingest` seam easier to defend, not easier to forget.
