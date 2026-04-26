@@ -21,12 +21,21 @@ Treat the operations pages for `bijux-canon-index` as the package's explicit ope
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Local Development] --> B[Open owning module]
-    B --> C[Implement change]
-    C --> D[Run local tests]
-    D --> E[Update docs or contracts]
-    E --> F[Prepare reviewable diff]
+flowchart LR
+    root["Work in package root<br/>packages/bijux-canon-index"]
+    change["Change code and docs together"]
+    tests["Run local proof<br/>tests/unit for API, application, contracts"]
+    commit["Commit when one intent is coherent"]
+    root --> change --> tests --> commit
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class root anchor;
+    class change page;
+    class tests positive;
+    class commit action;
 ```
 
 ## Development Anchors

@@ -21,12 +21,21 @@ Treat the operations pages for `bijux-canon-ingest` as the package's explicit op
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Release and Versioning] --> B[Conventional commit]
-    B --> C[Version derivation]
-    C --> D[Build and package ingest artifacts]
-    D --> E[Publish with release evidence]
-    E --> F[Traceable version history]
+flowchart LR
+    change["Code, docs, and tests agree"]
+    notes["Update release assets<br/>CHANGELOG.md<br/>pyproject.toml"]
+    version["Version source<br/>packages/bijux-canon-ingest/src/bijux_canon_ingest/_version.py"]
+    release["Cut the package release"]
+    change --> notes --> version --> release
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class change positive;
+    class notes anchor;
+    class version page;
+    class release action;
 ```
 
 ## Release Anchors

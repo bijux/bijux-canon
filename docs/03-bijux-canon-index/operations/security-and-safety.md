@@ -20,12 +20,21 @@ Treat the operations pages for `bijux-canon-index` as the package's explicit ope
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Security and Safety] --> B[Threat and misuse surface]
-    B --> C[Input and artifact safeguards]
-    C --> D[Dependency and policy checks]
-    D --> E[Security validation gates]
-    E --> F[Safe operational posture]
+flowchart LR
+    surface["Boundary surface"]
+    authority["What authority does it add?"]
+    evidence["Update docs, tests, and release notes"]
+    decision["Accept only if the expansion is explicit"]
+    surface --> authority --> evidence --> decision
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class surface anchor;
+    class authority page;
+    class evidence positive;
+    class decision caution;
 ```
 
 ## Review Anchors

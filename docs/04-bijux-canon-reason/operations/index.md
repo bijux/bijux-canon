@@ -18,35 +18,28 @@ Treat the operations pages for `bijux-canon-reason` as the package's explicit op
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Operations<br/>clarifies: repeat workflows | find diagnostics | release safely"]
+flowchart LR
+    ops["bijux-canon-reason<br/>operator questions"]
+    install["Install and configure"]
+    dev["Develop and validate locally"]
+    diagnose["Observe and recover"]
+    release["Version and publish safely"]
+    security["Review authority and deployment boundaries"]
+    ops --> install
+    ops --> dev
+    ops --> diagnose
+    ops --> release
+    ops --> security
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    step1["packages/bijux-canon-reason/pyproject.toml"]
-    step1 --> page
-    step2["CLI app in src/bijux_canon_reason/interfaces/cli"]
-    step2 --> page
-    step3["HTTP app in src/bijux_canon_reason/api/v1"]
-    step3 --> page
-    run1["tests/unit for planning, reasoning, execution, verification, and interfaces"]
-    page --> run1
-    run2["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
-    page --> run2
-    run3["tests/perf for retrieval benchmark coverage"]
-    page --> run3
-    release1["pyproject.toml"]
-    run1 --> release1
-    release2["README.md"]
-    run2 --> release2
-    release3["CHANGELOG.md"]
-    run3 --> release3
-    class page page;
-    class step1,step2,step3 positive;
-    class run1,run2,run3 anchor;
-    class release1,release2,release3 action;
+    class ops page;
+    class install positive;
+    class dev anchor;
+    class diagnose,security caution;
+    class release action;
 ```
 
 ## Pages in This Section
