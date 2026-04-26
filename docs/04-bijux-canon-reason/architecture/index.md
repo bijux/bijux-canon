@@ -20,27 +20,23 @@ make the result replayable rather than just plausible.
 
 ```mermaid
 flowchart LR
-    evidence["evidence input<br/>retrieved chunks and context"]
-    core["core models<br/>claims, plans, verification, traces"]
-    execution["execution<br/>runtime, tools, step executor"]
-    reasoning["reasoning<br/>extractive and backend logic"]
-    verification["verification<br/>structural and provenance checks"]
-    traces["traces<br/>checksum, replay, diff"]
-    output["reasoning artifact<br/>claims, checks, metadata"]
+    evidence["evidence input"]
+    core["core models"]
+    execution["execution runtime"]
+    reasoning["reasoning logic"]
+    verification["verification checks"]
+    traces["trace records"]
+    output["reasoning artifact"]
 
     evidence --> core --> execution --> reasoning --> verification --> output
     execution --> traces --> output
-    core -. schemas meaning .-> output
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class evidence page;
-    class core,execution,reasoning,verification positive;
-    class traces anchor;
-    class output action;
+    core --> output
 ```
+
+The architectural point of reason is that interpretation stays inspectable.
+Models define the shapes that matter, execution runs the step, reasoning logic
+forms the conclusion, verification constrains it, and traces preserve enough
+history for comparison or replay later.
 
 ## Read These First
 
@@ -78,6 +74,8 @@ The main architectural risk here is hiding reasoning policy in the wrong layer u
 - leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
 - leave for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
-## Bottom Line
+## Design Pressure
 
-A structure that cannot be explained in one pass is already carrying too much hidden policy.
+If a reader cannot point to where meaning is formed versus where meaning is
+checked, the package has already blurred its own reasoning policy. The
+architecture page should keep those responsibilities separate and visible.
