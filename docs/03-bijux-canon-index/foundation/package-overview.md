@@ -11,6 +11,22 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-index` exists to make retrieval behavior explicit, replayable, and reviewable. It turns prepared ingest output into embeddings, index state, and retrieval results that downstream packages can inspect instead of merely trust.
 
+## Role Model
+
+```mermaid
+flowchart LR
+    prepared["prepared ingest output"]
+    index["retrieval and indexing behavior"]
+    results["replayable retrieval results"]
+    downstream["reason, agent, and runtime consumers"]
+
+    prepared --> index --> results --> downstream
+```
+
+This page should let a reader picture index as the package that owns retrieval
+semantics in the open. The result is not just search output; it is search
+behavior that later packages can replay, compare, and review.
+
 ## Boundary Verdict
 
 If the work changes how search is executed, replayed, compared, or exposed as retrieval output, it belongs here. If it changes source preparation, claim meaning, or governed run policy, it does not.
@@ -33,6 +49,8 @@ If the work changes how search is executed, replayed, compared, or exposed as re
 - `packages/bijux-canon-index/apis` for tracked caller-facing schemas
 - `packages/bijux-canon-index/tests` for replay and provenance evidence
 
-## Bottom Line
+## Design Pressure
 
-If `bijux-canon-index` grows in a way that weakens this argument, the package is getting larger without getting clearer.
+The pressure on index is to keep retrieval logic visible enough that later
+packages never need to guess what happened inside search. If retrieval policy
+spills into adapters or downstream code, the package boundary stops paying off.
