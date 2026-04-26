@@ -11,6 +11,21 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-reason` is a separate package because reviewable meaning is a real system seam. The repository needs one place where evidence-to-claim policy is explicit instead of being inferred from lower or higher layers.
 
+## Fit Model
+
+```mermaid
+flowchart LR
+    seam["evidence-to-claim seam"]
+    package["bijux-canon-reason package boundary"]
+    proof["metadata, readme, tests, and handbook"]
+
+    seam --> package --> proof
+```
+
+This page should explain why reasoning exists as a package and not as glue
+inside retrieval or orchestration. The fit is good only when meaning itself is
+treated as a publishable, reviewable boundary.
+
 ## Why This Is A Package
 
 - `packages/bijux-canon-reason/src/bijux_canon_reason` keeps reasoning ownership visible in code
@@ -27,6 +42,8 @@ last_reviewed: 2026-04-26
 
 If the package exists only because the code looked complex enough to split out, the reasoning seam is not being defended on its actual merits.
 
-## Bottom Line
+## Design Pressure
 
-The repository should make the `bijux-canon-reason` seam easier to defend, not easier to forget.
+If reason is justified only by complexity or code volume, the seam is already
+being defended on the wrong grounds. The repository has to keep the
+evidence-to-claim boundary explicit.
