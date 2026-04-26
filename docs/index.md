@@ -10,10 +10,13 @@ last_reviewed: 2026-04-26
 # Bijux Canon
 
 `bijux-canon` is a package system for deterministic ingest, retrieval,
-reasoning, orchestration, and governed execution. The split is the design.
-Each package owns one operational promise strongly enough that the full
-system can be understood as a chain of accountable handoffs rather than as
-one blurred codebase.
+reasoning, orchestration, and governed execution. Use this site to find the
+package that owns the behavior you are reviewing and the repository rules
+that connect one package boundary to the next.
+
+The split is the design. Each package owns one operational promise strongly
+enough that you can follow the full system as a chain of accountable
+handoffs instead of treating the repository as one blurred codebase.
 
 <!-- bijux-canon-badges:generated:start -->
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
@@ -109,14 +112,14 @@ flowchart LR
 
 ## Start Here
 
-- open [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) for cross-package seams, root rules, or shared repository behavior
-- open one product handbook for package-local ownership, interfaces, operations, or proof
-- open [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
-- open [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name still exists in the environment
+- use the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) when you need package boundaries, shared rules, or repository-wide workflow
+- use one product handbook when you already know the behavior belongs to ingest, index, reason, agent, or runtime
+- use the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
+- use the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name is still part of the environment
 
-## Canonical Package Responsibilities
+## Choose A Package
 
-| Package | Owns | Open It When |
+| Package | Owns | Use It When |
 | --- | --- | --- |
 | `bijux-canon-ingest` | document preparation, chunking, and ingest-facing boundaries | you need to understand how raw inputs become deterministic material |
 | `bijux-canon-index` | vector execution, backend integration, and provenance-rich retrieval results | you are reviewing search or retrieval behavior rather than document preparation |
@@ -130,38 +133,38 @@ flowchart LR
 - [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
 - [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) documents preserved legacy names and the migration pressure away from them
 
-## Concrete Anchors
+## Verify The Route
 
-- `docs/index.md` as the root routing page
-- `mkdocs.yml` as the published navigation source
-- `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` as the developer-side catalog tool
-- `packages/` as the canonical package split this page is explaining
+- `mkdocs.yml` for the published navigation source
+- `packages/` for the package split this page is introducing
+- `docs/` for the handbook entry pages that route readers into the repository
+- `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` for the catalog tooling behind the handbook structure
 
-## Follow The System In This Order
+## Read Across The Flow
 
-Start with ingest when the question begins at documents or source preparation.
-Move to index when the question becomes retrieval behavior or provenance.
-Move to reason when the question becomes claims, verification, or evidence
-interpretation. Move to agent when the concern is multi-role orchestration.
-Move to runtime when the concern is final execution authority, replayability,
-or durable run state. Stay in the repository handbook only for seams shared
-across packages. Stay in the maintainer handbook only for repository-health
-surfaces. Stay in compatibility docs only until the canonical target is known.
+Start with ingest when your work begins at source material or deterministic
+preparation. Move to index when retrieval behavior or provenance becomes the
+focus. Move to reason when you need claims, verification, or evidence
+interpretation. Move to agent when you need orchestration, traces, or
+role-based coordination. Move to runtime when the question is whether a run
+is acceptable, replayable, and durable. Stay at the repository level only
+for shared seams, at the maintainer level only for repository health, and in
+compatibility docs only until the canonical target is clear.
 
-## Stay At The Root When
+## Use This Page When
 
-- the owned package or handbook branch is still unclear
-- the concern might be cross-package, maintainer-only, or legacy-only
-- the published docs navigation needs to stay consistent with the real package split
+- you are still deciding which handbook owns the topic
+- the concern may be cross-package, maintainer-only, or legacy-only
+- you want the shortest route from the site homepage to the right handbook branch
 
-## Leave The Root When
+## Move To A Deeper Handbook When
 
-- one product handbook already owns the behavior in question
-- the needed detail is a concrete interface, workflow, or test surface
-- the problem is already known to be a legacy-name migration issue
+- one product handbook already owns the behavior you need
+- the next step is a concrete interface, workflow, schema, or test surface
+- the work is already known to be a legacy-name migration issue
 
 ## Core Claim
 
 `bijux-canon` stays understandable because each package carries one main
-promise and hands off explicitly to the next layer. The docs should preserve
-that clarity instead of reintroducing a monolith in prose.
+promise and hands off explicitly to the next layer. Use this page to choose
+the right handbook, then let the owning package carry the detailed contract.
