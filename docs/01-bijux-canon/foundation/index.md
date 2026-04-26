@@ -9,11 +9,14 @@ last_reviewed: 2026-04-26
 
 # Foundation
 
-Use the foundation section to understand why the repository is split this way
-before you move into operational detail. These pages define the design
-boundary that keeps package ownership explicit: why the repository exists,
-where authority changes hands, which terms stay stable, and which changes
-would weaken that clarity.
+The foundation section explains the design boundary that keeps package
+ownership explicit: why the repository exists, where authority changes hands,
+which terms stay stable, and which changes would weaken that clarity.
+
+The main mistake this section should prevent is treating the root as a
+convenient overflow area. These pages exist so a reviewer can tell, early and
+plainly, whether a change belongs in shared governance or in one owning
+package.
 
 ## Start Here
 
@@ -50,8 +53,8 @@ would weaken that clarity.
 
 ## Concrete Anchors
 
+- `packages/` for the first ownership check when root scope feels arguable
 - `pyproject.toml` for the declared workspace boundary
-- `packages/` for the product split described in these pages
 - [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/) and [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/) for
   the clearest statement of authority changes
 - [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/) for the root-level test of whether a
@@ -69,3 +72,9 @@ The split should remain easier to defend after a change than before it. If a
 proposal simplifies one local task only by making ownership boundaries harder
 to explain, the proposal is weakening the repository even if it reduces
 short-term friction.
+
+## Bottom Line
+
+Open these pages when the question is why the root owns anything at all. Leave
+them when the answer has narrowed to one package contract, one workflow, or one
+proof surface.
