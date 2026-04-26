@@ -86,10 +86,3 @@ This page can identify the intended public surfaces of `bijux-canon-agent`, but 
 - open `https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/` when compatibility or evidence of protection becomes the real issue
 - open `https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/` when a public-surface question reveals a deeper structural drift
 
-## Purpose
-
-This page shows which structured shapes deserve compatibility review.
-
-## Stability
-
-Keep it aligned with tracked schemas, stable models, and durable artifacts.

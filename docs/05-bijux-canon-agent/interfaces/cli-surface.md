@@ -79,10 +79,3 @@ This page can identify the intended public surfaces of `bijux-canon-agent`, but 
 - open `https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/` when compatibility or evidence of protection becomes the real issue
 - open `https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/` when a public-surface question reveals a deeper structural drift
 
-## Purpose
-
-This page identifies the command entrypoints and their owning code.
-
-## Stability
-
-Keep it aligned with the declared scripts and the interface modules that implement them.

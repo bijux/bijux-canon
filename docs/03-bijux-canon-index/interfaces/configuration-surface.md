@@ -86,10 +86,3 @@ This page can identify the intended public surfaces of `bijux-canon-index`, but 
 - open `https://bijux.io/bijux-canon/03-bijux-canon-index/quality/` when compatibility or evidence of protection becomes the real issue
 - open `https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/` when a public-surface question reveals a deeper structural drift
 
-## Purpose
-
-This page shows where configuration enters the package and how it should be reviewed.
-
-## Stability
-
-Keep it aligned with real configuration loaders, defaults, and operator-facing options.

@@ -82,10 +82,3 @@ This page can identify the intended public surfaces of `bijux-canon-reason`, but
 - open quality when compatibility or evidence of protection becomes the real issue
 - move back to architecture when a public-surface question reveals a deeper structural drift
 
-## Purpose
-
-This page connects package interfaces to the workflows an operator actually performs.
-
-## Stability
-
-Keep it aligned with the existing commands, endpoints, and outputs.

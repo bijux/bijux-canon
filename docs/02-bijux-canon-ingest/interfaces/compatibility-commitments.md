@@ -84,10 +84,3 @@ This page can identify the intended public surfaces of `bijux-canon-ingest`, but
 - open `https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/` when compatibility or evidence of protection becomes the real issue
 - open `https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/` when a public-surface question reveals a deeper structural drift
 
-## Purpose
-
-This page shows what should trigger compatibility review for the package.
-
-## Stability
-
-Keep it aligned with the package's actual public surfaces and release process.

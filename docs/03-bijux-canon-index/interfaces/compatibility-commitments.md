@@ -84,10 +84,3 @@ This page can identify the intended public surfaces of `bijux-canon-index`, but 
 - open `https://bijux.io/bijux-canon/03-bijux-canon-index/quality/` when compatibility or evidence of protection becomes the real issue
 - open `https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/` when a public-surface question reveals a deeper structural drift
 
-## Purpose
-
-This page shows what should trigger compatibility review for the package.
-
-## Stability
-
-Keep it aligned with the package's actual public surfaces and release process.
