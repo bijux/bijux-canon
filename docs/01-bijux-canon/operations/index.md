@@ -17,6 +17,36 @@ The main mistake this section should prevent is operational folklore. Shared
 work should be discoverable from checked-in commands, workflows, schemas, and
 docs instead of from CI archaeology or private maintainer memory.
 
+## Operating Loop
+
+Operations pages should make the shared work loop visible: a contributor
+changes a package or root contract, runs the relevant local command, leaves
+artifacts in the repository-owned output area, and lets CI repeat the same
+intent before release.
+
+```mermaid
+flowchart LR
+    change["change intent<br/>package, schema, docs, release"]
+    local["local workflow<br/>make targets and package checks"]
+    artifacts["artifacts/<br/>logs, reports, generated run output"]
+    review["review gate<br/>diff, proof, boundary check"]
+    ci["CI and release workflows<br/>repeat shared commands"]
+    publish["publishable result<br/>package, docs, schema, release"]
+
+    change --> local --> artifacts --> review --> ci --> publish
+    change -. schema pressure .-> apis["apis/<br/>checked-in contracts"]
+    ci -. workflow source .-> workflows[".github/workflows/<br/>automation truth"]
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class change page;
+    class local,review,ci positive;
+    class artifacts,apis,workflows anchor;
+    class publish action;
+```
+
 ## Start Here
 
 - open [Contributor Workflows](https://bijux.io/bijux-canon/01-bijux-canon/operations/contributor-workflows/) for the shortest route through normal repository work
