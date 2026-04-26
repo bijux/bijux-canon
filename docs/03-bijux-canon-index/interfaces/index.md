@@ -55,7 +55,7 @@ flowchart LR
 - open [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/) when a change
   may break a retrieval contract that others already trust
 
-## Pages In Interfaces
+## Pages In This Section
 
 - [CLI Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/cli-surface/)
 - [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/)

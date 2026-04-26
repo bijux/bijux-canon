@@ -32,7 +32,7 @@ rules still justify trusting a governed run.
 - open [Known Limitations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/risk-register/)
   before claiming the package proves more than it currently does
 
-## Pages In Quality
+## Pages In This Section
 
 - [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/)
 - [Invariants](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/invariants/)

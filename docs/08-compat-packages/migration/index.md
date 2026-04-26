@@ -17,7 +17,7 @@ names, what continuity must be preserved while both exist, what validation must
 run during the overlap, and what evidence is required before a compatibility
 package can disappear.
 
-## Pages In Migration
+## Pages In This Section
 
 - [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)
 - [Migration Guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)

@@ -52,7 +52,7 @@ flowchart LR
 - open [Integration Seams](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/integration-seams/) when a change might blur the
   edges between ingest, index, and downstream consumers
 
-## Pages In Architecture
+## Pages In This Section
 
 - [Module Map](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/module-map/)
 - [Dependency Direction](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/dependency-direction/)

@@ -49,7 +49,7 @@ flowchart LR
 - open [Lifecycle Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/lifecycle-overview/) when you need the package
   story from agent input through traceable output
 
-## Pages In Foundation
+## Pages In This Section
 
 - [Package Overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/package-overview/)
 - [Scope and Non-Goals](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/scope-and-non-goals/)

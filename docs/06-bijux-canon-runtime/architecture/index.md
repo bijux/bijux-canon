@@ -55,7 +55,7 @@ flowchart LR
 - open [Integration Seams](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/integration-seams/) before broadening runtime's
   dependencies on lower packages or outside systems
 
-## Pages In Architecture
+## Pages In This Section
 
 - [Module Map](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/module-map/)
 - [Dependency Direction](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/dependency-direction/)

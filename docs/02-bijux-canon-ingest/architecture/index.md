@@ -48,7 +48,7 @@ flowchart LR
 - open [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/) when a change might blur the
   line between ingest and its upstream or downstream neighbors
 
-## Pages In Architecture
+## Pages In This Section
 
 - [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/)
 - [Dependency Direction](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/dependency-direction/)

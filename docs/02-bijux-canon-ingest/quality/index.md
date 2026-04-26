@@ -28,7 +28,7 @@ all look healthy while building on unstable prepared data.
 - open [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/) when known limits or tradeoffs may
   matter more than pass/fail checks
 
-## Pages In Quality
+## Pages In This Section
 
 - [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/)
 - [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/)

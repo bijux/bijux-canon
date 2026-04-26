@@ -28,7 +28,7 @@ live-provider pressure.
 - open [Known Limitations](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/risk-register/)
   before assuming agent output proves more than it actually does
 
-## Pages In Quality
+## Pages In This Section
 
 - [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/)
 - [Invariants](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/invariants/)

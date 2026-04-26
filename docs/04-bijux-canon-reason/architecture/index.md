@@ -53,7 +53,7 @@ flowchart TB
 - open [State and Persistence](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/state-and-persistence/) when the question is
   which records become replayable or durable
 
-## Pages In Architecture
+## Pages In This Section
 
 - [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/)
 - [Dependency Direction](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/dependency-direction/)

@@ -51,7 +51,7 @@ flowchart LR
 - open [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/) when you need the
   end-to-end shape from evidence intake to verified reasoning output
 
-## Pages In Foundation
+## Pages In This Section
 
 - [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/)
 - [Scope and Non-Goals](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/scope-and-non-goals/)

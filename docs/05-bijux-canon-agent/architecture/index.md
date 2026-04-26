@@ -55,7 +55,7 @@ flowchart TB
 - open [State and Persistence](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/state-and-persistence/) when the question is
   which results, traces, or replay data become durable
 
-## Pages In Architecture
+## Pages In This Section
 
 - [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/)
 - [Dependency Direction](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/dependency-direction/)

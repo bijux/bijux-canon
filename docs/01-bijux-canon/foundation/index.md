@@ -40,7 +40,7 @@ flowchart LR
 - open [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/) when you want to read the split as owned responsibilities instead of directory names
 - open [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/) before making a cross-package change that might blur authority
 
-## Pages In Foundation
+## Pages In This Section
 
 - [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/)
 - [Repository Scope](https://bijux.io/bijux-canon/01-bijux-canon/foundation/repository-scope/)

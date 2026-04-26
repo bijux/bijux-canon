@@ -55,7 +55,7 @@ flowchart LR
 - open [Failure Recovery](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/failure-recovery/) when index state or replay output
   has already gone wrong
 
-## Pages In Operations
+## Pages In This Section
 
 - [Installation and Setup](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/installation-and-setup/)
 - [Local Development](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/local-development/)

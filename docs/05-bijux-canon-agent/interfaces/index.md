@@ -52,7 +52,7 @@ flowchart LR
   [Data Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/data-contracts/) when trace or result shape matters more
   than invocation syntax
 
-## Pages In Interfaces
+## Pages In This Section
 
 - [CLI Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/cli-surface/)
 - [API Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/api-surface/)

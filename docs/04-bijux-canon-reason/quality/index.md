@@ -27,7 +27,7 @@ artifacts still support replay and audit instead of only looking complete.
 - open [Known Limitations](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/risk-register/)
   before assuming the reasoning layer proves more than it actually does
 
-## Pages In Quality
+## Pages In This Section
 
 - [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/)
 - [Invariants](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/invariants/)

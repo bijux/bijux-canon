@@ -55,7 +55,7 @@ flowchart LR
 - open [Compatibility Commitments](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/compatibility-commitments/) before
   changing names, shapes, or schema surfaces that another package may depend on
 
-## Pages In Interfaces
+## Pages In This Section
 
 - [CLI Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/cli-surface/)
 - [API Surface](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/api-surface/)

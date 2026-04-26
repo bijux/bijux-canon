@@ -55,7 +55,7 @@ flowchart LR
 - open [Compatibility Commitments](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/compatibility-commitments/) when a change
   might break an established ingest-facing contract
 
-## Pages In Interfaces
+## Pages In This Section
 
 - [CLI Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/cli-surface/)
 - [API Surface](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/api-surface/)

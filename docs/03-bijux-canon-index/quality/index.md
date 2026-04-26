@@ -29,7 +29,7 @@ results.
 - open [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/) when backend limitations or tradeoffs
   matter more than pass/fail status
 
-## Pages In Quality
+## Pages In This Section
 
 - [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/)
 - [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/)

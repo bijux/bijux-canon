@@ -18,7 +18,7 @@ the behavior. It also records the narrow compatibility surfaces that remain so
 reviewers can tell whether a legacy package is still doing its intended job or
 drifting into something larger.
 
-## Pages In Catalog
+## Pages In This Section
 
 - [agentic-flows](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
 - [bijux-agent](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/)

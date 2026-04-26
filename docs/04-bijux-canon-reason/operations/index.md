@@ -51,7 +51,7 @@ flowchart LR
   [Failure Recovery](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/failure-recovery/) when a reasoning run is producing
   suspect output or replay mismatches
 
-## Pages In Operations
+## Pages In This Section
 
 - [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/)
 - [Local Development](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/local-development/)

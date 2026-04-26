@@ -50,7 +50,7 @@ flowchart LR
 - open [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/) when the key question is how
   prepared material becomes a replayable retrieval surface
 
-## Pages In Foundation
+## Pages In This Section
 
 - [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/)
 - [Scope and Non-Goals](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/scope-and-non-goals/)

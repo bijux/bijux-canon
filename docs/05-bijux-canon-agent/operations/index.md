@@ -53,7 +53,7 @@ flowchart LR
   [Failure Recovery](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/failure-recovery/) when traces, providers, or pipelines
   are behaving unexpectedly
 
-## Pages In Operations
+## Pages In This Section
 
 - [Installation and Setup](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/installation-and-setup/)
 - [Local Development](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/local-development/)

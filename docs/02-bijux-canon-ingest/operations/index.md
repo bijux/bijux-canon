@@ -55,7 +55,7 @@ flowchart LR
 - open [Failure Recovery](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/failure-recovery/) when a run or generated output
   has already gone wrong
 
-## Pages In Operations
+## Pages In This Section
 
 - [Installation and Setup](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/installation-and-setup/)
 - [Local Development](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/local-development/)

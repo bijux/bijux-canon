@@ -56,7 +56,7 @@ flowchart LR
 - open [Security and Safety](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/security-and-safety/) before broadening runtime
   authority or store access
 
-## Pages In Operations
+## Pages In This Section
 
 - [Installation and Setup](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/installation-and-setup/)
 - [Local Development](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/local-development/)

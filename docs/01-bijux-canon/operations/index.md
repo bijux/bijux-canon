@@ -44,7 +44,7 @@ flowchart LR
 - open [Release and Versioning](https://bijux.io/bijux-canon/01-bijux-canon/operations/release-and-versioning/) when the concern is tag behavior, package publication, or release discipline
 - open [Automation Surfaces](https://bijux.io/bijux-canon/01-bijux-canon/operations/automation-surfaces/) when you need to know which shared root automation owns the current action
 
-## Pages In Operations
+## Pages In This Section
 
 - [Local Development](https://bijux.io/bijux-canon/01-bijux-canon/operations/local-development/)
 - [Testing and Validation](https://bijux.io/bijux-canon/01-bijux-canon/operations/testing-and-validation/)
