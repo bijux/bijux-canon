@@ -4,45 +4,54 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Quality
 
-This section explains how `bijux-canon-reason` earns trust: which proof surfaces matter, which risks stay visible, and what done should mean after a real change.
+Use this section when the question is how `bijux-canon-reason` earns trust:
+which tests and replay checks matter, which invariants must survive a change,
+which risks stay visible, and what counts as enough evidence before a reasoning
+result is allowed to look believable.
 
-These pages explain the proof story for `bijux-canon-reason`. They should make trust, skepticism, and review pressure visible enough that passing checks do not get mistaken for sufficient evidence.
-
-Treat the quality pages for `bijux-canon-reason` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+This package cannot hide behind generic green builds. It has to show that
+claim formation stays deterministic, verification remains meaningful, and trace
+artifacts still support replay and audit instead of only looking complete.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    trust["bijux-canon-reason<br/>quality questions"]
-    strategy["What proof should exist?"]
-    invariants["What must not drift?"]
-    review["How should changes be reviewed?"]
-    done["When is work truly done?"]
-    risks["Which limitations stay visible?"]
-    trust --> strategy
-    trust --> invariants
-    trust --> review
-    trust --> done
-    trust --> risks
+    units["unit tests across planning, retrieval, reasoning, verification"]
+    e2e["end-to-end CLI, API, and replay scenarios"]
+    perf["retrieval performance and benchmark pressure"]
+    invariants["determinism, trace integrity, and evidence safety"]
+    limits["known limits and explicit risk register"]
+    reader["reader question<br/>what evidence makes this reasoning output trustworthy?"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class trust page;
-    class strategy anchor;
-    class invariants,done positive;
-    class review action;
-    class risks caution;
+    class units,page reader;
+    class e2e,invariants positive;
+    class perf,limits caution;
+    units --> reader
+    e2e --> reader
+    perf --> reader
+    invariants --> reader
+    limits --> reader
 ```
 
-## Pages in This Section
+## Start Here
+
+- open [Test Strategy](test-strategy.md) for the proof layers that matter most
+  in this package
+- open [Change Validation](change-validation.md) when you need the concrete
+  validation bar for a real change
+- open [Known Limitations](known-limitations.md) and [Risk Register](risk-register.md)
+  before assuming the reasoning layer proves more than it actually does
+
+## Pages In This Section
 
 - [Test Strategy](test-strategy.md)
 - [Invariants](invariants.md)
@@ -54,55 +63,45 @@ flowchart LR
 - [Known Limitations](known-limitations.md)
 - [Risk Register](risk-register.md)
 
-## Read Across the Package
+## Use This Section When
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
+- you need to know what evidence should defend a reasoning change
+- a review is really about replay trust, determinism, or verification rigor
+- you need to decide whether a result is merely produced or actually justified
+
+## Do Not Use This Section When
+
+- the main problem is package ownership or boundary confusion
+- you are still locating modules or public contracts
+- the issue is mainly procedural rather than evidentiary
 
 ## Concrete Anchors
 
-- tests/unit for planning, reasoning, execution, verification, and interfaces
-- tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
-- README.md
+- `tests/unit` for planning, retrieval, reasoning, execution, verification,
+  trace, and interface behavior
+- `tests/e2e` for CLI, API, replay-gate, and retrieval-to-reasoning scenarios
+- `tests/perf/test_retrieval_benchmark.py` for benchmark pressure around
+  retrieval behavior
 
-## Use This Page When
+## Read Across The Package
 
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
+- open [Foundation](../foundation/index.md) for package purpose and trust
+  boundaries
+- open [Architecture](../architecture/index.md) when a proof gap points to
+  structural drift
+- open [Interfaces](../interfaces/index.md) when the evidence needs to defend a
+  contract
+- open [Operations](../operations/index.md) when the validation bar depends on
+  a repeatable workflow
 
-## Decision Rule
+## Reader Takeaway
 
-Use `Quality` to decide whether `bijux-canon-reason` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
-
-## What This Page Answers
-
-- what currently proves the `bijux-canon-reason` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
-
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-reason` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
+Use `Quality` to ask whether the reasoning layer has earned belief, not whether
+it merely produced output. The real bar is determinism, verification strength,
+trace integrity, and explicit limits that remain visible after the change.
 
 ## Purpose
 
-This page explains how to use the quality section for `bijux-canon-reason` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page introduces the reasoning quality handbook and routes readers to the
+pages that explain tests, invariants, review standards, validation, and known
+limits.
