@@ -28,26 +28,22 @@ same contract in CI and release paths.
 
 ```mermaid
 flowchart LR
-    maintainer["maintainer question<br/>drift, release, docs, checks"]
-    dev["bijux-canon-dev<br/>helper code and catalog logic"]
-    makes["makes<br/>local command contracts"]
-    workflows["GitHub workflows<br/>CI, release, docs deploy"]
-    evidence["evidence<br/>logs, artifacts, schemas, package reports"]
-    product["product handbooks<br/>package behavior stays owned elsewhere"]
+    maintainer["maintainer question"]
+    dev["bijux-canon-dev"]
+    makes["makes"]
+    workflows["GitHub workflows"]
+    evidence["logs, artifacts, schemas"]
+    product["product handbooks"]
 
     maintainer --> dev --> makes --> workflows --> evidence
-    dev -. catalog and policy .-> evidence
-    workflows -. when behavior changes .-> product
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class maintainer page;
-    class dev,makes,workflows positive;
-    class evidence anchor;
-    class product action;
+    dev --> evidence
+    workflows --> product
 ```
+
+Maintenance docs should read like a control surface, not like a second product
+manual. A reader should be able to tell which helper code owns a rule, how
+that rule becomes a repeatable command, and which workflow reruns the same
+contract in CI or release.
 
 ## Handbook Sections
 
@@ -80,3 +76,9 @@ Maintainer documentation can explain repository health, but it should never act
 as a shortcut for product behavior. When a maintainer surface only wraps a
 product package contract, this handbook should stop at the integration point
 and send the reader back to the owning package.
+
+## Leave This Handbook When
+
+- the question is really about one package's user-facing behavior
+- the next step is a product interface, workflow, or test rather than a shared command
+- the issue is a legacy-name migration rather than repository-health machinery
