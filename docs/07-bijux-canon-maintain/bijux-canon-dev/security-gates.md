@@ -16,8 +16,6 @@ This page is here to keep security work from becoming vague compliance
 theater. The useful question is always which checked-in tool or test is
 carrying the actual security expectation.
 
-These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
-
 ## Visual Summary
 
 ```mermaid
@@ -58,11 +56,13 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Security Gates` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use this page when the main question is how repository-health security checks
+are implemented and reviewed. If the change would affect end-user behavior
+directly, move to the owning product package instead.
 
 ## What This Page Answers
 
-- which repository maintenance concern this page explains
+- which repository-health security checks live in `bijux-canon-dev`
 - which maintainer modules or tests support that concern
 - what a reviewer should confirm before changing repository automation
 
@@ -74,13 +74,19 @@ Use `Security Gates` to decide whether a change belongs to maintainer automation
 
 ## Next Checks
 
-- move to product package docs if the question is user-facing behavior rather than repository health
+- move to the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
+  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
+  question is user-facing behavior rather than repository health
 - open the relevant helper module or test after using this page to orient yourself
-- return to repository handbook pages when the maintainer issue turns out to be root policy instead
+- return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
+  when the maintainer issue turns out to be root policy instead
 
 ## Honesty Boundary
 
-This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.
+This section can describe maintainer automation and repository health work, but
+it should never imply that maintainer tooling is part of the end-user product
+surface. Security claims still need visible helpers, tests, and workflow
+context to be trustworthy.
 
 ## Purpose
 

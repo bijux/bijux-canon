@@ -13,10 +13,8 @@ The package owns repository-level helpers that keep API schemas and tracked
 schema artifacts synchronized with the code that claims to implement them.
 
 Schema drift is one of the easiest ways to lose user trust quietly. This
-page should make it obvious where the repository checks that risk and why
-that work belongs in maintainer tooling.
-
-These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
+section shows where the repository checks that risk and why that work belongs
+in maintainer tooling.
 
 ## Visual Summary
 
@@ -58,11 +56,13 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Schema Governance` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use this page when the main question is how schema drift is checked and
+reviewed across the repository. If the change would affect end-user behavior
+directly, move to the owning product package instead.
 
 ## What This Page Answers
 
-- which repository maintenance concern this page explains
+- which schema-governance checks live in `bijux-canon-dev`
 - which maintainer modules or tests support that concern
 - what a reviewer should confirm before changing repository automation
 
@@ -74,17 +74,23 @@ Use `Schema Governance` to decide whether a change belongs to maintainer automat
 
 ## Next Checks
 
-- move to product package docs if the question is user-facing behavior rather than repository health
+- move to the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
+  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
+  question is user-facing behavior rather than repository health
 - open the relevant helper module or test after using this page to orient yourself
-- return to repository handbook pages when the maintainer issue turns out to be root policy instead
+- return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
+  when the maintainer issue turns out to be root policy instead
 
 ## Honesty Boundary
 
-This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.
+This section can describe maintainer automation and repository health work, but
+it should never imply that maintainer tooling is part of the end-user product
+surface. Schema claims still need visible helpers, tests, tracked artifacts,
+and workflow context to be trustworthy.
 
 ## Purpose
 
-This page explains why schema drift detection belongs in the maintainer package.
+This page shows why schema drift detection belongs in the maintainer package.
 
 ## Stability
 

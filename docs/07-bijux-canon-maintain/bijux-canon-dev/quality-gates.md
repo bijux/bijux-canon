@@ -12,11 +12,8 @@ last_reviewed: 2026-04-04
 Repository quality checks live here so package code does not each reinvent the
 same maintenance logic.
 
-This page should make the gates feel concrete and inspectable. A quality bar
-is more credible when a contributor can point to the helper, the test, and
-the workflow that back it.
-
-These maintainer pages should read like explicit operational memory for repository-health work. They are strongest when they expose automation intent, package impact, and repository policy without pretending that CI logs are documentation.
+A quality bar is more credible when a contributor can point to the helper, the
+test, and the workflow that back it.
 
 ## Visual Summary
 
@@ -58,11 +55,13 @@ flowchart LR
 
 ## Decision Rule
 
-Use `Quality Gates` to decide whether a change belongs to maintainer automation or to a product package contract. If the change would affect end-user behavior directly, this page should push the review back toward the owning product package instead of letting maintainer scope sprawl.
+Use this page when the main question is how repository-wide quality checks are
+implemented and reviewed. If the change would affect end-user behavior
+directly, move to the owning product package instead.
 
 ## What This Page Answers
 
-- which repository maintenance concern this page explains
+- which repository-wide quality checks live in `bijux-canon-dev`
 - which maintainer modules or tests support that concern
 - what a reviewer should confirm before changing repository automation
 
@@ -74,17 +73,24 @@ Use `Quality Gates` to decide whether a change belongs to maintainer automation 
 
 ## Next Checks
 
-- move to product package docs if the question is user-facing behavior rather than repository health
+- move to the package handbooks at `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`
+  through `https://bijux.io/bijux-canon/06-bijux-canon-runtime/` if the
+  question is user-facing behavior rather than repository health
 - open the relevant helper module or test after using this page to orient yourself
-- return to repository handbook pages when the maintainer issue turns out to be root policy instead
+- return to the repository handbook at `https://bijux.io/bijux-canon/01-bijux-canon/`
+  when the maintainer issue turns out to be root policy instead
 
 ## Honesty Boundary
 
-This section can describe maintainer automation and repository health work, but it should never imply that maintainer tooling is part of the end-user product surface. It also should not pretend that hidden scripts count as documentation just because CI happens to run them.
+This section can describe maintainer automation and repository health work, but
+it should never imply that maintainer tooling is part of the end-user product
+surface. Quality claims still need visible helpers, tests, and workflow context
+to be trustworthy.
 
 ## Purpose
 
-This page explains how the package participates in repository-wide correctness and consistency.
+This page shows how the package participates in repository-wide correctness and
+consistency.
 
 ## Stability
 
