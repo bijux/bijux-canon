@@ -11,6 +11,24 @@ last_reviewed: 2026-04-26
 
 Open this section when you need to decide whether governed run behavior is proven strongly enough for acceptance, persistence, and replay to be trusted as authority rather than habit.
 
+## Trust Model
+
+```mermaid
+flowchart LR
+    strategy["test strategy"]
+    invariants["authority invariants"]
+    validation["change validation"]
+    limits["limitations and risk"]
+    trust["trust decision"]
+
+    strategy --> invariants --> validation --> limits --> trust
+```
+
+Runtime quality is the proof path behind authority. The section should make it
+clear how accepted and replayable runs are tested, which invariants protect the
+authority model, and where the package still names limits instead of hiding
+them behind a green build.
+
 ## Read These First
 
 - open [Test Strategy](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/test-strategy/) first when you need the broad proof shape behind runtime authority
@@ -45,6 +63,8 @@ The main quality risk here is accepting or replaying runs under rules that are w
 - leave for [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is what the contract is rather than whether it is defended
 - leave for [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
-## Bottom Line
+## Design Pressure
 
-A passing check is not enough if the package still cannot explain why the surface should be trusted.
+If authority can drift while tests still look healthy, the package becomes
+dangerously shallow. This section has to show how trust in verdicts, replay,
+and persistence is actually defended.
