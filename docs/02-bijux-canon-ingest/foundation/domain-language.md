@@ -21,12 +21,23 @@ Treat the foundation pages for `bijux-canon-ingest` as the package's durable sel
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Domain Language] --> B[Canonical ingest terms]
-    B --> C[Term to behavior mapping]
-    C --> D[Shared review vocabulary]
-    D --> E[Consistent docs and code]
-    E --> F[Lower ambiguity in changes]
+flowchart LR
+    name["Package name<br/>bijux-canon-ingest"]
+    importroot["Import root<br/>bijux_canon_ingest"]
+    cli["Reader entrypoint<br/>bijux-canon-ingest"]
+    artifact["Output nouns<br/>normalized document trees<br/>chunk collections and retrieval-ready records"]
+    name --> importroot
+    importroot --> cli
+    importroot --> artifact
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class name page;
+    class importroot anchor;
+    class cli positive;
+    class artifact action;
 ```
 
 ## Package Vocabulary Anchors

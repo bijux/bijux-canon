@@ -21,12 +21,24 @@ Treat the foundation pages for `bijux-canon-index` as the package's durable self
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Ownership Boundary] --> B[Owned by index]
-    A --> C[Not owned by index]
-    B --> D[Retrieval execution and provenance]
-    C --> E[Ingest preparation and runtime governance]
-    D --> F[Clear package authority]
+flowchart TB
+    boundary["bijux-canon-index<br/>owned code boundary"]
+    mod1["domain<br/>execution, provenance, and request"]
+    mod2["application<br/>workflow coordination"]
+    mod3["infra<br/>backends, adapters, and runtime"]
+    adjacent["Adjacent systems<br/>accepts prepared inputs from ingest"]
+    boundary --> mod1
+    boundary --> mod2
+    boundary --> mod3
+    boundary -.stops before.-> adjacent
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class boundary page;
+    class mod1,mod2,mod3 anchor;
+    class adjacent caution;
 ```
 
 ## Owned Code Areas

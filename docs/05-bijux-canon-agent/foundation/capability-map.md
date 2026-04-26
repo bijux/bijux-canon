@@ -22,34 +22,30 @@ Treat the foundation pages for `bijux-canon-agent` as the package's durable self
 
 ```mermaid
 flowchart LR
-    page["Capability Map<br/>clarifies: own the right work | name the boundary | compare neighbors"]
+    package["bijux-canon-agent<br/>capabilities to modules"]
+    cap1["agent role implementations and role-specific helpers"]
+    mod1["agents<br/>role-local behavior"]
+    package --> cap1
+    cap1 --> mod1
+    cap2["deterministic orchestration of the local agent"]
+    mod2["pipeline<br/>execution flow orchestration"]
+    package --> cap2
+    cap2 --> mod2
+    cap3["trace-backed result artifacts that explain each"]
+    mod3["application<br/>workflow policy and graph"]
+    package --> cap3
+    cap3 --> mod3
+    output["Visible output<br/>trace-backed final outputs"]
+    mod3 --> output
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    own1["deterministic orchestration of the local agent pipeline"]
-    own1 --> page
-    own2["trace-backed result artifacts that explain each run"]
-    own2 --> page
-    own3["agent role implementations and role-specific helpers"]
-    own3 --> page
-    limit1["repository tooling and release automation"]
-    page -.keeps outside.-> limit1
-    limit2["runtime-wide persistence and replay acceptance"]
-    page -.keeps outside.-> limit2
-    limit3["ingest and index domain ownership"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-agent/src/bijux_canon_agent"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-agent/tests"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-agent"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+    class package page;
+    class cap1,cap2,cap3 positive;
+    class mod1,mod2,mod3 anchor;
+    class output action;
 ```
 
 ## Capability Map

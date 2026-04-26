@@ -22,12 +22,23 @@ Treat the foundation pages for `bijux-canon-ingest` as the package's durable sel
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Scope and Non-Goals] --> B[In-scope behaviors]
-    A --> C[Out-of-scope behaviors]
-    B --> D[Document transforms and contracts]
-    C --> E[Cross-package runtime concerns]
-    D --> F[Focused review decisions]
+flowchart LR
+    question["Should this work land here?"]
+    scope["In scope<br/>document cleaning, normalization, and chunking<br/>ingest-local retrieval and indexing assembly"]
+    noscope["Out of scope<br/>runtime-wide replay authority and persistence<br/>cross-package vector execution semantics"]
+    proof["Check before moving<br/>packages/bijux-canon-ingest/src/bijux_canon_ingest<br/>packages/bijux-canon-ingest/tests"]
+    question --> scope
+    question --> noscope
+    question --> proof
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class question page;
+    class scope positive;
+    class noscope caution;
+    class proof anchor;
 ```
 
 ## In Scope

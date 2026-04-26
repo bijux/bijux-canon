@@ -22,34 +22,22 @@ Treat the foundation pages for `bijux-canon-reason` as the package's durable sel
 
 ```mermaid
 flowchart LR
-    page["Domain Language<br/>clarifies: own the right work | name the boundary | compare neighbors"]
+    name["Package name<br/>bijux-canon-reason"]
+    importroot["Import root<br/>bijux_canon_reason"]
+    cli["Reader entrypoint<br/>bijux-canon-reason"]
+    artifact["Output nouns<br/>reasoning traces and replay diffs<br/>claim and verification outcomes"]
+    name --> importroot
+    importroot --> cli
+    importroot --> artifact
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    own1["execution of reasoning steps and local tool dispatch"]
-    own1 --> page
-    own2["verification and provenance checks that belong to reasoning itself"]
-    own2 --> page
-    own3["reasoning plans, claims, and evidence-aware reasoning models"]
-    own3 --> page
-    limit1["runtime persistence and replay authority"]
-    page -.keeps outside.-> limit1
-    limit2["ingest and index engines"]
-    page -.keeps outside.-> limit2
-    limit3["repository tooling and release automation"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-reason/tests"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-reason"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-reason/src/bijux_canon_reason"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+    class name page;
+    class importroot anchor;
+    class cli positive;
+    class artifact action;
 ```
 
 ## Package Vocabulary Anchors

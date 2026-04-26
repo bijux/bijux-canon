@@ -22,12 +22,23 @@ Treat the foundation pages for `bijux-canon-index` as the package's durable self
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Scope and Non-Goals] --> B[In-scope behaviors]
-    A --> C[Out-of-scope behaviors]
-    B --> D[Index contracts and retrieval logic]
-    C --> E[Agent orchestration and runtime policy]
-    D --> F[Focused review boundaries]
+flowchart LR
+    question["Should this work land here?"]
+    scope["In scope<br/>vector execution semantics and backend orchestration<br/>provenance-aware result artifacts and replay-oriented comparison"]
+    noscope["Out of scope<br/>document ingestion and normalization<br/>runtime-wide replay policy and execution governance"]
+    proof["Check before moving<br/>packages/bijux-canon-index/src/bijux_canon_index<br/>packages/bijux-canon-index/tests"]
+    question --> scope
+    question --> noscope
+    question --> proof
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class question page;
+    class scope positive;
+    class noscope caution;
+    class proof anchor;
 ```
 
 ## In Scope

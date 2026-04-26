@@ -21,12 +21,25 @@ Treat the foundation pages for `bijux-canon-ingest` as the package's durable sel
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Package Overview] --> B[Deterministic input preparation]
-    B --> C[Chunking and normalization]
-    C --> D[Retrieval-ready outputs]
-    D --> E[Package interfaces]
-    E --> F[Downstream index handoff]
+flowchart LR
+    package["bijux-canon-ingest<br/>document ingest and chunk assembly"]
+    own1["Owns<br/>document cleaning, normalization, and chunking"]
+    own2["Owns<br/>ingest-local retrieval and indexing assembly"]
+    out1["Not owned<br/>runtime-wide replay authority and persistence"]
+    handoff["Cross-package seam<br/>feeds prepared outputs toward index and reason"]
+    package --> own1
+    package --> own2
+    package --> out1
+    package --> handoff
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class package page;
+    class own1,own2 positive;
+    class out1 caution;
+    class handoff anchor;
 ```
 
 ## What It Owns

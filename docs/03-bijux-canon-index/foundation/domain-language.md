@@ -21,12 +21,23 @@ Treat the foundation pages for `bijux-canon-index` as the package's durable self
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Domain Language] --> B[Canonical index terms]
-    B --> C[Term to behavior mapping]
-    C --> D[Shared review vocabulary]
-    D --> E[Consistent docs and code]
-    E --> F[Lower ambiguity in retrieval changes]
+flowchart LR
+    name["Package name<br/>bijux-canon-index"]
+    importroot["Import root<br/>bijux_canon_index"]
+    cli["Reader entrypoint<br/>python import surface"]
+    artifact["Output nouns<br/>vector execution result collections<br/>provenance and replay comparison reports"]
+    name --> importroot
+    importroot --> cli
+    importroot --> artifact
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class name page;
+    class importroot anchor;
+    class cli positive;
+    class artifact action;
 ```
 
 ## Package Vocabulary Anchors

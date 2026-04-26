@@ -22,12 +22,25 @@ Treat the foundation pages for `bijux-canon-ingest` as the package's durable sel
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Repository Fit] --> B[Ingest package role]
-    B --> C[Shared repository contracts]
-    C --> D[API and schema alignment]
-    D --> E[Cross-package compatibility]
-    E --> F[Monorepo coherence]
+flowchart LR
+    root["packages/bijux-canon-ingest"]
+    src["src/bijux_canon_ingest<br/>implementation boundary"]
+    tests["tests<br/>executable proof"]
+    readme["README + handbook<br/>reader framing"]
+    seam["Repository seam<br/>stays under runtime governance"]
+    root --> src
+    root --> tests
+    root --> readme
+    root --> seam
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class root page;
+    class src,tests anchor;
+    class readme positive;
+    class seam action;
 ```
 
 ## Repository Relationships

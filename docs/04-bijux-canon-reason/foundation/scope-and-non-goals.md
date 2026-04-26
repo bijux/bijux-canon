@@ -22,35 +22,23 @@ Treat the foundation pages for `bijux-canon-reason` as the package's durable sel
 ## Visual Summary
 
 ```mermaid
-flowchart RL
-    page["Scope and Non-Goals<br/>clarifies: own the right work | name the boundary | compare neighbors"]
+flowchart LR
+    question["Should this work land here?"]
+    scope["In scope<br/>reasoning plans, claims, and evidence-aware reasoning<br/>execution of reasoning steps and local"]
+    noscope["Out of scope<br/>runtime persistence and replay authority<br/>ingest and index engines"]
+    proof["Check before moving<br/>packages/bijux-canon-reason/src/bijux_canon_reason<br/>packages/bijux-canon-reason/tests"]
+    question --> scope
+    question --> noscope
+    question --> proof
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    own1["verification and provenance checks that belong to reasoning itself"]
-    own1 --> page
-    own2["reasoning plans, claims, and evidence-aware reasoning models"]
-    own2 --> page
-    own3["execution of reasoning steps and local tool dispatch"]
-    own3 --> page
-    limit1["ingest and index engines"]
-    page -.keeps outside.-> limit1
-    limit2["repository tooling and release automation"]
-    page -.keeps outside.-> limit2
-    limit3["runtime persistence and replay authority"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-reason/tests"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-reason"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-reason/src/bijux_canon_reason"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+    class question page;
+    class scope positive;
+    class noscope caution;
+    class proof anchor;
 ```
 
 ## In Scope

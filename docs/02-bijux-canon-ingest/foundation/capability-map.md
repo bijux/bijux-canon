@@ -21,12 +21,31 @@ Treat the foundation pages for `bijux-canon-ingest` as the package's durable sel
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Capability Map] --> B[Input acquisition]
-    B --> C[Normalization]
-    C --> D[Chunk and metadata shaping]
-    D --> E[Retrieval preparation]
-    E --> F[Auditable ingest outputs]
+flowchart LR
+    package["bijux-canon-ingest<br/>capabilities to modules"]
+    cap1["document cleaning, normalization, and chunking"]
+    mod1["processing<br/>deterministic document transforms"]
+    package --> cap1
+    cap1 --> mod1
+    cap2["ingest-local retrieval and indexing assembly"]
+    mod2["retrieval<br/>retrieval-oriented models and assembly"]
+    package --> cap2
+    cap2 --> mod2
+    cap3["package-local CLI and HTTP boundaries"]
+    mod3["application<br/>package workflows"]
+    package --> cap3
+    cap3 --> mod3
+    output["Visible output<br/>normalized document trees"]
+    mod3 --> output
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class package page;
+    class cap1,cap2,cap3 positive;
+    class mod1,mod2,mod3 anchor;
+    class output action;
 ```
 
 ## Capability Map

@@ -22,12 +22,22 @@ Treat the foundation pages for `bijux-canon-ingest` as the package's durable sel
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Lifecycle Overview] --> B[Ingest request starts]
-    B --> C[Validation and parsing]
-    C --> D[Processing and enrichment]
-    D --> E[Artifacts emitted]
-    E --> F[Lifecycle completes with traceability]
+flowchart LR
+    entry["Entrypoints<br/>CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py<br/>HTTP boundaries under src/bijux_canon_ingest/interfaces"]
+    work1["Owned work<br/>processing<br/>deterministic document transforms"]
+    work2["Coordination<br/>retrieval<br/>retrieval-oriented models and assembly"]
+    output["Artifacts<br/>normalized document trees<br/>chunk collections and retrieval-ready records"]
+    handoff["Handoff<br/>feeds prepared outputs toward index and reason"]
+    entry --> work1 --> work2 --> output --> handoff
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class entry anchor;
+    class work1,work2 positive;
+    class output action;
+    class handoff caution;
 ```
 
 ## Lifecycle Anchors

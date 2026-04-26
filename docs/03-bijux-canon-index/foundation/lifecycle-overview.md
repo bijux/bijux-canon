@@ -22,12 +22,22 @@ Treat the foundation pages for `bijux-canon-index` as the package's durable self
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Lifecycle Overview] --> B[Index request starts]
-    B --> C[Validation and planning]
-    C --> D[Backend execution]
-    D --> E[Result assembly]
-    E --> F[Traceable lifecycle completion]
+flowchart LR
+    entry["Entrypoints<br/>CLI modules under src/bijux_canon_index/interfaces/cli<br/>HTTP app under src/bijux_canon_index/api"]
+    work1["Owned work<br/>domain<br/>execution, provenance, and request"]
+    work2["Coordination<br/>application<br/>workflow coordination"]
+    output["Artifacts<br/>vector execution result collections<br/>provenance and replay comparison reports"]
+    handoff["Handoff<br/>accepts prepared inputs from ingest"]
+    entry --> work1 --> work2 --> output --> handoff
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class entry anchor;
+    class work1,work2 positive;
+    class output action;
+    class handoff caution;
 ```
 
 ## Lifecycle Anchors

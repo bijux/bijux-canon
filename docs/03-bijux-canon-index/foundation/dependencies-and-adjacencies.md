@@ -22,12 +22,23 @@ Treat the foundation pages for `bijux-canon-index` as the package's durable self
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Dependencies and Adjacencies] --> B[Index dependencies]
-    B --> C[Interface and infra adjacencies]
-    C --> D[Contract and schema touchpoints]
-    D --> E[Neighbor package interactions]
-    E --> F[Stable dependency posture]
+flowchart LR
+    deps["Library pressure<br/>pydantic<br/>typer<br/>fastapi"]
+    package["bijux-canon-index<br/>package boundary"]
+    adj1["Upstream or downstream<br/>accepts prepared inputs from ingest"]
+    adj2["Governance seam<br/>runtime governs replay acceptance"]
+    deps --> package
+    package --> adj1
+    package --> adj2
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class deps anchor;
+    class package page;
+    class adj1 positive;
+    class adj2 caution;
 ```
 
 ## Direct Dependency Themes

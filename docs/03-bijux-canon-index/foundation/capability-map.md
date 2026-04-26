@@ -21,12 +21,31 @@ Treat the foundation pages for `bijux-canon-index` as the package's durable self
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Capability Map] --> B[Index query handling]
-    B --> C[Vector and backend execution]
-    C --> D[Result scoring and ranking]
-    D --> E[Provenance attachment]
-    E --> F[Deterministic retrieval outputs]
+flowchart LR
+    package["bijux-canon-index<br/>capabilities to modules"]
+    cap1["vector execution semantics and backend orchestration"]
+    mod1["domain<br/>execution, provenance, and request"]
+    package --> cap1
+    cap1 --> mod1
+    cap2["provenance-aware result artifacts and replay-oriented comparison"]
+    mod2["application<br/>workflow coordination"]
+    package --> cap2
+    cap2 --> mod2
+    cap3["plugin-backed vector store, embedding, and runner"]
+    mod3["infra<br/>backends, adapters, and runtime"]
+    package --> cap3
+    cap3 --> mod3
+    output["Visible output<br/>vector execution result collections"]
+    mod3 --> output
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class package page;
+    class cap1,cap2,cap3 positive;
+    class mod1,mod2,mod3 anchor;
+    class output action;
 ```
 
 ## Capability Map

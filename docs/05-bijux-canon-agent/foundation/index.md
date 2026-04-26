@@ -19,34 +19,26 @@ Treat the foundation pages for `bijux-canon-agent` as the package's durable self
 
 ```mermaid
 flowchart LR
-    page["Foundation<br/>clarifies: own the right work | name the boundary | compare neighbors"]
+    start["bijux-canon-agent<br/>foundation questions"]
+    boundary["Boundary<br/>what belongs here"]
+    code["Code map<br/>where to inspect"]
+    language["Shared terms<br/>what words mean"]
+    lifecycle["Lifecycle<br/>how work moves through"]
+    change["Change posture<br/>how to evolve safely"]
+    start --> boundary
+    start --> code
+    start --> language
+    start --> lifecycle
+    start --> change
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    own1["deterministic orchestration of the local agent pipeline"]
-    own1 --> page
-    own2["trace-backed result artifacts that explain each run"]
-    own2 --> page
-    own3["agent role implementations and role-specific helpers"]
-    own3 --> page
-    limit1["runtime-wide persistence and replay acceptance"]
-    page -.keeps outside.-> limit1
-    limit2["ingest and index domain ownership"]
-    page -.keeps outside.-> limit2
-    limit3["repository tooling and release automation"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-agent"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-agent/src/bijux_canon_agent"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-agent/tests"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+    class start page;
+    class boundary,lifecycle positive;
+    class code,language anchor;
+    class change action;
 ```
 
 ## Pages in This Section

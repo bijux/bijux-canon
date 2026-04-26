@@ -21,12 +21,25 @@ Treat the foundation pages for `bijux-canon-index` as the package's durable self
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Package Overview] --> B[Query and corpus inputs]
-    B --> C[Index execution and retrieval]
-    C --> D[Provenance-rich outputs]
-    D --> E[Package interfaces]
-    E --> F[Reasoning and runtime handoff]
+flowchart LR
+    package["bijux-canon-index<br/>vector execution and provenance"]
+    own1["Owns<br/>vector execution semantics and backend orchestration"]
+    own2["Owns<br/>provenance-aware result artifacts and replay-oriented comparison"]
+    out1["Not owned<br/>document ingestion and normalization"]
+    handoff["Cross-package seam<br/>accepts prepared inputs from ingest"]
+    package --> own1
+    package --> own2
+    package --> out1
+    package --> handoff
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class package page;
+    class own1,own2 positive;
+    class out1 caution;
+    class handoff anchor;
 ```
 
 ## What It Owns
