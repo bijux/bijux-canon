@@ -18,6 +18,37 @@ convenient overflow area. These pages exist so a reviewer can tell, early and
 plainly, whether a change belongs in shared governance or in one owning
 package.
 
+## Foundation Map
+
+Foundation pages should make the repository's authority model visible before a
+reader gets lost in package detail. The root explains why the split exists,
+where the shared workspace boundary sits, and which decision rules protect the
+package family from slow boundary drift.
+
+```mermaid
+flowchart LR
+    intent["platform intent<br/>why split the system"]
+    scope["repository scope<br/>what the root may own"]
+    layout["workspace layout<br/>where ownership appears on disk"]
+    packages["package map<br/>how authority moves"]
+    language["domain language<br/>terms that keep reviews precise"]
+    decisions["decision rules<br/>how changes stay narrow"]
+
+    intent --> scope --> layout --> packages --> language --> decisions
+    scope -. sends local behavior to .-> package["owning package handbook"]
+    decisions -. rejects .-> blur["root creep and vague ownership"]
+
+    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
+    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
+    classDef caution fill:#fff1f2,stroke:#dc2626,color:#6b1d1d;
+    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
+    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
+    class intent page;
+    class scope,layout,packages,language,decisions positive;
+    class package action;
+    class blur caution;
+```
+
 ## Start Here
 
 - open [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/) for the shortest statement of the repository design
