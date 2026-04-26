@@ -4,44 +4,53 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Foundation
 
-This section explains why `bijux-canon-ingest` exists, what it owns on purpose, and where its boundary stops.
+`bijux-canon-ingest` exists to turn raw source material into deterministic,
+retrieval-ready output. Use this section when the important question is not
+which command to run, but why ingest owns this work at all and where that
+ownership stops.
 
-Read this section first when you need the durable package story before code detail. A quick skim should make the role, the boundary, and the neighboring seams legible.
-
-Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
+These pages should help readers distinguish source preparation from the
+downstream jobs that index, reason over, or orchestrate the prepared output.
+When this section is doing its job well, a scientist, developer, or maintainer
+can explain why ingest exists without falling back to repository tribal memory.
 
 ## Visual Summary
 
 ```mermaid
 flowchart LR
-    start["bijux-canon-ingest<br/>foundation questions"]
-    boundary["Boundary<br/>what belongs here"]
-    code["Code map<br/>where to inspect"]
-    language["Shared terms<br/>what words mean"]
-    lifecycle["Lifecycle<br/>how work moves through"]
-    change["Change posture<br/>how to evolve safely"]
-    start --> boundary
-    start --> code
-    start --> language
-    start --> lifecycle
-    start --> change
+    source["raw documents and records"]
+    prepare["deterministic preparation"]
+    chunk["chunking and record shaping"]
+    handoff["retrieval-ready handoff"]
+    boundary["boundary<br/>reasoning and runtime start later"]
+    reader["reader question<br/>why does ingest own this step?"]
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
-    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    class start page;
-    class boundary,lifecycle positive;
-    class code,language anchor;
-    class change action;
+    class source,page reader;
+    class prepare,chunk,handoff positive;
+    class boundary caution;
+    source --> prepare --> chunk --> handoff
+    handoff --> boundary
+    handoff --> reader
 ```
 
-## Pages in This Section
+## Start Here
+
+- open [Package Overview](package-overview.md) for the shortest explanation of
+  what ingest is for
+- open [Ownership Boundary](ownership-boundary.md) when the issue might belong
+  in index, reason, agent, or runtime instead
+- open [Lifecycle Overview](lifecycle-overview.md) when the real question is
+  how source material moves through ingest before downstream packages pick it up
+
+## Pages In This Section
 
 - [Package Overview](package-overview.md)
 - [Scope and Non-Goals](scope-and-non-goals.md)
@@ -53,55 +62,45 @@ flowchart LR
 - [Dependencies and Adjacencies](dependencies-and-adjacencies.md)
 - [Change Principles](change-principles.md)
 
-## Read Across the Package
+## Use This Section When
 
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+- you need the durable ownership story before reading code or command docs
+- you are deciding whether deterministic preparation belongs in ingest or
+  downstream retrieval behavior belongs elsewhere
+- you need shared package language for chunking, source shaping, and handoff
+
+## Do Not Use This Section When
+
+- the question is already about public commands, schemas, or artifact contracts
+- the real problem is operational, such as setup, diagnostics, or release flow
+- you already know the boundary and need proof, tests, or risk review instead
+
+## Read Across The Package
+
+- open [Architecture](../architecture/index.md) when you need the structure
+  behind ingest preparation and workflow flow
+- open [Interfaces](../interfaces/index.md) when you need the contracts that
+  callers and downstream packages rely on
+- open [Operations](../operations/index.md) when you need local workflow,
+  validation, or release guidance
+- open [Quality](../quality/index.md) when you need evidence that deterministic
+  ingest behavior is actually protected
 
 ## Concrete Anchors
 
 - `packages/bijux-canon-ingest` as the package root
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the package proof surface
+- `packages/bijux-canon-ingest/tests` as the proof surface for owned behavior
 
-## Use This Page When
+## Reader Takeaway
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Foundation` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-ingest` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-ingest`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
+Use `Foundation` to answer the ownership question with integrity: ingest exists
+to make source material predictable enough for downstream retrieval work to
+trust. If a proposal broadens ingest without making that preparation story
+clearer, the design has probably crossed the boundary rather than improved it.
 
 ## Purpose
 
-This page explains how to use the foundation section for `bijux-canon-ingest` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+This page introduces the foundation handbook for `bijux-canon-ingest` and
+routes readers to the specific boundary, language, and lifecycle pages that
+explain why the package exists.
