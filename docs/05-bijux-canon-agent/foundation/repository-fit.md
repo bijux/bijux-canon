@@ -11,6 +11,21 @@ last_reviewed: 2026-04-26
 
 `bijux-canon-agent` is a separate package because orchestration creates its own readability and contract pressure. Keeping it visible stops workflow logic from hiding inside reasoning code or runtime policy.
 
+## Fit Model
+
+```mermaid
+flowchart LR
+    seam["orchestration seam"]
+    package["bijux-canon-agent package boundary"]
+    proof["metadata, apis, tests, and handbook"]
+
+    seam --> package --> proof
+```
+
+This page should justify agent as a distinct package instead of a convenient
+bucket for late-stage workflow code. The fit is strong only when orchestration
+itself is easier to inspect because the seam exists.
+
 ## Why This Is A Package
 
 - `packages/bijux-canon-agent/src/bijux_canon_agent` makes orchestration ownership visible in code
@@ -27,6 +42,8 @@ last_reviewed: 2026-04-26
 
 If the package can only be defended as “where the workflow code lives,” the orchestration seam has not been explained well enough.
 
-## Bottom Line
+## Design Pressure
 
-The repository should make the `bijux-canon-agent` seam easier to defend, not easier to forget.
+If agent can only be defended as “where the workflow code lives,” the package
+boundary has lost its explanatory value. The repository split has to make
+orchestration more legible, not merely more separate.
