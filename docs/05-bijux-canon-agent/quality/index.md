@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Use this section when the question is how `bijux-canon-agent` earns trust:
+Open this section when the question is how `bijux-canon-agent` earns trust:
 which tests matter, which architectural invariants must survive, what trace and
 artifact expectations are defended, and what still needs explicit skepticism
 after a change.
@@ -98,12 +98,13 @@ flowchart LR
 
 ## Why Use Quality
 
-Use `Quality` to ask whether the agent layer earned trust, not whether it
+Open `Quality` to ask whether the agent layer earned trust, not whether it
 merely produced a run. The real bar is layering discipline, trace integrity,
 schema and API stability, and clear limits that remain visible after the
 change.
 
 ## What You Get
 
-This page gives you the tests, invariants, review, validation, and risk route
-through `bijux-canon-agent` before you inspect a specific trust surface.
+Open this page when you need the tests, invariants, review, validation, and
+risk route through `bijux-canon-agent` before you inspect a specific trust
+surface.

@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Use this section to understand how `bijux-canon-runtime` earns trust: which
+Open this section to understand how `bijux-canon-runtime` earns trust: which
 proof surfaces matter, which risks stay visible, and what done should mean
 after a real change.
 
@@ -100,11 +100,12 @@ flowchart LR
 
 ## Why Use Quality
 
-Use `Quality` to decide whether runtime has actually earned trust after a
+Open `Quality` to decide whether runtime has actually earned trust after a
 change. If one narrow green check hides a wider replay, persistence, contract,
 or validation gap, the work is not done yet.
 
 ## What You Get
 
-This page gives you the tests, invariants, review, validation, and risk route
-through `bijux-canon-runtime` before you inspect a specific trust surface.
+Open this page when you need the tests, invariants, review, validation, and
+risk route through `bijux-canon-runtime` before you inspect a specific trust
+surface.

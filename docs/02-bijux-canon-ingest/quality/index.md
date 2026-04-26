@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Use this section when you need to know whether ingest output can be trusted:
+Open this section when you need to know whether ingest output can be trusted:
 which tests prove deterministic preparation, which risks stay visible, and
 what "done" should mean before downstream packages build on the result.
 
@@ -99,12 +99,13 @@ flowchart LR
 
 ## Why Use Quality
 
-Use `Quality` to ask a stricter question than “did the tests pass?” In ingest,
+Open `Quality` to ask a stricter question than “did the tests pass?” In ingest,
 the real bar is whether prepared output remains deterministic, contract-aligned,
 and honest about its limits before any downstream package treats it as stable
 input.
 
 ## What You Get
 
-This page gives you the proof, invariants, review, validation, and risk route
-through `bijux-canon-ingest` before you inspect a specific trust surface.
+Open this page when you need the proof, invariants, review, validation, and
+risk route through `bijux-canon-ingest` before you inspect a specific trust
+surface.

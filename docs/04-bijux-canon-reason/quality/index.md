@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Use this section when the question is how `bijux-canon-reason` earns trust:
+Open this section when the question is how `bijux-canon-reason` earns trust:
 which tests and replay checks matter, which invariants must survive a change,
 which risks stay visible, and what counts as enough evidence before a reasoning
 result is allowed to look believable.
@@ -96,11 +96,12 @@ flowchart LR
 
 ## Why Use Quality
 
-Use `Quality` to ask whether the reasoning layer has earned belief, not whether
+Open `Quality` to ask whether the reasoning layer has earned belief, not whether
 it merely produced output. The real bar is determinism, verification strength,
 trace integrity, and explicit limits that remain visible after the change.
 
 ## What You Get
 
-This page gives you the tests, invariants, review, validation, and risk route
-through `bijux-canon-reason` before you inspect a specific trust surface.
+Open this page when you need the tests, invariants, review, validation, and
+risk route through `bijux-canon-reason` before you inspect a specific trust
+surface.

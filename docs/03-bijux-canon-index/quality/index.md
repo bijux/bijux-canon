@@ -9,7 +9,7 @@ last_reviewed: 2026-04-26
 
 # Quality
 
-Use this section when you need to know whether index behavior can be trusted:
+Open this section when you need to know whether index behavior can be trusted:
 which tests prove retrieval and replay behavior, which risks remain visible,
 and what "done" should mean before reasoning or runtime depend on the result.
 
@@ -100,12 +100,13 @@ flowchart LR
 
 ## Why Use Quality
 
-Use `Quality` to ask a stricter question than “did the suite pass?” In index,
+Open `Quality` to ask a stricter question than “did the suite pass?” In index,
 the real bar is whether retrieval behavior remains replayable, provenance-aware,
 and honest about backend limits before downstream packages treat it as stable
 ground.
 
 ## What You Get
 
-This page gives you the proof, invariants, review, validation, and risk route
-through `bijux-canon-index` before you inspect a specific trust surface.
+Open this page when you need the proof, invariants, review, validation, and
+risk route through `bijux-canon-index` before you inspect a specific trust
+surface.
