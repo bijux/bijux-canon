@@ -10,8 +10,8 @@ last_reviewed: 2026-04-26
 # Bijux Canon
 
 `bijux-canon` is a package system for deterministic ingest, retrieval,
-reasoning, orchestration, and governed execution. Use this site to find the
-package that owns the behavior you are reviewing and the repository rules
+reasoning, orchestration, and governed execution. This site helps readers find
+the package that owns the behavior they are reviewing and the repository rules
 that connect one package boundary to the next.
 
 The split is the design. Each package owns one operational promise strongly
@@ -65,7 +65,7 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 <div class="bijux-panel-grid">
   <div class="bijux-panel"><h3>System Shape</h3><p>Five canonical packages carry the product flow, the root explains shared coordination, the maintainer handbook explains repository health, and compatibility docs exist only to bridge old names.</p></div>
   <div class="bijux-panel"><h3>Integrity Rule</h3><p>Statements here must stay consistent with checked-in code, schemas, tests, release assets, and published package boundaries.</p></div>
-  <div class="bijux-panel"><h3>Fast Route</h3><p>Use the repository handbook for cross-package seams, a product handbook for owned behavior, the maintainer handbook for automation, and compatibility docs only when a legacy package name is still in play.</p></div>
+  <div class="bijux-panel"><h3>Fast Route</h3><p>Open the repository handbook for cross-package seams, a product handbook for owned behavior, the maintainer handbook for automation, and compatibility docs only when a legacy package name is still in play.</p></div>
 </div>
 
 <div class="bijux-quicklinks">
@@ -112,10 +112,10 @@ flowchart LR
 
 ## Start Here
 
-- use the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) when you need package boundaries, shared rules, or repository-wide workflow
-- use one product handbook when you already know the behavior belongs to ingest, index, reason, agent, or runtime
-- use the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
-- use the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name is still part of the environment
+- open the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) when you need package boundaries, shared rules, or repository-wide workflow
+- open one product handbook when you already know the behavior belongs to ingest, index, reason, agent, or runtime
+- open the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
+- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution name, import, or command name is still part of the environment
 
 ## Choose A Package
 
@@ -166,5 +166,5 @@ compatibility docs only until the canonical target is clear.
 ## Core Claim
 
 `bijux-canon` stays understandable because each package carries one main
-promise and hands off explicitly to the next layer. Use this page to choose
-the right handbook, then let the owning package carry the detailed contract.
+promise and hands off explicitly to the next layer. Open the handbook that
+owns the behavior, then let that package carry the detailed contract.
