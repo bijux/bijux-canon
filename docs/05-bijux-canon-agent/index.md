@@ -22,26 +22,24 @@ of retrieval truth, reasoning meaning, or final runtime acceptance.
 
 ```mermaid
 flowchart LR
-    inputs["reasoning artifacts<br/>claims, checks, context"]
-    plan["execution plan<br/>roles, stages, stop rules"]
-    roles["agent roles<br/>planner, verifier, critique, summarizer"]
-    kernel["execution kernel<br/>ordered calls and lifecycle"]
-    trace["workflow trace<br/>events, hashes, replay fields"]
-    runtime["runtime package<br/>acceptance and replay authority"]
+    inputs["reasoning artifacts"]
+    plan["execution plan"]
+    roles["agent roles"]
+    kernel["execution kernel"]
+    trace["workflow trace"]
+    validation["trace validation"]
+    telemetry["result artifacts"]
+    runtime["runtime package"]
 
     inputs --> plan --> roles --> kernel --> trace --> runtime
-    roles -. validated by .-> validation["trace validation"]
-    kernel -. emits .-> telemetry["telemetry and result artifacts"]
-
-    classDef page fill:#eef6ff,stroke:#2563eb,color:#153145,stroke-width:2px;
-    classDef positive fill:#eefbf3,stroke:#16a34a,color:#173622;
-    classDef anchor fill:#f4f0ff,stroke:#7c3aed,color:#47207f;
-    classDef action fill:#fff4da,stroke:#d97706,color:#6b3410;
-    class inputs page;
-    class plan,roles,kernel positive;
-    class trace,validation,telemetry anchor;
-    class runtime action;
+    roles --> validation
+    kernel --> telemetry
 ```
+
+Agent should make multi-step work easier to inspect, not harder. The handbook
+is doing its job when a reader can tell how roles are sequenced, what trace is
+supposed to survive the run, and which part of the behavior belongs to
+orchestration rather than to reasoning or runtime policy.
 
 ## What This Package Owns
 
@@ -57,7 +55,9 @@ flowchart LR
 
 ## Boundary Test
 
-If the change decides how roles coordinate, which step runs next, or what trace a workflow must emit, it belongs here. If the change decides what a claim means or whether a whole run counts, it belongs elsewhere.
+If the change decides how roles coordinate, which step runs next, or what
+trace a workflow must emit, it belongs here. If the change decides what a
+claim means or whether a whole run counts, it belongs elsewhere.
 
 ## First Proof Check
 
@@ -83,6 +83,8 @@ If the change decides how roles coordinate, which step runs next, or what trace 
 - [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/)
 - [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/)
 
-## Bottom Line
+## Leave This Handbook When
 
-If a proposed change makes `bijux-canon-agent` broader without making its owned role easier to defend, the change is probably crossing a package boundary rather than improving the design.
+- the question is now about reasoning semantics rather than workflow coordination
+- the next step is a concrete interface, trace model, or orchestration test
+- the issue is actually about runtime acceptance or repository-level automation
