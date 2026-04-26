@@ -13,9 +13,9 @@ last_reviewed: 2026-04-04
 and workflows in application code, and delegating specific responsibilities to
 owned modules.
 
-This page should give a reader one clean story about how work moves through the
-package. The goal is not to describe every branch, but to make the main path
-recognizable before someone opens the implementation.
+This page shows one clean story about how work moves through the package. The
+goal is not to describe every branch, but to make the main path recognizable
+before someone opens the implementation.
 
 Treat the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
 

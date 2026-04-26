@@ -96,7 +96,7 @@ This page describes the current structural model of `bijux-canon-runtime`, but i
 
 ## Purpose
 
-This page records how to reason about failures in architecture review.
+This page shows how to reason about failures in architecture review.
 
 ## Stability
 

@@ -94,7 +94,7 @@ This page describes the current structural model of `bijux-canon-runtime`, but i
 
 ## Purpose
 
-This page explains where to look when integration behavior changes.
+This page shows where to look when integration behavior changes.
 
 ## Stability
 
