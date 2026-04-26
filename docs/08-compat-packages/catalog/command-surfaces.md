@@ -12,11 +12,8 @@ last_reviewed: 2026-04-04
 Some compatibility packages also preserve historic command names so migration
 does not break operator scripts immediately.
 
-This page should keep those commands in context. A preserved command should
-feel like a safety rail on the way to the canonical package, not like a new
-invitation to stay on the old name forever.
-
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
+A preserved command is a safety rail on the way to the canonical package, not a
+new invitation to stay on the old name forever.
 
 ## Visual Summary
 
@@ -79,13 +76,15 @@ provides a meaningful route behind it.
 
 ## Decision Rule
 
-Use `Command Surfaces` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
+Use this page when the main question is whether a preserved command still
+serves a real migration need. If the only reason to keep it is habit rather
+than an identified dependent environment, plan migration or retirement instead.
 
 ## What This Page Answers
 
-- which legacy surface is still preserved
-- when new work should move to the canonical package instead
-- what evidence would justify retiring a compatibility package
+- which legacy commands are still preserved
+- which canonical CLIs replace them
+- what evidence would justify retiring a compatibility command surface
 
 ## Reviewer Lens
 
@@ -95,9 +94,15 @@ Use `Command Surfaces` to decide whether a preserved legacy name is still servin
 
 ## Next Checks
 
-- move to the canonical package docs once the current target package is known
+- move to the canonical package docs once the current target package is known:
+  `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
+  `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
+  `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,
+  `https://bijux.io/bijux-canon/05-bijux-canon-agent/`, or
+  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
 - inspect compatibility package metadata if the question is about what remains preserved
-- use this section again only when evaluating migration progress or retirement readiness
+- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/`
+  when the question turns into retirement readiness
 
 ## Honesty Boundary
 

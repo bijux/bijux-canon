@@ -12,11 +12,8 @@ last_reviewed: 2026-04-04
 Compatibility imports exist only so older code can keep resolving package names
 during migration.
 
-This page should make that temporary intent impossible to miss. Preserved
-imports are a migration aid, not a sign that the legacy name regained first-
-class status.
-
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
+Preserved imports are a migration aid, not a sign that the legacy name regained
+first-class status.
 
 ## Visual Summary
 
@@ -75,13 +72,15 @@ flowchart TB
 
 ## Decision Rule
 
-Use `Import Surfaces` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
+Use this page when the main question is whether a preserved import still serves
+a real migration need. If the only reason to keep it is habit rather than an
+identified dependent environment, plan migration or retirement instead.
 
 ## What This Page Answers
 
-- which legacy surface is still preserved
-- when new work should move to the canonical package instead
-- what evidence would justify retiring a compatibility package
+- which legacy import roots are still preserved
+- which canonical import roots replace them
+- what evidence would justify retiring a compatibility import surface
 
 ## Reviewer Lens
 
@@ -91,9 +90,15 @@ Use `Import Surfaces` to decide whether a preserved legacy name is still serving
 
 ## Next Checks
 
-- move to the canonical package docs once the current target package is known
+- move to the canonical package docs once the current target package is known:
+  `https://bijux.io/bijux-canon/02-bijux-canon-ingest/`,
+  `https://bijux.io/bijux-canon/03-bijux-canon-index/`,
+  `https://bijux.io/bijux-canon/04-bijux-canon-reason/`,
+  `https://bijux.io/bijux-canon/05-bijux-canon-agent/`, or
+  `https://bijux.io/bijux-canon/06-bijux-canon-runtime/`
 - inspect compatibility package metadata if the question is about what remains preserved
-- use this section again only when evaluating migration progress or retirement readiness
+- continue to `https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/`
+  when the question broadens from one import root to compatibility strategy
 
 ## Honesty Boundary
 
@@ -101,7 +106,7 @@ This section documents preserved legacy surfaces, but it does not claim those le
 
 ## Purpose
 
-This page explains which Python import names remain preserved.
+This page shows which Python import names remain preserved.
 
 ## Stability
 
