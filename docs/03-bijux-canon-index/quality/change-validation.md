@@ -19,12 +19,21 @@ Treat the quality pages for `bijux-canon-index` as the proof frame around the pa
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Change Validation] --> B[Proposed change]
-    B --> C[Run relevant quality gates]
-    C --> D[Evaluate contract impact]
-    D --> E[Accept or revise]
-    E --> F[Validated change set]
+flowchart LR
+    seam["Touched seam"]
+    docs["Update the owning docs page"]
+    tests["Run the owning test layer"]
+    review["Match proof to real risk"]
+    seam --> docs --> tests --> review
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class seam page;
+    class docs anchor;
+    class tests positive;
+    class review action;
 ```
 
 ## Validation Targets

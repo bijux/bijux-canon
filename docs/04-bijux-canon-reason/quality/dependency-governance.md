@@ -21,35 +21,21 @@ Treat the quality pages for `bijux-canon-reason` as the proof frame around the p
 ## Visual Summary
 
 ```mermaid
-flowchart TB
-    page["Dependency Governance<br/>clarifies: see proof | see limitations | judge done-ness"]
+flowchart LR
+    dep["Dependency change"]
+    authority["Does it broaden package authority?"]
+    setup["Does it change setup or runtime risk?"]
+    validate["Re-check package proof<br/>tests/unit for planning, reasoning, execution"]
+    dep --> authority --> setup --> validate
     classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
     classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
     classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
     classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
     classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
-    proof1["tests/unit for planning, reasoning, execution, verification, and interfaces"]
-    proof1 --> page
-    proof2["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
-    proof2 --> page
-    proof3["tests/perf for retrieval benchmark coverage"]
-    proof3 --> page
-    risk1["README.md"]
-    risk1 -.keeps trust honest.-> page
-    risk2["CHANGELOG.md"]
-    risk2 -.keeps trust honest.-> page
-    risk3["pyproject.toml"]
-    risk3 -.keeps trust honest.-> page
-    bar1["done means defended behavior"]
-    page --> bar1
-    bar2["package trust after change"]
-    page --> bar2
-    bar3["proof before confidence"]
-    page --> bar3
-    class page page;
-    class proof1,proof2,proof3 positive;
-    class risk1,risk2,risk3 caution;
-    class bar1,bar2,bar3 action;
+    class dep page;
+    class authority caution;
+    class setup positive;
+    class validate anchor;
 ```
 
 ## Current Dependency Themes

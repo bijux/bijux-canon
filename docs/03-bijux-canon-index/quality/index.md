@@ -18,12 +18,28 @@ Treat the quality pages for `bijux-canon-index` as the proof frame around the pa
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Quality] --> B[Test strategy]
-    B --> C[Invariants and review checklist]
-    C --> D[Dependency and docs governance]
-    D --> E[Risk and limitation tracking]
-    E --> F[Change validation decision]
+flowchart LR
+    trust["bijux-canon-index<br/>quality questions"]
+    strategy["What proof should exist?"]
+    invariants["What must not drift?"]
+    review["How should changes be reviewed?"]
+    done["When is work truly done?"]
+    risks["Which limitations stay visible?"]
+    trust --> strategy
+    trust --> invariants
+    trust --> review
+    trust --> done
+    trust --> risks
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class trust page;
+    class strategy anchor;
+    class invariants,done positive;
+    class review action;
+    class risks caution;
 ```
 
 ## Pages in This Section

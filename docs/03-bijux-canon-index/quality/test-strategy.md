@@ -20,12 +20,21 @@ Treat the quality pages for `bijux-canon-index` as the proof frame around the pa
 ## Visual Summary
 
 ```mermaid
-graph TD
-    A[Test Strategy] --> B[Unit and integration layers]
-    B --> C[E2E and invariants]
-    C --> D[Determinism-focused assertions]
-    D --> E[Coverage of critical paths]
-    E --> F[Confidence in index behavior]
+flowchart LR
+    change["Change touches the package"]
+    unit["Fast proof<br/>tests/unit for API, application, contracts"]
+    endtoend["Boundary proof<br/>tests/e2e for CLI workflows, API"]
+    deeper["Long-lived proof<br/>tests/stress and tests/scenarios for operational"]
+    change --> unit --> endtoend --> deeper
+    classDef page fill:var(--bijux-mermaid-page-fill),stroke:var(--bijux-mermaid-page-stroke),color:var(--bijux-mermaid-page-text),stroke-width:2px;
+    classDef positive fill:var(--bijux-mermaid-positive-fill),stroke:var(--bijux-mermaid-positive-stroke),color:var(--bijux-mermaid-positive-text);
+    classDef caution fill:var(--bijux-mermaid-caution-fill),stroke:var(--bijux-mermaid-caution-stroke),color:var(--bijux-mermaid-caution-text);
+    classDef anchor fill:var(--bijux-mermaid-anchor-fill),stroke:var(--bijux-mermaid-anchor-stroke),color:var(--bijux-mermaid-anchor-text);
+    classDef action fill:var(--bijux-mermaid-action-fill),stroke:var(--bijux-mermaid-action-stroke),color:var(--bijux-mermaid-action-text);
+    class change page;
+    class unit anchor;
+    class endtoend positive;
+    class deeper action;
 ```
 
 ## Test Areas
