@@ -16,6 +16,22 @@ survive years of review: package contract versus root rule, maintainer
 automation versus product behavior, and compatibility bridge versus canonical
 surface.
 
+## Language Map
+
+```mermaid
+flowchart LR
+    terms["stable terms"]
+    owners["package, root, maintenance, and compatibility owners"]
+    proof["files, tests, schemas, workflows, and metadata"]
+    reviews["faster reviews and fewer routing mistakes"]
+
+    terms --> owners --> proof --> reviews
+```
+
+This page should make naming feel structural, not cosmetic. Stable language is
+what lets a reviewer move from a discussion to the right owner and the right
+proof without a translation step.
+
 ## Terms That Should Stay Stable
 
 - `canonical package` means one of the publishable `bijux-canon-*` packages
@@ -44,8 +60,8 @@ Language drift is an architecture problem. If a reviewer cannot tell whether a
 change belongs to a package, the root, maintenance tooling, or compatibility
 material, the names are already failing.
 
-## Bottom Line
+## Design Pressure
 
-Stable terms let a reader move from a discussion to a file, package, or test
-quickly. Unstable terms force every review to start with translation instead of
-understanding.
+Language drift looks harmless until ownership discussions start taking longer
+than the change itself. Once terms stop pointing reliably at real surfaces, the
+architecture has already started to blur.
