@@ -10,8 +10,8 @@ last_reviewed: 2026-04-26
 # Reasoning Handbook
 
 `bijux-canon-reason` owns inspectable reasoning, verification, provenance, and
-reasoning-side run artifacts. Start here when the question is about how
-evidence becomes claims, checks, and durable reasoning output.
+reasoning-side run artifacts. Use this handbook when you need to understand
+how evidence becomes claims, checks, and durable reasoning output.
 
 This package is where retrieval output becomes something a reviewer can inspect
 as reasoning rather than as raw search results. It owns the conversion from
@@ -34,7 +34,7 @@ flowchart LR
     reason --> reader
 ```
 
-## Read This Section When
+## Use This Handbook When
 
 - you need the package-level entrypoint for reasoning docs
 - you are checking reasoning behavior, verification, or provenance
@@ -54,20 +54,20 @@ flowchart LR
 - agent orchestration policy above one reasoning step
 - runtime acceptance, persistence, or run-governance behavior
 
-## Choose The Next Section By Question
+## Choose A Section
 
-- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the question is about package
+- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the question is about package
   purpose, language, or ownership
-- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when you need the module map,
+- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when you need the module map,
   execution flow, or dependency structure
-- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is about commands,
+- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is about commands,
   schemas, artifacts, or import surfaces
-- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when you need setup, diagnostics,
+- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when you need setup, diagnostics,
   local workflow, or release guidance
-- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is about trust, evidence,
+- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is about trust, evidence,
   limitations, or review standards
 
-## Main Paths
+## Pages In This Handbook
 
 - [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/)
@@ -75,7 +75,7 @@ flowchart LR
 - [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/)
 - [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/)
 
-## Reader Takeaway
+## Why Start Here
 
 Use this handbook when the real issue is whether reasoning output is explicit,
 verifiable, and provenance-aware enough to support later orchestration and

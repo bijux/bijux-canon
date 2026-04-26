@@ -44,26 +44,26 @@ flowchart LR
 
 ## Start Here
 
-- open [Package Overview](package-overview.md) for the shortest description of
+- use [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/) for the shortest description of
   the package role
-- open [Ownership Boundary](ownership-boundary.md) when the question is whether
+- use [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/) when the question is whether
   logic belongs in retrieval, reasoning, agent orchestration, or runtime
-- open [Lifecycle Overview](lifecycle-overview.md) when you need the
+- use [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/) when you need the
   end-to-end shape from evidence intake to verified reasoning output
 
-## Pages In This Section
+## Pages In Foundation
 
-- [Package Overview](package-overview.md)
-- [Scope and Non-Goals](scope-and-non-goals.md)
-- [Ownership Boundary](ownership-boundary.md)
-- [Repository Fit](repository-fit.md)
-- [Capability Map](capability-map.md)
-- [Domain Language](domain-language.md)
-- [Lifecycle Overview](lifecycle-overview.md)
-- [Dependencies and Adjacencies](dependencies-and-adjacencies.md)
-- [Change Principles](change-principles.md)
+- [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/)
+- [Scope and Non-Goals](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/scope-and-non-goals/)
+- [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/)
+- [Repository Fit](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/repository-fit/)
+- [Capability Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/capability-map/)
+- [Domain Language](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/domain-language/)
+- [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/)
+- [Dependencies and Adjacencies](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/dependencies-and-adjacencies/)
+- [Change Principles](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/change-principles/)
 
-## Use This Section When
+## Use Foundation When
 
 - you need the package role before looking at modules, commands, or tests
 - you are checking whether a behavior is really reasoning rather than retrieval,
@@ -71,7 +71,7 @@ flowchart LR
 - a reader needs one page that explains why this package exists without reading
   the whole tree
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is where a module lives or how control flows through code
 - you are deciding whether a CLI, API, schema, or artifact is a supported
@@ -80,13 +80,13 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Architecture](../architecture/index.md) for module boundaries,
+- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for module boundaries,
   execution flow, and persistence seams
-- open [Interfaces](../interfaces/index.md) for CLI, API, trace, and schema
+- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) for CLI, API, trace, and schema
   contracts
-- open [Operations](../operations/index.md) for install, replay, diagnostics,
+- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, diagnostics,
   and release procedures
-- open [Quality](../quality/index.md) for proof surfaces, invariants, and known
+- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for proof surfaces, invariants, and known
   limitations
 
 ## Concrete Anchors
@@ -95,14 +95,15 @@ flowchart LR
 - `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
 - `packages/bijux-canon-reason/tests` as the package proof surface
 
-## Reader Takeaway
+## Why Use Foundation
 
 `Foundation` should leave no doubt about the package boundary: retrieval finds
 evidence, reasoning turns it into inspectable claims and checks, agent
 coordinates multi-step work, and runtime decides what becomes durable and
 acceptable.
 
-## Purpose
+## What You Get
 
-This page introduces the reasoning foundation handbook and routes readers to
-the pages that explain purpose, scope, vocabulary, lifecycle, and boundaries.
+This page gives you the purpose, scope, vocabulary, lifecycle, and boundary
+route into `bijux-canon-reason` before you move on to structure, contracts,
+operations, or proof.

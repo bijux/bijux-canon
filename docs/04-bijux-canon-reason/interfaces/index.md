@@ -44,27 +44,27 @@ flowchart LR
 
 ## Start Here
 
-- open [CLI Surface](cli-surface.md) for operator-facing commands and replay
+- use [CLI Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/cli-surface/) for operator-facing commands and replay
   entrypoints
-- open [API Surface](api-surface.md) when the contract is HTTP-facing rather
+- use [API Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/api-surface/) when the contract is HTTP-facing rather
   than terminal-facing
-- open [Artifact Contracts](artifact-contracts.md) and
-  [Data Contracts](data-contracts.md) when the durable output shape matters
+- use [Artifact Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/artifact-contracts/) and
+  [Data Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/data-contracts/) when the durable output shape matters
   more than the call syntax
 
-## Pages In This Section
+## Pages In Interfaces
 
-- [CLI Surface](cli-surface.md)
-- [API Surface](api-surface.md)
-- [Configuration Surface](configuration-surface.md)
-- [Data Contracts](data-contracts.md)
-- [Artifact Contracts](artifact-contracts.md)
-- [Entrypoints and Examples](entrypoints-and-examples.md)
-- [Operator Workflows](operator-workflows.md)
-- [Public Imports](public-imports.md)
-- [Compatibility Commitments](compatibility-commitments.md)
+- [CLI Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/cli-surface/)
+- [API Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/api-surface/)
+- [Configuration Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/configuration-surface/)
+- [Data Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/data-contracts/)
+- [Artifact Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/artifact-contracts/)
+- [Entrypoints and Examples](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/entrypoints-and-examples/)
+- [Operator Workflows](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/operator-workflows/)
+- [Public Imports](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/public-imports/)
+- [Compatibility Commitments](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/compatibility-commitments/)
 
-## Use This Section When
+## Use Interfaces When
 
 - you need to know whether a command, route, schema, trace file, or import is
   meant to be stable
@@ -72,7 +72,7 @@ flowchart LR
   assumptions
 - a reviewer needs to separate explicit interfaces from incidental visibility
 
-## Do Not Use This Section When
+## Move On When
 
 - the real question is why the behavior belongs in reasoning at all
 - the concern is mainly how the package is organized internally
@@ -80,12 +80,12 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) for package purpose and ownership
-- open [Architecture](../architecture/index.md) for structural seams behind the
+- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
+- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) for structural seams behind the
   public surfaces
-- open [Operations](../operations/index.md) for install, replay, and release
+- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, and release
   procedures
-- open [Quality](../quality/index.md) for compatibility evidence and review
+- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for compatibility evidence and review
   pressure
 
 ## Concrete Anchors
@@ -96,14 +96,14 @@ flowchart LR
   trace JSONL formats
 - `apis/bijux-canon-reason/v1/schema.yaml` for the published schema contract
 
-## Reader Takeaway
+## Why Use Interfaces
 
 Use `Interfaces` to judge whether a dependency is defensible. In this package,
 the answer is not just “is there a function for it?” but also “can a reviewer
 trace the contract through commands, schemas, artifacts, examples, and tests?”
 
-## Purpose
+## What You Get
 
-This page introduces the reasoning interfaces handbook and routes readers to
-the pages that explain commands, APIs, artifacts, imports, and compatibility
-commitments.
+This page gives you the command, API, artifact, import, and compatibility
+route through `bijux-canon-reason` before you inspect a specific contract
+surface.

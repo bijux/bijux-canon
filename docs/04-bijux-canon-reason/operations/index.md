@@ -43,27 +43,27 @@ flowchart LR
 
 ## Start Here
 
-- open [Installation and Setup](installation-and-setup.md) for environment and
+- use [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/) for environment and
   package bootstrap expectations
-- open [Common Workflows](common-workflows.md) when you need the normal run and
+- use [Common Workflows](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/common-workflows/) when you need the normal run and
   validation paths
-- open [Observability and Diagnostics](observability-and-diagnostics.md) or
-  [Failure Recovery](failure-recovery.md) when a reasoning run is producing
+- use [Observability and Diagnostics](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/observability-and-diagnostics/) or
+  [Failure Recovery](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/failure-recovery/) when a reasoning run is producing
   suspect output or replay mismatches
 
-## Pages In This Section
+## Pages In Operations
 
-- [Installation and Setup](installation-and-setup.md)
-- [Local Development](local-development.md)
-- [Common Workflows](common-workflows.md)
-- [Observability and Diagnostics](observability-and-diagnostics.md)
-- [Performance and Scaling](performance-and-scaling.md)
-- [Failure Recovery](failure-recovery.md)
-- [Release and Versioning](release-and-versioning.md)
-- [Security and Safety](security-and-safety.md)
-- [Deployment Boundaries](deployment-boundaries.md)
+- [Installation and Setup](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/installation-and-setup/)
+- [Local Development](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/local-development/)
+- [Common Workflows](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/common-workflows/)
+- [Observability and Diagnostics](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/observability-and-diagnostics/)
+- [Performance and Scaling](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/performance-and-scaling/)
+- [Failure Recovery](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/failure-recovery/)
+- [Release and Versioning](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/release-and-versioning/)
+- [Security and Safety](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/security-and-safety/)
+- [Deployment Boundaries](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/deployment-boundaries/)
 
-## Use This Section When
+## Use Operations When
 
 - you need a repeatable procedure for running, replaying, diagnosing, or
   releasing the package
@@ -72,7 +72,7 @@ flowchart LR
 - you need to know which operational path produces trustworthy reasoning
   artifacts rather than just green commands
 
-## Do Not Use This Section When
+## Move On When
 
 - the main question is package purpose or ownership
 - you are still deciding whether a surface is a public contract
@@ -86,22 +86,21 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) for package boundary and scope
-- open [Architecture](../architecture/index.md) when a workflow problem points
+- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package boundary and scope
+- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a workflow problem points
   to a structural seam
-- open [Interfaces](../interfaces/index.md) when an operational path depends on
+- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when an operational path depends on
   a CLI, API, schema, or artifact contract
-- open [Quality](../quality/index.md) when the real question becomes whether a
+- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the next question is whether a
   run has been validated hard enough
 
-## Reader Takeaway
+## Why Use Operations
 
 Use `Operations` to find procedures a maintainer can repeat and defend. If a
 workflow cannot explain how it produces inspectable traces, replayable output,
 or diagnosable failures, it is not ready to be trusted as operating memory.
 
-## Purpose
+## What You Get
 
-This page introduces the reasoning operations handbook and routes readers to
-the pages that explain setup, execution, diagnostics, release, and safety
-procedures.
+This page gives you the setup, execution, diagnostics, release, and safety
+route through `bijux-canon-reason` before you open a specific operating page.

@@ -44,32 +44,32 @@ flowchart LR
 
 ## Start Here
 
-- open [Test Strategy](test-strategy.md) for the proof layers that matter most
+- use [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/) for the proof layers that matter most
   in this package
-- open [Change Validation](change-validation.md) when you need the concrete
+- use [Change Validation](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/change-validation/) when you need the concrete
   validation bar for a real change
-- open [Known Limitations](known-limitations.md) and [Risk Register](risk-register.md)
+- use [Known Limitations](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/known-limitations/) and [Risk Register](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/risk-register/)
   before assuming the reasoning layer proves more than it actually does
 
-## Pages In This Section
+## Pages In Quality
 
-- [Test Strategy](test-strategy.md)
-- [Invariants](invariants.md)
-- [Review Checklist](review-checklist.md)
-- [Documentation Standards](documentation-standards.md)
-- [Definition of Done](definition-of-done.md)
-- [Dependency Governance](dependency-governance.md)
-- [Change Validation](change-validation.md)
-- [Known Limitations](known-limitations.md)
-- [Risk Register](risk-register.md)
+- [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/)
+- [Invariants](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/invariants/)
+- [Review Checklist](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/review-checklist/)
+- [Documentation Standards](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/documentation-standards/)
+- [Definition of Done](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/definition-of-done/)
+- [Dependency Governance](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/dependency-governance/)
+- [Change Validation](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/change-validation/)
+- [Known Limitations](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/known-limitations/)
+- [Risk Register](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/risk-register/)
 
-## Use This Section When
+## Use Quality When
 
 - you need to know what evidence should defend a reasoning change
 - a review is really about replay trust, determinism, or verification rigor
 - you need to decide whether a result is merely produced or actually justified
 
-## Do Not Use This Section When
+## Move On When
 
 - the main problem is package ownership or boundary confusion
 - you are still locating modules or public contracts
@@ -85,23 +85,22 @@ flowchart LR
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) for package purpose and trust
+- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and trust
   boundaries
-- open [Architecture](../architecture/index.md) when a proof gap points to
+- use [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a proof gap points to
   structural drift
-- open [Interfaces](../interfaces/index.md) when the evidence needs to defend a
+- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the evidence needs to defend a
   contract
-- open [Operations](../operations/index.md) when the validation bar depends on
+- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the validation bar depends on
   a repeatable workflow
 
-## Reader Takeaway
+## Why Use Quality
 
 Use `Quality` to ask whether the reasoning layer has earned belief, not whether
 it merely produced output. The real bar is determinism, verification strength,
 trace integrity, and explicit limits that remain visible after the change.
 
-## Purpose
+## What You Get
 
-This page introduces the reasoning quality handbook and routes readers to the
-pages that explain tests, invariants, review standards, validation, and known
-limits.
+This page gives you the tests, invariants, review, validation, and risk route
+through `bijux-canon-reason` before you inspect a specific trust surface.

@@ -46,26 +46,26 @@ flowchart TB
 
 ## Start Here
 
-- open [Module Map](module-map.md) for the shortest route from directory names
+- use [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) for the shortest route from directory names
   to owned behavior
-- open [Execution Model](execution-model.md) when you need the reasoning
+- use [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/) when you need the reasoning
   lifecycle from plan to verified output
-- open [State and Persistence](state-and-persistence.md) when the question is
+- use [State and Persistence](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/state-and-persistence/) when the question is
   which records become replayable or durable
 
-## Pages In This Section
+## Pages In Architecture
 
-- [Module Map](module-map.md)
-- [Dependency Direction](dependency-direction.md)
-- [Execution Model](execution-model.md)
-- [State and Persistence](state-and-persistence.md)
-- [Integration Seams](integration-seams.md)
-- [Error Model](error-model.md)
-- [Extensibility Model](extensibility-model.md)
-- [Code Navigation](code-navigation.md)
-- [Architecture Risks](architecture-risks.md)
+- [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/)
+- [Dependency Direction](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/dependency-direction/)
+- [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/)
+- [State and Persistence](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/state-and-persistence/)
+- [Integration Seams](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/integration-seams/)
+- [Error Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/error-model/)
+- [Extensibility Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/extensibility-model/)
+- [Code Navigation](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/code-navigation/)
+- [Architecture Risks](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/architecture-risks/)
 
-## Use This Section When
+## Use Architecture When
 
 - you need to know which module family owns a behavior before editing it
 - a review comment names structure, layering, or execution drift rather than a
@@ -73,7 +73,7 @@ flowchart TB
 - you need to explain how planning, retrieval, reasoning, verification, and
   trace code relate
 
-## Do Not Use This Section When
+## Move On When
 
 - the main question is why the package owns the behavior at all
 - you are deciding whether a CLI, API, or trace file is a supported contract
@@ -81,13 +81,13 @@ flowchart TB
 
 ## Read Across The Package
 
-- open [Foundation](../foundation/index.md) for package purpose and ownership
+- use [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) for package purpose and ownership
   boundaries
-- open [Interfaces](../interfaces/index.md) for CLI, API, schema, and artifact
+- use [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) for CLI, API, schema, and artifact
   contracts
-- open [Operations](../operations/index.md) for install, replay, diagnostics,
+- use [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) for install, replay, diagnostics,
   and release procedures
-- open [Quality](../quality/index.md) for invariants, tests, and structural
+- use [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) for invariants, tests, and structural
   risk pressure
 
 ## Concrete Anchors
@@ -101,15 +101,15 @@ flowchart TB
 - `src/bijux_canon_reason/reasoning`, `verification`, and `traces` for claim
   semantics, checks, and replayable records
 
-## Reader Takeaway
+## Why Use Architecture
 
 `Architecture` should make the package readable as a sequence of named
 responsibilities, not a tangle of utilities. If a change blurs planning,
 evidence shaping, claim logic, verification, and traces into one layer, the
 design is getting weaker even if tests still pass.
 
-## Purpose
+## What You Get
 
-This page introduces the reasoning architecture handbook and routes readers to
-the pages that explain module groups, dependency direction, execution flow, and
-durable state.
+This page gives you the module, dependency, execution, and durable-state
+route through `bijux-canon-reason` before you inspect a specific structural
+topic.
