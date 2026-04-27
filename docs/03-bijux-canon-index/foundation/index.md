@@ -4,89 +4,69 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Foundation
 
-This section explains why `bijux-canon-index` exists, what it owns on purpose, and where its boundary stops.
+Open this section when you need the durable answer to why `bijux-canon-index` owns retrieval behavior instead of leaving search semantics smeared across ingest, reasoning, or runtime. These pages should make the search boundary easy to defend before anyone argues about code shape.
 
-Read this section first when you need the durable package story before code detail. A quick skim should make the role, the boundary, and the neighboring seams legible.
-
-Treat the foundation pages for `bijux-canon-index` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Boundary Model
 
 ```mermaid
-graph TD
-    A[Foundation] --> B[Index package identity]
-    B --> C[Retrieval and vector responsibilities]
-    C --> D[Ownership boundaries]
-    D --> E[Repository fit]
-    E --> F[Route to next section]
+flowchart LR
+    prepared["prepared input"]
+    package["index boundary"]
+    retrieval["retrieval execution"]
+    provenance["replay and provenance"]
+    handoff["evidence handoff"]
+    blur["ingest or reasoning blur"]
+
+    prepared --> package --> retrieval --> provenance --> handoff
+    package --> blur
 ```
 
-## Pages in This Section
+The foundation story for index has to make retrieval feel like a first-class
+responsibility. Prepared input arrives from ingest, search happens here through
+explicit contracts, and replayable evidence leaves for later interpretation.
+That line is what keeps search from becoming hidden glue.
 
-- [Package Overview](package-overview.md)
-- [Scope and Non-Goals](scope-and-non-goals.md)
-- [Ownership Boundary](ownership-boundary.md)
-- [Repository Fit](repository-fit.md)
-- [Capability Map](capability-map.md)
-- [Domain Language](domain-language.md)
-- [Lifecycle Overview](lifecycle-overview.md)
-- [Dependencies and Adjacencies](dependencies-and-adjacencies.md)
-- [Change Principles](change-principles.md)
+## Read These First
 
-## Read Across the Package
+- open [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/) first when retrieval logic could be confused with ingest preparation or reasoning meaning
+- open [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/) when you need the shortest stable description of the package role
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/) when the question is how prepared input becomes replayable retrieval output
 
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+## The Mistake This Section Prevents
 
-## Concrete Anchors
+The most common mistake here is treating vector execution as a background implementation detail instead of a contract-defining package responsibility.
 
-- `packages/bijux-canon-index` as the package root
-- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/bijux-canon-index/tests` as the package proof surface
+## First Proof Check
 
-## Use This Page When
+- `packages/bijux-canon-index/src/bijux_canon_index` for the owned retrieval implementation boundary
+- `packages/bijux-canon-index/apis` for the schema surfaces tied to caller expectations
+- `packages/bijux-canon-index/tests` for replay and provenance proof
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## Pages In This Section
 
-## Decision Rule
+- [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/)
+- [Scope and Non-Goals](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/scope-and-non-goals/)
+- [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/)
+- [Repository Fit](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/repository-fit/)
+- [Capability Map](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/capability-map/)
+- [Domain Language](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/domain-language/)
+- [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/)
+- [Dependencies and Adjacencies](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/dependencies-and-adjacencies/)
+- [Change Principles](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/change-principles/)
 
-Use `Foundation` to decide whether a change makes `bijux-canon-index` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
+## Leave This Section When
 
-## What This Page Answers
+- leave this section for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the live question is a command, API, artifact, or import contract
+- leave this section for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the issue is running, diagnosing, or releasing the package
+- leave this section for [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you are already convinced about the boundary and need proof that it survives change
 
-- what problem `bijux-canon-index` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
+## Design Pressure
 
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-index`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page explains how to use the foundation section for `bijux-canon-index` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If retrieval is described as just backend detail or just caller convenience,
+the package has already lost its reason to exist. This section has to keep
+execution, provenance, and handoff visibly tied together.

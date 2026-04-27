@@ -4,80 +4,23 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Change Principles
 
-Changes in `bijux-canon-ingest` should leave the package easier to explain, not
-harder. A good change makes ownership clearer, contract language more honest,
-and the proof story easier to follow.
+Changes in `bijux-canon-ingest` should make prepared input easier to explain, easier to verify, or harder to misuse. Anything else is likely noise, drift, or boundary creep.
 
-These principles are not slogans. They are the filter for deciding whether a
-local improvement is worth the long-term cost it creates for the rest of the
-system.
+## Change Rules
 
-Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
+- tighten preparation logic when it removes ambiguity visible to downstream packages
+- change docs, artifacts, and tests in the same series when package behavior changes
+- reject changes that enlarge ingest only because a neighbor would rather not own its own complexity
 
-## Visual Summary
+## Stop Rule
 
-```mermaid
-graph TD
-    A[Change Principles] --> B[Small explicit change]
-    B --> C[Preserve deterministic behavior]
-    C --> D[Update tests and docs together]
-    D --> E[Validate interfaces and artifacts]
-    E --> F[Merge with clear intent]
-```
+Stop the change if the best argument for it is that ingest is “close enough.”
 
-## Principles
+## Bottom Line
 
-- prefer moving behavior toward the owning package instead of letting boundary overlap grow
-- update docs and tests in the same change series that changes package behavior
-- keep names stable and descriptive enough to survive years of maintenance
-
-## Concrete Anchors
-
-- `packages/bijux-canon-ingest` as the package root
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the package proof surface
-
-## Use This Page When
-
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Change Principles` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-ingest` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-ingest`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page records the package-specific contribution posture.
-
-## Stability
-
-Update these principles only when the package operating model truly changes.
+A good change leaves the package easier to defend after the diff than before it.

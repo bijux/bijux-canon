@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Automation Surfaces
@@ -12,36 +12,46 @@ last_reviewed: 2026-04-09
 Repository automation should be visible in named surfaces, not hidden behind
 tribal shortcuts.
 
-The repository already exposes its shared operational machinery through a small
-set of durable entrypoints. Keeping those surfaces explicit matters because they
-shape how contributors learn the workspace and how reviewers reason about the
-impact of shared changes.
+## Automation Stack
 
-## Core Automation Surfaces
+```mermaid
+flowchart LR
+    makefile["Makefile"]
+    makes["makes/"]
+    workflows[".github/workflows/"]
+    helpers["bijux-canon-dev helpers"]
 
-- `Makefile` as the top-level repository entrypoint
-- `makes/` as the structured library of shared make fragments
-- `.github/workflows/` as the published CI, docs, and release automation
-- `packages/bijux-canon-dev` as the code-bearing home for maintainer helpers
+    makefile --> makes --> workflows --> helpers
+```
 
-## Automation Rule
+This page should make shared automation traceable in one pass. A maintainer
+needs to know where a command starts, where it delegates, and where shared code
+begins without reverse-engineering shell glue.
 
-If automation changes repository-wide behavior, it should be explainable from
-one or more of these surfaces without reading unrelated shell glue first.
+## Automation Order
 
-## Review Lens
+Read shared automation in this order:
 
-- does the automation name what it touches
-- is the owning file obvious from the docs and the command shape
-- does the change keep package ownership visible instead of burying it in root
-  convenience logic
+1. `Makefile` for the top-level entrypoint a maintainer is expected to start from
+2. `makes/` for the structured library behind shared commands
+3. `.github/workflows/` for published verification, docs, and release execution
+4. `packages/bijux-canon-dev` for code-bearing maintainer helpers
 
-## Purpose
+## Why The Order Matters
 
-This page explains where repository automation is allowed to live and how it
-should stay reviewable.
+A top-level command is usually the fastest operational route. A workflow file is
+usually the fastest route when the question starts from CI. `bijux-canon-dev`
+should explain helper behavior, not hide the only honest owner of a repository
+rule.
 
-## Stability
+## Failure Signals
 
-Keep it aligned with the actual automation surfaces that contributors are
-expected to use.
+- a contributor cannot tell which root command is canonical for common work
+- a workflow changes repository-wide behavior but the owning file is not easy to name
+- a helper script starts carrying product logic that belongs in one package
+
+## Design Pressure
+
+Automation becomes opaque when helpers, workflows, and commands can no longer
+be named in order. Once the execution path is guesswork, root tooling starts
+hiding the very behavior it is supposed to make reviewable.

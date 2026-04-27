@@ -4,80 +4,42 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Lifecycle Overview
 
-Every package run follows a simple lifecycle: inputs enter through interfaces, domain and
-application code coordinate the work, and durable artifacts or responses leave
-the package.
+The ingest lifecycle starts with raw source material and ends when prepared output is stable enough for search to trust. It should not continue into retrieval interpretation or claim production.
 
-The value of this page is speed. A reader should be able to skim it and leave
-with one coherent story about how work moves through `bijux-canon-ingest` from
-entrypoint to result.
-
-Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Lifecycle Flow
 
 ```mermaid
-graph TD
-    A[Lifecycle Overview] --> B[Ingest request starts]
-    B --> C[Validation and parsing]
-    C --> D[Processing and enrichment]
-    D --> E[Artifacts emitted]
-    E --> F[Lifecycle completes with traceability]
+flowchart LR
+    raw["raw source material"]
+    entry["ingest entrypoints"]
+    prep["normalization and chunking"]
+    handoff["prepared output and artifacts"]
+
+    raw --> entry --> prep --> handoff
 ```
 
-## Lifecycle Anchors
+This page should make ingest feel like a bounded preparation story. The
+lifecycle matters because it shows where messy source handling stops and where
+the next package can start from stable prepared material.
 
-- entry surfaces: CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py, HTTP boundaries under src/bijux_canon_ingest/interfaces, configuration modules under src/bijux_canon_ingest/config
-- code ownership: src/bijux_canon_ingest/processing, src/bijux_canon_ingest/retrieval, src/bijux_canon_ingest/application
-- durable outputs: normalized document trees, chunk collections and retrieval-ready records, diagnostic output produced during ingest workflows
+## Lifecycle Shape
 
-## Concrete Anchors
+- input enters through package interfaces and configuration surfaces
+- processing normalizes and chunks the material into predictable internal forms
+- retrieval-side assembly shapes the output into handoff records and artifacts
 
-- `packages/bijux-canon-ingest` as the package root
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the package proof surface
+## Handoff Point
 
-## Use This Page When
+The lifecycle stops at prepared output. `bijux-canon-index` owns what happens when that output becomes searchable behavior.
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## Design Pressure
 
-## Decision Rule
-
-Use `Lifecycle Overview` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-ingest` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-ingest`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page keeps the package lifecycle readable before a reader dives into implementation detail.
-
-## Stability
-
-Keep it aligned with the current entrypoints and produced outputs.
+If the ingest lifecycle starts explaining retrieval behavior or downstream
+interpretation, the package is carrying work that belongs somewhere else. The
+handoff has to stay explicit enough that search can trust it without inheriting
+source cleanup logic.

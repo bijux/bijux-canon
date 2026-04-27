@@ -4,35 +4,34 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Authoring Rules
 
-The make layer stays maintainable only when new fragments follow the same
-structure the existing tree is trying to preserve.
+The make layer stays maintainable only when new fragments follow the structure
+that the existing tree is enforcing. A small naming or layout shortcut in the
+command layer tends to become a repeated maintenance cost.
 
-## Rules
+## Authoring Rules
 
 - put shared logic in the narrowest reusable fragment that can honestly own it
 - keep package bindings thin and descriptive
 - prefer explicit variables and includes over hidden shell indirection
-- place CI-only logic in the CI fragment family instead of smearing it across
-  unrelated targets
-- document new make surfaces in this handbook when they become part of the
-  repository contract
+- place CI-only behavior in the CI fragment family rather than smearing it
+  across unrelated targets
+- document new durable command surfaces in this handbook when they become part
+  of repository contract
 
-## Review Questions
+## Failure Signs
 
-- is the new target in the right layer of the make tree
-- does the file name explain its enduring job
-- can a maintainer trace the target from the root entrypoint to the owning
-  fragment without guesswork
+- a target can be understood only by reading several unrelated fragments in
+  order
+- similar logic appears in multiple package binding files
+- root entrypoints hide important behavior behind opaque shell commands
 
-## Purpose
+## First Proof Check
 
-This page records the authoring discipline that keeps the make system coherent.
-
-## Stability
-
-Update it when the repository’s actual make authoring rules change.
+- new or changed fragment under `makes/`
+- nearest reusable contract under `makes/bijux-py/`
+- root or package caller that exposes the surface

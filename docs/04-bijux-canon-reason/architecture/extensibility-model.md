@@ -4,108 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Extensibility Model
 
-Extension work should use the package seams that already exist instead of bypassing ownership.
+Extensibility only helps when it preserves the core package argument. In `bijux-canon-reason`, extension points should widen claim formation, checks, and reasoning artifacts intentionally rather than invite neighboring concerns in through convenience hooks.
 
-This page is about where variation is welcomed and where it would be a design
-smell. A package becomes easier to extend when contributors can see which seams
-are meant to flex and which ones are carrying the core identity of the package.
+## What To Check
 
-Treat the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+- name the extension points that are safe because they preserve the package role
+- name the boundaries that extensions must not cross
+- prefer extension seams that keep review pressure visible in code and tests
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    page["Extensibility Model<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    module1["claim and reasoning semantics"]
-    module1 --> page
-    module2["step execution and tool dispatch"]
-    module2 --> page
-    module3["plan construction and intermediate representation"]
-    module3 --> page
-    code1["src/bijux_canon_reason/planning"]
-    page --> code1
-    code2["src/bijux_canon_reason/reasoning"]
-    page --> code2
-    code3["src/bijux_canon_reason/execution"]
-    page --> code3
-    pressure1["tests/perf for retrieval benchmark coverage"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/unit for planning, reasoning, execution, verification, and interfaces"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
-```
+- `src/bijux_canon_reason` and reasoning artifacts for the structural ownership boundary
+- `tests` for claim, verification, and provenance evidence for executable confirmation that the structure still holds
 
-## Likely Extension Areas
+## Bottom Line
 
-- `src/bijux_canon_reason/planning` for plan construction and intermediate representation
-- `src/bijux_canon_reason/reasoning` for claim and reasoning semantics
-- `src/bijux_canon_reason/execution` for step execution and tool dispatch
-- `src/bijux_canon_reason/verification` for checks and validation outcomes
-- `src/bijux_canon_reason/traces` for trace replay and diff support
-- `src/bijux_canon_reason/interfaces` for CLI and serialization boundaries
-
-## Extension Rule
-
-Add extension points where the package already expects variation, and document them next to the owning boundary.
-
-## Concrete Anchors
-
-- `src/bijux_canon_reason/planning` for plan construction and intermediate representation
-- `src/bijux_canon_reason/reasoning` for claim and reasoning semantics
-- `src/bijux_canon_reason/execution` for step execution and tool dispatch
-
-## Use This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Extensibility Model` to decide whether a structural change makes `bijux-canon-reason` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What This Page Answers
-
-- how `bijux-canon-reason` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Reviewer Lens
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-reason`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
-
-## Purpose
-
-This page helps maintainers extend the package without smearing responsibilities together.
-
-## Stability
-
-Keep it aligned with the package seams that actually support extension today.
+If `bijux-canon-reason` needs hidden structure to defend claim formation, checks, and reasoning artifacts, the architecture is already too opaque.

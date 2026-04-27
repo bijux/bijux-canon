@@ -4,88 +4,42 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Capability Map
 
-The fastest way to understand `bijux-canon-ingest` is to map capabilities to the
-code that carries them. This page should help a reader move from a package claim
-to a likely code area without pretending that module names alone are enough.
+The capability map for `bijux-canon-ingest` should let a reviewer connect a package promise to the code that carries it. If a capability cannot be tied to a stable module area, it is not owned clearly enough yet.
 
-When this page is healthy, the package feels like a set of deliberate abilities,
-not a pile of implementation details.
-
-Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Capability Flow
 
 ```mermaid
-graph TD
-    A[Capability Map] --> B[Input acquisition]
-    B --> C[Normalization]
-    C --> D[Chunk and metadata shaping]
-    D --> E[Retrieval preparation]
-    E --> F[Auditable ingest outputs]
+flowchart LR
+    source["source handling needs"]
+    modules["processing, retrieval, interfaces, and safeguards"]
+    outputs["prepared records and ingest diagnostics"]
+
+    source --> modules --> outputs
 ```
 
-## Capability Map
+This page should make ingest capability look like a traceable chain from messy
+source handling to explicit handoff output. If the reviewer cannot point from
+promise to module to output, the package seam is weaker than it sounds.
 
-- `src/bijux_canon_ingest/processing` for deterministic document transforms
-- `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
-- `src/bijux_canon_ingest/application` for package workflows
-- `src/bijux_canon_ingest/infra` for local adapters and infrastructure helpers
-- `src/bijux_canon_ingest/interfaces` for CLI and HTTP boundaries
-- `src/bijux_canon_ingest/safeguards` for protective rules for ingest behavior
+## Capability To Code
 
-## Produced Artifacts
+- `processing/` owns cleaning, normalization, and chunking before retrieval begins
+- `retrieval/` owns ingest-side record shaping and handoff-ready assembly
+- `interfaces/` and `safeguards/` own the package surfaces that make ingest behavior repeatable and defensible
 
-- normalized document trees
+## Visible Outputs
+
+- normalized source material
 - chunk collections and retrieval-ready records
-- diagnostic output produced during ingest workflows
+- ingest diagnostics that explain how preparation behaved
 
-## Concrete Anchors
+## Design Pressure
 
-- `packages/bijux-canon-ingest` as the package root
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the package proof surface
-
-## Use This Page When
-
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Capability Map` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-ingest` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-ingest`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page helps a reader quickly map package claims to code areas.
-
-## Stability
-
-Keep it aligned with the real package modules and generated outputs.
+Capabilities stop being trustworthy when they exist mostly in prose and only
+loosely in module boundaries. Ingest has to keep preparation promises tied to
+named code areas and visible outputs.

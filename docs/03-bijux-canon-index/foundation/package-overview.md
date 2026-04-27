@@ -4,86 +4,53 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Package Overview
 
-`bijux-canon-index` exists so one durable part of the system can stay legible.
-Its job is to own contract-driven vector execution with replay-aware determinism, audited backend behavior, and provenance-rich result handling.
+`bijux-canon-index` exists to make retrieval behavior explicit, replayable, and reviewable. It turns prepared ingest output into embeddings, index state, and retrieval results that downstream packages can inspect instead of merely trust.
 
-If a reader cannot explain this package in one or two sentences after skimming
-this page, the package boundary is still too fuzzy and later pages will inherit
-that confusion.
-
-Treat the foundation pages for `bijux-canon-index` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Role Model
 
 ```mermaid
-graph TD
-    A[Package Overview] --> B[Query and corpus inputs]
-    B --> C[Index execution and retrieval]
-    C --> D[Provenance-rich outputs]
-    D --> E[Package interfaces]
-    E --> F[Reasoning and runtime handoff]
+flowchart LR
+    prepared["prepared ingest output"]
+    index["retrieval and indexing behavior"]
+    results["replayable retrieval results"]
+    downstream["reason, agent, and runtime consumers"]
+
+    prepared --> index --> results --> downstream
 ```
 
-## What It Owns
+This page should let a reader picture index as the package that owns retrieval
+semantics in the open. The result is not just search output; it is search
+behavior that later packages can replay, compare, and review.
 
-- vector execution semantics and backend orchestration
-- provenance-aware result artifacts and replay-oriented comparison
-- plugin-backed vector store, embedding, and runner integration
-- package-local HTTP behavior and related schemas
+## Boundary Verdict
 
-## What It Does Not Own
+If the work changes how search is executed, replayed, compared, or exposed as retrieval output, it belongs here. If it changes source preparation, claim meaning, or governed run policy, it does not.
 
-- document ingestion and normalization
-- runtime-wide replay policy and execution governance
-- repository maintenance automation
+## What This Package Makes Possible
 
-## Concrete Anchors
+- retrieval behavior becomes a named contract instead of an accidental consequence of backend code
+- provenance and replay stay attached to search results that later packages rely on
+- index-specific search assumptions stop leaking into reasoning and runtime layers
 
-- `packages/bijux-canon-index` as the package root
-- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/bijux-canon-index/tests` as the package proof surface
+## Tempting Mistakes
 
-## Use This Page When
+- treating vector execution as infrastructure plumbing instead of package-owned behavior
+- burying caller-facing retrieval differences inside plugins or backend adapters
+- using runtime authority to paper over unclear retrieval semantics
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## First Proof Check
 
-## Decision Rule
+- `packages/bijux-canon-index/src/bijux_canon_index` for retrieval ownership in code
+- `packages/bijux-canon-index/apis` for tracked caller-facing schemas
+- `packages/bijux-canon-index/tests` for replay and provenance evidence
 
-Use `Package Overview` to decide whether a change makes `bijux-canon-index` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
+## Design Pressure
 
-## What This Page Answers
-
-- what problem `bijux-canon-index` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-index`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page gives the shortest honest description of what the package is for.
-
-## Stability
-
-Keep it aligned with the real package boundary described by the code and tests.
+The pressure on index is to keep retrieval logic visible enough that later
+packages never need to guess what happened inside search. If retrieval policy
+spills into adapters or downstream code, the package boundary stops paying off.

@@ -4,89 +4,84 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Architecture
 
-This section explains how `bijux_canon_ingest` is organized so a reviewer can follow structure, dependency direction, and execution flow without guessing.
+Open this section when the question is structural: where ingest logic lives, how preparation flows through modules, and where the package stops before retrieval semantics take over.
 
-These pages turn `bijux-canon-ingest` from a directory tree into a readable design map. Use them when a structural change needs to be grounded in named modules and real execution paths.
+## Structural Shape
 
-Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
-
-## Visual Summary
+Ingest architecture is a preparation pipeline with explicit adapters at the
+edges. Source material enters through interface code, application workflows
+assemble the run, processing modules normalize and chunk content, and retrieval
+modules shape handoff records without becoming the long-term owner of search
+semantics.
 
 ```mermaid
-graph TD
-    A[Architecture] --> B[Module topology]
-    B --> C[Dependency direction]
-    C --> D[Execution path]
-    D --> E[State boundaries]
-    E --> F[Integration seams]
+flowchart LR
+    interfaces["interfaces"]
+    application["application services"]
+    config["config"]
+    processing["processing stages"]
+    retrieval["retrieval handoff"]
+    observability["pipeline records"]
+    infra["storage and adapters"]
+    downstream["index package"]
+
+    interfaces --> application
+    config --> application
+    application --> processing --> retrieval --> downstream
+    processing --> observability
+    retrieval --> infra
 ```
 
-## Pages in This Section
+The architectural story here should let a reader follow one preparation run
+without reading code first. Interfaces admit the input, application code
+assembles the run, processing makes the content stable, and retrieval surfaces
+shape the handoff into index. Observability and storage matter because they
+let that pipeline stay inspectable without moving retrieval ownership upward
+into ingest.
 
-- [Module Map](module-map.md)
-- [Dependency Direction](dependency-direction.md)
-- [Execution Model](execution-model.md)
-- [State and Persistence](state-and-persistence.md)
-- [Integration Seams](integration-seams.md)
-- [Error Model](error-model.md)
-- [Extensibility Model](extensibility-model.md)
-- [Code Navigation](code-navigation.md)
-- [Architecture Risks](architecture-risks.md)
+## Read These First
 
-## Read Across the Package
+- open [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/) first when you need the fastest route from a behavior question to the owning code area
+- open [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/) when you need the real path from source input to prepared output
+- open [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/) when a change could blur the handoff into downstream packages
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+## Structural Risk
 
-## Concrete Anchors
+The main architectural risk here is letting preparation behavior leak into retrieval behavior because the handoff seam is weak or poorly named.
 
-- `src/bijux_canon_ingest/processing` for deterministic document transforms
-- `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
-- `src/bijux_canon_ingest/application` for package workflows
+## First Proof Check
 
-## Use This Page When
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/application` for pipeline assembly and services
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for core preparation flow
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for handoff-ready assembly
+- `packages/bijux-canon-ingest/tests` for proof that the structure still defends deterministic preparation
 
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
 
-## Decision Rule
+## Pages In This Section
 
-Use `Architecture` to decide whether a structural change makes `bijux-canon-ingest` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
+- [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/)
+- [Dependency Direction](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/dependency-direction/)
+- [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/)
+- [State and Persistence](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/state-and-persistence/)
+- [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/)
+- [Error Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/error-model/)
+- [Extensibility Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/extensibility-model/)
+- [Code Navigation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/code-navigation/)
+- [Architecture Risks](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/architecture-risks/)
 
-## What This Page Answers
+## Leave This Section When
 
-- how `bijux-canon-ingest` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
+- leave for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the structural question is already a public contract question
+- leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
+- leave for [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
-## Reviewer Lens
+## Design Pressure
 
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-ingest`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
-
-## Purpose
-
-This page explains how to use the architecture section for `bijux-canon-ingest` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If an architectural explanation here starts to sound like retrieval semantics,
+the package boundary is already drifting. Ingest stays strong by making the
+handoff to index cleaner, not by quietly absorbing search ownership.

@@ -4,40 +4,44 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # bijux-agent
 
-`bijux-agent` remains published so existing environments can keep installing
-the legacy agent distribution name while moving toward `bijux-canon-agent`.
+`bijux-agent` remains published so existing environments can keep using the legacy
+agent package name while migrating toward `bijux-canon-agent`. New work should start at
+the canonical package, not here.
 
-It is a migration surface, not the preferred package for new work. New
-installations should start with `bijux-canon-agent`.
-
-## Canonical replacement
+## Canonical Target
 
 - distribution: `bijux-canon-agent`
 - Python import: `bijux_canon_agent`
 - command: `bijux-canon-agent`
-- package handbook: <https://bijux.io/bijux-canon/bijux-canon-agent/>
+- package handbook: <https://bijux.io/bijux-canon/05-bijux-canon-agent/>
 
-## What the compatibility package preserves
+## Preserved Surfaces
 
-- the published `bijux-agent` distribution name on PyPI
+- the published `bijux-agent` distribution name
 - the `bijux_agent` Python import surface
-- the `bijux-agent` console command
+- the `bijux-agent` command name
 
-## Migration direction
+## When To Keep It
 
-- install `bijux-canon-agent` for new environments
-- keep `bijux-agent` only while existing automation still depends on the
-  legacy name
-- use the shared migration handbook for rename planning and retirement review:
-  <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
+Keep `bijux-agent` only while a documented dependent environment still relies on
+the legacy name. Once installs, imports, and command usage move to `bijux-canon-agent`,
+the compatibility package becomes retirement debt.
 
-## Repository transition
+## First Proof Check
 
-The former standalone repository at <https://github.com/bijux/bijux-agent> is
-being retired in favor of the unified monorepo at
-<https://github.com/bijux/bijux-canon>.
+- `packages/compat-bijux-agent`
+- the compatibility package `README.md`
+- the canonical handbook at <https://bijux.io/bijux-canon/05-bijux-canon-agent/>
+- shared retirement rules in
+  <https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/>
+
+## Repository Transition
+
+The former standalone repository at <https://github.com/bijux/bijux-agent> is retired in favor of
+<https://github.com/bijux/bijux-canon>. The legacy package remains only as a
+bridge to the canonical package inside the monorepo.

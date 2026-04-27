@@ -4,40 +4,44 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # bijux-rar
 
-`bijux-rar` remains published so existing environments can keep installing the
-legacy reasoning distribution name while moving toward `bijux-canon-reason`.
+`bijux-rar` remains published so existing environments can keep using the legacy
+reasoning package name while migrating toward `bijux-canon-reason`. New work should start at
+the canonical package, not here.
 
-It is a migration surface, not the preferred package for new work. New
-installations should start with `bijux-canon-reason`.
-
-## Canonical replacement
+## Canonical Target
 
 - distribution: `bijux-canon-reason`
 - Python import: `bijux_canon_reason`
 - command: `bijux-canon-reason`
-- package handbook: <https://bijux.io/bijux-canon/bijux-canon-reason/>
+- package handbook: <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
 
-## What the compatibility package preserves
+## Preserved Surfaces
 
-- the published `bijux-rar` distribution name on PyPI
+- the published `bijux-rar` distribution name
 - the `bijux_rar` Python import surface
-- the `bijux-rar` console command
+- the `bijux-rar` command name
 
-## Migration direction
+## When To Keep It
 
-- install `bijux-canon-reason` for new environments
-- keep `bijux-rar` only while existing automation still depends on the legacy
-  name
-- use the shared migration handbook for rename planning and retirement review:
-  <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
+Keep `bijux-rar` only while a documented dependent environment still relies on
+the legacy name. Once installs, imports, and command usage move to `bijux-canon-reason`,
+the compatibility package becomes retirement debt.
 
-## Repository transition
+## First Proof Check
 
-The former standalone repository at <https://github.com/bijux/bijux-rar> is
-being retired in favor of the unified monorepo at
-<https://github.com/bijux/bijux-canon>.
+- `packages/compat-bijux-rar`
+- the compatibility package `README.md`
+- the canonical handbook at <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
+- shared retirement rules in
+  <https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/>
+
+## Repository Transition
+
+The former standalone repository at <https://github.com/bijux/bijux-rar> is retired in favor of
+<https://github.com/bijux/bijux-canon>. The legacy package remains only as a
+bridge to the canonical package inside the monorepo.

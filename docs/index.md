@@ -4,20 +4,26 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-10
+last_reviewed: 2026-04-26
 ---
 
 # Bijux Canon
 
-`bijux-canon` is a deliberately split system for deterministic ingest,
-retrieval, reasoning, orchestration, and governed execution. The split
-is the architecture, not a packaging afterthought. Each package owns one
-kind of promise clearly enough that readers can understand the system by
-skimming the docs instead of reconstructing intent from the tree.
+`bijux-canon` is a package system for deterministic ingest, retrieval,
+reasoning, orchestration, and governed execution. Open this site to find the
+package that owns the behavior under review and the repository rules that keep
+the package handoffs explicit.
 
-Start here when you need repository-level orientation. A new reader
-should be able to see why the repository is split, which package owns
-the current concern, and which checked-in files back the explanation.
+The split is the design. Each package owns one operational promise strongly
+enough that you can follow the full system as a chain of accountable
+handoffs instead of treating the repository as one blurred codebase.
+
+One concrete reading path makes that split easier to trust. A source document
+is prepared by `bijux-canon-ingest`, turned into replayable retrieval behavior
+by `bijux-canon-index`, translated into inspectable claims by
+`bijux-canon-reason`, coordinated by `bijux-canon-agent`, and accepted or
+replayed under `bijux-canon-runtime`. The root owns the rules that keep those
+handoffs visible. It does not own the package behavior itself.
 
 <!-- bijux-canon-badges:generated:start -->
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
@@ -60,76 +66,91 @@ the current concern, and which checked-in files back the explanation.
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-<div class="bijux-callout"><strong>Start with the package split, not the file tree.</strong> 
-Ingest prepares deterministic material. Index executes retrieval and
-captures provenance. Reason turns evidence into inspectable claims.
-Agent coordinates role-based work. Runtime governs replay, persistence,
-and final acceptance. The repository handbook exists to explain how those
-responsibilities fit together without pretending they are one thing.</div>
-
-If you only remember one idea, remember this: the split protects clarity.
-Each package can stay strong because it is not also trying to absorb the
-whole system.
+<div class="bijux-callout"><strong>Start with owned promises, not with directory names.</strong>
+Ingest prepares deterministic material. Index executes retrieval and preserves provenance. Reason turns evidence into inspectable claims. Agent coordinates role-based work with explicit traces. Runtime governs execution, replay, persistence, and final acceptability. The repository handbook explains the seams without pretending the root owns package behavior.</div>
 
 <div class="bijux-panel-grid">
-  <div class="bijux-panel"><h3>Whole-System Idea</h3><p>Use the root pages to understand why the repository is split and how the five canonical packages fit into one accountable flow.</p></div>
-  <div class="bijux-panel"><h3>Honesty Rule</h3><p>Use the docs as a map, then verify the claim in code, schemas, tests, or release assets before treating it as settled.</p></div>
-  <div class="bijux-panel"><h3>Fast Reading Path</h3><p>Open the repository handbook for cross-package questions, one product handbook for owned behavior, the maintainer handbook for repository health, and compatibility docs only for legacy names.</p></div>
+  <div class="bijux-panel"><h3>System Shape</h3><p>Five canonical packages carry the product flow, the root explains shared coordination, the maintainer handbook explains repository health, and compatibility docs exist only to bridge old names.</p></div>
+  <div class="bijux-panel"><h3>Integrity Rule</h3><p>Statements here must stay consistent with checked-in code, schemas, tests, release assets, and published package boundaries.</p></div>
+  <div class="bijux-panel"><h3>Fast Route</h3><p>Open the repository handbook for cross-package seams, a product handbook for owned behavior, the maintainer handbook for automation, and compatibility docs only when a legacy package name is still in play.</p></div>
 </div>
 
 <div class="bijux-quicklinks">
-<a class="md-button md-button--primary" href="bijux-canon/">Open the repository handbook</a>
-<a class="md-button" href="07-bijux-canon-maintain/">Open maintenance docs</a>
-<a class="md-button" href="08-compat-packages/">Open compatibility docs</a>
+<a class="md-button md-button--primary" href="https://bijux.io/bijux-canon/01-bijux-canon/">Open the repository handbook</a>
+<a class="md-button" href="https://bijux.io/bijux-canon/07-bijux-canon-maintain/">Open maintenance docs</a>
+<a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
 
-## Visual Summary
+## System Map
 
 ```mermaid
-flowchart TB
-    page["Bijux Canon<br/>clarifies: bijux-canon section | bijux-canon-maintain section | compatibility packages section"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    detail1["why the split exists"]
-    detail1 --> page
-    detail2["where each package takes authority"]
-    detail2 -.gives the reader orientation.-> page
-    detail3["why the split protects clarity"]
-    detail3 --> page
-    detail4["repository handbook"]
-    detail4 -.gives the reader orientation.-> page
-    detail5["one product handbook"]
-    detail5 --> page
-    detail6["the fastest credible next section"]
-    detail6 -.gives the reader orientation.-> page
-    detail7["maintainer work"]
-    detail7 --> page
-    detail8["legacy-name migration"]
-    detail8 -.gives the reader orientation.-> page
-    detail9["questions that do not belong on the landing page"]
-    detail9 --> page
-    next1["interfaces next"]
-    page --> next1
-    next2["maintainer docs"]
-    page --> next2
-    next3["repository handbook"]
-    page --> next3
-    class page page;
-    class detail1,detail2,detail3,detail4,detail5,detail6,detail7,detail8,detail9 anchor;
-    class next1,next2,next3 action;
+flowchart LR
+    source["source material"]
+    ingest["ingest"]
+    index["index"]
+    reason["reason"]
+    agent["agent"]
+    runtime["runtime"]
+    accepted["accepted run"]
+    repository["repository handbook"]
+    maintain["maintenance handbook"]
+    compat["compatibility handbook"]
+
+    source --> ingest --> index --> reason --> agent --> runtime --> accepted
+    repository --> ingest
+    repository --> index
+    repository --> reason
+    repository --> agent
+    repository --> runtime
+    maintain --> repository
+    compat --> ingest
+    compat --> index
+    compat --> reason
+    compat --> agent
+    compat --> runtime
 ```
+
+Read the homepage like a chain of ownership. The product story moves left to
+right through the five canonical packages. The repository handbook explains the
+shared boundary rules around that chain. The maintenance handbook proves how
+the repository enforces those rules. The compatibility handbook exists only to
+route old names back to their canonical owners.
 
 ## Start Here
 
-- open [bijux-canon](01-bijux-canon/index.md) when the question crosses package boundaries or touches shared governance
-- open one product package when you need ownership, interfaces, operations, or proof for one package
-- open [bijux-canon-maintain](07-bijux-canon-maintain/index.md) for repository automation, schema enforcement, and maintainer-only guardrails
-- open [compatibility packages](08-compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem
+- open the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) when the question crosses package boundaries or touches shared root rules
+- open one product handbook when the behavior already belongs to ingest, index, reason, agent, or runtime
+- open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
+- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older distribution, import, or command name is still in play
 
-## Package Flow
+## One Real Run
+
+A useful mental model is a reviewable run. Each layer changes the question that
+the next layer is allowed to ask. Ingest asks whether source material is stable
+enough to hand forward. Index asks whether retrieval happened through an
+auditable contract. Reason asks what the retrieved evidence supports. Agent
+asks how the work should be coordinated. Runtime asks whether the full run can
+be accepted, persisted, and replayed.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Reader
+    participant Ingest
+    participant Index
+    participant Reason
+    participant Agent
+    participant Runtime
+
+    Reader->>Ingest: provide source material
+    Ingest-->>Index: deterministic chunks and preparation records
+    Index-->>Reason: retrieved evidence with provenance and replay data
+    Reason-->>Agent: claims, checks, and reasoning artifacts
+    Agent-->>Runtime: ordered workflow trace and final package outputs
+    Runtime-->>Reader: accepted, rejected, or replayable run verdict
+```
+
+## Package Handbooks
 
 | Package | Owns | Open It When |
 | --- | --- | --- |
@@ -139,55 +160,27 @@ flowchart TB
 | `bijux-canon-agent` | role-based orchestration and trace-backed agent workflows | you are reviewing how multi-step agent work is coordinated and explained |
 | `bijux-canon-runtime` | governed execution, replay, persistence, and final acceptability | you need the authority layer that decides whether a run is acceptable and durable |
 
-## Documentation Scope
+## Shared Handbooks
 
-- the bijux-canon section
-- the bijux-canon-maintain section
-- the compatibility packages section
+- [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) explains the root-owned design boundary, shared workflow, and package seams
+- [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
+- [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) documents preserved legacy names and the migration pressure away from them
 
-## Concrete Anchors
+## Proof Surfaces
 
-- `docs/index.md` as the root routing page
-- `mkdocs.yml` as the published navigation source
-- `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` as the developer-side catalog tool
+- `mkdocs.yml` for the published navigation source
+- `packages/` for the package split this page is introducing
+- `docs/` for the handbook entry pages that route readers into the repository
+- `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` for the catalog tooling behind the handbook structure
 
-## Use This Page When
+Start with `packages/` if the main question is package ownership. Start with
+`mkdocs.yml` if the main question is documentation routing. Start with
+`Makefile`, `makes/`, or `.github/workflows/` if the claim is about shared
+verification or release behavior. If none of those surfaces can support the
+claim quickly, the homepage should be treated as orientation rather than proof.
 
-- you are orienting yourself before opening a repository, package, maintainer, or compatibility page
-- you need the fastest route to the correct handbook section
-- you are reviewing whether the current docs system covers the right surfaces
+## Leave This Page When
 
-## Decision Rule
-
-Use this page to decide which handbook branch owns the current question. If a reader still cannot tell whether the issue is repository-wide, package-local, maintainer-only, or legacy-only after reading this page, then the root story is not clear enough yet.
-
-## What This Page Answers
-
-- which handbook to open first for a given repository question
-- how the repository, package, maintainer, and compatibility docs relate
-- what the current documentation system is expected to cover
-
-## Reviewer Lens
-
-- check that the first useful next step is obvious within a few seconds
-- look for package, maintainer, or compatibility material that is leaking back into the landing page
-- confirm that the route described here still matches the rendered navigation and the actual handbook content
-
-## Honesty Boundary
-
-This page can route readers quickly, but it does not replace the package, maintainer, or compatibility pages that carry the detailed proof for those surfaces.
-
-## Next Checks
-
-- open the repository handbook when the question spans packages or shared governance
-- open a product package handbook when the question is about owned behavior, interfaces, operations, or proof
-- open the maintainer or compatibility handbooks only when the question is explicitly about those concerns
-
-## Purpose
-
-Use this page to get oriented quickly, choose the right handbook branch,
-and move to the files that carry the detailed proof.
-
-## Stability
-
-This page is part of the canonical docs spine. Keep it aligned with the sections rendered in `docs/`, the packages that still ship from this repository, and the reasons the split exists.
+- one package or shared handbook clearly owns the question
+- the next step is a concrete interface, workflow, schema, test, or release surface
+- the issue is known to be maintainer-only or legacy-only

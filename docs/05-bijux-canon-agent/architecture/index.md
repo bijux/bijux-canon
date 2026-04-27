@@ -4,112 +4,81 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Architecture
 
-This section explains how `bijux_canon_agent` is organized so a reviewer can follow structure, dependency direction, and execution flow without guessing.
+Open this section when the question is structural: where orchestration lives, how roles and steps coordinate, and how the package keeps workflows traceable instead of magical.
 
-These pages turn `bijux-canon-agent` from a directory tree into a readable design map. Use them when a structural change needs to be grounded in named modules and real execution paths.
+## Structural Shape
 
-Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
-
-## Visual Summary
+Agent architecture is organized around traceable workflow control. Pipeline
+definitions describe the work, role modules perform bounded decisions, the
+execution kernel orders calls, convergence logic decides whether work is done,
+and trace modules make the sequence inspectable by runtime and reviewers.
 
 ```mermaid
 flowchart LR
-    page["Architecture<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    module1["execution flow orchestration"]
-    module1 --> page
-    module2["workflow policy and graph logic"]
-    module2 --> page
-    module3["role-local behavior"]
-    module3 --> page
-    code1["src/bijux_canon_agent/agents"]
-    page --> code1
-    code2["src/bijux_canon_agent/pipeline"]
-    page --> code2
-    code3["src/bijux_canon_agent/application"]
-    page --> code3
-    pressure1["tests/invariants for package promises that should not drift"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/unit for local behavior and utility coverage"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
+    contracts["contracts"]
+    pipeline["pipeline control"]
+    roles["agent roles"]
+    kernel["execution kernel"]
+    convergence["stop conditions"]
+    traces["trace records"]
+    validation["trace validation"]
+    observability["logs and metrics"]
+    runtime["runtime package"]
+
+    contracts --> pipeline --> roles --> kernel --> convergence --> traces --> runtime
+    pipeline --> validation
+    kernel --> observability
 ```
 
-## Pages in This Section
+Agent architecture should make one thing obvious: orchestration is a product
+surface with its own structure, not glue hidden between reasoning and runtime.
+Contracts describe the workflow shape, role modules perform bounded work, the
+kernel orders execution, and traces make the full sequence available to the
+next authority layer.
 
-- [Module Map](module-map.md)
-- [Dependency Direction](dependency-direction.md)
-- [Execution Model](execution-model.md)
-- [State and Persistence](state-and-persistence.md)
-- [Integration Seams](integration-seams.md)
-- [Error Model](error-model.md)
-- [Extensibility Model](extensibility-model.md)
-- [Code Navigation](code-navigation.md)
-- [Architecture Risks](architecture-risks.md)
+## Read These First
 
-## Read Across the Package
+- open [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/) first when you need the owning code area for a workflow concern
+- open [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/) when you need the real path from workflow input to trace-backed output
+- open [Integration Seams](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/integration-seams/) when a change could pull reasoning or runtime authority into orchestration
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+## Structural Risk
 
-## Concrete Anchors
+The main architectural risk here is letting workflow control become so distributed that a reader can no longer tell which module made a role or sequencing decision.
 
-- `src/bijux_canon_agent/agents` for role-local behavior
-- `src/bijux_canon_agent/pipeline` for execution flow orchestration
-- `src/bijux_canon_agent/application` for workflow policy and graph logic
+## First Proof Check
 
-## Use This Page When
+- `packages/bijux-canon-agent/src/bijux_canon_agent/pipeline` for workflow definition, orchestration, control, and convergence
+- `packages/bijux-canon-agent/src/bijux_canon_agent/agents` for role implementations and their bounded responsibilities
+- `packages/bijux-canon-agent/src/bijux_canon_agent/traces` for trace serialization and replayability
+- `packages/bijux-canon-agent/tests` for determinism and traceability evidence
 
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
 
-## Decision Rule
+## Pages In This Section
 
-Use `Architecture` to decide whether a structural change makes `bijux-canon-agent` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
+- [Module Map](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/module-map/)
+- [Dependency Direction](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/dependency-direction/)
+- [Execution Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/execution-model/)
+- [State and Persistence](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/state-and-persistence/)
+- [Integration Seams](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/integration-seams/)
+- [Error Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/error-model/)
+- [Extensibility Model](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/extensibility-model/)
+- [Code Navigation](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/code-navigation/)
+- [Architecture Risks](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/architecture-risks/)
 
-## What This Page Answers
+## Leave This Section When
 
-- how `bijux-canon-agent` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
+- leave for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the structural question is already a public contract question
+- leave for [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
+- leave for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
-## Reviewer Lens
+## Design Pressure
 
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-agent`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
-
-## Purpose
-
-This page explains how to use the architecture section for `bijux-canon-agent` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If workflow control is distributed so widely that no reader can locate the
+sequencing decision, the package stops being inspectable. The architecture
+page has to keep role execution, convergence, and trace responsibility clear.

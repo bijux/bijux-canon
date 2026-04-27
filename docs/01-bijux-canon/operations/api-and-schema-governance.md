@@ -4,40 +4,53 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # API and Schema Governance
 
 Shared API artifacts live under `apis/` so schema review does not depend on
-reading package source alone. This repository currently tracks schemas for
-ingest, index, reason, agent, and runtime.
+reading package source alone.
 
-That matters because the repository wants public surfaces to be reviewable in
-the open. A caller or reviewer should not need to reverse-engineer Python
-modules just to understand whether an HTTP or artifact contract changed.
+This page exists to answer one operational question clearly: when is a schema
+change just local code movement, and when is it a compatibility event that
+needs shared review.
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
-## Visual Summary
+## Governance Flow
 
 ```mermaid
-graph TD
-    A[Package API behavior] --> B[Schema files under apis]
-    B --> C[Pinned OpenAPI and schema hashes]
-    C --> D[CI drift checks]
-    D --> E{Contract change intentional}
-    E -- Yes --> F[Review and update docs and tests]
-    E -- No --> G[Fail fast and fix mismatch]
+flowchart LR
+    change["schema or api change"]
+    roots["tracked schema roots under apis/"]
+    proof["package interface docs and shared checks"]
+    review["explicit compatibility review"]
+
+    change --> roots --> proof --> review
 ```
 
-## Governance Rules
+This page should make schema governance feel procedural rather than implicit.
+A reader needs to see when a change crosses the line from local implementation
+movement into shared compatibility review.
 
-- package code and tracked schema files must describe the same public behavior
-- drift checks belong in `bijux-canon-dev` or package tests, not in prose alone
-- schema hashes and pinned OpenAPI artifacts should move only with reviewable intent
+## Compatibility Threshold
 
-## Current Schema Roots
+Treat a change as a shared compatibility event when it changes any caller- or
+reader-facing contract that is tracked outside one module alone, including:
+
+- request or response shapes in tracked OpenAPI material
+- pinned schema artifacts under `apis/`
+- field names, required fields, or semantics that more than one package or
+  external caller depends on
+- workflow checks whose purpose is to prove schema alignment
+
+## First Proof Checks
+
+- `apis/` for the tracked schema roots and pinned artifacts
+- the owning package interface docs for the public contract being changed
+- drift or validation checks under `.github/workflows/` and maintainer tooling
+  when the change claims to stay safe
+
+## Shared Schema Roots
 
 - `apis/bijux-canon-agent/v1`
 - `apis/bijux-canon-index/v1`
@@ -45,48 +58,8 @@ graph TD
 - `apis/bijux-canon-reason/v1`
 - `apis/bijux-canon-runtime/v1`
 
-## Concrete Anchors
+## Design Pressure
 
-- `pyproject.toml` for workspace metadata and commit conventions
-- `Makefile` and `makes/` for root automation
-- `apis/` and `.github/workflows/` for schema and validation review
-
-## Use This Page When
-
-- you are dealing with repository-wide seams rather than one package alone
-- you need shared workflow, schema, or governance context before changing code
-- you want the monorepo view that sits above the package handbooks
-
-## Decision Rule
-
-Use `API and Schema Governance` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
-
-## What This Page Answers
-
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
-
-## Reviewer Lens
-
-- compare the page claims with the real root files, workflows, or schema assets
-- check that repository guidance still stops where package ownership begins
-- confirm that any repository rule described here is still enforceable in code or automation
-
-## Honesty Boundary
-
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
-
-## Next Checks
-
-- move to the owning package docs when the question stops being repository-wide
-- check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
-
-## Purpose
-
-This page explains why schemas are first-class repository assets rather than incidental package outputs.
-
-## Stability
-
-Keep this page aligned with the actual schema directories and the validation tooling that protects them.
+Schema drift becomes expensive when local code changes look harmless but alter
+what another package, caller, or shared check will read. Governance has to make
+that threshold obvious before review falls back to guesswork.

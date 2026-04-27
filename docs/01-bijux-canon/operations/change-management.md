@@ -4,45 +4,53 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Change Management
 
 The repository should make change easier to reason about, not easier to hide.
 
-Change management here means keeping cross-package work understandable over
-time. That includes how diffs are split, how release-facing effects are made
-visible, and how documentation, proof, and implementation are kept in the same
-story instead of being updated on separate timelines.
+## Change Loop
 
-## Expectations
+```mermaid
+flowchart LR
+    intent["change intent"]
+    owner["confirm the owner of each behavior"]
+    series["move docs, proof, and implementation together"]
+    history["durable commit history"]
 
-- split repository-wide work into reviewable batches with durable commit intent
-- update the relevant handbook pages in the same change series as the behavior
-- keep file and directory names descriptive enough that later readers do not
-  need private project history to decode them
-- use redirects or explicit metadata updates when documentation paths move
+    intent --> owner --> series --> history
+```
 
-## What Good Looks Like
+This page should frame change management as packaging explanation and proof
+while the work is still moving. A change series is healthy when the ownership
+story gets clearer as the edits accumulate.
 
-- a maintainer can read the history and understand why each batch exists
-- later cleanup work is reduced because the original change closed the
-  documentation and proof loop at the same time
-- renamed pages or sections have an explicit continuity plan instead of silent
-  breakage
+## Fail-Fast Gates
 
-## Why It Matters
+A cross-package change is not ready to merge until it passes all of these tests:
 
-Most repository rework debt comes from changes that “worked” but were never made
-fully legible. Good change management is the discipline that prevents that debt
-from accumulating again.
+- the owner of each changed behavior is still easy to name
+- docs, proof, and implementation move in the same change series when they
+  describe the same rule
+- release-facing or compatibility effects are visible in the changed surfaces
+- the commit boundaries explain durable intent instead of bundling unrelated work
 
-## Purpose
+## Most Common Failure Mode
 
-This page explains how shared repository changes should be packaged and carried
-through to completion.
+The usual repository rework debt comes from changes that technically worked but
+left the reason for the split harder to explain. The cost appears later as
+cleanup, duplicated rules, or confused root ownership.
 
-## Stability
+## First Proof Checks
 
-Update this page only when the repository’s change discipline genuinely shifts.
+- the changed handbook pages under `docs/`
+- the package or root surface that implements the behavior
+- the test, workflow, or schema check that proves the rule still holds
+
+## Design Pressure
+
+The repository pays later for changes that were easy to merge but hard to
+describe. If the explanation loop stays open until after merge, the history is
+already losing information.

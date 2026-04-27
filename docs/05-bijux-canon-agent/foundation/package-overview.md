@@ -4,109 +4,53 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Package Overview
 
-`bijux-canon-agent` exists so one durable part of the system can stay legible.
-Its job is to own deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
+`bijux-canon-agent` exists to coordinate role-based, multi-step behavior without hiding what happened. It owns deterministic orchestration, trace-bearing workflow progression, and agent-facing contracts that sit above reasoning and below runtime authority.
 
-If a reader cannot explain this package in one or two sentences after skimming
-this page, the package boundary is still too fuzzy and later pages will inherit
-that confusion.
-
-Treat the foundation pages for `bijux-canon-agent` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Role Model
 
 ```mermaid
-flowchart TB
-    page["Package Overview<br/>clarifies: own the right work | name the boundary | compare neighbors"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    own1["agent role implementations and role-specific helpers"]
-    own1 --> page
-    own2["deterministic orchestration of the local agent pipeline"]
-    own2 --> page
-    own3["trace-backed result artifacts that explain each run"]
-    own3 --> page
-    limit1["ingest and index domain ownership"]
-    page -.keeps outside.-> limit1
-    limit2["repository tooling and release automation"]
-    page -.keeps outside.-> limit2
-    limit3["runtime-wide persistence and replay acceptance"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-agent/src/bijux_canon_agent"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-agent/tests"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-agent"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+flowchart LR
+    inputs["reasoning artifacts and commands"]
+    agent["workflow orchestration"]
+    trace["trace-bearing workflow output"]
+    downstream["runtime and operators"]
+
+    inputs --> agent --> trace --> downstream
 ```
 
-## What It Owns
+This page should show agent as the workflow layer, not as a place where any
+hard late-stage problem gets parked. The package matters when it makes
+coordination visible and replayable rather than merely convenient.
 
-- agent role implementations and role-specific helpers
-- deterministic orchestration of the local agent pipeline
-- trace-backed result artifacts that explain each run
-- package-local CLI and HTTP boundaries for agent workflows
+## Boundary Verdict
 
-## What It Does Not Own
+If the change decides how roles coordinate, which step runs next, or what trace a workflow must emit, it belongs here. If it decides what a claim means or whether a run counts, it belongs in another package.
 
-- runtime-wide persistence and replay acceptance
-- ingest and index domain ownership
-- repository tooling and release automation
+## What This Package Makes Possible
 
-## Concrete Anchors
+- workflow behavior becomes explainable as orchestration rather than as accidental cross-package coupling
+- trace output stays strong enough for readers to reconstruct what the agent did
+- reasoning and runtime layers keep their own authority instead of being blurred into orchestration
 
-- `packages/bijux-canon-agent` as the package root
-- `packages/bijux-canon-agent/src/bijux_canon_agent` as the import boundary
-- `packages/bijux-canon-agent/tests` as the package proof surface
+## Tempting Mistakes
 
-## Use This Page When
+- calling any multi-step behavior an agent feature even when it is really reasoning logic
+- letting runtime acceptance rules leak into orchestration because they are both late-stage concerns
+- adding convenience workflow behavior that makes traces harder to defend
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## First Proof Check
 
-## Decision Rule
+- `packages/bijux-canon-agent/src/bijux_canon_agent` for orchestration ownership in code
+- `packages/bijux-canon-agent/tests` for determinism and traceability evidence
+- `packages/bijux-canon-agent/apis` for tracked agent-facing surfaces
 
-Use `Package Overview` to decide whether a change makes `bijux-canon-agent` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
+## Design Pressure
 
-## What This Page Answers
-
-- what problem `bijux-canon-agent` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-agent`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page gives the shortest honest description of what the package is for.
-
-## Stability
-
-Keep it aligned with the real package boundary described by the code and tests.
+The pressure on agent is to keep orchestration distinct from both reasoning and
+runtime authority. If traces stop being enough to explain why a workflow moved,
+the package has absorbed too much hidden policy.

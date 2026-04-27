@@ -4,30 +4,30 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Package Dispatch
 
-Package dispatch is how shared make workflows become package-specific without
-duplicating the whole command model.
+Package dispatch is how shared target families become package-specific work
+without copying the whole command model. It is the seam where reusable rules
+meet real package directories and artifact locations.
 
-The repository uses `makes/bijux-py/root/package-dispatch.mk`,
-`makes/packages/compat-package.mk`, and the per-package files under
-`makes/packages/` to route shared target families onto real package roots and
-artifact directories.
+## Dispatch Surfaces
 
-## Dispatch Anchors
-
+- `makes/bijux-py/root/package-dispatch.mk` for shared dispatch mechanics
 - `makes/packages/bijux-canon-*.mk` for canonical package bindings
 - `makes/packages/compat-package.mk` for compatibility-package routing
-- `makes/bijux-py/package-catalog.mk` and related package fragments for shared
-  package metadata
+- `makes/bijux-py/package-catalog.mk` for shared package metadata
 
-## Purpose
+## What Dispatch Must Not Do
 
-This page records how package-specific target routing is assembled.
+Dispatch should map shared rules onto package inputs. It should not smuggle new
+package behavior into the make layer or hide package-specific differences that
+belong in the package itself.
 
-## Stability
+## First Proof Check
 
-Keep it aligned with the package dispatch files that currently exist.
+- `makes/bijux-py/root/package-dispatch.mk`
+- `makes/packages/bijux-canon-*.mk`
+- `makes/packages/compat-package.mk`

@@ -4,34 +4,51 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-19
+last_reviewed: 2026-04-26
 ---
 
 # verify
 
-`verify.yml` is the main repository verification workflow.
+`verify.yml` is the main repository verification workflow. It is the broadest
+day-to-day CI truth because it checks shared repository contracts first, then
+fans out across the package matrix through reusable workflows.
 
-It is the workflow that decides whether repository automation contracts and the
-package matrix are healthy enough to trust on pushes and pull requests. It is
-therefore the broadest CI truth for day-to-day repository changes.
+## Workflow Model
 
-The job tree is intentionally split. `repository` runs shared automation
-contracts first, `package` fans out by package through `ci.yml`, and
-each reusable package run splits again into package-scoped `tests`, `checks`,
-and `lint` jobs.
+```mermaid
+flowchart LR
+    trigger["push, pr, merge-group, or dispatch"]
+    verify["verify.yml"]
+    repo["repository contract checks"]
+    package["package matrix via ci.yml"]
 
-## Workflow Anchors
+    trigger --> verify --> repo --> package
+```
+
+This page should make the verification path obvious: shared repository truth is
+checked first, then package-scoped proof fans out through the reusable CI
+contract.
+
+## Entry Workflow
+
+`verify.yml` runs on pushes, pull requests, manual dispatch, and merge-group
+validation for changes touching repository code, docs, workflows, packages,
+make surfaces, or tracked configuration files.
+
+## Job Shape
+
+- `repository` checks shared automation contracts first
+- `package` fans out by package and delegates to `.github/workflows/ci.yml`
+- package jobs carry package-scoped `tests`, `checks`, and `lint` work
+
+## First Proof Check
 
 - `.github/workflows/verify.yml`
-- repository contract checks driven from `make`
-- the package matrix that delegates to reusable package workflows
+- `.github/workflows/ci.yml`
+- repository and CI targets under `makes/`
 
-## Purpose
+## Design Pressure
 
-Use this page to understand when verification runs and how it branches from
-repository checks into package-level jobs.
-
-## Stability
-
-Keep it aligned with the real trigger paths, repository job, and package matrix
-declared in `verify.yml`.
+Verification gets harder to trust when repository checks and package checks are
+mixed without a visible order. The main workflow has to keep the shared-first,
+package-second structure easy to name.

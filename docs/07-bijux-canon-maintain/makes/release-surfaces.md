@@ -4,30 +4,30 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Release Surfaces
 
-Release-facing make behavior should be visible before it is triggered from CI.
+Release-facing make behavior should be understandable before a workflow fires.
+The repository keeps publish-related logic in named make fragments so the build,
+package, and SBOM path can be reviewed without depending on the Actions UI.
 
-The repository keeps release-related make logic in places such as
-`makes/publish.mk`, `makes/bijux-py/repository/publish.mk`, and the build and
-sbom fragments that shape artifact creation. These surfaces should make release
-behavior understandable outside the workflow YAML that eventually invokes them.
-
-## Release Anchors
+## Release Files
 
 - `makes/publish.mk`
 - `makes/bijux-py/repository/publish.mk`
 - `makes/bijux-py/ci/build.mk`
 - `makes/bijux-py/ci/sbom.mk`
 
-## Purpose
+## Release Boundary
 
-This page records the main make files that influence release preparation and
-publication behavior.
+The make layer prepares release work and stages repeatable command surfaces. It
+does not replace the release workflows that coordinate publication, nor does it
+replace package handbooks that explain release meaning.
 
-## Stability
+## First Proof Check
 
-Keep it aligned with the repository’s actual release-facing make surfaces.
+- `makes/publish.mk`
+- `makes/bijux-py/repository/publish.mk`
+- release workflow callers under `.github/workflows/`

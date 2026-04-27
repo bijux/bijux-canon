@@ -4,84 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Configuration Surface
 
-Configuration belongs at the package boundary, not scattered through unrelated
-modules.
+Configuration is part of the contract when it changes how `bijux-canon-index` exposes retrieval behavior. Operators should be able to tell what may vary without reading code.
 
-When configuration is documented well, maintainers can tell which behavior is
-meant to vary without editing code. When it is documented poorly, package
-behavior starts to feel magical or fragile.
+## What To Check
 
-Treat the interfaces pages for `bijux-canon-index` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+- name the settings that intentionally change package behavior
+- separate supported configuration from internal toggles and development shortcuts
+- update docs and tests when configuration changes caller-visible behavior
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-graph TD
-    A[Configuration Surface] --> B[Config sources]
-    B --> C[Normalization and precedence]
-    C --> D[Validated runtime settings]
-    D --> E[Index behavior control]
-    E --> F[Reproducible configuration state]
-```
+- `src` and boundary-facing modules for the owning implementation surface
+- `apis/bijux-canon-index/v1/schema.yaml` or tracked examples for the documented contract surface
+- `tests` for executable confirmation that the contract still holds
 
-## Configuration Anchors
+## Bottom Line
 
-- CLI modules under src/bijux_canon_index/interfaces/cli
-- HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/bijux-canon-index/v1
-
-## Review Rule
-
-Configuration changes should update the operator docs, schema docs, and tests that protect the same behavior.
-
-## Concrete Anchors
-
-- CLI modules under src/bijux_canon_index/interfaces/cli
-- HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/bijux-canon-index/v1
-- apis/bijux-canon-index/v1/schema.yaml
-
-## Use This Page When
-
-- you need the public command, API, import, schema, or artifact surface
-- you are checking whether a caller can safely rely on a given entrypoint or shape
-- you want the contract-facing side of the package before building on it
-
-## Decision Rule
-
-Use `Configuration Surface` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
-
-## What This Page Answers
-
-- which public or operator-facing surfaces `bijux-canon-index` is really asking readers to trust
-- which schemas, artifacts, imports, or commands behave like contracts
-- what compatibility pressure a change to this surface would create
-
-## Reviewer Lens
-
-- compare commands, schemas, imports, and artifacts against the documented surface one by one
-- check whether a seemingly local change actually needs compatibility review
-- confirm that examples still point to real entrypoints and not to stale habits
-
-## Honesty Boundary
-
-This page can identify the intended public surfaces of `bijux-canon-index`, but real compatibility depends on code, schemas, artifacts, examples, and tests staying aligned. If those disagree, the prose is wrong or incomplete.
-
-## Next Checks
-
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
-
-## Purpose
-
-This page explains where configuration enters the package and how it should be reviewed.
-
-## Stability
-
-Keep it aligned with real configuration loaders, defaults, and operator-facing options.
+If callers depend on `bijux-canon-index` for retrieval behavior, the contract needs to be named as clearly as the implementation.

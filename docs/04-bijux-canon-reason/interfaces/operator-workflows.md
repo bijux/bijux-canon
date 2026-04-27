@@ -4,102 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Operator Workflows
 
-Operator workflows should start from documented package entrypoints and end in reviewable outputs.
+Operator workflows matter when `bijux-canon-reason` is run by humans or automation under real expectations. The workflow should show one supported operator path from entrypoint to reviewable output.
 
-This page connects interface prose to real use. A reader should leave with a
-picture of how commands, APIs, inputs, and outputs hang together in a workflow
-an operator can actually repeat.
+## What To Check
 
-Treat the interfaces pages for `bijux-canon-reason` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
+- name the supported operator path rather than every possible internal path
+- identify the output or artifact the operator should inspect at the end
+- treat undocumented manual steps as evidence that the workflow is not yet a real surface
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    page["Operator Workflows<br/>clarifies: identify contracts | see caller impact | review compatibility"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    surface1["HTTP app in src/bijux_canon_reason/api/v1"]
-    surface1 --> page
-    surface2["schema files in apis/bijux-canon-reason/v1"]
-    surface2 --> page
-    surface3["CLI app in src/bijux_canon_reason/interfaces/cli"]
-    surface3 --> page
-    proof1["reasoning traces and replay diffs"]
-    page --> proof1
-    proof2["apis/bijux-canon-reason/v1/schema.yaml"]
-    page --> proof2
-    proof3["apis/bijux-canon-reason/v1/pinned_openapi.json"]
-    page --> proof3
-    review1["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
-    review1 -.raises compatibility pressure on.-> page
-    review2["tests/perf for retrieval benchmark coverage"]
-    review2 -.raises compatibility pressure on.-> page
-    review3["tests/unit for planning, reasoning, execution, verification, and interfaces"]
-    review3 -.raises compatibility pressure on.-> page
-    class page page;
-    class surface1,surface2,surface3 positive;
-    class proof1,proof2,proof3 anchor;
-    class review1,review2,review3 caution;
-```
+- `src` and boundary-facing modules for the owning implementation surface
+- `apis/bijux-canon-reason/v1/schema.yaml` or tracked examples for the documented contract surface
+- `tests` for executable confirmation that the contract still holds
 
-## Workflow Anchors
+## Bottom Line
 
-- entry surfaces: CLI app in src/bijux_canon_reason/interfaces/cli, HTTP app in src/bijux_canon_reason/api/v1, schema files in apis/bijux-canon-reason/v1
-- durable outputs: reasoning traces and replay diffs, claim and verification outcomes, evaluation suite artifacts
-- validation backstops: tests/unit for planning, reasoning, execution, verification, and interfaces, tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
-
-## Concrete Anchors
-
-- CLI app in src/bijux_canon_reason/interfaces/cli
-- HTTP app in src/bijux_canon_reason/api/v1
-- schema files in apis/bijux-canon-reason/v1
-- apis/bijux-canon-reason/v1/schema.yaml
-
-## Use This Page When
-
-- you need the public command, API, import, schema, or artifact surface
-- you are checking whether a caller can safely rely on a given entrypoint or shape
-- you want the contract-facing side of the package before building on it
-
-## Decision Rule
-
-Use `Operator Workflows` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
-
-## What This Page Answers
-
-- which public or operator-facing surfaces `bijux-canon-reason` is really asking readers to trust
-- which schemas, artifacts, imports, or commands behave like contracts
-- what compatibility pressure a change to this surface would create
-
-## Reviewer Lens
-
-- compare commands, schemas, imports, and artifacts against the documented surface one by one
-- check whether a seemingly local change actually needs compatibility review
-- confirm that examples still point to real entrypoints and not to stale habits
-
-## Honesty Boundary
-
-This page can identify the intended public surfaces of `bijux-canon-reason`, but real compatibility depends on code, schemas, artifacts, examples, and tests staying aligned. If those disagree, the prose is wrong or incomplete.
-
-## Next Checks
-
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
-
-## Purpose
-
-This page connects package interfaces to the workflows an operator actually performs.
-
-## Stability
-
-Keep it aligned with the existing commands, endpoints, and outputs.
+If callers depend on `bijux-canon-reason` for reasoning output, the contract needs to be named as clearly as the implementation.

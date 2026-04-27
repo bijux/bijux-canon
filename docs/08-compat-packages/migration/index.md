@@ -4,49 +4,78 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Migration
 
-The migration section explains how legacy names should be retired responsibly
-instead of merely coexisting forever.
+The migration section covers how legacy names stay alive temporarily, how the
+canonical package family takes over, and what evidence is required before a
+compatibility package can disappear.
 
-This section is about movement: how readers should adopt canonical package
-names, what repository consolidation means in practice, how release and
-validation posture should support the transition, and what evidence is needed
-before a compatibility package can disappear.
+Migration documentation should bias toward closure, not coexistence. The bridge
+is successful when the canonical package can carry the work alone without
+stranding supported environments.
 
-## Pages in This Section
+## Bridge Lifecycle
 
-- [Compatibility Overview](compatibility-overview.md)
-- [Migration Guidance](migration-guidance.md)
-- [Repository Consolidation](repository-consolidation.md)
-- [Canonical Targets](canonical-targets.md)
-- [Dependency Continuity](dependency-continuity.md)
-- [Release Policy](release-policy.md)
-- [Validation Strategy](validation-strategy.md)
-- [Retirement Conditions](retirement-conditions.md)
-- [Retirement Playbook](retirement-playbook.md)
+```mermaid
+flowchart LR
+    legacy["legacy name in the wild"]
+    bridge["compatibility package"]
+    target["canonical package"]
+    validation["continuity proof"]
+    retirement["retirement decision"]
 
-## What This Section Covers
+    legacy --> bridge --> target
+    bridge --> validation --> retirement
+```
 
-- how to move from legacy package names to canonical package names
-- how release, dependency, and validation choices support that move
-- what a credible retirement path looks like for a compatibility package
+Migration docs should make the bridge feel temporary but well controlled. A
+reader needs to see where the old name still matters, where the canonical
+target already owns the real behavior, and what proof is required before the
+bridge can be removed.
 
-## Read This Section When
+## Migration Pages
 
-- you are planning or reviewing a migration away from legacy package names
-- you need the shared rules for compatibility release and retirement decisions
-- you want the compatibility layer’s future posture rather than its current
-  catalog entry
+- [Compatibility Overview](https://bijux.io/bijux-canon/08-compat-packages/migration/compatibility-overview/)
+- [Migration Guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- [Repository Consolidation](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/)
+- [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/)
+- [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/)
+- [Release Policy](https://bijux.io/bijux-canon/08-compat-packages/migration/release-policy/)
+- [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/)
+- [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/)
+- [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/)
 
-## Purpose
+## Start With
 
-This page provides the route into the compatibility migration guidance.
+- Open [Canonical Targets](https://bijux.io/bijux-canon/08-compat-packages/migration/canonical-targets/)
+  when the first need is the exact destination package.
+- Open [Dependency Continuity](https://bijux.io/bijux-canon/08-compat-packages/migration/dependency-continuity/)
+  when the risk is broken installs, imports, or commands.
+- Open [Validation Strategy](https://bijux.io/bijux-canon/08-compat-packages/migration/validation-strategy/)
+  when the bridge has to be proven through tests, metadata, or repository-wide
+  search.
+- Open [Retirement Conditions](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/)
+  and [Retirement Playbook](https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-playbook/)
+  when the bridge may be ready to disappear.
 
-## Stability
+## Proof Path
 
-Keep this page aligned with the migration, validation, and retirement material
-that the repository currently stands behind.
+- `packages/compat-*` for the shipped bridges
+- compatibility package `README.md` files for checked-in target routing
+- canonical handbooks for current behavior
+- release and validation surfaces that prove continuity is still real
+
+## Completion Rule
+
+Migration is complete only when the supported environments that needed the
+legacy name no longer depend on it and the canonical package can carry the
+workload without hidden breakage.
+
+## Design Pressure
+
+If this section starts describing compatibility as a standing product surface
+instead of a governed exit path, it stops helping readers decide when to
+finish the migration.

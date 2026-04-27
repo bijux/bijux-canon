@@ -4,107 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Change Validation
 
-Validation after a change should target the package surfaces that were actually touched.
+Change validation for `bijux-canon-agent` should match the seam that actually moved. Strong validation means choosing evidence that tests the real risk around workflow and trace behavior, not just adding more checks mechanically.
 
-This page is about choosing proof that matches the real risk. Strong validation
-is not just more testing; it is testing and review aimed at the seam that moved.
+## What To Check
 
-Treat the quality pages for `bijux-canon-agent` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+- match proof depth to the surface that changed: boundary, contract, artifact, or behavior
+- update the surrounding docs when validation reveals a changed assumption
+- treat low-signal validation as unfinished work when the change touches a high-trust surface
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    page["Change Validation<br/>clarifies: see proof | see limitations | judge done-ness"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    proof1["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    proof1 --> page
-    proof2["tests/invariants for package promises that should not drift"]
-    proof2 --> page
-    proof3["tests/unit for local behavior and utility coverage"]
-    proof3 --> page
-    risk1["pyproject.toml"]
-    risk1 -.keeps trust honest.-> page
-    risk2["README.md"]
-    risk2 -.keeps trust honest.-> page
-    risk3["CHANGELOG.md"]
-    risk3 -.keeps trust honest.-> page
-    bar1["done means defended behavior"]
-    page --> bar1
-    bar2["package trust after change"]
-    page --> bar2
-    bar3["proof before confidence"]
-    page --> bar3
-    class page page;
-    class proof1,proof2,proof3 positive;
-    class risk1,risk2,risk3 caution;
-    class bar1,bar2,bar3 action;
-```
+- `tests` and package-local validation surfaces for executable evidence
+- caller-facing docs, limits, and risks for the trust story readers actually receive
+- release notes and change records when the work alters what others may safely assume
 
-## Validation Targets
+## Bottom Line
 
-- interface changes should update interface docs and owning tests
-- artifact changes should update artifact docs and consuming tests
-- architectural changes should update section pages that explain the package seam
-
-## Test Anchors
-
-- tests/unit for local behavior and utility coverage
-- tests/integration and tests/e2e for end-to-end workflow behavior
-- tests/invariants for package promises that should not drift
-- tests/api for HTTP-facing validation
-
-## Concrete Anchors
-
-- tests/unit for local behavior and utility coverage
-- tests/integration and tests/e2e for end-to-end workflow behavior
-- README.md
-
-## Use This Page When
-
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
-
-## Decision Rule
-
-Use `Change Validation` to decide whether `bijux-canon-agent` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
-
-## What This Page Answers
-
-- what currently proves the `bijux-canon-agent` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
-
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-agent` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
-
-## Purpose
-
-This page records how to choose meaningful validation for package work.
-
-## Stability
-
-Keep it aligned with the package's current test layout and docs structure.
+If `bijux-canon-agent` cannot explain why `workflow and trace behavior` should be trusted after a change, the quality work is still incomplete.

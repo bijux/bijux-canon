@@ -4,109 +4,53 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Package Overview
 
-`bijux-canon-reason` exists so one durable part of the system can stay legible.
-Its job is to own deterministic evidence-aware reasoning, claim formation, verification, and traceable reasoning workflows.
+`bijux-canon-reason` exists to turn retrieved evidence into inspectable claims, checks, and reasoning artifacts. It owns the logic that makes conclusions reviewable instead of leaving meaning scattered across prompts, retrieval output, and workflow code.
 
-If a reader cannot explain this package in one or two sentences after skimming
-this page, the package boundary is still too fuzzy and later pages will inherit
-that confusion.
-
-Treat the foundation pages for `bijux-canon-reason` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Role Model
 
 ```mermaid
-flowchart RL
-    page["Package Overview<br/>clarifies: own the right work | name the boundary | compare neighbors"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    own1["verification and provenance checks that belong to reasoning itself"]
-    own1 --> page
-    own2["reasoning plans, claims, and evidence-aware reasoning models"]
-    own2 --> page
-    own3["execution of reasoning steps and local tool dispatch"]
-    own3 --> page
-    limit1["repository tooling and release automation"]
-    page -.keeps outside.-> limit1
-    limit2["runtime persistence and replay authority"]
-    page -.keeps outside.-> limit2
-    limit3["ingest and index engines"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-reason"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-reason/src/bijux_canon_reason"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-reason/tests"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+flowchart LR
+    evidence["retrieved evidence"]
+    reason["reasoning and verification"]
+    claims["claims and reasoning artifacts"]
+    downstream["agent and runtime consumers"]
+
+    evidence --> reason --> claims --> downstream
 ```
 
-## What It Owns
+This page should make reason feel like the package where evidence becomes
+meaning in a reviewable form. The package earns its place only if a reader can
+see how claims are produced without shifting that burden onto orchestration.
 
-- reasoning plans, claims, and evidence-aware reasoning models
-- execution of reasoning steps and local tool dispatch
-- verification and provenance checks that belong to reasoning itself
-- package-local CLI and API boundaries
+## Boundary Verdict
 
-## What It Does Not Own
+If the disputed behavior decides what evidence means, how a claim is checked, or which reasoning artifact should exist after evaluation, it belongs here. If it only fetches evidence or coordinates multiple steps, it does not.
 
-- runtime persistence and replay authority
-- ingest and index engines
-- repository tooling and release automation
+## What This Package Makes Possible
 
-## Concrete Anchors
+- reviewers can inspect how evidence became a claim instead of inferring intent from raw outputs
+- verification logic stays close to the reasoning decision it protects
+- agent and runtime layers can consume reasoning artifacts without re-owning reasoning policy
 
-- `packages/bijux-canon-reason` as the package root
-- `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
-- `packages/bijux-canon-reason/tests` as the package proof surface
+## Tempting Mistakes
 
-## Use This Page When
+- hiding reasoning policy inside retrieval scoring or output shaping
+- letting orchestration code decide claim meaning because it is closer to the workflow
+- using runtime persistence as a substitute for reasoning clarity
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## First Proof Check
 
-## Decision Rule
+- `packages/bijux-canon-reason/src/bijux_canon_reason` for the reasoning boundary in code
+- `packages/bijux-canon-reason/tests` for claim, verification, and provenance evidence
+- `packages/bijux-canon-reason/README.md` for the public package contract
 
-Use `Package Overview` to decide whether a change makes `bijux-canon-reason` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
+## Design Pressure
 
-## What This Page Answers
-
-- what problem `bijux-canon-reason` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-reason`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page gives the shortest honest description of what the package is for.
-
-## Stability
-
-Keep it aligned with the real package boundary described by the code and tests.
+The pressure on reason is to keep claim formation explicit instead of letting
+meaning leak into retrieval tuning or workflow glue. If claim policy becomes
+hard to locate, the evidence chain becomes harder to defend.

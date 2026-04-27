@@ -4,51 +4,77 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Operations
 
-The operations section explains how the repository is run, reviewed, and kept
-coherent after the foundation has already made the ownership model clear.
+The operations section covers the shared procedures that keep the package split
+credible after code changes: local workflow, validation, schema review,
+artifact handling, release flow, and review discipline.
 
-These pages are about repeatable repository work rather than package-local
-behavior. They should help a maintainer move from a question about setup,
-validation, release flow, automation, or review posture to the concrete files
-that carry that work today. The point is not to create ceremony. The point is
-to keep operational memory checked in and inspectable.
+The main mistake this section should prevent is operational folklore. Shared
+work should be discoverable from checked-in commands, workflows, schemas, and
+docs instead of from CI archaeology or private maintainer memory.
 
-## Pages in This Section
+## Operating Loop
 
-- [Local Development](local-development.md)
-- [Testing and Validation](testing-and-validation.md)
-- [Release and Versioning](release-and-versioning.md)
-- [API and Schema Governance](api-and-schema-governance.md)
-- [Contributor Workflows](contributor-workflows.md)
-- [Automation Surfaces](automation-surfaces.md)
-- [Artifact Governance](artifact-governance.md)
-- [Review Expectations](review-expectations.md)
-- [Change Management](change-management.md)
+Operations pages should make the shared work loop visible: a contributor
+changes a package or root contract, runs the relevant local command, leaves
+artifacts in the repository-owned output area, and lets CI repeat the same
+intent before release.
 
-## What This Section Covers
+```mermaid
+flowchart LR
+    change["change intent"]
+    local["local make and package checks"]
+    artifacts["artifacts output"]
+    review["review gate"]
+    ci["CI and release workflows"]
+    publish["published result"]
+    apis["apis contracts"]
+    workflows["workflow source"]
 
-- how repository-wide work should be carried out from checked-in assets
-- where shared automation lives and what kinds of work it is allowed to do
-- how release, review, validation, and artifact handling fit together at the
-  repository boundary
+    change --> local --> artifacts --> review --> ci --> publish
+    change --> apis
+    ci --> workflows
+```
 
-## Read This Section When
+Repository operations should read like a closed loop, not like a bag of
+commands. A maintainer starts from one explicit change, runs the checked-in
+entrypoints, leaves machine output in `artifacts/`, and relies on review and
+CI to replay the same intent. If a step cannot be traced to one of those
+surfaces, it is operational folklore rather than repository procedure.
 
-- you are performing repository-wide work instead of one package-local change
-- you need the operational truth for shared automation, release, or validation
-- you are checking whether a proposed workflow is explicit enough to maintain
+## Start Here
 
-## Purpose
+- open [Contributor Workflows](https://bijux.io/bijux-canon/01-bijux-canon/operations/contributor-workflows/) for the shortest route through normal repository work
+- open [Testing and Validation](https://bijux.io/bijux-canon/01-bijux-canon/operations/testing-and-validation/) when you need to know which shared proof must run before acceptance
+- open [API and Schema Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/api-and-schema-governance/) when the concern is contract drift or reviewed schema change
+- open [Release and Versioning](https://bijux.io/bijux-canon/01-bijux-canon/operations/release-and-versioning/) when the concern is tag behavior, package publication, or release discipline
+- open [Automation Surfaces](https://bijux.io/bijux-canon/01-bijux-canon/operations/automation-surfaces/) when you need to know which shared root automation owns the current action
 
-This page gives maintainers the shortest route into the repository’s operational
-guidance without forcing them to infer it from CI logs or Make targets first.
+## Pages In This Section
 
-## Stability
+- [Local Development](https://bijux.io/bijux-canon/01-bijux-canon/operations/local-development/)
+- [Testing and Validation](https://bijux.io/bijux-canon/01-bijux-canon/operations/testing-and-validation/)
+- [Release and Versioning](https://bijux.io/bijux-canon/01-bijux-canon/operations/release-and-versioning/)
+- [API and Schema Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/api-and-schema-governance/)
+- [Contributor Workflows](https://bijux.io/bijux-canon/01-bijux-canon/operations/contributor-workflows/)
+- [Automation Surfaces](https://bijux.io/bijux-canon/01-bijux-canon/operations/automation-surfaces/)
+- [Artifact Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/artifact-governance/)
+- [Review Expectations](https://bijux.io/bijux-canon/01-bijux-canon/operations/review-expectations/)
+- [Change Management](https://bijux.io/bijux-canon/01-bijux-canon/operations/change-management/)
 
-Keep this page aligned with the operational topics that actually matter at the
-repository level.
+## First Proof Checks
+
+- `Makefile` and `makes/` for shared command entrypoints and routing
+- `.github/workflows/` for repository-wide automation and release execution
+- `apis/` for schema governance surfaces that affect shared review
+- the relevant package handbook once the action stops being truly shared
+
+## Leave This Section When
+
+- the work is already local to one package's own operations surface
+- the real question is repository intent rather than repository procedure
+- the next step is maintainer-helper implementation detail instead of the shared workflow contract

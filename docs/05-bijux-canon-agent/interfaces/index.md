@@ -4,113 +4,69 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Interfaces
 
-This section explains which commands, APIs, imports, schemas, and artifacts `bijux-canon-agent` is prepared to stand behind as real surfaces.
+Open this section when the question is contractual: which agent workflows, commands, artifacts, and imports callers or operators may treat as stable instead of incidental.
 
-These pages explain the public face of `bijux-canon-agent`. They help a caller separate deliberate contracts from incidental visibility before a dependency hardens around the wrong surface.
-
-Treat the interfaces pages for `bijux-canon-agent` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
-
-## Visual Summary
+## Contract Model
 
 ```mermaid
-flowchart TB
-    page["Interfaces<br/>clarifies: identify contracts | see caller impact | review compatibility"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    surface1["CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py"]
-    surface1 --> page
-    surface2["operator configuration under src/bijux_canon_agent/config"]
-    surface2 --> page
-    surface3["HTTP-adjacent modules under src/bijux_canon_agent/api"]
-    surface3 --> page
-    proof1["trace-backed final outputs"]
-    page --> proof1
-    proof2["workflow graph execution records"]
-    page --> proof2
-    proof3["apis/bijux-canon-agent/v1/schema.yaml"]
-    page --> proof3
-    review1["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    review1 -.raises compatibility pressure on.-> page
-    review2["tests/invariants for package promises that should not drift"]
-    review2 -.raises compatibility pressure on.-> page
-    review3["tests/unit for local behavior and utility coverage"]
-    review3 -.raises compatibility pressure on.-> page
-    class page page;
-    class surface1,surface2,surface3 positive;
-    class proof1,proof2,proof3 anchor;
-    class review1,review2,review3 caution;
+flowchart LR
+    caller["caller or operator"]
+    surfaces["commands and APIs"]
+    workflow["workflow contracts"]
+    traces["trace artifacts"]
+    imports["public imports"]
+    consumers["runtime or automation"]
+
+    caller --> surfaces --> workflow --> traces --> consumers
+    imports --> workflow
 ```
 
-## Pages in This Section
+The interface story for agent is not just about entrypoints. It is about which
+workflow surfaces and trace artifacts the package is prepared to defend once
+another tool or operator starts depending on them.
 
-- [CLI Surface](cli-surface.md)
-- [API Surface](api-surface.md)
-- [Configuration Surface](configuration-surface.md)
-- [Data Contracts](data-contracts.md)
-- [Artifact Contracts](artifact-contracts.md)
-- [Entrypoints and Examples](entrypoints-and-examples.md)
-- [Operator Workflows](operator-workflows.md)
-- [Public Imports](public-imports.md)
-- [Compatibility Commitments](compatibility-commitments.md)
+## Read These First
 
-## Read Across the Package
+- open [Operator Workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/operator-workflows/) first when the contract question is really about how a workflow is supposed to be run or observed
+- open [CLI Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/cli-surface/) when the issue begins with an agent command or entrypoint
+- open [Compatibility Commitments](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/compatibility-commitments/) when a workflow surface change may break automation or callers
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+## Contract Risk
 
-## Concrete Anchors
+The main contract risk here is letting workflow behavior look stable to operators while its actual boundary stays undocumented.
 
-- CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py
-- operator configuration under src/bijux_canon_agent/config
-- HTTP-adjacent modules under src/bijux_canon_agent/api
-- apis/bijux-canon-agent/v1/schema.yaml
+## First Proof Check
 
-## Use This Page When
+- `src/bijux_canon_agent/interfaces` and `apis` for named caller-facing surfaces
+- trace-bearing artifacts and examples for workflow expectations
+- `tests` for determinism and compatibility evidence
 
-- you need the public command, API, import, schema, or artifact surface
-- you are checking whether a caller can safely rely on a given entrypoint or shape
-- you want the contract-facing side of the package before building on it
 
-## Decision Rule
+## Pages In This Section
 
-Use `Interfaces` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
+- [CLI Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/cli-surface/)
+- [API Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/api-surface/)
+- [Configuration Surface](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/configuration-surface/)
+- [Data Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/data-contracts/)
+- [Artifact Contracts](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/artifact-contracts/)
+- [Entrypoints and Examples](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/entrypoints-and-examples/)
+- [Operator Workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/operator-workflows/)
+- [Public Imports](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/public-imports/)
+- [Compatibility Commitments](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/compatibility-commitments/)
 
-## What This Page Answers
+## Leave This Section When
 
-- which public or operator-facing surfaces `bijux-canon-agent` is really asking readers to trust
-- which schemas, artifacts, imports, or commands behave like contracts
-- what compatibility pressure a change to this surface would create
+- leave for [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the contract dispute is really a package-boundary dispute
+- leave for [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a surface question reveals structural drift underneath it
+- leave for [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) or [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the boundary is clear and the question becomes execution or proof
 
-## Reviewer Lens
+## Design Pressure
 
-- compare commands, schemas, imports, and artifacts against the documented surface one by one
-- check whether a seemingly local change actually needs compatibility review
-- confirm that examples still point to real entrypoints and not to stale habits
-
-## Honesty Boundary
-
-This page can identify the intended public surfaces of `bijux-canon-agent`, but real compatibility depends on code, schemas, artifacts, examples, and tests staying aligned. If those disagree, the prose is wrong or incomplete.
-
-## Next Checks
-
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
-
-## Purpose
-
-This page explains how to use the interfaces section for `bijux-canon-agent` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If a caller can only learn what is stable after reading workflow internals, the
+contract page is too weak. This section has to name which surfaces and trace
+artifacts are intentionally reusable.

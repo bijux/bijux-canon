@@ -4,136 +4,86 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Compatibility Packages
 
-The compatibility packages preserve older distribution names, import names,
-and command names while the canonical package family now lives under the
-`bijux-canon-*` naming system.
+The compatibility handbook covers the legacy distribution, import, and command
+names that still exist while the canonical `bijux-canon-*` package family takes
+over. These packages are migration bridges, not equal design centers.
 
-They should be easy to understand but hard to romanticize. Their job is to
-reduce migration pain, not to compete with the canonical package family for
-new work.
+That distinction has to stay explicit. A preserved legacy name may protect a
+real dependent environment, but it still carries maintenance debt and should
+always point toward the canonical package that owns current behavior.
 
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
+## Bridge Model
 
-## Visual Summary
+Compatibility packages exist to protect users during migration. They should
+make old names work long enough to move responsibly, but every page in this
+handbook should pull readers toward the canonical package that owns current
+behavior and future design.
 
 ```mermaid
-flowchart RL
-    page["Compatibility Packages<br/>clarifies: map old names | choose migration | judge retirement"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    legacy1["command names"]
-    legacy1 --> page
-    legacy2["distribution names"]
-    legacy2 --> page
-    legacy3["import names"]
-    legacy3 --> page
-    canon1["current handbook surfaces"]
-    page --> canon1
-    canon2["current packages"]
-    page --> canon2
-    canon3["new work"]
-    page --> canon3
-    pressure1["migration pressure"]
-    pressure1 -.should shorten the life of.-> page
-    pressure2["retirement readiness"]
-    pressure2 -.should shorten the life of.-> page
-    pressure3["do not normalize the old name"]
-    pressure3 -.should shorten the life of.-> page
-    class page page;
-    class legacy1,legacy2,legacy3 caution;
-    class canon1,canon2,canon3 positive;
-    class pressure1,pressure2,pressure3 action;
+flowchart LR
+    legacy["legacy name"]
+    bridge["compat package"]
+    canonical["canonical package"]
+    validation["migration checks"]
+    retire["retirement decision"]
+
+    legacy --> bridge --> canonical
+    bridge --> validation --> retire
+    canonical --> retire
 ```
 
-## Sections
+Compatibility pages should make migration pressure visible. They are useful
+only when they shorten the path from an old name to the canonical owner and
+when they make it easier to judge whether a bridge still protects a real
+dependent environment.
 
-- [Catalog](catalog/index.md) for legacy package entries, preserved names, and
-  the concrete surfaces each compatibility package still carries
-- [Migration](migration/index.md) for rename planning, dependency continuity,
-  validation, release posture, and retirement decisions
+## Handbook Sections
 
-## Pages In Catalog
+- [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) for the
+  exact legacy names still shipped, the surfaces they preserve, and the
+  canonical packages they point to
+- [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) for
+  continuity rules, validation, release posture, and retirement conditions
 
-- [agentic-flows](catalog/agentic-flows.md)
-- [bijux-agent](catalog/bijux-agent.md)
-- [bijux-rag](catalog/bijux-rag.md)
-- [bijux-rar](catalog/bijux-rar.md)
-- [bijux-vex](catalog/bijux-vex.md)
-- [Legacy Name Map](catalog/legacy-name-map.md)
-- [Package Behavior](catalog/package-behavior.md)
-- [Import Surfaces](catalog/import-surfaces.md)
-- [Command Surfaces](catalog/command-surfaces.md)
+## Legacy Package Map
 
-## Pages In Migration
+| Legacy package | Canonical target | Reader action |
+| --- | --- | --- |
+| `agentic-flows` | `bijux-canon-runtime` | use the bridge only while migrating execution and replay surfaces |
+| `bijux-agent` | `bijux-canon-agent` | move orchestration imports, commands, and docs to the canonical agent package |
+| `bijux-rag` | `bijux-canon-ingest` | move document preparation and retrieval-preparation work to ingest docs |
+| `bijux-rar` | `bijux-canon-reason` | move reasoning, claim, and verification review to reason docs |
+| `bijux-vex` | `bijux-canon-index` | move vector execution and retrieval provenance review to index docs |
 
-- [Compatibility Overview](migration/compatibility-overview.md)
-- [Migration Guidance](migration/migration-guidance.md)
-- [Repository Consolidation](migration/repository-consolidation.md)
-- [Canonical Targets](migration/canonical-targets.md)
-- [Dependency Continuity](migration/dependency-continuity.md)
-- [Release Policy](migration/release-policy.md)
-- [Validation Strategy](migration/validation-strategy.md)
-- [Retirement Conditions](migration/retirement-conditions.md)
-- [Retirement Playbook](migration/retirement-playbook.md)
+## Start With
 
-## Retired Standalone Repositories
+- Open [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/)
+  when you already have a legacy name and need the current canonical target.
+- Open [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/)
+  when the question is whether the bridge is still justified, how to migrate off
+  it, or when it can be retired.
 
-- `https://github.com/bijux/agentic-flows`
-- `https://github.com/bijux/bijux-agent`
-- `https://github.com/bijux/bijux-rag`
-- `https://github.com/bijux/bijux-rar`
-- `https://github.com/bijux/bijux-vex`
+## Proof Path
 
-## Concrete Anchors
+- `packages/compat-*` contains the shipped bridges.
+- compatibility package `README.md` files should name the canonical targets.
+- canonical package handbooks under `docs/02-...` through `docs/06-...` own
+  current behavior.
+- migration pages under `docs/08-compat-packages/migration/` explain when a bridge is still justified.
 
-- `packages/compat-*` for the preserved legacy packages
-- the compatibility package `README.md` files for canonical targets
-- the matching canonical package docs for current behavior and new work
+## Retirement Rule
 
-## Use This Page When
+A preserved legacy name stays only when it protects a real dependent
+environment or a documented migration window. Habit, nostalgia, or naming
+symmetry are not enough.
 
-- you are tracing a legacy package name back to its canonical replacement
-- you need migration guidance rather than product implementation detail
-- you are deciding whether a compatibility surface still deserves to exist
+## Leave This Handbook When
 
-## Decision Rule
-
-Use `Compatibility Packages` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
-
-## What This Page Answers
-
-- which legacy surface is still preserved
-- when new work should move to the canonical package instead
-- what evidence would justify retiring a compatibility package
-
-## Reviewer Lens
-
-- compare legacy names here with the compatibility package metadata and README targets
-- check that migration advice still points at current canonical docs
-- confirm that compatibility language does not accidentally encourage new work to start here
-
-## Next Checks
-
-- move to the canonical package docs once the current target package is known
-- inspect compatibility package metadata if the question is about what remains preserved
-- use this section again only when evaluating migration progress or retirement readiness
-
-## Honesty Boundary
-
-This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
-
-## Purpose
-
-This page explains the role of the compatibility handbooks without encouraging new work to start there.
-
-## Stability
-
-Keep it aligned with the legacy packages that still ship from `packages/compat-*`.
+- the canonical target package is clear and you need current behavior details
+- the next step is a product interface, workflow, or test rather than migration policy
+- the bridge no longer protects a real dependent environment

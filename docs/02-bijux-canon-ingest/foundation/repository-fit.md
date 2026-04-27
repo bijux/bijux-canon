@@ -4,85 +4,46 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Repository Fit
 
-`bijux-canon-ingest` is one publishable part of a larger system. It sits in the
-monorepo with its own `src/`, tests, metadata, and release history because the
-repository wants package ownership to stay visible even when the packages evolve
-together.
+`bijux-canon-ingest` is a separate publishable package because prepared input is a real system seam. The repository gains review clarity by keeping that seam visible in package layout, metadata, tests, and release surfaces.
 
-This page is here to answer a simple but important question: why is this work a
-package at all, instead of just another folder inside a single giant project?
-
-Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Fit Model
 
 ```mermaid
-graph TD
-    A[Repository Fit] --> B[Ingest package role]
-    B --> C[Shared repository contracts]
-    C --> D[API and schema alignment]
-    D --> E[Cross-package compatibility]
-    E --> F[Monorepo coherence]
+flowchart LR
+    seam["prepared-input seam"]
+    package["bijux-canon-ingest package boundary"]
+    proof["metadata, readme, tests, and handbook"]
+
+    seam --> package --> proof
 ```
 
-## Repository Relationships
+This page should justify why ingest exists as its own package instead of as a
+utility layer buried in the repository. The fit is good only when the seam is
+visible in publishable identity, proof, and reader framing.
 
-- feeds prepared material toward bijux-canon-index and bijux-canon-reason
-- stays under runtime governance instead of defining replay authority itself
+## Why This Is A Package
 
-## Canonical Package Root
+- `packages/bijux-canon-ingest/src/bijux_canon_ingest` keeps implementation ownership explicit
+- `packages/bijux-canon-ingest/tests` proves the handoff stays stable under change
+- the handbook and package root together explain why downstream packages may trust ingest output
 
-- `packages/bijux-canon-ingest`
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest`
-- `packages/bijux-canon-ingest/tests`
+## First Proof Check
 
-## Concrete Anchors
+- `packages/bijux-canon-ingest/pyproject.toml` for publishable package identity
+- `packages/bijux-canon-ingest/README.md` for package-level reader framing
+- `packages/bijux-canon-ingest/tests` for executable proof that the seam still matters
 
-- `packages/bijux-canon-ingest` as the package root
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the package proof surface
+## Fit Warning
 
-## Use This Page When
+If the package can only be justified as “the place this code ended up,” the repository has lost a meaningful seam.
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## Design Pressure
 
-## Decision Rule
-
-Use `Repository Fit` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-ingest` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-ingest`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page explains how the package fits into the repository without restating repository-wide rules.
-
-## Stability
-
-Keep it aligned with the package's checked-in directories and actual neighboring packages.
+Package seams decay when they can be justified only by code placement. Ingest
+has to keep its publishable identity tied to the real prepared-input boundary
+or the repository split becomes decorative.

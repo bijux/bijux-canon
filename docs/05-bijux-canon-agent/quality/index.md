@@ -4,112 +4,67 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Quality
 
-This section explains how `bijux-canon-agent` earns trust: which proof surfaces matter, which risks stay visible, and what done should mean after a real change.
+Open this section when you need to decide whether workflow and trace behavior is proven strongly enough for operators and callers to trust deterministic orchestration.
 
-These pages explain the proof story for `bijux-canon-agent`. They should make trust, skepticism, and review pressure visible enough that passing checks do not get mistaken for sufficient evidence.
-
-Treat the quality pages for `bijux-canon-agent` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
-
-## Visual Summary
+## Trust Model
 
 ```mermaid
-flowchart TB
-    page["Quality<br/>clarifies: see proof | see limitations | judge done-ness"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    proof1["tests/unit for local behavior and utility coverage"]
-    proof1 --> page
-    proof2["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    proof2 --> page
-    proof3["tests/invariants for package promises that should not drift"]
-    proof3 --> page
-    risk1["CHANGELOG.md"]
-    risk1 -.keeps trust honest.-> page
-    risk2["pyproject.toml"]
-    risk2 -.keeps trust honest.-> page
-    risk3["README.md"]
-    risk3 -.keeps trust honest.-> page
-    bar1["proof before confidence"]
-    page --> bar1
-    bar2["done means defended behavior"]
-    page --> bar2
-    bar3["package trust after change"]
-    page --> bar3
-    class page page;
-    class proof1,proof2,proof3 positive;
-    class risk1,risk2,risk3 caution;
-    class bar1,bar2,bar3 action;
+flowchart LR
+    strategy["test strategy"]
+    invariants["workflow invariants"]
+    validation["change validation"]
+    limits["limitations and risk"]
+    trust["trust decision"]
+
+    strategy --> invariants --> validation --> limits --> trust
 ```
 
-## Pages in This Section
+Agent quality has to defend more than successful runs. It has to show why
+workflow ordering, traces, and deterministic coordination are still trustworthy
+under change, and where the package is still honest about risk or limit
+surfaces.
 
-- [Test Strategy](test-strategy.md)
-- [Invariants](invariants.md)
-- [Review Checklist](review-checklist.md)
-- [Documentation Standards](documentation-standards.md)
-- [Definition of Done](definition-of-done.md)
-- [Dependency Governance](dependency-governance.md)
-- [Change Validation](change-validation.md)
-- [Known Limitations](known-limitations.md)
-- [Risk Register](risk-register.md)
+## Read These First
 
-## Read Across the Package
+- open [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/) first when you need the broad proof shape behind workflow behavior
+- open [Invariants](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/invariants/) when the question is what must not drift across coordination and traces
+- open [Change Validation](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/change-validation/) when you need the minimum proof for a safe agent change
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
+## Trust Risk
 
-## Concrete Anchors
+The main quality risk here is workflow success that still leaves traces or review evidence too weak to defend the behavior.
 
-- tests/unit for local behavior and utility coverage
-- tests/integration and tests/e2e for end-to-end workflow behavior
-- README.md
+## First Proof Check
 
-## Use This Page When
+- `tests` and package-local validation surfaces for executable evidence
+- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
+- release notes and caller-facing docs when the change alters what readers may safely assume
 
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
+## Pages In This Section
 
-## Decision Rule
+- [Test Strategy](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/test-strategy/)
+- [Invariants](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/invariants/)
+- [Review Checklist](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/review-checklist/)
+- [Documentation Standards](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/documentation-standards/)
+- [Definition of Done](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/definition-of-done/)
+- [Dependency Governance](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/dependency-governance/)
+- [Change Validation](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/change-validation/)
+- [Known Limitations](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/known-limitations/)
+- [Risk Register](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/risk-register/)
 
-Use `Quality` to decide whether `bijux-canon-agent` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
+## Leave This Section When
 
-## What This Page Answers
+- leave for [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the doubt is really about package ownership rather than proof
+- leave for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is what the contract is rather than whether it is defended
+- leave for [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
-- what currently proves the `bijux-canon-agent` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
+## Design Pressure
 
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-agent` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
-
-## Purpose
-
-This page explains how to use the quality section for `bijux-canon-agent` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If a workflow only looks deterministic because the trace is not reviewed hard
+enough, this section is too weak. Quality here has to keep execution evidence,
+trace invariants, and residual risk in one frame.

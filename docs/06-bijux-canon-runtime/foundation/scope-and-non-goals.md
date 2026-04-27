@@ -4,110 +4,48 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Scope and Non-Goals
 
-This page names the line that keeps `bijux-canon-runtime` useful instead of bloated.
-The point of a package boundary is not to make work harder. It is to keep
-neighboring packages from silently accumulating overlapping authority.
+The scope of `bijux-canon-runtime` is explicit authority over runs. It is not a convenient place for any code that happens late in execution.
 
-The non-goals matter as much as the goals. A package becomes easier to trust
-when readers can see what it refuses to absorb just because the code happens to
-be nearby.
-
-Treat the foundation pages for `bijux-canon-runtime` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Scope Map
 
 ```mermaid
-flowchart TB
-    page["Scope and Non-Goals<br/>clarifies: own the right work | name the boundary | compare neighbors"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    own1["flow execution authority"]
-    own1 --> page
-    own2["replay and acceptability semantics"]
-    own2 --> page
-    own3["trace capture, runtime persistence, and execution-store behavior"]
-    own3 --> page
-    limit1["agent composition policy"]
-    page -.keeps outside.-> limit1
-    limit2["ingest and index domain ownership"]
-    page -.keeps outside.-> limit2
-    limit3["repository tooling and release support"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-runtime/tests"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-runtime"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-runtime/src/bijux_canon_runtime"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+flowchart LR
+    inputs["lower-package outputs"]
+    scope["runtime scope"]
+    records["durable governed runs"]
+    refuse["package-local semantics and maintainer automation stay out of scope"]
+
+    inputs --> scope --> records
+    scope --> refuse
 ```
+
+This page should make runtime look narrow for a reason. It owns the verdict,
+the persistence model, and the replay contract, but it should stop before
+becoming a second home for whatever lower packages leave unresolved.
 
 ## In Scope
 
-- flow execution authority
-- replay and acceptability semantics
-- trace capture, runtime persistence, and execution-store behavior
-- package-local CLI and API boundaries
+- acceptance policy for governed runs
+- persistence and replay behavior tied to runtime authority
+- runtime-facing interfaces and artifacts that define what a durable run means
 
-## Out of Scope
+## Non-Goals
 
-- agent composition policy
-- ingest and index domain ownership
-- repository tooling and release support
+- package-local semantics owned by ingest, index, reason, or agent
+- maintainer automation that belongs to the maintenance handbook
+- convenience features that never affect governed run outcomes
 
-## Concrete Anchors
+## Scope Check
 
-- `packages/bijux-canon-runtime` as the package root
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime` as the import boundary
-- `packages/bijux-canon-runtime/tests` as the package proof surface
+If the change makes runtime broader without making run authority easier to explain, it is probably misplaced.
 
-## Use This Page When
+## Design Pressure
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Scope and Non-Goals` to decide whether a change makes `bijux-canon-runtime` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-runtime` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-runtime`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page keeps future work from leaking into the wrong package.
-
-## Stability
-
-Update it only when ownership truly moves into or out of `bijux-canon-runtime`.
+If runtime grows by collecting every late-stage concern, authority becomes less
+explicit rather than more. The non-goals keep governed execution separate from
+both package-local behavior and repository operations.

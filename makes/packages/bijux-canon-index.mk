@@ -4,7 +4,7 @@ PACKAGE_KIND := api-python
 PACKAGE_IMPORT_NAME := bijux_canon_index
 API_MODE := freeze
 FMT_DIRS          := src tests
-CODESPELL         = $(if $(ACT),$(ACT)/codespell,codespell) --ignore-words-list=ND,nd
+CODESPELL         = $(VENV_PYTHON) -m codespell_lib --ignore-words-list=ND,nd
 API_LOG                   = $(API_ARTIFACTS_DIR)/openapi_drift.log
 API_OPENAPI_DRIFT_COMMAND = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_index.api.v1:build_app --schema "$(API_DIR)/v1/schema.yaml" --out "$(API_ARTIFACTS_DIR)/openapi.generated.json"
 SECURITY_AUDIT_PREPARE_MODE := pyproject

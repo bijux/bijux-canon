@@ -4,108 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Extensibility Model
 
-Extension work should use the package seams that already exist instead of bypassing ownership.
+Extensibility only helps when it preserves the core package argument. In `bijux-canon-agent`, extension points should widen role coordination, workflow order, and traces intentionally rather than invite neighboring concerns in through convenience hooks.
 
-This page is about where variation is welcomed and where it would be a design
-smell. A package becomes easier to extend when contributors can see which seams
-are meant to flex and which ones are carrying the core identity of the package.
+## What To Check
 
-Treat the architecture pages for `bijux-canon-agent` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+- name the extension points that are safe because they preserve the package role
+- name the boundaries that extensions must not cross
+- prefer extension seams that keep review pressure visible in code and tests
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart TB
-    page["Extensibility Model<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    module1["role-local behavior"]
-    module1 --> page
-    module2["execution flow orchestration"]
-    module2 --> page
-    module3["workflow policy and graph logic"]
-    module3 --> page
-    code1["src/bijux_canon_agent/agents"]
-    page --> code1
-    code2["src/bijux_canon_agent/pipeline"]
-    page --> code2
-    code3["src/bijux_canon_agent/application"]
-    page --> code3
-    pressure1["tests/unit for local behavior and utility coverage"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/integration and tests/e2e for end-to-end workflow behavior"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/invariants for package promises that should not drift"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
-```
+- `src/bijux_canon_agent` and tracked workflow surfaces for the structural ownership boundary
+- `tests` for determinism and traceability evidence for executable confirmation that the structure still holds
 
-## Likely Extension Areas
+## Bottom Line
 
-- `src/bijux_canon_agent/agents` for role-local behavior
-- `src/bijux_canon_agent/pipeline` for execution flow orchestration
-- `src/bijux_canon_agent/application` for workflow policy and graph logic
-- `src/bijux_canon_agent/llm` for LLM runtime integration support
-- `src/bijux_canon_agent/interfaces` for CLI boundaries and operator helpers
-- `src/bijux_canon_agent/traces` for trace-facing models and persistence helpers
-
-## Extension Rule
-
-Add extension points where the package already expects variation, and document them next to the owning boundary.
-
-## Concrete Anchors
-
-- `src/bijux_canon_agent/agents` for role-local behavior
-- `src/bijux_canon_agent/pipeline` for execution flow orchestration
-- `src/bijux_canon_agent/application` for workflow policy and graph logic
-
-## Use This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Extensibility Model` to decide whether a structural change makes `bijux-canon-agent` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What This Page Answers
-
-- how `bijux-canon-agent` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Reviewer Lens
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-agent`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
-
-## Purpose
-
-This page helps maintainers extend the package without smearing responsibilities together.
-
-## Stability
-
-Keep it aligned with the package seams that actually support extension today.
+If `bijux-canon-agent` needs hidden structure to defend role coordination, workflow order, and traces, the architecture is already too opaque.

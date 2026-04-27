@@ -4,115 +4,81 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Maintenance Handbook
 
-The maintenance handbook explains the repository-owned operational surfaces that
-do not belong in one product package handbook.
+The maintenance handbook covers repository-health surfaces that sit above any
+single product package. It exists so schema drift checks, shared command
+surfaces, publication workflows, and maintainer-only helpers can be reviewed
+from checked-in truth instead of CI archaeology.
 
-This handbook exists because repository health work is real work. Schema drift
-checks, supply-chain helpers, shared Make targets, and CI workflow contracts are
-too important to leave half-documented in scripts and logs. They need their own
-home so maintainers can review them as first-class parts of the system instead
-of as hidden support glue.
+These pages are narrow by design. They document repository operation, not
+product semantics. If a change alters ingest, index, reasoning, agent, or
+runtime behavior for users, the owning package handbook still owns the real
+explanation.
 
-The maintenance handbook should make repository-health behavior explicit without
-turning it into a shadow product layer. It is strongest when readers can see
-what the shared maintenance surfaces do, where they live, and which packages or
-rules they affect.
+## Maintenance System
 
-## Visual Summary
+Maintenance work should be easy to audit because each automation surface has a
+checked-in owner. The helper package provides repository-health logic, `makes/`
+turns that logic into repeatable local commands, and GitHub workflows run the
+same contract in CI and release paths.
 
 ```mermaid
 flowchart LR
-    page["Maintenance Handbook<br/>clarifies: maintenance scope | shared automation | workflow contracts"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    anchor1["packages/bijux-canon-dev"]
-    anchor2["makes/"]
-    anchor3[".github/workflows/"]
-    anchor1 --> page
-    anchor2 --> page
-    anchor3 --> page
-    next1["open the dev-package section for maintainer helper code"]
-    next2["open the make section for shared command surfaces"]
-    next3["open the workflow section for CI and release contracts"]
-    page --> next1
-    page --> next2
-    page --> next3
-    class page page;
-    class anchor1,anchor2,anchor3 anchor;
-    class next1,next2,next3 action;
+    maintainer["maintainer question"]
+    dev["bijux-canon-dev"]
+    makes["makes"]
+    workflows["GitHub workflows"]
+    evidence["logs, artifacts, schemas"]
+    product["product handbooks"]
+
+    maintainer --> dev --> makes --> workflows --> evidence
+    dev --> evidence
+    workflows --> product
 ```
 
-## Sections
+Maintenance docs should read like a control surface, not like a second product
+manual. A reader should be able to tell which helper code owns a rule, how
+that rule becomes a repeatable command, and which workflow reruns the same
+contract in CI or release.
 
-- [bijux-canon-dev](bijux-canon-dev/index.md) for maintainer package behavior,
-  schema drift tooling, release support, SBOM helpers, and repository-health
-  guardrails
-- [makes](makes/index.md) for the shared make entrypoints, package dispatch,
-  CI target families, and release-facing command surfaces
-- [gh-workflows](gh-workflows/index.md) for GitHub Actions verification,
-  publication, docs deployment, and reusable workflow contracts
+## Handbook Sections
 
-## Shared Maintenance Anchors
+- [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) for repository-health helper code,
+  schema governance, release support, quality gates, and supply-chain tooling
+- [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) for the shared `make` interface,
+  package dispatch, CI target families, and release-facing command surfaces
+- [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) for GitHub Actions entrypoints,
+  reusable workflow contracts, release publication, and docs deployment
 
-- `packages/bijux-canon-dev` for maintainer helper code
-- `makes/` for shared make entrypoints and composition
-- `.github/workflows/` for CI, docs, and publication workflow truth
+## Start With
 
-## Use This Page When
+- Open [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) when the question is which helper code or test
+  owns a repository-health rule.
+- Open [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) when the concern begins at `Makefile`, shared targets, or package
+  dispatch.
+- Open [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) when the concern begins in GitHub Actions triggers, job
+  graphs, or publication orchestration.
 
-- you are changing repository automation, validation, or release support
-- you need maintainer-only context that should not live in product package docs
-- you are reviewing CI, schema drift, supply-chain, or shared automation
+## Proof Path
 
-## Decision Rule
+- `packages/bijux-canon-dev/` is the maintainer helper package.
+- `makes/` is the checked-in command surface.
+- `.github/workflows/` is the checked-in workflow contract.
+- `artifacts/` is the default destination for local check output and generated run products.
 
-Use `Maintenance Handbook` to decide whether a change belongs to repository
-maintenance surfaces or to a product package contract. If the change would
-affect end-user behavior directly, this handbook should push the review back
-toward the owning product package instead of letting maintainer scope sprawl.
+## Boundary
 
-## What This Page Answers
+Maintainer documentation can explain repository health, but it should never act
+as a shortcut for product behavior. When a maintainer surface only wraps a
+product package contract, this handbook should stop at the integration point
+and send the reader back to the owning package.
 
-- which maintenance section owns the current repository-health concern
-- which shared automation surfaces matter for that concern
-- what a reviewer should confirm before changing repository automation
+## Leave This Handbook When
 
-## Reviewer Lens
-
-- compare the described maintenance behavior with the actual helper modules,
-  make surfaces, and workflow files
-- check that maintainer-only guidance has not leaked into product-facing pages
-- confirm that repository automation still names its package impact explicitly
-
-## Next Checks
-
-- move to the `bijux-canon-dev` section when the question is about the
-  maintainer package itself
-- move to product package docs if the question is user-facing behavior rather
-  than repository health
-- return to repository handbook pages when the issue turns out to be root
-  governance rather than maintenance implementation
-
-## Honesty Boundary
-
-This handbook can describe maintainer automation and repository health work, but
-it should never imply that maintainer tooling is part of the end-user product
-surface. It also should not pretend that hidden scripts count as documentation
-just because CI happens to run them.
-
-## Purpose
-
-This page explains how to use the maintenance handbook without confusing it with
-user-facing product docs.
-
-## Stability
-
-Keep this page aligned with the actual maintenance sections and shared surfaces
-documented in this handbook.
+- the question is really about one package's user-facing behavior
+- the next step is a product interface, workflow, or test rather than a shared command
+- the issue is a legacy-name migration rather than repository-health machinery

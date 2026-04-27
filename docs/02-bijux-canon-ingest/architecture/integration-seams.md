@@ -4,84 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Integration Seams
 
-Integration seams are the points where `bijux-canon-ingest` meets configuration, APIs,
-operators, or neighboring packages.
+Integration seams matter because `bijux-canon-ingest` touches neighboring packages without becoming them. The handoff into and out of ingest work should be explicit enough to survive review under change.
 
-This page exists so integration changes do not feel mysterious. A reviewer should
-be able to say which seams are intentional, which ones carry compatibility risk,
-and where the package expects outside systems to meet it.
+## What To Check
 
-Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+- name the seam where work enters from index, reason, agent, and runtime
+- name the seam where `bijux-canon-ingest` hands responsibility outward again
+- treat seam ambiguity as a design problem, not as a documentation gap only
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-graph TD
-    A[Integration Seams] --> B[Inbound data contracts]
-    B --> C[Ingest internal boundaries]
-    C --> D[Outbound artifact contracts]
-    D --> E[Index-facing seams]
-    E --> F[Stable integration behavior]
-```
+- `src/bijux_canon_ingest/processing`, `retrieval`, and `application` for the structural ownership boundary
+- `tests` for deterministic preparation evidence for executable confirmation that the structure still holds
 
-## Integration Surfaces
+## Bottom Line
 
-- CLI entrypoint in src/bijux_canon_ingest/interfaces/cli/entrypoint.py
-- HTTP boundaries under src/bijux_canon_ingest/interfaces
-- configuration modules under src/bijux_canon_ingest/config
-
-## Adjacent Systems
-
-- feeds prepared material toward bijux-canon-index and bijux-canon-reason
-- stays under runtime governance instead of defining replay authority itself
-
-## Concrete Anchors
-
-- `src/bijux_canon_ingest/processing` for deterministic document transforms
-- `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
-- `src/bijux_canon_ingest/application` for package workflows
-
-## Use This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Integration Seams` to decide whether a structural change makes `bijux-canon-ingest` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What This Page Answers
-
-- how `bijux-canon-ingest` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Reviewer Lens
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-ingest`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
-
-## Purpose
-
-This page explains where to look when integration behavior changes.
-
-## Stability
-
-Keep it aligned with real boundary modules and schema files.
+If `bijux-canon-ingest` needs hidden structure to defend source preparation before retrieval begins, the architecture is already too opaque.

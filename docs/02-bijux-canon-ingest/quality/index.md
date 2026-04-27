@@ -4,89 +4,67 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Quality
 
-This section explains how `bijux-canon-ingest` earns trust: which proof surfaces matter, which risks stay visible, and what done should mean after a real change.
+Open this section when you need to decide whether prepared ingest output is trustworthy enough for downstream packages to build on without inheriting hidden drift.
 
-These pages explain the proof story for `bijux-canon-ingest`. They should make trust, skepticism, and review pressure visible enough that passing checks do not get mistaken for sufficient evidence.
-
-Treat the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
-
-## Visual Summary
+## Trust Model
 
 ```mermaid
-graph TD
-    A[Quality] --> B[Test strategy]
-    B --> C[Invariants and review checklist]
-    C --> D[Dependency and docs governance]
-    D --> E[Risk and limitation tracking]
-    E --> F[Change validation decision]
+flowchart LR
+    strategy["test strategy"]
+    invariants["ingest invariants"]
+    validation["change validation"]
+    limits["limitations and risk"]
+    trust["trust decision"]
+
+    strategy --> invariants --> validation --> limits --> trust
 ```
 
-## Pages in This Section
+Quality pages should tell a reviewer why prepared ingest output deserves to be
+trusted by later packages. Tests matter, but only when they are connected to
+the invariants that keep source preparation stable and to the limits that still
+need to be read honestly.
 
-- [Test Strategy](test-strategy.md)
-- [Invariants](invariants.md)
-- [Review Checklist](review-checklist.md)
-- [Documentation Standards](documentation-standards.md)
-- [Definition of Done](definition-of-done.md)
-- [Dependency Governance](dependency-governance.md)
-- [Change Validation](change-validation.md)
-- [Known Limitations](known-limitations.md)
-- [Risk Register](risk-register.md)
+## Read These First
 
-## Read Across the Package
+- open [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/) first when you need the broad proof shape behind ingest behavior
+- open [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/) when the question is what must not drift across source preparation and chunking
+- open [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/) when you need the minimum proof for a safe ingest change
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
+## Trust Risk
 
-## Concrete Anchors
+The main quality risk here is letting unstable prepared input look healthy because later packages still pass on top of it.
 
-- tests/unit for module-level behavior across processing, retrieval, and interfaces
-- tests/e2e for package boundary coverage
-- README.md
+## First Proof Check
 
-## Use This Page When
+- `tests` and package-local validation surfaces for executable evidence
+- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
+- release notes and caller-facing docs when the change alters what readers may safely assume
 
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
+## Pages In This Section
 
-## Decision Rule
+- [Test Strategy](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/test-strategy/)
+- [Invariants](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/invariants/)
+- [Review Checklist](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/review-checklist/)
+- [Documentation Standards](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/documentation-standards/)
+- [Definition of Done](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/definition-of-done/)
+- [Dependency Governance](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/dependency-governance/)
+- [Change Validation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/change-validation/)
+- [Known Limitations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/known-limitations/)
+- [Risk Register](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/risk-register/)
 
-Use `Quality` to decide whether `bijux-canon-ingest` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
+## Leave This Section When
 
-## What This Page Answers
+- leave for [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the doubt is really about package ownership rather than proof
+- leave for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is what the contract is rather than whether it is defended
+- leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
-- what currently proves the `bijux-canon-ingest` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
+## Design Pressure
 
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-ingest` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
-
-## Purpose
-
-This page explains how to use the quality section for `bijux-canon-ingest` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If quality here is reduced to green checks alone, unstable prepared input can
+still leak forward. This section has to tie proofs, invariants, and residual
+limits into one trust story.

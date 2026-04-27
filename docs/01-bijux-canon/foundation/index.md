@@ -4,53 +4,92 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Foundation
 
-The foundation section explains why the repository exists in this shape before
-it explains how the root is operated. A reader should leave this section able
-to answer a small set of durable questions without guessing from directory
-names: why the monorepo is split, where authority changes hands, which names
-mean something stable, and what kind of change would damage that clarity.
+The foundation section explains the design boundary that keeps package
+ownership explicit: why the repository exists, where authority changes hands,
+which terms stay stable, and which changes would weaken that clarity.
 
-This is the section to open when the repository still feels abstract. The goal
-is to make the root legible as a design boundary, not as a pile of shared
-files. If the foundation pages are healthy, later workflow and review pages can
-assume the reader already understands what the repository is trying to protect.
+The main mistake this section should prevent is treating the root as a
+convenient overflow area. These pages exist so a reviewer can tell, early and
+plainly, whether a change belongs in shared governance or in one owning
+package.
 
-## Pages in This Section
+## Foundation Map
 
-- [Platform Overview](platform-overview.md)
-- [Repository Scope](repository-scope.md)
-- [Workspace Layout](workspace-layout.md)
-- [Package Map](package-map.md)
-- [Ownership Model](ownership-model.md)
-- [Domain Language](domain-language.md)
-- [Documentation System](documentation-system.md)
-- [Change Principles](change-principles.md)
-- [Decision Rules](decision-rules.md)
+Foundation pages should make the repository's authority model visible before a
+reader gets lost in package detail. The root explains why the split exists,
+where the shared workspace boundary sits, and which decision rules protect the
+package family from slow boundary drift.
 
-## What This Section Covers
+```mermaid
+flowchart LR
+    intent["platform intent"]
+    scope["repository scope"]
+    layout["workspace layout"]
+    packages["package map"]
+    language["domain language"]
+    decisions["decision rules"]
+    package["owning package handbook"]
+    blur["root creep"]
 
-- the purpose of the repository split
-- the shared vocabulary that should stay stable in code, docs, and review
-- the ownership model that keeps root governance distinct from package behavior
-- the design principles that make later operational choices easier to evaluate
+    intent --> scope --> layout --> packages --> language --> decisions
+    scope --> package
+    decisions --> blur
+```
 
-## Read This Section When
+Foundation pages should help a reviewer defend the split out loud. They are not
+there to decorate the repository with theory. They exist to answer why the
+root owns anything at all, where that authority stops, and which terms or rules
+must stay stable if package boundaries are going to remain believable.
 
-- the monorepo shape is still more obvious than the monorepo intent
-- you need to decide whether work belongs at the root or in a package
-- you want the shortest route to the repository’s enduring design logic
+## Start Here
 
-## Purpose
+- open [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/) for the shortest statement of the repository design
+- open [Repository Scope](https://bijux.io/bijux-canon/01-bijux-canon/foundation/repository-scope/) when you need to know what the root may document, enforce, or coordinate
+- open [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/) when you need the line between the root and a package
+- open [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/) when you want to read the split as owned responsibilities instead of directory names
+- open [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/) before making a cross-package change that might blur authority
 
-This page gives readers a clean starting point for the repository foundation
-without forcing them to skim all of the topic pages first.
+## Pages In This Section
 
-## Stability
+- [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/)
+- [Repository Scope](https://bijux.io/bijux-canon/01-bijux-canon/foundation/repository-scope/)
+- [Workspace Layout](https://bijux.io/bijux-canon/01-bijux-canon/foundation/workspace-layout/)
+- [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/)
+- [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/)
+- [Domain Language](https://bijux.io/bijux-canon/01-bijux-canon/foundation/domain-language/)
+- [Documentation System](https://bijux.io/bijux-canon/01-bijux-canon/foundation/documentation-system/)
+- [Change Principles](https://bijux.io/bijux-canon/01-bijux-canon/foundation/change-principles/)
+- [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/)
 
-Keep this page aligned with the actual foundation topics that define the root
-boundary and the names used across the repository.
+## Concrete Anchors
+
+- `packages/` for the first ownership check when root scope feels arguable
+- `pyproject.toml` for the declared workspace boundary
+- [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/) and [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/) for
+  the clearest statement of authority changes
+- [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/) for the root-level test of whether a
+  proposed change strengthens or blurs the split
+
+## Read Across The Repository
+
+- open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) when you need to run, validate, release, or review shared work
+- open the owning product handbook when a boundary question resolves into one package's local behavior
+- open the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the issue is repository-health automation rather than repository intent
+
+## Design Pressure
+
+The split should remain easier to defend after a change than before it. If a
+proposal simplifies one local task only by making ownership boundaries harder
+to explain, the proposal is weakening the repository even if it reduces
+short-term friction.
+
+## Leave This Section When
+
+- the question has narrowed to one package contract, workflow, or proof surface
+- the concern is operational enforcement rather than repository intent
+- the issue lives in maintainer-only automation instead of root-owned design logic

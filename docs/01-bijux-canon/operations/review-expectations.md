@@ -4,44 +4,53 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Review Expectations
 
-Repository review should be sharper at the root than it is in purely local code.
+Repository review should be sharper at the root than it is in purely local
+code.
 
-The reason is simple: root changes alter how the whole package family is built,
-read, verified, or released. That means a “small” root edit can carry wider
-consequences than a larger package-local edit. Review expectations should make
-that pressure visible.
+## Review Model
 
-## Root Review Expectations
+```mermaid
+flowchart LR
+    owner["right owner"]
+    proof["docs, automation, and proof assets align"]
+    intent["durable commit intent"]
+    acceptance["root review can accept the change"]
 
-- confirm the owning repository surface is still the right one for the change
-- check that docs, automation, and proof assets move together when they describe
-  one repository rule
-- verify that the change does not smuggle product behavior into maintainer or
-  root automation layers
-- prefer clear, durable commit intent over vague historical shorthand
+    owner --> proof --> intent --> acceptance
+```
 
-## Evidence To Check
+This page should make root review feel stricter for concrete reasons, not
+cultural ones. The repository needs a sharper review model because root mistakes
+spread farther than package-local ones.
+
+## Root Review Gates
+
+Before accepting a root-facing change, confirm that:
+
+- the chosen repository surface is still the right owner
+- docs, automation, and proof assets move together when they describe one rule
+- the change does not smuggle product behavior into maintainer or root layers
+- the commit intent is durable enough to understand years later without private memory
+
+## Evidence To Check First
 
 - the relevant handbook page under `docs/`
 - the root or package automation file that implements the behavior
-- the test or workflow that proves the rule still holds
+- the test, workflow, or schema surface that proves the rule still holds
 
 ## Red Flags
 
-- the explanation is spread across multiple places but none of them clearly own
-  it
+- the explanation is spread across multiple places but none clearly own it
 - the change is easy to apply but hard to describe at the repository boundary
 - review confidence depends on memory instead of checked-in proof
 
-## Purpose
+## Design Pressure
 
-This page records the review bar for repository-wide changes.
-
-## Stability
-
-Keep this page aligned with the actual root review posture and proof surfaces.
+Root review weakens as soon as familiarity substitutes for checked proof. If
+the owner, evidence, or intent still has to be explained from memory, the
+change is not yet reviewable enough.

@@ -4,131 +4,117 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Repository Handbook
 
-The repository handbook explains the shared story above the package level:
-why this repository is split, which rules genuinely live at the root, and
-how the packages stay coordinated without collapsing back into one blurry
-codebase.
+Open the repository handbook when the question belongs to the part of
+`bijux-canon` that no single package owns alone: why the split exists, which
+rules belong at the root, and how package handoffs stay explicit across the
+repository.
 
-`bijux-canon` is easiest to understand if you start from intent instead of
-from filenames. The repository exists to keep several deterministic,
-reviewable surfaces moving together: ingest prepares evidence, index makes
-retrieval executable, reason makes claims inspectable, agent turns role-based
-work into orchestrated runs, and runtime decides what execution and replay
-results are acceptable.
-
-The repository is therefore less like a toolbox and more like a chain of
-accountable boundaries. Each package is meant to carry one kind of promise
-clearly enough that readers do not have to reverse-engineer the whole tree to
-understand where authority lives.
+The main repository mistake this handbook is meant to prevent is root creep.
+The root should coordinate package truth, not become a second product layer
+that quietly re-explains or overrides package ownership.
 
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
-Product behavior should stay inside the publishable packages under `packages/`.
-The root only owns what is genuinely shared: workspace layout, schema
-governance, documentation rules, validation posture, and release
-coordination.</div>
+Product behavior belongs in the publishable packages under `packages/`. The
+root owns only what is genuinely shared: workspace layout, schema governance,
+documentation rules, validation posture, and release coordination.</div>
 
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
+## Reader Contract
 
-## Visual Summary
+This handbook should answer three questions before a reviewer touches code:
+
+- is the concern genuinely repository-wide, or does one package own it
+- which shared file, schema, workflow, or rule backs the claim
+- where should the reader go next when the root no longer has authority
 
 ```mermaid
-graph TD
-    A[Reader Question] --> B{Repository-wide concern}
-    B -- Yes --> C[Repository Handbook]
-    C --> D[Foundation pages]
-    C --> E[Operations pages]
-    D --> F[Root contracts and boundaries]
-    E --> F
-    B -- No --> G[Owning package handbook]
-    G --> H[Package code and tests]
+flowchart TD
+    question["reader question"]
+    root{"cross-package concern?"}
+    package["owning package handbook"]
+    maintain{"maintainer machinery?"}
+    compat{"legacy name?"}
+    foundation["foundation pages"]
+    operations["operations pages"]
+    devdocs["maintenance handbook"]
+    compatdocs["compatibility handbook"]
+    proof["root proof surfaces"]
+
+    question --> root
+    root -- no --> package
+    root -- yes --> maintain
+    maintain -- yes --> devdocs
+    maintain -- no --> compat
+    compat -- yes --> compatdocs
+    compat -- no --> foundation
+    compat -- no --> operations
+    foundation --> proof
+    operations --> proof
 ```
 
-## Sections
+The repository handbook is strongest when it routes quickly and then stops. It
+should make the shared root logic legible, show where package authority begins,
+and point to the concrete files that back the claim instead of trying to
+re-explain package behavior from above.
 
-- [Foundation](foundation/index.md) for the repository split, ownership model,
-  shared language, and design rules that should stay stable over time
-- [Operations](operations/index.md) for contributor workflows, validation,
-  release, automation, artifact handling, and shared review posture
+## Start Here
 
-## Pages In Foundation
+- open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
+- open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
+- open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
+- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
+- leave this handbook as soon as the behavior is clearly local to one canonical package
 
-- [Platform Overview](foundation/platform-overview.md)
-- [Repository Scope](foundation/repository-scope.md)
-- [Workspace Layout](foundation/workspace-layout.md)
-- [Package Map](foundation/package-map.md)
-- [Ownership Model](foundation/ownership-model.md)
-- [Domain Language](foundation/domain-language.md)
-- [Documentation System](foundation/documentation-system.md)
-- [Change Principles](foundation/change-principles.md)
-- [Decision Rules](foundation/decision-rules.md)
+## What This Handbook Owns
 
-## Pages In Operations
+- why the repository is split into canonical packages instead of one combined surface
+- root-owned workflow, validation, release, artifact, and documentation rules
+- the seams where one package hands authority to another package or to a shared root rule
 
-- [Local Development](operations/local-development.md)
-- [Testing and Validation](operations/testing-and-validation.md)
-- [Release and Versioning](operations/release-and-versioning.md)
-- [API and Schema Governance](operations/api-and-schema-governance.md)
-- [Contributor Workflows](operations/contributor-workflows.md)
-- [Automation Surfaces](operations/automation-surfaces.md)
-- [Artifact Governance](operations/artifact-governance.md)
-- [Review Expectations](operations/review-expectations.md)
-- [Change Management](operations/change-management.md)
+## What This Handbook Does Not Own
+
+- ingest, index, reason, agent, or runtime behavior inside the product handbooks
+- helper implementation detail that belongs in the maintainer handbook
+- legacy-name migration policy that belongs in the compatibility handbook
 
 ## Shared Package Map
 
-- `bijux-canon-ingest` for deterministic document ingestion, chunking, retrieval assembly, and ingest-facing boundaries.
-- `bijux-canon-index` for contract-driven vector execution with replay-aware determinism, audited backend behavior, and provenance-rich result handling.
-- `bijux-canon-reason` for deterministic evidence-aware reasoning, claim formation, verification, and traceable reasoning workflows.
-- `bijux-canon-agent` for deterministic, auditable agent orchestration with role-local behavior, pipeline control, and trace-backed results.
-- `bijux-canon-runtime` for governed execution and replay authority with auditable non-determinism handling, persistence, and package-to-package coordination.
+| Canonical package | Repository-level promise | Root-level proof to inspect |
+| --- | --- | --- |
+| `bijux-canon-ingest` | source material becomes deterministic preparation output before downstream use | package entry in `pyproject.toml`, handbook route in `mkdocs.yml`, package code under `packages/bijux-canon-ingest` |
+| `bijux-canon-index` | retrieval executes through auditable contracts rather than hidden search behavior | API schema under `apis/bijux-canon-index`, package tests, handbook route |
+| `bijux-canon-reason` | retrieved evidence becomes claims, checks, and reasoning artifacts | API schema under `apis/bijux-canon-reason`, package tests, handbook route |
+| `bijux-canon-agent` | role-based orchestration emits traces instead of swallowing decisions | API schema under `apis/bijux-canon-agent`, package tests, handbook route |
+| `bijux-canon-runtime` | the full run is accepted, rejected, persisted, or replayed under explicit policy | API schema under `apis/bijux-canon-runtime`, runtime regression tests, handbook route |
 
-## Concrete Anchors
+## Boundary Example
 
-- `pyproject.toml` for workspace metadata and commit conventions
-- `Makefile` and `makes/` for root automation
-- `apis/` and `.github/workflows/` for schema and validation review
+A schema pin under `apis/`, a workspace-level validation rule, or a handbook
+routing rule belongs here because it protects more than one package at once. A
+change to ingest chunking, runtime replay semantics, or reason-level claim
+formation does not belong here, even if the root automation or docs also have
+to move with it.
 
-## Use This Page When
+## First Proof Checks
 
-- you are dealing with repository-wide seams rather than one package alone
-- you need shared workflow, schema, or governance context before changing code
-- you want the monorepo view that sits above the package handbooks
+- check `pyproject.toml` when the claim is about workspace structure or commit rules
+- check `Makefile`, `makes/`, and `.github/workflows/` when the claim is about shared automation or validation
+- check `apis/` when the claim is about shared schema storage or compatibility review
+- check `packages/` when the question is whether the root is starting to blur a package boundary
 
-## Decision Rule
+## Cross-Package Anchors
 
-Use `Repository Handbook` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
+- `pyproject.toml` declares the workspace and package set
+- `mkdocs.yml` defines the published handbook structure
+- `Makefile`, `makes/`, and `.github/workflows/` carry root-level operations
+- `packages/` carries the canonical product boundaries the root must not blur
 
-## What This Page Answers
+## Leave This Handbook When
 
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
-
-## Reviewer Lens
-
-- compare the page claims with the real root files, workflows, or schema assets
-- check that repository guidance still stops where package ownership begins
-- confirm that any repository rule described here is still enforceable in code or automation
-
-## Honesty Boundary
-
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
-
-## Next Checks
-
-- move to the owning package docs when the question stops being repository-wide
-- check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
-
-## Purpose
-
-This page gives the shortest credible explanation of why the monorepo exists and what kind of questions belong in the repository handbook instead of a package handbook.
-
-## Stability
-
-This page is part of the canonical docs spine. Keep it aligned with the current repository layout and the actual package set declared in `pyproject.toml`.
+- the behavior is already local to one package's interfaces, workflows, or tests
+- the question is really about maintainer automation internals
+- the real work is a legacy-name migration rather than a root-owned rule

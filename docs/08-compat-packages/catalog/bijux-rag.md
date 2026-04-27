@@ -4,40 +4,44 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # bijux-rag
 
-`bijux-rag` remains published so existing environments can keep installing the
-legacy ingest distribution name while moving toward `bijux-canon-ingest`.
+`bijux-rag` remains published so existing environments can keep using the legacy
+ingest package name while migrating toward `bijux-canon-ingest`. New work should start at
+the canonical package, not here.
 
-It is a migration surface, not the preferred package for new work. New
-installations should start with `bijux-canon-ingest`.
-
-## Canonical replacement
+## Canonical Target
 
 - distribution: `bijux-canon-ingest`
 - Python import: `bijux_canon_ingest`
 - command: `bijux-canon-ingest`
-- package handbook: <https://bijux.io/bijux-canon/bijux-canon-ingest/>
+- package handbook: <https://bijux.io/bijux-canon/02-bijux-canon-ingest/>
 
-## What the compatibility package preserves
+## Preserved Surfaces
 
-- the published `bijux-rag` distribution name on PyPI
+- the published `bijux-rag` distribution name
 - the `bijux_rag` Python import surface
-- the `bijux-rag` console command
+- the `bijux-rag` command name
 
-## Migration direction
+## When To Keep It
 
-- install `bijux-canon-ingest` for new environments
-- keep `bijux-rag` only while existing automation still depends on the legacy
-  name
-- use the shared migration handbook for rename planning and retirement review:
-  <https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/>
+Keep `bijux-rag` only while a documented dependent environment still relies on
+the legacy name. Once installs, imports, and command usage move to `bijux-canon-ingest`,
+the compatibility package becomes retirement debt.
 
-## Repository transition
+## First Proof Check
 
-The former standalone repository at <https://github.com/bijux/bijux-rag> is
-being retired in favor of the unified monorepo at
-<https://github.com/bijux/bijux-canon>.
+- `packages/compat-bijux-rag`
+- the compatibility package `README.md`
+- the canonical handbook at <https://bijux.io/bijux-canon/02-bijux-canon-ingest/>
+- shared retirement rules in
+  <https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/>
+
+## Repository Transition
+
+The former standalone repository at <https://github.com/bijux/bijux-rag> is retired in favor of
+<https://github.com/bijux/bijux-canon>. The legacy package remains only as a
+bridge to the canonical package inside the monorepo.

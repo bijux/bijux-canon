@@ -4,101 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Definition of Done
 
-A change in `bijux-canon-reason` is not done when code passes locally but the package contract
-is still unclear or unprotected.
+A change in `bijux-canon-reason` is done only when `reasoning and verification behavior` is implemented, explained, and defended together. Local success without package-level trust is not done.
 
-This page is where the package draws the line against false confidence. Done
-should mean that behavior, explanation, and proof all move together.
+## What To Check
 
-Treat the quality pages for `bijux-canon-reason` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+- require code, docs, and proof to agree on the new behavior
+- treat unclear release or compatibility impact as unfinished work when callers are affected
+- reject “done” that depends on a reviewer inferring the missing proof story alone
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-flowchart LR
-    page["Definition of Done<br/>clarifies: see proof | see limitations | judge done-ness"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    proof1["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
-    proof1 --> page
-    proof2["tests/perf for retrieval benchmark coverage"]
-    proof2 --> page
-    proof3["tests/unit for planning, reasoning, execution, verification, and interfaces"]
-    proof3 --> page
-    risk1["README.md"]
-    risk1 -.keeps trust honest.-> page
-    risk2["CHANGELOG.md"]
-    risk2 -.keeps trust honest.-> page
-    risk3["pyproject.toml"]
-    risk3 -.keeps trust honest.-> page
-    bar1["done means defended behavior"]
-    page --> bar1
-    bar2["package trust after change"]
-    page --> bar2
-    bar3["proof before confidence"]
-    page --> bar3
-    class page page;
-    class proof1,proof2,proof3 positive;
-    class risk1,risk2,risk3 caution;
-    class bar1,bar2,bar3 action;
-```
+- `tests` and package-local validation surfaces for executable evidence
+- caller-facing docs, limits, and risks for the trust story readers actually receive
+- release notes and change records when the work alters what others may safely assume
 
-## Done Means
+## Bottom Line
 
-- code, docs, and tests agree on the new behavior
-- public surfaces and artifacts remain explainable
-- release-facing impact is visible when compatibility changes
-
-## Concrete Anchors
-
-- tests/unit for planning, reasoning, execution, verification, and interfaces
-- tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage
-- README.md
-
-## Use This Page When
-
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
-
-## Decision Rule
-
-Use `Definition of Done` to decide whether `bijux-canon-reason` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
-
-## What This Page Answers
-
-- what currently proves the `bijux-canon-reason` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
-
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-reason` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
-
-## Purpose
-
-This page records the package's completion threshold.
-
-## Stability
-
-Keep it aligned with the package validation and release expectations.
+If `bijux-canon-reason` cannot explain why `reasoning and verification behavior` should be trusted after a change, the quality work is still incomplete.

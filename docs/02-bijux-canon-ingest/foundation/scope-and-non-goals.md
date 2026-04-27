@@ -4,87 +4,48 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Scope and Non-Goals
 
-This page names the line that keeps `bijux-canon-ingest` useful instead of bloated.
-The point of a package boundary is not to make work harder. It is to keep
-neighboring packages from silently accumulating overlapping authority.
+The scope of `bijux-canon-ingest` is narrower than “anything near the front of the pipeline.” It owns preparation work that makes later packages less ambiguous, not work that makes them less inconvenient.
 
-The non-goals matter as much as the goals. A package becomes easier to trust
-when readers can see what it refuses to absorb just because the code happens to
-be nearby.
-
-Treat the foundation pages for `bijux-canon-ingest` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Scope Map
 
 ```mermaid
-graph TD
-    A[Scope and Non-Goals] --> B[In-scope behaviors]
-    A --> C[Out-of-scope behaviors]
-    B --> D[Document transforms and contracts]
-    C --> E[Cross-package runtime concerns]
-    D --> F[Focused review decisions]
+flowchart LR
+    source["messy source material"]
+    scope["ingest scope"]
+    handoff["prepared downstream input"]
+    refuse["retrieval quality, claim meaning, and run authority stay out of scope"]
+
+    source --> scope --> handoff
+    scope --> refuse
 ```
+
+This page should show ingest as a narrowing step, not as a general prelude to
+the whole platform. The scope stays healthy when it produces stable prepared
+input and then stops.
 
 ## In Scope
 
-- document cleaning, normalization, and chunking
-- ingest-local retrieval and indexing assembly
-- package-local CLI and HTTP boundaries
-- ingest-specific safeguards, adapters, and observability helpers
+- cleaning, normalization, and chunking before search begins
+- ingest records and artifacts that become the explicit handoff into downstream packages
+- package-local interfaces and safeguards required to run ingest work repeatably
 
-## Out of Scope
+## Non-Goals
 
-- runtime-wide replay authority and persistence
-- cross-package vector execution semantics
-- repository maintenance automation
+- deciding retrieval quality, search replay, or vector-store behavior
+- deciding what evidence means once claims and checks are being formed
+- deciding whether a run is durable, governed, or acceptable to keep
 
-## Concrete Anchors
+## Scope Check
 
-- `packages/bijux-canon-ingest` as the package root
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest` as the import boundary
-- `packages/bijux-canon-ingest/tests` as the package proof surface
+If the change makes later packages depend on ingest for anything beyond prepared input, the package is growing past its job.
 
-## Use This Page When
+## Design Pressure
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Scope and Non-Goals` to decide whether a change makes `bijux-canon-ingest` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-ingest` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-ingest`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page keeps future work from leaking into the wrong package.
-
-## Stability
-
-Update it only when ownership truly moves into or out of `bijux-canon-ingest`.
+If ingest starts absorbing work because downstream packages would rather not own
+their own ambiguity, the package becomes broader without becoming clearer. The
+non-goals have to stay explicit enough to resist that pull.

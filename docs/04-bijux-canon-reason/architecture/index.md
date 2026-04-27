@@ -4,112 +4,78 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Architecture
 
-This section explains how `bijux_canon_reason` is organized so a reviewer can follow structure, dependency direction, and execution flow without guessing.
+Open this section when the question is structural: where claims and checks are formed, how reasoning steps flow through the package, and how the code keeps meaning visible instead of scattering it.
 
-These pages turn `bijux-canon-reason` from a directory tree into a readable design map. Use them when a structural change needs to be grounded in named modules and real execution paths.
+## Structural Shape
 
-Treat the architecture pages for `bijux-canon-reason` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
-
-## Visual Summary
+Reason architecture centers on explicit reasoning artifacts. Core models define
+claims, plans, traces, and verification results; execution modules run steps
+and tools; verification modules check structure and provenance; trace modules
+make the result replayable rather than just plausible.
 
 ```mermaid
 flowchart LR
-    page["Architecture<br/>clarifies: trace execution | spot dependency pressure | judge structural drift"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    module1["claim and reasoning semantics"]
-    module1 --> page
-    module2["step execution and tool dispatch"]
-    module2 --> page
-    module3["plan construction and intermediate representation"]
-    module3 --> page
-    code1["src/bijux_canon_reason/planning"]
-    page --> code1
-    code2["src/bijux_canon_reason/reasoning"]
-    page --> code2
-    code3["src/bijux_canon_reason/execution"]
-    page --> code3
-    pressure1["tests/e2e for API, CLI, replay gates, retrieval reasoning, and smoke coverage"]
-    pressure1 -.tests whether this structure still holds.-> page
-    pressure2["tests/perf for retrieval benchmark coverage"]
-    pressure2 -.tests whether this structure still holds.-> page
-    pressure3["tests/unit for planning, reasoning, execution, verification, and interfaces"]
-    pressure3 -.tests whether this structure still holds.-> page
-    class page page;
-    class module1,module2,module3 positive;
-    class code1,code2,code3 anchor;
-    class pressure1,pressure2,pressure3 caution;
+    evidence["evidence input"]
+    core["core models"]
+    execution["execution runtime"]
+    reasoning["reasoning logic"]
+    verification["verification checks"]
+    traces["trace records"]
+    output["reasoning artifact"]
+
+    evidence --> core --> execution --> reasoning --> verification --> output
+    execution --> traces --> output
+    core --> output
 ```
 
-## Pages in This Section
+The architectural point of reason is that interpretation stays inspectable.
+Models define the shapes that matter, execution runs the step, reasoning logic
+forms the conclusion, verification constrains it, and traces preserve enough
+history for comparison or replay later.
 
-- [Module Map](module-map.md)
-- [Dependency Direction](dependency-direction.md)
-- [Execution Model](execution-model.md)
-- [State and Persistence](state-and-persistence.md)
-- [Integration Seams](integration-seams.md)
-- [Error Model](error-model.md)
-- [Extensibility Model](extensibility-model.md)
-- [Code Navigation](code-navigation.md)
-- [Architecture Risks](architecture-risks.md)
+## Read These First
 
-## Read Across the Package
+- open [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) first when you need the owning code area for a reasoning concern
+- open [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/) when you need the path from evidence input to reasoning output
+- open [Integration Seams](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/integration-seams/) when a change could blur retrieval, orchestration, or runtime boundaries
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+## Structural Risk
 
-## Concrete Anchors
+The main architectural risk here is hiding reasoning policy in the wrong layer until no one can point to the module that actually decided what a claim means.
 
-- `src/bijux_canon_reason/planning` for plan construction and intermediate representation
-- `src/bijux_canon_reason/reasoning` for claim and reasoning semantics
-- `src/bijux_canon_reason/execution` for step execution and tool dispatch
+## First Proof Check
 
-## Use This Page When
+- `packages/bijux-canon-reason/src/bijux_canon_reason/core/models` for claims, planning, trace, and verification models
+- `packages/bijux-canon-reason/src/bijux_canon_reason/execution` for runtime and tool execution boundaries
+- `packages/bijux-canon-reason/src/bijux_canon_reason/verification` for checks that keep claims reviewable
+- `packages/bijux-canon-reason/tests` for proof that claims, checks, and provenance stay aligned
 
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
 
-## Decision Rule
+## Pages In This Section
 
-Use `Architecture` to decide whether a structural change makes `bijux-canon-reason` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
+- [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/)
+- [Dependency Direction](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/dependency-direction/)
+- [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/)
+- [State and Persistence](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/state-and-persistence/)
+- [Integration Seams](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/integration-seams/)
+- [Error Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/error-model/)
+- [Extensibility Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/extensibility-model/)
+- [Code Navigation](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/code-navigation/)
+- [Architecture Risks](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/architecture-risks/)
 
-## What This Page Answers
+## Leave This Section When
 
-- how `bijux-canon-reason` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
+- leave for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the structural question is already a public contract question
+- leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
+- leave for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
 
-## Reviewer Lens
+## Design Pressure
 
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-reason`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
-
-## Purpose
-
-This page explains how to use the architecture section for `bijux-canon-reason` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If a reader cannot point to where meaning is formed versus where meaning is
+checked, the package has already blurred its own reasoning policy. The
+architecture page should keep those responsibilities separate and visible.

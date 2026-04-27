@@ -4,36 +4,70 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-19
+last_reviewed: 2026-04-26
 ---
 
 # gh-workflows
 
-The workflow section explains the GitHub Actions entrypoints and reusable
-building blocks that verify, release, and document the repository.
+The workflow handbook covers the GitHub Actions surfaces that verify, publish,
+and deploy this repository. These files are part of the checked-in operational
+contract, even when some of them are standards-managed and generated.
 
-Use these pages when you need to know which workflow starts on push, pull
-request, tag, or manual dispatch, and how that entrypoint fans out into
-repository checks, package matrices, or documentation publication.
+The useful question here is not how Actions works in general. The useful
+question is which workflow owns a trigger, which reusable file carries shared
+execution logic, and where that behavior connects back to checked-in make or
+helper code.
 
-The top-level entrypoints are `verify.yml` for pushes and pull requests,
-`deploy-docs.yml` for handbook publication from `main`, and the release split
-workflows (`release-github.yml`, `release-pypi.yml`, `release-ghcr.yml`) for
-tag-driven publication. `ci.yml` and `release-artifacts.yml` are reusable
-workflows called by those entrypoints rather than standalone manual surfaces.
+## Workflow Model
 
-## Pages in This Section
+```mermaid
+flowchart LR
+    trigger["GitHub trigger"]
+    workflow["top-level workflow"]
+    reusable["reusable workflow"]
+    commands["make and helper code"]
+    result["verification or release result"]
 
-- [verify](verify.md)
-- [reusable-workflows](reusable-workflows.md)
-- [deploy-docs](deploy-docs.md)
-- [release-workflows](release-workflows.md)
+    trigger --> workflow --> reusable --> commands --> result
+```
 
-## Purpose
+The workflow handbook should explain ownership, not just list YAML files. A
+reader needs to see how a trigger lands in a top-level workflow, where shared
+job logic is reused, and which checked-in command surface actually performs the
+real work.
 
-Use this section to find the workflow file, trigger, and job tree behind a
-repository automation concern.
+## Workflow Pages
 
-## Stability
+- [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/)
+- [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/)
+- [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/)
+- [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/)
 
-Keep it aligned with the actual workflow files in `.github/workflows/`.
+## Start With
+
+- Open [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/) for day-to-day repository verification.
+- Open [deploy-docs](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/deploy-docs/) for handbook publication.
+- Open [release-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/) for tag-driven release publication.
+- Open [reusable-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/reusable-workflows/) when the question is about the shared
+  job contracts called by top-level workflows.
+
+## Checked-In Truth
+
+- `.github/workflows/verify.yml`
+- `.github/workflows/deploy-docs.yml`
+- `.github/workflows/release-artifacts.yml`
+- `.github/workflows/release-github.yml`
+- `.github/workflows/release-pypi.yml`
+- `.github/workflows/release-ghcr.yml`
+- `.github/workflows/ci.yml`
+
+## Boundary
+
+Workflow documentation should explain triggers, callers, and job ownership. It
+should not absorb the deeper product behavior that workflows happen to invoke.
+
+## Design Pressure
+
+If a workflow can only be understood by reading raw job YAML without knowing
+where execution is delegated, the page is still too shallow. This section has
+to keep triggers, reuse, and command ownership visibly connected.

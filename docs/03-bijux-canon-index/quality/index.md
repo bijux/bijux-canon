@@ -4,89 +4,67 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Quality
 
-This section explains how `bijux-canon-index` earns trust: which proof surfaces matter, which risks stay visible, and what done should mean after a real change.
+Open this section when you need to decide whether retrieval behavior is proven strongly enough for callers and downstream packages to trust replay, provenance, and search results.
 
-These pages explain the proof story for `bijux-canon-index`. They should make trust, skepticism, and review pressure visible enough that passing checks do not get mistaken for sufficient evidence.
-
-Treat the quality pages for `bijux-canon-index` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
-
-## Visual Summary
+## Trust Model
 
 ```mermaid
-graph TD
-    A[Quality] --> B[Test strategy]
-    B --> C[Invariants and review checklist]
-    C --> D[Dependency and docs governance]
-    D --> E[Risk and limitation tracking]
-    E --> F[Change validation decision]
+flowchart LR
+    strategy["test strategy"]
+    invariants["retrieval invariants"]
+    validation["change validation"]
+    limits["limitations and risk"]
+    trust["trust decision"]
+
+    strategy --> invariants --> validation --> limits --> trust
 ```
 
-## Pages in This Section
+The quality story for index has to explain why retrieval results are more than
+plausible output. Reviewers need to see how replay, provenance, and search
+behavior are constrained, what proof backs them, and where the remaining trust
+limits still sit.
 
-- [Test Strategy](test-strategy.md)
-- [Invariants](invariants.md)
-- [Review Checklist](review-checklist.md)
-- [Documentation Standards](documentation-standards.md)
-- [Definition of Done](definition-of-done.md)
-- [Dependency Governance](dependency-governance.md)
-- [Change Validation](change-validation.md)
-- [Known Limitations](known-limitations.md)
-- [Risk Register](risk-register.md)
+## Read These First
 
-## Read Across the Package
+- open [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/) first when you need the broad proof shape behind retrieval behavior
+- open [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/) when the question is what must not drift across search and replay behavior
+- open [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/) when you need the minimum proof for a safe index change
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
+## Trust Risk
 
-## Concrete Anchors
+The main quality risk here is green tests that still allow replay or provenance meaning to drift unnoticed.
 
-- tests/unit for API, application, contracts, domain, infra, and tooling
-- tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
-- README.md
+## First Proof Check
 
-## Use This Page When
+- `tests` and package-local validation surfaces for executable evidence
+- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
+- release notes and caller-facing docs when the change alters what readers may safely assume
 
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
+## Pages In This Section
 
-## Decision Rule
+- [Test Strategy](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/test-strategy/)
+- [Invariants](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/invariants/)
+- [Review Checklist](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/review-checklist/)
+- [Documentation Standards](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/documentation-standards/)
+- [Definition of Done](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/definition-of-done/)
+- [Dependency Governance](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/dependency-governance/)
+- [Change Validation](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/change-validation/)
+- [Known Limitations](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/known-limitations/)
+- [Risk Register](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/risk-register/)
 
-Use `Quality` to decide whether `bijux-canon-index` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
+## Leave This Section When
 
-## What This Page Answers
+- leave for [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the doubt is really about package ownership rather than proof
+- leave for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is what the contract is rather than whether it is defended
+- leave for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
 
-- what currently proves the `bijux-canon-index` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
+## Design Pressure
 
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-index` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
-
-## Purpose
-
-This page explains how to use the quality section for `bijux-canon-index` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If replay and provenance trust are treated as side effects of passing tests,
+the package will look stronger than it is. This section has to keep proof,
+drift boundaries, and known limits visibly connected.

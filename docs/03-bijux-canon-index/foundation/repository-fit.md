@@ -4,85 +4,45 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Repository Fit
 
-`bijux-canon-index` is one publishable part of a larger system. It sits in the
-monorepo with its own `src/`, tests, metadata, and release history because the
-repository wants package ownership to stay visible even when the packages evolve
-together.
+`bijux-canon-index` is a separate package because retrieval behavior creates its own contract pressure. Keeping that pressure visible at the package boundary prevents search semantics from becoming invisible infrastructure.
 
-This page is here to answer a simple but important question: why is this work a
-package at all, instead of just another folder inside a single giant project?
-
-Treat the foundation pages for `bijux-canon-index` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Fit Model
 
 ```mermaid
-graph TD
-    A[Repository Fit] --> B[Index package role]
-    B --> C[Shared repository contracts]
-    C --> D[API and schema alignment]
-    D --> E[Cross-package compatibility]
-    E --> F[Monorepo coherence]
+flowchart LR
+    seam["retrieval contract seam"]
+    package["bijux-canon-index package boundary"]
+    proof["metadata, apis, tests, and handbook"]
+
+    seam --> package --> proof
 ```
 
-## Repository Relationships
+This page should explain why retrieval is not just another backend detail in
+the monorepo. The fit is real only when the package makes search semantics more
+explicit, more publishable, and easier to defend.
 
-- consumes prepared inputs from ingest-oriented flows
-- is governed by bijux-canon-runtime for final replay acceptance
+## Why This Is A Package
 
-## Canonical Package Root
+- `packages/bijux-canon-index/src/bijux_canon_index` makes retrieval ownership visible in code
+- `packages/bijux-canon-index/apis` shows where caller expectations harden into tracked surfaces
+- `packages/bijux-canon-index/tests` proves replay and provenance claims against real behavior
 
-- `packages/bijux-canon-index`
-- `packages/bijux-canon-index/src/bijux_canon_index`
-- `packages/bijux-canon-index/tests`
+## First Proof Check
 
-## Concrete Anchors
+- `packages/bijux-canon-index/pyproject.toml` for publishable package identity
+- `packages/bijux-canon-index/README.md` for package-level reader framing
+- `packages/bijux-canon-index/tests` for executable proof that the seam still matters
 
-- `packages/bijux-canon-index` as the package root
-- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/bijux-canon-index/tests` as the package proof surface
+## Fit Warning
 
-## Use This Page When
+If the package only exists as a technical convenience for backend adapters, the retrieval seam is no longer being documented honestly.
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## Design Pressure
 
-## Decision Rule
-
-Use `Repository Fit` to decide whether a change makes `bijux-canon-index` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-index` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-index`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page explains how the package fits into the repository without restating repository-wide rules.
-
-## Stability
-
-Keep it aligned with the package's checked-in directories and actual neighboring packages.
+If index is defended only as a technical layer for adapters, the repository has
+already stopped documenting retrieval as a real contract surface.

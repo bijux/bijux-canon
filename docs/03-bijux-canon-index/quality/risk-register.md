@@ -4,79 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Risk Register
 
-The durable risks for `bijux-canon-index` are the ones that make the package boundary, interface contract,
-or produced artifacts harder to trust.
+The risk register for `bijux-canon-index` should track the failures most likely to damage trust in retrieval and replay behavior. The goal is not alarmism; it is durable memory about the risks that matter.
 
-This page should keep long-lived risk language attached to the package instead
-of scattering it across reviews and memory. The goal is not alarmism; it is to
-help maintainers remember which failures would actually cost credibility.
+## What To Check
 
-Treat the quality pages for `bijux-canon-index` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+- prioritize risks that would make callers trust search or replay behavior that has drifted
+- keep risk language tied to current code, tests, and documentation surfaces
+- treat repeated surprise failures as proof that a risk is not being tracked honestly enough
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-graph TD
-    A[Risk Register] --> B[Identify risk]
-    B --> C[Estimate likelihood and impact]
-    C --> D[Assign mitigation owner]
-    D --> E[Track status over releases]
-    E --> F[Reduce unresolved risk]
-```
+- `tests` and package-local validation surfaces for executable evidence
+- caller-facing docs, limits, and risks for the trust story readers actually receive
+- release notes and change records when the work alters what others may safely assume
 
-## Ongoing Risks to Watch
+## Bottom Line
 
-- hidden overlap with neighboring packages
-- drift between docs, code, and tests
-- compatibility changes that are not made explicit
-
-## Concrete Anchors
-
-- tests/unit for API, application, contracts, domain, infra, and tooling
-- tests/e2e for CLI workflows, API smoke, determinism gates, and provenance gates
-- README.md
-
-## Use This Page When
-
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
-
-## Decision Rule
-
-Use `Risk Register` to decide whether `bijux-canon-index` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
-
-## What This Page Answers
-
-- what currently proves the `bijux-canon-index` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
-
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-index` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
-
-## Purpose
-
-This page keeps long-lived package risks visible to maintainers.
-
-## Stability
-
-Update it when the durable risk profile changes, not for routine day-to-day churn.
+If `bijux-canon-index` cannot explain why `retrieval and replay behavior` should be trusted after a change, the quality work is still incomplete.

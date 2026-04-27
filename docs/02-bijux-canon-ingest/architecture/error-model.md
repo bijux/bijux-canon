@@ -4,86 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Error Model
 
-The package error model should make it clear which failures are local validation issues,
-which are dependency failures, and which are contract violations.
+The error model for `bijux-canon-ingest` should reveal how the package fails when source preparation before retrieval begins goes wrong. Hidden failure semantics make later layers absorb problems they did not create.
 
-Good error explanations reduce two kinds of waste at once: operator confusion in
-the moment and architectural confusion during later review. The package should
-fail in ways that still preserve the boundary story.
+## What To Check
 
-Treat the architecture pages for `bijux-canon-ingest` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+- name the failures that belong to this package role
+- separate local failure handling from failures that must cross a package seam
+- treat recovery shortcuts that hide ownership as design debt
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-graph TD
-    A[Error Model] --> B[Detect failure type]
-    B --> C[Map to structured error]
-    C --> D[Attach context and provenance]
-    D --> E[Emit predictable failure surface]
-    E --> F[Support recovery and debugging]
-```
+- `src/bijux_canon_ingest/processing`, `retrieval`, and `application` for the structural ownership boundary
+- `tests` for deterministic preparation evidence for executable confirmation that the structure still holds
 
-## Review Anchors
+## Bottom Line
 
-- inspect interface modules for operator-facing error shape
-- inspect application and domain modules for orchestration failures
-- inspect tests for the failure cases the package already protects
-
-## Test Areas
-
-- tests/unit for module-level behavior across processing, retrieval, and interfaces
-- tests/e2e for package boundary coverage
-- tests/invariants for long-lived repository promises
-- tests/eval for corpus-backed behavior checks
-
-## Concrete Anchors
-
-- `src/bijux_canon_ingest/processing` for deterministic document transforms
-- `src/bijux_canon_ingest/retrieval` for retrieval-oriented models and assembly
-- `src/bijux_canon_ingest/application` for package workflows
-
-## Use This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Error Model` to decide whether a structural change makes `bijux-canon-ingest` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What This Page Answers
-
-- how `bijux-canon-ingest` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Reviewer Lens
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-ingest`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
-
-## Purpose
-
-This page records how to reason about failures in architecture review.
-
-## Stability
-
-Keep it aligned with the actual error-handling behavior and tests.
+If `bijux-canon-ingest` needs hidden structure to defend source preparation before retrieval begins, the architecture is already too opaque.

@@ -4,112 +4,69 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Foundation
 
-This section explains why `bijux-canon-reason` exists, what it owns on purpose, and where its boundary stops.
+Open this section when the dispute is about what retrieved evidence means once it becomes a claim, check, or reasoning artifact. These pages should make `bijux-canon-reason` defensible as the place where evidence becomes inspectable conclusions rather than raw search output or agent choreography.
 
-Read this section first when you need the durable package story before code detail. A quick skim should make the role, the boundary, and the neighboring seams legible.
-
-Treat the foundation pages for `bijux-canon-reason` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Boundary Model
 
 ```mermaid
 flowchart LR
-    page["Foundation<br/>clarifies: own the right work | name the boundary | compare neighbors"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    own1["execution of reasoning steps and local tool dispatch"]
-    own1 --> page
-    own2["verification and provenance checks that belong to reasoning itself"]
-    own2 --> page
-    own3["reasoning plans, claims, and evidence-aware reasoning models"]
-    own3 --> page
-    limit1["runtime persistence and replay authority"]
-    page -.keeps outside.-> limit1
-    limit2["ingest and index engines"]
-    page -.keeps outside.-> limit2
-    limit3["repository tooling and release automation"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-reason/tests"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-reason"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-reason/src/bijux_canon_reason"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+    evidence["retrieved evidence"]
+    package["reason boundary"]
+    claim["claim and check logic"]
+    record["reasoning artifact"]
+    handoff["agent or runtime handoff"]
+    blur["retrieval or workflow blur"]
+
+    evidence --> package --> claim --> record --> handoff
+    package --> blur
 ```
 
-## Pages in This Section
+The foundation pages for reason have to defend one sharp idea: this is where
+evidence becomes meaning that another reviewer can inspect. If that move is not
+clear here, later workflow and runtime docs will end up carrying reasoning
+policy they should never have inherited.
 
-- [Package Overview](package-overview.md)
-- [Scope and Non-Goals](scope-and-non-goals.md)
-- [Ownership Boundary](ownership-boundary.md)
-- [Repository Fit](repository-fit.md)
-- [Capability Map](capability-map.md)
-- [Domain Language](domain-language.md)
-- [Lifecycle Overview](lifecycle-overview.md)
-- [Dependencies and Adjacencies](dependencies-and-adjacencies.md)
-- [Change Principles](change-principles.md)
+## Read These First
 
-## Read Across the Package
+- open [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/) first when the behavior could belong in retrieval below or orchestration above
+- open [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/) when you need the shortest stable description of the package role
+- open [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/) when the question is how evidence turns into verified reasoning output
 
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+## The Mistake This Section Prevents
 
-## Concrete Anchors
+The most common mistake here is burying reasoning policy inside retrieval artifacts or workflow code until no one can explain which layer actually made the decision.
 
-- `packages/bijux-canon-reason` as the package root
-- `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
-- `packages/bijux-canon-reason/tests` as the package proof surface
+## First Proof Check
 
-## Use This Page When
+- `packages/bijux-canon-reason/src/bijux_canon_reason` for the owned reasoning boundary in code
+- `packages/bijux-canon-reason/tests` for proof that claims, checks, and provenance stay aligned
+- `packages/bijux-canon-reason/README.md` for the public package contract readers encounter first
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## Pages In This Section
 
-## Decision Rule
+- [Package Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/package-overview/)
+- [Scope and Non-Goals](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/scope-and-non-goals/)
+- [Ownership Boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/)
+- [Repository Fit](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/repository-fit/)
+- [Capability Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/capability-map/)
+- [Domain Language](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/domain-language/)
+- [Lifecycle Overview](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/lifecycle-overview/)
+- [Dependencies and Adjacencies](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/dependencies-and-adjacencies/)
+- [Change Principles](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/change-principles/)
 
-Use `Foundation` to decide whether a change makes `bijux-canon-reason` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
+## Leave This Section When
 
-## What This Page Answers
+- leave this section for [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when the question is already about modules or execution flow
+- leave this section for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the issue is a command, schema, artifact, or import surface
+- leave this section for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the reasoning boundary is understood and the open question is whether the package has earned trust
 
-- what problem `bijux-canon-reason` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
+## Design Pressure
 
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-reason`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page explains how to use the foundation section for `bijux-canon-reason` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If a page here starts sounding like search tuning or workflow coordination, the
+reason boundary is already undercut. This section has to keep interpretation
+separate from both retrieval below and orchestration above.

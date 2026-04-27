@@ -4,50 +4,64 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Change Principles
 
-Root-level change should leave the repository easier to explain, not merely
+Root-level change should leave `bijux-canon` easier to explain, not merely
 more featureful.
 
-The repository exists to keep the package family legible. Changes that weaken
-that legibility create long-term cost even when they solve a short-term
-problem. The root therefore needs principles that make review stricter where
-shared structure is at stake.
+The root exists to coordinate package truth. When a root change makes package
+ownership harder to see, the repository gains short-term convenience at the
+cost of long-term review accuracy.
 
-## Principles
+## Change Model
 
-- prefer moving behavior toward the owning package rather than broadening root
-  scope by convenience
-- keep documentation, schemas, tests, and workflow changes in the same review
-  series when they describe the same behavior
-- choose filenames, section names, and commit messages that will still make
-  sense years later without relying on project memory
-- keep root automation explicit about what it touches and why
-- add compatibility shims only when they preserve a real migration path, not
-  when they postpone a naming decision
+```mermaid
+flowchart LR
+    proposal["shared change proposal"]
+    owner["confirm the owning package or root surface"]
+    proof["move explanation, proof, and enforcement together"]
+    outcome["clearer repository behavior"]
 
-## Review Pressure
+    proposal --> owner --> proof --> outcome
+```
 
-Changes at the root deserve a little more skepticism because they can reshape
-how the entire package family is read. A small root shortcut can create a large
-maintenance shadow if it weakens the ownership model.
+This page should make root-level change feel disciplined rather than broad. A
+good change clarifies one shared rule and leaves package ownership easier to
+see than before.
 
-## What Good Looks Like
+## Tie-Break Order
 
-- the change clarifies one shared rule or structure instead of inventing a new
-  ambiguous layer
-- the proof surfaces move together with the explanation
-- the resulting tree is more teachable to a new reader than it was before
+When two plausible changes compete, prefer the option that:
 
-## Purpose
+- keeps behavior in the owning package instead of broadening the root
+- moves explanation, schema, tests, and automation together when they describe
+  the same shared rule
+- makes the repository easier for a new reviewer to route correctly after one
+  quick read
+- keeps automation explicit about which package or shared rule it is protecting
+- treats compatibility bridges as temporary migration pressure, not preferred
+  design
 
-This page records the principles that should guide repository-wide changes when
-shared boundaries, names, or governance are involved.
+## Reject This Shortcut
 
-## Stability
+A root helper that quietly starts encoding ingest chunking rules or reason-level
+claim policy is a regression even if it simplifies one local task. The helper
+would hide product behavior behind repository glue and make later review less
+honest.
 
-Update these principles only when the repository operating model changes in a
-real way.
+## First Proof Checks
+
+- `packages/` to confirm the behavior is not already owned by one package
+- `Makefile`, `makes/`, and `.github/workflows/` to confirm a shared rule is
+  actually enforced
+- `apis/` when the change claims to protect more than one package contract
+- neighboring package docs when the boundary feels arguable
+
+## Design Pressure
+
+The pressure on root change is always toward convenience. If a shared helper or
+policy starts absorbing package-local behavior, the repository gains motion and
+loses honesty at the same time.

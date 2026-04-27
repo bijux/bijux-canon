@@ -4,84 +4,24 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Integration Seams
 
-Integration seams are the points where `bijux-canon-index` meets configuration, APIs,
-operators, or neighboring packages.
+Integration seams matter because `bijux-canon-index` touches neighboring packages without becoming them. The handoff into and out of index work should be explicit enough to survive review under change.
 
-This page exists so integration changes do not feel mysterious. A reviewer should
-be able to say which seams are intentional, which ones carry compatibility risk,
-and where the package expects outside systems to meet it.
+## What To Check
 
-Treat the architecture pages for `bijux-canon-index` as a reviewer-facing map of structure and flow. They should shorten code reading, not try to replace it.
+- name the seam where work enters from ingest, reason, and runtime
+- name the seam where `bijux-canon-index` hands responsibility outward again
+- treat seam ambiguity as a design problem, not as a documentation gap only
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-graph TD
-    A[Integration Seams] --> B[Inbound retrieval contracts]
-    B --> C[Index internal boundaries]
-    C --> D[Outbound result contracts]
-    D --> E[Reason-runtime seams]
-    E --> F[Stable integration behavior]
-```
+- `src/bijux_canon_index` and `apis` for the structural ownership boundary
+- `tests` for replay and provenance evidence for executable confirmation that the structure still holds
 
-## Integration Surfaces
+## Bottom Line
 
-- CLI modules under src/bijux_canon_index/interfaces/cli
-- HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/bijux-canon-index/v1
-
-## Adjacent Systems
-
-- consumes prepared inputs from ingest-oriented flows
-- is governed by bijux-canon-runtime for final replay acceptance
-
-## Concrete Anchors
-
-- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
-- `src/bijux_canon_index/application` for workflow coordination
-- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
-
-## Use This Page When
-
-- you are tracing structure, execution flow, or dependency pressure
-- you need to understand how modules fit before refactoring
-- you are reviewing design drift rather than one isolated bug
-
-## Decision Rule
-
-Use `Integration Seams` to decide whether a structural change makes `bijux-canon-index` easier or harder to explain in terms of modules, dependency direction, and execution flow. If the change works only because the design becomes harder to read, the safer answer is redesign rather than acceptance.
-
-## What This Page Answers
-
-- how `bijux-canon-index` is organized internally in terms a reviewer can follow
-- which modules carry the main execution and dependency story
-- where structural drift would show up before it becomes expensive
-
-## Reviewer Lens
-
-- trace the described execution path through the named modules instead of trusting the diagram alone
-- look for dependency direction or layering that now contradicts the documented seam
-- verify that the structural risks named here still match the current code shape
-
-## Honesty Boundary
-
-This page describes the current structural model of `bijux-canon-index`, but it does not guarantee that every import path or runtime path still obeys that model. Readers should treat it as a map that must stay aligned with code and tests, not as an authority above them.
-
-## Next Checks
-
-- move to interfaces when the review reaches a public or operator-facing seam
-- move to operations when the concern becomes repeatable runtime behavior
-- move to quality when you need proof that the documented structure is still protected
-
-## Purpose
-
-This page explains where to look when integration behavior changes.
-
-## Stability
-
-Keep it aligned with real boundary modules and schema files.
+If `bijux-canon-index` needs hidden structure to defend retrieval execution, replay, and provenance, the architecture is already too opaque.

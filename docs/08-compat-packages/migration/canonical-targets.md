@@ -4,38 +4,31 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Canonical Targets
 
-Migration gets easier when the destination is named just as clearly as the
-legacy source.
-
-The compatibility layer exists to bridge old public names to the canonical
-package family. That bridge only works if the target package is unmistakable
-and the target docs are the place where new work is expected to begin.
+Migration gets easier when the destination is named as clearly as the legacy
+source. Every compatibility package should point at one canonical package and
+one handbook route without ambiguity.
 
 ## Current Target Map
 
-- `agentic-flows` migrates to `bijux-canon-runtime`
-- `bijux-agent` migrates to `bijux-canon-agent`
-- `bijux-rag` migrates to `bijux-canon-ingest`
-- `bijux-rar` migrates to `bijux-canon-reason`
-- `bijux-vex` migrates to `bijux-canon-index`
+- `agentic-flows` -> `bijux-canon-runtime` -> <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
+- `bijux-agent` -> `bijux-canon-agent` -> <https://bijux.io/bijux-canon/05-bijux-canon-agent/>
+- `bijux-rag` -> `bijux-canon-ingest` -> <https://bijux.io/bijux-canon/02-bijux-canon-ingest/>
+- `bijux-rar` -> `bijux-canon-reason` -> <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
+- `bijux-vex` -> `bijux-canon-index` -> <https://bijux.io/bijux-canon/03-bijux-canon-index/>
 
 ## Targeting Rules
 
 - new dependencies should use the canonical distribution name
-- new code should rely on canonical imports and canonical docs
-- compatibility packages should point readers toward the owning canonical
-  package without ambiguity
+- new code should use canonical imports and commands
+- package docs should route immediately to the canonical handbook once the
+  target is known
 
-## Purpose
+## First Proof Check
 
-This page records the canonical destinations that compatibility guidance should
-keep reinforcing.
-
-## Stability
-
-Update it only when a compatibility package’s target genuinely changes.
+- compatibility package `README.md` files
+- canonical package docs under `docs/02-...` through `docs/06-...`

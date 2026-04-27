@@ -4,104 +4,54 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Import Surfaces
 
-Compatibility imports exist only so older code can keep resolving package names
-during migration.
+Compatibility imports exist so older code can keep resolving package names while
+migration is underway. They are continuity aids, not first-class imports for
+new code.
 
-This page should make that temporary intent impossible to miss. Preserved
-imports are a migration aid, not a sign that the legacy name regained first-
-class status.
-
-These compatibility pages should make legacy names understandable without romanticizing them. Their value is in helping readers migrate with less ambiguity, not in making the old names feel equally current.
-
-## Visual Summary
+## Import Bridge
 
 ```mermaid
-flowchart TB
-    page["Import Surfaces<br/>clarifies: map old names | choose migration | judge retirement"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    legacy1["distribution names"]
-    legacy1 --> page
-    legacy2["import names"]
-    legacy2 --> page
-    legacy3["command names"]
-    legacy3 --> page
-    canon1["new work"]
-    page --> canon1
-    canon2["current handbook surfaces"]
-    page --> canon2
-    canon3["current packages"]
-    page --> canon3
-    pressure1["migration pressure"]
-    pressure1 -.should shorten the life of.-> page
-    pressure2["retirement readiness"]
-    pressure2 -.should shorten the life of.-> page
-    pressure3["do not normalize the old name"]
-    pressure3 -.should shorten the life of.-> page
-    class page page;
-    class legacy1,legacy2,legacy3 caution;
-    class canon1,canon2,canon3 positive;
-    class pressure1,pressure2,pressure3 action;
+flowchart LR
+    legacy["legacy import root"]
+    compat["compatibility import surface"]
+    canon["canonical import target"]
+    migration["new code moves to canonical imports"]
+
+    legacy --> compat --> canon
+    compat --> migration
 ```
 
-## Current Import Roots
+This page should make the import story obvious: old code keeps resolving while
+new code moves to the canonical root. The preserved import is a migration tool,
+not a design endorsement.
 
-- `agentic_flows`
-- `bijux_agent`
-- `bijux_rag`
-- `bijux_rar`
-- `bijux_vex`
+## Current Import Map
 
-## Concrete Anchors
+- `agentic_flows` -> `bijux_canon_runtime`
+- `bijux_agent` -> `bijux_canon_agent`
+- `bijux_rag` -> `bijux_canon_ingest`
+- `bijux_rar` -> `bijux_canon_reason`
+- `bijux_vex` -> `bijux_canon_index`
 
-- `packages/compat-*` for the preserved legacy packages
-- the compatibility package `README.md` files for canonical targets
-- the matching canonical package docs for current behavior and new work
+## Review Rule
 
-## Use This Page When
+A preserved import is justified only while supported code still depends on it.
+New code should use canonical imports even if the compatibility import still
+resolves.
 
-- you are tracing a legacy package name back to its canonical replacement
-- you need migration guidance rather than product implementation detail
-- you are deciding whether a compatibility surface still deserves to exist
+## First Proof Check
 
-## Decision Rule
+- `packages/compat-*`
+- compatibility package `README.md` routing
+- repository-wide search for remaining legacy imports
 
-Use `Import Surfaces` to decide whether a preserved legacy name is still serving a real migration need. If the only reason to keep it is habit rather than an identified dependent environment, the section should bias the reviewer toward migration or retirement planning.
+## Design Pressure
 
-## What This Page Answers
-
-- which legacy surface is still preserved
-- when new work should move to the canonical package instead
-- what evidence would justify retiring a compatibility package
-
-## Reviewer Lens
-
-- compare legacy names here with the compatibility package metadata and README targets
-- check that migration advice still points at current canonical docs
-- confirm that compatibility language does not accidentally encourage new work to start here
-
-## Next Checks
-
-- move to the canonical package docs once the current target package is known
-- inspect compatibility package metadata if the question is about what remains preserved
-- use this section again only when evaluating migration progress or retirement readiness
-
-## Honesty Boundary
-
-This section documents preserved legacy surfaces, but it does not claim those legacy names are the preferred place for new work or long-term design growth. If a legacy name remains, that is a migration fact, not a design endorsement.
-
-## Purpose
-
-This page explains which Python import names remain preserved.
-
-## Stability
-
-Keep it aligned with the `src/` roots inside the compatibility packages.
+If compatibility imports read like a supported long-term API surface, the
+migration pressure disappears. The bridge has to stay useful without sounding
+comfortable.

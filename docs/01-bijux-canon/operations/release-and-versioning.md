@@ -4,86 +4,55 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Release and Versioning
 
-The repository uses commitizen for conventional commit messages and package
-tags for version discovery through Hatch VCS. Version resolution is therefore
-both a repository concern and a package concern.
+Release behavior in `bijux-canon` is partly shared and partly package-local.
+The repository owns the conventions that make the package family legible; the
+packages own their published behavior.
 
-The wording of the commit history matters here because the repository is meant
-to stay understandable years later. A good commit message should explain
-durable intent, not just what happened to be touched in one diff.
-
-These repository pages should explain the cross-package frame that no single package can explain alone. They are strongest when they make the monorepo easier to understand without turning the root into a second owner of package behavior.
-
-## Visual Summary
+## Release Model
 
 ```mermaid
-graph TD
-    A[Conventional commit] --> B[Commitizen message captures intent]
-    B --> C[Tag and version resolved by Hatch VCS]
-    C --> D[Package _version.py updated]
-    D --> E[release workflows publish artifacts]
-    E --> F[Changelog and tags stay auditable]
+flowchart LR
+    shared["shared versioning and release conventions"]
+    workflows["release workflows and helpers"]
+    packages["package-local published behavior"]
+    review["shared versus package-local review split"]
+
+    shared --> workflows --> packages --> review
 ```
 
-## Shared Release Facts
+This page should make the split visible between family-wide release governance
+and package-specific publication facts. Readers should know when to stay at the
+root and when to hand the question back to one package.
+
+## Shared Release Rules
 
 - root commit rules live in `pyproject.toml`
 - package versions are written to package-local `_version.py` files by Hatch VCS
 - release support helpers live in `bijux-canon-dev`
-- the split release workflows (`release-pypi.yml`, `release-ghcr.yml`, `release-github.yml`) publish package artifacts and release metadata
+- split release workflows publish package artifacts and release metadata
 
-## Versioning Rule
+## Compatibility Triggers
 
-Commit messages should communicate long-lived intent clearly enough that a
-maintainer can understand them years later without opening the diff first.
+Treat a release change as shared governance when it changes:
 
-## Concrete Anchors
+- commit semantics that affect version discovery or release notes
+- shared release workflows or publication routing
+- metadata or tagging rules that apply across more than one package
+- compatibility expectations around package naming or public release surfaces
 
-- `pyproject.toml` for workspace metadata and commit conventions
-- `Makefile` and `makes/` for root automation
-- `apis/` and `.github/workflows/` for schema and validation review
+## First Proof Checks
 
-## Use This Page When
+- `pyproject.toml` for commit and versioning conventions
+- `.github/workflows/release-*.yml` for publication behavior
+- the affected package handbook when the question narrows to one package release surface
 
-- you are dealing with repository-wide seams rather than one package alone
-- you need shared workflow, schema, or governance context before changing code
-- you want the monorepo view that sits above the package handbooks
+## Design Pressure
 
-## Decision Rule
-
-Use `Release and Versioning` to decide whether the current question is genuinely repository-wide or whether it belongs back in one package handbook. If the answer depends mostly on one package's local behavior, this page should redirect instead of absorbing detail that the package should own.
-
-## What This Page Answers
-
-- which repository-level decision this page clarifies
-- which shared assets or workflows a reviewer should inspect
-- how the repository boundary differs from package-local ownership
-
-## Reviewer Lens
-
-- compare the page claims with the real root files, workflows, or schema assets
-- check that repository guidance still stops where package ownership begins
-- confirm that any repository rule described here is still enforceable in code or automation
-
-## Honesty Boundary
-
-These pages explain repository-level intent and shared rules, but they do not override package-local ownership. They also do not count as proof by themselves; the real backstops are the referenced files, workflows, schemas, and checks.
-
-## Next Checks
-
-- move to the owning package docs when the question stops being repository-wide
-- check root files, schemas, or workflows named here before trusting prose alone
-- use maintainer docs next if the root issue is really about automation or drift tooling
-
-## Purpose
-
-This page connects the root commit conventions to the package release mechanism.
-
-## Stability
-
-Keep this page aligned with the release tooling that is actually configured in the repository.
+Release logic gets muddy when shared governance and package-local publication
+behavior are discussed as one thing. The boundary has to stay sharp enough that
+release review does not turn into general repository folklore.

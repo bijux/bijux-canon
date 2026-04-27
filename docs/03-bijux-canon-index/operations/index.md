@@ -4,89 +4,70 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Operations
 
-This section explains how to install, run, diagnose, and release `bijux-canon-index` from checked-in workflow guidance instead of team memory.
+Open this section when you need to run index work repeatably: install it, exercise retrieval flows, diagnose replay drift, release it, or recover from failure without guessing what the package expected.
 
-These pages are the checked-in operating memory for `bijux-canon-index`. They should let a maintainer move from setup to diagnosis to release without relying on CI archaeology or private habits.
-
-Treat the operations pages for `bijux-canon-index` as the package's explicit operating memory. They should make common tasks repeatable without relearning the workflow from logs or oral history.
-
-## Visual Summary
+## Operating Loop
 
 ```mermaid
-graph TD
-    A[Operations] --> B[Setup and local run]
-    B --> C[Common workflows]
-    C --> D[Observability and recovery]
-    D --> E[Security and release steps]
-    E --> F[Operational readiness]
+flowchart LR
+    setup["setup"]
+    query["run retrieval flow"]
+    inspect["inspect replay output"]
+    recover["recover from drift"]
+    release["release package"]
+    proof["tests and artifacts"]
+
+    setup --> query --> inspect --> recover --> release
+    query --> proof
+    inspect --> proof
 ```
 
-## Pages in This Section
+Index operations need to make replayability practical, not rhetorical. A
+maintainer should be able to move from a clean setup to a reproducible query
+path, inspect the replay evidence, and recover from drift without treating the
+backend as a black box.
 
-- [Installation and Setup](installation-and-setup.md)
-- [Local Development](local-development.md)
-- [Common Workflows](common-workflows.md)
-- [Observability and Diagnostics](observability-and-diagnostics.md)
-- [Performance and Scaling](performance-and-scaling.md)
-- [Failure Recovery](failure-recovery.md)
-- [Release and Versioning](release-and-versioning.md)
-- [Security and Safety](security-and-safety.md)
-- [Deployment Boundaries](deployment-boundaries.md)
+## Read These First
 
-## Read Across the Package
+- open [Installation and Setup](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/installation-and-setup/) first when you need a clean package starting point
+- open [Observability and Diagnostics](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/observability-and-diagnostics/) when retrieval or replay behavior no longer matches expectation
+- open [Failure Recovery](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/failure-recovery/) when index output or search behavior has already gone wrong
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Interfaces](../interfaces/index.md) when the question becomes caller-facing, schema-facing, or contract-facing
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+## Operational Risk
 
-## Concrete Anchors
+The main operational risk here is hiding retrieval and replay assumptions in environment state or one-off debugging habits.
 
-- `packages/bijux-canon-index/pyproject.toml` for package metadata
-- `packages/bijux-canon-index/README.md` for local package framing
-- `packages/bijux-canon-index/tests` for executable operational backstops
+## First Proof Check
 
-## Use This Page When
+- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
+- `tests` and runnable workflows for evidence that the package can be operated repeatably
+- release notes and version metadata when the work changes caller expectations
 
-- you are installing, running, diagnosing, or releasing the package
-- you need repeatable operational anchors rather than architectural framing
-- you are responding to package behavior in local work, CI, or incident pressure
+## Pages In This Section
 
-## Decision Rule
+- [Installation and Setup](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/installation-and-setup/)
+- [Local Development](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/local-development/)
+- [Common Workflows](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/common-workflows/)
+- [Observability and Diagnostics](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/observability-and-diagnostics/)
+- [Performance and Scaling](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/performance-and-scaling/)
+- [Failure Recovery](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/failure-recovery/)
+- [Release and Versioning](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/release-and-versioning/)
+- [Security and Safety](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/security-and-safety/)
+- [Deployment Boundaries](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/deployment-boundaries/)
 
-Use `Operations` to decide whether a maintainer can repeat the package workflow from checked-in assets instead of memory. If a step works only because someone already knows the trick, the workflow is not documented clearly enough yet.
+## Leave This Section When
 
-## What This Page Answers
+- leave for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the live problem is contract shape rather than package operation
+- leave for [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when a workflow problem exposes structural drift underneath it
+- leave for [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the package runs but the real question is whether the evidence is strong enough
 
-- how `bijux-canon-index` is installed, run, diagnosed, and released in practice
-- which checked-in files and tests anchor the operational story
-- where a maintainer should look first when the package behaves differently
+## Design Pressure
 
-## Reviewer Lens
-
-- verify that setup, workflow, and release statements still match package metadata and current commands
-- check that operational guidance still points at real diagnostics and validation paths
-- confirm that maintainer advice still works under current local and CI expectations
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-index` is expected to be operated, but it does not replace package metadata, actual runtime behavior, or validation in a real environment. A workflow is only trustworthy if a maintainer can still repeat it from the checked-in assets named here.
-
-## Next Checks
-
-- move to interfaces when the operational path depends on a specific surface contract
-- move to quality when the question becomes whether the workflow is sufficiently proven
-- move back to architecture when operational complexity suggests a structural problem
-
-## Purpose
-
-This page explains how to use the operations section for `bijux-canon-index` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If replay drift can only be diagnosed by backend intuition or private habits,
+the package is not operationally honest enough yet. The checked-in workflow
+needs to expose how search behavior is examined and recovered.

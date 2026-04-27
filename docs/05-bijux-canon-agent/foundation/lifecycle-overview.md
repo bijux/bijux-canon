@@ -4,103 +4,41 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Lifecycle Overview
 
-Every package run follows a simple lifecycle: inputs enter through interfaces, domain and
-application code coordinate the work, and durable artifacts or responses leave
-the package.
+The agent lifecycle starts when a workflow enters orchestration and ends when the coordinated result and its trace are clear enough for runtime or a caller to inspect.
 
-The value of this page is speed. A reader should be able to skim it and leave
-with one coherent story about how work moves through `bijux-canon-agent` from
-entrypoint to result.
-
-Treat the foundation pages for `bijux-canon-agent` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Lifecycle Flow
 
 ```mermaid
 flowchart LR
-    page["Lifecycle Overview<br/>clarifies: own the right work | name the boundary | compare neighbors"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    own1["deterministic orchestration of the local agent pipeline"]
-    own1 --> page
-    own2["trace-backed result artifacts that explain each run"]
-    own2 --> page
-    own3["agent role implementations and role-specific helpers"]
-    own3 --> page
-    limit1["runtime-wide persistence and replay acceptance"]
-    page -.keeps outside.-> limit1
-    limit2["ingest and index domain ownership"]
-    page -.keeps outside.-> limit2
-    limit3["repository tooling and release automation"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-agent/tests"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-agent"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-agent/src/bijux_canon_agent"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+    workflow["workflow input"]
+    entry["orchestration entrypoints"]
+    coordination["role and step coordination"]
+    trace["trace-backed workflow output"]
+
+    workflow --> entry --> coordination --> trace
 ```
 
-## Lifecycle Anchors
+This page should frame agent as a workflow lifecycle with traceability built
+in. The package earns its boundary when readers can see how coordination moves
+from input to trace without confusing that work with final authority.
 
-- entry surfaces: CLI entrypoint in src/bijux_canon_agent/interfaces/cli/entrypoint.py, operator configuration under src/bijux_canon_agent/config, HTTP-adjacent modules under src/bijux_canon_agent/api
-- code ownership: src/bijux_canon_agent/agents, src/bijux_canon_agent/pipeline, src/bijux_canon_agent/application
-- durable outputs: trace-backed final outputs, workflow graph execution records, operator-visible result artifacts
+## Lifecycle Shape
 
-## Concrete Anchors
+- workflow input enters through package interfaces and orchestration entrypoints
+- roles and steps coordinate under deterministic workflow rules
+- trace-backed artifacts and outputs leave the package for callers or runtime governance
 
-- `packages/bijux-canon-agent` as the package root
-- `packages/bijux-canon-agent/src/bijux_canon_agent` as the import boundary
-- `packages/bijux-canon-agent/tests` as the package proof surface
+## Handoff Point
 
-## Use This Page When
+The lifecycle stops before final acceptance and persistence. Runtime owns that last authority step.
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## Design Pressure
 
-## Decision Rule
-
-Use `Lifecycle Overview` to decide whether a change makes `bijux-canon-agent` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-agent` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-agent`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page keeps the package lifecycle readable before a reader dives into implementation detail.
-
-## Stability
-
-Keep it aligned with the current entrypoints and produced outputs.
+If the lifecycle starts resolving acceptance questions or redefining reasoning
+artifacts, orchestration has reached past its role. The lifecycle has to stop
+at traceable coordination output that runtime can judge separately.

@@ -4,27 +4,31 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Package Contracts
 
-Shared make behavior for packages should be defined once and reused honestly.
+Shared package behavior belongs in reusable make contracts rather than in copied
+target logic. These contracts make package checks and API-related targets feel
+consistent across the repository.
 
-Files such as `makes/bijux-py/package.mk`, `makes/bijux-py/api.mk`,
-`makes/bijux-py/api-contract.mk`, `makes/bijux-py/api-freeze.mk`, and
-`makes/bijux-py/api-live-contract.mk` describe reusable target contracts that
-package-specific files then bind to real repository packages.
+## Shared Contracts
 
-## Contract Rule
+- `makes/bijux-py/package.mk`
+- `makes/bijux-py/api.mk`
+- `makes/bijux-py/api-contract.mk`
+- `makes/bijux-py/api-freeze.mk`
+- `makes/bijux-py/api-live-contract.mk`
 
-When package behavior is shared, encode it in a reusable make fragment instead
-of copying target logic across many package files.
+## Review Rule
 
-## Purpose
+A contract fragment should define a reusable rule once, then let package files
+bind it honestly. If several package files start carrying their own slight
+variants of the same target family, the shared contract boundary is eroding.
 
-This page explains where package-level make contracts are defined and reused.
+## First Proof Check
 
-## Stability
-
-Keep it aligned with the shared package contract fragments that currently exist.
+- `makes/bijux-py/package.mk`
+- `makes/bijux-py/api*.mk`
+- package bindings under `makes/packages/`

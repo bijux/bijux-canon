@@ -4,18 +4,33 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-09
+last_reviewed: 2026-04-26
 ---
 
 # Domain Language
 
 Stable language is part of the repository design.
 
-This repository does not just store code. It stores distinctions that need to
-survive years of review and maintenance. When the language drifts, people stop
-knowing whether they are talking about a package contract, a root rule, a
-maintenance concern, or a migration bridge. That is how blurry architecture
-returns even when the directory tree still looks neat.
+`bijux-canon` does not just store code. It stores distinctions that need to
+survive years of review: package contract versus root rule, maintainer
+automation versus product behavior, and compatibility bridge versus canonical
+surface.
+
+## Language Map
+
+```mermaid
+flowchart LR
+    terms["stable terms"]
+    owners["package, root, maintenance, and compatibility owners"]
+    proof["files, tests, schemas, workflows, and metadata"]
+    reviews["faster reviews and fewer routing mistakes"]
+
+    terms --> owners --> proof --> reviews
+```
+
+This page should make naming feel structural, not cosmetic. Stable language is
+what lets a reviewer move from a discussion to the right owner and the right
+proof without a translation step.
 
 ## Terms That Should Stay Stable
 
@@ -27,31 +42,26 @@ returns even when the directory tree still looks neat.
   `docs/07-bijux-canon-maintain/`
 - `compatibility package` means a legacy-name bridge under `packages/compat-*`
   rather than a preferred long-term entrypoint
-- `root governance` means repository-wide rules such as docs structure, schema
-  storage, validation posture, and release coordination
 - `proof surface` means the files that let a reader verify a claim, such as
   tests, schemas, workflow definitions, or metadata
 
-## Naming Guidance
+## Terms To Avoid
 
-- prefer names that explain durable intent rather than temporary delivery
-  sequence
-- keep commit messages, filenames, and headings aligned with the same concept
-- avoid creating synonyms for the same repository boundary unless there is a
-  real semantic difference
+- do not use `root package` when the subject is actually repository governance
+- do not use `platform` as a synonym for any one product package
+- do not use `public surface` for internal helper code that only supports one
+  package implementation
+- do not use `canonical` for compatibility material that exists only to bridge
+  older names
 
-## Why It Matters
+## Review Consequence
 
-When names are stable, reviewers can move from a discussion to a file or a
-test quickly. When names are unstable, every change starts with translation
-work instead of understanding.
+Language drift is an architecture problem. If a reviewer cannot tell whether a
+change belongs to a package, the root, maintenance tooling, or compatibility
+material, the names are already failing.
 
-## Purpose
+## Design Pressure
 
-This page records the vocabulary that should remain consistent across docs,
-code, metadata, and review conversations.
-
-## Stability
-
-Change this page only when the repository meaning of a term actually changes,
-not when a new wording happens to sound fashionable.
+Language drift looks harmless until ownership discussions start taking longer
+than the change itself. Once terms stop pointing reliably at real surfaces, the
+architecture has already started to blur.

@@ -4,82 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Dependency Governance
 
-Dependency changes in `bijux-canon-ingest` should be treated as contract changes when they
-alter package authority, operational risk, or public setup expectations.
+Dependency governance for `bijux-canon-ingest` matters because new libraries can reshape authority, setup, and risk around prepared ingest behavior. Dependency review should stay technical rather than ceremonial.
 
-This page should keep dependency review from feeling bureaucratic. Dependencies
-matter because they reshape what the package relies on, what it exposes, and
-what downstream maintainers must now trust.
+## What To Check
 
-Treat the quality pages for `bijux-canon-ingest` as the proof frame around the package. They should show how trust is earned and where skepticism still belongs.
+- name the dependency change that actually affects trust, setup, or package authority
+- tie dependency additions or removals to docs, validation, and release impact where needed
+- treat convenience-driven dependency growth as a quality cost, not a free upgrade
 
-## Visual Summary
+## First Proof Check
 
-```mermaid
-graph TD
-    A[Dependency Governance] --> B[Dependency change proposed]
-    B --> C[Assess supply-chain impact]
-    C --> D[Lock and policy checks]
-    D --> E[Compatibility verification]
-    E --> F[Approved dependency state]
-```
+- `tests` and package-local validation surfaces for executable evidence
+- caller-facing docs, limits, and risks for the trust story readers actually receive
+- release notes and change records when the work alters what others may safely assume
 
-## Current Dependency Themes
+## Bottom Line
 
-- pydantic
-- msgpack
-- numpy
-- fastapi
-- uvicorn
-- PyYAML
-
-## Concrete Anchors
-
-- tests/unit for module-level behavior across processing, retrieval, and interfaces
-- tests/e2e for package boundary coverage
-- README.md
-
-## Use This Page When
-
-- you are reviewing tests, invariants, limitations, or ongoing risks
-- you need evidence that the documented contract is actually defended
-- you are deciding whether a change is truly done rather than merely implemented
-
-## Decision Rule
-
-Use `Dependency Governance` to decide whether `bijux-canon-ingest` has actually earned trust after a change. If one narrow green check hides a wider contract, risk, or validation gap, the work is not done yet.
-
-## What This Page Answers
-
-- what currently proves the `bijux-canon-ingest` contract instead of merely describing it
-- which risks, limits, and assumptions still need explicit skepticism
-- what a reviewer should be able to say before accepting a change as done
-
-## Reviewer Lens
-
-- compare the documented proof story with the actual test layout and release posture
-- look for limitations or risks that should have moved with recent behavior changes
-- verify that the claimed done-ness standard still reflects real validation practice
-
-## Honesty Boundary
-
-This page explains how `bijux-canon-ingest` is supposed to earn trust, but it does not claim that prose alone is enough. If the listed tests, checks, and review practice stop backing the story, the story has to change.
-
-## Next Checks
-
-- move to foundation when the risk appears to be boundary confusion rather than missing tests
-- move to architecture when the proof gap points to structural drift
-- move to interfaces or operations when the proof question is really about a contract or workflow
-
-## Purpose
-
-This page explains why dependency review matters for the package.
-
-## Stability
-
-Keep it aligned with `pyproject.toml` and the package's real dependency posture.
+If `bijux-canon-ingest` cannot explain why `prepared ingest behavior` should be trusted after a change, the quality work is still incomplete.

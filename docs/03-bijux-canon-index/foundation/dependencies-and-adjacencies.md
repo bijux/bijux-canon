@@ -4,85 +4,25 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Dependencies and Adjacencies
 
-Dependencies and adjacencies explain what `bijux-canon-index` can do by itself and
-what it deliberately leans on. They are part of the package story, not just
-implementation trivia, because they show where local authority ends.
+Dependency and adjacency pressure in `bijux-canon-index` matters because backends, plugins, and replay features can make retrieval semantics look accidental. Reviewers need the semantics named explicitly so they stay visible.
 
-This page should help a reviewer see both kinds of dependency pressure: library
-dependencies that shape the implementation, and neighboring packages that shape
-the system boundary.
+## Library Pressure
 
-Treat the foundation pages for `bijux-canon-index` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
+- vector-store and embedding dependencies support search behavior but do not define its public meaning by themselves
+- schema and interface helpers matter because search contracts become caller obligations quickly
+- library choice should never be the only explanation for why retrieval behaves the way it does
 
-## Visual Summary
+## Neighbor Pressure
 
-```mermaid
-graph TD
-    A[Dependencies and Adjacencies] --> B[Index dependencies]
-    B --> C[Interface and infra adjacencies]
-    C --> D[Contract and schema touchpoints]
-    D --> E[Neighbor package interactions]
-    E --> F[Stable dependency posture]
-```
+- `bijux-canon-ingest` feeds prepared input into index behavior
+- `bijux-canon-reason` consumes retrieved evidence without owning how search happened
+- `bijux-canon-runtime` governs runs that include retrieval without redefining retrieval semantics
 
-## Direct Dependency Themes
+## Bottom Line
 
-- pydantic
-- typer
-- fastapi
-
-## Adjacent Package Relationships
-
-- consumes prepared inputs from ingest-oriented flows
-- is governed by bijux-canon-runtime for final replay acceptance
-
-## Concrete Anchors
-
-- `packages/bijux-canon-index` as the package root
-- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/bijux-canon-index/tests` as the package proof surface
-
-## Use This Page When
-
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Dependencies and Adjacencies` to decide whether a change makes `bijux-canon-index` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-index` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-index`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page explains which surrounding tools and packages `bijux-canon-index` depends on to do its job.
-
-## Stability
-
-Keep it aligned with `pyproject.toml` and the actual package seams.
+Dependencies matter, but they should never be allowed to silently redefine package ownership.

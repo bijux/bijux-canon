@@ -4,87 +4,48 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Scope and Non-Goals
 
-This page names the line that keeps `bijux-canon-index` useful instead of bloated.
-The point of a package boundary is not to make work harder. It is to keep
-neighboring packages from silently accumulating overlapping authority.
+The scope of `bijux-canon-index` is to make search behavior explicit enough to defend. It is not a general home for “things that happen around retrieval.”
 
-The non-goals matter as much as the goals. A package becomes easier to trust
-when readers can see what it refuses to absorb just because the code happens to
-be nearby.
-
-Treat the foundation pages for `bijux-canon-index` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Scope Map
 
 ```mermaid
-graph TD
-    A[Scope and Non-Goals] --> B[In-scope behaviors]
-    A --> C[Out-of-scope behaviors]
-    B --> D[Index contracts and retrieval logic]
-    C --> E[Agent orchestration and runtime policy]
-    D --> F[Focused review boundaries]
+flowchart LR
+    prepared["prepared input"]
+    scope["index scope"]
+    results["replayable retrieval behavior"]
+    refuse["source cleanup, claim meaning, and run authority stay out of scope"]
+
+    prepared --> scope --> results
+    scope --> refuse
 ```
+
+This page should make index feel narrow in a useful way. It owns search
+behavior end to end, but it should stop before explaining what results mean or
+whether a whole run counts.
 
 ## In Scope
 
-- vector execution semantics and backend orchestration
-- provenance-aware result artifacts and replay-oriented comparison
-- plugin-backed vector store, embedding, and runner integration
-- package-local HTTP behavior and related schemas
+- vector execution and backend coordination tied to prepared ingest output
+- replayable retrieval behavior and provenance-rich search results
+- index-facing contracts that downstream reasoning and runtime flows rely on
 
-## Out of Scope
+## Non-Goals
 
-- document ingestion and normalization
-- runtime-wide replay policy and execution governance
-- repository maintenance automation
+- normalizing source material before search begins
+- deciding what retrieved evidence means for a claim or verification step
+- deciding whether a whole run is acceptable or durable under runtime policy
 
-## Concrete Anchors
+## Scope Check
 
-- `packages/bijux-canon-index` as the package root
-- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/bijux-canon-index/tests` as the package proof surface
+If the change can only be explained by saying “search needs it somewhere,” the ownership argument is not strong enough yet.
 
-## Use This Page When
+## Design Pressure
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Scope and Non-Goals` to decide whether a change makes `bijux-canon-index` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-index` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-index`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page keeps future work from leaking into the wrong package.
-
-## Stability
-
-Update it only when ownership truly moves into or out of `bijux-canon-index`.
+If index starts collecting adjacent concerns just because they touch search, the
+package turns into a traffic junction instead of a clear retrieval surface. The
+non-goals keep the search contract reviewable.

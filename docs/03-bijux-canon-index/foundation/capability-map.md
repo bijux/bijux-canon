@@ -4,88 +4,42 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Capability Map
 
-The fastest way to understand `bijux-canon-index` is to map capabilities to the
-code that carries them. This page should help a reader move from a package claim
-to a likely code area without pretending that module names alone are enough.
+The capability map for `bijux-canon-index` should let a reviewer trace retrieval promises back to the modules that execute, compare, and expose search behavior. If a retrieval promise has no visible home, the package contract is weaker than it looks.
 
-When this page is healthy, the package feels like a set of deliberate abilities,
-not a pile of implementation details.
-
-Treat the foundation pages for `bijux-canon-index` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Capability Flow
 
 ```mermaid
-graph TD
-    A[Capability Map] --> B[Index query handling]
-    B --> C[Vector and backend execution]
-    C --> D[Result scoring and ranking]
-    D --> E[Provenance attachment]
-    E --> F[Deterministic retrieval outputs]
+flowchart LR
+    retrieval["retrieval promises"]
+    modules["application, domain, backends, interfaces, and apis"]
+    outputs["search results, provenance, and replayable artifacts"]
+
+    retrieval --> modules --> outputs
 ```
 
-## Capability Map
+This page should show index capability as a concrete path from retrieval claim
+to execution surface to reviewable output. Readers should not have to infer
+where search behavior really lives.
 
-- `src/bijux_canon_index/domain` for execution, provenance, and request semantics
-- `src/bijux_canon_index/application` for workflow coordination
-- `src/bijux_canon_index/infra` for backends, adapters, and runtime environment helpers
-- `src/bijux_canon_index/interfaces` for CLI and operator-facing edges
-- `src/bijux_canon_index/api` for HTTP application surfaces
-- `src/bijux_canon_index/contracts` for stable contract definitions
+## Capability To Code
 
-## Produced Artifacts
+- `application/` and package workflows coordinate search execution at the package seam
+- `domain/`, backend modules, and retrieval services own embedding, retrieval, and comparison behavior
+- `interfaces/` and `apis/` own the surfaces that callers depend on when retrieval becomes a contract
 
-- vector execution result collections
-- provenance and replay comparison reports
-- backend-specific metadata and audit output
+## Visible Outputs
 
-## Concrete Anchors
+- embeddings and index state tied to prepared input
+- retrieval results with provenance and replay context
+- caller-facing search artifacts and schemas
 
-- `packages/bijux-canon-index` as the package root
-- `packages/bijux-canon-index/src/bijux_canon_index` as the import boundary
-- `packages/bijux-canon-index/tests` as the package proof surface
+## Design Pressure
 
-## Use This Page When
-
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
-
-## Decision Rule
-
-Use `Capability Map` to decide whether a change makes `bijux-canon-index` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-index` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-index`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page helps a reader quickly map package claims to code areas.
-
-## Stability
-
-Keep it aligned with the real package modules and generated outputs.
+Retrieval contracts become fragile when provenance and replay claims cannot be
+traced back to named code areas. The package has to keep capability, module,
+and output aligned tightly enough for review.

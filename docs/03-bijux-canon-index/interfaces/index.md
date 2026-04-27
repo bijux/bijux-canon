@@ -4,90 +4,81 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Interfaces
 
-This section explains which commands, APIs, imports, schemas, and artifacts `bijux-canon-index` is prepared to stand behind as real surfaces.
+Open this section when the question is contractual: which index commands, APIs, retrieval outputs, artifacts, and imports callers may treat as stable enough to build on.
 
-These pages explain the public face of `bijux-canon-index`. They help a caller separate deliberate contracts from incidental visibility before a dependency hardens around the wrong surface.
+## Contract Surface
 
-Treat the interfaces pages for `bijux-canon-index` as the bridge between implementation detail and caller expectation. They should show what the package is prepared to defend before a dependency forms.
-
-## Visual Summary
+Index contracts sit between prepared data and evidence consumers. They include
+operator commands, HTTP routes, query payloads, execution artifacts, and replay
+records. The page should make clear which surfaces are stable promises and
+which backend details remain internal.
 
 ```mermaid
-graph TD
-    A[Interfaces] --> B[CLI and API surfaces]
-    B --> C[Configuration and data contracts]
-    C --> D[Artifact and output contracts]
-    D --> E[Public import boundaries]
-    E --> F[Compatibility commitments]
+flowchart LR
+    caller["caller or operator"]
+    cli["CLI surface"]
+    api["API surface"]
+    request["request contracts"]
+    artifact["result artifacts"]
+    replay["replay records"]
+    schema["tracked schema"]
+    consumer["reason or runtime"]
+
+    caller --> cli --> request
+    caller --> api --> request
+    request --> artifact --> replay --> consumer
+    request --> schema
 ```
 
-## Pages in This Section
+The interface story for index is really a retrieval accountability story.
+Callers need to know not only how to submit a query, but also what result,
+artifact, and replay surface they are allowed to depend on after the query
+finishes.
 
-- [CLI Surface](cli-surface.md)
-- [API Surface](api-surface.md)
-- [Configuration Surface](configuration-surface.md)
-- [Data Contracts](data-contracts.md)
-- [Artifact Contracts](artifact-contracts.md)
-- [Entrypoints and Examples](entrypoints-and-examples.md)
-- [Operator Workflows](operator-workflows.md)
-- [Public Imports](public-imports.md)
-- [Compatibility Commitments](compatibility-commitments.md)
+## Read These First
 
-## Read Across the Package
+- open [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/) first when the contract question begins with a caller-visible schema or HTTP surface
+- open [Data Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/data-contracts/) when the dispute is about retrieval payloads or replay-visible record shape
+- open [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/) when search-surface changes may break downstream expectations
 
-- [Foundation](../foundation/index.md) when you need the package boundary and ownership story first
-- [Architecture](../architecture/index.md) when the question becomes structural, modular, or execution-oriented
-- [Operations](../operations/index.md) when the question becomes procedural, environmental, diagnostic, or release-oriented
-- [Quality](../quality/index.md) when the question becomes proof, risk, trust, or review sufficiency
+## Contract Risk
 
-## Concrete Anchors
+The main contract risk here is treating retrieval behavior as backend detail while callers quietly harden dependencies against it.
 
-- CLI modules under src/bijux_canon_index/interfaces/cli
-- HTTP app under src/bijux_canon_index/api
-- OpenAPI schema files under apis/bijux-canon-index/v1
-- apis/bijux-canon-index/v1/schema.yaml
+## First Proof Check
 
-## Use This Page When
+- `packages/bijux-canon-index/src/bijux_canon_index/interfaces` for CLI, schema, and error surfaces
+- `packages/bijux-canon-index/src/bijux_canon_index/api/v1` for HTTP routes and runtime app boundaries
+- `apis/bijux-canon-index/v1/schema.yaml` for tracked schema visibility
+- `packages/bijux-canon-index/tests` for replay, provenance, and compatibility evidence
 
-- you need the public command, API, import, schema, or artifact surface
-- you are checking whether a caller can safely rely on a given entrypoint or shape
-- you want the contract-facing side of the package before building on it
 
-## Decision Rule
+## Pages In This Section
 
-Use `Interfaces` to decide whether a caller-facing surface is explicit enough to depend on. If the surface cannot be tied back to concrete code, schemas, artifacts, examples, and tests, treat it as unstable until that evidence is visible.
+- [CLI Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/cli-surface/)
+- [API Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/api-surface/)
+- [Configuration Surface](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/configuration-surface/)
+- [Data Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/data-contracts/)
+- [Artifact Contracts](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/artifact-contracts/)
+- [Entrypoints and Examples](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/entrypoints-and-examples/)
+- [Operator Workflows](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/operator-workflows/)
+- [Public Imports](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/public-imports/)
+- [Compatibility Commitments](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/compatibility-commitments/)
 
-## What This Page Answers
+## Leave This Section When
 
-- which public or operator-facing surfaces `bijux-canon-index` is really asking readers to trust
-- which schemas, artifacts, imports, or commands behave like contracts
-- what compatibility pressure a change to this surface would create
+- leave for [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the contract dispute is really a package-boundary dispute
+- leave for [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when a surface question reveals structural drift underneath it
+- leave for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) or [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the boundary is clear and the question becomes execution or proof
 
-## Reviewer Lens
+## Design Pressure
 
-- compare commands, schemas, imports, and artifacts against the documented surface one by one
-- check whether a seemingly local change actually needs compatibility review
-- confirm that examples still point to real entrypoints and not to stale habits
-
-## Honesty Boundary
-
-This page can identify the intended public surfaces of `bijux-canon-index`, but real compatibility depends on code, schemas, artifacts, examples, and tests staying aligned. If those disagree, the prose is wrong or incomplete.
-
-## Next Checks
-
-- move to operations when the caller-facing question becomes procedural or environmental
-- move to quality when compatibility or evidence of protection becomes the real issue
-- move back to architecture when a public-surface question reveals a deeper structural drift
-
-## Purpose
-
-This page explains how to use the interfaces section for `bijux-canon-index` without repeating the detail that belongs on the topic pages beneath it.
-
-## Stability
-
-This page is part of the canonical package docs spine. Keep it aligned with the current package boundary and the topic pages in this section.
+If a replay-visible behavior is treated as an implementation detail here,
+downstream packages will still depend on it but without an explicit contract.
+The interface page should make those dependencies visible before they become
+surprises.

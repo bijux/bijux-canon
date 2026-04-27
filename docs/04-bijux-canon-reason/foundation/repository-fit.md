@@ -4,108 +4,46 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-04
+last_reviewed: 2026-04-26
 ---
 
 # Repository Fit
 
-`bijux-canon-reason` is one publishable part of a larger system. It sits in the
-monorepo with its own `src/`, tests, metadata, and release history because the
-repository wants package ownership to stay visible even when the packages evolve
-together.
+`bijux-canon-reason` is a separate package because reviewable meaning is a real system seam. The repository needs one place where evidence-to-claim policy is explicit instead of being inferred from lower or higher layers.
 
-This page is here to answer a simple but important question: why is this work a
-package at all, instead of just another folder inside a single giant project?
-
-Treat the foundation pages for `bijux-canon-reason` as the package's durable self-description. If the package still feels blurry after this section, the boundary story is not clear enough yet.
-
-## Visual Summary
+## Fit Model
 
 ```mermaid
-flowchart TB
-    page["Repository Fit<br/>clarifies: own the right work | name the boundary | compare neighbors"]
-    classDef page fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a,stroke-width:2px;
-    classDef positive fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef caution fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
-    classDef anchor fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
-    classDef action fill:#fef3c7,stroke:#d97706,color:#7c2d12;
-    own1["reasoning plans, claims, and evidence-aware reasoning models"]
-    own1 --> page
-    own2["execution of reasoning steps and local tool dispatch"]
-    own2 --> page
-    own3["verification and provenance checks that belong to reasoning itself"]
-    own3 --> page
-    limit1["ingest and index engines"]
-    page -.keeps outside.-> limit1
-    limit2["repository tooling and release automation"]
-    page -.keeps outside.-> limit2
-    limit3["runtime persistence and replay authority"]
-    page -.keeps outside.-> limit3
-    anchor1["packages/bijux-canon-reason/tests"]
-    page --> anchor1
-    anchor2["packages/bijux-canon-reason"]
-    page --> anchor2
-    anchor3["packages/bijux-canon-reason/src/bijux_canon_reason"]
-    page --> anchor3
-    class page page;
-    class own1,own2,own3 positive;
-    class limit1,limit2,limit3 caution;
-    class anchor1,anchor2,anchor3 anchor;
+flowchart LR
+    seam["evidence-to-claim seam"]
+    package["bijux-canon-reason package boundary"]
+    proof["metadata, readme, tests, and handbook"]
+
+    seam --> package --> proof
 ```
 
-## Repository Relationships
+This page should explain why reasoning exists as a package and not as glue
+inside retrieval or orchestration. The fit is good only when meaning itself is
+treated as a publishable, reviewable boundary.
 
-- consumes evidence prepared by ingest and retrieval provided by index
-- relies on runtime when a run must be accepted, stored, or replayed under policy
+## Why This Is A Package
 
-## Canonical Package Root
+- `packages/bijux-canon-reason/src/bijux_canon_reason` keeps reasoning ownership visible in code
+- `packages/bijux-canon-reason/tests` proves claim, verification, and provenance behavior together
+- the package root and handbook explain why downstream layers may consume reasoning artifacts without re-owning the policy
 
-- `packages/bijux-canon-reason`
-- `packages/bijux-canon-reason/src/bijux_canon_reason`
-- `packages/bijux-canon-reason/tests`
+## First Proof Check
 
-## Concrete Anchors
+- `packages/bijux-canon-reason/pyproject.toml` for publishable package identity
+- `packages/bijux-canon-reason/README.md` for package-level reader framing
+- `packages/bijux-canon-reason/tests` for executable proof that the seam still matters
 
-- `packages/bijux-canon-reason` as the package root
-- `packages/bijux-canon-reason/src/bijux_canon_reason` as the import boundary
-- `packages/bijux-canon-reason/tests` as the package proof surface
+## Fit Warning
 
-## Use This Page When
+If the package exists only because the code looked complex enough to split out, the reasoning seam is not being defended on its actual merits.
 
-- you need the package idea before the implementation detail
-- you are deciding whether work belongs here or in a neighboring package
-- you want the shortest honest explanation of what this package is for
+## Design Pressure
 
-## Decision Rule
-
-Use `Repository Fit` to decide whether a change makes `bijux-canon-reason` easier or harder to defend as one distinct role in the overall system. If the work makes the package broader without making its role clearer, stop and re-check the boundary before treating the change as a local improvement.
-
-## What This Page Answers
-
-- what problem `bijux-canon-reason` is supposed to own on purpose
-- where the package boundary stops, even when nearby code looks tempting
-- which neighboring package seams deserve comparison before the boundary is changed
-
-## Reviewer Lens
-
-- compare the stated boundary with the modules, artifacts, and tests that are supposed to uphold it
-- check that out-of-scope behavior is not quietly re-entering through convenience paths
-- confirm that the package story still matches the real repository layout and neighboring package docs
-
-## Honesty Boundary
-
-This page can explain the intended boundary of `bijux-canon-reason`, but it cannot prove that boundary by itself. The real proof still lives in the code, tests, and neighboring package seams that either support or contradict the story told here.
-
-## Next Checks
-
-- move to architecture when the question becomes structural rather than boundary-oriented
-- move to interfaces when the question becomes contract-facing
-- move to quality when the question becomes proof or review sufficiency
-
-## Purpose
-
-This page explains how the package fits into the repository without restating repository-wide rules.
-
-## Stability
-
-Keep it aligned with the package's checked-in directories and actual neighboring packages.
+If reason is justified only by complexity or code volume, the seam is already
+being defended on the wrong grounds. The repository has to keep the
+evidence-to-claim boundary explicit.
