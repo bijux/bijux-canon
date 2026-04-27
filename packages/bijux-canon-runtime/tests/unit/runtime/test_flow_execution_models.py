@@ -3,6 +3,7 @@ from __future__ import annotations
 from bijux_canon_runtime.application.flow_execution_models import ExecutionConfig
 from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.runtime.context import RunMode as ContextRunMode
+from bijux_canon_runtime.ontology import DeterminismLevel
 import pytest
 
 
@@ -22,7 +23,7 @@ def test_execution_config_from_command_maps_command_to_run_mode(
     config = ExecutionConfig.from_command(command)
 
     assert config.mode is mode
-    assert config.determinism_level is None
+    assert config.determinism_level is DeterminismLevel.STRICT
 
 
 def test_execution_config_from_command_rejects_unknown_command() -> None:

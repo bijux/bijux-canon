@@ -74,7 +74,10 @@ class ExecutionConfig:
     @classmethod
     def from_command(cls, command: str) -> ExecutionConfig:
         """Build config from the command-line command name."""
-        return cls(mode=run_mode_for_command(command), determinism_level=None)
+        return cls(
+            mode=run_mode_for_command(command),
+            determinism_level=DeterminismLevel.STRICT,
+        )
 
 
 @dataclass(frozen=True)

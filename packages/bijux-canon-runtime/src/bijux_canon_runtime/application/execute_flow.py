@@ -32,6 +32,7 @@ from bijux_canon_runtime.core.authority import (
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
 from bijux_canon_runtime.model.execution.run_mode import RunMode
 from bijux_canon_runtime.model.flows.manifest import FlowManifest
+from bijux_canon_runtime.ontology import DeterminismLevel
 
 
 class FlowPreparation:
@@ -156,7 +157,7 @@ def execute_flow(
     """
     execution_config = config or ExecutionConfig(
         mode=RunMode.LIVE,
-        determinism_level=None,
+        determinism_level=DeterminismLevel.STRICT,
     )
     preparation = FlowPreparation(
         manifest=manifest, resolved_flow=resolved_flow, config=execution_config
