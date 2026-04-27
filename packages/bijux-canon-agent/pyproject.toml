@@ -51,7 +51,6 @@ dependencies = [
     "pydantic-settings~=2.0",
     "packaging>=23.0",
     "injector>=0.20.1",
-    "fastapi>=0.110,<1.0",
     "orjson>=3.9.0",
     "pyyaml>=6.0.2",
     "cryptography>=44.0.1",
@@ -80,6 +79,10 @@ PackageMap = "https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map
 CompatibilityGuide = "https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/"
 
 [project.optional-dependencies]
+api = [
+    "fastapi>=0.110,<1.0",
+]
+
 dev = [
     "types-PyYAML>=6.0.12,<7.0",
     "types-orjson>=3.6.0,<4.0",
