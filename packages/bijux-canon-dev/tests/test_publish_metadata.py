@@ -33,7 +33,12 @@ LEGACY_NAME_MAP_URL = (
 )
 README_BADGE_MARKER = "https://img.shields.io"
 EXPECTED_BADGE_COUNT = 20
-EXPECTED_PYPI_GUIDE_BADGE_COUNT = 5
+PACKAGE_ARTIFACT_LINKS = {
+    "artifacts": "",
+    ".venv": "venv",
+    ".hypothesis": "hypothesis",
+    ".benchmarks": "benchmarks",
+}
 FORBIDDEN_STANDALONE_DOC_URLS = (
     "https://bijux.io/06-bijux-canon-runtime/",
     "https://bijux.io/05-bijux-canon-agent/",
@@ -118,6 +123,12 @@ def _package_path(package_name: str) -> Path:
     workspace = _workspace_metadata()
     package_dirs = cast(dict[str, str], workspace["package_dirs"])
     return REPO_ROOT / package_dirs[package_name]
+
+
+def _expected_package_link_target(package_name: str, link_name: str) -> str:
+    suffix = PACKAGE_ARTIFACT_LINKS[link_name]
+    base = Path("..") / ".." / "artifacts" / package_name
+    return str(base / suffix) if suffix else str(base)
 
 
 def _shared_docs_url(package_name: str) -> str:
@@ -223,6 +234,30 @@ def test_workspace_packages_use_shared_repository_release_tags() -> None:
 
     assert not mismatches, "workspace release tag configuration failed:\n" + "\n".join(
         mismatches
+    )
+
+
+def test_package_roots_use_repository_artifact_symlinks() -> None:
+    workspace = _workspace_metadata()
+    package_dirs = cast(dict[str, str], workspace["package_dirs"])
+    failures: list[str] = []
+
+    for package_name in sorted(package_dirs):
+        package_root = _package_path(package_name)
+        for link_name in PACKAGE_ARTIFACT_LINKS:
+            link_path = package_root / link_name
+            if not link_path.is_symlink():
+                failures.append(f"{package_name}: missing symlink {link_name}")
+                continue
+            target = os.readlink(link_path)
+            expected = _expected_package_link_target(package_name, link_name)
+            if target != expected:
+                failures.append(
+                    f"{package_name}: {link_name} -> {target!r}, expected {expected!r}"
+                )
+
+    assert not failures, "package artifact symlink contract failed:\n" + "\n".join(
+        failures
     )
 
 
@@ -532,83 +567,6 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
 
     assert not failures, "compatibility publication contract failed:\n" + "\n".join(
         failures
-    )
-
-
-def test_public_release_packages_ship_package_local_publication_guides() -> None:
-    workspace = _workspace_metadata()
-    public_packages = set(workspace["public_release_packages"])
-
-    failures: list[str] = []
-    for package_name in sorted(public_packages):
-        package_root = _package_path(package_name)
-        guide_path = package_root / "docs" / "maintainer" / "pypi.md"
-        if not guide_path.exists():
-            failures.append(f"{package_name}: missing docs/maintainer/pypi.md")
-            continue
-
-        pyproject_text = (package_root / "pyproject.toml").read_text(encoding="utf-8")
-        if "docs/maintainer/pypi.md" not in pyproject_text:
-            failures.append(
-                f"{package_name}: pyproject should ship docs/maintainer/pypi.md"
-            )
-
-    assert not failures, "public package publication guides failed:\n" + "\n".join(
-        failures
-    )
-
-
-def test_public_release_package_publication_guides_publish_release_surface() -> None:
-    workspace = _workspace_metadata()
-    public_packages = set(workspace["public_release_packages"])
-
-    failures: list[str] = []
-    for package_name in sorted(public_packages):
-        guide = (
-            _package_path(package_name) / "docs" / "maintainer" / "pypi.md"
-        ).read_text(encoding="utf-8")
-        if guide.count("[![") < EXPECTED_PYPI_GUIDE_BADGE_COUNT:
-            failures.append(
-                f"{package_name}: expected at least {EXPECTED_PYPI_GUIDE_BADGE_COUNT} badges in pypi.md"
-            )
-        if "## Release Surface" not in guide:
-            failures.append(
-                f"{package_name}: pypi.md should include a release-surface section"
-            )
-        distribution_name = _distribution_name(package_name)
-        if f"https://pypi.org/project/{distribution_name}/" not in guide:
-            failures.append(
-                f"{package_name}: pypi.md should advertise the package distribution"
-            )
-        verify_url = "https://github.com/bijux/bijux-canon/actions/workflows/verify.yml"
-        if verify_url not in guide:
-            failures.append(
-                f"{package_name}: pypi.md should advertise repository verification"
-            )
-        release_url = (
-            "https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml"
-        )
-        if release_url not in guide:
-            failures.append(
-                f"{package_name}: pypi.md should advertise release workflow"
-            )
-        docs_url = (
-            "https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml"
-        )
-        if docs_url not in guide:
-            failures.append(f"{package_name}: pypi.md should advertise docs workflow")
-        package_docs_url = (
-            _compat_docs_url(distribution_name)
-            if package_name in COMPATIBILITY_PACKAGES
-            else _shared_docs_url(package_name)
-        )
-        if package_docs_url not in guide:
-            failures.append(
-                f"{package_name}: pypi.md should link package handbook docs"
-            )
-
-    assert not failures, (
-        "public package publication guide badges failed:\n" + "\n".join(failures)
     )
 
 

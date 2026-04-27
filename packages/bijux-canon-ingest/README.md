@@ -46,6 +46,23 @@ This package should help a maintainer answer practical questions such as:
 - where do retrieval-oriented assembly steps belong
 - which code is pure transformation logic and which code is adapter work
 
+## What This Package Takes And Produces
+
+- takes: raw documents, ingest configuration, and package-local retrieval assembly inputs
+- produces: cleaned records, chunks, retrieval-ready artifacts, and ingest boundary failures when source data breaks contract
+- guarantees: deterministic transforms stay separable from adapters and the root import remains safe for dependency-light consumers
+- does not do: own runtime replay policy, expose every internal helper as a stable promise, or define vector execution semantics for the rest of canon
+
+## Public API Routing
+
+Use the package root for stable, dependency-light ingestion primitives.
+Reach into submodules only when you need a specific boundary:
+
+- `bijux_canon_ingest` for stable transforms, result helpers, and shared ingest primitives
+- `bijux_canon_ingest.application` for workflow orchestration
+- `bijux_canon_ingest.interfaces` for CLI and HTTP edges
+- `bijux_canon_ingest.config` for builder-style package configuration
+
 ## Legacy continuity
 
 - compatibility package: [`bijux-rag`](https://pypi.org/project/bijux-rag/)

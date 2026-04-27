@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 from bijux_canon_runtime.model.artifact.artifact import Artifact
 from bijux_canon_runtime.model.artifact.retrieved_evidence import RetrievedEvidence
@@ -36,6 +36,9 @@ from bijux_canon_runtime.runtime.artifact_store import ArtifactStore
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
 from bijux_canon_runtime.runtime.context import ExecutionContext
 from bijux_canon_runtime.runtime.execution.step_executor import ExecutionOutcome
+
+if TYPE_CHECKING:
+    from bijux_canon_runtime.model.flows.manifest import FlowManifest
 
 
 @dataclass(frozen=True)
@@ -74,7 +77,29 @@ class ExecutionConfig:
     @classmethod
     def from_command(cls, command: str) -> ExecutionConfig:
         """Build config from the command-line command name."""
-        return cls(mode=run_mode_for_command(command), determinism_level=None)
+        return cls(
+            mode=run_mode_for_command(command),
+            determinism_level=DeterminismLevel.STRICT,
+        )
+
+    def for_manifest(self, manifest: FlowManifest) -> ExecutionConfig:
+        """Return a copy aligned to the manifest determinism contract."""
+        return ExecutionConfig(
+            mode=self.mode,
+            determinism_level=manifest.determinism_level,
+            verification_policy=self.verification_policy,
+            non_determinism_policy=self.non_determinism_policy,
+            artifact_store=self.artifact_store,
+            execution_store=self.execution_store,
+            execution_read_store=self.execution_read_store,
+            budget=self.budget,
+            observed_run=self.observed_run,
+            parent_flow_id=self.parent_flow_id,
+            child_flow_ids=self.child_flow_ids,
+            observers=self.observers,
+            resume_run_id=self.resume_run_id,
+            strict_determinism=self.strict_determinism,
+        )
 
 
 @dataclass(frozen=True)

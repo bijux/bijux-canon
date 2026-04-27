@@ -46,6 +46,19 @@ is produced, or where agent-facing CLI and HTTP behavior lives, start here. If
 you need replay governance, runtime persistence, or cross-package execution
 authority, you are probably looking for `bijux-canon-runtime` instead.
 
+## What This Package Takes And Produces
+
+- takes: declared agent workflows, role-specific inputs, local orchestration settings, and package-local boundary requests
+- produces: deterministic agent traces, role outputs, operator-facing artifacts, and explicit workflow failures when orchestration contracts are broken
+- guarantees: role orchestration stays inspectable and trace-backed instead of collapsing into one opaque tool invocation
+- does not do: decide runtime replay acceptance, own ingest or index package behavior, or treat provider integrations as cross-package authority
+
+## Dependency Surface
+
+Treat the base package as the canonical orchestration surface. CLI, HTTP,
+provider, and template integrations are package-owned extensions that must stay
+subordinate to the trace and workflow contract, not the other way around.
+
 ## Package continuity
 
 - compatibility package: [`bijux-agent`](https://pypi.org/project/bijux-agent/)

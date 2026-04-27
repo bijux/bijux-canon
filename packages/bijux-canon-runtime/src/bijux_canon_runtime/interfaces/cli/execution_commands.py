@@ -49,8 +49,7 @@ def execute_manifest_command_with_runner(
     """Execute a manifest-backed runtime CLI command with an injected runner."""
     manifest = load_manifest(Path(args.manifest))
     command = args.command
-    config = ExecutionConfig.from_command(command)
-    config = replace(config, determinism_level=manifest.determinism_level)
+    config = ExecutionConfig.from_command(command).for_manifest(manifest)
     if getattr(args, "db_path", None):
         config = ExecutionConfig(
             mode=config.mode,

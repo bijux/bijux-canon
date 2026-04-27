@@ -6,6 +6,10 @@ from typing import Any, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PUBLIC_LICENSE_SOURCE = "LICENSE"
+ROOT_LEGAL_ARTIFACTS = {
+    "LICENSE": Path("..") / ".." / "LICENSE",
+    "NOTICE": Path("..") / ".." / "NOTICE",
+}
 GENERATED_VERSION_PACKAGES = {
     "bijux-canon-ingest": "src/bijux_canon_ingest/_build_version.py",
     "bijux-canon-reason": "src/bijux_canon_reason/_build_version.py",
@@ -30,6 +34,26 @@ def _pyproject_data(package_name: str) -> dict[str, Any]:
         return tomllib.load(handle)
 
 
+def test_workspace_packages_link_legal_artifacts_from_repo_root() -> None:
+    workspace = _workspace_metadata()
+    failures: list[str] = []
+
+    for package_name in sorted(workspace["package_dirs"]):
+        package_root = _package_path(package_name)
+        for artifact_name, expected_target in ROOT_LEGAL_ARTIFACTS.items():
+            artifact_path = package_root / artifact_name
+            if not artifact_path.is_symlink():
+                failures.append(f"{package_name}: {artifact_name} should be a symlink")
+                continue
+            target = artifact_path.readlink()
+            if target != expected_target:
+                failures.append(
+                    f"{package_name}: {artifact_name} -> {target!s}, expected {expected_target!s}"
+                )
+
+    assert not failures, "legal artifact linkage failed:\n" + "\n".join(failures)
+
+
 def test_public_release_packages_ship_source_and_release_docs() -> None:
     workspace = _workspace_metadata()
     failures: list[str] = []
@@ -51,7 +75,6 @@ def test_public_release_packages_ship_source_and_release_docs() -> None:
         required_release_files = {
             "README.md",
             "CHANGELOG.md",
-            "docs/maintainer/pypi.md",
             f"{source_package_dir}/**",
         }
 

@@ -65,7 +65,7 @@ canonical-name = "bijux-canon-ingest"
 
 [tool.hatch.build]
 ignore-vcs = true
-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/bijux_rag/**"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_rag/**"]
 exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
 force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
@@ -77,6 +77,6 @@ include = ["src/bijux_rag/py.typed"]
 "bijux_rag" = ["py.typed"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/bijux_rag/**"]
-only-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/bijux_rag"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_rag/**"]
+only-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_rag"]
 exclude = [".gitignore", "/.gitignore", "**/.gitignore"]

@@ -46,6 +46,13 @@ capability profiles, replay semantics, or provenance-aware result comparison,
 start here. If you need document preparation, runtime governance, or repository
 tooling, you are outside this package's boundary.
 
+## What This Package Takes And Produces
+
+- takes: declared vector execution requests, backend capability profiles, and embedding or store adapter inputs
+- produces: provenance-aware retrieval results, backend execution artifacts, replay comparison surfaces, and explicit capability failures
+- guarantees: vector execution remains attached to one declared contract instead of one implicit backend assumption
+- does not do: normalize source documents, own runtime persistence, or hide backend divergence behind one undifferentiated API
+
 ## Legacy continuity
 
 - compatibility package: [`bijux-vex`](https://pypi.org/project/bijux-vex/)

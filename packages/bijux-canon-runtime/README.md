@@ -45,6 +45,30 @@ If you need to understand plan versus run modes, replay acceptance, trace
 capture, execution-store behavior, or non-determinism policy enforcement, start
 here.
 
+## What This Package Takes And Produces
+
+- takes: validated flow manifests or resolved execution plans plus explicit execution policy
+- produces: flow run results, replayable traces, persisted run records, and contract failures when execution violates policy
+- guarantees: runtime mode selection stays explicit, replay semantics are checked, and persisted outputs remain tied to one governed run id
+- does not do: define agent behavior, own ingest or retrieval policy, or infer missing determinism from ambient state
+
+## Minimal Example
+
+```python
+from bijux_canon_runtime import execute_flow
+
+result = execute_flow(manifest=my_manifest)
+print(result.resolved_flow.manifest.flow_id)
+print(result.trace is not None)
+print(result.run_id)
+```
+
+Expected shape:
+
+- `result.resolved_flow` is always present
+- `result.trace` is present for non-plan execution
+- `result.run_id` is set once the runtime registers a persisted run
+
 ## Legacy continuity
 
 - compatibility package: [`agentic-flows`](https://pypi.org/project/agentic-flows/)

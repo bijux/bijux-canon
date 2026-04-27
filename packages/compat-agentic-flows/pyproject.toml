@@ -69,7 +69,7 @@ canonical-name = "bijux-canon-runtime"
 
 [tool.hatch.build]
 ignore-vcs = true
-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/agentic_flows/**"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/agentic_flows/**"]
 exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
 force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
 
@@ -81,6 +81,6 @@ include = ["src/agentic_flows/py.typed"]
 "agentic_flows" = ["py.typed"]
 
 [tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/agentic_flows/**"]
-only-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "docs/maintainer/pypi.md", "hatch_build.py", "src/agentic_flows"]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/agentic_flows/**"]
+only-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/agentic_flows"]
 exclude = [".gitignore", "/.gitignore", "**/.gitignore"]

@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
+import importlib
 import os
 from pathlib import Path
-
-from dotenv import load_dotenv
 
 
 @dataclass(frozen=True)
@@ -31,7 +30,11 @@ def load_environment(dotenv_path: str | Path | None = None) -> None:
     """Load `.env` files when available to seed API key lookups."""
     path = Path(dotenv_path) if dotenv_path else Path(".env")
     if path.exists():
-        load_dotenv(dotenv_path=path)
+        try:
+            dotenv_module = importlib.import_module("dotenv")
+        except ModuleNotFoundError:
+            return
+        dotenv_module.load_dotenv(dotenv_path=path)
 
 
 def _missing_keys() -> list[str]:

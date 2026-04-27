@@ -29,9 +29,9 @@ handoffs visible. It does not own the package behavior itself.
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
 [![Verify](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/bijux/bijux-canon/actions/workflows/verify.yml?query=branch%3Amain)
-[![Release PyPI](https://github.com/bijux/bijux-canon/actions/workflows/release-pypi.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/release-pypi.yml)
-[![Release GHCR](https://github.com/bijux/bijux-canon/actions/workflows/release-ghcr.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/release-ghcr.yml)
-[![Release GitHub](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml)
+[![Release PyPI](https://img.shields.io/badge/release-pypi%20workflow-2563EB?logo=githubactions&logoColor=white)](https://github.com/bijux/bijux-canon/actions/workflows/release-pypi.yml)
+[![Release GHCR](https://img.shields.io/badge/release-ghcr%20workflow-2563EB?logo=githubactions&logoColor=white)](https://github.com/bijux/bijux-canon/actions/workflows/release-ghcr.yml)
+[![Release GitHub](https://img.shields.io/badge/release-github%20workflow-2563EB?logo=githubactions&logoColor=white)](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml)
 [![Docs](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml)
 [![Release](https://img.shields.io/github/v/release/bijux/bijux-canon?display_name=tag&label=release)](https://github.com/bijux/bijux-canon/releases)
 [![GHCR packages](https://img.shields.io/badge/ghcr-10%20packages-181717?logo=github)](https://github.com/bijux?tab=packages&repo_name=bijux-canon)
@@ -80,6 +80,13 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 <a class="md-button" href="https://bijux.io/bijux-canon/07-bijux-canon-maintain/">Open maintenance docs</a>
 <a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
+
+## What It Takes And Produces
+
+- takes: governed documents, retrieval corpora, execution manifests, and policy contracts
+- produces: ingest artifacts, vector execution outputs, reasoning bundles, agent traces, and replayable runtime records
+- guarantees: explicit package ownership, checked-in API schemas, deterministic or bounded execution modes, and reviewable release surfaces
+- does not do: promise model correctness, hide cross-package coupling behind one import, or treat one successful run as sufficient evidence
 
 ## System Map
 
