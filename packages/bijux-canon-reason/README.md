@@ -45,6 +45,13 @@ planned and executed, how evidence is used, or where verification lives, start
 here. If you need runtime governance, storage, or vector execution internals,
 you are outside this package's boundary.
 
+## What This Package Takes And Produces
+
+- takes: evidence bundles, reasoning plans, verification gates, and package-local tool inputs
+- produces: structured claims, reasoning step outputs, verification outcomes, and inspectable reasoning artifacts
+- guarantees: reasoning behavior stays explicit enough to test and challenge, with verification attached to the reasoning surface itself
+- does not do: persist runtime-wide state, own replay authority, or replace ingest and retrieval package boundaries
+
 ## Legacy continuity
 
 - compatibility package: [`bijux-rar`](https://pypi.org/project/bijux-rar/)
