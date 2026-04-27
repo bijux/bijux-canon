@@ -123,7 +123,6 @@ bijux-canon-runtime = "bijux_canon_runtime.interfaces.cli.entrypoint:main"
 include = [
   "README.md",
   "CHANGELOG.md",
-  "docs/maintainer/pypi.md",
   "src/bijux_canon_runtime/py.typed",
 ]
 force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
@@ -148,7 +147,6 @@ zip-safe = false
 include = [
   "README.md",
   "CHANGELOG.md",
-  "docs/maintainer/pypi.md",
   "src/bijux_canon_runtime/**",
 ]
 

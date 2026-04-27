@@ -51,7 +51,6 @@ def test_public_release_packages_ship_source_and_release_docs() -> None:
         required_release_files = {
             "README.md",
             "CHANGELOG.md",
-            "docs/maintainer/pypi.md",
             f"{source_package_dir}/**",
         }
 

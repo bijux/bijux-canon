@@ -167,7 +167,6 @@ include = [
   "stubs/**",
   "README.md",
   "CHANGELOG.md",
-  "docs/maintainer/pypi.md",
   "pyproject.toml",
 ]
 force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
@@ -183,7 +182,6 @@ include = [
   "stubs/**",
   "README.md",
   "CHANGELOG.md",
-  "docs/maintainer/pypi.md",
   "pyproject.toml",
 ]
 
