@@ -16,7 +16,7 @@ answer "yes" to all of these questions without hand-waving.
 - CLI help or flag snapshots
 - OpenAPI output
 - compatibility snapshots
-- docs under `docs/spec/` and `docs/maintainer/`
+- docs under `docs/spec/`
 
 If a reviewer would need to infer the new contract from code alone, the package
 is not ready to freeze yet.

@@ -21,7 +21,7 @@ def test_freeze_docs_exist():
         root / "docs/spec/mental_model.md",
         root / "docs/spec/failure_semantics.md",
         root / "docs/spec/vdb_profile.md",
-        root / "docs/maintainer/freeze_criteria.md",
+        root / "docs/spec/freeze_criteria.md",
     ]:
         assert doc.exists(), f"Missing required freeze doc: {doc}"
 

@@ -20,7 +20,7 @@ with provenance, replay, and backend capability concerns.
 - [Mental model](spec/mental_model.md)
 - [Failure semantics](spec/failure_semantics.md)
 - [Vector store profile](spec/vdb_profile.md)
-- [Freeze criteria](maintainer/freeze_criteria.md)
+- [Freeze criteria](spec/freeze_criteria.md)
 
 ## Suggested reading order
 
