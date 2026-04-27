@@ -33,6 +33,13 @@ LEGACY_NAME_MAP_URL = (
 )
 README_BADGE_MARKER = "https://img.shields.io"
 EXPECTED_BADGE_COUNT = 20
+PACKAGE_ARTIFACT_LINKS = {
+    "artifacts": "",
+    ".venv": "venv",
+    ".hypothesis": "hypothesis",
+    ".benchmark": "benchmarks",
+    ".benchmarks": "benchmarks",
+}
 FORBIDDEN_STANDALONE_DOC_URLS = (
     "https://bijux.io/06-bijux-canon-runtime/",
     "https://bijux.io/05-bijux-canon-agent/",
@@ -117,6 +124,12 @@ def _package_path(package_name: str) -> Path:
     workspace = _workspace_metadata()
     package_dirs = cast(dict[str, str], workspace["package_dirs"])
     return REPO_ROOT / package_dirs[package_name]
+
+
+def _expected_package_link_target(package_name: str, link_name: str) -> str:
+    suffix = PACKAGE_ARTIFACT_LINKS[link_name]
+    base = Path("..") / ".." / "artifacts" / package_name
+    return str(base / suffix) if suffix else str(base)
 
 
 def _shared_docs_url(package_name: str) -> str:
@@ -222,6 +235,30 @@ def test_workspace_packages_use_shared_repository_release_tags() -> None:
 
     assert not mismatches, "workspace release tag configuration failed:\n" + "\n".join(
         mismatches
+    )
+
+
+def test_package_roots_use_repository_artifact_symlinks() -> None:
+    workspace = _workspace_metadata()
+    package_dirs = cast(dict[str, str], workspace["package_dirs"])
+    failures: list[str] = []
+
+    for package_name in sorted(package_dirs):
+        package_root = _package_path(package_name)
+        for link_name in PACKAGE_ARTIFACT_LINKS:
+            link_path = package_root / link_name
+            if not link_path.is_symlink():
+                failures.append(f"{package_name}: missing symlink {link_name}")
+                continue
+            target = os.readlink(link_path)
+            expected = _expected_package_link_target(package_name, link_name)
+            if target != expected:
+                failures.append(
+                    f"{package_name}: {link_name} -> {target!r}, expected {expected!r}"
+                )
+
+    assert not failures, "package artifact symlink contract failed:\n" + "\n".join(
+        failures
     )
 
 

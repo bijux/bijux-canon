@@ -21,3 +21,11 @@ SBOM_REQUIREMENTS_WRITER ?= -m bijux_canon_dev.sbom.requirements_writer
 SBOM_PYTHON_ENV ?= $(CANON_DEV_PYTHON_ENV)
 
 include $(ROOT_MAKE_DIR)/bijux-py/repository/env.mk
+
+# Package roots expose tracked symlink aliases for repository-owned artifact
+# locations. Keep the aliases stable and let clean targets operate on the
+# canonical repository artifact tree instead of deleting the links themselves.
+COMMON_PYTHON_CLEAN_PATHS := $(filter-out .hypothesis .benchmarks .benchmark,$(COMMON_PYTHON_CLEAN_PATHS))
+PROJECT_ARTIFACT_PRESERVE_DIRS ?= venv hypothesis benchmarks
+PROJECT_ARTIFACT_CHILD_CLEAN_PATHS := $(shell if [ -d "$(PROJECT_ARTIFACTS_DIR)" ]; then find "$(PROJECT_ARTIFACTS_DIR)" -mindepth 1 -maxdepth 1 $(foreach dir,$(PROJECT_ARTIFACT_PRESERVE_DIRS),! -name "$(dir)") -print; fi)
+COMMON_ARTIFACT_CLEAN_PATHS := $(PROJECT_ARTIFACT_CHILD_CLEAN_PATHS)
