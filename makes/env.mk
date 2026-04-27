@@ -6,6 +6,7 @@ CONFIG_DIR := $(MONOREPO_ROOT)/configs
 CANON_DEV_SRC := $(MONOREPO_ROOT)/packages/bijux-canon-dev/src
 CANON_DEV_PYTHON_ENV ?= PYTHONPATH="$(CANON_DEV_SRC)$${PYTHONPATH:+:$$PYTHONPATH}"
 DOCS_CONFIG_CLI ?= -m bijux_canon_dev.docs.mkdocs_config
+CODESPELL ?= $(VENV_PYTHON) -m codespell_lib
 QUALITY_GATE_PYTHON ?= $(if $(wildcard $(VENV_PYTHON)),$(abspath $(VENV_PYTHON)),$(if $(wildcard $(VENV)/bin/python),$(abspath $(VENV)/bin/python),$(PYTHON)))
 DEPTRY_SCAN_SCRIPT ?= $(CANON_DEV_PYTHON_ENV) "$(QUALITY_GATE_PYTHON)" -m bijux_canon_dev.quality.deptry_scan
 DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
