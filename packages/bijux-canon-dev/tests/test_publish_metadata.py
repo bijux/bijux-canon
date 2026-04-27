@@ -37,7 +37,6 @@ PACKAGE_ARTIFACT_LINKS = {
     "artifacts": "",
     ".venv": "venv",
     ".hypothesis": "hypothesis",
-    ".benchmark": "benchmarks",
     ".benchmarks": "benchmarks",
 }
 FORBIDDEN_STANDALONE_DOC_URLS = (
