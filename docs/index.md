@@ -81,6 +81,13 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 <a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
 
+## What It Takes And Produces
+
+- takes: governed documents, retrieval corpora, execution manifests, and policy contracts
+- produces: ingest artifacts, vector execution outputs, reasoning bundles, agent traces, and replayable runtime records
+- guarantees: explicit package ownership, checked-in API schemas, deterministic or bounded execution modes, and reviewable release surfaces
+- does not do: promise model correctness, hide cross-package coupling behind one import, or treat one successful run as sufficient evidence
+
 ## System Map
 
 ```mermaid
