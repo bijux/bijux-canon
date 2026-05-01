@@ -11,7 +11,6 @@ BUILD_CLEAN_PYCACHE := 1
 PUBLISH_VERIFY_INSTALL_CMD := bijux --version
 TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_reason/core) $(abspath src/bijux_canon_reason/interfaces)
 TEST_MAIN_ARGS := --maxfail=1
-ENABLE_BENCH := 0
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 
