@@ -30,6 +30,7 @@ include $(ROOT_MAKEFILE_DIR)/bijux-py/ci/help.mk
 
 ##@ Repository
 help: ## Show generated repository commands from included make modules
+check: lock-check lint test quality security docs api build sbom ## Run the full repository verification flow
 list: ## List primary package slugs
 list-all: ## List every canonical package slug
 install: ## Sync the shared root uv environment from pyproject.toml and uv.lock
