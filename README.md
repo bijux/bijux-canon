@@ -177,6 +177,13 @@ clear artifacts, and a codebase that still makes sense after the first demo.
 - Want to build the handbook locally: run `make docs-check` or `make docs-serve`
 - Want contributor guidance: read [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
+## Local Artifact Contract
+
+- transient local outputs belong under `artifacts/`, not as ad hoc root-level
+  cache or build directories
+- the shared root environment lives at `artifacts/root/check-venv/`
+- the MkDocs site builds to `artifacts/root/docs/site/`
+
 ## Repository Design
 
 The root keeps only the assets that truly need repository ownership:
