@@ -335,6 +335,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ItemResponse'
           description: Successful Response
+          links:
+            deleteCreatedItem:
+              operationId: deleteReasonItem
+              parameters:
+                item_id: $response.body#/id
+            getCreatedItem:
+              operationId: getReasonItem
+              parameters:
+                item_id: $response.body#/id
+            updateCreatedItem:
+              operationId: updateReasonItem
+              parameters:
+                item_id: $response.body#/id
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+          description: The submitted request body could not be parsed as JSON.
         '401':
           content:
             application/json:
@@ -513,6 +532,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ItemResponse'
           description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+          description: The submitted request body could not be parsed as JSON.
         '401':
           content:
             application/json:
@@ -576,6 +601,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/RunCreateResponse'
           description: Successful Response
+          links:
+            getCreatedRun:
+              operationId: getReasonRun
+              parameters:
+                run_id: $response.body#/run_id
+            getCreatedRunManifest:
+              operationId: getReasonRunManifest
+              parameters:
+                run_id: $response.body#/run_id
+            getCreatedRunTrace:
+              operationId: getReasonRunTrace
+              parameters:
+                run_id: $response.body#/run_id
+            replayCreatedRun:
+              operationId: replayReasonRun
+              parameters:
+                run_id: $response.body#/run_id
+            verifyCreatedRun:
+              operationId: verifyReasonRun
+              parameters:
+                run_id: $response.body#/run_id
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetail'
+          description: The submitted request body could not be parsed as JSON.
         '401':
           content:
             application/json:
@@ -619,6 +671,7 @@ paths:
         name: run_id
         required: true
         schema:
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$
           title: Run Id
           type: string
       responses:
@@ -658,8 +711,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
+                $ref: '#/components/schemas/ErrorDetail'
+          description: Validation failed for the requested run id.
         '429':
           content:
             application/json:
@@ -679,6 +732,7 @@ paths:
         name: run_id
         required: true
         schema:
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$
           title: Run Id
           type: string
       responses:
@@ -718,8 +772,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
+                $ref: '#/components/schemas/ErrorDetail'
+          description: Validation failed for the requested run id.
         '429':
           content:
             application/json:
@@ -739,6 +793,7 @@ paths:
         name: run_id
         required: true
         schema:
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$
           title: Run Id
           type: string
       responses:
@@ -776,8 +831,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
+                $ref: '#/components/schemas/ErrorDetail'
+          description: Validation failed for the requested run id.
         '429':
           content:
             application/json:
@@ -796,6 +851,7 @@ paths:
         name: run_id
         required: true
         schema:
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$
           title: Run Id
           type: string
       responses:
@@ -841,8 +897,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
+                $ref: '#/components/schemas/ErrorDetail'
+          description: Validation failed for the requested run id.
         '429':
           content:
             text/plain:
@@ -862,6 +918,7 @@ paths:
         name: run_id
         required: true
         schema:
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$
           title: Run Id
           type: string
       responses:
@@ -901,8 +958,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
+                $ref: '#/components/schemas/ErrorDetail'
+          description: Validation failed for the requested run id.
         '429':
           content:
             application/json:
