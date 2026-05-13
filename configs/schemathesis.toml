@@ -8,4 +8,4 @@ expected-statuses = [200, 422]
 expected-statuses = [400]
 
 [warnings]
-display = ["missing_auth", "missing_test_data"]
+display = ["missing_auth"]

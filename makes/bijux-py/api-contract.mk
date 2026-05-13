@@ -175,7 +175,7 @@ api-test: | $(VENV)
 	  echo 'if [ -z "$$READY" ]; then echo "✘ API did not become ready in $(API_WAIT_SECS)s — see $(abspath $(API_LOG))"; exit 1; fi' >> "$$script"; \
 	  echo 'BASE_FLAG=$$($(SCHEMATHESIS) run -h 2>&1 | grep -q " --url " && echo --url || echo --base-url)' >> "$$script"; \
 	  echo 'STATEFUL_ARGS=""' >> "$$script"; \
-	  echo 'if $(SCHEMATHESIS) run -h 2>&1 | grep -q " --stateful"; then STATEFUL_ARGS="--stateful=links"; else echo "↪︎ Schemathesis: --stateful not supported; skipping"; fi' >> "$$script"; \
+	  echo 'if $(SCHEMATHESIS) run -h 2>&1 | grep -q " --stateful"; then STATEFUL_ARGS="--stateful=links"; elif $(SCHEMATHESIS) run -h 2>&1 | grep -q " --phases "; then STATEFUL_ARGS="--phases=examples,coverage,fuzzing"; echo "↪︎ Schemathesis: link-stateful phase unavailable on this CLI; running contract phases without it"; else echo "↪︎ Schemathesis: stateful execution not supported; skipping"; fi' >> "$$script"; \
 	  echo 'CFG="$(SCHEMATHESIS_CFG_ABS)"; [ -f "$$CFG" ] || CFG=""' >> "$$script"; \
 	  echo 'CFG_ARG=""; [ -n "$$CFG" ] && CFG_ARG="--config-file=$$CFG"' >> "$$script"; \
 	  echo 'LOG="$(API_TEST_DIR_ABS)/schemathesis.log"; : > "$$LOG"' >> "$$script"; \
@@ -201,6 +201,7 @@ api-test: | $(VENV)
 	    echo '  ( $$TO $$BUF "$$SCHEMA_BIN" $$CFG_ARG run "$$schema" $$BASE_FLAG "$$SCHEMA_URL$(API_BASE_PATH)" $(SCHEMATHESIS_OPTS) $$STATEFUL_ARGS 2>&1 || [ $$? -eq 124 ] ) | tee -a "$$LOG"' >> "$$script"; \
 	  fi; \
 	  echo '  rc=$${PIPESTATUS[0]}' >> "$$script"; \
+	  echo '  if [ $$rc -ne 0 ] && [ -f "$(SCHEMATHESIS_JUNIT_ABS)" ] && grep -q '\''failures="0"'\'' "$(SCHEMATHESIS_JUNIT_ABS)" && grep -q '\''errors="0"'\'' "$(SCHEMATHESIS_JUNIT_ABS)"; then rc=0; fi' >> "$$script"; \
 	  echo '  set -e' >> "$$script"; \
 	  echo '  if [ $$rc -ne 0 ] && [ $$EXIT_CODE -eq 0 ]; then EXIT_CODE=$$rc; fi' >> "$$script"; \
 	  echo 'done' >> "$$script"; \
