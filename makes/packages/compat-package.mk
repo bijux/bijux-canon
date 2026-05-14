@@ -1,4 +1,20 @@
 PACKAGE_KIND ?= python
+COMPAT_MONOREPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
+COMPAT_PROJECT_SLUG := $(notdir $(abspath $(CURDIR)))
+COMPAT_CANONICAL_PACKAGE_DIR ?=
+
+ifeq ($(COMPAT_PROJECT_SLUG),compat-agentic-flows)
+COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-runtime
+else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-agent)
+COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-agent
+else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-rag)
+COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-ingest
+else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-rar)
+COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-reason
+else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-vex)
+COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-index
+endif
+
 LINT_DIRS ?= src hatch_build.py
 LINT_TARGETS ?= src hatch_build.py
 MYPY_TARGETS ?= src hatch_build.py
@@ -12,8 +28,10 @@ PACKAGE_INSTALL_STAMP ?= $(PROJECT_ARTIFACTS_DIR)/.compat-toolchain.stamp
 PACKAGE_INSTALL_EDITABLE ?= 0
 PACKAGE_INSTALL_MESSAGE ?= → Installing compatibility package toolchain...
 PACKAGE_INSTALL_PYTHON_PACKAGES ?= \
+  pytest pytest-asyncio pytest-cov pytest-timeout \
   ruff mypy pydantic codespell vulture deptry interrogate bandit pip-audit \
-  build twine hatchling hatch-vcs
+  build twine hatchling hatch-vcs \
+  $(COMPAT_CANONICAL_PACKAGE_DIR)
 ENABLE_MYPY ?= 1
 ENABLE_CODESPELL ?= 1
 ENABLE_RADON ?= 0
@@ -22,12 +40,15 @@ SKIP_DEPTRY ?= 0
 SKIP_INTERROGATE ?= 0
 SKIP_MYPY ?= 0
 SKIP_BANDIT ?= 0
+TEST_SOURCE_PATHS ?= src $(COMPAT_CANONICAL_PACKAGE_DIR)/src
+TEST_COVERAGE_SOURCE ?= src
 PUBLISH_PACKAGE_NAME ?= $(patsubst compat-%,%,$(PROJECT_SLUG))
 PUBLISH_UPLOAD_ENABLED ?= 0
 PACKAGE_DEFINE_BOOTSTRAP ?= 0
 PACKAGE_CLEAN_PATHS ?= \
   $(COMMON_ARTIFACT_CLEAN_PATHS) $(COMMON_BUILD_CLEAN_PATHS) "$(PACKAGE_INSTALL_STAMP)"
 PACKAGE_INSTALL_TARGETS ?= \
+  test test-unit test-ci \
   lint-artifacts quality security-bandit security-audit security-deps \
   build publish publish-test release-dry
 

@@ -6,11 +6,26 @@ from typing import cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 COMPATIBILITY_TARGETS = {
-    "compat-agentic-flows": "bijux_canon_runtime",
-    "compat-bijux-agent": "bijux_canon_agent",
-    "compat-bijux-rag": "bijux_canon_ingest",
-    "compat-bijux-rar": "bijux_canon_reason",
-    "compat-bijux-vex": "bijux_canon_index",
+    "compat-agentic-flows": {
+        "canonical_import": "bijux_canon_runtime",
+        "test_files": ["tests/unit/test_agentic_flows_compatibility_bridge.py"],
+    },
+    "compat-bijux-agent": {
+        "canonical_import": "bijux_canon_agent",
+        "test_files": ["tests/unit/test_bijux_agent_compatibility_bridge.py"],
+    },
+    "compat-bijux-rag": {
+        "canonical_import": "bijux_canon_ingest",
+        "test_files": ["tests/unit/test_bijux_rag_compatibility_bridge.py"],
+    },
+    "compat-bijux-rar": {
+        "canonical_import": "bijux_canon_reason",
+        "test_files": ["tests/unit/test_bijux_rar_compatibility_bridge.py"],
+    },
+    "compat-bijux-vex": {
+        "canonical_import": "bijux_canon_index",
+        "test_files": ["tests/unit/test_bijux_vex_compatibility_bridge.py"],
+    },
 }
 
 
@@ -35,16 +50,28 @@ def test_compatibility_packages_are_explicitly_tracked_in_workspace_metadata() -
     assert set(_as_str_list(workspace["compat_packages"])) == set(COMPATIBILITY_TARGETS)
 
 
-def test_compatibility_packages_remain_test_exempt_only_while_they_stay_thin() -> None:
+def test_compatibility_packages_keep_standardized_bridge_tests_while_they_stay_thin() -> None:
     failures: list[str] = []
 
-    for package_name, canonical_import in COMPATIBILITY_TARGETS.items():
+    for package_name, metadata in COMPATIBILITY_TARGETS.items():
+        contract = _as_dict(metadata)
+        canonical_import = cast(str, contract["canonical_import"])
+        expected_test_files = cast(list[str], contract["test_files"])
         package_root = REPO_ROOT / "packages" / package_name
         tests_dir = package_root / "tests"
-        if tests_dir.exists():
+        if not tests_dir.is_dir():
             failures.append(
-                f"{package_name}: compatibility packages must not grow ad hoc tests"
+                f"{package_name}: missing standardized compatibility tests"
             )
+        else:
+            test_files = sorted(
+                path.relative_to(package_root).as_posix()
+                for path in tests_dir.rglob("test_*.py")
+            )
+            if test_files != expected_test_files:
+                failures.append(
+                    f"{package_name}: expected only {expected_test_files}, found {test_files}"
+                )
 
         python_files = sorted(
             path.relative_to(package_root).as_posix()
