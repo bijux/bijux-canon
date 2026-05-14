@@ -15,6 +15,13 @@ ROOT_TARGET_GROUPS_test-all ?= check
 ROOT_TARGET_GROUPS_test-all-plus-run-time ?= check
 ROOT_TARGET_SHARED_ENV_test-all ?= 1
 ROOT_TARGET_SHARED_ENV_test-all-plus-run-time ?= 1
+# Guard against stale local stamp state so root docs and helper lanes can
+# recreate the shared check environment when the interpreter path was removed.
+ROOT_CHECK_ENV_COMMAND = @test -x "$(ROOT_CHECK_PYTHON)" || { \
+	echo "→ Rebuilding missing root check environment"; \
+	rm -f "$(ROOT_CHECK_STAMP)"; \
+	$(MAKE) "$(ROOT_CHECK_STAMP)"; \
+}
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
