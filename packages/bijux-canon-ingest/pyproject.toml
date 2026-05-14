@@ -128,7 +128,7 @@ ignore-private = true
 ignore-semiprivate = true
 
 [tool.pytest.ini_options]
-cache_dir = "../../.pytest_cache/bijux-canon-ingest"
+cache_dir = "../../artifacts/bijux-canon-ingest/test/.pytest_cache"
 markers = [
   "e2e: end-to-end coverage for package boundaries and retrieval contracts",
   "slow: long-running checks excluded from default ci and tox lanes",
@@ -136,7 +136,7 @@ markers = [
 testpaths = ["tests"]
 
 [tool.ruff]
-cache-dir = "../../.ruff_cache/bijux-canon-ingest"
+cache-dir = "../../artifacts/bijux-canon-ingest/lint/.ruff_cache"
 line-length = 88
 respect-gitignore = true
 src = ["src", "tests"]
@@ -152,7 +152,7 @@ extend-exclude = [
 "__init__.py" = ["F401"]
 
 [tool.mypy]
-cache_dir = "../../.mypy_cache/bijux-canon-ingest"
+cache_dir = "../../artifacts/bijux-canon-ingest/quality/.mypy_cache"
 python_version = "3.11"
 mypy_path = ["src", "stubs"]
 namespace_packages = false
