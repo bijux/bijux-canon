@@ -10,8 +10,9 @@ import pytest
 
 pytest.importorskip("fastapi")
 
-from bijux_canon_index.api.v1.app import build_app
 from fastapi.testclient import TestClient
+
+from bijux_canon_index.api.v1.app import build_app
 
 
 def test_api_execute_concurrency(

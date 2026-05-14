@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
     InvariantError,
@@ -29,7 +31,6 @@ from bijux_canon_index.domain.requests.request_execution import (
 )
 from bijux_canon_index.infra.adapters.ann_base import AnnExecutionRequestRunner
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-import pytest
 
 
 class NoAnn(AnnExecutionRequestRunner):

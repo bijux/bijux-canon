@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import AuthzDeniedError
@@ -13,7 +15,6 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExplainRequest,
     IngestRequest,
 )
-import pytest
 
 
 def test_read_only_blocks_mutations(monkeypatch):

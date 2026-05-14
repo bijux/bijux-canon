@@ -10,7 +10,6 @@ from bijux_canon_index.domain.requests.request_execution import (
     execute_request,
     start_execution_session,
 )
-
 from tests.fixtures.test_scale_vectors import build_scale_backend
 
 

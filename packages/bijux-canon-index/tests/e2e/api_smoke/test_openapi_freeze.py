@@ -2,10 +2,11 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from fastapi.encoders import jsonable_encoder
+
 from bijux_canon_index.api.v1.app import build_app
 from bijux_canon_index.core.canon import canon
 from bijux_canon_index.core.identity.ids import fingerprint
-from fastapi.encoders import jsonable_encoder
 
 EXPECTED_OPENAPI_FINGERPRINT = (
     "acabfc3b388d424eb63cda9bbe1f5b20821cbbf6c00ccd8323bc3a1af0fc2993"

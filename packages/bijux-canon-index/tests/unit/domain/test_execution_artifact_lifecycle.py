@@ -2,11 +2,12 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.types import ExecutionArtifact
 from bijux_canon_index.domain.artifact import lifecycle
-import pytest
 
 
 def _artifact() -> ExecutionArtifact:

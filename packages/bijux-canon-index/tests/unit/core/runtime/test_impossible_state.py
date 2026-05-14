@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import Any, cast
 
-from bijux_canon_index.core.runtime.execution_session import ExecutionSession
 import pytest
+
+from bijux_canon_index.core.runtime.execution_session import ExecutionSession
 
 
 def test_execution_session_cannot_start_without_plan() -> None:

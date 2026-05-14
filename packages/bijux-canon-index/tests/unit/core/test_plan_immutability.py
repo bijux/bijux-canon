@@ -4,6 +4,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -12,7 +14,6 @@ from bijux_canon_index.core.runtime.vector_execution import VectorExecution
 from bijux_canon_index.core.types import ExecutionArtifact, ExecutionRequest
 from bijux_canon_index.domain.requests.execution_plan import run_plan
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-import pytest
 
 
 def test_plan_tampering_rejected() -> None:

@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+import pytest
+from typer.testing import CliRunner
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
     InvariantError,
@@ -26,8 +29,6 @@ from bijux_canon_index.domain.requests.request_execution import (
 )
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
 from bijux_canon_index.interfaces.cli import app as cli_app
-import pytest
-from typer.testing import CliRunner
 
 
 def test_cli_help_snapshot() -> None:

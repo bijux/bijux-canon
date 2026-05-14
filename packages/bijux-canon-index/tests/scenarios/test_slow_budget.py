@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.core.execution_mode import ExecutionMode
@@ -13,8 +15,6 @@ from bijux_canon_index.domain.requests.request_execution import (
     start_execution_session,
 )
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-import pytest
-
 from tests.conformance.test_cross_backend_replay import _seed_backend
 
 

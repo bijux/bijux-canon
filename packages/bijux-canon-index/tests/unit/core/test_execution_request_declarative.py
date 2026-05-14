@@ -2,6 +2,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import InvariantError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -12,7 +14,6 @@ from bijux_canon_index.core.types import (
 )
 from bijux_canon_index.domain.requests.request_execution import start_execution_session
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-import pytest
 
 
 def test_execution_request_cannot_execute_directly() -> None:

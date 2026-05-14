@@ -4,6 +4,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_index.contracts.resources import (
     BackendCapabilities,
     ExecutionResources,
@@ -24,7 +26,6 @@ from bijux_canon_index.core.types import (
 )
 from bijux_canon_index.domain.requests.execution_plan import build_execution_plan
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-import pytest
 
 
 def _prepare_artifact(backend):

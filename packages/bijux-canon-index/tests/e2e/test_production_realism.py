@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from pathlib import Path
 
+import pytest
+
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.config import ExecutionConfig, VectorStoreConfig
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
@@ -23,7 +25,6 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExplainRequest,
     IngestRequest,
 )
-import pytest
 
 pytest.importorskip("faiss")
 
