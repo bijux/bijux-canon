@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.core.errors import (
     FAILURE_CLASS_MAP,
     FailureClass,
@@ -10,7 +12,6 @@ from bijux_canon_runtime.core.errors import (
     SemanticViolationError,
     classify_failure,
 )
-import pytest
 
 
 def test_failure_taxonomy_is_exhaustive() -> None:

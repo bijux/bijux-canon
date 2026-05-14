@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+import duckdb
+import pytest
+
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
@@ -13,8 +16,6 @@ from bijux_canon_runtime.observability.storage.execution_store import (
 from bijux_canon_runtime.ontology import EntropyMagnitude
 from bijux_canon_runtime.ontology.public import EntropySource
 from bijux_canon_runtime.runtime.context import RunMode
-import duckdb
-import pytest
 
 pytestmark = pytest.mark.unit
 

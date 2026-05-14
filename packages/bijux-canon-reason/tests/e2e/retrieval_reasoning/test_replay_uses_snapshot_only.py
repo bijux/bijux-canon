@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 
 import pytest
+
 from tests.e2e._helpers import run_cli, write_spec
 
 

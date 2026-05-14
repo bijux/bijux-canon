@@ -30,8 +30,7 @@ def test_openapi_schema_links_created_resources_to_follow_up_operations() -> Non
 
     assert run_links["getCreatedRun"]["operationId"] == "getReasonRun"
     assert (
-        run_links["getCreatedRun"]["parameters"]["run_id"]
-        == "$response.body#/run_id"
+        run_links["getCreatedRun"]["parameters"]["run_id"] == "$response.body#/run_id"
     )
     assert run_links["getCreatedRunManifest"]["operationId"] == "getReasonRunManifest"
     assert run_links["getCreatedRunTrace"]["operationId"] == "getReasonRunTrace"

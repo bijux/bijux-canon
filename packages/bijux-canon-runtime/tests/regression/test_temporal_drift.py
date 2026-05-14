@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -17,7 +19,6 @@ from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summar
 from bijux_canon_runtime.observability.storage.execution_store import (
     DuckDBExecutionWriteStore,
 )
-import pytest
 
 pytestmark = pytest.mark.regression
 

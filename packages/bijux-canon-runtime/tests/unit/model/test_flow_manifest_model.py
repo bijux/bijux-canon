@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.replay_envelope import ReplayEnvelope
@@ -25,7 +27,6 @@ from bijux_canon_runtime.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )
-import pytest
 
 pytestmark = pytest.mark.unit
 

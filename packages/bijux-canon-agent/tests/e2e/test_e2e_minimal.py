@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+
 from bijux_canon_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
 from bijux_canon_agent.constants import CONTRACT_VERSION
 from bijux_canon_agent.enums import DecisionOutcome
@@ -11,7 +13,6 @@ from bijux_canon_agent.llm.registry import Provider
 from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
 from bijux_canon_agent.pipeline.control.lifecycle import PipelineLifecycle
 from bijux_canon_agent.traces import TraceEntry, TraceRecorder
-import pytest
 from tests.utils.trace_helpers import (
     build_replay_metadata,
     build_run_fingerprint,

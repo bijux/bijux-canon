@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_canon_reason.interfaces.cli.main import app
 from typer.testing import CliRunner
+
+from bijux_canon_reason.interfaces.cli.main import app
 
 runner = CliRunner()
 

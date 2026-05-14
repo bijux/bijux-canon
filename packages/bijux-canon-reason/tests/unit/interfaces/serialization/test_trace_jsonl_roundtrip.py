@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, cast
 
+import pytest
+
 from bijux_canon_reason.core.fingerprints import fingerprint_obj
 from bijux_canon_reason.core.types import (
     Claim,
@@ -28,7 +30,6 @@ from bijux_canon_reason.interfaces.serialization.trace_jsonl import (
     read_trace_jsonl,
     write_trace_jsonl,
 )
-import pytest
 
 
 def test_trace_jsonl_roundtrip_is_stable(tmp_path: Path) -> None:

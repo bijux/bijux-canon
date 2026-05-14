@@ -6,8 +6,9 @@ import os
 from pathlib import Path
 from typing import Any, cast
 
-from bijux_canon_reason.api.v1.app import MAX_REQUEST_BYTES, create_app
 from fastapi.testclient import TestClient
+
+from bijux_canon_reason.api.v1.app import MAX_REQUEST_BYTES, create_app
 
 
 def _client(

@@ -3,12 +3,13 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.application.determinism_guard import validate_determinism
 from bijux_canon_runtime.observability.capture.environment import (
     compute_environment_fingerprint,
 )
 from bijux_canon_runtime.ontology import DeterminismLevel
-import pytest
 
 pytestmark = pytest.mark.regression
 

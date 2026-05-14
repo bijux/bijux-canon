@@ -7,6 +7,8 @@ from collections.abc import Callable
 import dataclasses
 from typing import Any, cast
 
+import pytest
+
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_steps import ExecutionSteps
@@ -35,7 +37,6 @@ from bijux_canon_runtime.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )
-import pytest
 
 pytestmark = pytest.mark.unit
 

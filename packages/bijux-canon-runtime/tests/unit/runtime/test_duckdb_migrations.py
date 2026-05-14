@@ -5,6 +5,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import duckdb
+import pytest
+
 from bijux_canon_runtime.observability.storage.execution_store import (
     MIGRATIONS_DIR,
     SCHEMA_CONTRACT_PATH,
@@ -12,8 +15,6 @@ from bijux_canon_runtime.observability.storage.execution_store import (
     SCHEMA_VERSION,
     DuckDBExecutionWriteStore,
 )
-import duckdb
-import pytest
 
 pytestmark = pytest.mark.unit
 

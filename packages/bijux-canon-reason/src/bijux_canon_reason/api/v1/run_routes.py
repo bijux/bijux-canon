@@ -9,7 +9,8 @@ import json
 from pathlib import Path
 from typing import Annotated, TypeAlias
 
-from fastapi import FastAPI, HTTPException, Path as FastPath, Request
+from fastapi import FastAPI, HTTPException, Request
+from fastapi import Path as FastPath
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from bijux_canon_reason.core.types import Trace
 from bijux_canon_reason.interfaces.serialization.trace_jsonl import write_trace_jsonl
 from bijux_canon_reason.traces.replay import replay_from_artifacts
-import pytest
 
 
 def test_replay_missing_spec_raises(tmp_path: Path) -> None:

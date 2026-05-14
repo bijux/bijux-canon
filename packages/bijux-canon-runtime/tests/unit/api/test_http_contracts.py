@@ -3,8 +3,9 @@
 
 from __future__ import annotations
 
-from bijux_canon_runtime.api.v1.app import app
 from fastapi.testclient import TestClient
+
+from bijux_canon_runtime.api.v1.app import app
 
 client = TestClient(app)
 

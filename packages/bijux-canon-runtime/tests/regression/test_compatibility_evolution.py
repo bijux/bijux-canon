@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+import pytest
+
 from bijux_canon_runtime.application.determinism_guard import validate_replay
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
@@ -12,7 +14,6 @@ from bijux_canon_runtime.application.execute_flow import (
     execute_flow,
 )
 from bijux_canon_runtime.ontology.ids import PlanHash
-import pytest
 
 pytestmark = pytest.mark.regression
 

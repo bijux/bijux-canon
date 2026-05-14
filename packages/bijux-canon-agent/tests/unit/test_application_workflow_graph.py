@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from bijux_canon_agent.application.workflow_graph.orchestrator import (
     WorkflowNode,
     WorkflowOrchestrator,
@@ -21,7 +23,6 @@ from bijux_canon_agent.contracts.agent_contract import (
 )
 from bijux_canon_agent.enums import PipelineState
 from bijux_canon_agent.pipeline.control.stop_conditions import StopReason
-import pytest
 from tests.utils.trace_helpers import default_model_metadata
 
 

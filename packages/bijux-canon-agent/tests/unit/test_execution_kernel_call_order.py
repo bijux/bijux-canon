@@ -5,11 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.contracts import AgentInput
 from bijux_canon_agent.enums import AgentType, ExecutionMode
 from bijux_canon_agent.observability.logging import LoggerConfig, LoggerManager
-import pytest
 
 
 class CallOrderAgent(BaseAgent):

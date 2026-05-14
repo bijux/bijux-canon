@@ -3,9 +3,10 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.contracts.artifact_contract import validate
 from bijux_canon_runtime.ontology import ArtifactType
-import pytest
 
 pytestmark = pytest.mark.unit
 

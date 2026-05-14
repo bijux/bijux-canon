@@ -8,6 +8,8 @@ from pathlib import Path
 import sys
 import types
 
+import pytest
+
 from bijux_canon_runtime.model.artifact.entropy_budget import EntropyBudget
 from bijux_canon_runtime.model.datasets.dataset_descriptor import DatasetDescriptor
 from bijux_canon_runtime.model.execution.execution_plan import ExecutionPlan
@@ -59,7 +61,6 @@ from bijux_canon_runtime.ontology.public import (
     ReplayMode,
 )
 from bijux_canon_runtime.runtime.artifact_store import InMemoryArtifactStore
-import pytest
 
 PlanHashFactory = Callable[..., PlanHash]
 

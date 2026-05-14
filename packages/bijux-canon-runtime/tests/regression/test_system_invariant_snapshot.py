@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 import bijux_canon_runtime
 from bijux_canon_runtime.contracts import compatibility_contract
 from bijux_canon_runtime.core import authority
@@ -12,7 +14,6 @@ from bijux_canon_runtime.ontology import (
     StepType,
     VerificationPhase,
 )
-import pytest
 
 pytestmark = pytest.mark.regression
 

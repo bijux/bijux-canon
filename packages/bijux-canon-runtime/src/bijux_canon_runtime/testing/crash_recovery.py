@@ -12,7 +12,6 @@ from typing import Any
 
 import bijux_canon_index
 import bijux_canon_reason
-
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,

@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from dataclasses import asdict
 
+import pytest
+
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -13,7 +15,6 @@ from bijux_canon_runtime.application.execute_flow import (
 from bijux_canon_runtime.observability.classification.fingerprint import (
     fingerprint_inputs,
 )
-import pytest
 
 pytestmark = pytest.mark.regression
 

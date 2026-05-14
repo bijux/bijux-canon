@@ -5,9 +5,10 @@ from __future__ import annotations
 from time import perf_counter
 from typing import Any
 
+import pytest
+
 from bijux_canon_reason.retrieval.bm25 import BM25Index
 from bijux_canon_reason.retrieval.corpus import CorpusDoc
-import pytest
 
 
 @pytest.mark.benchmark(group="retrieval")
