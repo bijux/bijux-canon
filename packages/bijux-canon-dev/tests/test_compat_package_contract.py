@@ -50,7 +50,9 @@ def test_compatibility_packages_are_explicitly_tracked_in_workspace_metadata() -
     assert set(_as_str_list(workspace["compat_packages"])) == set(COMPATIBILITY_TARGETS)
 
 
-def test_compatibility_packages_keep_standardized_bridge_tests_while_they_stay_thin() -> None:
+def test_compatibility_packages_keep_standardized_bridge_tests_while_they_stay_thin() -> (
+    None
+):
     failures: list[str] = []
 
     for package_name, metadata in COMPATIBILITY_TARGETS.items():
@@ -60,9 +62,7 @@ def test_compatibility_packages_keep_standardized_bridge_tests_while_they_stay_t
         package_root = REPO_ROOT / "packages" / package_name
         tests_dir = package_root / "tests"
         if not tests_dir.is_dir():
-            failures.append(
-                f"{package_name}: missing standardized compatibility tests"
-            )
+            failures.append(f"{package_name}: missing standardized compatibility tests")
         else:
             test_files = sorted(
                 path.relative_to(package_root).as_posix()
