@@ -22,6 +22,11 @@ API_DRIFT_OUT                  = $(API_ARTIFACTS_DIR)/openapi.generated.json
 API_OPENAPI_DRIFT_COMMAND      = $(VENV_PYTHON) -m bijux_canon_dev.api.openapi_drift --app-import bijux_canon_ingest.interfaces.http.app:create_app --schema "$(API_SCHEMA)" --out "$(API_DRIFT_OUT)"
 API_SCHEMATHESIS_ARGS          := --workers=1 --max-failures=1 --checks=not_a_server_error,response_schema_conformance,content_type_conformance,response_headers_conformance --max-examples=5 --request-timeout=30000 --max-response-time=500 --suppress-health-check=filter_too_much
 BUILD_CHECK_DISTS              := 1
+TEST_MAIN_ARGS := -m "not slow"
+TEST_E2E_ARGS := -m "e2e and not slow" --maxfail=1 -q
+TEST_REGRESSION_ARGS := -m "regression and not slow" --maxfail=1 -q
+TEST_EVALUATION_ARGS := -m "evaluation and not slow" --maxfail=1 -q
+TEST_REAL_LOCAL_ARGS := -m "real_local and not slow" -s -p no:cov
 PACKAGE_INSTALL_TARGETS := \
   test lint fmt quality security api build sbom \
   fmt-artifacts lint-artifacts interrogate-report

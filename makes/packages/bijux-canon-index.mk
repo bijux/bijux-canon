@@ -17,6 +17,10 @@ BUILD_POST_TARGETS := build-release-metadata
 PUBLISH_DIST_DIR = $(PROJECT_ARTIFACTS_DIR)/release
 PUBLISH_UPLOAD_ENABLED := 0
 TEST_MAIN_ARGS := -m "not slow" --maxfail=1
+TEST_E2E_ARGS := -m "e2e and not slow" --maxfail=1 -q
+TEST_REGRESSION_ARGS := -m "regression and not slow" --maxfail=1 -q
+TEST_EVALUATION_ARGS := -m "evaluation and not slow" --maxfail=1 -q
+TEST_REAL_LOCAL_ARGS := -m "real_local and not slow" -s -p no:cov
 BUILD_DIR = $(PROJECT_ARTIFACTS_DIR)/release
 PACKAGE_BOOTSTRAP_PREREQS = $(VENV)
 PACKAGE_BOOTSTRAP_TARGETS := lint quality security api docs

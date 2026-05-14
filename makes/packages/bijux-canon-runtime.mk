@@ -2,6 +2,11 @@ PACKAGE_KIND := workspace-python
 PACKAGE_IMPORT_NAME := bijux_canon_runtime
 MYPY_TARGETS := $(if $(LINT_SCOPE),$(LINT_SCOPE),src/bijux_canon_runtime)
 TEST_CI_TARGETS := test-unit test-e2e test-regression
+TEST_MAIN_ARGS := -m "not slow and not real_local and not api"
+TEST_E2E_ARGS := -m "e2e and not slow" --maxfail=1 -q
+TEST_REGRESSION_ARGS := -m "regression and not slow" --maxfail=1 -q
+TEST_EVALUATION_ARGS := -m "evaluation and not slow" --maxfail=1 -q
+TEST_REAL_LOCAL_ARGS := -m "real_local and not slow" -s -p no:cov
 
 SECURITY_EXTRA_CHECKS = $(MONOREPO_ROOT)/packages/bijux-canon-dev/src/bijux_canon_dev/packages/runtime/check_dependency_allowlist.py
 # The checked-in schema already includes the /api/v1 prefix in each path.
