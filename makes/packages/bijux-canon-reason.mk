@@ -11,7 +11,17 @@ SCHEMATHESIS_OPTS = --checks=all --max-failures=1 --report junit --report-junit-
 BUILD_CLEAN_PYCACHE := 1
 PUBLISH_VERIFY_INSTALL_CMD := bijux --version
 TEST_COVERAGE_TARGETS := $(abspath src/bijux_canon_reason/core) $(abspath src/bijux_canon_reason/interfaces)
-TEST_MAIN_ARGS := --maxfail=1
+TEST_MAIN_ARGS := -m "not slow" --maxfail=1
+
+test-all: TEST_MAIN_ARGS =
+test-all: PYTEST_ADDOPTS_EXTRA = -o timeout=0
+test-all: test
+.PHONY: test-all
+
+test-all-plus-run-time: TEST_MAIN_ARGS =
+test-all-plus-run-time: PYTEST_ADDOPTS_EXTRA = -o timeout=0 --durations=0 --durations-min=0
+test-all-plus-run-time: test
+.PHONY: test-all-plus-run-time
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 

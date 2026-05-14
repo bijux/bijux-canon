@@ -28,13 +28,23 @@ API_VALIDATE_IN_NODE_DIR := 1
 SCHEMATHESIS_OPTS    = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --suppress-health-check=filter_too_much
 BUILD_CLEAN_PYCACHE  := 1
 PUBLISH_VERIFY_INSTALL_CMD := python -m bijux_canon_agent --help >/dev/null 2>&1
-TEST_MAIN_ARGS       := -m "not integration and not e2e"
+TEST_MAIN_ARGS       := -m "not integration and not e2e and not slow"
 TEST_UNIT_DIR_ARGS   := -m "not integration and not e2e and not slow" --maxfail=1 -q
 TEST_UNIT_FALLBACK_ARGS := -k "not e2e and not integration and not functional" -m "not integration and not e2e and not slow" --maxfail=1 -q
 TEST_SYNTAX_PATHS    := src tests
 TEST_PYCACHE_PREFIX  = $(TEST_ARTIFACTS_DIR)/pycache
 TEST_RESET_PYCACHE   := 1
 TEST_PRE_TARGETS     := bootstrap
+
+test-all: TEST_MAIN_ARGS =
+test-all: PYTEST_ADDOPTS_EXTRA = -o timeout=0
+test-all: test
+.PHONY: test-all
+
+test-all-plus-run-time: TEST_MAIN_ARGS =
+test-all-plus-run-time: PYTEST_ADDOPTS_EXTRA = -o timeout=0 --durations=0 --durations-min=0
+test-all-plus-run-time: test
+.PHONY: test-all-plus-run-time
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 

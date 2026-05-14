@@ -10,10 +10,17 @@ ROOT_DOCS_DEV_ADDR ?= 127.0.0.1:8001
 UV_SYNC := UV_PROJECT_ENVIRONMENT="$(ROOT_CHECK_VENV)" $(UV) sync --frozen --group dev --python "$(PYTHON)"
 BIJUX_PY_SYSTEM_REL ?= .bijux/shared/bijux-makes-py
 BIJUX_GH_PY_SHARED_DIR ?= .bijux/shared/bijux-gh
+ROOT_PACKAGE_TARGETS += test-all test-all-plus-run-time
+ROOT_TARGET_GROUPS_test-all ?= check
+ROOT_TARGET_GROUPS_test-all-plus-run-time ?= check
+ROOT_TARGET_SHARED_ENV_test-all ?= 1
+ROOT_TARGET_SHARED_ENV_test-all-plus-run-time ?= 1
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/repository/root.mk
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/package-dispatch.mk
+ROOT_TARGET_PACKAGES_test-all := $(CHECK_PACKAGES)
+ROOT_TARGET_PACKAGES_test-all-plus-run-time := $(CHECK_PACKAGES)
 include $(ROOT_MAKEFILE_DIR)/bijux-py/root/docs.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-docs.mk
 include $(ROOT_MAKEFILE_DIR)/bijux-std.mk
@@ -31,6 +38,8 @@ include $(ROOT_MAKEFILE_DIR)/bijux-py/ci/help.mk
 ##@ Repository
 help: ## Show generated repository commands from included make modules
 check: lock-check lint test quality security docs api build sbom ## Run the full repository verification flow
+test-all: ## Run every repository test surface, including slow, evaluation, and real-local tests
+test-all-plus-run-time: ## Run every repository test surface and report per-test durations
 list: ## List primary package slugs
 list-all: ## List every canonical package slug
 install: ## Sync the shared root uv environment from pyproject.toml and uv.lock

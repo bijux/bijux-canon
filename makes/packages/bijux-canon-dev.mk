@@ -9,6 +9,16 @@ BUILD_CHECK_DISTS := 1
 PACKAGE_ALL_TARGETS := clean install test lint quality security build sbom
 QUALITY_MYPY_CONFIG = $(MONOREPO_ROOT)/configs/mypy.ini
 
+test-all: TEST_MAIN_ARGS =
+test-all: PYTEST_ADDOPTS_EXTRA = -o timeout=0
+test-all: test
+.PHONY: test-all
+
+test-all-plus-run-time: TEST_MAIN_ARGS =
+test-all-plus-run-time: PYTEST_ADDOPTS_EXTRA = -o timeout=0 --durations=0 --durations-min=0
+test-all-plus-run-time: test
+.PHONY: test-all-plus-run-time
+
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 
 PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.7
