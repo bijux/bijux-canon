@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import importlib
 
+import pytest
+
 from bijux_canon_agent.config import validate_keys as core_validate
 from bijux_canon_agent.config.env import load_environment
 from bijux_canon_agent.config.env import validate_keys as env_validate
-import pytest
 
 
 def test_validate_keys_is_deduplicated() -> None:

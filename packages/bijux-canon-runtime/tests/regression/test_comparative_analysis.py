@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -11,7 +13,6 @@ from bijux_canon_runtime.application.execute_flow import (
 from bijux_canon_runtime.observability.analysis.comparative_analysis import (
     compare_runs,
 )
-import pytest
 
 pytestmark = pytest.mark.regression
 

@@ -7,8 +7,9 @@ from pathlib import Path
 import subprocess
 from typing import Any
 
-from bijux_canon_reason.core.fingerprints import canonical_dumps
 import pytest
+
+from bijux_canon_reason.core.fingerprints import canonical_dumps
 
 
 @pytest.fixture()

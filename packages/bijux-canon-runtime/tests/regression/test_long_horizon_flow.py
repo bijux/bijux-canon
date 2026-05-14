@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 import bijux_canon_agent
 import bijux_canon_index
 import bijux_canon_reason
@@ -39,11 +41,11 @@ from bijux_canon_runtime.ontology.ids import (
 )
 from bijux_canon_runtime.ontology.public import ReplayAcceptability
 import bijux_rag
-import pytest
 
 pytestmark = pytest.mark.regression
 
 
+@pytest.mark.slow
 def test_long_horizon_flow_is_stable(
     baseline_policy,
     resolved_flow_factory,

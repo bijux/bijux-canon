@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any, cast
 
+import pytest
+
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BackendUnavailableError
@@ -26,7 +28,6 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExecutionRequestPayload,
     RandomnessProfilePayload,
 )
-import pytest
 
 
 class FailingAnn(AnnExecutionRequestRunner):

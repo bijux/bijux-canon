@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import BackendDivergenceError
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -16,7 +18,6 @@ from bijux_canon_index.core.types import (
 )
 from bijux_canon_index.domain.drift.backend_drift import detect_backend_drift
 from bijux_canon_index.infra.adapters.memory.backend import memory_backend
-import pytest
 
 
 def _seed(

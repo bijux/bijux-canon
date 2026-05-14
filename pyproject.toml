@@ -1,19 +1,35 @@
+[build-system]
+requires = ["hatchling>=1.27.0,<1.30", "hatch-vcs>=0.4.0,<1.0"]
+build-backend = "hatchling.build"
+
 [project]
 name = "bijux-canon-repository"
-version = "0.1.0"
 description = "Repository workspace for bijux-canon."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
+dynamic = ["version"]
 
 [project.urls]
 Documentation = "https://bijux.io/bijux-canon/"
 Repository = "https://github.com/bijux/bijux-canon"
 Issues = "https://github.com/bijux/bijux-canon/issues"
+Changelog = "https://github.com/bijux/bijux-canon/blob/main/CHANGELOG.md"
+Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
 
 [dependency-groups]
 dev = [
+  "bijux-canon-agent[dev]",
   "bijux-canon-dev[dev]",
+  "bijux-canon-index[dev]",
+  "bijux-canon-ingest[dev]",
+  "bijux-canon-reason[dev]",
+  "bijux-canon-runtime[dev]",
+  "agentic-flows",
+  "bijux-agent",
+  "bijux-rag",
+  "bijux-rar",
+  "bijux-vex",
   "mkdocs>=1.6.1,<2.0",
   "mkdocs-click>=0.9.0,<1.0",
   "mkdocs-gen-files>=0.5.0,<1.0",
@@ -33,6 +49,8 @@ dev = [
 name = "cz_conventional_commits"
 major_version_zero = true
 annotated_tag = true
+version_provider = "scm"
+tag_format = "v$version"
 update_changelog_on_bump = false
 
 [tool.bijux_canon]
@@ -98,4 +116,34 @@ make_dir = "makes"
 "compat-bijux-vex" = "packages/compat-bijux-vex"
 
 [tool.uv.sources]
-bijux-canon-dev = { path = "packages/bijux-canon-dev", editable = true }
+bijux-canon-runtime = { workspace = true }
+bijux-canon-agent = { workspace = true }
+bijux-canon-dev = { workspace = true }
+bijux-canon-ingest = { workspace = true }
+bijux-canon-reason = { workspace = true }
+bijux-canon-index = { workspace = true }
+agentic-flows = { workspace = true }
+bijux-agent = { workspace = true }
+bijux-rag = { workspace = true }
+bijux-rar = { workspace = true }
+bijux-vex = { workspace = true }
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.interrogate]
+fail-under = 32
+color = true
+
+[tool.bandit]
+skips = ["B404", "B311"]
+exclude_dirs = [".venv", "tests", "artifacts", ".pytest_cache", ".ruff_cache"]
+
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = "^v(?P<version>.*)$"
+fallback-version = "0.1.0"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = ".", search_parent_directories = true }
+
+[tool.hatch.build.targets.wheel]
+bypass-selection = true

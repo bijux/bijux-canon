@@ -2,8 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_index.api.v1.app import build_app
 from fastapi.testclient import TestClient
+
+from bijux_canon_index.api.v1.app import build_app
 
 
 def test_api_capabilities_reports_backend():

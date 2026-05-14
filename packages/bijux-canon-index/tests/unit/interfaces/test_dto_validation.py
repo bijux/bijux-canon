@@ -2,6 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from pydantic_core import ValidationError
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
 from bijux_canon_index.interfaces.schemas.models import (
@@ -10,8 +13,6 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExplainRequest,
     IngestRequest,
 )
-from pydantic_core import ValidationError
-import pytest
 
 
 def test_unknown_fields_rejected() -> None:

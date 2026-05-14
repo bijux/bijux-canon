@@ -2,9 +2,10 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_reason.core.types import EvidenceRef
 from pydantic_core import ValidationError
 import pytest
+
+from bijux_canon_reason.core.types import EvidenceRef
 
 
 @pytest.mark.parametrize(

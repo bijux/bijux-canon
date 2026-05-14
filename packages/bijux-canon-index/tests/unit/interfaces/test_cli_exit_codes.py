@@ -4,9 +4,10 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+from typer.testing import CliRunner
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.interfaces.cli import app as cli_app
-from typer.testing import CliRunner
 
 
 def test_cli_exit_code_for_misuse():

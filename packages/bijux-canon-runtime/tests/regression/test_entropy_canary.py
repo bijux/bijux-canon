@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.model.artifact.entropy_usage import EntropyUsage
 from bijux_canon_runtime.model.artifact.non_determinism_source import (
     NonDeterminismSource,
@@ -11,7 +13,6 @@ from bijux_canon_runtime.observability.analysis.trace_diff import entropy_summar
 from bijux_canon_runtime.ontology import EntropyMagnitude
 from bijux_canon_runtime.ontology.ids import FlowID, TenantID
 from bijux_canon_runtime.ontology.public import EntropySource
-import pytest
 
 pytestmark = pytest.mark.regression
 

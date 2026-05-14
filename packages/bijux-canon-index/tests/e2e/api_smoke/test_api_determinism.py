@@ -7,10 +7,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from bijux_canon_index.api.v1.app import build_app
-from bijux_canon_index.core.identity.ids import fingerprint
 import pytest
 from starlette.testclient import TestClient
+
+from bijux_canon_index.api.v1.app import build_app
+from bijux_canon_index.core.identity.ids import fingerprint
 
 
 def test_api_responses_are_deterministic(

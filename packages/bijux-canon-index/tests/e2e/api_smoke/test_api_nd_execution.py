@@ -6,9 +6,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_index.api.v1 import build_app
 from fastapi.testclient import TestClient
 import pytest
+
+from bijux_canon_index.api.v1 import build_app
 
 
 def test_api_nd_execution_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

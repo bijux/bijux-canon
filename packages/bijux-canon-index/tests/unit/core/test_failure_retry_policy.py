@@ -4,6 +4,8 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.errors import (
     InvariantError,
@@ -15,7 +17,6 @@ from bijux_canon_index.core.failures import (
     classify_failure,
     retry_with_policy,
 )
-import pytest
 
 
 def test_invariant_is_terminal():

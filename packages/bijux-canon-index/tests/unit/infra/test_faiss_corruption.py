@@ -6,8 +6,9 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from bijux_canon_index.core.errors import CorruptArtifactError
 import pytest
+
+from bijux_canon_index.core.errors import CorruptArtifactError
 
 faiss = pytest.importorskip("faiss")
 

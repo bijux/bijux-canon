@@ -2,9 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_index.core.types import Document
 import pytest
 
+from bijux_canon_index.core.types import Document
 from tests.conformance.suite import default_backends, parametrize_backends
 
 

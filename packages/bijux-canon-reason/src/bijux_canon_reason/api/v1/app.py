@@ -197,11 +197,91 @@ def _install_openapi_schema(app: FastAPI) -> None:
             contact=app.contact,
             license_info=app.license_info,
         )
+        _attach_stateful_links(schema)
         schema["security"] = []
         app.openapi_schema = schema
         return schema
 
     app.openapi = _openapi
+
+
+def _attach_stateful_links(schema: dict[str, object]) -> None:
+    """Attach OpenAPI links that let contract runners follow created resources."""
+    _attach_links(
+        schema,
+        path="/v1/items",
+        method="post",
+        status_code="201",
+        links={
+            "getCreatedItem": {
+                "operationId": "getReasonItem",
+                "parameters": {"item_id": "$response.body#/id"},
+            },
+            "updateCreatedItem": {
+                "operationId": "updateReasonItem",
+                "parameters": {"item_id": "$response.body#/id"},
+            },
+            "deleteCreatedItem": {
+                "operationId": "deleteReasonItem",
+                "parameters": {"item_id": "$response.body#/id"},
+            },
+        },
+    )
+    _attach_links(
+        schema,
+        path="/v1/runs",
+        method="post",
+        status_code="200",
+        links={
+            "getCreatedRun": {
+                "operationId": "getReasonRun",
+                "parameters": {"run_id": "$response.body#/run_id"},
+            },
+            "getCreatedRunManifest": {
+                "operationId": "getReasonRunManifest",
+                "parameters": {"run_id": "$response.body#/run_id"},
+            },
+            "getCreatedRunTrace": {
+                "operationId": "getReasonRunTrace",
+                "parameters": {"run_id": "$response.body#/run_id"},
+            },
+            "verifyCreatedRun": {
+                "operationId": "verifyReasonRun",
+                "parameters": {"run_id": "$response.body#/run_id"},
+            },
+            "replayCreatedRun": {
+                "operationId": "replayReasonRun",
+                "parameters": {"run_id": "$response.body#/run_id"},
+            },
+        },
+    )
+
+
+def _attach_links(
+    schema: dict[str, object],
+    *,
+    path: str,
+    method: str,
+    status_code: str,
+    links: dict[str, object],
+) -> None:
+    """Attach response links for one operation when the generated schema owns it."""
+    paths = schema.get("paths")
+    if not isinstance(paths, dict):
+        return
+    path_item = paths.get(path)
+    if not isinstance(path_item, dict):
+        return
+    operation = path_item.get(method)
+    if not isinstance(operation, dict):
+        return
+    responses = operation.get("responses")
+    if not isinstance(responses, dict):
+        return
+    response = responses.get(status_code)
+    if not isinstance(response, dict):
+        return
+    response["links"] = links
 
 
 app = create_app()

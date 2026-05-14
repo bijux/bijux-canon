@@ -86,6 +86,7 @@ def test_assert_artifacts_match_version_rejects_mismatched_files(
         assert_artifacts_match_version(tmp_path, "0.3.0")
 
 
+@pytest.mark.slow
 def test_public_release_packages_resolve_same_version_as_hatch() -> None:
     workspace = _workspace_metadata()
     failures: list[str] = []

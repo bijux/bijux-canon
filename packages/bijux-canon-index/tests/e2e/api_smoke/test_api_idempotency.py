@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_index.api.v1.app import build_app
 import pytest
 from starlette.testclient import TestClient
+
+from bijux_canon_index.api.v1.app import build_app
 
 
 def test_ingest_idempotency_key(

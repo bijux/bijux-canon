@@ -5,13 +5,14 @@ from __future__ import annotations
 import dataclasses
 from decimal import Decimal
 
+from pydantic import BaseModel
+import pytest
+
 from bijux_canon_reason.core.fingerprints import (
     canonical_dumps,
     fingerprint_obj,
     stable_id,
 )
-from pydantic import BaseModel
-import pytest
 
 
 class _Model(BaseModel):

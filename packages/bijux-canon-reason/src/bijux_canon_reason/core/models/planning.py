@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Literal, cast
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from bijux_canon_reason.core.fingerprints import stable_id
 from bijux_canon_reason.core.models.base import JsonValue, StableModel
@@ -21,6 +21,14 @@ class ProblemSpec(StableModel):
     expected_output_type: str = "Claim"
     expected: dict[str, object] | None = None
     version: int | None = None
+
+    @field_validator("version", mode="before")
+    @classmethod
+    def _reject_boolean_version(cls, value: object) -> object:
+        """Reject booleans while still allowing numeric JSON integers."""
+        if isinstance(value, bool):
+            raise ValueError("version must not be a boolean")
+        return value
 
     def with_content_id(self) -> ProblemSpec:
         """Handle with content ID."""

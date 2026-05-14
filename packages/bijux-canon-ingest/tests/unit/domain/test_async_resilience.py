@@ -18,6 +18,7 @@ from bijux_canon_ingest.domain.effects.asyncio import (
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok
 from hypothesis import given, settings
 from hypothesis import strategies as st
+import pytest
 
 
 def test_identity_when_no_retry_no_timeout() -> None:
@@ -37,6 +38,7 @@ def test_identity_when_no_retry_no_timeout() -> None:
 
 @given(attempts=st.integers(min_value=2, max_value=10))
 @settings(deadline=None, max_examples=50)
+@pytest.mark.slow
 def test_retry_bounded_attempts(attempts: int) -> None:
     async def run() -> None:
         policy = RetryPolicy(

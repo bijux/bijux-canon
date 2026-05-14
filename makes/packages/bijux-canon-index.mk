@@ -16,7 +16,11 @@ BUILD_PRE_TARGETS := clean install fmt lint test quality security sbom
 BUILD_POST_TARGETS := build-release-metadata
 PUBLISH_DIST_DIR = $(PROJECT_ARTIFACTS_DIR)/release
 PUBLISH_UPLOAD_ENABLED := 0
-TEST_MAIN_ARGS := --maxfail=1
+TEST_MAIN_ARGS := -m "not slow" --maxfail=1
+TEST_E2E_ARGS := -m "e2e and not slow" --maxfail=1 -q
+TEST_REGRESSION_ARGS := -m "regression and not slow" --maxfail=1 -q
+TEST_EVALUATION_ARGS := -m "evaluation and not slow" --maxfail=1 -q
+TEST_REAL_LOCAL_ARGS := -m "real_local and not slow" -s -p no:cov
 BUILD_DIR = $(PROJECT_ARTIFACTS_DIR)/release
 PACKAGE_BOOTSTRAP_PREREQS = $(VENV)
 PACKAGE_BOOTSTRAP_TARGETS := lint quality security api docs
@@ -28,6 +32,16 @@ PACKAGE_CLEAN_MESSAGE := [INFO] Cleaning (.venv) ...
 PACKAGE_CLEAN_SOFT_MESSAGE := [INFO] Cleaning (no .venv) ...
 PACKAGE_ALL_TARGETS := clean install fmt lint test quality api security sbom
 PACKAGE_ALL_MESSAGE := [OK] All targets completed
+
+test-all: TEST_MAIN_ARGS =
+test-all: PYTEST_ADDOPTS_EXTRA = -o timeout=0
+test-all: test
+.PHONY: test-all
+
+test-all-plus-run-time: TEST_MAIN_ARGS =
+test-all-plus-run-time: PYTEST_ADDOPTS_EXTRA = -o timeout=0 --durations=0 --durations-min=0
+test-all-plus-run-time: test
+.PHONY: test-all-plus-run-time
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 

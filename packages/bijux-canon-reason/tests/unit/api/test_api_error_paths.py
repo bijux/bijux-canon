@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.api.v1.app import create_app
 from fastapi.testclient import TestClient
+
+from bijux_canon_reason.api.v1.app import create_app
 
 
 def _client(tmp_path: Path) -> TestClient:
@@ -36,10 +37,34 @@ def test_bad_item_id_validation(tmp_path: Path) -> None:
     assert resp.status_code == 422
 
 
+def test_huge_item_id_validation(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+    resp = client.delete("/v1/items/9223372036854775808")
+    assert resp.status_code == 422
+
+
 def test_list_items_rejects_unknown_query_param(tmp_path: Path) -> None:
     client = _client(tmp_path)
     resp = client.get("/v1/items?extra=1")
     assert resp.status_code == 422
+
+
+def test_create_endpoints_report_malformed_json_as_bad_request(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+
+    item_response = client.post(
+        "/v1/items",
+        content=b"\x0c\xffbad",
+        headers={"content-type": "application/json"},
+    )
+    run_response = client.post(
+        "/v1/runs",
+        content=b"\xff\x00bad",
+        headers={"content-type": "application/json"},
+    )
+
+    assert item_response.status_code == 400
+    assert run_response.status_code == 400
 
 
 def test_create_item_conflict_and_410(tmp_path: Path) -> None:

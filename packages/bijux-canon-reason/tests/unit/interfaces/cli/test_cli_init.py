@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.interfaces.cli import init as init_cmd
 from typer.testing import CliRunner
+
+from bijux_canon_reason.interfaces.cli import init as init_cmd
 
 runner = CliRunner()
 

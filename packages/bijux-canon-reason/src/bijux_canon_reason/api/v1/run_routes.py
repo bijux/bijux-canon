@@ -7,11 +7,12 @@ from __future__ import annotations
 from collections.abc import Callable
 import json
 from pathlib import Path
-from typing import TypeAlias
+from typing import Annotated, TypeAlias
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi import Path as FastPath
 from fastapi.responses import PlainTextResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints, field_validator
 
 from bijux_canon_reason.api.v1.openapi_models import ErrorDetail
 from bijux_canon_reason.application.run_artifacts import RunBuilder, RunInputs
@@ -28,6 +29,8 @@ from bijux_canon_reason.verification.verifier import verify_trace
 JsonDocument: TypeAlias = (
     dict[str, object] | list[object] | str | int | float | bool | None
 )
+RUN_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
+RunIdPath = Annotated[str, StringConstraints(pattern=RUN_ID_PATTERN), FastPath()]
 
 
 class RunCreateRequest(BaseModel):
@@ -36,6 +39,14 @@ class RunCreateRequest(BaseModel):
     spec: ProblemSpec
     preset: str = Field(default="default")
     seed: int = Field(default=0, ge=0)
+
+    @field_validator("seed", mode="before")
+    @classmethod
+    def _reject_boolean_seed(cls, value: object) -> object:
+        """Reject booleans while still allowing numeric JSON integers."""
+        if isinstance(value, bool):
+            raise ValueError("seed must not be a boolean")
+        return value
 
 
 class RunCreateResponse(BaseModel):
@@ -95,6 +106,10 @@ def register_run_routes(
         operation_id="createReasonRun",
         responses={
             **guard_responses,
+            400: {
+                "description": "The submitted request body could not be parsed as JSON.",
+                "model": ErrorDetail,
+            },
             422: {
                 "description": "Validation failed for the run creation payload.",
                 "model": ErrorDetail,
@@ -129,9 +144,16 @@ def register_run_routes(
                 "description": "The requested run was not found.",
                 "model": ErrorDetail,
             },
+            422: {
+                "description": "Validation failed for the requested run id.",
+                "model": ErrorDetail,
+            },
         },
     )
-    def get_run(run_id: str, request: Request) -> JsonDocument:
+    def get_run(
+        request: Request,
+        run_id: RunIdPath,
+    ) -> JsonDocument:
         """Return run."""
         guard_request(request)
         return _load_run_document(
@@ -154,9 +176,16 @@ def register_run_routes(
                 "description": "The requested manifest was not found.",
                 "model": ErrorDetail,
             },
+            422: {
+                "description": "Validation failed for the requested run id.",
+                "model": ErrorDetail,
+            },
         },
     )
-    def get_manifest(run_id: str, request: Request) -> JsonDocument:
+    def get_manifest(
+        request: Request,
+        run_id: RunIdPath,
+    ) -> JsonDocument:
         """Return manifest."""
         guard_request(request)
         return _load_run_document(
@@ -183,9 +212,16 @@ def register_run_routes(
                     }
                 },
             },
+            422: {
+                "description": "Validation failed for the requested run id.",
+                "model": ErrorDetail,
+            },
         },
     )
-    def fetch_trace(run_id: str, request: Request) -> str:
+    def fetch_trace(
+        request: Request,
+        run_id: RunIdPath,
+    ) -> str:
         """Handle fetch trace."""
         guard_request(request)
         path = _run_dir(artifacts_dir, run_id) / "trace.jsonl"
@@ -206,9 +242,16 @@ def register_run_routes(
                 "description": "Required run artifacts were not found.",
                 "model": ErrorDetail,
             },
+            422: {
+                "description": "Validation failed for the requested run id.",
+                "model": ErrorDetail,
+            },
         },
     )
-    def verify_run(run_id: str, request: Request) -> dict[str, object]:
+    def verify_run(
+        request: Request,
+        run_id: RunIdPath,
+    ) -> dict[str, object]:
         """Handle verify run."""
         guard_request(request)
         run_dir = _run_dir(artifacts_dir, run_id)
@@ -239,9 +282,16 @@ def register_run_routes(
                 "description": "The requested trace was not found.",
                 "model": ErrorDetail,
             },
+            422: {
+                "description": "Validation failed for the requested run id.",
+                "model": ErrorDetail,
+            },
         },
     )
-    def replay_run(run_id: str, request: Request) -> RunReplayResponse:
+    def replay_run(
+        request: Request,
+        run_id: RunIdPath,
+    ) -> RunReplayResponse:
         """Handle replay run."""
         guard_request(request)
         trace_path = _run_dir(artifacts_dir, run_id) / "trace.jsonl"

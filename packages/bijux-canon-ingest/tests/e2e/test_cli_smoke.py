@@ -60,6 +60,7 @@ def _write_config(tmp_path: Path, chunk_size: int, overlap: int, tail: str) -> P
 
 @pytest.mark.e2e
 @pytest.mark.timeout(0)
+@pytest.mark.slow
 @given(
     docs=st.lists(doc_strategy, min_size=1, max_size=3),
     chunk_size=st.integers(min_value=32, max_value=192),

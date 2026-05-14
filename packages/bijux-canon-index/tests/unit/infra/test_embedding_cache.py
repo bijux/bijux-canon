@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from bijux_canon_index.infra.embeddings.cache import (
     EmbeddingCacheEntry,
     SQLiteEmbeddingCache,
     build_cache,
 )
-import pytest
 
 
 def test_sqlite_embedding_cache_round_trip(tmp_path: Path) -> None:

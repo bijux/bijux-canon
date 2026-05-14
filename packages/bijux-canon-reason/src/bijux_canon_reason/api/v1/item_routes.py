@@ -20,6 +20,8 @@ from bijux_canon_reason.api.v1.openapi_models import (
     ItemResponse,
 )
 
+MAX_ITEM_ID = 1_000_000
+
 
 class ItemCreate(BaseModel):
     """Represents item create."""
@@ -152,7 +154,7 @@ def register_item_routes(
     )
     def get_item(
         request: Request,
-        item_id: int = FastPath(ge=1, le=1_000_000),
+        item_id: int = FastPath(ge=1, le=MAX_ITEM_ID),
     ) -> dict[str, object]:
         """Return item."""
         guard_request(request)
@@ -182,7 +184,7 @@ def register_item_routes(
     )
     def delete_item(
         request: Request,
-        item_id: int = FastPath(ge=1, le=1_000_000),
+        item_id: int = FastPath(ge=1, le=MAX_ITEM_ID),
     ) -> Response:
         """Handle delete item."""
         guard_request(request)
@@ -212,6 +214,10 @@ def register_item_routes(
             **guard_responses,
             409: {
                 "description": "The submitted name conflicts with another item.",
+                "model": ErrorDetail,
+            },
+            400: {
+                "description": "The submitted request body could not be parsed as JSON.",
                 "model": ErrorDetail,
             },
             422: {
@@ -260,6 +266,10 @@ def register_item_routes(
                 "description": "The submitted name conflicts with another item.",
                 "model": ErrorDetail,
             },
+            400: {
+                "description": "The submitted request body could not be parsed as JSON.",
+                "model": ErrorDetail,
+            },
             422: {
                 "description": "Validation failed for the submitted payload or item id.",
                 "model": ErrorDetail,
@@ -268,7 +278,7 @@ def register_item_routes(
     )
     def update_item(
         request: Request,
-        item_id: int = FastPath(ge=1, le=1_000_000),
+        item_id: int = FastPath(ge=1, le=MAX_ITEM_ID),
         payload: ItemUpdate = ...,
     ) -> dict[str, object]:
         """Handle update item."""
@@ -398,7 +408,7 @@ def _row_to_item(row: sqlite3.Row) -> dict[str, object]:
 
 def _validate_item_id(item_id: int) -> None:
     """Validate item ID."""
-    if item_id < 1 or item_id > 1_000_000:
+    if item_id < 1 or item_id > MAX_ITEM_ID:
         raise HTTPException(status_code=422, detail="item_id out of range")
 
 

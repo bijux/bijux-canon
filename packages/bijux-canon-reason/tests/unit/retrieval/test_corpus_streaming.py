@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from bijux_canon_reason.retrieval.chunked_bm25 import build_or_load_index
 from bijux_canon_reason.retrieval.corpus import (
     load_corpus_jsonl,
     load_corpus_jsonl_stream,
 )
-import pytest
 
 
 def test_streaming_matches_full(tmp_path: Path) -> None:

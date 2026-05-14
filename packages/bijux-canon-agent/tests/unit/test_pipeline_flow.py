@@ -6,6 +6,8 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
 from bijux_canon_agent.constants import AGENT_CONTRACT_VERSION, CONTRACT_VERSION
 from bijux_canon_agent.core.hashing import prompt_hash
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
@@ -42,7 +44,6 @@ from bijux_canon_agent.traces import (
     TraceEntry,
     TraceRecorder,
 )
-import pytest
 from tests.utils.trace_helpers import (
     build_replay_metadata,
     build_run_fingerprint,

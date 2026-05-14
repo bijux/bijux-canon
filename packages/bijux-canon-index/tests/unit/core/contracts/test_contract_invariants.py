@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.contracts.invariants import (
     assert_invariants,
@@ -16,7 +18,6 @@ from bijux_canon_index.core.types import (
     ExecutionBudget,
     ExecutionRequest,
 )
-import pytest
 
 
 @pytest.fixture()

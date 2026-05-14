@@ -4,6 +4,8 @@ from datetime import UTC, datetime
 import os
 from typing import Any
 
+import pytest
+
 from bijux_canon_agent.agents import JudgeAgent, PlannerAgent, VerifierAgent
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.config.env import key_for_provider, load_environment
@@ -21,7 +23,6 @@ from bijux_canon_agent.pipeline.convergence.monitor import (
 from bijux_canon_agent.pipeline.definition import standard_pipeline_definition
 from bijux_canon_agent.pipeline.trace_validation.trace_validator import TraceValidator
 from bijux_canon_agent.traces import RunTrace, TraceEntry
-import pytest
 from tests.utils.trace_helpers import (
     build_replay_metadata,
     build_run_fingerprint,

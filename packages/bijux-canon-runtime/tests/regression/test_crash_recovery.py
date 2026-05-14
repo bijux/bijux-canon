@@ -6,6 +6,9 @@ from __future__ import annotations
 import multiprocessing
 from pathlib import Path
 
+import duckdb
+import pytest
+
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     RunMode,
@@ -17,8 +20,6 @@ from bijux_canon_runtime.observability.storage.execution_store import (
 )
 from bijux_canon_runtime.ontology.ids import RunID, TenantID
 from bijux_canon_runtime.testing.crash_recovery import run_with_crash
-import duckdb
-import pytest
 
 pytestmark = pytest.mark.regression
 

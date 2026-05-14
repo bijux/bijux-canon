@@ -4,8 +4,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_index.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
 import pytest
+
+from bijux_canon_index.core.v1_exclusions import V1_EXCLUSIONS, ensure_excluded
 
 
 def test_all_exclusions_raise():

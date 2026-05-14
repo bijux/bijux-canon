@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.contracts.execution_plan_contract import (
     validate as validate_execution_plan,
 )
@@ -39,7 +41,6 @@ from bijux_canon_runtime.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )
-import pytest
 
 pytestmark = pytest.mark.unit
 

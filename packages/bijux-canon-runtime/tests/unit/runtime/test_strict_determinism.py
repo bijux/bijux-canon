@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 import bijux_canon_agent
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
@@ -45,7 +47,6 @@ from bijux_canon_runtime.ontology.public import (
     NonDeterminismIntentSource,
     ReplayAcceptability,
 )
-import pytest
 
 
 @pytest.mark.unit

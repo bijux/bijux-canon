@@ -21,6 +21,7 @@ def run_cmd(args: list[str], env: dict[str, str]) -> str:
     return subprocess.check_output(CLI + args, text=True, env=env).strip()
 
 
+@pytest.mark.slow
 def test_cli_outputs_are_deterministic(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

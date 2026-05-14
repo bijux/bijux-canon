@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_runtime.application.determinism_guard import validate_replay
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
@@ -38,7 +40,6 @@ from bijux_canon_runtime.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )
-import pytest
 
 pytestmark = pytest.mark.regression
 

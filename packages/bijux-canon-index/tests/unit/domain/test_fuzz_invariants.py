@@ -2,9 +2,9 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
-from bijux_canon_index.domain.requests import scoring
 from hypothesis import HealthCheck, given, settings
 
+from bijux_canon_index.domain.requests import scoring
 from tests import strategies
 
 

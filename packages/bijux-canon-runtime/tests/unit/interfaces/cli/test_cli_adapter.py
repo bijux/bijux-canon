@@ -8,6 +8,8 @@ import importlib
 import json
 from pathlib import Path
 
+import pytest
+
 from bijux_canon_runtime.application.execute_flow import (
     ExecutionConfig,
     FlowRunResult,
@@ -40,7 +42,6 @@ from bijux_canon_runtime.ontology.public import (
     EntropySource,
     ReplayAcceptability,
 )
-import pytest
 
 pytestmark = pytest.mark.unit
 

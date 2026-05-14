@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bijux_canon_reason.api.v1.app import create_app
 from fastapi.testclient import TestClient
 import pytest
+
+from bijux_canon_reason.api.v1.app import create_app
 
 
 def _app(tmp_path: Path) -> TestClient:

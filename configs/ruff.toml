@@ -1,6 +1,7 @@
 target-version = "py311"
 line-length = 88
 respect-gitignore = true
+cache-dir = "artifacts/root/ruff-cache"
 src = [
   "packages/bijux-canon-agent/src",
   "packages/bijux-canon-agent/tests",
@@ -15,10 +16,15 @@ src = [
   "packages/bijux-canon-runtime/src",
   "packages/bijux-canon-runtime/tests",
   "packages/compat-agentic-flows/src",
+  "packages/compat-agentic-flows/tests",
   "packages/compat-bijux-agent/src",
+  "packages/compat-bijux-agent/tests",
   "packages/compat-bijux-rag/src",
+  "packages/compat-bijux-rag/tests",
   "packages/compat-bijux-rar/src",
+  "packages/compat-bijux-rar/tests",
   "packages/compat-bijux-vex/src",
+  "packages/compat-bijux-vex/tests",
 ]
 exclude = [
   ".git",
@@ -50,6 +56,20 @@ ignore = ["E501", "E203"]
 
 [lint.isort]
 force-sort-within-sections = true
+known-first-party = [
+  "agentic_flows",
+  "bijux_agent",
+  "bijux_canon_agent",
+  "bijux_canon_dev",
+  "bijux_canon_index",
+  "bijux_canon_ingest",
+  "bijux_canon_reason",
+  "bijux_canon_runtime",
+  "bijux_rag",
+  "bijux_rar",
+  "bijux_vex",
+  "tests",
+]
 
 [lint.mccabe]
 max-complexity = 10

@@ -272,10 +272,7 @@ def test_workspace_manifest_declares_root_uv_contract() -> None:
     dev_group = set(dependency_groups["dev"])
     assert "bijux-canon-dev[dev]" in dev_group
     assert "mkdocs-material>=9.5.39,<10.0" in dev_group
-    assert uv_sources["bijux-canon-dev"] == {
-        "path": "packages/bijux-canon-dev",
-        "editable": True,
-    }
+    assert uv_sources["bijux-canon-dev"] == {"workspace": True}
     assert set(workspace["package_dirs"]) == set(workspace["packages"])
 
 

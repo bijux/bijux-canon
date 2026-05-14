@@ -106,7 +106,7 @@ dev = [
     "pexpect>=4.8.0,<5.0",
 
     "ruff>=0.6.8,<1.0",
-    "mypy>=1.11.2,<2.0",
+    "mypy>=1.11.2,<3.0",
     "codespell>=2.3.0,<3.0",
     "pydocstyle>=6.2.1,<7.0",
     "radon>=6.0.0",
@@ -177,6 +177,11 @@ source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
 fallback-version = "0.3.4"
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: long-running checks excluded from default ci and tox lanes",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_agent"]

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from bijux_canon_index.application.engine import VectorExecutionEngine
 from bijux_canon_index.core.contracts.execution_contract import ExecutionContract
 from bijux_canon_index.core.execution_intent import ExecutionIntent
@@ -14,7 +16,6 @@ from bijux_canon_index.interfaces.schemas.models import (
     ExecutionRequestPayload,
     IngestRequest,
 )
-import pytest
 
 
 def test_run_metadata_includes_determinism_fingerprints(

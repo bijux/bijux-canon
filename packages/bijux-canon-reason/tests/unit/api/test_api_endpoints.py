@@ -6,8 +6,9 @@ import os
 from pathlib import Path
 from typing import Any, cast
 
-from bijux_canon_reason.api.v1.app import MAX_REQUEST_BYTES, create_app
 from fastapi.testclient import TestClient
+
+from bijux_canon_reason.api.v1.app import MAX_REQUEST_BYTES, create_app
 
 
 def _client(
@@ -124,3 +125,63 @@ def test_runs_create_verify_replay(tmp_path: Path) -> None:
     body = replay.json()
     assert body["original_trace_fingerprint"]
     assert body["replayed_trace_fingerprint"]
+
+
+def test_runs_create_metadata_manifest_and_trace(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+    payload = {
+        "spec": {"description": "hello", "constraints": {}, "expected": {}},
+        "preset": "default",
+        "seed": 0,
+    }
+
+    created = client.post("/v1/runs", json=payload)
+    assert created.status_code == 200
+    created_body = created.json()
+    run_id = created_body["run_id"]
+
+    metadata = client.get(f"/v1/runs/{run_id}")
+    assert metadata.status_code == 200
+    metadata_body = metadata.json()
+    assert metadata_body["run_id"] == run_id
+    assert metadata_body["trace_id"] == created_body["trace_id"]
+
+    manifest = client.get(f"/v1/runs/{run_id}/manifest")
+    assert manifest.status_code == 200
+    manifest_body = manifest.json()
+    assert "run_meta.json" in manifest_body
+    assert "trace.jsonl" in manifest_body
+
+    trace = client.get(f"/v1/runs/{run_id}/trace")
+    assert trace.status_code == 200
+    assert created_body["trace_id"] in trace.text
+
+
+def test_runs_reject_boolean_problem_spec_version(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+    payload = {
+        "spec": {
+            "description": "hello",
+            "constraints": {},
+            "expected": {},
+            "version": False,
+        },
+        "preset": "default",
+        "seed": 0,
+    }
+
+    response = client.post("/v1/runs", json=payload)
+
+    assert response.status_code == 422
+
+
+def test_runs_reject_boolean_seed(tmp_path: Path) -> None:
+    client = _client(tmp_path)
+    payload = {
+        "spec": {"description": "hello"},
+        "seed": False,
+    }
+
+    response = client.post("/v1/runs", json=payload)
+
+    assert response.status_code == 422

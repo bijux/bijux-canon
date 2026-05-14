@@ -30,6 +30,7 @@ def _resolve_mypy_python(package_root: Path) -> str:
     return sys.executable
 
 
+@pytest.mark.slow
 def test_pipeline_mypy_has_no_regressions() -> None:
     """Ensure the focused mypy scope stays green."""
 

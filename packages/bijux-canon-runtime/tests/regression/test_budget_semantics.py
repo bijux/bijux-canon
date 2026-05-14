@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+import pytest
+
 import bijux_canon_agent
 import bijux_canon_index
 import bijux_canon_reason
@@ -57,8 +59,6 @@ from bijux_canon_runtime.ontology.public import (
 )
 from bijux_canon_runtime.runtime.budget import ExecutionBudget
 import bijux_rag
-import pytest
-
 from tests.helpers import build_claim_statement
 
 pytestmark = pytest.mark.regression

@@ -4,12 +4,13 @@
 # Copyright © 2026 Bijan Mousavi
 from __future__ import annotations
 
+import pytest
+
 from bijux_canon_index.core.version import (
     DEPRECATION_POLICY,
     PUBLIC_API_VERSION,
     assert_supported_version,
 )
-import pytest
 
 
 def test_version_policy():
