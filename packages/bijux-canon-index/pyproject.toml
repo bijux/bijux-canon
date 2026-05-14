@@ -153,6 +153,11 @@ raw-options = { git_describe_command = "git describe --dirty --tags --long --mat
 [tool.hatch.build.hooks.vcs]
 version-file = "src/bijux_canon_index/_build_version.py"
 
+[tool.pytest.ini_options]
+markers = [
+  "slow: long-running checks excluded from default ci and tox lanes",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/bijux_canon_index"]
 include = ["src/bijux_canon_index/py.typed"]

@@ -21,6 +21,7 @@ def run_cmd(args: list[str]) -> str:
     return subprocess.check_output(CLI + args, text=True, env=env).strip()
 
 
+@pytest.mark.slow
 def test_basic_cli_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     vec = json.dumps([0.0, 0.0])

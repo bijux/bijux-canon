@@ -131,6 +131,7 @@ ignore-semiprivate = true
 cache_dir = "../../.pytest_cache/bijux-canon-ingest"
 markers = [
   "e2e: end-to-end coverage for package boundaries and retrieval contracts",
+  "slow: long-running checks excluded from default ci and tox lanes",
 ]
 testpaths = ["tests"]
 

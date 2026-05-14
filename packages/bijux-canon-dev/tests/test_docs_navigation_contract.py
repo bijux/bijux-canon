@@ -186,6 +186,7 @@ def _declared_mermaid_node_ids(block: str) -> set[str]:
     return ids
 
 
+@pytest.mark.slow
 def test_product_package_detail_tabs_follow_authored_order(
     rendered_docs: Path,
 ) -> None:

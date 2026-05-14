@@ -165,6 +165,7 @@ color = true
 markers = [
   "e2e: end-to-end runtime contract coverage",
   "regression: regression coverage for replay and determinism guarantees",
+  "slow: long-running checks excluded from default ci and tox lanes",
   "smoke: focused smoke coverage for storage and package wiring",
   "unit: unit coverage for local runtime components",
 ]

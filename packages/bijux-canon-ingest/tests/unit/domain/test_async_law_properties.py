@@ -17,6 +17,7 @@ from bijux_canon_ingest.domain.effects.asyncio import (
 from bijux_canon_ingest.result.types import Err, ErrInfo, Ok, Result
 from hypothesis import given, settings
 from hypothesis import strategies as st
+import pytest
 
 
 class FakeEmbedder:
@@ -87,6 +88,7 @@ def lawful_desc(
     schedule=st.lists(st.booleans(), min_size=0, max_size=200),
 )
 @settings(deadline=None, max_examples=25)
+@pytest.mark.slow
 def test_async_pipeline_idempotence_and_no_duplication(
     keys: list[int], schedule: list[bool]
 ) -> None:

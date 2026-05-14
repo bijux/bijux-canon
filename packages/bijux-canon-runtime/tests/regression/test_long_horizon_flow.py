@@ -45,6 +45,7 @@ import bijux_rag
 pytestmark = pytest.mark.regression
 
 
+@pytest.mark.slow
 def test_long_horizon_flow_is_stable(
     baseline_policy,
     resolved_flow_factory,
