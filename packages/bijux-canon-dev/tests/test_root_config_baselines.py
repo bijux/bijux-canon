@@ -3,6 +3,7 @@ from __future__ import annotations
 from configparser import ConfigParser
 from pathlib import Path
 import tomllib
+from typing import cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -15,7 +16,15 @@ def _config_parser(path: Path) -> ConfigParser:
 
 def _ruff_config() -> dict[str, object]:
     with (REPO_ROOT / "configs" / "ruff.toml").open("rb") as handle:
-        return tomllib.load(handle)
+        return cast(dict[str, object], tomllib.load(handle))
+
+
+def _as_dict(value: object) -> dict[str, object]:
+    return cast(dict[str, object], value)
+
+
+def _as_str_list(value: object) -> list[str]:
+    return cast(list[str], value)
 
 
 def _package_roots(kind: str) -> set[str]:
@@ -122,8 +131,10 @@ def test_root_ruff_configuration_matches_shared_python_baseline() -> None:
     assert ruff_config["line-length"] == 88
     assert ruff_config["respect-gitignore"] is True
     assert ruff_config["cache-dir"] == "artifacts/root/ruff-cache"
-    assert set(ruff_config["src"]) == _package_roots("src") | _package_roots("tests")
-    assert ruff_config["exclude"] == [
+    assert set(_as_str_list(ruff_config["src"])) == _package_roots(
+        "src"
+    ) | _package_roots("tests")
+    assert _as_str_list(ruff_config["exclude"]) == [
         ".git",
         ".hg",
         ".mypy_cache",
@@ -143,15 +154,27 @@ def test_root_ruff_configuration_matches_shared_python_baseline() -> None:
         "site",
     ]
 
-    lint = ruff_config["lint"]
-    assert lint["select"] == ["E", "F", "I", "B", "UP", "SIM", "C4", "PIE", "RET", "ISC"]
-    assert lint["ignore"] == ["E501", "E203"]
-    assert lint["per-file-ignores"] == {"__init__.py": ["F401"]}
-    assert lint["isort"]["force-sort-within-sections"] is True
-    assert set(lint["isort"]["known-first-party"]) == _package_import_roots() | {
+    lint = _as_dict(ruff_config["lint"])
+    assert _as_str_list(lint["select"]) == [
+        "E",
+        "F",
+        "I",
+        "B",
+        "UP",
+        "SIM",
+        "C4",
+        "PIE",
+        "RET",
+        "ISC",
+    ]
+    assert _as_str_list(lint["ignore"]) == ["E501", "E203"]
+    assert _as_dict(lint["per-file-ignores"]) == {"__init__.py": ["F401"]}
+    isort = _as_dict(lint["isort"])
+    assert isort["force-sort-within-sections"] is True
+    assert set(_as_str_list(isort["known-first-party"])) == _package_import_roots() | {
         "tests"
     }
-    assert lint["mccabe"]["max-complexity"] == 10
+    assert _as_dict(lint["mccabe"])["max-complexity"] == 10
 
 
 def test_root_mypy_configuration_matches_shared_python_baseline() -> None:
@@ -182,4 +205,3 @@ def test_root_mypy_configuration_matches_shared_python_baseline() -> None:
         entry.strip() for entry in root_mypy["mypy_path"].split(":") if entry.strip()
     }
     assert configured_paths == _mypy_search_roots()
-

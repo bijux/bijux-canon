@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import tomllib
+from typing import cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 COMPATIBILITY_TARGETS = {
@@ -13,15 +14,25 @@ COMPATIBILITY_TARGETS = {
 }
 
 
+def _as_dict(value: object) -> dict[str, object]:
+    return cast(dict[str, object], value)
+
+
+def _as_str_list(value: object) -> list[str]:
+    return cast(list[str], value)
+
+
 def _workspace_metadata() -> dict[str, object]:
     with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
-        return tomllib.load(handle)["tool"]["bijux_canon"]
+        pyproject = cast(dict[str, object], tomllib.load(handle))
+    tool = _as_dict(pyproject["tool"])
+    return _as_dict(tool["bijux_canon"])
 
 
 def test_compatibility_packages_are_explicitly_tracked_in_workspace_metadata() -> None:
     workspace = _workspace_metadata()
 
-    assert set(workspace["compat_packages"]) == set(COMPATIBILITY_TARGETS)
+    assert set(_as_str_list(workspace["compat_packages"])) == set(COMPATIBILITY_TARGETS)
 
 
 def test_compatibility_packages_remain_test_exempt_only_while_they_stay_thin() -> None:
@@ -31,7 +42,9 @@ def test_compatibility_packages_remain_test_exempt_only_while_they_stay_thin() -
         package_root = REPO_ROOT / "packages" / package_name
         tests_dir = package_root / "tests"
         if tests_dir.exists():
-            failures.append(f"{package_name}: compatibility packages must not grow ad hoc tests")
+            failures.append(
+                f"{package_name}: compatibility packages must not grow ad hoc tests"
+            )
 
         python_files = sorted(
             path.relative_to(package_root).as_posix()
@@ -50,6 +63,8 @@ def test_compatibility_packages_remain_test_exempt_only_while_they_stay_thin() -
                 f"{package_name}: compatibility module must proxy {canonical_import}"
             )
         if "def __getattr__(name: str) -> object:" not in module_text:
-            failures.append(f"{package_name}: compatibility module must proxy runtime attributes")
+            failures.append(
+                f"{package_name}: compatibility module must proxy runtime attributes"
+            )
 
     assert not failures, "\n".join(failures)
