@@ -11,6 +11,6 @@
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "2.32.0",
-    "@redocly/cli": "^2.30.4"
+    "@redocly/cli": "^2.31.5"
   }
 }
