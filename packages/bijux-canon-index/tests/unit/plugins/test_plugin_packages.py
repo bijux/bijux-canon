@@ -17,9 +17,9 @@ def test_external_plugin_examples_define_entrypoints() -> None:
         )
     )
     embeddings = tomllib.loads(
-        (
-            plugin_root / "sentence_transformers_provider" / "pyproject.toml"
-        ).read_text(encoding="utf-8")
+        (plugin_root / "sentence_transformers_provider" / "pyproject.toml").read_text(
+            encoding="utf-8"
+        )
     )
 
     assert "bijux_canon_index.vectorstores" in template["project"]["entry-points"]
