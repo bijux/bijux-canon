@@ -21,7 +21,7 @@ from .binary import (
     HAS_FITZ,
     HAS_PDFMINER,
     HAS_PIL,
-    HAS_PYPDF2,
+    HAS_PYPDF,
     HAS_PYTESSERACT,
     BinaryExtractor,
 )
@@ -400,7 +400,7 @@ class UniversalFileReader:
                 "pandas": HAS_PANDAS,
                 "yaml": HAS_YAML,
                 "pdfminer": HAS_PDFMINER,
-                "PyPDF2": HAS_PYPDF2,
+                "pypdf": HAS_PYPDF,
                 "pytesseract": HAS_PYTESSERACT,
                 "PIL": HAS_PIL,
                 "fitz": HAS_FITZ,

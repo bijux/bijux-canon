@@ -8,6 +8,7 @@ from pathlib import Path
 from bijux_canon_ingest.interfaces.cli.entrypoint import main
 from bijux_canon_ingest.interfaces.cli.pipeline_config import load_pipeline_config
 from bijux_canon_ingest.interfaces.cli.pipeline_runner import boundary_app_config
+from bijux_canon_ingest.interfaces.cli import typer_app as typer_app_module
 from bijux_canon_ingest.interfaces.cli.typer_app import build_app
 from bijux_canon_ingest.result import Err, Ok
 import pytest
@@ -150,10 +151,9 @@ def test_typer_app_pipeline_command_routes_to_entrypoint(
         return 17
 
     monkeypatch.setattr(
-        "bijux_canon_ingest.interfaces.cli.typer_app.importlib.import_module",
-        lambda _: _FakeTyperModule(),
+        typer_app_module.importlib, "import_module", lambda _: _FakeTyperModule()
     )
-    monkeypatch.setattr("bijux_canon_ingest.interfaces.cli.typer_app.main", fake_main)
+    monkeypatch.setattr(typer_app_module, "main", fake_main)
 
     app = build_app()
     result = app.commands["pipeline"](
@@ -187,10 +187,9 @@ def test_typer_app_ask_command_preserves_no_rerank_flag(
         return 23
 
     monkeypatch.setattr(
-        "bijux_canon_ingest.interfaces.cli.typer_app.importlib.import_module",
-        lambda _: _FakeTyperModule(),
+        typer_app_module.importlib, "import_module", lambda _: _FakeTyperModule()
     )
-    monkeypatch.setattr("bijux_canon_ingest.interfaces.cli.typer_app.main", fake_main)
+    monkeypatch.setattr(typer_app_module, "main", fake_main)
 
     app = build_app()
     result = app.commands["ask"](

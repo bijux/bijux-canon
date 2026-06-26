@@ -64,4 +64,4 @@ release: build
 	@echo "[OK] build target completed (alias for make release)"
 .PHONY: build-release-metadata release
 
-PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.7
+PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.24

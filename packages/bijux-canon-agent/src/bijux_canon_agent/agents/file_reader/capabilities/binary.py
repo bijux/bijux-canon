@@ -9,7 +9,7 @@ from types import ModuleType
 from typing import Any
 
 pdfminer: ModuleType | None = None
-PyPDF2: ModuleType | None = None
+pypdf: ModuleType | None = None
 pytesseract: ModuleType | None = None
 Image: ModuleType | None = None
 fitz: ModuleType | None = None
@@ -23,12 +23,12 @@ except ImportError:
     HAS_PDFMINER = False
 
 try:
-    import PyPDF2 as _PyPDF2
+    import pypdf as _pypdf
 
-    PyPDF2 = _PyPDF2
-    HAS_PYPDF2 = True
+    pypdf = _pypdf
+    HAS_PYPDF = True
 except ImportError:
-    HAS_PYPDF2 = False
+    HAS_PYPDF = False
 
 try:
     import pytesseract as _pytesseract
@@ -105,11 +105,11 @@ class BinaryExtractor:
             except Exception as e:
                 warnings.append(f"pdfminer extraction failed: {e}")
 
-        if HAS_PYPDF2 and not text.strip():
+        if HAS_PYPDF and not text.strip():
             try:
                 with open(file_path, "rb") as file:
-                    _require_dependency(PyPDF2, "PyPDF2")
-                    reader = PyPDF2.PdfReader(file)
+                    _require_dependency(pypdf, "pypdf")
+                    reader = pypdf.PdfReader(file)
                     page_count = len(reader.pages)
                     pages_to_process = min(self.max_pdf_pages, page_count)
                     text_chunks = [
@@ -118,7 +118,7 @@ class BinaryExtractor:
                     ]
                     text = "\n".join(text_chunks)
             except Exception as e:
-                warnings.append(f"PyPDF2 extraction failed: {e}")
+                warnings.append(f"pypdf extraction failed: {e}")
 
         if self._should_use_ocr(text):
             ocr_result = await self._extract_pdf_with_ocr(file_path)

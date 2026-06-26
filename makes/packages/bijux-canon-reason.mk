@@ -25,4 +25,4 @@ test-all-plus-run-time: test
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 
-PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.7
+PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.24

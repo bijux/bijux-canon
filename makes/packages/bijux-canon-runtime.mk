@@ -32,4 +32,4 @@ include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 -include .env
 export
 
-PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.7
+PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.24
