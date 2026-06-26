@@ -29,6 +29,16 @@ def test_initialize_workspace_creates_config_artifacts_and_gitignore(
     assert result == {"status": "initialized", "config": str(config_path)}
     assert config_path.exists()
     assert (tmp_path / "artifacts" / "bijux-canon-index" / "runs").is_dir()
+    assert config_path.read_text(encoding="utf-8").splitlines()[:8] == [
+        "[vector_store]",
+        'backend = "memory"',
+        '# uri = "index.faiss"',
+        "",
+        "# [embeddings]",
+        '# provider = "sentence_transformers"',
+        '# model = "all-MiniLM-L6-v2"',
+        "# install an embedding plugin that exposes bijux_canon_index.embeddings",
+    ]
     assert gitignore_path.read_text(encoding="utf-8").splitlines() == [
         "node_modules/",
         "artifacts/",

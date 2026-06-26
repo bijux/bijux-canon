@@ -1,56 +1,47 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
-"""Sentence transformers helpers."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping
 
-try:  # pragma: no cover - optional dependency
-    import sentence_transformers
-    from sentence_transformers import SentenceTransformer
-except Exception:  # pragma: no cover - optional dependency
-    sentence_transformers = None
-    SentenceTransformer = None
-
 import numpy as np
+import sentence_transformers
+from sentence_transformers import SentenceTransformer
 
 from bijux_canon_index.infra.embeddings.cache import embedding_config_hash
 from bijux_canon_index.infra.embeddings.registry import (
     EmbeddingBatch,
     EmbeddingMetadata,
     EmbeddingProvider,
+    EmbeddingProviderRegistry,
 )
+from bijux_canon_index.infra.plugins.contract import PluginContract
 
 
 class SentenceTransformersProvider(EmbeddingProvider):
-    """Represents sentence transformers provider."""
+    """Embedding provider backed by sentence-transformers."""
 
     name = "sentence_transformers"
 
     @property
     def provider_version(self) -> str | None:
-        """Handle provider version."""
+        """Return the provider library version."""
         return getattr(sentence_transformers, "__version__", None)
 
     def embed(
         self, texts: list[str], model: str, options: Mapping[str, str] | None = None
     ) -> EmbeddingBatch:
-        """Handle embed."""
-        if (
-            sentence_transformers is None or SentenceTransformer is None
-        ):  # pragma: no cover
-            raise ImportError("sentence-transformers is not available")
+        """Encode texts into float32 vectors."""
         if not model:
             raise ValueError("model id required for embeddings")
-        options = dict(options or {})
-        options.setdefault("normalize", "false")
-        device = options.get("device")
+        resolved_options = dict(options or {})
+        resolved_options.setdefault("normalize", "false")
+        device = resolved_options.get("device")
         encoder = SentenceTransformer(model, device=device)
         vectors = encoder.encode(
             texts,
             convert_to_numpy=True,
-            normalize_embeddings=options.get("normalize", "false").lower() == "true",
+            normalize_embeddings=resolved_options["normalize"].lower() == "true",
             show_progress_bar=False,
         )
         vectors = np.asarray(vectors, dtype="float32")
@@ -63,9 +54,12 @@ class SentenceTransformersProvider(EmbeddingProvider):
             embedding_seed=None,
             embedding_device=str(getattr(encoder, "device", device) or ""),
             embedding_dtype=str(vectors.dtype),
-            embedding_normalization=options.get("normalize"),
+            embedding_normalization=resolved_options["normalize"],
             config_hash=embedding_config_hash(
-                self.name, model, options, provider_version=self.provider_version
+                self.name,
+                model,
+                resolved_options,
+                provider_version=self.provider_version,
             ),
         )
         return EmbeddingBatch(
@@ -74,4 +68,15 @@ class SentenceTransformersProvider(EmbeddingProvider):
         )
 
 
-__all__ = ["SentenceTransformersProvider"]
+def register(registry: EmbeddingProviderRegistry) -> None:
+    """Register the sentence-transformers embedding provider."""
+    registry.register(
+        SentenceTransformersProvider.name,
+        factory=SentenceTransformersProvider,
+        contract=PluginContract(
+            determinism="model_dependent",
+            randomness_sources=("model_init", "runtime_device"),
+            approximation=False,
+        ),
+        default=True,
+    )

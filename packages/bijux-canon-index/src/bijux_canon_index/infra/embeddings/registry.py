@@ -163,29 +163,6 @@ class EmbeddingProviderRegistry:
 
 EMBEDDING_PROVIDERS = EmbeddingProviderRegistry()
 
-
-def _register_sentence_transformers() -> None:
-    """Register sentence transformers."""
-    try:
-        from bijux_canon_index.infra.embeddings.sentence_transformers import (
-            SentenceTransformersProvider,
-        )
-    except Exception:
-        return
-
-    EMBEDDING_PROVIDERS.register(
-        "sentence_transformers",
-        factory=SentenceTransformersProvider,
-        contract=PluginContract(
-            determinism="model_dependent",
-            randomness_sources=("model_init", "runtime_device"),
-            approximation=False,
-        ),
-        default=True,
-    )
-
-
-_register_sentence_transformers()
 load_entrypoints("bijux_canon_index.embeddings", EMBEDDING_PROVIDERS)
 
 
