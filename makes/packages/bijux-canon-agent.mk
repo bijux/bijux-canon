@@ -22,7 +22,7 @@ API_SKIP_IF_NO_SCHEMAS := 1
 API_LINT_MISSING_MESSAGE = → No API schemas found under $(API_DIR); skipping API lint
 API_TEST_MISSING_MESSAGE = → No API schemas found under $(API_DIR); skipping API tests
 API_NODE_BOOTSTRAP_MODE := npm-install-pinned
-OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@2.27.0
+OPENAPI_GENERATOR_NPM_PACKAGE := @openapitools/openapi-generator-cli@2.38.0
 OPENAPI_GENERATOR_JAR_VERSION := 7.18.0
 API_VALIDATE_IN_NODE_DIR := 1
 SCHEMATHESIS_OPTS    = --checks=all --max-failures=1 --report junit --report-junit-path $(SCHEMATHESIS_JUNIT_ABS) --request-timeout=5 --max-response-time=3 --max-examples=50 --seed=1 --generation-deterministic --suppress-health-check=filter_too_much
@@ -51,4 +51,4 @@ include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
 ci-fast: lint test mypy-core
 .PHONY: ci-fast
 
-PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.7
+PACKAGE_INSTALL_PYTHON_PACKAGES := uv==0.11.24
