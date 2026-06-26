@@ -12,9 +12,11 @@ DEFAULT_CONFIG_TEMPLATE = """[vector_store]
 backend = "memory"
 # uri = "index.faiss"
 
-[embeddings]
-provider = "sentence_transformers"
-model = "all-MiniLM-L6-v2"
+# [embeddings]
+# provider = "sentence_transformers"
+# model = "all-MiniLM-L6-v2"
+# install an embedding plugin that exposes bijux_canon_index.embeddings
+# before enabling this section
 
 [resource_limits]
 # max_vectors_per_ingest = 10000

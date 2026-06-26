@@ -1,0 +1,17 @@
+[project]
+name = "bijux-canon-index-sentence-transformers-plugin"
+version = "0.0.0"
+description = "Example sentence-transformers embedding plugin for bijux-canon-index"
+requires-python = ">=3.11"
+dependencies = [
+  "bijux-canon-index",
+  "numpy>=1.26,<3.0",
+  "sentence-transformers>=2.7.0,<6.0",
+]
+
+[project.entry-points."bijux_canon_index.embeddings"]
+sentence_transformers = "bijux_canon_index_sentence_transformers_plugin:register"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

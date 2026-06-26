@@ -105,7 +105,7 @@ def doctor(
     """Handle doctor."""
     try:
         extras = {}
-        for module in ("faiss", "qdrant_client", "sentence_transformers"):
+        for module in ("faiss", "qdrant_client"):
             try:
                 __import__(module)
                 extras[module] = True
@@ -146,7 +146,10 @@ def doctor(
         report = {
             "extras": extras,
             "backend": backend_status,
-            "embeddings": {"providers": EMBEDDING_PROVIDERS.providers()},
+            "embeddings": {
+                "providers": EMBEDDING_PROVIDERS.providers(),
+                "default": EMBEDDING_PROVIDERS.default,
+            },
             "permissions": permissions,
         }
         _emit(ctx, report)
