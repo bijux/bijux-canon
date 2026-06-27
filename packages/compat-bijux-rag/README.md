@@ -36,60 +36,51 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-`bijux-rag` is the continuation of the published `bijux-rag` distribution on
-PyPI. Each release keeps the legacy distribution, import, and command surfaces
-available while installing `bijux-canon-ingest` at the same version.
+Alias distribution for `bijux-canon-ingest`.
 
-Its package handbook lives at
-[Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/).
+Install this package if you need the legacy package name and CLI command while
+running the same ingest behavior as `bijux-canon-ingest`.
 
-## Migration note
+## Install
 
-- new installs should use `uv add bijux-canon-ingest`
-- existing automation can stay on `bijux-rag` while you update imports and commands
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-rag](https://github.com/bijux/bijux-rag) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+```bash
+python3.11 -m pip install bijux-rag
+bijux-rag --help
+```
 
-## Publication status
+## What It Does
 
-- published continuation of the legacy `bijux-rag` distribution
-- each release depends on `bijux-canon-ingest==<same version>`
-- intended for existing environments that still rely on the legacy name
+- re-exports the public Python API from `bijux-canon-ingest`
+- resolves legacy submodules such as `bijux_rag.interfaces.cli.entrypoint` to
+  the same canonical modules used by `bijux_canon_ingest`
+- dispatches the same CLI entrypoint through the legacy `bijux-rag` command
+- keeps the legacy distribution installable while steering new work to
+  `bijux-canon-ingest`
+- avoids becoming a second home for ingest logic or release ownership
 
-## Canonical package
+## Compatibility Contract
 
-- distribution: `bijux-canon-ingest`
-- Python import: `bijux_canon_ingest`
-- command: `bijux-canon-ingest`
+If this works:
 
-## What this compatibility package preserves
+```python
+from bijux_canon_ingest import Ok
+```
 
-- the legacy distribution name `bijux-rag`
-- the legacy Python import surface `bijux_rag`
-- the legacy command name `bijux-rag`
+the alias package is expected to support the same import through:
 
-## Read this next
+```python
+from bijux_rag import Ok
+```
 
-Use `bijux-canon-ingest` directly:
+The alias package also keeps `bijux_rag.interfaces.cli.entrypoint` pointed at
+the canonical ingest CLI module, while preserving the executable name
+`bijux-rag`.
 
-- package directory: [Canonical package source directory](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest)
-- legacy package handbook: [Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/)
-- package docs: [Canonical package handbook](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
+## Read Next
+
+- canonical package: [bijux-canon-ingest](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest)
+- canonical handbook: [bijux-canon-ingest handbook](https://bijux.io/bijux-canon/bijux-canon-ingest/)
+- legacy handbook: [bijux-rag alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/)
 - migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- retired repository: [bijux/bijux-rag](https://github.com/bijux/bijux-rag)
 - changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md)
-
-## Primary entrypoint
-
-- console script: `bijux-rag`
-
-## Package contents
-
-- [`pyproject.toml`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/pyproject.toml)
-- [`hatch_build.py`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/hatch_build.py)
-- [`overview.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/overview.md)
-- [`CHANGELOG.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md)
-
-## Release Readiness
-
-- upcoming release line: `0.3.6`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

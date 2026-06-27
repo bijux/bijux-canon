@@ -8,6 +8,19 @@ distribution name while the canonical package lives at `bijux-canon-reason`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
+## 0.3.8 - 2026-06-27
+
+### Changed
+
+- Reworked the package README around the alias-distribution contract so it now
+  documents canonical import re-exports, legacy CLI continuity, and the
+  migration path in the same style used by the `pollenomics` alias package.
+
+### Fixed
+
+- Release fallback metadata now aligns with the synchronized `0.3.8` canon
+  release line.
+
 ## 0.3.7 - 2026-04-21
 
 ### Changed

@@ -36,60 +36,51 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-`bijux-rar` is the continuation of the published `bijux-rar` distribution on
-PyPI. Each release keeps the legacy distribution, import, and command surfaces
-available while installing `bijux-canon-reason` at the same version.
+Alias distribution for `bijux-canon-reason`.
 
-Its package handbook lives at
-[Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/).
+Install this package if you need the legacy package name and CLI command while
+running the same reasoning behavior as `bijux-canon-reason`.
 
-## Migration note
+## Install
 
-- new installs should use `uv add bijux-canon-reason`
-- existing automation can stay on `bijux-rar` while you update imports and commands
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-rar](https://github.com/bijux/bijux-rar) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+```bash
+python3.11 -m pip install bijux-rar
+bijux-rar --help
+```
 
-## Publication status
+## What It Does
 
-- published continuation of the legacy `bijux-rar` distribution
-- each release depends on `bijux-canon-reason==<same version>`
-- intended for existing environments that still rely on the legacy name
+- re-exports the public Python API from `bijux-canon-reason`
+- resolves legacy submodules such as `bijux_rar.interfaces.cli` to the same
+  canonical modules used by `bijux_canon_reason`
+- dispatches the same CLI entrypoint through the legacy `bijux-rar` command
+- keeps the legacy distribution installable while steering new work to
+  `bijux-canon-reason`
+- avoids becoming a second home for reasoning logic or release ownership
 
-## Canonical package
+## Compatibility Contract
 
-- distribution: `bijux-canon-reason`
-- Python import: `bijux_canon_reason`
-- command: `bijux-canon-reason`
+If this works:
 
-## What this compatibility package preserves
+```python
+from bijux_canon_reason import validate_plan
+```
 
-- the legacy distribution name `bijux-rar`
-- the legacy Python import surface `bijux_rar`
-- the legacy command name `bijux-rar` via the canonical package
+the alias package is expected to support the same import through:
 
-## Read this next
+```python
+from bijux_rar import validate_plan
+```
 
-Use `bijux-canon-reason` directly:
+The alias package also keeps `bijux_rar.interfaces.cli` pointed at the
+canonical reasoning CLI module, while preserving the executable name
+`bijux-rar`.
 
-- package directory: [Canonical package source directory](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason)
-- legacy package handbook: [Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/)
-- package docs: [Canonical package handbook](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
+## Read Next
+
+- canonical package: [bijux-canon-reason](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason)
+- canonical handbook: [bijux-canon-reason handbook](https://bijux.io/bijux-canon/bijux-canon-reason/)
+- legacy handbook: [bijux-rar alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rar/)
 - migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- retired repository: [bijux/bijux-rar](https://github.com/bijux/bijux-rar)
 - changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md)
-
-## Primary entrypoint
-
-- console script: `bijux-rar`
-
-## Package contents
-
-- [`pyproject.toml`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/pyproject.toml)
-- [`hatch_build.py`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/hatch_build.py)
-- [`overview.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/overview.md)
-- [`CHANGELOG.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rar/CHANGELOG.md)
-
-## Release Readiness
-
-- upcoming release line: `0.3.6`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
