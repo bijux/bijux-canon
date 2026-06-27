@@ -118,6 +118,7 @@ def _package_path(package_name: str) -> Path:
     package_dirs = cast(dict[str, str], workspace["package_dirs"])
     return REPO_ROOT / package_dirs[package_name]
 
+
 def _shared_docs_url(package_name: str) -> str:
     return f"{BIJUX_CANON_DOCS_URL}{package_name}/"
 
@@ -222,6 +223,7 @@ def test_workspace_packages_use_shared_repository_release_tags() -> None:
     assert not mismatches, "workspace release tag configuration failed:\n" + "\n".join(
         mismatches
     )
+
 
 def test_workspace_manifest_declares_root_uv_contract() -> None:
     with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
