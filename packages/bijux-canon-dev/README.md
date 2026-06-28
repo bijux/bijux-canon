@@ -20,7 +20,7 @@ repository healthy rather than to run the product, it should usually live here.
 
 - runtime or product behavior that end users depend on directly
 - domain models that belong to agent, ingest, index, reason, or runtime packages
-- compatibility shims whose only job is to preserve legacy package names
+- compatibility bridges whose only job is to preserve older or shorter public names
 
 ## Source map
 

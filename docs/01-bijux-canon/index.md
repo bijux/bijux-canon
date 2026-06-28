@@ -117,4 +117,4 @@ to move with it.
 
 - the behavior is already local to one package's interfaces, workflows, or tests
 - the question is really about maintainer automation internals
-- the real work is a legacy-name migration rather than a root-owned rule
+- the real work is compatibility alias routing rather than a root-owned rule
