@@ -14,6 +14,9 @@ tagged release, including legacy distribution naming where applicable.
   outputs, and publish readiness for the `0.3.8` line.
 - Flow execution models and CLI configuration handling now align more strictly
   with manifest-driven runtime contracts.
+- Runtime continuity guidance now treats both `agentic-flows` and
+  `bijux-canon` as real compatibility aliases that resolve to the same runtime
+  execution surface.
 
 ### Fixed
 

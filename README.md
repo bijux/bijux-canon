@@ -9,10 +9,11 @@
 [![Release GitHub](https://img.shields.io/badge/release-github%20workflow-2563EB?logo=githubactions&logoColor=white)](https://github.com/bijux/bijux-canon/actions/workflows/release-github.yml)
 [![Docs](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/bijux/bijux-canon/actions/workflows/deploy-docs.yml)
 [![Release](https://img.shields.io/github/v/release/bijux/bijux-canon?display_name=tag&label=release)](https://github.com/bijux/bijux-canon/releases)
-[![GHCR packages](https://img.shields.io/badge/ghcr-10%20packages-181717?logo=github)](https://github.com/bijux?tab=packages&repo_name=bijux-canon)
-[![Published packages](https://img.shields.io/badge/published%20packages-10-2563EB)](https://github.com/bijux/bijux-canon/tree/main/packages)
+[![GHCR packages](https://img.shields.io/badge/ghcr-11%20packages-181717?logo=github)](https://github.com/bijux?tab=packages&repo_name=bijux-canon)
+[![Published packages](https://img.shields.io/badge/published%20packages-11-2563EB)](https://github.com/bijux/bijux-canon/tree/main/packages)
 
 [![bijux-canon-runtime](https://img.shields.io/pypi/v/bijux-canon-runtime?label=runtime&logo=pypi)](https://pypi.org/project/bijux-canon-runtime/)
+[![bijux-canon](https://img.shields.io/pypi/v/bijux-canon?label=bijux--canon&logo=pypi)](https://pypi.org/project/bijux-canon/)
 [![bijux-canon-agent](https://img.shields.io/pypi/v/bijux-canon-agent?label=agent&logo=pypi)](https://pypi.org/project/bijux-canon-agent/)
 [![bijux-canon-ingest](https://img.shields.io/pypi/v/bijux-canon-ingest?label=ingest&logo=pypi)](https://pypi.org/project/bijux-canon-ingest/)
 [![bijux-canon-reason](https://img.shields.io/pypi/v/bijux-canon-reason?label=reason&logo=pypi)](https://pypi.org/project/bijux-canon-reason/)
@@ -24,6 +25,7 @@
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
 [![bijux-canon-runtime](https://img.shields.io/badge/runtime-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
+[![bijux-canon](https://img.shields.io/badge/bijux--canon-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
 [![bijux-canon-agent](https://img.shields.io/badge/agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
 [![bijux-canon-ingest](https://img.shields.io/badge/ingest-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
 [![bijux-canon-reason](https://img.shields.io/badge/reason-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
@@ -56,16 +58,17 @@ repository layout that stays understandable as the system grows.
 - guarantees: explicit package ownership, checked-in API schemas, deterministic or bounded execution modes, and reviewable release surfaces
 - does not do: promise model correctness, hide cross-package coupling behind one import, or treat one successful run as sufficient evidence
 
-This repository publishes `10` packages. Each release tag builds one staged
+This repository publishes `11` packages. Each release tag builds one staged
 bundle per package, uploads distributions to PyPI, publishes release bundles to
 their exact GHCR package pages under the `bijux` account, and attaches the same
 staged assets to the GitHub Release.
 
 Current synchronized release line: `v0.3.8` dated `2026-06-28`.
 
-The five compatibility distributions in this repository are real alias
-packages, not migration-only placeholders. They preserve legacy distribution,
-import, and CLI names by re-exporting the canonical package surfaces directly.
+The six compatibility distributions in this repository are real alias
+packages, not migration-only placeholders. Five preserve retired public names,
+and one preserves the shorter family-root `bijux-canon` runtime name. All six
+re-export canonical package surfaces directly.
 
 ## Why `bijux-canon` Exists
 
@@ -102,6 +105,10 @@ consolidated `bijux-canon` source of truth:
 - `bijux/bijux-rar` -> `bijux-canon-reason`
 - `bijux/bijux-vex` -> `bijux-canon-index`
 
+The repository also ships `bijux-canon` as a shorter compatibility
+distribution for `bijux-canon-runtime`. It is a real alias package, not a
+retired standalone repository.
+
 ## What Makes It Different
 
 - Contracts are first-class. API schemas are checked in under `apis/` instead of
@@ -117,11 +124,12 @@ consolidated `bijux-canon` source of truth:
 
 ## Package Map
 
-The 10 publishable packages in this repository are:
+The 11 publishable packages in this repository are:
 
 | Package | Purpose | Links |
 | --- | --- | --- |
 | `bijux-canon-runtime` | Governed execution, policy enforcement, and replay | <a href="https://pypi.org/project/bijux-canon-runtime/"><img alt="PyPI" src="https://img.shields.io/badge/pypi-3775A9?logo=pypi&logoColor=white" height="18"></a> <a href="https://bijux.io/bijux-canon/06-bijux-canon-runtime/"><img alt="Docs" src="https://img.shields.io/badge/docs-2563EB?logo=materialformkdocs&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime"><img alt="GHCR" src="https://img.shields.io/badge/ghcr-181717?logo=github&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime"><img alt="Source" src="https://img.shields.io/badge/source-181717?logo=github&logoColor=white" height="18"></a> |
+| `bijux-canon` | Compatibility package for `bijux-canon-runtime` | <a href="https://pypi.org/project/bijux-canon/"><img alt="PyPI" src="https://img.shields.io/badge/pypi-3775A9?logo=pypi&logoColor=white" height="18"></a> <a href="https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/"><img alt="Docs" src="https://img.shields.io/badge/docs-2563EB?logo=materialformkdocs&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon"><img alt="GHCR" src="https://img.shields.io/badge/ghcr-181717?logo=github&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/tree/main/packages/compat-bijux-canon"><img alt="Source" src="https://img.shields.io/badge/source-181717?logo=github&logoColor=white" height="18"></a> |
 | `bijux-canon-agent` | Deterministic agent orchestration and execution surfaces | <a href="https://pypi.org/project/bijux-canon-agent/"><img alt="PyPI" src="https://img.shields.io/badge/pypi-3775A9?logo=pypi&logoColor=white" height="18"></a> <a href="https://bijux.io/bijux-canon/05-bijux-canon-agent/"><img alt="Docs" src="https://img.shields.io/badge/docs-2563EB?logo=materialformkdocs&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent"><img alt="GHCR" src="https://img.shields.io/badge/ghcr-181717?logo=github&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent"><img alt="Source" src="https://img.shields.io/badge/source-181717?logo=github&logoColor=white" height="18"></a> |
 | `bijux-canon-ingest` | Deterministic ingest, chunking, indexing, and retrieval preparation | <a href="https://pypi.org/project/bijux-canon-ingest/"><img alt="PyPI" src="https://img.shields.io/badge/pypi-3775A9?logo=pypi&logoColor=white" height="18"></a> <a href="https://bijux.io/bijux-canon/02-bijux-canon-ingest/"><img alt="Docs" src="https://img.shields.io/badge/docs-2563EB?logo=materialformkdocs&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest"><img alt="GHCR" src="https://img.shields.io/badge/ghcr-181717?logo=github&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest"><img alt="Source" src="https://img.shields.io/badge/source-181717?logo=github&logoColor=white" height="18"></a> |
 | `bijux-canon-reason` | Contract-driven reasoning runtime and run artifacts | <a href="https://pypi.org/project/bijux-canon-reason/"><img alt="PyPI" src="https://img.shields.io/badge/pypi-3775A9?logo=pypi&logoColor=white" height="18"></a> <a href="https://bijux.io/bijux-canon/04-bijux-canon-reason/"><img alt="Docs" src="https://img.shields.io/badge/docs-2563EB?logo=materialformkdocs&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason"><img alt="GHCR" src="https://img.shields.io/badge/ghcr-181717?logo=github&logoColor=white" height="18"></a> <a href="https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason"><img alt="Source" src="https://img.shields.io/badge/source-181717?logo=github&logoColor=white" height="18"></a> |

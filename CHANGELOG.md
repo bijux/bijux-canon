@@ -20,6 +20,9 @@ whole workspace.
 - Clarified repository-level compatibility guidance around real alias packages:
   legacy names remain installable as direct canonical re-export distributions,
   not as decorative migration stubs.
+- Added the shorter `bijux-canon` compatibility distribution as a real alias to
+  `bijux-canon-runtime`, and aligned handbook navigation, release metadata, and
+  package docs around that sixth compatibility surface.
 - Runtime release metadata now requires the synchronized `0.3.8` canon package
   line, and maintainer tooling resolves the same fallback version from source
   checkouts.

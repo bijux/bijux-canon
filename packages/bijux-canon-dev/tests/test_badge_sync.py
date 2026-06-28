@@ -34,8 +34,8 @@ def test_repository_badge_block_renders_all_public_badge_groups() -> None:
     rendered = render_badge_block(
         BadgeTarget(path=Path("README.md"), kind="repository")
     )
-    assert rendered.count("https://img.shields.io/pypi/v/") == 10
-    assert rendered.count("/pkgs/container/") == 10
+    assert rendered.count("https://img.shields.io/pypi/v/") == 11
+    assert rendered.count("/pkgs/container/") == 11
     assert rendered.count("https://bijux.io/bijux-canon/") == 5
     assert "https://img.shields.io/badge/runtime-ghcr" in rendered
     assert "https://img.shields.io/badge/agent-ghcr" in rendered
@@ -86,6 +86,7 @@ def test_readme_surfaces_only_use_generated_badges() -> None:
         Path("packages/bijux-canon-ingest/README.md"),
         Path("packages/bijux-canon-reason/README.md"),
         Path("packages/bijux-canon-index/README.md"),
+        Path("packages/compat-bijux-canon/README.md"),
         Path("packages/compat-agentic-flows/README.md"),
         Path("packages/compat-bijux-agent/README.md"),
         Path("packages/compat-bijux-rag/README.md"),
