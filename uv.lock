@@ -23,6 +23,7 @@ resolution-markers = [
 members = [
     "agentic-flows",
     "bijux-agent",
+    "bijux-canon",
     "bijux-canon-agent",
     "bijux-canon-dev",
     "bijux-canon-index",
@@ -432,6 +433,16 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "bijux-canon-agent", editable = "packages/bijux-canon-agent" }]
+
+[[package]]
+name = "bijux-canon"
+source = { editable = "packages/compat-bijux-canon" }
+dependencies = [
+    { name = "bijux-canon-runtime" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "bijux-canon-runtime", editable = "packages/bijux-canon-runtime" }]
 
 [[package]]
 name = "bijux-canon-agent"
@@ -1066,6 +1077,7 @@ source = { editable = "." }
 dev = [
     { name = "agentic-flows" },
     { name = "bijux-agent" },
+    { name = "bijux-canon" },
     { name = "bijux-canon-agent", extra = ["dev"] },
     { name = "bijux-canon-dev", extra = ["dev"] },
     { name = "bijux-canon-index", extra = ["dev"] },
@@ -1096,6 +1108,7 @@ dev = [
 dev = [
     { name = "agentic-flows", editable = "packages/compat-agentic-flows" },
     { name = "bijux-agent", editable = "packages/compat-bijux-agent" },
+    { name = "bijux-canon", editable = "packages/compat-bijux-canon" },
     { name = "bijux-canon-agent", extras = ["dev"], editable = "packages/bijux-canon-agent" },
     { name = "bijux-canon-dev", extras = ["dev"], editable = "packages/bijux-canon-dev" },
     { name = "bijux-canon-index", extras = ["dev"], editable = "packages/bijux-canon-index" },

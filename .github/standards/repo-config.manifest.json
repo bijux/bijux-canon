@@ -388,6 +388,13 @@
               "build_targets": "build sbom"
             },
             {
+              "package_slug": "bijux-canon",
+              "package_dir": "packages/compat-bijux-canon",
+              "artifacts_dir": "artifacts/compat-bijux-canon",
+              "makefile_path": "makes/packages/compat-package.mk",
+              "build_targets": "build sbom"
+            },
+            {
               "package_slug": "bijux-canon-agent",
               "package_dir": "packages/bijux-canon-agent",
               "artifacts_dir": "artifacts/bijux-canon-agent",
@@ -462,6 +469,9 @@
               "package_slug": "bijux-canon-runtime"
             },
             {
+              "package_slug": "bijux-canon"
+            },
+            {
               "package_slug": "bijux-canon-agent"
             },
             {
@@ -496,6 +506,9 @@
           "value": [
             {
               "package_slug": "bijux-canon-runtime"
+            },
+            {
+              "package_slug": "bijux-canon"
             },
             {
               "package_slug": "bijux-canon-agent"
@@ -665,6 +678,18 @@
           {
             "package-ecosystem": "pip",
             "directory": "/packages/compat-agentic-flows",
+            "schedule": {
+              "interval": "weekly"
+            },
+            "open-pull-requests-limit": 10,
+            "labels": [
+              "dependencies",
+              "python"
+            ]
+          },
+          {
+            "package-ecosystem": "pip",
+            "directory": "/packages/compat-bijux-canon",
             "schedule": {
               "interval": "weekly"
             },

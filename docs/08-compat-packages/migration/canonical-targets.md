@@ -15,6 +15,7 @@ one handbook route without ambiguity.
 
 ## Current Target Map
 
+- `bijux-canon` -> `bijux-canon-runtime` -> <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
 - `agentic-flows` -> `bijux-canon-runtime` -> <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
 - `bijux-agent` -> `bijux-canon-agent` -> <https://bijux.io/bijux-canon/05-bijux-canon-agent/>
 - `bijux-rag` -> `bijux-canon-ingest` -> <https://bijux.io/bijux-canon/02-bijux-canon-ingest/>

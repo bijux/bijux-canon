@@ -5,6 +5,8 @@ COMPAT_CANONICAL_PACKAGE_DIR ?=
 
 ifeq ($(COMPAT_PROJECT_SLUG),compat-agentic-flows)
 COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-runtime
+else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-canon)
+COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-runtime
 else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-agent)
 COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-agent
 else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-rag)

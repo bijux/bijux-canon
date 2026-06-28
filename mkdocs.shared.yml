@@ -79,6 +79,7 @@ plugins:
         bijux-canon/local-development.md: 01-bijux-canon/operations/local-development.md
         bijux-canon/testing-and-validation.md: 01-bijux-canon/operations/testing-and-validation.md
         bijux-canon/release-and-versioning.md: 01-bijux-canon/operations/release-and-versioning.md
+        08-compat-packages/bijux-canon/index.md: 08-compat-packages/catalog/bijux-canon.md
         08-compat-packages/agentic-flows/index.md: 08-compat-packages/catalog/agentic-flows.md
         08-compat-packages/bijux-agent/index.md: 08-compat-packages/catalog/bijux-agent.md
         08-compat-packages/bijux-rag/index.md: 08-compat-packages/catalog/bijux-rag.md

@@ -396,6 +396,7 @@ nav:
       - Compatibility Packages: 08-compat-packages/index.md
       - Catalog:
           - Catalog: 08-compat-packages/catalog/index.md
+          - bijux-canon: 08-compat-packages/catalog/bijux-canon.md
           - agentic-flows: 08-compat-packages/catalog/agentic-flows.md
           - bijux-agent: 08-compat-packages/catalog/bijux-agent.md
           - bijux-rag: 08-compat-packages/catalog/bijux-rag.md

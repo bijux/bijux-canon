@@ -32,6 +32,7 @@ not a design endorsement.
 
 ## Current Import Map
 
+- `bijux_canon` -> `bijux_canon_runtime`
 - `agentic_flows` -> `bijux_canon_runtime`
 - `bijux_agent` -> `bijux_canon_agent`
 - `bijux_rag` -> `bijux_canon_ingest`

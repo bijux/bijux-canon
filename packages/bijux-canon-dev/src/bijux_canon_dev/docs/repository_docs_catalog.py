@@ -3701,6 +3701,7 @@ def render_dev_page(slug: str, title: str) -> str:
 def render_compat_page(slug: str, title: str) -> str:
     """Render compat page."""
     mappings = [
+        ("bijux-canon", "bijux-canon-runtime"),
         ("agentic-flows", "bijux-canon-runtime"),
         ("bijux-agent", "bijux-canon-agent"),
         ("bijux-rag", "bijux-canon-ingest"),
@@ -3719,9 +3720,9 @@ def render_compat_page(slug: str, title: str) -> str:
             f"""\
             # Compatibility Packages
 
-            The compatibility packages preserve older distribution names, import names,
-            and command names while the canonical package family now lives under the
-            `bijux-canon-*` naming system.
+            The compatibility packages preserve older or shorter distribution names,
+            import names, and command names while the canonical package family now
+            lives under the `bijux-canon-*` naming system.
 
             They should be easy to understand but hard to romanticize. Their job is to
             reduce migration pain, not to compete with the canonical package family for
@@ -3850,6 +3851,7 @@ def render_compat_page(slug: str, title: str) -> str:
 
             ## Current Import Roots
 
+            - `bijux_canon`
             - `agentic_flows`
             - `bijux_agent`
             - `bijux_rag`
@@ -3880,6 +3882,15 @@ def render_compat_page(slug: str, title: str) -> str:
 
             A compatibility command should only exist when the canonical package still
             provides a meaningful route behind it.
+
+            ## Current Commands
+
+            - `bijux-canon`
+            - `agentic-flows`
+            - `bijux-agent`
+            - `bijux-rag`
+            - `bijux-rar`
+            - `bijux-vex`
 
             ## Purpose
 

@@ -42,6 +42,12 @@ FORBIDDEN_STANDALONE_DOC_URLS = (
     "https://bijux.io/bijux-canon-dev/",
 )
 COMPATIBILITY_PACKAGES = {
+    "compat-bijux-canon": {
+        "distribution": "bijux-canon",
+        "canonical": "bijux-canon-runtime",
+        "script": "bijux-canon",
+        "retired_repo": None,
+    },
     "compat-agentic-flows": {
         "distribution": "agentic-flows",
         "canonical": "bijux-canon-runtime",
@@ -75,24 +81,24 @@ COMPATIBILITY_PACKAGES = {
 }
 CANONICAL_PACKAGES = {
     "bijux-canon-runtime": {
-        "compatibility_package": "agentic-flows",
-        "retired_repo": "https://github.com/bijux/agentic-flows",
+        "compatibility_packages": ["bijux-canon", "agentic-flows"],
+        "retired_repos": ["https://github.com/bijux/agentic-flows"],
     },
     "bijux-canon-agent": {
-        "compatibility_package": "bijux-agent",
-        "retired_repo": "https://github.com/bijux/bijux-agent",
+        "compatibility_packages": ["bijux-agent"],
+        "retired_repos": ["https://github.com/bijux/bijux-agent"],
     },
     "bijux-canon-ingest": {
-        "compatibility_package": "bijux-rag",
-        "retired_repo": "https://github.com/bijux/bijux-rag",
+        "compatibility_packages": ["bijux-rag"],
+        "retired_repos": ["https://github.com/bijux/bijux-rag"],
     },
     "bijux-canon-reason": {
-        "compatibility_package": "bijux-rar",
-        "retired_repo": "https://github.com/bijux/bijux-rar",
+        "compatibility_packages": ["bijux-rar"],
+        "retired_repos": ["https://github.com/bijux/bijux-rar"],
     },
     "bijux-canon-index": {
-        "compatibility_package": "bijux-vex",
-        "retired_repo": "https://github.com/bijux/bijux-vex",
+        "compatibility_packages": ["bijux-vex"],
+        "retired_repos": ["https://github.com/bijux/bijux-vex"],
     },
 }
 
@@ -175,7 +181,7 @@ def test_public_release_matrix_excludes_internal_dev_package() -> None:
     public_packages = workspace["public_release_packages"]
     internal_packages = workspace["internal_support_packages"]
 
-    assert len(public_packages) == 10
+    assert len(public_packages) == 11
     assert "bijux-canon-dev" not in public_packages
     assert internal_packages == ["bijux-canon-dev"]
 
@@ -428,18 +434,24 @@ def test_canonical_package_readmes_publish_legacy_continuity() -> None:
     failures: list[str] = []
     for package_name, expectation in CANONICAL_PACKAGES.items():
         readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
-        compatibility_package = expectation["compatibility_package"]
-        retired_repo = expectation["retired_repo"]
+        compatibility_packages = cast(list[str], expectation["compatibility_packages"])
+        retired_repos = cast(list[str], expectation["retired_repos"])
 
         if (
             "## Legacy continuity" not in readme
             and "## Package continuity" not in readme
         ):
             failures.append(f"{package_name}: missing package continuity section")
-        if f"https://pypi.org/project/{compatibility_package}/" not in readme:
-            failures.append(f"{package_name}: missing compatibility package link")
-        if retired_repo not in readme:
-            failures.append(f"{package_name}: missing retired repository guidance")
+        for compatibility_package in compatibility_packages:
+            if f"https://pypi.org/project/{compatibility_package}/" not in readme:
+                failures.append(
+                    f"{package_name}: missing compatibility package link for {compatibility_package}"
+                )
+        for retired_repo in retired_repos:
+            if retired_repo not in readme:
+                failures.append(
+                    f"{package_name}: missing retired repository guidance for {retired_repo}"
+                )
     assert not failures, "canonical package continuity failed:\n" + "\n".join(failures)
 
 
@@ -515,7 +527,7 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(
                 f"{package_name}: overview should link the legacy package handbook"
             )
-        if retired_repo not in readme:
+        if retired_repo is not None and retired_repo not in readme:
             failures.append(
                 f"{package_name}: README should document the retired repository"
             )
@@ -523,7 +535,7 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(
                 f"{package_name}: overview should explain the same-version install"
             )
-        if retired_repo not in overview:
+        if retired_repo is not None and retired_repo not in overview:
             failures.append(
                 f"{package_name}: overview should document the retired repository"
             )

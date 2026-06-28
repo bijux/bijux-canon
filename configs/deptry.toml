@@ -2,7 +2,7 @@
 optional_dependencies_dev_groups = ["dev"]
 ignore = ["DEP003"]
 extend_exclude = ["docs", "apis", "artifacts", "site"]
-package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-agent" = "bijux_agent", "bijux-canon-runtime" = "bijux_canon_runtime", "bijux-canon-agent" = "bijux_canon_agent", "bijux-canon-ingest" = "bijux_canon_ingest", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "bijux-canon-dev" = "bijux_canon_dev", "bijux-rag" = "bijux_rag", "bijux-rar" = "bijux_rar", "bijux-vex" = "bijux_vex", "faiss-cpu" = "faiss", "pyfakefs" = "pyfakefs", "pytest-mock" = "pytest_mock", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
+package_module_name_map = { "agentic-flows" = "agentic_flows", "bijux-agent" = "bijux_agent", "bijux-canon" = "bijux_canon", "bijux-canon-runtime" = "bijux_canon_runtime", "bijux-canon-agent" = "bijux_canon_agent", "bijux-canon-ingest" = "bijux_canon_ingest", "bijux-canon-reason" = "bijux_canon_reason", "bijux-canon-index" = "bijux_canon_index", "bijux-canon-dev" = "bijux_canon_dev", "bijux-rag" = "bijux_rag", "bijux-rar" = "bijux_rar", "bijux-vex" = "bijux_vex", "faiss-cpu" = "faiss", "pyfakefs" = "pyfakefs", "pytest-mock" = "pytest_mock", "qdrant-client" = "qdrant_client", "sentence-transformers" = "sentence_transformers" }
 
 [tool.repo_deptry.packages."bijux-canon-runtime"]
 known_first_party = ["bijux_canon_runtime"]
@@ -31,6 +31,10 @@ per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama",
 known_first_party = ["bijux_canon_index"]
 ignore = ["DEP001"]
 per_rule_ignores = { DEP002 = ["types-PyYAML", "types-orjson", "types-colorama", "types-psutil", "typing-extensions", "types-pexpect", "pytest", "pytest-cov", "pytest-asyncio", "pytest-timeout", "pytest-rerunfailures", "pytest-benchmark", "hypothesis", "hypothesis-jsonschema", "pexpect", "ruff", "mypy", "codespell", "pydocstyle", "radon", "vulture", "deptry", "build", "bandit", "pip-audit", "commitizen", "interrogate", "mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-git-revision-date-localized-plugin", "mkdocs-include-markdown-plugin", "mkdocs-gen-files", "mkdocs-literate-nav", "mkdocs-redirects", "mkdocs-minify-plugin", "mkdocs-glightbox", "prance", "openapi-spec-validator", "schemathesis", "anyio", "uvicorn", "twine", "cyclonedx-bom", "faiss-cpu"], DEP003 = ["bijux_canon_index"] }
+
+[tool.repo_deptry.packages."compat-bijux-canon"]
+known_first_party = ["bijux_canon"]
+per_rule_ignores = { DEP001 = ["bijux_canon_runtime"] }
 
 [tool.repo_deptry.packages."compat-agentic-flows"]
 known_first_party = ["agentic_flows"]

@@ -31,6 +31,7 @@ visible without any additional interpretation.
 
 ## Current Map
 
+- `bijux-canon` -> `bijux-canon-runtime`
 - `agentic-flows` -> `bijux-canon-runtime`
 - `bijux-agent` -> `bijux-canon-agent`
 - `bijux-rag` -> `bijux-canon-ingest`
