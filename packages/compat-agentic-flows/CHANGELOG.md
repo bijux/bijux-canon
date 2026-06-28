@@ -19,6 +19,9 @@ changelog update are reconstructed from tag annotations and release diffs.
 
 ### Fixed
 
+- Published package metadata now identifies `agentic-flows` as a real
+  compatibility alias package for `bijux-canon-runtime` instead of a migration
+  bridge placeholder.
 - Release fallback metadata now aligns with the synchronized `0.3.8` canon
   release line.
 

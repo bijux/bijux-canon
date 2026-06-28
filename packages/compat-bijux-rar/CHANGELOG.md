@@ -18,6 +18,9 @@ releases when a tagged changelog existed.
 
 ### Fixed
 
+- Published package metadata now identifies `bijux-rar` as a real
+  compatibility alias package for `bijux-canon-reason` instead of a migration
+  bridge placeholder.
 - Release fallback metadata now aligns with the synchronized `0.3.8` canon
   release line.
 

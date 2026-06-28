@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-rag"
 dynamic = ["version", "dependencies"]
-description = "Compatibility bridge for the legacy bijux-rag PyPI package. Preserves installs, imports, and the bijux-rag command while installing bijux-canon-ingest from the bijux-canon family at the same version."
+description = "Compatibility alias package for bijux-canon-ingest. Preserves installs, imports, and the legacy bijux-rag PyPI package name and CLI command at the same synchronized version."
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
@@ -16,7 +16,7 @@ keywords = [
   "bijux-canon",
   "bijux.io",
   "compatibility",
-  "migration",
+  "alias",
   "legacy-name",
   "rag",
   "retrieval",

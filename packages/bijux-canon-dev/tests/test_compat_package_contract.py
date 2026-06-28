@@ -60,6 +60,27 @@ def test_compatibility_packages_keep_standardized_bridge_tests_while_they_stay_t
         canonical_import = cast(str, contract["canonical_import"])
         expected_test_files = cast(list[str], contract["test_files"])
         package_root = REPO_ROOT / "packages" / package_name
+        pyproject_path = package_root / "pyproject.toml"
+        with pyproject_path.open("rb") as handle:
+            pyproject = cast(dict[str, object], tomllib.load(handle))
+        project = _as_dict(pyproject["project"])
+        description = cast(str, project["description"])
+        custom = _as_dict(
+            _as_dict(_as_dict(pyproject["tool"])["hatch"])["metadata"]
+        )
+        custom_hook = _as_dict(custom["hooks"])
+        canonical_name = cast(
+            str, _as_dict(custom_hook["custom"])["canonical-name"]
+        )
+
+        if not description.startswith("Compatibility alias package for "):
+            failures.append(
+                f"{package_name}: description must identify the package as a compatibility alias"
+            )
+        if canonical_name.replace("-", "_") != canonical_import:
+            failures.append(
+                f"{package_name}: canonical-name={canonical_name!r} does not match {canonical_import!r}"
+            )
         tests_dir = package_root / "tests"
         if not tests_dir.is_dir():
             failures.append(f"{package_name}: missing standardized compatibility tests")
@@ -89,9 +110,17 @@ def test_compatibility_packages_keep_standardized_bridge_tests_while_they_stay_t
             failures.append(
                 f"{package_name}: compatibility module must proxy {canonical_import}"
             )
+        if "__path__ = _impl.__path__" not in module_text:
+            failures.append(
+                f"{package_name}: compatibility module must alias canonical package paths"
+            )
         if "def __getattr__(name: str) -> object:" not in module_text:
             failures.append(
                 f"{package_name}: compatibility module must proxy runtime attributes"
+            )
+        if "def __dir__() -> list[str]:" not in module_text:
+            failures.append(
+                f"{package_name}: compatibility module must mirror canonical attribute discovery"
             )
 
     assert not failures, "\n".join(failures)

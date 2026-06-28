@@ -18,6 +18,9 @@ releases when a tagged changelog existed.
 
 ### Fixed
 
+- Published package metadata now identifies `bijux-rag` as a real
+  compatibility alias package for `bijux-canon-ingest` instead of a migration
+  bridge placeholder.
 - Release fallback metadata now aligns with the synchronized `0.3.8` canon
   release line.
 
