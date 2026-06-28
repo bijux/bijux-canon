@@ -4,44 +4,81 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable
+import importlib
 import json
 from pathlib import Path
-from types import ModuleType
-from typing import Any
+import xml.etree.ElementTree as _ElementTree  # nosec B405
+from typing import Any, Protocol, TypeVar, cast
 
-pd: ModuleType | None = None
-yaml: ModuleType | None = None
-ET: ModuleType | None = None
+
+class PandasModule(Protocol):
+    errors: Any
+
+    def read_csv(
+        self,
+        file_path: str | Path,
+        *,
+        sep: str,
+        encoding: str,
+        nrows: int | None = None,
+    ) -> Any: ...
+
+
+class YamlModule(Protocol):
+    YAMLError: type[Exception]
+
+    def safe_load(self, stream: Any) -> Any: ...
+
+
+class XmlModule(Protocol):
+    ParseError: type[Exception]
+
+    def parse(self, file_path: str | Path) -> Any: ...
+
+
+pd: PandasModule | None = None
+yaml: YamlModule | None = None
+ET: XmlModule | None = None
 
 try:
-    import pandas as _pd
-
-    pd = _pd
+    pd = cast(PandasModule, importlib.import_module("pandas"))
     HAS_PANDAS = True
 except ImportError:
     HAS_PANDAS = False
 
 try:
-    import yaml as _yaml
-
-    yaml = _yaml
+    yaml = cast(YamlModule, importlib.import_module("yaml"))
     HAS_YAML = True
 except ImportError:
     HAS_YAML = False
 
-try:
-    import xml.etree.ElementTree as _ElementTree  # nosec B405
-
-    ET = _ElementTree
-    HAS_XML = True
-except ImportError:
-    HAS_XML = False
+ET = cast(XmlModule, _ElementTree)
+HAS_XML = True
 
 
-def _require_dependency(module: ModuleType | None, name: str) -> ModuleType:
+DependencyT = TypeVar("DependencyT")
+
+
+def _require_dependency(module: DependencyT | None, name: str) -> DependencyT:
     if module is None:
         raise RuntimeError(f"{name} dependency is required but not installed")
     return module
+
+
+def _read_csv_with_options(
+    pandas_module: PandasModule,
+    file_path: str | Path,
+    *,
+    sep: str,
+    encoding: str,
+    nrows: int | None = None,
+) -> Any:
+    return pandas_module.read_csv(
+        file_path,
+        sep=sep,
+        encoding=encoding,
+        nrows=nrows,
+    )
 
 
 YAML_EXTENSIONS: set[str] = {".yaml", ".yml"}
@@ -93,28 +130,25 @@ class StructuredExtractor:
             }
 
         try:
+            pandas_module = _require_dependency(pd, "pandas")
             for sep in [",", ";", "\t"]:
                 for encoding in ["utf-8", "latin1", "cp1252"]:
                     try:
-                        loop = asyncio.get_running_loop()
-                        _require_dependency(pd, "pandas")
-                        df = await loop.run_in_executor(
-                            None,
-                            lambda sep=sep, encoding=encoding: pd.read_csv(
+                        df = await asyncio.to_thread(
+                            _read_csv_with_options,
+                            pandas_module,
+                            file_path,
+                            sep=sep,
+                            encoding=encoding,
+                            nrows=1000,
+                        )
+                        if len(df.columns) > 1:
+                            full_df = await asyncio.to_thread(
+                                _read_csv_with_options,
+                                pandas_module,
                                 file_path,
                                 sep=sep,
                                 encoding=encoding,
-                                nrows=1000,
-                            ),
-                        )
-                        if len(df.columns) > 1:
-                            full_df = await loop.run_in_executor(
-                                None,
-                                lambda sep=sep, encoding=encoding: pd.read_csv(
-                                    file_path,
-                                    sep=sep,
-                                    encoding=encoding,
-                                ),
                             )
                             return {
                                 "columns": list(full_df.columns),
@@ -128,7 +162,11 @@ class StructuredExtractor:
                                 "encoding_used": encoding,
                                 "file_info": file_info,
                             }
-                    except (pd.errors.ParserError, UnicodeDecodeError, OSError):
+                    except (
+                        pandas_module.errors.ParserError,
+                        UnicodeDecodeError,
+                        OSError,
+                    ):
                         continue
 
             return {
@@ -157,14 +195,14 @@ class StructuredExtractor:
 
         try:
             with open(file_path, encoding="utf-8") as f:
-                _require_dependency(yaml, "PyYAML")
-                parsed_data = yaml.safe_load(f)
+                yaml_module = _require_dependency(yaml, "PyYAML")
+                parsed_data = yaml_module.safe_load(f)
             return {
                 "parsed": parsed_data,
                 "data_type": type(parsed_data).__name__,
                 "file_info": file_info,
             }
-        except yaml.YAMLError as e:
+        except _require_dependency(yaml, "PyYAML").YAMLError as e:
             return {
                 "error": f"YAML parsing error: {e}",
                 "file_info": file_info,
@@ -193,8 +231,8 @@ class StructuredExtractor:
             }
 
         try:
-            _require_dependency(ET, "xml.etree.ElementTree")
-            tree = ET.parse(file_path)  # nosec B314
+            xml_module = _require_dependency(ET, "xml.etree.ElementTree")
+            tree = xml_module.parse(file_path)  # nosec B314
             root = tree.getroot()
             xml_dict = self._xml_to_dict(root)
             return {
@@ -202,7 +240,7 @@ class StructuredExtractor:
                 "root_tag": root.tag,
                 "file_info": file_info,
             }
-        except ET.ParseError as e:
+        except _require_dependency(ET, "xml.etree.ElementTree").ParseError as e:
             return {
                 "error": f"XML parsing error: {e}",
                 "file_info": file_info,

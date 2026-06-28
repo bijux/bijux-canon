@@ -156,26 +156,29 @@ def validate_recursive(
                         pattern
                         and isinstance(expected_type, type)
                         and expected_type is str
-                        and not re.match(pattern, val_checked)
                     ):
-                        error_msg = (
-                            f"{key_path}: Value '{val_checked}' does not match "
-                            f"pattern {pattern}"
-                        )
-                        errors.append(error_msg)
-                        audit[key_path] = {
-                            "error": "pattern_mismatch",
-                            "pattern": str(pattern),
-                            "value": val_checked,
-                        }
-                        agent.logger.error(error_msg, extra={"context": key_tags})
-                        agent.logger_manager.log_metric(
-                            "pattern_mismatch_errors",
-                            1,
-                            MetricType.COUNTER,
-                            tags=key_tags,
-                        )
-                        continue
+                        val_checked_str = str(val_checked)
+                        if re.match(pattern, val_checked_str):
+                            pass
+                        else:
+                            error_msg = (
+                                f"{key_path}: Value '{val_checked_str}' does not match "
+                                f"pattern {pattern}"
+                            )
+                            errors.append(error_msg)
+                            audit[key_path] = {
+                                "error": "pattern_mismatch",
+                                "pattern": str(pattern),
+                                "value": val_checked_str,
+                            }
+                            agent.logger.error(error_msg, extra={"context": key_tags})
+                            agent.logger_manager.log_metric(
+                                "pattern_mismatch_errors",
+                                1,
+                                MetricType.COUNTER,
+                                tags=key_tags,
+                            )
+                            continue
 
                     if (
                         (min_val is not None or max_val is not None)

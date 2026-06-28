@@ -75,8 +75,13 @@ class FileExtractionDispatcher:
         file_type = extension.lstrip(".")
         custom_extractor = custom_extractors.get(file_type)
         if custom_extractor is not None:
+            extractor_name = getattr(
+                custom_extractor,
+                "__name__",
+                custom_extractor.__class__.__name__,
+            )
             return ExtractionPlan(
-                processing_method=f"custom_{custom_extractor.__name__}",
+                processing_method=f"custom_{extractor_name}",
                 uses_custom_extractor=True,
                 extract=self._wrap_custom_extractor(custom_extractor),
             )

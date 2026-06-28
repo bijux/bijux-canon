@@ -10,7 +10,6 @@ designed to be used by FileReaderAgent.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Awaitable, Callable
 import hashlib
 from pathlib import Path
 import time
@@ -28,7 +27,11 @@ from .binary import (
 from .binary import (
     IMAGE_EXTENSIONS as BINARY_IMAGE_EXTENSIONS,
 )
-from .dispatch import ExtractionHandlers, FileExtractionDispatcher
+from .dispatch import (
+    CustomExtractor,
+    ExtractionHandlers,
+    FileExtractionDispatcher,
+)
 from .processing_support import enrich_read_result, validate_read_target
 from .structured import (
     HAS_PANDAS,
@@ -92,9 +95,7 @@ class UniversalFileReader:
         )
         self.chunk_size = self._get_config_int("chunk_size", self.DEFAULT_CHUNK_SIZE)
         self.ocr_enabled = self._get_config_bool("ocr_enabled", False)
-        self._custom_extractors: dict[
-            str, Callable[[str], Awaitable[dict[str, Any]]]
-        ] = {}
+        self._custom_extractors: dict[str, CustomExtractor] = {}
         self._text_extractor = TextExtractor(
             create_file_audit=self._create_file_audit,
             normalize_text=self._normalize_text,
@@ -368,7 +369,7 @@ class UniversalFileReader:
         )
 
     def register_custom_extractor(
-        self, file_type: str, extractor: Callable[[str], Awaitable[dict[str, Any]]]
+        self, file_type: str, extractor: CustomExtractor
     ) -> None:
         """Register a custom file extractor for a specific file type.
 

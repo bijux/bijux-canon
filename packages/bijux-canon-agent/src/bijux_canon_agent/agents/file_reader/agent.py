@@ -79,10 +79,12 @@ class FileReaderAgent(BaseAgent[dict[str, Any], dict[str, Any]]):
         self.cache_enabled = self.config.get("cache_enabled", True)
         self.async_io = self.config.get("async_io", True)
         self.backoff_strategy = self.config.get("backoff_strategy", "exponential")
-        self._version = self.config.get("agent_version", "2.0.0")
-        self._agent_id = self.config.get(
-            "agent_id",
-            str(hashlib.sha256(self.__class__.__name__.encode()).hexdigest()),
+        self._version = str(self.config.get("agent_version", "2.0.0"))
+        self._agent_id = str(
+            self.config.get(
+                "agent_id",
+                str(hashlib.sha256(self.__class__.__name__.encode()).hexdigest()),
+            )
         )
 
         # Validate backoff strategy

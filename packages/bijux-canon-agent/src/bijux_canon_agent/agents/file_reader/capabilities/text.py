@@ -4,21 +4,32 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable
+import importlib
 from pathlib import Path
-from types import ModuleType
-from typing import Any
+from typing import Any, Protocol, cast
 
-docx: ModuleType | None = None
+
+class DocxParagraph(Protocol):
+    text: str
+
+
+class DocxDocument(Protocol):
+    paragraphs: list[DocxParagraph]
+
+
+class DocxModule(Protocol):
+    def Document(self, file_path: str | Path) -> DocxDocument: ...
+
+
+docx: DocxModule | None = None
 try:
-    import docx as _docx
-
-    docx = _docx
+    docx = cast(DocxModule, importlib.import_module("docx"))
     HAS_DOCX = True
 except ImportError:
     HAS_DOCX = False
 
 
-def _require_dependency(module: ModuleType | None, name: str) -> ModuleType:
+def _require_dependency(module: DocxModule | None, name: str) -> DocxModule:
     if module is None:
         raise RuntimeError(f"{name} dependency is required but not installed")
     return module
@@ -85,8 +96,10 @@ class TextExtractor:
 
         try:
             loop = asyncio.get_running_loop()
-            _require_dependency(docx, "python-docx")
-            doc = await loop.run_in_executor(None, lambda: docx.Document(file_path))
+            docx_module = _require_dependency(docx, "python-docx")
+            doc = await loop.run_in_executor(
+                None, lambda: docx_module.Document(file_path)
+            )
             paragraphs = [para.text for para in doc.paragraphs if para.text.strip()]
             text = "\n".join(paragraphs)
             return {
