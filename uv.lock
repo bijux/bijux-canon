@@ -1183,7 +1183,7 @@ requires-dist = [
     { name = "bijux-canon-index", editable = "packages/bijux-canon-index" },
     { name = "bijux-canon-ingest", editable = "packages/bijux-canon-ingest" },
     { name = "bijux-canon-reason", editable = "packages/bijux-canon-reason" },
-    { name = "bijux-cli", specifier = ">=0.3.4,<0.4.0" },
+    { name = "bijux-cli", specifier = ">=0.3.6,<0.4.0" },
     { name = "build", marker = "extra == 'dev'", specifier = ">=1.0.3,<2.0" },
     { name = "codespell", marker = "extra == 'dev'", specifier = ">=2.3.0,<3.0" },
     { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.10.0,<1.0" },
