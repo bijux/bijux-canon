@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 import time
 from typing import Any
+import uuid
 
 from bijux_canon_agent.interfaces.cli import config_support as _config_support_module
 from bijux_canon_agent.interfaces.cli import replay_support as _replay_support_module
@@ -97,6 +99,8 @@ async def process_files(
 
 def build_trace_from_result(*args: Any, **kwargs: Any) -> tuple[Path, RunTrace]:
     """Build a run trace while preserving helper-level monkeypatch compatibility."""
+    _result_artifacts_module.datetime = datetime
+    _result_artifacts_module.uuid = uuid
     return _result_artifacts_module.build_trace_from_result(*args, **kwargs)
 
 

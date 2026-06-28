@@ -7,8 +7,8 @@ from collections.abc import Callable
 import importlib
 import json
 from pathlib import Path
-import xml.etree.ElementTree as _ElementTree  # nosec B405
 from typing import Any, Protocol, TypeVar, cast
+import xml.etree.ElementTree as _ElementTree  # nosec B405
 
 
 class PandasModule(Protocol):
