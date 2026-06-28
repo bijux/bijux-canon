@@ -36,62 +36,52 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-`agentic-flows` is the continuation of the published `agentic-flows`
-distribution on PyPI. Each release keeps the legacy distribution, import, and
-command surfaces available while installing `bijux-canon-runtime` at the same
-version.
+Alias distribution for `bijux-canon-runtime`.
 
-This package exists to reduce migration breakage, not to become the preferred
-entrypoint for new work. Its package handbook lives at
-[Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/).
+Install this package if you need the legacy package name and CLI command while
+running the same runtime behavior as `bijux-canon-runtime`.
 
-## Migration note
+## Install
 
-- new installs should use `uv add bijux-canon-runtime`
-- existing automation can stay on `agentic-flows` while you update imports and commands
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/agentic-flows](https://github.com/bijux/agentic-flows) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+```bash
+python3.11 -m pip install agentic-flows
+agentic-flows --help
+```
 
-## Publication status
+## What It Does
 
-- published continuation of the legacy `agentic-flows` distribution
-- each release depends on `bijux-canon-runtime==<same version>`
-- intended for existing environments that still rely on the legacy name
+- re-exports the public Python API from `bijux-canon-runtime`
+- resolves legacy submodules such as `agentic_flows.interfaces.cli.entrypoint`
+  to the same canonical modules used by `bijux_canon_runtime`
+- dispatches the same CLI entrypoint through the legacy `agentic-flows`
+  command
+- keeps the legacy distribution installable while steering new work to
+  `bijux-canon-runtime`
+- avoids becoming a second home for runtime logic or release ownership
 
-## Canonical package
+## Compatibility Contract
 
-- distribution: `bijux-canon-runtime`
-- Python import: `bijux_canon_runtime`
-- command: `bijux-canon-runtime`
+If this works:
 
-## What this compatibility package preserves
+```python
+from bijux_canon_runtime import execute_flow
+```
 
-- the legacy distribution name `agentic-flows`
-- the legacy Python import surface `agentic_flows`
-- the legacy command name `agentic-flows`
+the alias package is expected to support the same import through:
 
-## Read this next
+```python
+from agentic_flows import execute_flow
+```
 
-Depend on `bijux-canon-runtime` directly and read the canonical docs there:
+The alias package also keeps `agentic_flows.interfaces.cli.entrypoint` pointed
+at the canonical runtime CLI module, while preserving the executable name
+`agentic-flows`.
 
-- package directory: [Canonical package source directory](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime)
-- legacy package handbook: [Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
-- package docs: [Canonical package handbook](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
+## Read Next
+
+- canonical package: [bijux-canon-runtime](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime)
+- canonical handbook: [bijux-canon-runtime handbook](https://bijux.io/bijux-canon/bijux-canon-runtime/)
+- legacy handbook: [agentic-flows alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
 - migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- retired repository: [bijux/agentic-flows](https://github.com/bijux/agentic-flows)
 - changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md)
-
-## Primary entrypoint
-
-- console script: `agentic-flows`
-
-## Package contents
-
-- [`pyproject.toml`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/pyproject.toml)
-- [`hatch_build.py`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/hatch_build.py)
-- [`overview.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/overview.md)
-- [`CHANGELOG.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md)
-
-## Release Readiness
-
-- upcoming release line: `0.3.6`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

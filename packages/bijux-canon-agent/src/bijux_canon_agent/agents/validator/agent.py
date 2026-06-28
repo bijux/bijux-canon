@@ -38,7 +38,7 @@ class ValidationError(Exception):
     """Exception for validation failures, used for strict mode."""
 
 
-class ValidatorAgent(BaseAgent):
+class ValidatorAgent(BaseAgent[dict[str, Any], dict[str, Any]]):
     """Enhanced ValidatorAgent for a multi-agent system.
 
     Performs deep, schema-aware validation of nested data structures

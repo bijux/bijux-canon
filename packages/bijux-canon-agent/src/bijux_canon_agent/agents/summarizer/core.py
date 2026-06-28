@@ -29,7 +29,9 @@ from .types import (
 )
 
 
-class SummarizerAgent(BaseAgent):
+class SummarizerAgent(
+    BaseAgent[dict[str, Any], SummarizerResult | SummarizerErrorResult]
+):
     """Enhanced summarization agent for a multi-agent system.
 
     Supports chunking, section-aware summarization, multiple strategies (extractive,
@@ -47,7 +49,7 @@ class SummarizerAgent(BaseAgent):
         config: dict[str, Any],
         logger_manager: LoggerManager,
         pre_hook: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
-        post_hook: Callable[[dict[str, Any], dict[str, Any]], dict[str, Any]]
+        post_hook: Callable[[dict[str, Any], SummarizerResult], SummarizerResult]
         | None = None,
     ):
         """Initialize SummarizerAgent with config and logger manager.
@@ -287,7 +289,7 @@ class SummarizerAgent(BaseAgent):
                     }
                 },
             )
-            return cast(SummarizerResult, result)
+            return result
 
     @staticmethod
     def _extract_text(context: dict[str, Any]) -> str:
@@ -336,7 +338,7 @@ class SummarizerAgent(BaseAgent):
         self.logger_manager.log_metric(
             "cache_hits", 1, MetricType.COUNTER, tags={"stage": "cache_check"}
         )
-        return cast(SummarizerResult, self._cache[cache_key])
+        return self._cache[cache_key]
 
     def _prompt_prefix(self, feedback: Any) -> str:
         if not feedback:
@@ -423,7 +425,7 @@ class SummarizerAgent(BaseAgent):
         if self.post_hook is None:
             return result
         try:
-            updated = cast(SummarizerResult, self.post_hook(context, result))
+            updated = self.post_hook(context, result)
             self.logger.debug(
                 "Post-hook applied successfully",
                 extra={"context": {"stage": "post_hook"}},
@@ -514,17 +516,16 @@ class SummarizerAgent(BaseAgent):
         context: dict[str, Any],
         stage: str,
         extra: dict[str, Any] | None = None,
-    ) -> SummarizerErrorResult:
+    ) -> dict[str, Any]:
         """Build a standardized error payload for summarization."""
         _ = extra
-        error_result = build_summarizer_error_result(
+        return build_summarizer_error_result(
             msg,
             {**(context or {}), "stage": stage},
             input_length=len(self._extract_text(context)),
             backend=self.backend,
             strategy=self.strategy,
         )
-        return cast(SummarizerErrorResult, error_result)
 
     @classmethod
     def self_report_schema(cls) -> dict[str, Any]:

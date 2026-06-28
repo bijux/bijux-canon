@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 import time
-from typing import Any, ClassVar, cast
+from typing import Any, ClassVar
 
 from bijux_canon_agent.agents.base import BaseAgent
 from bijux_canon_agent.observability.logging import LoggerManager
@@ -32,7 +32,7 @@ from .rules.types import (
 from .run_context import build_critique_run_input
 
 
-class CritiqueAgent(BaseAgent):
+class CritiqueAgent(BaseAgent[dict[str, Any], dict[str, Any]]):
     """Enhanced CritiqueAgent for evaluating AI-generated outputs in Bijux Agent.
 
     Provides actionable, high-quality feedback with robust error handling, relevance
@@ -110,7 +110,7 @@ class CritiqueAgent(BaseAgent):
         config: dict[str, Any],
         logger_manager: LoggerManager,
         pre_hook: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
-        post_hook: Callable[[dict[str, Any], dict[str, Any]], dict[str, Any]]
+        post_hook: Callable[[dict[str, Any], CritiqueResult], CritiqueResult]
         | None = None,
     ):
         """Initialize the CritiqueAgent with configuration and logger manager."""
@@ -334,7 +334,7 @@ class CritiqueAgent(BaseAgent):
         if not self.post_hook:
             return result
         try:
-            return cast(CritiqueResult, self.post_hook(context, result))
+            return self.post_hook(context, result)
         except Exception as exc:
             self.logger.error(
                 f"Post-hook failed: {exc!s}",
@@ -347,7 +347,7 @@ class CritiqueAgent(BaseAgent):
         text: str,
         context: dict[str, Any],
         source_text: str,
-    ) -> dict[str, Any]:
+    ) -> CritiqueResult:
         """Perform the critique evaluation with enhanced checks."""
         state = await self._evaluate_criteria(
             text,
@@ -480,10 +480,10 @@ class CritiqueAgent(BaseAgent):
         context: dict[str, Any],
         stage: str,
         extra: dict[str, Any] | None = None,
-    ) -> CritiqueResult:
+    ) -> dict[str, Any]:
         """Return a standardized error result with detailed logging."""
         _ = (context, stage, extra)
-        return build_critique_error_payload(msg, self.criteria)
+        return dict(build_critique_error_payload(msg, self.criteria))
 
     def _revise_payload(
         self, feedback: dict[str, Any], context: dict[str, Any]

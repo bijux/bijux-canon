@@ -4,36 +4,58 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable
+import importlib
 from pathlib import Path
-from types import ModuleType
-from typing import Any
+from typing import Any, Protocol, TypeVar, cast
 
-pdfminer: ModuleType | None = None
-pypdf: ModuleType | None = None
-pytesseract: ModuleType | None = None
-Image: ModuleType | None = None
-fitz: ModuleType | None = None
+
+class PdfMinerHighLevelModule(Protocol):
+    def extract_text(self, file_path: str) -> str: ...
+
+
+class PypdfModule(Protocol):
+    PdfReader: Any
+
+
+class PytesseractModule(Protocol):
+    def image_to_string(self, image: Any, *, lang: str) -> str: ...
+
+
+class ImageModule(Protocol):
+    def frombytes(
+        self, mode: str, size: tuple[int, int], data: bytes | bytearray
+    ) -> Any: ...
+
+    def open(self, file_path: str | Path) -> Any: ...
+
+
+class FitzModule(Protocol):
+    def open(self, file_path: str) -> Any: ...
+
+
+pdfminer_high_level: PdfMinerHighLevelModule | None = None
+pypdf: PypdfModule | None = None
+pytesseract: PytesseractModule | None = None
+Image: ImageModule | None = None
+fitz: FitzModule | None = None
 
 try:
-    import pdfminer.high_level
-    import pdfminer.pdfparser
-
+    pdfminer_high_level = cast(
+        PdfMinerHighLevelModule,
+        importlib.import_module("pdfminer.high_level"),
+    )
     HAS_PDFMINER = True
 except ImportError:
     HAS_PDFMINER = False
 
 try:
-    import pypdf as _pypdf
-
-    pypdf = _pypdf
+    pypdf = cast(PypdfModule, importlib.import_module("pypdf"))
     HAS_PYPDF = True
 except ImportError:
     HAS_PYPDF = False
 
 try:
-    import pytesseract as _pytesseract
-
-    pytesseract = _pytesseract
+    pytesseract = cast(PytesseractModule, importlib.import_module("pytesseract"))
     HAS_PYTESSERACT = True
 except ImportError:
     HAS_PYTESSERACT = False
@@ -41,21 +63,22 @@ except ImportError:
 try:
     from PIL import Image as _Image
 
-    Image = _Image
+    Image = cast(ImageModule, _Image)
     HAS_PIL = True
 except ImportError:
     HAS_PIL = False
 
 try:
-    import fitz as _fitz  # PyMuPDF
-
-    fitz = _fitz
+    fitz = cast(FitzModule, importlib.import_module("fitz"))
     HAS_FITZ = True
 except ImportError:
     HAS_FITZ = False
 
 
-def _require_dependency(module: ModuleType | None, name: str) -> ModuleType:
+DependencyT = TypeVar("DependencyT")
+
+
+def _require_dependency(module: DependencyT | None, name: str) -> DependencyT:
     if module is None:
         raise RuntimeError(f"{name} dependency is required but not installed")
     return module
@@ -97,10 +120,12 @@ class BinaryExtractor:
 
         if HAS_PDFMINER and not text.strip():
             try:
-                loop = asyncio.get_running_loop()
-                _require_dependency(pdfminer, "pdfminer")
-                text = await loop.run_in_executor(
-                    None, lambda: pdfminer.high_level.extract_text(str(file_path))
+                pdfminer_module = _require_dependency(
+                    pdfminer_high_level, "pdfminer.six"
+                )
+                text = await asyncio.to_thread(
+                    pdfminer_module.extract_text,
+                    str(file_path),
                 )
             except Exception as e:
                 warnings.append(f"pdfminer extraction failed: {e}")
@@ -108,8 +133,8 @@ class BinaryExtractor:
         if HAS_PYPDF and not text.strip():
             try:
                 with open(file_path, "rb") as file:
-                    _require_dependency(pypdf, "pypdf")
-                    reader = pypdf.PdfReader(file)
+                    pypdf_module = _require_dependency(pypdf, "pypdf")
+                    reader = pypdf_module.PdfReader(file)
                     page_count = len(reader.pages)
                     pages_to_process = min(self.max_pdf_pages, page_count)
                     text_chunks = [
@@ -149,10 +174,9 @@ class BinaryExtractor:
             }
 
         try:
-            _require_dependency(fitz, "PyMuPDF")
-            _require_dependency(pytesseract, "pytesseract")
-            loop = asyncio.get_running_loop()
-            doc = await loop.run_in_executor(None, lambda: fitz.open(str(file_path)))
+            fitz_module = _require_dependency(fitz, "PyMuPDF")
+            pytesseract_module = _require_dependency(pytesseract, "pytesseract")
+            doc = await asyncio.to_thread(fitz_module.open, str(file_path))
             ocr_chunks = []
             pages_to_process = min(self.max_pdf_pages, len(doc))
             for page_num in range(pages_to_process):
@@ -163,8 +187,10 @@ class BinaryExtractor:
                 if self._is_valid_pixmap(pix):
                     img = self._pixmap_to_pil_image(pix)
                     if img is not None:
-                        ocr_text = await loop.run_in_executor(
-                            None, pytesseract.image_to_string(img, lang="eng")
+                        ocr_text = await asyncio.to_thread(
+                            pytesseract_module.image_to_string,
+                            img,
+                            lang="eng",
                         )
                         if ocr_text.strip():
                             ocr_chunks.append(ocr_text)
@@ -203,8 +229,8 @@ class BinaryExtractor:
                 and isinstance(height, int)
                 and isinstance(samples, (bytes, bytearray))
             ):
-                _require_dependency(Image, "Pillow")
-                return Image.frombytes(mode, (width, height), samples)
+                image_module = _require_dependency(Image, "Pillow")
+                return image_module.frombytes(mode, (width, height), samples)
             return None
         except (AttributeError, ValueError, TypeError):
             return None
@@ -220,12 +246,13 @@ class BinaryExtractor:
             }
 
         try:
-            _require_dependency(Image, "Pillow")
-            _require_dependency(pytesseract, "pytesseract")
-            loop = asyncio.get_running_loop()
-            img = await loop.run_in_executor(None, lambda: Image.open(file_path))
-            ocr_text = await loop.run_in_executor(
-                None, pytesseract.image_to_string(img, lang="eng")
+            image_module = _require_dependency(Image, "Pillow")
+            pytesseract_module = _require_dependency(pytesseract, "pytesseract")
+            img = await asyncio.to_thread(image_module.open, file_path)
+            ocr_text = await asyncio.to_thread(
+                pytesseract_module.image_to_string,
+                img,
+                lang="eng",
             )
             return {
                 "text": self._normalize_text(ocr_text),

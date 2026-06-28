@@ -36,7 +36,7 @@ async def _execute_ensemble_stage(
     for agent_entry in stage["agents"]:
         agent = agent_entry["agent"]
         try:
-            agent_result = await agent.run(context)
+            agent_result = dict(await agent.run(context))
             results.append(agent_result)
         except Exception as exc:
             logger.error(
@@ -59,7 +59,7 @@ async def _execute_single_stage(
     stage_name = stage["name"]
     agent = stage["agent"]
     try:
-        return await agent.run(context)
+        return dict(await agent.run(context))
     except Exception as exc:
         logger.error(
             f"Agent in stage '{stage_name}' failed: {exc!s}",

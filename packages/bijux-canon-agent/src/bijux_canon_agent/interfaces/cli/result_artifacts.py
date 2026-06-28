@@ -50,7 +50,7 @@ def write_final_artifacts(
     result_dir.mkdir(parents=True, exist_ok=True)
     trace_dir.mkdir(parents=True, exist_ok=True)
     final_result_path = result_dir / "final_result.json"
-    pipeline_result = success_entry["result"] if success_entry else None
+    pipeline_result = None if success_entry is None else success_entry["result"]
     if pipeline_result and not dry_run:
         final_status = pipeline_result["final_status"]
         success_flag = bool(final_status.get("success"))

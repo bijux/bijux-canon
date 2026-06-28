@@ -141,8 +141,8 @@ async def read_with_retries(
 def calculate_backoff(backoff_strategy: str, attempt: int) -> float:
     """Calculate the retry backoff for the configured strategy."""
     if backoff_strategy == "exponential":
-        return 0.5 * (2 ** (attempt - 1))
-    return 0.5 * attempt
+        return float(0.5 * (2 ** (attempt - 1)))
+    return float(0.5 * attempt)
 
 
 def _record_read_success(

@@ -40,7 +40,7 @@ async def process_files(
 
     logger.info(f"Processing {len(files)} file(s)")
     start_time = time.time()
-    results = {"successful": [], "failed": [], "telemetry": {}}
+    results: dict[str, Any] = {"successful": [], "failed": [], "telemetry": {}}
 
     for input_file in files:
         if not input_file.is_file():

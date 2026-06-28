@@ -129,9 +129,9 @@ class AgentExecutionKernel(Generic[OutputT]):
         if feedback is None:
             return await self._agent.run(context)
         if isinstance(feedback, str):
-            feedback_dict = {"message": feedback}
+            feedback_dict: dict[str, Any] = {"message": feedback}
         elif isinstance(feedback, list):
-            feedback_dict = {"messages": feedback}
+            feedback_dict = {"messages": list(feedback)}
         else:
             feedback_dict = feedback
         context_dict = self.normalize_context(context)

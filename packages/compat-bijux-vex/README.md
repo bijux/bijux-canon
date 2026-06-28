@@ -36,60 +36,50 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-`bijux-vex` is the continuation of the published `bijux-vex` distribution on
-PyPI. Each release keeps the legacy distribution, import, and command surfaces
-available while installing `bijux-canon-index` at the same version.
+Alias distribution for `bijux-canon-index`.
 
-Its package handbook lives at
-[Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/).
+Install this package if you need the legacy package name and CLI command while
+running the same indexing behavior as `bijux-canon-index`.
 
-## Migration note
+## Install
 
-- new installs should use `uv add bijux-canon-index`
-- existing automation can stay on `bijux-vex` while you update imports and commands
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-vex](https://github.com/bijux/bijux-vex) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+```bash
+python3.11 -m pip install bijux-vex
+bijux-vex --help
+```
 
-## Publication status
+## What It Does
 
-- published continuation of the legacy `bijux-vex` distribution
-- each release depends on `bijux-canon-index==<same version>`
-- intended for existing environments that still rely on the legacy name
+- re-exports the public Python API from `bijux-canon-index`
+- resolves legacy submodules such as `bijux_vex.interfaces.cli.app` to the
+  same canonical modules used by `bijux_canon_index`
+- dispatches the same CLI entrypoint through the legacy `bijux-vex` command
+- keeps the legacy distribution installable while steering new work to
+  `bijux-canon-index`
+- avoids becoming a second home for retrieval logic or release ownership
 
-## Canonical package
+## Compatibility Contract
 
-- distribution: `bijux-canon-index`
-- Python import: `bijux_canon_index`
-- command: `bijux-canon-index`
+If this works:
 
-## What this compatibility package preserves
+```python
+from bijux_canon_index import __version__
+```
 
-- the legacy distribution name `bijux-vex`
-- the legacy Python import surface `bijux_vex`
-- the legacy command name `bijux-vex`
+the alias package is expected to support the same import through:
 
-## Read this next
+```python
+from bijux_vex import __version__
+```
 
-Use `bijux-canon-index` directly:
+The alias package also keeps `bijux_vex.interfaces.cli.app` pointed at the
+canonical index CLI module, while preserving the executable name `bijux-vex`.
 
-- package directory: [Canonical package source directory](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index)
-- legacy package handbook: [Legacy package handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/)
-- package docs: [Canonical package handbook](https://bijux.io/bijux-canon/03-bijux-canon-index/)
+## Read Next
+
+- canonical package: [bijux-canon-index](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index)
+- canonical handbook: [bijux-canon-index handbook](https://bijux.io/bijux-canon/bijux-canon-index/)
+- legacy handbook: [bijux-vex alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-vex/)
 - migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+- retired repository: [bijux/bijux-vex](https://github.com/bijux/bijux-vex)
 - changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/CHANGELOG.md)
-
-## Primary entrypoint
-
-- console script: `bijux-vex`
-
-## Package contents
-
-- [`pyproject.toml`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/pyproject.toml)
-- [`hatch_build.py`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/hatch_build.py)
-- [`overview.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/overview.md)
-- [`CHANGELOG.md`](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/CHANGELOG.md)
-
-## Release Readiness
-
-- upcoming release line: `0.3.6`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
