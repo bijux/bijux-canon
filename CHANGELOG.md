@@ -30,6 +30,9 @@ whole workspace.
 - Runtime release metadata now requires the synchronized `0.3.8` canon package
   line, and maintainer tooling resolves the same fallback version from source
   checkouts.
+- Normalized `hatchling` and `hatch-vcs` builder floors across the canonical,
+  maintainer, and compatibility packages so the `0.3.8` release line builds on
+  one consistent packaging baseline instead of package-by-package drift.
 
 ### Fixed
 
