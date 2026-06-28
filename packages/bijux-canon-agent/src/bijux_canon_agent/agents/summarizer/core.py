@@ -29,7 +29,9 @@ from .types import (
 )
 
 
-class SummarizerAgent(BaseAgent):
+class SummarizerAgent(
+    BaseAgent[dict[str, Any], SummarizerResult | SummarizerErrorResult]
+):
     """Enhanced summarization agent for a multi-agent system.
 
     Supports chunking, section-aware summarization, multiple strategies (extractive,

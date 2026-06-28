@@ -101,7 +101,7 @@ def format_structured_summary(
 
     scored_sentences: list[tuple[str, float]] = []
     for idx, sentence in enumerate(sentences):
-        score = sum(1 for kw in keywords if kw.lower() in sentence.lower())
+        score = float(sum(1 for kw in keywords if kw.lower() in sentence.lower()))
         positional_factor = 1.0 / (idx + 1) * 0.5
         score += positional_factor
         scored_sentences.append((sentence, score))

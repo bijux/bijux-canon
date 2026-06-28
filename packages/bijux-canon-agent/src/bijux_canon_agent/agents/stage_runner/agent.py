@@ -30,7 +30,7 @@ from .run_context import (
 from .stage_execution import execute_stage
 
 
-class StageRunnerAgent(BaseAgent):
+class StageRunnerAgent(BaseAgent[dict[str, Any], StageRunnerResult]):
     """Enhanced StageRunnerAgent for executing workflow steps in a multi-agent system.
 
     Manages step execution with detailed logging and telemetry, focusing on

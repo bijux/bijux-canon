@@ -32,7 +32,7 @@ from .rules.types import (
 from .run_context import build_critique_run_input
 
 
-class CritiqueAgent(BaseAgent):
+class CritiqueAgent(BaseAgent[dict[str, Any], dict[str, Any]]):
     """Enhanced CritiqueAgent for evaluating AI-generated outputs in Bijux Agent.
 
     Provides actionable, high-quality feedback with robust error handling, relevance

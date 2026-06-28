@@ -13,7 +13,7 @@ from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.enums import DecisionOutcome, FailureMode
 
 
-class JudgeAgent(BaseAgent):
+class JudgeAgent(BaseAgent[dict[str, Any], AgentOutputSchema]):
     """Aggregates multiple agent outputs into normalized decisions."""
 
     async def _run_payload(self, context: dict[str, Any]) -> AgentOutputSchema:
@@ -51,7 +51,7 @@ class JudgeAgent(BaseAgent):
 
     def _aggregate_scores(self, outputs: list[AgentOutput]) -> dict[str, float]:
         """Compute a weighted average of each score label."""
-        weighted = defaultdict(float)
+        weighted: defaultdict[str, float] = defaultdict(float)
         total_weight = 0.0
         for entry in outputs:
             weight = entry.confidence

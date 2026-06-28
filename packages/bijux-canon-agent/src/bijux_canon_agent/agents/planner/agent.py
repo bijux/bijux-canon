@@ -12,7 +12,7 @@ from bijux_canon_agent.contracts.retrieval import RetrievalRequest
 from bijux_canon_agent.enums import AgentType, DecisionOutcome
 
 
-class PlannerAgent(BaseAgent):
+class PlannerAgent(BaseAgent[dict[str, Any], AgentOutputSchema]):
     """Creates execution DAGs, sequences, and required retrieval actions."""
 
     async def _run_payload(self, context: dict[str, Any]) -> AgentOutputSchema:

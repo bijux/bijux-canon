@@ -10,8 +10,9 @@ T = TypeVar("T", bound=type[Any])
 def final_class(cls: T) -> T:
     """Mark the class as final so subclassing raises at runtime."""
 
-    def __init_subclass__(subcls: type[Any], **kwargs: Any) -> None:  # noqa: N807
+    def __init_subclass__(subcls: type[Any], /, **kwargs: Any) -> None:  # noqa: N807
+        _ = (subcls, kwargs)
         raise TypeError(f"{cls.__name__} is final and cannot be subclassed")
 
-    cls.__init_subclass__ = classmethod(__init_subclass__)
+    setattr(cls, "__init_subclass__", classmethod(__init_subclass__))
     return cls

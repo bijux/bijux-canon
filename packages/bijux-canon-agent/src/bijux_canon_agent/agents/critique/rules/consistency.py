@@ -54,7 +54,7 @@ def check_no_repetition(
             for j in range(i + 1, len(sentences)):
                 s1_words = set(sentences[i].lower().split())
                 s2_words = set(sentences[j].lower().split())
-                overlap = len(s1_words.intersection(s2_words))
+                overlap = float(len(s1_words.intersection(s2_words)))
                 overlap /= min(len(s1_words), len(s2_words))
                 if overlap > 0.8:
                     return agent._create_result(

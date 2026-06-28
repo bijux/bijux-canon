@@ -8,7 +8,7 @@ fully integrated with LoggerManager for structured logging.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 import hashlib
 from typing import Any
 
@@ -39,7 +39,7 @@ from .telemetry_events import (
 )
 
 
-class FileReaderAgent(BaseAgent):
+class FileReaderAgent(BaseAgent[dict[str, Any], dict[str, Any]]):
     """Enhanced FileReaderAgent for a multi-agent system.
 
     Performs async file reading, metadata extraction, and structural analysis.
@@ -93,7 +93,7 @@ class FileReaderAgent(BaseAgent):
         self._cache: dict[str, dict[str, Any]] | None = (
             {} if self.cache_enabled else None
         )
-        self._custom_readers: dict[str, Callable[[str], dict[str, Any]]] = {}
+        self._custom_readers: dict[str, Callable[[str], Awaitable[dict[str, Any]]]] = {}
 
         self.logger.info(
             "FileReaderAgent initialized",
@@ -417,7 +417,9 @@ class FileReaderAgent(BaseAgent):
         )
 
     def register_custom_reader(
-        self, file_extension: str, reader: Callable[[str], dict[str, Any]]
+        self,
+        file_extension: str,
+        reader: Callable[[str], Awaitable[dict[str, Any]]],
     ) -> None:
         """Register a custom file reader for a specific file extension.
 

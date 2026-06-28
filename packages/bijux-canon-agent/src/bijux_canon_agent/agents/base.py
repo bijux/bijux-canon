@@ -16,7 +16,12 @@ from bijux_canon_agent.agents.kernel.execution_kernel import AgentExecutionKerne
 from bijux_canon_agent.agents.kernel.lifecycle import LifecyclePhase
 from bijux_canon_agent.contracts import AgentInput, AgentOutput
 from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
-from bijux_canon_agent.enums import AgentType, ExecutionMode, FailureMode
+from bijux_canon_agent.enums import (
+    AgentStatus,
+    AgentType,
+    ExecutionMode,
+    FailureMode,
+)
 from bijux_canon_agent.observability.logging import LoggerManager
 
 InputT = TypeVar("InputT", bound=Mapping[str, Any])
@@ -46,6 +51,7 @@ class BaseAgent(Generic[InputT, OutputT], ABC):
         self.config = config
         self.logger_manager = logger_manager
         self.logger = logger_manager.get_logger()
+        self.status = AgentStatus.PENDING
         self.execution_kernel: AgentExecutionKernel[OutputT] = AgentExecutionKernel(
             self
         )

@@ -11,7 +11,7 @@ from bijux_canon_agent.contracts.agent_contract import AgentOutputSchema
 from bijux_canon_agent.enums import DecisionOutcome, FailureMode
 
 
-class VerifierAgent(BaseAgent):
+class VerifierAgent(BaseAgent[dict[str, Any], AgentOutputSchema]):
     """Re-evaluates final outputs and issues vetoes for contradictions."""
 
     async def _run_payload(self, context: dict[str, Any]) -> AgentOutputSchema:
