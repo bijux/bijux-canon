@@ -370,11 +370,18 @@ def test_public_release_package_readmes_link_changelog_and_entrypoint() -> None:
     missing: list[str] = []
     for package_name in sorted(public_packages):
         readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
-        if "## Read this next" not in readme:
-            missing.append(f"{package_name}: missing 'Read this next' section")
+        if "## Read Next" not in readme and "## Read this next" not in readme:
+            missing.append(f"{package_name}: missing read-next section")
         if CHANGELOG_URL_PREFIX + f"packages/{package_name}/CHANGELOG.md" not in readme:
             missing.append(f"{package_name}: missing changelog URL")
-        if "## Primary entrypoint" not in readme:
+        if package_name in COMPATIBILITY_PACKAGES:
+            if "## Install" not in readme:
+                missing.append(f"{package_name}: missing install section")
+            if "## Compatibility Contract" not in readme:
+                missing.append(
+                    f"{package_name}: missing compatibility contract section"
+                )
+        elif "## Primary entrypoint" not in readme:
             missing.append(f"{package_name}: missing 'Primary entrypoint' section")
     assert not missing, "public package README contract failed:\n" + "\n".join(missing)
 
@@ -469,22 +476,35 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(
                 f"{package_name}: description should explain legacy compatibility"
             )
-        if (
-            "continuation of the published" not in readme
-            or f"`{distribution}`" not in readme
-        ):
+        if f"Alias distribution for `{canonical}`." not in readme:
             failures.append(
-                f"{package_name}: README should state the PyPI continuation"
+                f"{package_name}: README should state the alias distribution owner"
             )
-        if "## Migration note" not in readme:
-            failures.append(f"{package_name}: README should include a migration note")
-        if f"`{canonical}==<same version>`" not in readme:
+        if "## Install" not in readme:
+            failures.append(f"{package_name}: README should include an install section")
+        if "## What It Does" not in readme:
             failures.append(
-                f"{package_name}: README should document the same-version dependency"
+                f"{package_name}: README should explain the compatibility surface"
             )
-        if f"console script: `{script}`" not in readme:
+        if "## Compatibility Contract" not in readme:
             failures.append(
-                f"{package_name}: README should document the legacy console script"
+                f"{package_name}: README should include a compatibility contract"
+            )
+        if f"{script} --help" not in readme:
+            failures.append(
+                f"{package_name}: README should document the legacy console command"
+            )
+        if "re-exports the public Python API" not in readme:
+            failures.append(
+                f"{package_name}: README should explain canonical API re-exports"
+            )
+        if "preserving the executable name" not in readme:
+            failures.append(
+                f"{package_name}: README should describe executable-name continuity"
+            )
+        if "## Read Next" not in readme:
+            failures.append(
+                f"{package_name}: README should include a read-next section"
             )
         legacy_handbook = _compat_docs_url(distribution)
         if legacy_handbook not in readme:
