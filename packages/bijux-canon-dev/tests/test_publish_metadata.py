@@ -229,18 +229,34 @@ def test_runtime_workspace_dependencies_accept_local_release_previews() -> None:
     assert "bijux-canon-index>=0.3.8.dev0,<0.4.0" in dependencies
 
 
-def test_http_surface_packages_declare_safe_starlette_floor() -> None:
-    expected_packages = {
+def test_http_surface_packages_declare_only_owned_http_dependencies() -> None:
+    fastapi_surface_packages = {
         "bijux-canon-ingest",
         "bijux-canon-reason",
         "bijux-canon-index",
     }
 
-    for package_name in expected_packages:
+    for package_name in fastapi_surface_packages:
         project = _project_table(_package_path(package_name) / "pyproject.toml")
         dependencies = set(cast(list[str], project.get("dependencies", [])))
         assert "fastapi>=0.138,<1.0" in dependencies
-        assert "starlette>=1.3.1,<2.0" in dependencies
+        assert "starlette>=1.3.1,<2.0" not in dependencies
+
+    runtime_pyproject = _package_path("bijux-canon-runtime") / "pyproject.toml"
+    with runtime_pyproject.open("rb") as handle:
+        runtime_data = tomllib.load(handle)
+
+    runtime_project = cast(dict[str, Any], runtime_data["project"])
+    runtime_dependencies = set(cast(list[str], runtime_project.get("dependencies", [])))
+    assert "fastapi>=0.128,<1.0" not in runtime_dependencies
+    assert "starlette>=1.3.1,<2.0" not in runtime_dependencies
+
+    optional_dependencies = cast(
+        dict[str, list[str]], runtime_project.get("optional-dependencies", {})
+    )
+    api_dependencies = set(optional_dependencies.get("api", []))
+    assert "fastapi>=0.128,<1.0" in api_dependencies
+    assert "starlette>=1.3.1,<2.0" in api_dependencies
 
 
 def test_workspace_packages_use_shared_repository_release_tags() -> None:
