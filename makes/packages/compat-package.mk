@@ -26,7 +26,6 @@ INTERROGATE_PATHS ?= src hatch_build.py
 QUALITY_PATHS ?= src
 QUALITY_VULTURE_MIN_CONFIDENCE ?= 80
 SECURITY_PATHS ?= src hatch_build.py
-PACKAGE_INSTALL_STAMP ?= $(PROJECT_ARTIFACTS_DIR)/.compat-toolchain.stamp
 PACKAGE_INSTALL_EDITABLE ?= 0
 PACKAGE_INSTALL_MESSAGE ?= → Installing compatibility package toolchain...
 PACKAGE_INSTALL_PYTHON_PACKAGES ?= \

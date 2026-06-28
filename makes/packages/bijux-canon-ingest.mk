@@ -28,7 +28,7 @@ TEST_REGRESSION_ARGS := -m "regression and not slow" --maxfail=1 -q
 TEST_EVALUATION_ARGS := -m "evaluation and not slow" --maxfail=1 -q
 TEST_REAL_LOCAL_ARGS := -m "real_local and not slow" -s -p no:cov
 PACKAGE_INSTALL_TARGETS := \
-  test lint fmt quality security api build sbom \
+  test lint fmt quality security-bandit security-audit security-deps api build sbom \
   fmt-artifacts lint-artifacts interrogate-report
 PACKAGE_ALL_TARGETS := clean install test lint quality security api build sbom
 
