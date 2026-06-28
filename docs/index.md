@@ -74,7 +74,7 @@ Ingest prepares deterministic material. Index executes retrieval and preserves p
 <div class="bijux-panel-grid">
   <div class="bijux-panel"><h3>System Shape</h3><p>Five canonical packages carry the product flow, the root explains shared coordination, the maintainer handbook explains repository health, and compatibility docs exist only to bridge older or shorter continuity names.</p></div>
   <div class="bijux-panel"><h3>Integrity Rule</h3><p>Statements here must stay consistent with checked-in code, schemas, tests, release assets, and published package boundaries.</p></div>
-  <div class="bijux-panel"><h3>Fast Route</h3><p>Open the repository handbook for cross-package seams, a product handbook for owned behavior, the maintainer handbook for automation, and compatibility docs only when a legacy package name is still in play.</p></div>
+  <div class="bijux-panel"><h3>Fast Route</h3><p>Open the repository handbook for cross-package seams, a product handbook for owned behavior, the maintainer handbook for automation, and compatibility docs only when an older or shorter continuity name is still in play.</p></div>
 </div>
 
 <div class="bijux-quicklinks">
@@ -173,7 +173,7 @@ sequenceDiagram
 
 - [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) explains the root-owned design boundary, shared workflow, and package seams
 - [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
-- [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) documents preserved legacy names and the migration pressure away from them
+- [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) documents preserved continuity names and the migration pressure back toward canonical package ownership
 
 ## Proof Surfaces
 

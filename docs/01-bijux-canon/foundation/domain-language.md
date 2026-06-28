@@ -40,8 +40,10 @@ proof without a translation step.
   structure, governance, and decisions
 - `maintenance handbook` means the maintainer-facing documentation rooted at
   `docs/07-bijux-canon-maintain/`
-- `compatibility package` means a legacy-name bridge under `packages/compat-*`
-  rather than a preferred long-term entrypoint
+- `compatibility package` means a preserved-name bridge under `packages/compat-*`
+  that keeps an older or shorter public package, import, or command name
+  pointed at the canonical owner instead of becoming a second implementation
+  home
 - `proof surface` means the files that let a reader verify a claim, such as
   tests, schemas, workflow definitions, or metadata
 

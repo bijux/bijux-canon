@@ -17,6 +17,10 @@ whole workspace.
 - Finalized the `v0.3.8` release line across the root handbook and package
   README release-readiness surfaces so publish intent, dates, and changelog
   ownership are consistent.
+- Tightened repository handbook, maintainer docs, and runtime package guidance
+  so preserved continuity names now describe the `bijux-canon` and
+  `agentic-flows` runtime aliases as real parity surfaces rather than vague
+  migration-only names.
 - Clarified repository-level compatibility guidance around real alias packages:
   legacy names remain installable as direct canonical re-export distributions,
   not as decorative migration stubs.

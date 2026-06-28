@@ -12,6 +12,9 @@ tagged release, including legacy distribution naming where applicable.
 
 - Runtime examples and README guidance now describe governed execution inputs,
   outputs, and publish readiness for the `0.3.8` line.
+- Runtime compatibility documentation now names preserved distribution, import,
+  and command aliases as parity surfaces that must keep resolving to the same
+  runtime behavior.
 - Flow execution models and CLI configuration handling now align more strictly
   with manifest-driven runtime contracts.
 - Runtime continuity guidance now treats both `agentic-flows` and

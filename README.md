@@ -117,8 +117,9 @@ retired standalone repository.
   behavior, and replay where it matters.
 - Layers stay legible. Each package owns a specific slice of responsibility
   instead of collapsing into one "do everything" library.
-- Compatibility is explicit. Legacy package names are preserved through compat
-  packages instead of being hidden or silently broken.
+- Compatibility is explicit. Older and shorter public names are preserved
+  through real alias packages instead of being hidden, silently broken, or left
+  behind as decorative migration stubs.
 - The repository is designed as one system. Docs, schemas, validation, release
   flow, and automation are meant to stay aligned.
 

@@ -66,7 +66,7 @@ re-explain package behavior from above.
 - open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
 - open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
 - open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
-- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when a legacy package name or migration question is still active
+- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older or shorter compatibility name, preserved import root, or migration question is still active
 - leave this handbook as soon as the behavior is clearly local to one canonical package
 
 ## What This Handbook Owns
@@ -79,7 +79,7 @@ re-explain package behavior from above.
 
 - ingest, index, reason, agent, or runtime behavior inside the product handbooks
 - helper implementation detail that belongs in the maintainer handbook
-- legacy-name migration policy that belongs in the compatibility handbook
+- compatibility-alias migration policy that belongs in the compatibility handbook
 
 ## Shared Package Map
 

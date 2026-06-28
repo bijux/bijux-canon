@@ -81,4 +81,4 @@ and send the reader back to the owning package.
 
 - the question is really about one package's user-facing behavior
 - the next step is a product interface, workflow, or test rather than a shared command
-- the issue is a legacy-name migration rather than repository-health machinery
+- the issue belongs to compatibility alias routing rather than repository-health machinery

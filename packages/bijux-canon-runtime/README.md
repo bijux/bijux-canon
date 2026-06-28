@@ -71,11 +71,13 @@ Expected shape:
 - `result.trace` is present for non-plan execution
 - `result.run_id` is set once the runtime registers a persisted run
 
-## Legacy continuity
+## Package continuity
 
 - compatibility packages: [`bijux-canon`](https://pypi.org/project/bijux-canon/), [`agentic-flows`](https://pypi.org/project/agentic-flows/)
 - preserved import roots: `bijux_canon`, `agentic_flows`
 - preserved commands: `bijux-canon`, `agentic-flows`
+- alias expectation: the preserved names above should resolve to the same
+  runtime API and command behavior as `bijux-canon-runtime`
 - family-root alias handbook: [bijux-canon alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/)
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 - retired repository target: [https://github.com/bijux/agentic-flows](https://github.com/bijux/agentic-flows) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
