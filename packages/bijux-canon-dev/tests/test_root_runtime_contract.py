@@ -54,8 +54,8 @@ def test_root_make_declares_shared_maintainer_commands() -> None:
 
 
 def test_root_security_dispatch_uses_isolated_package_environments() -> None:
-    package_catalog = (
-        REPO_ROOT / "makes" / "bijux-py" / "package-catalog.mk"
-    ).read_text(encoding="utf-8")
+    package_inventory = (REPO_ROOT / "makes" / "packages.mk").read_text(
+        encoding="utf-8"
+    )
 
-    assert "ROOT_TARGET_SHARED_ENV_security ?= 0" in package_catalog
+    assert "ROOT_TARGET_SHARED_ENV_security := 0" in package_inventory

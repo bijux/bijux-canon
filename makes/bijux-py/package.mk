@@ -157,15 +157,14 @@ setup: ## Materialize package artifact alias links
 .PHONY: setup
 
 ifeq ($(PACKAGE_DEFINE_VENV),1)
-$(VENV_PYTHON): | setup
+$(VENV): | setup
 	@echo "$(PACKAGE_VENV_CREATE_MESSAGE)"
-	@mkdir -p "$(dir $(VENV))"
 	@$(UV) venv --python "$(PYTHON)" "$(VENV)"
 endif
 
 ifeq ($(PACKAGE_DEFINE_INSTALL),1)
 ifneq ($(strip $(PACKAGE_INSTALL_STAMP)),)
-$(PACKAGE_INSTALL_STAMP): $(VENV_PYTHON)
+$(PACKAGE_INSTALL_STAMP): $(VENV)
 	@echo "$(PACKAGE_INSTALL_MESSAGE)"
 	@mkdir -p "$(PROJECT_ARTIFACTS_DIR)"
 	@if [ -n "$(strip $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES))" ]; then \
@@ -190,7 +189,7 @@ $(PACKAGE_INSTALL_STAMP): $(VENV_PYTHON)
 
 install: $(PACKAGE_INSTALL_STAMP)
 else
-install: $(VENV_PYTHON)
+install: $(VENV)
 	@echo "$(PACKAGE_INSTALL_MESSAGE)"
 	@if [ -n "$(strip $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES))" ]; then \
 	  if ! $(UV) pip install --python "$(VENV_PYTHON)" --upgrade $(PACKAGE_INSTALL_BOOTSTRAP_PACKAGES); then \
@@ -270,15 +269,10 @@ endif
 ifeq ($(PACKAGE_KIND),workspace-python)
 .PHONY: ensure-venv nlenv clean-venv
 
-ensure-venv: $(VENV_PYTHON) ## Ensure venv exists and deps are installed
+ensure-venv: $(VENV) ## Ensure venv exists and deps are installed
 	@set -e; \
 	echo "→ Ensuring dependencies in $(VENV) ..."; \
 	mkdir -p "$(PROJECT_ARTIFACTS_DIR)"; \
-	if [ ! -x "$(VENV_PYTHON)" ]; then \
-	  echo "→ Rebuilding missing package virtualenv"; \
-	  rm -rf "$(VENV)"; \
-	  $(UV) venv --python "$(PYTHON)" "$(VENV)"; \
-	fi; \
 	if ! $(UV) pip install --python "$(VENV_PYTHON)" --upgrade pip setuptools wheel; then \
 	  echo "→ uv pip install failed; retrying with python -m pip"; \
 	  "$(VENV_PYTHON)" -m pip install --upgrade pip setuptools wheel; \

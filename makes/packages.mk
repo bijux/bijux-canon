@@ -25,5 +25,6 @@ COMPAT_PACKAGE_RECORDS := \
 	compat-bijux-vex|compat,check|compat-package.mk
 
 PACKAGE_RECORDS := $(PRIMARY_PACKAGE_RECORDS) $(COMPAT_PACKAGE_RECORDS)
+ROOT_TARGET_SHARED_ENV_security := 0
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/package-catalog.mk
