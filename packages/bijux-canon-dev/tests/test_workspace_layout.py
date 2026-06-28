@@ -10,11 +10,7 @@ from typing import Any, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ARTIFACT_ALIAS_SCRIPT = (
-    REPO_ROOT
-    / "makes"
-    / "bijux-py"
-    / "repository"
-    / "artifact_aliases.py"
+    REPO_ROOT / "makes" / "bijux-py" / "repository" / "artifact_aliases.py"
 )
 PACKAGE_ARTIFACT_LINKS = {
     "artifacts": "",

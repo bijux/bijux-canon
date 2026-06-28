@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import sys
 import tomllib
-from typing import Any, cast
+from typing import Any, TypedDict, cast
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -41,7 +41,21 @@ FORBIDDEN_STANDALONE_DOC_URLS = (
     "https://bijux.io/03-bijux-canon-index/",
     "https://bijux.io/bijux-canon-dev/",
 )
-COMPATIBILITY_PACKAGES = {
+
+
+class CompatibilityPackageExpectation(TypedDict):
+    distribution: str
+    canonical: str
+    script: str
+    retired_repo: str | None
+
+
+class CanonicalPackageExpectation(TypedDict):
+    compatibility_packages: list[str]
+    retired_repos: list[str]
+
+
+COMPATIBILITY_PACKAGES: dict[str, CompatibilityPackageExpectation] = {
     "compat-bijux-canon": {
         "distribution": "bijux-canon",
         "canonical": "bijux-canon-runtime",
@@ -79,7 +93,7 @@ COMPATIBILITY_PACKAGES = {
         "retired_repo": "https://github.com/bijux/bijux-vex",
     },
 }
-CANONICAL_PACKAGES = {
+CANONICAL_PACKAGES: dict[str, CanonicalPackageExpectation] = {
     "bijux-canon-runtime": {
         "compatibility_packages": ["bijux-canon", "agentic-flows"],
         "retired_repos": ["https://github.com/bijux/agentic-flows"],
@@ -203,6 +217,30 @@ def test_public_release_packages_are_aligned_to_public_release_version() -> None
     assert not misaligned, "public release version alignment failed:\n" + "\n".join(
         misaligned
     )
+
+
+def test_runtime_workspace_dependencies_accept_local_release_previews() -> None:
+    project = _project_table(_package_path("bijux-canon-runtime") / "pyproject.toml")
+    dependencies = set(cast(list[str], project.get("dependencies", [])))
+
+    assert "bijux-canon-agent>=0.3.8.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-ingest>=0.3.8.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-reason>=0.3.8.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-index>=0.3.8.dev0,<0.4.0" in dependencies
+
+
+def test_http_surface_packages_declare_safe_starlette_floor() -> None:
+    expected_packages = {
+        "bijux-canon-ingest",
+        "bijux-canon-reason",
+        "bijux-canon-index",
+    }
+
+    for package_name in expected_packages:
+        project = _project_table(_package_path(package_name) / "pyproject.toml")
+        dependencies = set(cast(list[str], project.get("dependencies", [])))
+        assert "fastapi>=0.138,<1.0" in dependencies
+        assert "starlette>=1.3.1,<2.0" in dependencies
 
 
 def test_workspace_packages_use_shared_repository_release_tags() -> None:
@@ -434,8 +472,8 @@ def test_canonical_package_readmes_publish_legacy_continuity() -> None:
     failures: list[str] = []
     for package_name, expectation in CANONICAL_PACKAGES.items():
         readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
-        compatibility_packages = cast(list[str], expectation["compatibility_packages"])
-        retired_repos = cast(list[str], expectation["retired_repos"])
+        compatibility_packages = expectation["compatibility_packages"]
+        retired_repos = expectation["retired_repos"]
 
         if (
             "## Legacy continuity" not in readme
