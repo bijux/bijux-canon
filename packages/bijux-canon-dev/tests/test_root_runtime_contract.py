@@ -22,6 +22,10 @@ def test_root_tox_declares_shared_env_families() -> None:
 
     assert "security" in envlist
     assert "docs" in envlist
+    assert "test-{dev,runtime,agent,ingest,reason,index,compatcanon,compatflows,compatagent,compatrag,compatrar,compatvex}" in envlist
+    assert "lint-{dev,runtime,agent,ingest,reason,index,compatcanon,compatflows,compatagent,compatrag,compatrar,compatvex}" in envlist
+    assert "quality-{dev,runtime,agent,ingest,reason,index,compatcanon,compatflows,compatagent,compatrag,compatrar,compatvex}" in envlist
+    assert "security-{dev,runtime,agent,ingest,reason,index,compatcanon,compatflows,compatagent,compatrag,compatrar,compatvex}" in envlist
     assert "fmt-{dev,runtime,agent,ingest,reason,index}" not in envlist
     assert "api-freeze-core" not in envlist
     assert "openapi-drift-core" not in envlist

@@ -15,16 +15,19 @@ class _RuntimeAliasLoader(Loader):
     """Load the canonical runtime module for an alias-package submodule."""
 
     def __init__(self, alias_name: str, runtime_name: str) -> None:
+        """Capture the alias module name and its canonical runtime target."""
         self._alias_name = alias_name
         self._runtime_name = runtime_name
 
     def create_module(self, spec: ModuleSpec) -> ModuleType:
+        """Import the canonical module and register it under the alias name."""
         del spec
         module = import_module(self._runtime_name)
         sys.modules[self._alias_name] = module
         return module
 
     def exec_module(self, module: ModuleType) -> None:
+        """Keep the alias module cache pointed at the canonical module object."""
         sys.modules.setdefault(self._alias_name, module)
 
 
@@ -38,6 +41,7 @@ class _RuntimeAliasFinder(MetaPathFinder):
         runtime_package: str,
         local_submodules: Collection[str],
     ) -> None:
+        """Store the alias package mapping and locally owned submodule names."""
         self.alias_package = alias_package
         self.runtime_package = runtime_package
         self.local_submodules = frozenset(local_submodules)
@@ -49,6 +53,7 @@ class _RuntimeAliasFinder(MetaPathFinder):
         path: object | None = None,
         target: ModuleType | None = None,
     ) -> ModuleSpec | None:
+        """Resolve non-local alias submodules through the canonical runtime tree."""
         del path, target
         if not fullname.startswith(self._alias_prefix):
             return None
