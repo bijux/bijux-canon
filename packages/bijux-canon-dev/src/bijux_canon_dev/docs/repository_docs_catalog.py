@@ -2387,7 +2387,7 @@ def home_map_focus_sections() -> tuple[tuple[str, tuple[str, ...]], ...]:
             "Special cases",
             (
                 "maintainer work",
-                "legacy-name migration",
+                "compatibility alias routing",
                 "questions that do not belong on the landing page",
             ),
         ),
@@ -2737,7 +2737,7 @@ def render_home(
             '<div class="bijux-panel-grid">',
             '  <div class="bijux-panel"><h3>Whole-System Idea</h3><p>Use the root pages to understand why the repository is split and how the five canonical packages fit into one accountable flow.</p></div>',
             '  <div class="bijux-panel"><h3>Honesty Rule</h3><p>Use the docs as a map, then verify the claim in code, schemas, tests, or release assets before treating it as settled.</p></div>',
-            '  <div class="bijux-panel"><h3>Fast Reading Path</h3><p>Open the repository handbook for cross-package questions, one product handbook for owned behavior, the maintainer handbook for repository health, and compatibility docs only for legacy names.</p></div>',
+            '  <div class="bijux-panel"><h3>Fast Reading Path</h3><p>Open the repository handbook for cross-package questions, one product handbook for owned behavior, the maintainer handbook for repository health, and compatibility docs only when an older or shorter continuity name is still active.</p></div>',
             "</div>",
             "",
             '<div class="bijux-quicklinks">',
@@ -2751,7 +2751,7 @@ def render_home(
             "- open [bijux-canon-maintain](07-bijux-canon-maintain/index.md) for repository automation, schema enforcement, and maintainer-only guardrails"
             if "dev" in targets
             else "- maintainer guidance appears here when the dev section is rendered",
-            "- open [compatibility packages](08-compat-packages/index.md) only when a legacy distribution, import, or command name is part of the problem"
+            "- open [compatibility packages](08-compat-packages/index.md) only when an older or shorter distribution, import, or command name is part of the problem"
             if "compat" in targets
             else "- compatibility guidance appears here when the compatibility section is rendered",
             "",
@@ -3419,7 +3419,7 @@ def render_dev_page(slug: str, title: str) -> str:
 
             - user-facing runtime behavior
             - product-domain models that belong to canonical packages
-            - legacy-name compatibility shims
+            - compatibility bridges for older or shorter public names
 
             ## Purpose
 
@@ -3701,6 +3701,7 @@ def render_dev_page(slug: str, title: str) -> str:
 def render_compat_page(slug: str, title: str) -> str:
     """Render compat page."""
     mappings = [
+        ("bijux-canon", "bijux-canon-runtime"),
         ("agentic-flows", "bijux-canon-runtime"),
         ("bijux-agent", "bijux-canon-agent"),
         ("bijux-rag", "bijux-canon-ingest"),
@@ -3719,9 +3720,9 @@ def render_compat_page(slug: str, title: str) -> str:
             f"""\
             # Compatibility Packages
 
-            The compatibility packages preserve older distribution names, import names,
-            and command names while the canonical package family now lives under the
-            `bijux-canon-*` naming system.
+            The compatibility packages preserve older or shorter distribution names,
+            import names, and command names while the canonical package family now
+            lives under the `bijux-canon-*` naming system.
 
             They should be easy to understand but hard to romanticize. Their job is to
             reduce migration pain, not to compete with the canonical package family for
@@ -3850,6 +3851,7 @@ def render_compat_page(slug: str, title: str) -> str:
 
             ## Current Import Roots
 
+            - `bijux_canon`
             - `agentic_flows`
             - `bijux_agent`
             - `bijux_rag`
@@ -3880,6 +3882,15 @@ def render_compat_page(slug: str, title: str) -> str:
 
             A compatibility command should only exist when the canonical package still
             provides a meaningful route behind it.
+
+            ## Current Commands
+
+            - `bijux-canon`
+            - `agentic-flows`
+            - `bijux-agent`
+            - `bijux-rag`
+            - `bijux-rar`
+            - `bijux-vex`
 
             ## Purpose
 

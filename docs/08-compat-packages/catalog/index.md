@@ -10,8 +10,8 @@ last_reviewed: 2026-04-26
 # Catalog
 
 The catalog is the concrete half of the compatibility handbook. It tells you
-which legacy names still ship, what they preserve, and which canonical package
-now owns the real behavior.
+which compatibility names still ship, what they preserve, and which canonical
+package now owns the real behavior.
 
 These pages should be quick to scan and hard to misread. A reader should be
 able to land on an old name, find the current target immediately, and tell
@@ -39,6 +39,7 @@ compatibility surface is still honest or just lingering.
 
 ## Catalog Pages
 
+- [bijux-canon](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/)
 - [agentic-flows](https://bijux.io/bijux-canon/08-compat-packages/catalog/agentic-flows/)
 - [bijux-agent](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/)
 - [bijux-rag](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-rag/)
@@ -61,7 +62,7 @@ compatibility surface is still honest or just lingering.
 
 ## Checked Surfaces
 
-- legacy distribution names on PyPI
+- preserved compatibility distribution names on PyPI
 - preserved Python import roots
 - preserved CLI names where they still exist
 - compatibility package metadata and README routing

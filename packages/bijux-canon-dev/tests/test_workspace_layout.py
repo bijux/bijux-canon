@@ -10,12 +10,7 @@ from typing import Any, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ARTIFACT_ALIAS_SCRIPT = (
-    REPO_ROOT
-    / ".bijux"
-    / "shared"
-    / "bijux-makes-py"
-    / "repository"
-    / "artifact_aliases.py"
+    REPO_ROOT / "makes" / "bijux-py" / "repository" / "artifact_aliases.py"
 )
 PACKAGE_ARTIFACT_LINKS = {
     "artifacts": "",
@@ -105,6 +100,39 @@ def test_setup_materializes_governed_artifact_aliases(tmp_path: Path) -> None:
                 link_path=package_root / link_name,
                 expected_target=_expected_package_link_target(package_name, link_name),
             )
+
+
+def test_setup_preserves_existing_local_environment_directories(tmp_path: Path) -> None:
+    repo_root = tmp_path / "repo"
+    packages_dir = repo_root / "packages"
+    package_root = packages_dir / "compat-bijux-canon"
+    package_root.mkdir(parents=True)
+    (package_root / "pyproject.toml").write_text("[project]\nname='test'\n")
+    (repo_root / ".venv").mkdir()
+    (repo_root / ".tox").mkdir()
+    (package_root / ".venv").mkdir()
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(ARTIFACT_ALIAS_SCRIPT),
+            "root",
+            "--repo-root",
+            str(repo_root),
+            "--packages-dir",
+            str(packages_dir),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert (repo_root / ".venv").is_dir()
+    assert not (repo_root / ".venv").is_symlink()
+    assert (repo_root / ".tox").is_dir()
+    assert not (repo_root / ".tox").is_symlink()
+    assert (package_root / ".venv").is_dir()
+    assert not (package_root / ".venv").is_symlink()
 
 
 def test_artifact_alias_paths_are_ignored_by_git() -> None:

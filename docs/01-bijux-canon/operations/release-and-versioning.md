@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-06-28
 ---
 
 # Release and Versioning
@@ -35,6 +35,7 @@ root and when to hand the question back to one package.
 - package versions are written to package-local `_version.py` files by Hatch VCS
 - release support helpers live in `bijux-canon-dev`
 - split release workflows publish package artifacts and release metadata
+- the current synchronized public canon release line is `v0.3.8`
 
 ## Compatibility Triggers
 

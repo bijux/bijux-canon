@@ -5,6 +5,8 @@ COMPAT_CANONICAL_PACKAGE_DIR ?=
 
 ifeq ($(COMPAT_PROJECT_SLUG),compat-agentic-flows)
 COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-runtime
+else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-canon)
+COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-runtime
 else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-agent)
 COMPAT_CANONICAL_PACKAGE_DIR := $(COMPAT_MONOREPO_ROOT)/packages/bijux-canon-agent
 else ifeq ($(COMPAT_PROJECT_SLUG),compat-bijux-rag)
@@ -24,7 +26,6 @@ INTERROGATE_PATHS ?= src hatch_build.py
 QUALITY_PATHS ?= src
 QUALITY_VULTURE_MIN_CONFIDENCE ?= 80
 SECURITY_PATHS ?= src hatch_build.py
-PACKAGE_INSTALL_STAMP ?= $(PROJECT_ARTIFACTS_DIR)/.compat-toolchain.stamp
 PACKAGE_INSTALL_EDITABLE ?= 0
 PACKAGE_INSTALL_MESSAGE ?= → Installing compatibility package toolchain...
 PACKAGE_INSTALL_PYTHON_PACKAGES ?= \

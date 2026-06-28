@@ -24,8 +24,9 @@ commands, or deployment configs. If you only need mapping context, start with
 
 ## Canonical Migration Map
 
-| Legacy distribution | Canonical distribution | Canonical import | Canonical command | Canonical package docs |
+| Compatibility distribution | Canonical distribution | Canonical import | Canonical command | Canonical package docs |
 | --- | --- | --- | --- | --- |
+| `bijux-canon` | `bijux-canon-runtime` | `bijux_canon_runtime` | `bijux-canon-runtime` | [Runtime overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/) |
 | `agentic-flows` | `bijux-canon-runtime` | `bijux_canon_runtime` | `bijux-canon-runtime` | [Runtime overview](https://bijux.io/bijux-canon/06-bijux-canon-runtime/) |
 | `bijux-agent` | `bijux-canon-agent` | `bijux_canon_agent` | `bijux-canon-agent` | [Agent overview](https://bijux.io/bijux-canon/05-bijux-canon-agent/) |
 | `bijux-rag` | `bijux-canon-ingest` | `bijux_canon_ingest` | `bijux-canon-ingest` | [Ingest overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/) |
@@ -52,6 +53,7 @@ Update package names in files such as:
 Example replacements:
 
 ```text
+bijux-canon  -> bijux-canon-runtime
 agentic-flows -> bijux-canon-runtime
 bijux-agent   -> bijux-canon-agent
 bijux-rag     -> bijux-canon-ingest
@@ -101,7 +103,7 @@ Run these checks before merging migration changes:
 
 ```bash
 # 1) detect remaining legacy dependency/import/command usage
-rg -n "agentic-flows|bijux-agent|bijux-rag|bijux-rar|bijux-vex" .
+rg -n "bijux-canon|agentic-flows|bijux-agent|bijux-rag|bijux-rar|bijux-vex" .
 
 # 2) run repository validation
 make check

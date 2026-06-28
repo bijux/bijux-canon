@@ -363,6 +363,7 @@ def test_compatibility_catalog_leaf_pages_keep_section_sidebar(
     assert page.active_detail_tabs == ["Catalog"]
     assert page.sidebar_title == "Catalog"
     assert page.sidebar_links == [
+        "bijux-canon",
         "agentic-flows",
         "bijux-agent",
         "bijux-rag",

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-agent"
 dynamic = ["version", "dependencies"]
-description = "Compatibility bridge for the legacy bijux-agent PyPI package. Preserves installs, imports, and the bijux-agent command while installing bijux-canon-agent from the bijux-canon family at the same version."
+description = "Compatibility alias package for bijux-canon-agent. Preserves installs, imports, and the legacy bijux-agent PyPI package name and CLI command at the same synchronized version."
 authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
 readme = "README.md"
@@ -16,7 +16,7 @@ keywords = [
     "bijux-canon",
     "bijux.io",
     "compatibility",
-    "migration",
+    "alias",
     "legacy-name",
     "agent",
     "workflow",

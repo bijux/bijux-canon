@@ -9,7 +9,7 @@ Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed. Releases that shipped without a
 changelog update are reconstructed from tag annotations and release diffs.
 
-## 0.3.8 - 2026-06-27
+## 0.3.8 - 2026-06-28
 
 ### Changed
 
@@ -19,6 +19,9 @@ changelog update are reconstructed from tag annotations and release diffs.
 
 ### Fixed
 
+- Published package metadata now identifies `bijux-vex` as a real
+  compatibility alias package for `bijux-canon-index` instead of a migration
+  bridge placeholder.
 - Release fallback metadata now aligns with the synchronized `0.3.8` canon
   release line.
 

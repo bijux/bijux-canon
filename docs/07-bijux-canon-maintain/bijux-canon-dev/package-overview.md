@@ -45,7 +45,7 @@ repository-wide rules reusable without absorbing end-user behavior.
 
 - end-user runtime behavior
 - package-specific domain rules that only one canonical package owns
-- compatibility shims for legacy public names
+- compatibility bridges for older or shorter public names
 
 ## First Proof Check
 

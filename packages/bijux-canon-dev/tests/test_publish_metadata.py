@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import sys
 import tomllib
-from typing import Any, cast
+from typing import Any, TypedDict, cast
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -41,7 +41,27 @@ FORBIDDEN_STANDALONE_DOC_URLS = (
     "https://bijux.io/03-bijux-canon-index/",
     "https://bijux.io/bijux-canon-dev/",
 )
-COMPATIBILITY_PACKAGES = {
+
+
+class CompatibilityPackageExpectation(TypedDict):
+    distribution: str
+    canonical: str
+    script: str
+    retired_repo: str | None
+
+
+class CanonicalPackageExpectation(TypedDict):
+    compatibility_packages: list[str]
+    retired_repos: list[str]
+
+
+COMPATIBILITY_PACKAGES: dict[str, CompatibilityPackageExpectation] = {
+    "compat-bijux-canon": {
+        "distribution": "bijux-canon",
+        "canonical": "bijux-canon-runtime",
+        "script": "bijux-canon",
+        "retired_repo": None,
+    },
     "compat-agentic-flows": {
         "distribution": "agentic-flows",
         "canonical": "bijux-canon-runtime",
@@ -73,26 +93,26 @@ COMPATIBILITY_PACKAGES = {
         "retired_repo": "https://github.com/bijux/bijux-vex",
     },
 }
-CANONICAL_PACKAGES = {
+CANONICAL_PACKAGES: dict[str, CanonicalPackageExpectation] = {
     "bijux-canon-runtime": {
-        "compatibility_package": "agentic-flows",
-        "retired_repo": "https://github.com/bijux/agentic-flows",
+        "compatibility_packages": ["bijux-canon", "agentic-flows"],
+        "retired_repos": ["https://github.com/bijux/agentic-flows"],
     },
     "bijux-canon-agent": {
-        "compatibility_package": "bijux-agent",
-        "retired_repo": "https://github.com/bijux/bijux-agent",
+        "compatibility_packages": ["bijux-agent"],
+        "retired_repos": ["https://github.com/bijux/bijux-agent"],
     },
     "bijux-canon-ingest": {
-        "compatibility_package": "bijux-rag",
-        "retired_repo": "https://github.com/bijux/bijux-rag",
+        "compatibility_packages": ["bijux-rag"],
+        "retired_repos": ["https://github.com/bijux/bijux-rag"],
     },
     "bijux-canon-reason": {
-        "compatibility_package": "bijux-rar",
-        "retired_repo": "https://github.com/bijux/bijux-rar",
+        "compatibility_packages": ["bijux-rar"],
+        "retired_repos": ["https://github.com/bijux/bijux-rar"],
     },
     "bijux-canon-index": {
-        "compatibility_package": "bijux-vex",
-        "retired_repo": "https://github.com/bijux/bijux-vex",
+        "compatibility_packages": ["bijux-vex"],
+        "retired_repos": ["https://github.com/bijux/bijux-vex"],
     },
 }
 
@@ -175,7 +195,7 @@ def test_public_release_matrix_excludes_internal_dev_package() -> None:
     public_packages = workspace["public_release_packages"]
     internal_packages = workspace["internal_support_packages"]
 
-    assert len(public_packages) == 10
+    assert len(public_packages) == 11
     assert "bijux-canon-dev" not in public_packages
     assert internal_packages == ["bijux-canon-dev"]
 
@@ -197,6 +217,46 @@ def test_public_release_packages_are_aligned_to_public_release_version() -> None
     assert not misaligned, "public release version alignment failed:\n" + "\n".join(
         misaligned
     )
+
+
+def test_runtime_workspace_dependencies_accept_local_release_previews() -> None:
+    project = _project_table(_package_path("bijux-canon-runtime") / "pyproject.toml")
+    dependencies = set(cast(list[str], project.get("dependencies", [])))
+
+    assert "bijux-canon-agent>=0.3.8.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-ingest>=0.3.8.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-reason>=0.3.8.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-index>=0.3.8.dev0,<0.4.0" in dependencies
+
+
+def test_http_surface_packages_declare_only_owned_http_dependencies() -> None:
+    fastapi_surface_packages = {
+        "bijux-canon-ingest",
+        "bijux-canon-reason",
+        "bijux-canon-index",
+    }
+
+    for package_name in fastapi_surface_packages:
+        project = _project_table(_package_path(package_name) / "pyproject.toml")
+        dependencies = set(cast(list[str], project.get("dependencies", [])))
+        assert "fastapi>=0.138,<1.0" in dependencies
+        assert "starlette>=1.3.1,<2.0" not in dependencies
+
+    runtime_pyproject = _package_path("bijux-canon-runtime") / "pyproject.toml"
+    with runtime_pyproject.open("rb") as handle:
+        runtime_data = tomllib.load(handle)
+
+    runtime_project = cast(dict[str, Any], runtime_data["project"])
+    runtime_dependencies = set(cast(list[str], runtime_project.get("dependencies", [])))
+    assert "fastapi>=0.128,<1.0" not in runtime_dependencies
+    assert "starlette>=1.3.1,<2.0" not in runtime_dependencies
+
+    optional_dependencies = cast(
+        dict[str, list[str]], runtime_project.get("optional-dependencies", {})
+    )
+    api_dependencies = set(optional_dependencies.get("api", []))
+    assert "fastapi>=0.128,<1.0" in api_dependencies
+    assert "starlette>=1.3.1,<2.0" in api_dependencies
 
 
 def test_workspace_packages_use_shared_repository_release_tags() -> None:
@@ -428,18 +488,24 @@ def test_canonical_package_readmes_publish_legacy_continuity() -> None:
     failures: list[str] = []
     for package_name, expectation in CANONICAL_PACKAGES.items():
         readme = (_package_path(package_name) / "README.md").read_text(encoding="utf-8")
-        compatibility_package = expectation["compatibility_package"]
-        retired_repo = expectation["retired_repo"]
+        compatibility_packages = expectation["compatibility_packages"]
+        retired_repos = expectation["retired_repos"]
 
         if (
             "## Legacy continuity" not in readme
             and "## Package continuity" not in readme
         ):
             failures.append(f"{package_name}: missing package continuity section")
-        if f"https://pypi.org/project/{compatibility_package}/" not in readme:
-            failures.append(f"{package_name}: missing compatibility package link")
-        if retired_repo not in readme:
-            failures.append(f"{package_name}: missing retired repository guidance")
+        for compatibility_package in compatibility_packages:
+            if f"https://pypi.org/project/{compatibility_package}/" not in readme:
+                failures.append(
+                    f"{package_name}: missing compatibility package link for {compatibility_package}"
+                )
+        for retired_repo in retired_repos:
+            if retired_repo not in readme:
+                failures.append(
+                    f"{package_name}: missing retired repository guidance for {retired_repo}"
+                )
     assert not failures, "canonical package continuity failed:\n" + "\n".join(failures)
 
 
@@ -515,7 +581,7 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(
                 f"{package_name}: overview should link the legacy package handbook"
             )
-        if retired_repo not in readme:
+        if retired_repo is not None and retired_repo not in readme:
             failures.append(
                 f"{package_name}: README should document the retired repository"
             )
@@ -523,7 +589,7 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(
                 f"{package_name}: overview should explain the same-version install"
             )
-        if retired_repo not in overview:
+        if retired_repo is not None and retired_repo not in overview:
             failures.append(
                 f"{package_name}: overview should document the retired repository"
             )

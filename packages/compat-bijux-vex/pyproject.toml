@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bijux-vex"
 dynamic = ["version", "dependencies"]
-description = "Compatibility bridge for the legacy bijux-vex PyPI package. Preserves installs, imports, and the bijux-vex command while installing bijux-canon-index from the bijux-canon family at the same version."
+description = "Compatibility alias package for bijux-canon-index. Preserves installs, imports, and the legacy bijux-vex PyPI package name and CLI command at the same synchronized version."
 readme = "README.md"
 requires-python = ">=3.11,<4"
 license = { text = "Apache-2.0" }
@@ -16,7 +16,7 @@ keywords = [
   "bijux-canon",
   "bijux.io",
   "compatibility",
-  "migration",
+  "alias",
   "legacy-name",
   "vector-search",
   "ann",

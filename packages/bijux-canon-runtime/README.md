@@ -8,6 +8,7 @@
 [![GitHub Repository](https://img.shields.io/badge/github-bijux%2Fbijux--canon-181717?logo=github)](https://github.com/bijux/bijux-canon)
 
 [![bijux-canon-runtime](https://img.shields.io/pypi/v/bijux-canon-runtime?label=runtime&logo=pypi)](https://pypi.org/project/bijux-canon-runtime/)
+[![bijux-canon](https://img.shields.io/pypi/v/bijux-canon?label=bijux--canon&logo=pypi)](https://pypi.org/project/bijux-canon/)
 [![bijux-canon-agent](https://img.shields.io/pypi/v/bijux-canon-agent?label=agent&logo=pypi)](https://pypi.org/project/bijux-canon-agent/)
 [![bijux-canon-ingest](https://img.shields.io/pypi/v/bijux-canon-ingest?label=ingest&logo=pypi)](https://pypi.org/project/bijux-canon-ingest/)
 [![bijux-canon-reason](https://img.shields.io/pypi/v/bijux-canon-reason?label=reason&logo=pypi)](https://pypi.org/project/bijux-canon-reason/)
@@ -19,6 +20,7 @@
 [![bijux-vex](https://img.shields.io/pypi/v/bijux-vex?label=bijux--vex&logo=pypi)](https://pypi.org/project/bijux-vex/)
 
 [![bijux-canon-runtime](https://img.shields.io/badge/runtime-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-runtime)
+[![bijux-canon](https://img.shields.io/badge/bijux--canon-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon)
 [![bijux-canon-agent](https://img.shields.io/badge/agent-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-agent)
 [![bijux-canon-ingest](https://img.shields.io/badge/ingest-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-ingest)
 [![bijux-canon-reason](https://img.shields.io/badge/reason-ghcr-181717?logo=github)](https://github.com/bijux/bijux-canon/pkgs/container/bijux-canon%2Fbijux-canon-reason)
@@ -69,11 +71,14 @@ Expected shape:
 - `result.trace` is present for non-plan execution
 - `result.run_id` is set once the runtime registers a persisted run
 
-## Legacy continuity
+## Package continuity
 
-- compatibility package: [`agentic-flows`](https://pypi.org/project/agentic-flows/)
-- legacy import root: `agentic_flows`
-- legacy command: `agentic-flows`
+- compatibility packages: [`bijux-canon`](https://pypi.org/project/bijux-canon/), [`agentic-flows`](https://pypi.org/project/agentic-flows/)
+- preserved import roots: `bijux_canon`, `agentic_flows`
+- preserved commands: `bijux-canon`, `agentic-flows`
+- alias expectation: the preserved names above should resolve to the same
+  runtime API and command behavior as `bijux-canon-runtime`
+- family-root alias handbook: [bijux-canon alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/)
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 - retired repository target: [https://github.com/bijux/agentic-flows](https://github.com/bijux/agentic-flows) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
@@ -115,5 +120,6 @@ Expected shape:
 
 ## Release Readiness
 
-- upcoming release line: `0.3.6`
+- release line prepared for publish: `0.3.8`
+- release date: `2026-06-28`
 - package changelog: [`CHANGELOG.md`](CHANGELOG.md)

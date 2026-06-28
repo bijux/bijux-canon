@@ -109,6 +109,15 @@ updates:
       - python
 
   - package-ecosystem: pip
+    directory: "/packages/compat-bijux-canon"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: pip
     directory: "/packages/compat-bijux-agent"
     schedule:
       interval: weekly

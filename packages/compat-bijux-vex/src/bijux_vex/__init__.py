@@ -1,31 +1,34 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2026 Bijan Mousavi
 
-"""Compatibility import surface for the former ``bijux_vex`` package name."""
+"""Compatibility alias module for ``bijux_canon_index``."""
 
 from __future__ import annotations
 
-import bijux_canon_index as _impl
+from importlib import import_module
+from typing import Any
 
-__path__ = _impl.__path__
+from .runtime_alias import install_runtime_aliases
 
-for _name in dir(_impl):
-    if _name.startswith("_"):
-        continue
-    try:
-        globals()[_name] = getattr(_impl, _name)
-    except AttributeError:
-        continue
+_ALIAS_PACKAGE = "bijux_vex"
+_RUNTIME_PACKAGE = "bijux_canon_index"
+_LOCAL_SUBMODULES = frozenset({"__main__", "runtime_alias"})
+_runtime_module = import_module(_RUNTIME_PACKAGE)
 
-_impl_all = getattr(_impl, "__all__", ())
-__all__ = [name for name in _impl_all if hasattr(_impl, name)]
+install_runtime_aliases(
+    alias_package=_ALIAS_PACKAGE,
+    runtime_package=_RUNTIME_PACKAGE,
+    local_submodules=_LOCAL_SUBMODULES,
+)
+
+__all__ = list(getattr(_runtime_module, "__all__", ()))
 
 
-def __getattr__(name: str) -> object:
-    """Proxy unresolved attributes to the canonical vector index package."""
-    return getattr(_impl, name)
+def __getattr__(name: str) -> Any:
+    """Forward compatibility lookups to the canonical index package."""
+    return getattr(_runtime_module, name)
 
 
 def __dir__() -> list[str]:
-    """Expose merged module attributes for interactive discovery."""
-    return sorted({*globals(), *dir(_impl), *__all__})
+    """Expose the canonical index attributes in interactive discovery."""
+    return sorted(set(globals()) | set(dir(_runtime_module)) | set(__all__))

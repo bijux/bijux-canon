@@ -20,7 +20,7 @@ repository healthy rather than to run the product, it should usually live here.
 
 - runtime or product behavior that end users depend on directly
 - domain models that belong to agent, ingest, index, reason, or runtime packages
-- compatibility shims whose only job is to preserve legacy package names
+- compatibility bridges whose only job is to preserve older or shorter public names
 
 ## Source map
 
@@ -43,5 +43,6 @@ repository healthy rather than to run the product, it should usually live here.
 
 ## Release Readiness
 
-- upcoming release line: `0.3.6`
+- release line prepared for source-checkout validation: `0.3.8`
+- release date: `2026-06-28`
 - package changelog: [`CHANGELOG.md`](CHANGELOG.md)

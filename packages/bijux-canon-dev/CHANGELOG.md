@@ -6,6 +6,21 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
+## 0.3.8 - 2026-06-28
+
+### Changed
+
+- Maintainer release tests now cover root config baselines, workspace layout,
+  publication metadata, and repository workflow contracts against the current
+  governed repository shape.
+- Package release-readiness docs now describe the `0.3.8` source-checkout
+  validation line explicitly.
+
+### Fixed
+
+- Source-checkout version fallback now resolves to `0.3.8`, matching the
+  release line enforced by the maintainer publication contracts.
+
 ## 0.3.7 - 2026-04-21
 
 ### Changed

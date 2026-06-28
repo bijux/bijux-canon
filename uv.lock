@@ -23,6 +23,7 @@ resolution-markers = [
 members = [
     "agentic-flows",
     "bijux-agent",
+    "bijux-canon",
     "bijux-canon-agent",
     "bijux-canon-dev",
     "bijux-canon-index",
@@ -434,6 +435,16 @@ dependencies = [
 requires-dist = [{ name = "bijux-canon-agent", editable = "packages/bijux-canon-agent" }]
 
 [[package]]
+name = "bijux-canon"
+source = { editable = "packages/compat-bijux-canon" }
+dependencies = [
+    { name = "bijux-canon-runtime" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "bijux-canon-runtime", editable = "packages/bijux-canon-runtime" }]
+
+[[package]]
 name = "bijux-canon-agent"
 source = { editable = "packages/bijux-canon-agent" }
 dependencies = [
@@ -770,8 +781,8 @@ requires-dist = [
     { name = "cyclonedx-bom", marker = "extra == 'dev'", specifier = ">=4.6.0" },
     { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.10.0,<1.0" },
     { name = "faiss-cpu", marker = "extra == 'vdb'", specifier = ">=1.7.4,<2.0" },
-    { name = "fastapi", specifier = ">=0.128,<0.139" },
-    { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.128,<0.139" },
+    { name = "fastapi", specifier = ">=0.138,<1.0" },
+    { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.138,<1.0" },
     { name = "hnswlib", marker = "extra == 'nd'", specifier = ">=0.8.0,<1.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.103.0,<7.0" },
     { name = "hypothesis-jsonschema", marker = "extra == 'dev'", specifier = ">=0.23.0,<1.0" },
@@ -887,7 +898,7 @@ requires-dist = [
     { name = "bandit", marker = "extra == 'dev'", specifier = ">=1.7.10,<2.0" },
     { name = "build", marker = "extra == 'dev'", specifier = ">=1.2,<2.0" },
     { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.10.0,<1.0" },
-    { name = "fastapi", specifier = ">=0.115,<1.0" },
+    { name = "fastapi", specifier = ">=0.138,<1.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.91,<7.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0,<2.0" },
     { name = "mkdocs", marker = "extra == 'dev'", specifier = ">=1.6,<2" },
@@ -1010,8 +1021,8 @@ requires-dist = [
     { name = "commitizen", marker = "extra == 'dev'", specifier = ">=4.0.0,<5.0" },
     { name = "cyclonedx-bom", marker = "extra == 'dev'", specifier = ">=4.6.0" },
     { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.10.0,<1.0" },
-    { name = "fastapi", specifier = ">=0.110,<1.0" },
-    { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.110,<1.0" },
+    { name = "fastapi", specifier = ">=0.138,<1.0" },
+    { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.138,<1.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.103.0,<7.0" },
     { name = "hypothesis-jsonschema", marker = "extra == 'dev'", specifier = ">=0.23.0,<1.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0,<2.0" },
@@ -1066,6 +1077,7 @@ source = { editable = "." }
 dev = [
     { name = "agentic-flows" },
     { name = "bijux-agent" },
+    { name = "bijux-canon" },
     { name = "bijux-canon-agent", extra = ["dev"] },
     { name = "bijux-canon-dev", extra = ["dev"] },
     { name = "bijux-canon-index", extra = ["dev"] },
@@ -1096,6 +1108,7 @@ dev = [
 dev = [
     { name = "agentic-flows", editable = "packages/compat-agentic-flows" },
     { name = "bijux-agent", editable = "packages/compat-bijux-agent" },
+    { name = "bijux-canon", editable = "packages/compat-bijux-canon" },
     { name = "bijux-canon-agent", extras = ["dev"], editable = "packages/bijux-canon-agent" },
     { name = "bijux-canon-dev", extras = ["dev"], editable = "packages/bijux-canon-dev" },
     { name = "bijux-canon-index", extras = ["dev"], editable = "packages/bijux-canon-index" },
@@ -1183,7 +1196,7 @@ requires-dist = [
     { name = "bijux-canon-index", editable = "packages/bijux-canon-index" },
     { name = "bijux-canon-ingest", editable = "packages/bijux-canon-ingest" },
     { name = "bijux-canon-reason", editable = "packages/bijux-canon-reason" },
-    { name = "bijux-cli", specifier = ">=0.3.4,<0.4.0" },
+    { name = "bijux-cli", specifier = ">=0.3.6,<0.4.0" },
     { name = "build", marker = "extra == 'dev'", specifier = ">=1.0.3,<2.0" },
     { name = "codespell", marker = "extra == 'dev'", specifier = ">=2.3.0,<3.0" },
     { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.10.0,<1.0" },
@@ -1961,7 +1974,7 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.136.1"
+version = "0.138.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-doc" },
@@ -1970,9 +1983,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5d/45/c130091c2dfa061bbfe3150f2a5091ef1adf149f2a8d2ae769ecaf6e99a2/fastapi-0.136.1.tar.gz", hash = "sha256:7af665ad7acfa0a3baf8983d393b6b471b9da10ede59c60045f49fbc89a0fa7f", size = 397448, upload-time = "2026-04-23T16:49:44.046Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/c9/5e8defe249899c0dc900643695fc07829a67fc88b4ff2cdb03fcbdbf5a4b/fastapi-0.138.1.tar.gz", hash = "sha256:96e3702dce09ee0dce48856135620d3d865ca684a79fe7513fd7b13a12f82862", size = 419646, upload-time = "2026-06-25T15:40:42.115Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5a/ff/2e4eca3ade2c22fe1dea7043b8ee9dabe47753349eb1b56a202de8af6349/fastapi-0.136.1-py3-none-any.whl", hash = "sha256:a6e9d7eeada96c93a4d69cb03836b44fa34e2854accb7244a1ece36cd4781c3f", size = 117683, upload-time = "2026-04-23T16:49:42.437Z" },
+    { url = "https://files.pythonhosted.org/packages/38/a9/69a6924f645eb4dd8cd625bf255b3625990eb3e14e073438a53c405dcd3e/fastapi-0.138.1-py3-none-any.whl", hash = "sha256:b994cae7ba8b82c976a728b544244de31333fa5f7d261f9a1dffe526444cae23", size = 129182, upload-time = "2026-06-25T15:40:40.771Z" },
 ]
 
 [[package]]

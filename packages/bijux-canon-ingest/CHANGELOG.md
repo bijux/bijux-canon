@@ -5,6 +5,20 @@ All notable changes to `bijux-canon-ingest` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.3.8] - 2026-06-28
+
+### Changed
+
+- Package-local cache and transient state contracts now route more of the
+  ingest toolchain through governed `artifacts/` paths.
+- Package release-readiness docs now point at the `0.3.8` publish line and
+  current release date.
+
+### Fixed
+
+- Typer entrypoint tests were stabilized around the current monkeypatch
+  strategy so CLI contract checks remain deterministic during release prep.
+
 ## [0.3.7] - 2026-04-21
 
 ### Changed

@@ -5,6 +5,20 @@ All notable changes to `bijux-canon-index` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## 0.3.8 - 2026-06-28
+
+### Changed
+
+- The sentence-transformers integration now ships as a dedicated plugin package
+  instead of as an in-tree index implementation detail.
+- Freeze-criteria docs now live under package spec ownership, and package
+  release-readiness docs now point at the `0.3.8` line explicitly.
+
+### Fixed
+
+- CLI flag snapshot and workspace setup coverage were refreshed so plugin-aware
+  command surfaces stay aligned with the canonical index package contract.
+
 ## 0.3.7 - 2026-04-21
 
 ### Changed

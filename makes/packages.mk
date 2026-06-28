@@ -1,6 +1,7 @@
 ROOT_PACKAGE_PROFILE_DIR ?= $(ROOT_MAKEFILE_DIR)/packages
 
 PACKAGE_ALIASES := \
+	bijux-canon=bijux-canon-runtime \
 	agentic-flows=bijux-canon-runtime \
 	bijux-agent=bijux-canon-agent \
 	bijux-rag=bijux-canon-ingest \
@@ -16,6 +17,7 @@ PRIMARY_PACKAGE_RECORDS := \
 	bijux-canon-index|primary,check,buildable,sbom,test,api|bijux-canon-index.mk
 
 COMPAT_PACKAGE_RECORDS := \
+	compat-bijux-canon|compat,check|compat-package.mk \
 	compat-agentic-flows|compat,check|compat-package.mk \
 	compat-bijux-agent|compat,check|compat-package.mk \
 	compat-bijux-rag|compat,check|compat-package.mk \
@@ -23,5 +25,6 @@ COMPAT_PACKAGE_RECORDS := \
 	compat-bijux-vex|compat,check|compat-package.mk
 
 PACKAGE_RECORDS := $(PRIMARY_PACKAGE_RECORDS) $(COMPAT_PACKAGE_RECORDS)
+ROOT_TARGET_SHARED_ENV_security := 0
 
 include $(ROOT_MAKEFILE_DIR)/bijux-py/package-catalog.mk

@@ -15,6 +15,8 @@ src = [
   "packages/bijux-canon-reason/tests",
   "packages/bijux-canon-runtime/src",
   "packages/bijux-canon-runtime/tests",
+  "packages/compat-bijux-canon/src",
+  "packages/compat-bijux-canon/tests",
   "packages/compat-agentic-flows/src",
   "packages/compat-agentic-flows/tests",
   "packages/compat-bijux-agent/src",
@@ -59,6 +61,7 @@ force-sort-within-sections = true
 known-first-party = [
   "agentic_flows",
   "bijux_agent",
+  "bijux_canon",
   "bijux_canon_agent",
   "bijux_canon_dev",
   "bijux_canon_index",

@@ -12,8 +12,9 @@ DEPTRY_SCAN_SCRIPT ?= $(CANON_DEV_PYTHON_ENV) "$(QUALITY_GATE_PYTHON)" -m bijux_
 DEPTRY_CONFIG ?= $(MONOREPO_ROOT)/configs/deptry.toml
 QUALITY_DEPTRY_COMMAND ?= $(DEPTRY_SCAN_SCRIPT) --config "$(DEPTRY_CONFIG)" --project-dir . $(QUALITY_PATHS)
 QUALITY_DEPTRY_VERSION_COMMAND ?=
-PIP_AUDIT ?= env VIRTUAL_ENV= PIPAPI_PYTHON_LOCATION="$(abspath $(VENV_PYTHON))" "$(VENV_PYTHON)" -m pip_audit
-SECURITY_AUDIT_PREPARE_MODE ?= pyproject
+PIP_AUDIT ?= env VIRTUAL_ENV= PIP_NO_CACHE_DIR=1 PIPAPI_PYTHON_LOCATION="$(abspath $(VENV_PYTHON))" "$(VENV_PYTHON)" -m pip_audit
+SECURITY_REQS ?= $(PROJECT_ARTIFACTS_DIR)/security/requirements.txt
+SECURITY_AUDIT_PREPARE_MODE ?= none
 PIP_AUDIT_INPUTS ?= -r "$(SECURITY_REQS)"
 SECURITY_PIP_AUDIT_TEXT_COMMAND ?= VIRTUAL_ENV= PIPAPI_PYTHON_LOCATION="$(abspath $(VENV_PYTHON))" $(CANON_DEV_PYTHON_ENV) "$(VENV_PYTHON)" -m bijux_canon_dev.security.pip_audit_gate
 SBOM_VERSION_RESOLVER ?= -m bijux_canon_dev.release.version_resolver
@@ -21,3 +22,9 @@ SBOM_REQUIREMENTS_WRITER ?= -m bijux_canon_dev.sbom.requirements_writer
 SBOM_PYTHON_ENV ?= $(CANON_DEV_PYTHON_ENV)
 
 include $(ROOT_MAKE_DIR)/bijux-py/repository/env.mk
+
+security-audit: $(SECURITY_REQS)
+
+$(SECURITY_REQS): pyproject.toml
+	@mkdir -p "$(dir $@)"
+	@$(SBOM_PYTHON_ENV) $(VENV_PYTHON) $(SBOM_REQUIREMENTS_WRITER) --pyproject "pyproject.toml" --group prod --output "$@"

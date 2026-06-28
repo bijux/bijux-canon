@@ -9,9 +9,11 @@ last_reviewed: 2026-04-26
 
 # Compatibility Packages
 
-The compatibility handbook covers the legacy distribution, import, and command
-names that still exist while the canonical `bijux-canon-*` package family takes
-over. These packages are migration bridges, not equal design centers.
+The compatibility handbook covers the preserved distribution, import, and
+command names that still exist while the canonical `bijux-canon-*` package
+family takes over. Most of these packages preserve legacy names; one preserves
+the shorter family-root `bijux-canon` runtime identity. They are continuity
+bridges, not equal design centers.
 
 That distinction has to stay explicit. A preserved legacy name may protect a
 real dependent environment, but it still carries maintenance debt and should
@@ -50,10 +52,11 @@ dependent environment.
 - [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) for
   continuity rules, validation, release posture, and retirement conditions
 
-## Legacy Package Map
+## Compatibility Package Map
 
-| Legacy package | Canonical target | Reader action |
+| Compatibility package | Canonical target | Reader action |
 | --- | --- | --- |
+| `bijux-canon` | `bijux-canon-runtime` | use the bridge only when an existing environment still expects the shorter family-root runtime name |
 | `agentic-flows` | `bijux-canon-runtime` | use the bridge only while migrating execution and replay surfaces |
 | `bijux-agent` | `bijux-canon-agent` | move orchestration imports, commands, and docs to the canonical agent package |
 | `bijux-rag` | `bijux-canon-ingest` | move document preparation and retrieval-preparation work to ingest docs |

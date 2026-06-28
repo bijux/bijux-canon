@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "agentic-flows"
 dynamic = ["version", "dependencies"]
-description = "Compatibility bridge for the legacy agentic-flows PyPI package. Preserves installs, imports, and the agentic-flows command while installing bijux-canon-runtime from the bijux-canon family at the same version."
+description = "Compatibility alias package for bijux-canon-runtime. Preserves installs, imports, and the legacy agentic-flows PyPI package name and CLI command at the same synchronized version."
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 license = { text = "Apache-2.0" }
@@ -16,7 +16,7 @@ keywords = [
   "bijux-canon",
   "bijux.io",
   "compatibility",
-  "migration",
+  "alias",
   "legacy-name",
   "runtime",
   "replay",

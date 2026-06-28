@@ -8,7 +8,7 @@ name while the canonical package lives at `bijux-canon-ingest`.
 Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed.
 
-## 0.3.8 - 2026-06-27
+## 0.3.8 - 2026-06-28
 
 ### Changed
 
@@ -18,6 +18,9 @@ releases when a tagged changelog existed.
 
 ### Fixed
 
+- Published package metadata now identifies `bijux-rag` as a real
+  compatibility alias package for `bijux-canon-ingest` instead of a migration
+  bridge placeholder.
 - Release fallback metadata now aligns with the synchronized `0.3.8` canon
   release line.
 

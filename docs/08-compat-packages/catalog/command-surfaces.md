@@ -33,6 +33,7 @@ automation.
 
 ## Current Command Map
 
+- `bijux-canon` -> `bijux-canon-runtime`
 - `agentic-flows` -> `bijux-canon-runtime`
 - `bijux-agent` -> `bijux-canon-agent`
 - `bijux-rag` -> `bijux-canon-ingest`

@@ -132,7 +132,7 @@ def test_compatibility_handbook_layout_is_sectioned() -> None:
     assert root_markdown == ["index.md"]
     assert section_dirs == ["catalog", "migration"]
     assert section_counts == {
-        "catalog": 10,
+        "catalog": 11,
         "migration": 10,
     }
 

@@ -2,96 +2,155 @@ from __future__ import annotations
 
 from pathlib import Path
 import tomllib
-from typing import cast
+from typing import Any, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-COMPATIBILITY_TARGETS = {
+WORKSPACE_PYPROJECT = REPO_ROOT / "pyproject.toml"
+
+COMPATIBILITY_PACKAGES = {
+    "compat-bijux-canon": {
+        "distribution": "bijux-canon",
+        "module": "bijux_canon",
+        "runtime": "bijux_canon_runtime",
+        "script": "bijux-canon",
+    },
     "compat-agentic-flows": {
-        "canonical_import": "bijux_canon_runtime",
-        "test_files": ["tests/unit/test_agentic_flows_compatibility_bridge.py"],
+        "distribution": "agentic-flows",
+        "module": "agentic_flows",
+        "runtime": "bijux_canon_runtime",
+        "script": "agentic-flows",
     },
     "compat-bijux-agent": {
-        "canonical_import": "bijux_canon_agent",
-        "test_files": ["tests/unit/test_bijux_agent_compatibility_bridge.py"],
+        "distribution": "bijux-agent",
+        "module": "bijux_agent",
+        "runtime": "bijux_canon_agent",
+        "script": "bijux-agent",
     },
     "compat-bijux-rag": {
-        "canonical_import": "bijux_canon_ingest",
-        "test_files": ["tests/unit/test_bijux_rag_compatibility_bridge.py"],
+        "distribution": "bijux-rag",
+        "module": "bijux_rag",
+        "runtime": "bijux_canon_ingest",
+        "script": "bijux-rag",
     },
     "compat-bijux-rar": {
-        "canonical_import": "bijux_canon_reason",
-        "test_files": ["tests/unit/test_bijux_rar_compatibility_bridge.py"],
+        "distribution": "bijux-rar",
+        "module": "bijux_rar",
+        "runtime": "bijux_canon_reason",
+        "script": "bijux-rar",
     },
     "compat-bijux-vex": {
-        "canonical_import": "bijux_canon_index",
-        "test_files": ["tests/unit/test_bijux_vex_compatibility_bridge.py"],
+        "distribution": "bijux-vex",
+        "module": "bijux_vex",
+        "runtime": "bijux_canon_index",
+        "script": "bijux-vex",
     },
 }
 
 
-def _as_dict(value: object) -> dict[str, object]:
-    return cast(dict[str, object], value)
+def _workspace_metadata() -> dict[str, Any]:
+    with WORKSPACE_PYPROJECT.open("rb") as handle:
+        data = tomllib.load(handle)
+    return cast(dict[str, Any], data["tool"]["bijux_canon"])
 
 
-def _as_str_list(value: object) -> list[str]:
-    return cast(list[str], value)
-
-
-def _workspace_metadata() -> dict[str, object]:
-    with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
-        pyproject = cast(dict[str, object], tomllib.load(handle))
-    tool = _as_dict(pyproject["tool"])
-    return _as_dict(tool["bijux_canon"])
-
-
-def test_compatibility_packages_are_explicitly_tracked_in_workspace_metadata() -> None:
+def _package_root(package_name: str) -> Path:
     workspace = _workspace_metadata()
+    package_dirs = cast(dict[str, str], workspace["package_dirs"])
+    return REPO_ROOT / package_dirs[package_name]
 
-    assert set(_as_str_list(workspace["compat_packages"])) == set(COMPATIBILITY_TARGETS)
+
+def test_workspace_metadata_declares_all_compatibility_packages() -> None:
+    workspace = _workspace_metadata()
+    compat_packages = cast(list[str], workspace["compat_packages"])
+
+    assert compat_packages == [
+        "compat-bijux-canon",
+        "compat-agentic-flows",
+        "compat-bijux-agent",
+        "compat-bijux-rag",
+        "compat-bijux-rar",
+        "compat-bijux-vex",
+    ]
 
 
-def test_compatibility_packages_keep_standardized_bridge_tests_while_they_stay_thin() -> (
-    None
-):
+def test_compatibility_packages_keep_runtime_alias_layout() -> None:
     failures: list[str] = []
 
-    for package_name, metadata in COMPATIBILITY_TARGETS.items():
-        contract = _as_dict(metadata)
-        canonical_import = cast(str, contract["canonical_import"])
-        expected_test_files = cast(list[str], contract["test_files"])
-        package_root = REPO_ROOT / "packages" / package_name
-        tests_dir = package_root / "tests"
-        if not tests_dir.is_dir():
-            failures.append(f"{package_name}: missing standardized compatibility tests")
-        else:
-            test_files = sorted(
-                path.relative_to(package_root).as_posix()
-                for path in tests_dir.rglob("test_*.py")
-            )
-            if test_files != expected_test_files:
+    for package_name, expectation in COMPATIBILITY_PACKAGES.items():
+        package_root = _package_root(package_name)
+        module_name = expectation["module"]
+        module_root = package_root / "src" / module_name
+        test_path = (
+            package_root
+            / "tests"
+            / "unit"
+            / f"test_{module_name}_compatibility_bridge.py"
+        )
+
+        for required_path in (
+            package_root / "README.md",
+            package_root / "CHANGELOG.md",
+            package_root / "overview.md",
+            package_root / "hatch_build.py",
+            module_root / "__init__.py",
+            module_root / "__main__.py",
+            module_root / "runtime_alias.py",
+            module_root / "py.typed",
+            test_path,
+        ):
+            if not required_path.exists():
                 failures.append(
-                    f"{package_name}: expected only {expected_test_files}, found {test_files}"
+                    f"{package_name}: missing {required_path.relative_to(package_root)}"
                 )
 
-        python_files = sorted(
-            path.relative_to(package_root).as_posix()
-            for path in package_root.glob("src/**/*.py")
+    assert not failures, "compatibility package layout failed:\n" + "\n".join(failures)
+
+
+def test_compatibility_packages_install_runtime_alias_helpers() -> None:
+    failures: list[str] = []
+
+    for package_name, expectation in COMPATIBILITY_PACKAGES.items():
+        package_root = _package_root(package_name)
+        module_name = expectation["module"]
+        runtime_name = expectation["runtime"]
+        init_text = (package_root / "src" / module_name / "__init__.py").read_text(
+            encoding="utf-8"
         )
-        if len(python_files) != 1:
-            failures.append(
-                f"{package_name}: expected exactly one compatibility module, found {python_files}"
-            )
-            continue
+        runtime_alias_text = (
+            package_root / "src" / module_name / "runtime_alias.py"
+        ).read_text(encoding="utf-8")
+        main_text = (package_root / "src" / module_name / "__main__.py").read_text(
+            encoding="utf-8"
+        )
 
-        module_path = package_root / python_files[0]
-        module_text = module_path.read_text(encoding="utf-8")
-        if f"import {canonical_import} as _impl" not in module_text:
+        expected_init_fragments = (
+            "install_runtime_aliases",
+            f'_ALIAS_PACKAGE = "{module_name}"',
+            f'_RUNTIME_PACKAGE = "{runtime_name}"',
+            "__getattr__",
+            "__dir__",
+        )
+        for fragment in expected_init_fragments:
+            if fragment not in init_text:
+                failures.append(f"{package_name}: __init__.py missing {fragment!r}")
+
+        for fragment in (
+            "class _RuntimeAliasLoader",
+            "class _RuntimeAliasFinder",
+            "def install_runtime_aliases",
+        ):
+            if fragment not in runtime_alias_text:
+                failures.append(
+                    f"{package_name}: runtime_alias.py missing {fragment!r}"
+                )
+
+        if f"from {runtime_name}.interfaces.cli" not in main_text:
             failures.append(
-                f"{package_name}: compatibility module must proxy {canonical_import}"
+                f"{package_name}: __main__.py should import its CLI from the canonical package"
             )
-        if "def __getattr__(name: str) -> object:" not in module_text:
+        if 'if __name__ == "__main__":' not in main_text:
             failures.append(
-                f"{package_name}: compatibility module must proxy runtime attributes"
+                f"{package_name}: __main__.py should dispatch the canonical CLI directly"
             )
 
-    assert not failures, "\n".join(failures)
+    assert not failures, "runtime alias helper contract failed:\n" + "\n".join(failures)

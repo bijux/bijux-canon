@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling>=1.27.0,<1.31", "hatch-vcs>=0.4.0,<1.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bijux-canon"
+dynamic = ["version", "dependencies"]
+description = "Compatibility alias package for bijux-canon-runtime. Preserves installs, imports, and the shorter bijux-canon PyPI package name and CLI command at the same synchronized version."
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+maintainers = [{ name = "Bijan Mousavi", email = "bijan@bijux.io" }]
+keywords = [
+  "bijux",
+  "bijux-canon",
+  "bijux.io",
+  "compatibility",
+  "alias",
+  "family-root",
+  "runtime",
+  "replay",
+  "short-name",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Utilities",
+  "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/"
+Website = "https://bijux.io/"
+Documentation = "https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/"
+MigrationGuide = "https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/"
+LegacyNameMap = "https://bijux.io/bijux-canon/08-compat-packages/catalog/legacy-name-map/"
+Repository = "https://github.com/bijux/bijux-canon"
+Issues = "https://github.com/bijux/bijux-canon/issues"
+Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-canon/CHANGELOG.md"
+Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
+Funding = "https://github.com/sponsors/bijux"
+
+[project.scripts]
+bijux-canon = "bijux_canon_runtime.interfaces.cli.entrypoint:main"
+
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = "^v(?P<version>.*)$"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
+fallback-version = "0.3.8"
+
+[tool.hatch.metadata.hooks.custom]
+canonical-name = "bijux-canon-runtime"
+
+[tool.hatch.build]
+ignore-vcs = true
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_canon/**"]
+exclude = [".gitignore", "/.gitignore", "**/.gitignore"]
+force-include = { "LICENSE" = "LICENSE", "NOTICE" = "NOTICE" }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bijux_canon"]
+include = ["src/bijux_canon/py.typed"]
+
+[tool.hatch.build.targets.wheel.package-data]
+"bijux_canon" = ["py.typed"]
+
+[tool.hatch.build.targets.sdist]
+include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_canon/**"]
+only-include = ["pyproject.toml", "README.md", "CHANGELOG.md", "overview.md", "hatch_build.py", "src/bijux_canon"]
+exclude = [".gitignore", "/.gitignore", "**/.gitignore"]

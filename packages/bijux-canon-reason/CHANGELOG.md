@@ -6,6 +6,20 @@ All notable changes to `bijux-canon-reason` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## 0.3.8 - 2026-06-28
+
+### Changed
+
+- The v1 reasoning API app, run routes, and item routes were tightened to keep
+  current endpoint wiring aligned with the checked-in contract artifacts.
+- Package release-readiness docs now point at the synchronized `0.3.8` line
+  and current publish date.
+
+### Fixed
+
+- Schemathesis exit handling and API endpoint coverage now protect the current
+  reasoning contract without relying on stale route assumptions.
+
 ## 0.3.7 - 2026-04-21
 
 ### Changed
