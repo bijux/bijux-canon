@@ -128,7 +128,7 @@ class LoggerManager:
             self._async_handlers.append(console_handler)
 
         logger.propagate = False
-        logger._is_configured = True
+        setattr(logger, "_is_configured", True)
         return logger
 
     @contextmanager

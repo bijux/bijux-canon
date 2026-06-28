@@ -259,7 +259,7 @@ class StageRunnerAgent(BaseAgent[dict[str, Any], StageRunnerResult]):
         context: dict[str, Any],
         stage: str,
         extra: dict[str, Any] | None = None,
-    ) -> StageRunnerResult:
+    ) -> dict[str, Any]:
         """Return a standardized error result with async logging."""
         _ = extra
         self.logger_manager.log_metric(

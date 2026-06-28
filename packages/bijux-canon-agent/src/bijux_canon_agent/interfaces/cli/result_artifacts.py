@@ -52,6 +52,7 @@ def write_final_artifacts(
     final_result_path = result_dir / "final_result.json"
     pipeline_result = success_entry["result"] if success_entry else None
     if pipeline_result and not dry_run:
+        assert success_entry is not None
         final_status = pipeline_result["final_status"]
         success_flag = bool(final_status.get("success"))
         termination_reason = final_status.get(

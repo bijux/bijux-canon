@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import time
 from typing import Any
 
@@ -10,7 +11,7 @@ from bijux_canon_agent.observability.logging import LoggerManager, MetricType
 
 def build_summarizer_result(
     *,
-    structured_summary: dict[str, Any],
+    structured_summary: Mapping[str, Any],
     method: str,
     text: str,
     backend: str,
@@ -139,7 +140,7 @@ async def get_summarizer_telemetry(
         return {}
 
 
-def _summary_text_parts(structured_summary: dict[str, Any]) -> list[str]:
+def _summary_text_parts(structured_summary: Mapping[str, Any]) -> list[str]:
     parts: list[str] = []
     for value in structured_summary.values():
         if isinstance(value, str):

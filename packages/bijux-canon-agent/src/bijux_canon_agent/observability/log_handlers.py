@@ -149,7 +149,7 @@ class LoggerSettings:
         self._file_handler: RotatingFileHandler | None = None
         self._async_handlers: list[Handler] = []
         self._queue_thread: threading.Thread | None = None
-        self._queue: queue.Queue[LogRecord] | None = None
+        self._queue: queue.Queue[LogRecord | None] | None = None
         self._stop_event = threading.Event()
 
     def get_handlers(self) -> tuple[Handler, Handler | None, Handler | None]:
@@ -216,7 +216,7 @@ class LoggerSettings:
             return None
 
     def _get_async_handler(self) -> QueueHandler:
-        self._queue = queue.Queue[LogRecord]()
+        self._queue = queue.Queue[LogRecord | None]()
         handler = QueueHandler(self._queue)
         self._queue_thread = threading.Thread(
             target=self._process_queue,
@@ -233,7 +233,7 @@ class LoggerSettings:
             try:
                 record = queue_ref.get(timeout=1.0)
                 if record is None:
-                    break
+                    return
                 for handler in self._async_handlers:
                     handler.handle(record)
             except queue.Empty:

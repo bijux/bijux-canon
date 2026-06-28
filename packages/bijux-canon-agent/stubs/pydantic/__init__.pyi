@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import builtins
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Self
 
 from .config import ConfigDict
 
@@ -12,6 +12,8 @@ class BaseModel:
     model_config: ConfigDict
 
     def __init__(self, **values: Any) -> None: ...
+    @classmethod
+    def model_validate(cls, obj: Any) -> Self: ...
     def model_dump(
         self,
         *,
@@ -35,5 +37,7 @@ class BaseModel:
     def model_dump_json(self, *, indent: int | None = None) -> str: ...
     def json(self, *, indent: int | None = None) -> str: ...
 
+class ValidationError(Exception): ...
+
 Field: Any
-__all__ = ["BaseModel", "ConfigDict", "Field"]
+__all__ = ["BaseModel", "ConfigDict", "Field", "ValidationError"]
