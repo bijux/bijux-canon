@@ -52,6 +52,8 @@ PACKAGE_INSTALL_TARGETS ?= \
   test test-unit test-ci \
   lint-artifacts quality security-bandit security-audit security-deps \
   build publish publish-test release-dry
+LINT_PRE_TARGETS += compat-sync-canonical
+TEST_PRE_TARGETS += compat-sync-canonical
 
 test-all: TEST_MAIN_ARGS =
 test-all: PYTEST_ADDOPTS_EXTRA = -o timeout=0
@@ -64,6 +66,18 @@ test-all-plus-run-time: test
 .PHONY: test-all-plus-run-time
 
 include $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../bijux-py/package.mk
+
+compat-sync-canonical: | $(VENV)
+	@set -e; \
+	if [ -z "$(strip $(COMPAT_CANONICAL_PACKAGE_DIR))" ]; then \
+	  echo "✖ COMPAT_CANONICAL_PACKAGE_DIR is required for $(PROJECT_SLUG)"; \
+	  exit 1; \
+	fi; \
+	if ! $(UV) pip install --python "$(VENV_PYTHON)" --editable "$(COMPAT_CANONICAL_PACKAGE_DIR)"; then \
+	  echo "→ uv pip install failed; retrying with python -m pip"; \
+	  "$(VENV_PYTHON)" -m pip install --editable "$(COMPAT_CANONICAL_PACKAGE_DIR)"; \
+	fi
+.PHONY: compat-sync-canonical
 
 ##@ Core
 clean: ## Remove virtualenv plus compatibility package artifacts
