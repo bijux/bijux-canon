@@ -6,6 +6,21 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.3.8] - 2026-06-28
+
+### Changed
+
+- Runtime examples and README guidance now describe governed execution inputs,
+  outputs, and publish readiness for the `0.3.8` line.
+- Flow execution models and CLI configuration handling now align more strictly
+  with manifest-driven runtime contracts.
+
+### Fixed
+
+- Default execution settings are now valid by construction.
+- Internal canon dependency floors now require the synchronized `0.3.8`
+  package line instead of the stale `0.3.7` floor.
+
 ## [0.3.7] - 2026-04-21
 
 ### Changed

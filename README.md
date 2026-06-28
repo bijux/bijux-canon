@@ -61,6 +61,12 @@ bundle per package, uploads distributions to PyPI, publishes release bundles to
 their exact GHCR package pages under the `bijux` account, and attaches the same
 staged assets to the GitHub Release.
 
+Current synchronized release line: `v0.3.8` dated `2026-06-28`.
+
+The five compatibility distributions in this repository are real alias
+packages, not migration-only placeholders. They preserve legacy distribution,
+import, and CLI names by re-exporting the canonical package surfaces directly.
+
 ## Why `bijux-canon` Exists
 
 Many AI and RAG stacks are easy to start and hard to trust. They often mix

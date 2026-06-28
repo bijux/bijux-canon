@@ -10,6 +10,27 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## 0.3.8 - 2026-06-28
+
+### Changed
+
+- Finalized the `v0.3.8` release line across the root handbook and package
+  README release-readiness surfaces so publish intent, dates, and changelog
+  ownership are consistent.
+- Clarified repository-level compatibility guidance around real alias packages:
+  legacy names remain installable as direct canonical re-export distributions,
+  not as decorative migration stubs.
+- Runtime release metadata now requires the synchronized `0.3.8` canon package
+  line, and maintainer tooling resolves the same fallback version from source
+  checkouts.
+
+### Fixed
+
+- Source-checkout release metadata for the maintainer tooling package no longer
+  drifts to `0.1.0` while the repository prepares a `0.3.8` publish.
+- Release-facing docs no longer point at the stale `0.3.6` line during final
+  publish preparation.
+
 ## 0.3.7 - 2026-04-21
 
 ### Changed

@@ -109,5 +109,6 @@ Reach into submodules only when you need a specific boundary:
 
 ## Release Readiness
 
-- upcoming release line: `0.3.6`
+- release line prepared for publish: `0.3.8`
+- release date: `2026-06-28`
 - package changelog: [`CHANGELOG.md`](CHANGELOG.md)

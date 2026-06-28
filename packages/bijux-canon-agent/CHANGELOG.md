@@ -5,6 +5,22 @@ All notable changes to `bijux-canon-agent` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## 0.3.8 - 2026-06-28
+
+### Changed
+
+- Optional HTTP and environment support now live behind explicit package extras
+  instead of inflating the base agent dependency surface.
+- Package release-readiness docs now point at the synchronized `0.3.8` line
+  and current publish date.
+
+### Fixed
+
+- File-reader typing was tightened across text, structured, binary, and schema
+  traversal paths so package contracts match the current orchestrated surfaces.
+- CLI trace compatibility and observability/reporting typing were restored
+  after the recent agent refactor work.
+
 ## 0.3.7 - 2026-04-21
 
 ### Changed

@@ -98,5 +98,6 @@ you are outside this package's boundary.
 
 ## Release Readiness
 
-- upcoming release line: `0.3.6`
+- release line prepared for publish: `0.3.8`
+- release date: `2026-06-28`
 - package changelog: [`CHANGELOG.md`](CHANGELOG.md)
