@@ -47,3 +47,4 @@ jobs:
       check_targets: "${{ inputs.check_targets }}"
       api_toolchain_targets: "${{ inputs.api_toolchain_targets }}"
       post_test_command: "${{ inputs.post_test_command }}"
+    if: "${{ github.event_name != 'pull_request' || github.event.pull_request.user.login != 'dependabot[bot]' }}"
