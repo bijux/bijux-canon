@@ -44,10 +44,10 @@ def test_runtime_dependency_versions_use_canonical_keys(
 ) -> None:
     values = {
         "bijux-cli": "0.3.6",
-        "bijux-canon-agent": "0.3.8",
-        "bijux-canon-ingest": "0.3.8",
-        "bijux-canon-reason": "0.3.8",
-        "bijux-canon-index": "0.3.8",
+        "bijux-canon-agent": "0.3.9",
+        "bijux-canon-ingest": "0.3.9",
+        "bijux-canon-reason": "0.3.9",
+        "bijux-canon-index": "0.3.9",
     }
 
     def fake_version(name: str) -> str:
@@ -60,8 +60,8 @@ def test_runtime_dependency_versions_use_canonical_keys(
 
     assert runtime_dependency_versions() == {
         "bijux-cli": "0.3.6",
-        "bijux-canon-agent": "0.3.8",
-        "bijux-canon-ingest": "0.3.8",
-        "bijux-canon-reason": "0.3.8",
-        "bijux-canon-index": "0.3.8",
+        "bijux-canon-agent": "0.3.9",
+        "bijux-canon-ingest": "0.3.9",
+        "bijux-canon-reason": "0.3.9",
+        "bijux-canon-index": "0.3.9",
     }

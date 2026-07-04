@@ -66,10 +66,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://bijux.io/bijux-canon/bijux-canon-agent/"
+Homepage = "https://bijux.io/bijux-canon/05-bijux-canon-agent/"
 Website = "https://bijux.io/"
 Repository = "https://github.com/bijux/bijux-canon"
-Documentation = "https://bijux.io/bijux-canon/bijux-canon-agent/"
+Documentation = "https://bijux.io/bijux-canon/05-bijux-canon-agent/"
 Issues = "https://github.com/bijux/bijux-canon/issues"
 Changelog = "https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md"
 Security = "https://github.com/bijux/bijux-canon/blob/main/SECURITY.md"
@@ -176,7 +176,7 @@ allow-direct-references = true
 source = "vcs"
 tag-pattern = "^v(?P<version>.*)$"
 raw-options = { git_describe_command = "git describe --dirty --tags --long --match 'v*'", local_scheme = "dirty-tag", version_scheme = "guess-next-dev", root = "../..", search_parent_directories = true }
-fallback-version = "0.3.8"
+fallback-version = "0.3.9"
 
 [tool.pytest.ini_options]
 markers = [
