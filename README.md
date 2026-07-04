@@ -63,7 +63,7 @@ bundle per package, uploads distributions to PyPI, publishes release bundles to
 their exact GHCR package pages under the `bijux` account, and attaches the same
 staged assets to the GitHub Release.
 
-Current synchronized release line: `v0.3.8` dated `2026-06-28`.
+Current synchronized release line: `v0.3.9` dated `2026-07-04`.
 
 The six compatibility distributions in this repository are real alias
 packages, not migration-only placeholders. Five preserve retired public names,

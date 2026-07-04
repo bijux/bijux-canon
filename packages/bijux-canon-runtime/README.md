@@ -120,6 +120,6 @@ Expected shape:
 
 ## Release Readiness
 
-- release line prepared for publish: `0.3.8`
-- release date: `2026-06-28`
+- release line prepared for publish: `0.3.9`
+- release date: `2026-07-04`
 - package changelog: [`CHANGELOG.md`](CHANGELOG.md)
