@@ -88,6 +88,15 @@ layers:
 The result is a stack that is easier to govern, easier to inspect, and easier
 to evolve without losing the plot.
 
+## Read The Repository By Ownership
+
+| If the question is about | Start here | Proof usually lives in |
+| --- | --- | --- |
+| cross-package rules, shared repository boundaries, or docs routing | [repository handbook](https://bijux.io/bijux-canon/) | `mkdocs.yml`, `pyproject.toml`, `Makefile`, `makes/`, `.github/workflows/` |
+| product behavior in one canonical layer | the owning package handbook under `https://bijux.io/bijux-canon/02-...` through `06-...` | `packages/<package>/src`, `packages/<package>/tests`, `apis/` |
+| maintainer automation, release posture, or repository health | [maintenance handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) | `packages/bijux-canon-dev`, `makes/`, `.github/workflows/` |
+| older or shorter compatibility names | [compatibility handbook](https://bijux.io/bijux-canon/08-compat-packages/) | `packages/compat-*`, migration docs, package metadata |
+
 ## Repository Consolidation
 
 The package family now ships from a single repository:
@@ -168,6 +177,13 @@ maintaining the workspace rather than for end-user installation.
 
 If you want the fastest high-level orientation, start with the repository
 handbook and then jump to the package docs that match the layer you care about.
+
+## Proof Surfaces
+
+- `packages/` owns the publishable package boundaries
+- `apis/` holds checked-in contract artifacts
+- `docs/` routes readers to the owning handbook and proof surface
+- `Makefile`, `makes/`, and `.github/workflows/` own shared automation and release behavior
 
 ## Where `bijux-canon` Fits
 
