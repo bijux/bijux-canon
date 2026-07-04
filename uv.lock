@@ -722,6 +722,7 @@ dev = [
     { name = "commitizen" },
     { name = "cyclonedx-bom" },
     { name = "deptry" },
+    { name = "httpx2" },
     { name = "hypothesis" },
     { name = "hypothesis-jsonschema" },
     { name = "interrogate" },
@@ -784,6 +785,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.138,<1.0" },
     { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.138,<1.0" },
     { name = "hnswlib", marker = "extra == 'nd'", specifier = ">=0.8.0,<1.0" },
+    { name = "httpx2", marker = "extra == 'dev'", specifier = ">=2.5.0,<3.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.103.0,<7.0" },
     { name = "hypothesis-jsonschema", marker = "extra == 'dev'", specifier = ">=0.23.0,<1.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0,<2.0" },
@@ -849,6 +851,7 @@ dev = [
     { name = "bandit" },
     { name = "build" },
     { name = "deptry" },
+    { name = "httpx2" },
     { name = "hypothesis" },
     { name = "interrogate" },
     { name = "mkdocs" },
@@ -899,6 +902,7 @@ requires-dist = [
     { name = "build", marker = "extra == 'dev'", specifier = ">=1.2,<2.0" },
     { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.10.0,<1.0" },
     { name = "fastapi", specifier = ">=0.138,<1.0" },
+    { name = "httpx2", marker = "extra == 'dev'", specifier = ">=2.5.0,<3.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.91,<7.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0,<2.0" },
     { name = "mkdocs", marker = "extra == 'dev'", specifier = ">=1.6,<2" },
@@ -973,6 +977,7 @@ dev = [
     { name = "commitizen" },
     { name = "cyclonedx-bom" },
     { name = "deptry" },
+    { name = "httpx2" },
     { name = "hypothesis" },
     { name = "hypothesis-jsonschema" },
     { name = "interrogate" },
@@ -1023,6 +1028,7 @@ requires-dist = [
     { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.10.0,<1.0" },
     { name = "fastapi", specifier = ">=0.138,<1.0" },
     { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.138,<1.0" },
+    { name = "httpx2", marker = "extra == 'dev'", specifier = ">=2.5.0,<3.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.103.0,<7.0" },
     { name = "hypothesis-jsonschema", marker = "extra == 'dev'", specifier = ">=0.23.0,<1.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0,<2.0" },
@@ -1159,6 +1165,7 @@ dev = [
     { name = "deptry" },
     { name = "fastapi" },
     { name = "httpx" },
+    { name = "httpx2" },
     { name = "hypothesis" },
     { name = "hypothesis-jsonschema" },
     { name = "interrogate" },
@@ -1204,6 +1211,7 @@ requires-dist = [
     { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.128,<1.0" },
     { name = "fastapi", marker = "extra == 'dev'", specifier = ">=0.128,<1.0" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27.0,<1.0" },
+    { name = "httpx2", marker = "extra == 'dev'", specifier = ">=2.5.0,<3.0" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.103.0,<7.0" },
     { name = "hypothesis-jsonschema", marker = "extra == 'dev'", specifier = ">=0.23.0,<1.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0,<2.0" },
@@ -2331,6 +2339,19 @@ wheels = [
 ]
 
 [[package]]
+name = "httpcore2"
+version = "2.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "h11" },
+    { name = "truststore" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/47/06/5c12df521b5322fb1114a83d46911b2fbcb8855ddb3a635f11c01a214af5/httpcore2-2.5.0.tar.gz", hash = "sha256:88aa170137c17328d5ac44234f9fd10706466d5fb347f3edac4d39b91137b09d", size = 64808, upload-time = "2026-06-25T14:16:56.472Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c9/a1/7564199d1a8728fe737b0a72e5b3f8d92dfe085a74ddf7cdd83bce5f206d/httpcore2-2.5.0-py3-none-any.whl", hash = "sha256:5ce35188de461d31e8d000bfb8ef8bf22c6c16587a211e5571deaa5e9bdf842a", size = 80330, upload-time = "2026-06-25T14:16:53.634Z" },
+]
+
+[[package]]
 name = "httpx"
 version = "0.28.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2348,6 +2369,22 @@ wheels = [
 [package.optional-dependencies]
 http2 = [
     { name = "h2" },
+]
+
+[[package]]
+name = "httpx2"
+version = "2.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "httpcore2" },
+    { name = "idna" },
+    { name = "truststore" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d0/e2/b5dedc0cf35aa65de5f541ccd30d2bc1fd7f1d43c9ab09f8ed9a7342317b/httpx2-2.5.0.tar.gz", hash = "sha256:e2df9cb4611021527ff8a675b1c320b610a2ec397acc8d6fe6e91df2d9b33c29", size = 83121, upload-time = "2026-06-25T14:16:57.491Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/31/22/859d8252dad9bc9adee34b52e62cde621ece07b042ccb2ab4da1be46695f/httpx2-2.5.0-py3-none-any.whl", hash = "sha256:3d2d4d9cf4b61f1a1f46a95947cfdb47e80cb56a2f91c6256ac8f58e4891df41", size = 76652, upload-time = "2026-06-25T14:16:55.23Z" },
 ]
 
 [[package]]
@@ -5817,6 +5854,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d8/43/7935f8ea93fcb6680bc10a6fdbf534075c198eeead59150dd5ed68449642/trove_classifiers-2026.1.14.14.tar.gz", hash = "sha256:00492545a1402b09d4858605ba190ea33243d361e2b01c9c296ce06b5c3325f3", size = 16997, upload-time = "2026-01-14T14:54:50.526Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/bb/4a/2e5583e544bc437d5e8e54b47db87430df9031b29b48d17f26d129fa60c0/trove_classifiers-2026.1.14.14-py3-none-any.whl", hash = "sha256:1f9553927f18d0513d8e5ff80ab8980b8202ce37ecae0e3274ed2ef11880e74d", size = 14197, upload-time = "2026-01-14T14:54:49.067Z" },
+]
+
+[[package]]
+name = "truststore"
+version = "0.10.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/53/a3/1585216310e344e8102c22482f6060c7a6ea0322b63e026372e6dcefcfd6/truststore-0.10.4.tar.gz", hash = "sha256:9d91bd436463ad5e4ee4aba766628dd6cd7010cf3e2461756b3303710eebc301", size = 26169, upload-time = "2025-08-12T18:49:02.73Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/19/97/56608b2249fe206a67cd573bc93cd9896e1efb9e98bce9c163bcdc704b88/truststore-0.10.4-py3-none-any.whl", hash = "sha256:adaeaecf1cbb5f4de3b1959b42d41f6fab57b2b1666adb59e89cb0b53361d981", size = 18660, upload-time = "2025-08-12T18:49:01.46Z" },
 ]
 
 [[package]]
