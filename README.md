@@ -93,7 +93,7 @@ to evolve without losing the plot.
 | If the question is about | Start here | Proof usually lives in |
 | --- | --- | --- |
 | cross-package rules, shared repository boundaries, or docs routing | [repository handbook](https://bijux.io/bijux-canon/) | `mkdocs.yml`, `pyproject.toml`, `Makefile`, `makes/`, `.github/workflows/` |
-| product behavior in one canonical layer | the owning package handbook under `https://bijux.io/bijux-canon/02-...` through `06-...` | `packages/<package>/src`, `packages/<package>/tests`, `apis/` |
+| product behavior in one canonical layer | the owning canonical package handbook in the `02` through `06` handbook sections | `packages/<package>/src`, `packages/<package>/tests`, `apis/` |
 | maintainer automation, release posture, or repository health | [maintenance handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) | `packages/bijux-canon-dev`, `makes/`, `.github/workflows/` |
 | older or shorter compatibility names | [compatibility handbook](https://bijux.io/bijux-canon/08-compat-packages/) | `packages/compat-*`, migration docs, package metadata |
 
