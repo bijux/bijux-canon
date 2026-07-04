@@ -5,6 +5,19 @@ All notable changes to `bijux-canon-index` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## 0.3.9 - 2026-07-04
+
+### Changed
+
+- Package metadata now points at the numbered index handbook route, and the
+  README release-readiness surface now tracks the synchronized `0.3.9`
+  publish line.
+
+### Fixed
+
+- Source-checkout version fallback now reports `0.3.9`, keeping package
+  metadata and local release checks aligned.
+
 ## 0.3.8 - 2026-06-28
 
 ### Changed

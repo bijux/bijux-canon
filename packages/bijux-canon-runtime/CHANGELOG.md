@@ -6,6 +6,20 @@ All notable changes to **bijux-canon-runtime** are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release, including legacy distribution naming where applicable.
 
+## [0.3.9] - 2026-07-04
+
+### Changed
+
+- Runtime release metadata now advertises the numbered handbook route and the
+  synchronized `0.3.9` publish line.
+- Internal canon dependency floors now accept the `0.3.9.dev0` package family
+  during coordinated local release validation.
+
+### Fixed
+
+- Generated docs badges and README release-readiness guidance now resolve to
+  the canonical runtime handbook route instead of the stale short path.
+
 ## [0.3.8] - 2026-06-28
 
 ### Changed

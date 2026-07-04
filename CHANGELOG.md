@@ -10,6 +10,28 @@ The goal of this changelog is to explain repository changes that affect more
 than one package or change the way contributors and maintainers work across the
 whole workspace.
 
+## 0.3.9 - 2026-07-04
+
+### Changed
+
+- Refreshed the synchronized `bijux-std` governance surfaces that drive release
+  workflows, docs deployment, managed checks, and shared repository policy
+  manifests.
+- Canonical package metadata, generated badge surfaces, and release-readiness
+  docs now advertise the numbered handbook routes that actually own each public
+  package.
+- Public release metadata now aligns on `0.3.9` across canonical,
+  compatibility, and maintainer packages, including runtime dependency floors
+  and source-checkout fallback versions.
+
+### Fixed
+
+- Root and package README surfaces, the docs landing page, and compatibility
+  overviews no longer point readers at the non-existent short package handbook
+  routes.
+- Root environment checks now preserve existing local environment directories
+  instead of trying to replace non-symlink paths during setup.
+
 ## 0.3.8 - 2026-06-28
 
 ### Changed

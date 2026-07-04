@@ -9,6 +9,18 @@ Historical release entries below preserve the wording that shipped with tagged
 releases when a tagged changelog existed. Releases that shipped without a
 changelog update are reconstructed from tag annotations and release diffs.
 
+## 0.3.9 - 2026-07-04
+
+### Changed
+
+- Compatibility README and overview guidance now point legacy index users at
+  the numbered canonical handbook route for `bijux-canon-index`.
+
+### Fixed
+
+- Release fallback metadata now aligns with the synchronized `0.3.9` canon
+  release line.
+
 ## 0.3.8 - 2026-06-28
 
 ### Changed
