@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-04
 ---
 
 # bijux-canon-dev
@@ -36,6 +36,12 @@ This page should make `bijux-canon-dev` feel like a real package with a clear
 operating role, not just a bin for repository glue. Helper modules define the
 rules, tests prove them, and checked-in integration points show where those
 rules actually get enforced.
+
+## What Maintainers Should Expect Here
+
+- helper code that explains repository policy in Python rather than in shell fragments
+- tests that prove the helper package is enforcing the intended contract
+- visible integration seams back into `make`, workflows, docs, schemas, and release gates
 
 ## Package Pages
 
@@ -72,6 +78,15 @@ rules actually get enforced.
 - `packages/bijux-canon-dev/tests` carries the executable proof.
 - `apis/`, `Makefile`, and `.github/workflows/` show where the helpers are
   consumed.
+
+## Review Sequence
+
+When a maintainer rule looks wrong, inspect it in this order:
+
+1. the owning helper module
+2. the test that proves the rule
+3. the `make` or workflow entrypoint that invokes it
+4. the generated artifact or CI output that exposed the problem
 
 ## Boundary
 

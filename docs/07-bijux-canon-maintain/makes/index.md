@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-04
 ---
 
 # makes
@@ -35,6 +35,13 @@ the root entrypoint into the fragment that owns it and then into the helper or
 package surface that actually does the work. This page should make that route
 easy to picture before anyone starts chasing includes.
 
+## What A Good Make Surface Looks Like
+
+- root targets are memorable and stable
+- routing into package or CI fragments is visible instead of hidden behind shell tricks
+- environment and artifact behavior are predictable enough to reproduce locally
+- command names describe owned behavior rather than delivery history or local habits
+
 ## Section Pages
 
 - [Make System Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/make-system-overview/)
@@ -62,6 +69,15 @@ easy to picture before anyone starts chasing includes.
   tree.
 - `makes/bijux-py/` and `makes/packages/` show the reusable and package-bound
   parts of the command surface.
+
+## Review Sequence
+
+When a command behaves unexpectedly, inspect it in this order:
+
+1. `Makefile` or the root target the maintainer actually invoked
+2. the fragment that defines or dispatches the target
+3. the helper package, package target, or workflow-facing command it delegates to
+4. the artifact directory or CI job that proves the result
 
 ## Boundary
 
