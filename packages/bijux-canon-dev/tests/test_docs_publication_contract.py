@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import tomllib
 from typing import Any, cast
 
@@ -39,6 +40,15 @@ def _public_package_docs_urls() -> dict[str, str]:
     return urls
 
 
+def _readme_docs_surfaces() -> dict[str, Path]:
+    surfaces = {"README.md": REPO_ROOT / "README.md"}
+    for package_name in sorted(_workspace_metadata()["public_release_packages"]):
+        surfaces[f"{package_name}/README.md"] = (
+            _package_path(package_name) / "README.md"
+        )
+    return surfaces
+
+
 def _docs_source_path(docs_url: str) -> Path:
     assert docs_url.startswith(BIJUX_CANON_DOCS_URL), docs_url
     relative_path = docs_url.removeprefix(BIJUX_CANON_DOCS_URL).rstrip("/")
@@ -55,6 +65,25 @@ def _docs_source_path(docs_url: str) -> Path:
     return candidates[0]
 
 
+def _docs_url_candidates(docs_url: str) -> set[str]:
+    candidates = {docs_url}
+    docs_path = _docs_source_path(docs_url)
+    if not docs_path.exists():
+        return candidates
+
+    relative_path = docs_path.relative_to(REPO_ROOT / "docs").as_posix()
+    if relative_path == "index.md":
+        candidates.add(BIJUX_CANON_DOCS_URL)
+        return candidates
+    if relative_path.endswith("/index.md"):
+        route = relative_path[: -len("index.md")]
+    else:
+        route = relative_path[: -len(".md")]
+    candidates.add(f"{BIJUX_CANON_DOCS_URL}{route}")
+    candidates.add(f"{BIJUX_CANON_DOCS_URL}{route.rstrip('/')}/")
+    return candidates
+
+
 def test_public_package_documentation_urls_resolve_to_checked_in_pages() -> None:
     failures: list[str] = []
     for package_name, docs_url in sorted(_public_package_docs_urls().items()):
@@ -69,14 +98,34 @@ def test_root_readme_package_map_advertises_resolvable_docs_pages() -> None:
 
     failures: list[str] = []
     for package_name, docs_url in sorted(_public_package_docs_urls().items()):
-        if docs_url not in readme:
-            failures.append(f"{package_name}: README should advertise {docs_url}")
-            continue
         docs_path = _docs_source_path(docs_url)
+        acceptable_urls = _docs_url_candidates(docs_url)
+        if not any(url in readme for url in acceptable_urls):
+            advertised = " or ".join(sorted(acceptable_urls))
+            failures.append(f"{package_name}: README should advertise {advertised}")
+            continue
         if not docs_path.exists():
             failures.append(
                 f"{package_name}: README points at missing docs page {docs_url}"
             )
+
+    assert not failures, "README docs publication contract failed:\n" + "\n".join(
+        failures
+    )
+
+
+def test_root_and_package_readmes_only_link_resolvable_docs_pages() -> None:
+    docs_url_pattern = re.compile(r"https://bijux\.io/bijux-canon/[^\s)\]>\"']*")
+
+    failures: list[str] = []
+    for label, path in sorted(_readme_docs_surfaces().items()):
+        readme = path.read_text(encoding="utf-8")
+        for docs_url in sorted(set(docs_url_pattern.findall(readme))):
+            docs_path = _docs_source_path(docs_url)
+            if not docs_path.exists():
+                failures.append(
+                    f"{label}: README points at missing docs page {docs_url}"
+                )
 
     assert not failures, "README docs publication contract failed:\n" + "\n".join(
         failures

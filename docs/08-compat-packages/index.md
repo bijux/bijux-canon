@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-04
 ---
 
 # Compatibility Packages
@@ -44,6 +44,16 @@ only when they shorten the path from an old name to the canonical owner and
 when they make it easier to judge whether a bridge still protects a real
 dependent environment.
 
+## Reader Contract
+
+When you open a compatibility page, you should be able to answer four
+questions quickly:
+
+- which canonical package owns the real behavior today
+- which import, command, or distribution surface the bridge still preserves
+- what evidence shows the bridge is still justified
+- what migration path removes the need for the bridge later
+
 ## Handbook Sections
 
 - [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) for the
@@ -78,6 +88,12 @@ dependent environment.
 - canonical package handbooks under `docs/02-...` through `docs/06-...` own
   current behavior.
 - migration pages under `docs/08-compat-packages/migration/` explain when a bridge is still justified.
+
+## Evaluation Rule
+
+Compatibility docs should make retirement easier, not harder. A page is too
+weak if it lets a bridge feel permanent, symmetrical with canonical packages,
+or worth keeping for convenience alone.
 
 ## Retirement Rule
 

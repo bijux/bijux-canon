@@ -4,14 +4,14 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-04
 ---
 
 # Documentation System
 
 The `bijux-canon` handbook exists to solve three reader problems quickly:
-choosing the right owner, finding the proof behind a claim, and seeing where a
-documentation page stops making claims.
+choosing the right owner, finding the proof behind a claim, and knowing when a
+page has reached the edge of its authority.
 
 The site is organized around one landing page, one repository handbook, one
 five-branch handbook for each canonical product package, one maintenance
@@ -36,9 +36,18 @@ flowchart LR
     compat --> proof
 ```
 
-This page should show the handbook as a routing system, not just a pile of
-pages. Each branch exists to move readers toward the right owner and the right
-proof surface quickly.
+Read the handbook as a routing system rather than a library shelf. Every branch
+exists to answer one ownership question and then move the reader into code,
+tests, schemas, workflows, or package metadata that can support the claim.
+
+## Reader Routes
+
+| If the question starts with | Open first | Expect proof in |
+| --- | --- | --- |
+| repository-wide rules, package seams, or shared governance | the repository handbook | `mkdocs.yml`, `Makefile`, `makes/`, `.github/workflows/`, `pyproject.toml` |
+| canonical product behavior | the owning package handbook | `packages/<package>/src`, `packages/<package>/tests`, `apis/` |
+| maintainer automation, release posture, or repository health | the maintenance handbook | `packages/bijux-canon-dev`, `makes/`, `.github/workflows/` |
+| older or shorter public names | the compatibility handbook | `packages/compat-*`, migration docs, package metadata |
 
 ## What This System Prevents
 
@@ -53,6 +62,15 @@ proof surface quickly.
 - `docs/` carries the handbook entry surfaces and topic pages
 - `packages/`, `apis/`, `Makefile`, `makes/`, and `.github/workflows/` supply
   the concrete proof behind most cross-page claims
+
+## Page Contract
+
+Every strong page in this site should do four things in order:
+
+1. state what surface owns the topic
+2. say what the surface does not own
+3. point to the checked-in proof that can support the claim
+4. route the reader away once another surface has stronger authority
 
 ## Fix The Weakest Surface First
 

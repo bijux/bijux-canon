@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-04
 ---
 
 # Repository Handbook
@@ -25,7 +25,7 @@ documentation rules, validation posture, and release coordination.</div>
 
 ## Reader Contract
 
-This handbook should answer three questions before a reviewer touches code:
+Use this handbook to answer three questions before a reviewer touches code:
 
 - is the concern genuinely repository-wide, or does one package own it
 - which shared file, schema, workflow, or rule backs the claim
@@ -60,6 +60,22 @@ The repository handbook is strongest when it routes quickly and then stops. It
 should make the shared root logic legible, show where package authority begins,
 and point to the concrete files that back the claim instead of trying to
 re-explain package behavior from above.
+
+## What Readers Can Safely Assume Here
+
+- root pages may define shared rules, but they do not redefine product behavior
+- a claim about package semantics should become stronger when you leave this section
+- every repository-level statement should be traceable to checked-in proof
+
+## Shared Proof Surfaces
+
+| Claim family | Check here first |
+| --- | --- |
+| package set, workspace boundaries, and shared metadata | `pyproject.toml`, `packages/` |
+| docs routing and public handbook structure | `mkdocs.yml`, `docs/` |
+| shared automation and local command entrypoints | `Makefile`, `makes/` |
+| CI, release, and deploy behavior | `.github/workflows/` |
+| API storage and schema review | `apis/` |
 
 ## Start Here
 
@@ -98,13 +114,6 @@ routing rule belongs here because it protects more than one package at once. A
 change to ingest chunking, runtime replay semantics, or reason-level claim
 formation does not belong here, even if the root automation or docs also have
 to move with it.
-
-## First Proof Checks
-
-- check `pyproject.toml` when the claim is about workspace structure or commit rules
-- check `Makefile`, `makes/`, and `.github/workflows/` when the claim is about shared automation or validation
-- check `apis/` when the claim is about shared schema storage or compatibility review
-- check `packages/` when the question is whether the root is starting to blur a package boundary
 
 ## Cross-Package Anchors
 

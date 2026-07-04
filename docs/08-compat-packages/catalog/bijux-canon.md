@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-06-28
+last_reviewed: 2026-07-04
 ---
 
 # bijux-canon

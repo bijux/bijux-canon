@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-04
 ---
 
 # gh-workflows
@@ -36,6 +36,15 @@ reader needs to see how a trigger lands in a top-level workflow, where shared
 job logic is reused, and which checked-in command surface actually performs the
 real work.
 
+## Workflow Reading Rule
+
+Read workflows from outside in:
+
+1. start with the trigger and the top-level workflow file
+2. identify whether the job body is local or delegated to a reusable workflow
+3. identify the `make` target or helper package the workflow actually runs
+4. judge the resulting artifact, publication event, or CI verdict only after the ownership chain is clear
+
 ## Workflow Pages
 
 - [verify](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/verify/)
@@ -60,6 +69,14 @@ real work.
 - `.github/workflows/release-pypi.yml`
 - `.github/workflows/release-ghcr.yml`
 - `.github/workflows/ci.yml`
+
+## What Strong Workflow Docs Must Show
+
+- why the workflow exists
+- which event or release state triggers it
+- whether job logic is local or reused
+- which checked-in command surface performs the real work
+- where to look for the resulting artifacts, releases, or deploy outputs
 
 ## Boundary
 

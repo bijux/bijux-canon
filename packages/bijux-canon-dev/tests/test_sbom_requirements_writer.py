@@ -40,7 +40,7 @@ def test_write_requirements_rewrites_workspace_dependencies_for_prod_group(
                 "[project]",
                 'name = "bijux-canon-runtime"',
                 "dependencies = [",
-                '  "bijux-canon-agent>=0.3.8,<0.4.0",',
+                '  "bijux-canon-agent>=0.3.9,<0.4.0",',
                 '  "duckdb>=1.1.3,<2.0.0",',
                 "]",
                 "",

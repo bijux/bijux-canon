@@ -6,6 +6,18 @@ This package owns repository maintenance helpers, so its release history should
 explain changes to shared tooling, publish support, security checks, and schema
 governance.
 
+## 0.3.9 - 2026-07-04
+
+### Changed
+
+- Release metadata contracts now enforce the `0.3.9` public package line and
+  the numbered canonical handbook routes published by the repository.
+
+### Fixed
+
+- README docs-publication checks now fail when root or package README surfaces
+  point at unresolved `bijux.io/bijux-canon/...` handbook paths.
+
 ## 0.3.8 - 2026-06-28
 
 ### Changed

@@ -5,6 +5,18 @@ All notable changes to `bijux-canon-agent` are documented here.
 Historical release entries below preserve the wording that shipped with the
 tagged release.
 
+## 0.3.9 - 2026-07-04
+
+### Changed
+
+- Package metadata and README release-readiness guidance now align with the
+  numbered agent handbook route and the synchronized `0.3.9` publish date.
+
+### Fixed
+
+- Source-checkout fallback versioning now matches the `0.3.9` release line
+  across package metadata and the guarded defaults snapshot.
+
 ## 0.3.8 - 2026-06-28
 
 ### Changed

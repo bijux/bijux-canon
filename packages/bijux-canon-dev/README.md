@@ -43,6 +43,6 @@ repository healthy rather than to run the product, it should usually live here.
 
 ## Release Readiness
 
-- release line prepared for source-checkout validation: `0.3.8`
-- release date: `2026-06-28`
+- release line prepared for source-checkout validation: `0.3.9`
+- release date: `2026-07-04`
 - package changelog: [`CHANGELOG.md`](CHANGELOG.md)

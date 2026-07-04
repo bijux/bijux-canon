@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PACKAGE_ROOT = REPO_ROOT / "packages"
 CHANGELOG_URL_PREFIX = "https://github.com/bijux/bijux-canon/blob/main/"
-PUBLIC_RELEASE_VERSION = "0.3.8"
+PUBLIC_RELEASE_VERSION = "0.3.9"
 REQUIRED_PUBLIC_URLS = {
     "Homepage",
     "Website",
@@ -140,7 +140,14 @@ def _package_path(package_name: str) -> Path:
 
 
 def _shared_docs_url(package_name: str) -> str:
-    return f"{BIJUX_CANON_DOCS_URL}{package_name}/"
+    canonical_docs_urls = {
+        "bijux-canon-runtime": "06-bijux-canon-runtime",
+        "bijux-canon-agent": "05-bijux-canon-agent",
+        "bijux-canon-ingest": "02-bijux-canon-ingest",
+        "bijux-canon-reason": "04-bijux-canon-reason",
+        "bijux-canon-index": "03-bijux-canon-index",
+    }
+    return f"{BIJUX_CANON_DOCS_URL}{canonical_docs_urls[package_name]}/"
 
 
 def _compat_docs_url(distribution_name: str) -> str:
@@ -223,10 +230,10 @@ def test_runtime_workspace_dependencies_accept_local_release_previews() -> None:
     project = _project_table(_package_path("bijux-canon-runtime") / "pyproject.toml")
     dependencies = set(cast(list[str], project.get("dependencies", [])))
 
-    assert "bijux-canon-agent>=0.3.8.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-ingest>=0.3.8.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-reason>=0.3.8.dev0,<0.4.0" in dependencies
-    assert "bijux-canon-index>=0.3.8.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-agent>=0.3.9.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-ingest>=0.3.9.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-reason>=0.3.9.dev0,<0.4.0" in dependencies
+    assert "bijux-canon-index>=0.3.9.dev0,<0.4.0" in dependencies
 
 
 def test_http_surface_packages_declare_only_owned_http_dependencies() -> None:

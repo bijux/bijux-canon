@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-04
 ---
 
 # Maintenance Handbook
@@ -45,6 +45,16 @@ manual. A reader should be able to tell which helper code owns a rule, how
 that rule becomes a repeatable command, and which workflow reruns the same
 contract in CI or release.
 
+## Maintenance Review Path
+
+Use the maintainer docs in this order when the repository itself is under
+review:
+
+1. confirm which helper package or policy surface owns the rule
+2. confirm which `make` target exposes that rule locally
+3. confirm which GitHub workflow reruns the same rule in CI, docs deploy, or release
+4. inspect the generated evidence or artifacts only after the owning rule is clear
+
 ## Handbook Sections
 
 - [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) for repository-health helper code,
@@ -69,6 +79,12 @@ contract in CI or release.
 - `makes/` is the checked-in command surface.
 - `.github/workflows/` is the checked-in workflow contract.
 - `artifacts/` is the default destination for local check output and generated run products.
+
+## What This Handbook Must Not Become
+
+- a second explanation of ingest, index, reason, agent, or runtime behavior
+- a changelog for transient incidents or one-off CI failures
+- a pile of workflow names without a clear ownership path back to checked-in code
 
 ## Boundary
 
