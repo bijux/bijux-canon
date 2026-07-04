@@ -43,7 +43,9 @@ def _public_package_docs_urls() -> dict[str, str]:
 def _readme_docs_surfaces() -> dict[str, Path]:
     surfaces = {"README.md": REPO_ROOT / "README.md"}
     for package_name in sorted(_workspace_metadata()["public_release_packages"]):
-        surfaces[f"{package_name}/README.md"] = _package_path(package_name) / "README.md"
+        surfaces[f"{package_name}/README.md"] = (
+            _package_path(package_name) / "README.md"
+        )
     return surfaces
 
 
@@ -121,7 +123,9 @@ def test_root_and_package_readmes_only_link_resolvable_docs_pages() -> None:
         for docs_url in sorted(set(docs_url_pattern.findall(readme))):
             docs_path = _docs_source_path(docs_url)
             if not docs_path.exists():
-                failures.append(f"{label}: README points at missing docs page {docs_url}")
+                failures.append(
+                    f"{label}: README points at missing docs page {docs_url}"
+                )
 
     assert not failures, "README docs publication contract failed:\n" + "\n".join(
         failures
