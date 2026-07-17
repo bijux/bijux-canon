@@ -51,7 +51,7 @@ classifiers = [
 
 dependencies = [
   "pydantic>=2.12,<3.0",
-  "typer>=0.21,<0.27",
+  "typer>=0.21,<0.28",
   "fastapi>=0.138,<1.0",
 ]
 
