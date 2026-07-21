@@ -78,12 +78,16 @@ final evidence remains invalid even if a role produced usable text.
 
 ## Replay a delivered result
 
-Replay requires input and config hashes, model identity and metadata, prompt
-hashes, pipeline-definition identity, and applicable convergence identity. It
-reconstructs the outcome from the trace and compares the adjacent final result.
+Production traces record input and config hashes, model identity and metadata,
+prompt hashes, pipeline-definition identity, and applicable convergence
+identity. The replay command reconstructs an outcome from the stored trace and
+compares only verdict, confidence, epistemic status, and stop reason with the
+adjacent final result. Its loader supplies defaults for some omitted replay
+metadata and does not perform complete lifecycle validation.
 
-A matching verdict alone is insufficient. Check confidence, epistemic status,
-stop reason, schema version, runtime version, and field classifications. Model
+A four-field match is only summary parity. Independently check schema and
+runtime versions, replay status, hashes, lifecycle ordering, termination and
+convergence data, field classifications, and retained input bytes. Model
 sampling above zero is incompatible with a replayable label and must be
 reported as such.
 

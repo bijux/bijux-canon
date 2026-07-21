@@ -41,7 +41,7 @@ the pipeline or an interface boundary for orchestration.
 
 ```bash
 bijux-canon-agent run documents/ \
-  --config examples/reference-config.yml \
+  --config packages/bijux-canon-agent/examples/reference-config.yml \
   --out artifacts/bijux-canon-agent
 ```
 
@@ -55,7 +55,7 @@ Inspect file resolution and artifact behavior without executing the pipeline:
 
 ```bash
 bijux-canon-agent run report.txt \
-  --config examples/reference-config.yml \
+  --config packages/bijux-canon-agent/examples/reference-config.yml \
   --out artifacts/bijux-canon-agent \
   --dry-run
 ```
@@ -75,10 +75,13 @@ manager; never place credentials in the YAML file or committed shell scripts.
 bijux-canon-agent replay artifacts/bijux-canon-agent/trace/run_trace.json
 ```
 
-Replay upgrades and validates the trace, reconstructs the pipeline verdict,
-confidence, epistemic status, and stop reason, then compares them with
-`result/final_result.json` when that file is adjacent to the trace directory.
-It reports when the final result is absent instead of claiming parity.
+Replay upgrades the trace, validates schema compatibility and minimal shape,
+reconstructs the pipeline verdict, confidence, epistemic status, and stop
+reason, then compares those four fields with `result/final_result.json` when
+that file is adjacent to the trace directory. It reports when the final result
+is absent instead of claiming parity. This is stored-outcome reconstruction,
+not role or provider re-execution; a mismatch is printed but does not currently
+produce a nonzero exit status.
 
 ## HTTP: run the offline v1 pipeline
 
