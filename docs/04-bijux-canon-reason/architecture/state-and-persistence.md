@@ -9,14 +9,14 @@ last_reviewed: 2026-07-21
 
 # State and Persistence
 
-A reason run is persisted as a self-describing evidence directory. The
-directory binds problem identity, execution, claims, verification, producer
-metadata, and optional retrieval provenance into one reviewable unit.
+A reason run is a self-describing evidence directory. Its durability claim
+depends on the complete directory: problem identity, plan, ordered events,
+claims, verification, runtime identity, provenance, and manifest are one review
+unit. Retaining only the answer or trace breaks that custody chain.
 
-## Run Layout
+## Durable Layout
 
-The CLI defaults to `artifacts/bijux-canon-reason` and creates
-`runs/<run-id>/` beneath it.
+The CLI defaults to `artifacts/bijux-canon-reason/runs/<run-id>/`.
 
 ```text
 <artifacts-root>/runs/<run-id>/
@@ -36,77 +36,82 @@ The CLI defaults to `artifacts/bijux-canon-reason` and creates
     └── trace.jsonl
 ```
 
-Provenance and replay files appear when the run uses the corresponding
-capabilities. The core seven files form the durable run contract.
-
-## What Each Core File Proves
-
-| File | Evidence carried |
-| --- | --- |
-| `spec.json` | canonical problem declaration and content identity |
-| `plan.json` | planned nodes, dependencies, and plan identity |
-| `trace.jsonl` | ordered reasoning, claim, and tool events |
-| `verify.json` | verification findings produced with the run |
-| `fingerprint.txt` | fingerprint of the canonical trace file |
-| `run_meta.json` | run, spec, plan, trace, runtime, schema, and producer identities |
-| `manifest.json` | inventory, digests, and invariant binding for the run |
-
-The run identifier is stable for the specification identity, preset, seed, and
-runtime fingerprint. Reusing those inputs addresses the same run directory;
-callers must not treat that as permission for concurrent writers.
+The core seven files are mandatory. Provenance and replay members appear only
+when their capabilities are used.
 
 ## Evidence Binding
 
 ```mermaid
 flowchart TD
-    spec["spec identity"] --> manifest["manifest"]
-    plan["plan identity"] --> manifest
-    trace["trace and fingerprint"] --> manifest
-    verify["verification report"] --> manifest
-    runtime["runtime descriptor"] --> manifest
-    provenance["retrieval provenance"] --> trace
-    manifest --> replay["integrity check before replay"]
+    spec["spec.json"] --> identity["problem and run identity"]
+    plan["plan.json"] --> identity
+    trace["trace.jsonl + fingerprint"] --> invariant["invariant checksum"]
+    verify["verify.json"] --> invariant
+    runtime["run_meta.json"] --> invariant
+    provenance["provenance files"] --> invariant
+    identity --> manifest["manifest.json"]
+    invariant --> manifest
+    manifest --> consumer["verification, replay, and archival"]
 ```
 
-`run_meta.json` records the runtime descriptor, its fingerprint, the invariant
-checksum, schema version, and producer version. Replay checks the invariant
-checksum before reconstruction and validates retrieval-provenance agreement
-between the trace and files on disk.
+| File | Evidence carried | Failure meaning |
+| --- | --- | --- |
+| `spec.json` | canonical problem and content identity | the run's question cannot be established |
+| `plan.json` | nodes, dependencies, and plan identity | event order has no governed plan |
+| `trace.jsonl` | ordered reasoning, tool, evidence, and claim events | derivation cannot be reconstructed |
+| `verify.json` | original checks and findings | the run's verification posture is missing |
+| `fingerprint.txt` | canonical trace-file fingerprint | trace identity cannot be confirmed |
+| `run_meta.json` | run, runtime, schema, producer, and invariant identities | environment and producer context are unbound |
+| `manifest.json` | member inventory and digests | the directory is not a completed bundle |
 
-## Write and Concurrency Boundaries
+## Completion And Concurrency
 
-The builder creates the run directory and writes artifacts in sequence, ending
-with the manifest. The directory has no separate transactional status file.
-Consumers should therefore require the complete core set and a valid manifest;
-the mere presence of `trace.jsonl` does not prove a completed run.
+The builder writes members sequentially and finishes with the manifest. There
+is no transactional directory commit or status file. A consumer must require
+the complete core set and validate the manifest; `trace.jsonl` appearing early
+does not mean the run completed.
 
-Do not run concurrent writers with the same effective run identity into the
-same artifact root. Use isolated roots when evaluating the same inputs in
-parallel, then compare completed bundles.
+Run identity is stable for specification identity, preset, seed, and runtime
+fingerprint. Identical inputs therefore target the same directory. This is an
+identity property, not concurrent-write coordination. Parallel evaluations must
+use isolated artifact roots and compare only completed bundles.
 
 Standalone verification writes `verify.verify.json` beside the trace. Replay
-writes `replay/trace.jsonl`. These derived files do not replace the original
-`verify.json` or `trace.jsonl` recorded by the run.
+writes `replay/trace.jsonl`. These are derived observations. They must retain
+their source trace identity and may not overwrite `verify.json` or
+`trace.jsonl`.
 
-## Safe Paths and Portability
+## Archive And Restore
 
-Retrieval provenance stored for replay uses paths governed by the run
-directory. Preserve relative layout when archiving or moving a bundle. Replay
-rejects missing provenance, fingerprint disagreements, and attempts to resolve
-evidence outside its permitted boundary rather than weakening validation.
+```mermaid
+flowchart LR
+    run["completed run"] --> validate["validate core set, manifest, and provenance"]
+    validate -->|fail| quarantine["quarantine as incomplete or altered"]
+    validate -->|pass| archive["archive directory as one unit"]
+    archive --> restore["restore relative layout"]
+    restore --> revalidate["revalidate before use"]
+    revalidate --> replay["snapshot replay or review"]
+```
 
-## Retention Guidance
+Evidence and provenance paths are governed relative to the run directory.
+Preserve that layout when moving a bundle. Replay refuses missing files,
+fingerprint disagreements, provenance drift, and evidence paths outside the
+allowed root.
 
-- Retain the entire run directory whenever a claim leaves the originating
-  process.
-- Archive the manifest and all files it binds as one unit.
-- Preserve failed verification reports; they are evidence, not disposable
-  diagnostics.
-- Treat manual edits as a new artifact set and expect digest or replay checks
-  to fail.
-- Record external evidence licenses and retention limits alongside deployment
-  policy; a valid manifest does not grant permission to retain source data.
+## Retention Decisions
 
-See [artifact contracts](../interfaces/artifact-contracts.md) for field-level
-compatibility and [failure recovery](../operations/failure-recovery.md) for
-handling incomplete or invalid bundles.
+| Condition | Required handling |
+| --- | --- |
+| verification failed | retain report with the bundle; failure is evidence |
+| core member missing | classify incomplete and refuse verification/replay claim |
+| digest or invariant mismatch | quarantine; never repair in place and preserve the old identity |
+| external evidence retention expires | remove or redact under policy and withdraw claims that require unavailable bytes |
+| manual correction required | produce a new bundle and link it to the superseded run |
+| restore completed | validate manifest, trace fingerprint, provenance agreement, and path containment before access |
+
+A valid manifest proves integrity, not permission. Record evidence licenses,
+privacy classification, retention limits, and deletion obligations in the
+deployment policy governing the archive.
+
+See [artifact contracts](../interfaces/artifact-contracts.md) for compatibility
+and [failure recovery](../operations/failure-recovery.md) for invalid bundles.
