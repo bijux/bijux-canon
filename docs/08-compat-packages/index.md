@@ -4,55 +4,51 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # Compatibility Packages
 
-The compatibility handbook covers the preserved distribution, import, and
-command names that still exist while the canonical `bijux-canon-*` package
-family takes over. Most of these packages preserve legacy names; one preserves
-the shorter family-root `bijux-canon` runtime identity. They are continuity
-bridges, not equal design centers.
+Six compatibility distributions preserve established installation, import,
+submodule, module-execution, and command names while delegating behavior to a
+canonical `bijux-canon-*` package. Five preserve earlier product names;
+`bijux-canon` preserves the shorter family-root name for the runtime package.
 
-That distinction has to stay explicit. A preserved legacy name may protect a
-real dependent environment, but it still carries maintenance debt and should
-always point toward the canonical package that owns current behavior.
+These are executable aliases, not empty deprecation wheels. Their root modules
+forward attributes, their import finders map non-local submodules to canonical
+modules, their `__main__` modules invoke canonical commands, and their package
+metadata registers the preserved console scripts.
 
 ## Bridge Model
-
-Compatibility packages exist to protect users during migration. They should
-make old names work long enough to move responsibly, but every page in this
-handbook should pull readers toward the canonical package that owns current
-behavior and future design.
 
 ```mermaid
 flowchart LR
     legacy["legacy name"]
     bridge["compat package"]
     canonical["canonical package"]
-    validation["migration checks"]
-    retire["retirement decision"]
+    tests["identity + import + command tests"]
+    retire["dependency evidence + retirement"]
 
     legacy --> bridge --> canonical
-    bridge --> validation --> retire
+    bridge --> tests --> retire
     canonical --> retire
 ```
 
-Compatibility pages should make migration pressure visible. They are useful
-only when they shorten the path from an old name to the canonical owner and
-when they make it easier to judge whether a bridge still protects a real
-dependent environment.
+## Exact Name Map
 
-## Reader Contract
+| Distribution | Import root | Command | Canonical owner |
+| --- | --- | --- | --- |
+| `bijux-canon` | `bijux_canon` | `bijux-canon` | `bijux-canon-runtime` |
+| `agentic-flows` | `agentic_flows` | `agentic-flows` | `bijux-canon-runtime` |
+| `bijux-agent` | `bijux_agent` | `bijux-agent` | `bijux-canon-agent` |
+| `bijux-rag` | `bijux_rag` | `bijux-rag` | `bijux-canon-ingest` |
+| `bijux-rar` | `bijux_rar` | `bijux-rar` | `bijux-canon-reason` |
+| `bijux-vex` | `bijux_vex` | `bijux-vex` | `bijux-canon-index` |
 
-When you open a compatibility page, you should be able to answer four
-questions quickly:
-
-- which canonical package owns the real behavior today
-- which import, command, or distribution surface the bridge still preserves
-- what evidence shows the bridge is still justified
-- what migration path removes the need for the bridge later
+`bijux-vex` currently supplies the preserved console entrypoint even though the
+canonical index distribution does not register its own console script. This is
+an observable asymmetry in current packaging, not proof that the compatibility
+package owns index behavior.
 
 ## Handbook Sections
 
@@ -89,11 +85,15 @@ questions quickly:
   current behavior.
 - migration pages under `docs/08-compat-packages/migration/` explain when a bridge is still justified.
 
-## Evaluation Rule
+## Compatibility Invariants
 
-Compatibility docs should make retirement easier, not harder. A page is too
-weak if it lets a bridge feel permanent, symmetrical with canonical packages,
-or worth keeping for convenience alone.
+- installing a bridge installs its exact canonical package dependency
+- root attributes and `__all__` follow the canonical package
+- non-local alias submodules resolve to canonical module objects
+- local `__main__` and alias machinery remain owned by the bridge
+- preserved console scripts call canonical entrypoints
+- bridge and canonical versions move on the same tagged release line
+- new behavior and new documentation belong to the canonical package first
 
 ## Retirement Rule
 
@@ -101,8 +101,10 @@ A preserved legacy name stays only when it protects a real dependent
 environment or a documented migration window. Habit, nostalgia, or naming
 symmetry are not enough.
 
-## Leave This Handbook When
+## Migration Proof
 
-- the canonical target package is clear and you need current behavior details
-- the next step is a product interface, workflow, or test rather than migration policy
-- the bridge no longer protects a real dependent environment
+A migration is complete only after dependency metadata, imports, submodule
+imports, command invocations, configuration names, artifact readers, and
+deployment images use the canonical identity and pass the canonical package's
+tests. Replacing only the distribution name can leave runtime imports or shell
+automation on the compatibility path.

@@ -4,62 +4,58 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # Repository Handbook
 
-Open the repository handbook when the question belongs to the part of
-`bijux-canon` that no single package owns alone: why the split exists, which
-rules belong at the root, and how package handoffs stay explicit across the
-repository.
-
-The main repository mistake this handbook is meant to prevent is root creep.
-The root should coordinate package truth, not become a second product layer
-that quietly re-explains or overrides package ownership.
+The repository root coordinates one tagged release line across five canonical
+product packages, six compatibility distributions, one internal maintainer
+package, five versioned HTTP contracts, shared documentation, and common CI and
+publication workflows. Product behavior remains inside the package that owns
+it; the root owns the machinery that proves the pieces still agree.
 
 <div class="bijux-callout"><strong>The root is a coordination layer, not a shadow owner.</strong>
 Product behavior belongs in the publishable packages under `packages/`. The
 root owns only what is genuinely shared: workspace layout, schema governance,
 documentation rules, validation posture, and release coordination.</div>
 
-## Reader Contract
+## Repository Contract
 
-Use this handbook to answer three questions before a reviewer touches code:
-
-- is the concern genuinely repository-wide, or does one package own it
-- which shared file, schema, workflow, or rule backs the claim
-- where should the reader go next when the root no longer has authority
+| Root surface | Authority | Does not establish |
+| --- | --- | --- |
+| `pyproject.toml` and `uv.lock` | workspace membership, release package set, dependency resolution | package behavior |
+| `apis/` | versioned HTTP schema source, pins, and hashes | implementation conformance by itself |
+| `Makefile` and `makes/` | repeatable local command graph and package dispatch | CI success without execution |
+| `.github/workflows/` | verification, policy, docs, and publication orchestration | local package semantics |
+| `docs/` and `mkdocs.yml` | public information architecture and routing | executable proof |
+| `packages/bijux-canon-dev` | repository-health checks and release guards | end-user runtime behavior |
 
 ```mermaid
-flowchart TD
-    question["reader question"]
-    root{"cross-package concern?"}
-    package["owning package handbook"]
-    maintain{"maintainer machinery?"}
-    compat{"legacy name?"}
-    foundation["foundation pages"]
-    operations["operations pages"]
-    devdocs["maintenance handbook"]
-    compatdocs["compatibility handbook"]
-    proof["root proof surfaces"]
+flowchart LR
+    source["tagged source"]
+    canonical["5 canonical packages"]
+    compat["6 compatibility packages"]
+    schemas["5 API contracts"]
+    checks["local + CI verification"]
+    releases["PyPI + GHCR + GitHub release"]
 
-    question --> root
-    root -- no --> package
-    root -- yes --> maintain
-    maintain -- yes --> devdocs
-    maintain -- no --> compat
-    compat -- yes --> compatdocs
-    compat -- no --> foundation
-    compat -- no --> operations
-    foundation --> proof
-    operations --> proof
+    source --> canonical --> checks --> releases
+    source --> compat --> checks
+    source --> schemas --> checks
 ```
 
-The repository handbook is strongest when it routes quickly and then stops. It
-should make the shared root logic legible, show where package authority begins,
-and point to the concrete files that back the claim instead of trying to
-re-explain package behavior from above.
+## Package Sets
+
+- **canonical product:** runtime, agent, ingest, reason, and index
+- **compatibility:** `bijux-canon`, `agentic-flows`, `bijux-agent`, `bijux-rag`,
+  `bijux-rar`, and `bijux-vex`
+- **internal support:** `bijux-canon-dev`, which is tested with the primary set
+  but excluded from the public release package list
+
+The root release configuration is the source of truth for these sets. A
+directory under `packages/` is not automatically public, canonical, or eligible
+for publication.
 
 ## What Readers Can Safely Assume Here
 
@@ -122,8 +118,10 @@ to move with it.
 - `Makefile`, `makes/`, and `.github/workflows/` carry root-level operations
 - `packages/` carries the canonical product boundaries the root must not blur
 
-## Leave This Handbook When
+## Cross-Package Change Rule
 
-- the behavior is already local to one package's interfaces, workflows, or tests
-- the question is really about maintainer automation internals
-- the real work is compatibility alias routing rather than a root-owned rule
+A change that alters a public request or response must update its owning schema,
+pinned representation, hash, implementation tests, and package docs together.
+A change that alters release membership must update root metadata and release
+guards. A change that alters only one package's domain semantics remains in
+that package even when shared verification runs afterward.

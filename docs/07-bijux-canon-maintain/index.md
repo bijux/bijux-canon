@@ -4,56 +4,57 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # Maintenance Handbook
 
-The maintenance handbook covers repository-health surfaces that sit above any
-single product package. It exists so schema drift checks, shared command
-surfaces, publication workflows, and maintainer-only helpers can be reviewed
-from checked-in truth instead of CI archaeology.
-
-These pages are narrow by design. They document repository operation, not
-product semantics. If a change alters ingest, index, reasoning, agent, or
-runtime behavior for users, the owning package handbook still owns the real
-explanation.
+Repository maintenance is implemented as a three-layer control system:
+`bijux-canon-dev` owns repository-specific checks, `makes/` exposes repeatable
+local commands and package dispatch, and GitHub workflows apply those commands
+to pull requests, documentation deployment, and tagged publication.
 
 ## Maintenance System
 
-Maintenance work should be easy to audit because each automation surface has a
-checked-in owner. The helper package provides repository-health logic, `makes/`
-turns that logic into repeatable local commands, and GitHub workflows run the
-same contract in CI and release paths.
-
 ```mermaid
 flowchart LR
-    maintainer["maintainer question"]
-    dev["bijux-canon-dev"]
-    makes["makes"]
-    workflows["GitHub workflows"]
-    evidence["logs, artifacts, schemas"]
-    product["product handbooks"]
+    source["source + schemas + metadata"]
+    dev["bijux-canon-dev checks"]
+    make["root and package targets"]
+    verify["verify / policy workflows"]
+    release["PyPI / GHCR / GitHub release"]
+    evidence["artifacts + logs + SBOMs"]
 
-    maintainer --> dev --> makes --> workflows --> evidence
+    source --> dev --> make --> verify --> release
     dev --> evidence
-    workflows --> product
+    make --> evidence
+    verify --> evidence
+    release --> evidence
 ```
 
-Maintenance docs should read like a control surface, not like a second product
-manual. A reader should be able to tell which helper code owns a rule, how
-that rule becomes a repeatable command, and which workflow reruns the same
-contract in CI or release.
+## Command Families
 
-## Maintenance Review Path
+| Intent | Local command | Primary evidence |
+| --- | --- | --- |
+| full verification | `make check` or `make all` | package-specific test, lint, quality, security, API, build, and SBOM output |
+| exhaustive tests | `make test-all` | slow, evaluation, and real-local test results where configured |
+| API governance | `make api` | schema lint, generated-schema drift, pins, hashes, and live contract tests |
+| documentation | `make docs-check` | strict MkDocs build and hygiene result |
+| supply chain | `make security` and `make sbom` | Bandit, dependency audit, CycloneDX documents, validation summary |
+| release preparation | package build and publication guards | wheel, sdist, Twine result, resolved version, publication eligibility |
 
-Use the maintainer docs in this order when the repository itself is under
-review:
+Generated logs, reports, SBOMs, build products, and test output belong under
+`artifacts/`. Checked-in API pins and documentation remain in their governed
+repository locations because they are versioned contract sources, not local run
+products.
 
-1. confirm which helper package or policy surface owns the rule
-2. confirm which `make` target exposes that rule locally
-3. confirm which GitHub workflow reruns the same rule in CI, docs deploy, or release
-4. inspect the generated evidence or artifacts only after the owning rule is clear
+## Verification Path
+
+1. identify the package or shared contract that changed
+2. run its narrow package target and inspect the artifact output
+3. run the applicable root aggregation target
+4. confirm the matching workflow trigger and publication dependency
+5. treat a skipped, missing, or stale check as unresolved evidence
 
 ## Handbook Sections
 
@@ -80,11 +81,14 @@ review:
 - `.github/workflows/` is the checked-in workflow contract.
 - `artifacts/` is the default destination for local check output and generated run products.
 
-## What This Handbook Must Not Become
+## Repository-Specific Checks
 
-- a second explanation of ingest, index, reason, agent, or runtime behavior
-- a changelog for transient incidents or one-off CI failures
-- a pile of workflow names without a clear ownership path back to checked-in code
+`bijux-canon-dev` freezes and compares OpenAPI contracts, synchronizes badge
+blocks, validates MkDocs structure, reports index plugin conformance, enforces
+runtime dependency allowlists, gates package publication, resolves release
+versions, prepares SBOM requirements, and applies the dependency-audit policy.
+These helpers are internal support code and are not part of the public product
+package set.
 
 ## Boundary
 
@@ -93,8 +97,10 @@ as a shortcut for product behavior. When a maintainer surface only wraps a
 product package contract, this handbook should stop at the integration point
 and send the reader back to the owning package.
 
-## Leave This Handbook When
+## Workflow Boundaries
 
-- the question is really about one package's user-facing behavior
-- the next step is a product interface, workflow, or test rather than a shared command
-- the issue belongs to compatibility alias routing rather than repository-health machinery
+`verify.yml` is the main verification entrypoint. Separate workflows govern
+repository policy, PR approval, docs deployment, and PyPI, GHCR, and GitHub
+release publication. A successful docs deployment does not imply package tests
+passed; a successful package build does not imply publication guards passed;
+and a reusable workflow does not broaden the permissions of its caller.
