@@ -13,6 +13,15 @@ last_reviewed: 2026-07-21
 for the typed execution engine, module CLI, FastAPI application, and local
 memory or SQLite paths. Add extras only for the adapters an environment uses.
 
+```mermaid
+flowchart LR
+    P[Install base package] --> C[Discover capabilities]
+    C --> S[Choose optional adapters]
+    S --> W[Initialize governed state]
+    W --> D[Validate a dry-run plan]
+    D --> R[Retain backend and artifact identity]
+```
+
 ## Install
 
 ```bash
@@ -111,9 +120,14 @@ curl --fail-with-body http://127.0.0.1:8000/capabilities
 
 ```bash
 make install
-make -C packages/bijux-canon-index help
-make -C packages/bijux-canon-index test
+make -f makes/packages/bijux-canon-index.mk \
+  -C packages/bijux-canon-index help
+make test PACKAGE=bijux-canon-index
 ```
+
+Package Makefiles are repository profiles under `makes/packages/`; the package
+directory does not contain a standalone Makefile. Use the root dispatcher for
+normal checks and the explicit profile form when inspecting package targets.
 
 Use `make docs-check` for handbook changes. Repository-wide validation is
 reserved for changes that cross package, API, build, or release boundaries.
