@@ -47,6 +47,67 @@ planned and executed, how evidence is used, or where verification lives, start
 here. If you need runtime governance, storage, or vector execution internals,
 you are outside this package's boundary.
 
+## Reasoning Record
+
+```mermaid
+flowchart LR
+    problem["ProblemSpec"] --> plan["Plan"]
+    plan --> steps["StepOutput + ToolCall"]
+    steps --> claims["Claim + SupportRef"]
+    claims --> trace["Trace"]
+    trace --> report["VerificationReport"]
+    report --> replay["fingerprint replay"]
+```
+
+The package root exports the stable model and validation vocabulary:
+`ProblemSpec`, `Plan`, `PlanNode`, `Claim`, `EvidenceRef`, `SupportRef`,
+`ToolRequest`, `ToolResult`, `Trace`, `VerificationCheck`, and
+`VerificationReport`, together with canonical serialization, fingerprinting,
+stable-ID, and validation helpers.
+
+Support is content-addressed. A `SupportRef` records whether it refers to a
+claim, evidence item, or tool call; its source identity; an exact non-empty
+span; and the SHA-256 digest of the cited snippet. Claims separately record
+their observed, assumed, or derived type and proposed, validated, or rejected
+status.
+
+## CLI Workflow
+
+```bash
+bijux-canon-reason run \
+  --spec problem.json \
+  --preset default \
+  --seed 0 \
+  --artifacts-dir artifacts/bijux-canon-reason \
+  --fail-on-verify \
+  --json
+
+bijux-canon-reason verify \
+  --trace artifacts/bijux-canon-reason/runs/<run-id>/trace.jsonl \
+  --plan artifacts/bijux-canon-reason/runs/<run-id>/plan.json \
+  --fail-on-verify --json
+
+bijux-canon-reason replay \
+  --trace artifacts/bijux-canon-reason/runs/<run-id>/trace.jsonl \
+  --fail-on-diff --json
+```
+
+`run` writes `spec.json`, `plan.json`, `trace.jsonl`, `verify.json`,
+`fingerprint.txt`, `run_meta.json`, and `manifest.json` beneath a stable run
+identifier. The manifest and invariant checksum bind the inputs, plan, trace,
+runtime descriptor, schema version, and producer version.
+
+The `eval` command exists, but its suite selector is explicitly marked as a
+placeholder in the current implementation. It must not be treated as evidence
+of a mature configurable evaluation catalog.
+
+## HTTP Contract
+
+The v1 API supports health, item CRUD, run creation, run lookup, manifest and
+trace retrieval, verification, and replay. Its source, pinned representation,
+and digest live under
+[`apis/bijux-canon-reason/v1/`](../../apis/bijux-canon-reason/v1/).
+
 ## What This Package Takes And Produces
 
 - takes: evidence bundles, reasoning plans, verification gates, and package-local tool inputs
@@ -74,6 +135,19 @@ you are outside this package's boundary.
 - runtime persistence, replay authority, or execution governance
 - ingest and index engines
 - repository tooling and release automation
+
+## Verification And Failure Semantics
+
+- trace and plan validation reject invalid topology and inconsistent event
+  structure before successful verification
+- evidence paths are constrained and provenance references are checked rather
+  than trusted as arbitrary filesystem input
+- `--fail-on-verify` promotes verification findings to exit status `2` while
+  retaining the machine-readable report
+- replay compares original and reproduced trace fingerprints and returns a diff
+  summary on mismatch
+- disk, wall-time, CPU, corpus-size, and retrieval limits are explicit runtime
+  controls, not undocumented environment behavior
 
 ## Source map
 

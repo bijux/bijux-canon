@@ -4,40 +4,54 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Reasoning Handbook
 
-`bijux-canon-reason` owns inspectable reasoning, verification, provenance, and reasoning-side run artifacts. It is where retrieved evidence becomes claims, checks, and reviewer-facing reasoning records instead of raw search results.
+`bijux-canon-reason` turns a `ProblemSpec` into a content-addressed plan,
+evidence-backed claims, a typed event trace, a verification report, and a
+manifested run directory. Its core models are immutable, serialize
+canonically, and derive stable identifiers from content so a later replay can
+compare the reasoning record rather than only its final prose.
 
-The main failure this handbook prevents is hiding reasoning policy inside retrieval output or orchestration flow. If this package does not say clearly how evidence turns into claims and checks, the system becomes hard to audit even when every lower layer technically works.
-
-## What The Reader Should See First
-
-Reason is the evidence interpretation layer. It does not merely pass retrieved
-text upward. It creates structured reasoning records: what claim was made, what
-evidence supported it, which checks ran, and what trace lets a reviewer replay
-or compare the reasoning later.
+A claim distinguishes observed, assumed, and derived content; proposed,
+validated, and rejected status; and the support references behind it. Evidence
+support includes a reference identity, exact span, and SHA-256 snippet digest.
+Confidence without support does not become evidence by convention.
 
 ```mermaid
 flowchart LR
-    evidence["retrieved evidence"]
-    plan["reasoning plan"]
-    claim["claim formation"]
-    checks["verification checks"]
-    record["reasoning record"]
-    agent["agent package"]
+    spec["ProblemSpec"]
+    plan["Plan + stable ids"]
+    runtime["tool and retrieval runtime"]
+    claims["claims + support refs"]
+    trace["typed trace.jsonl"]
+    verify["verification report"]
+    manifest["manifest + fingerprints"]
 
-    evidence --> plan --> claim --> checks --> record --> agent
-    evidence --> checks
-    plan --> record
+    spec --> plan --> runtime --> claims --> trace --> verify --> manifest
+    plan --> trace
+    runtime --> trace
 ```
 
-Reason is where the system stops being about retrieval success and starts being
-about interpretive accountability. A good page here should let a reviewer see
-how evidence becomes claims, which checks constrain that move, and which record
-lets another person inspect the same reasoning later.
+## Run Evidence
+
+Every CLI-built run writes a directory keyed by a stable run identifier:
+
+| Artifact | Review question |
+| --- | --- |
+| `spec.json` | what problem and constraints were submitted? |
+| `plan.json` | which ordered reasoning graph was approved? |
+| `trace.jsonl` | which evidence, tools, claims, and checks occurred? |
+| `verify.json` | which invariants passed or failed? |
+| `fingerprint.txt` | does the serialized trace match during replay? |
+| `run_meta.json` | which preset, seed, runtime, producer, and schema created it? |
+| `manifest.json` | which files and digests make the run complete? |
+
+The invariant checksum binds plan, trace, and runtime descriptor. Replay checks
+fingerprints and emits a diff summary; it does not declare equivalence merely
+because the final answer looks similar.
 
 ## What This Package Owns
 
@@ -51,14 +65,14 @@ lets another person inspect the same reasoning later.
 - multi-step orchestration policy above one reasoning-capable step
 - runtime acceptance, persistence, and final replay authority for whole runs
 
-## Boundary Test
+## Ownership Test
 
 If the issue is about what evidence means, how a claim is verified, or which
 reasoning artifact should exist after evaluation, it belongs here. If the
 issue is about how evidence was fetched or how multiple steps are coordinated,
 it does not.
 
-## First Proof Check
+## Implementation Anchors
 
 - `packages/bijux-canon-reason/src/bijux_canon_reason` for the owned reasoning implementation boundary
 - `packages/bijux-canon-reason/src/bijux_canon_reason/core/models` for claim, verification, planning, and trace models
@@ -74,7 +88,7 @@ it does not.
 - open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when you need local workflow, diagnostics, release, or recovery guidance
 - open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is whether the package has proved its promises strongly enough
 
-## Pages In This Package
+## Reference Areas
 
 - [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/)
@@ -82,8 +96,10 @@ it does not.
 - [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/)
 - [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/)
 
-## Leave This Handbook When
+## Verification Boundaries
 
-- the question is now about orchestration across steps rather than one reasoning step
-- the next stop is a concrete interface, verification rule, or reasoning test
-- the real concern belongs to retrieval below or runtime authority above
+Plan shape, trace topology, evidence paths, provenance, tool capability,
+support references, content hashes, and replay checksums are validated
+separately. Verification failures can be reported without immediate process
+failure, or promoted to exit status `2` with `--fail-on-verify`. This makes the
+policy choice explicit while preserving the report in either mode.
