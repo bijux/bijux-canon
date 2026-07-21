@@ -13,6 +13,15 @@ last_reviewed: 2026-07-21
 includes DuckDB persistence and depends on the canonical ingest, index, reason,
 and agent packages so runtime contracts can bind their artifacts.
 
+```mermaid
+flowchart LR
+    P[Install canonical runtime] --> M[Declare manifest and policy]
+    M --> L[Resolve plan]
+    L --> S[Create governed store]
+    S --> R[Execute and inspect run]
+    R --> V[Validate persistence and replay inputs]
+```
+
 ## Install
 
 ```bash
@@ -120,10 +129,16 @@ request boundary.
 ## Repository Checkout
 
 ```bash
-make -C packages/bijux-canon-runtime help
-make -C packages/bijux-canon-runtime test
+make install
+make -f makes/packages/bijux-canon-runtime.mk \
+  -C packages/bijux-canon-runtime help
+make test PACKAGE=bijux-canon-runtime
 make docs-check
 ```
+
+Package Makefiles are repository profiles under `makes/packages/`; the package
+directory does not contain a standalone Makefile. Use the root dispatcher for
+normal checks and the explicit profile form when inspecting package targets.
 
 Use package and documentation checks for the first feedback loop. Broader
 repository lanes are appropriate only when a change crosses shared contracts.
