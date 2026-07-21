@@ -1,28 +1,57 @@
 ---
-title: Documentation Standards
+title: Public Claim Standards
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
-# Documentation Standards
+# Public Claim Standards
 
-Documentation standards for `bijux-canon-agent` should keep the handbook reader-first, direct, and evidence-backed. Consistency matters only when it helps readers trust what they are being told.
+Agent claims describe orchestration evidence, not model truth. Deterministic,
+converged, verified, replayable, and successful each name a different property
+of a run.
 
-## What To Check
+```mermaid
+flowchart LR
+    contract[Contract validity]
+    control[Lifecycle conformance]
+    convergence[Convergence evidence]
+    outcome[Terminal decision]
+    replay[Trace reconstruction]
+    model[Model evaluation]
 
-- prefer durable filenames and headings that name the real question the page answers
-- tie prose to code paths, artifacts, contracts, or tests instead of abstract template language
-- treat filler, meta-doc prose, and unsupported certainty as documentation defects
+    contract --> control --> convergence --> outcome --> replay
+    outcome -. separate evidence .-> model
+```
 
-## First Proof Check
+## Claim vocabulary
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+| Public wording | Evidence required | Bound on the claim |
+| --- | --- | --- |
+| contract-valid role call | strict typed input, output or failure, metadata, and version | does not establish content correctness |
+| governed lifecycle | declared phases, allowed transitions, passive roles, and terminal state | applies to the canonical pipeline or an equally declared custom graph |
+| converged run | named strategy, window, observations, snapshot, hash, and typed reason | stable agreement can still be wrong |
+| successful outcome | accepted terminal status, decision, validation, and termination reason | does not mean every shard or optional activity succeeded unless recorded |
+| complete trace | mandatory header and ordered entries sufficient to reconstruct the outcome | cannot recover unrecorded provider or host events |
+| replayable trace | complete replay metadata, deterministic fields, and zero temperature | does not reproduce historical provider serving |
+| provider integration works | named provider/model, configuration, live response, usage, and failure behavior | proves connectivity, not truthfulness or future availability |
+| CLI and HTTP parity | matching typed outcome and trace semantics for their shared contract | the fixed offline HTTP pipeline is narrower than the provider CLI |
 
-## Bottom Line
+## Result presentation
 
-If `bijux-canon-agent` cannot explain why `workflow and trace behavior` should be trusted after a change, the quality work is still incomplete.
+Final content is displayed with verdict, confidence, epistemic status, stop
+reason, termination reason, convergence evidence, and trace identity. Veto,
+abort, interruption, maximum-iteration exhaustion, and partial failure remain
+visible even when useful text was produced.
+
+## Credential language
+
+Examples distinguish CLI bootstrap requirements from actual provider use and
+the offline HTTP boundary. Placeholder keys are valid only in controlled tests
+that cannot contact a provider. Live credentials stay outside configuration,
+traces, logs, snapshots, and committed files.
+
+See [invariants](invariants.md) for orchestration laws and
+[risk register](risk-register.md) for authority, custody, and provider risks.

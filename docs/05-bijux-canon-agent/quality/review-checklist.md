@@ -1,28 +1,68 @@
 ---
-title: Review Checklist
+title: Orchestration Review
 audience: mixed
-type: explanation
+type: how-to
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
-# Review Checklist
+# Orchestration Review
 
-The review checklist for `bijux-canon-agent` should keep review fast without letting it become shallow. The point is to catch trust failures around workflow and trace behavior before they ship.
+Review reconstructs control flow independently of the final prose. Every role
+action must be authorized by lifecycle state and represented in the terminal
+outcome and trace.
 
-## What To Check
+```mermaid
+flowchart TD
+    policy[Pipeline and policy]
+    transition[Lifecycle transition]
+    role[Role call or failure]
+    decision[Merge, judge, verify]
+    stop[Convergence or termination]
+    record[Result and trace]
 
-- check whether the package boundary, contract, and proof story still agree
-- confirm that code, docs, and tests moved together when behavior changed
-- treat unclear filenames, symbols, or release notes as quality issues, not cosmetic ones
+    policy --> transition --> role --> decision --> stop --> record
+```
 
-## First Proof Check
+## Contracts and authority
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+- Do role inputs and outputs reject extra fields and retain contract version?
+- Are lifecycle transitions owned by typed orchestration rather than prompts,
+  role output, or provider adapters?
+- Are forbidden transitions, aborts, interruptions, and shutdown behavior
+  exercised?
+- Does every call retain input identity, prompt/model hashes, output or error,
+  and terminal call status?
 
-## Bottom Line
+## Decisions and termination
 
-If `bijux-canon-agent` cannot explain why `workflow and trace behavior` should be trusted after a change, the quality work is still incomplete.
+- Do merge and judgment records retain lineage, issues, action plan, verdict,
+  confidence, and failures for every input?
+- Is convergence tied to a named strategy, window, observations, and hash?
+- Are oscillation and maximum iterations distinguished from successful
+  convergence?
+- Can veto, validation failure, interruption, and fatal failure reach the
+  final status without being flattened into completed success?
+
+## Trace and custody
+
+- Do header versions, configuration/pipeline hashes, model metadata, agent
+  versions, convergence, and termination identity agree with entries?
+- Are observational timestamps excluded from deterministic comparison without
+  deleting causal ordering?
+- Can `final_result.json` be reconstructed from its named trace?
+- Are mismatched, missing, or cross-attempt artifact pairs rejected?
+
+## Providers and public boundaries
+
+- Do provider failures cover timeout, rate limit, malformed response,
+  redaction, retry, and fallback behavior?
+- Is live-provider evidence kept separate from deterministic orchestration
+  evidence?
+- Do CLI and HTTP retain the same typed outcome where their contracts overlap?
+- Are the offline HTTP application and provider-configurable CLI described as
+  different execution surfaces?
+
+Conclude with [orchestration release acceptance](definition-of-done.md) and
+[known limitations](known-limitations.md).
