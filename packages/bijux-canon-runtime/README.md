@@ -108,36 +108,50 @@ with the three prominently advertised commands.
 
 ## HTTP Contract
 
-The v1 API exposes flow execution and replay plus health and readiness probes.
-Responses carry run identity, status, result data, replay acceptability, and a
-structured failure envelope. The contract is pinned under
+The experimental v1 application implements health and DuckDB readiness probes.
+Run and replay requests are schema-validated and require authority headers, but
+both endpoints currently return `501 Not Implemented`; no successful
+`FlowRunResponse` is produced over HTTP today. The tracked future-facing
+contract is pinned under
 [`apis/bijux-canon-runtime/v1/`](../../apis/bijux-canon-runtime/v1/).
 
-## What This Package Takes And Produces
+## Evaluate A Runtime Claim
 
-- takes: validated flow manifests or resolved execution plans plus explicit execution policy
-- produces: flow run results, replayable traces, persisted run records, and contract failures when execution violates policy
-- guarantees: runtime mode selection stays explicit, replay semantics are checked, and persisted outputs remain tied to one governed run id
-- does not do: define agent behavior, own ingest or retrieval policy, or infer missing determinism from ambient state
+| Claim | Evidence to inspect | What is not enough |
+| --- | --- | --- |
+| execution was authorized | authority token, manifest, resolved plan, mode, policy fingerprint | a completed lower-package call |
+| the run is accepted | finalized trace, verification results, arbitration, certifiability | trace finalization alone |
+| resume preserved identity | tenant, manifest, plan, dataset, policy, checkpoint, store | reusing a run ID |
+| replay is exact | original envelope, retained inputs, event/artifact identity, verdict | similar final output |
+| bounded replay is acceptable | original variance declaration and evaluated semantic diff | tolerance chosen after divergence |
+
+Runtime records and judges declared execution. It cannot make an external tool
+transactional, recover state that was never captured, or infer determinism
+from a seed alone.
 
 ## Minimal Example
 
 ```python
-from bijux_canon_runtime import execute_flow
+from bijux_canon_runtime import RunMode, execute_flow
+from bijux_canon_runtime.application.execute_flow import ExecutionConfig
 
-result = execute_flow(manifest=my_manifest)
+result = execute_flow(
+    manifest=my_manifest,
+    config=ExecutionConfig(
+        mode=RunMode.PLAN,
+        determinism_level=my_manifest.determinism_level,
+    ),
+)
 print(result.resolved_flow.manifest.flow_id)
-print(result.trace is not None)
-print(result.run_id)
+assert result.trace is None
+assert result.run_id is None
 ```
 
-Expected shape:
+The default `execute_flow(manifest)` selects live, strict execution; it is not a
+preview. Executable modes need a write store and the verification, authority,
+and nondeterminism resources required by their policy.
 
-- `result.resolved_flow` is always present
-- `result.trace` is present for non-plan execution
-- `result.run_id` is set once the runtime registers a persisted run
-
-## Package continuity
+## Package Continuity
 
 - compatibility packages: [`bijux-canon`](https://pypi.org/project/bijux-canon/), [`agentic-flows`](https://pypi.org/project/agentic-flows/)
 - preserved import roots: `bijux_canon`, `agentic_flows`
@@ -148,18 +162,14 @@ Expected shape:
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 - retired repository target: [https://github.com/bijux/agentic-flows](https://github.com/bijux/agentic-flows) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
-## What this package owns
+## Package Boundary
 
-- flow execution authority
-- replay and acceptability semantics
-- trace capture, runtime persistence, and execution-store behavior
-- package-local CLI and API boundaries
-
-## What this package does not own
-
-- agent composition policy
-- ingest or index domain ownership
-- repository tooling and release support
+Runtime owns flow planning, execution authority, verification arbitration,
+trace finalization, execution persistence, resume, and replay verdicts. It
+consumes ingest, index, reason, and agent artifacts without redefining their
+domain semantics. The execution store records external effects; it cannot roll
+them back, so live executors require idempotency or compensation at their own
+boundary.
 
 ## Persistence And Replay Evidence
 
@@ -172,7 +182,7 @@ Expected shape:
 - crash recovery and partial failure retain recorded state rather than
   presenting an incomplete run as complete
 
-## Source map
+## Source Map
 
 - [`src/bijux_canon_runtime/model`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/model) for durable runtime models
 - [`src/bijux_canon_runtime/runtime`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime) for execution engines and lifecycle logic
@@ -181,7 +191,7 @@ Expected shape:
 - [`src/bijux_canon_runtime/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces) and [`src/bijux_canon_runtime/api`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/api) for boundaries
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/tests) and [`examples`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/examples) for executable expectations and teaching material
 
-## Read this next
+## Read This Next
 
 - [Package guide](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
 - [Ownership boundary](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/ownership-boundary/)
@@ -191,12 +201,7 @@ Expected shape:
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md)
 
-## Primary entrypoint
+## Primary Entrypoint
 
 - console script: `bijux-canon-runtime`
-
-## Release Readiness
-
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- package history: [`CHANGELOG.md`](CHANGELOG.md)
