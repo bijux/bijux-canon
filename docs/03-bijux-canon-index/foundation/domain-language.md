@@ -13,6 +13,23 @@ Index governs vector retrieval. Its language distinguishes stored corpus state,
 the contract under which a query may execute, the ranked result, and the
 evidence needed to explain or replay that execution.
 
+```mermaid
+flowchart LR
+    corpus["identified corpus and vectors"]
+    intent["execution intent"]
+    contract["mode, contract, and budget"]
+    plan["resolved execution plan"]
+    result["ranked result"]
+    evidence["artifact, fingerprints, trace"]
+    replay["replay or comparison"]
+
+    corpus --> intent --> contract --> plan --> result --> evidence --> replay
+```
+
+Backend selection is deliberately downstream of intent and contract. A store
+name cannot substitute for an exactness promise, loss profile, resource budget,
+or replay posture.
+
 ## Corpus and Retrieval
 
 | Term | Meaning |
