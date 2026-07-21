@@ -1,28 +1,52 @@
 ---
-title: Documentation Standards
+title: Public Authority Claims
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
-# Documentation Standards
+# Public Authority Claims
 
-Documentation standards for `bijux-canon-runtime` should keep the handbook reader-first, direct, and evidence-backed. Consistency matters only when it helps readers trust what they are being told.
+Runtime claims name the authority and retained boundary under which they hold.
+Governed, verified, finalized, resumable, deterministic, and replayable are
+separate properties.
 
-## What To Check
+```mermaid
+flowchart LR
+    authority[Declared authority]
+    execution[Mode-specific execution]
+    decision[Verification and arbitration]
+    persistence[Finalized persistence]
+    comparison[Replay comparison]
+    claim[Bounded public claim]
 
-- prefer durable filenames and headings that name the real question the page answers
-- tie prose to code paths, artifacts, contracts, or tests instead of abstract template language
-- treat filler, meta-doc prose, and unsupported certainty as documentation defects
+    authority --> execution --> decision --> persistence --> comparison --> claim
+```
 
-## First Proof Check
+## Claim vocabulary
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+| Public wording | Evidence required | Bound on the claim |
+| --- | --- | --- |
+| resolved flow | semantically valid manifest, dependency order, identities, and immutable plan | has not necessarily been authorized to execute |
+| governed live run | live mode, required policy, authorized effects, complete verification coverage, and finalized trace | covers recorded integrations and declared rules |
+| unsafe run | explicit unsafe mode, semantic warning, relaxed policy, and finalized trace | is not equivalent to governed live execution |
+| verified result | complete registered findings and recorded arbitration policy/decision | does not establish factual or scientific truth |
+| finalized run | consistent trace, events, artifacts, evidence, entropy, and terminal store state | external payload durability remains deployment-owned |
+| resumable run | compatible authority, checkpoint, indices, effect state, and store identity | cannot make an unrecorded external effect transactional |
+| deterministic execution | declared strict boundary, controlled entropy, and matching identity | cannot control omitted providers, hardware, clocks, or mutable data |
+| acceptable replay | original envelope and policy judge retained differences inside declared bounds | acceptable drift remains drift and requires domain judgment |
 
-## Bottom Line
+## Mode and endpoint language
 
-If `bijux-canon-runtime` cannot explain why `governed run behavior` should be trusted after a change, the quality work is still incomplete.
+Examples name the selected mode and its authority. `dry-run` is simulation,
+`observe` depends on supplied observations, and `unsafe` retains an explicit
+non-equivalent classification.
+
+The HTTP schema describes request and response contracts. Health and readiness
+are implemented; flow run and replay currently return `501 Not Implemented`.
+Schema validation is not described as execution availability.
+
+See [invariants](invariants.md) for machine-enforced authority laws and
+[risk register](risk-register.md) for persistent effect and deployment risks.
