@@ -1,5 +1,5 @@
 ---
-title: Release Policy
+title: Compatibility Release Policy
 audience: mixed
 type: explanation
 status: canonical
@@ -7,82 +7,119 @@ owner: bijux-canon-compat-docs
 last_reviewed: 2026-07-21
 ---
 
-# Release Policy
+# Compatibility Release Policy
 
-Compatibility distributions share the repository release version with their
-canonical owners, but version alignment, release eligibility, build selection,
-and publication are different facts. A trustworthy release claim identifies
-which of those facts has evidence.
+Compatibility distributions share the repository's VCS-derived version with
+their canonical owners. Version alignment, public-release eligibility, build
+selection, artifact verification, and publication are separate facts. A
+release claim is trustworthy only when it names the distribution, version,
+channel, and evidence available at each boundary.
 
 ## Release Evidence Chain
 
 ```mermaid
 flowchart LR
-    tag["shared repository tag"]
+    source["repository tag and source"]
     eligible["public release inventory"]
-    selected["release build matrix"]
+    selected["generated build and publish matrices"]
     built["wheel and source archive"]
-    verified["metadata and bridge checks"]
-    published["package index artifact"]
+    verified["metadata, contents, import, command checks"]
+    published["named channel and artifact"]
+    consumed["lockfile or image with hashes"]
 
-    tag --> eligible --> selected --> built --> verified --> published
+    source --> eligible --> selected --> built --> verified --> published --> consumed
 ```
 
-| Layer | What it establishes | What it does not establish |
+| Boundary | Establishes | Does not establish |
 | --- | --- | --- |
-| shared VCS tag | canonical and compatibility sources resolve one version | that every distribution was selected or uploaded |
-| public release inventory | distribution is eligible for public release checks | that a release workflow builds it |
-| release build matrix | workflow is configured to build an artifact | that the run succeeded or publication occurred |
-| built wheel and source archive | artifact contents and metadata can be inspected | that a package index serves them |
-| publication record | a named artifact is available from a channel | that imports, commands, or consumer behavior pass |
+| repository tag | one source version for canonical and compatibility packages | selection or upload of any distribution |
+| public release inventory | package is governed as a public distribution | presence in every channel matrix |
+| build matrix | workflow intends to build the named package | successful build, verification, or publication |
+| wheel and source archive | inspectable files and resolved metadata exist | availability from PyPI, GHCR, or GitHub Releases |
+| verification evidence | tested exact pin, contents, import identity, and dispatch | that a consumer's private imports or artifacts are compatible |
+| publication record | named artifact is available from a named channel | that a resolver or deployment selected it |
+| lockfile or image digest | consumer selected exact bytes | runtime acceptance without a representative workflow |
 
-## Current Repository Declaration
+## Current Release Inventory
 
-The workspace public-release inventory contains five canonical product
-packages and all six compatibility distributions. `bijux-canon-dev` is an
-internal support package and is excluded.
+The root public-release inventory contains five canonical product packages and
+all six compatibility distributions. `bijux-canon-dev` is internal support and
+is excluded from public release.
 
-The generated release-build matrix currently selects these compatibility
-distributions:
+The generated release build matrix currently selects these compatibility
+packages:
 
-- `agentic-flows`
-- `bijux-agent`
-- `bijux-rag`
-- `bijux-rar`
-- `bijux-vex`
+- `agentic-flows`;
+- `bijux-agent`;
+- `bijux-rag`;
+- `bijux-rar`; and
+- `bijux-vex`.
 
-`bijux-canon` is declared public and buildable in the workspace but is not
-currently enumerated in that generated release-build matrix. Consequently,
-neither the shared version nor public eligibility is evidence that a matching
-`bijux-canon` artifact was built or published. Check the target package index
-and the release run before promising availability.
+`bijux-canon` is public, workspace-managed, and buildable, but it is not
+currently listed in that generated release build matrix. Therefore the shared
+tag, workspace inventory, and successful local build do not establish that a
+matching `bijux-canon` artifact was produced or published. Check the release
+run and target channel before promising its availability.
 
-## Acceptance For A Compatibility Artifact
+This is an explicit release-selection gap, not a reason to infer that the
+bridge has been retired. Retirement requires the independent consumer evidence
+defined by [retirement conditions](retirement-conditions.md).
 
-A release candidate is acceptable when:
+## Artifact Acceptance
 
-1. built metadata requires the canonical distribution at the identical
-   version;
-2. wheel and source archive contain the alias package, `py.typed`, README,
-   changelog, license, notice, and bridge implementation;
-3. the installed root and representative nested imports preserve canonical
-   object identity;
-4. the preserved console script and `python -m` route reach the canonical CLI;
-5. project URLs and package documentation identify the canonical owner; and
-6. release notes describe continuity changes without assigning product
+A compatibility release candidate is acceptable only when:
+
+1. wheel and source-archive metadata require the canonical owner at the
+   identical version;
+2. both archives contain the forwarding package, `runtime_alias.py`,
+   `__main__.py`, `py.typed`, README, overview, changelog, license, and notice;
+3. an isolated installation resolves the matching canonical artifact;
+4. root exports and representative nested imports preserve canonical object
+   identity while bridge-local modules remain local;
+5. the preserved console script and `python -m` route dispatch the canonical
+   command and retain exit semantics;
+6. expected canonical exceptions pass through without compatibility-specific
+   reinterpretation;
+7. project URLs identify the current repository, canonical handbook,
+   compatibility record, migration guide, and security path; and
+8. release notes describe continuity changes without assigning product
    behavior to the bridge.
 
-The canonical package owns behavior testing. Compatibility validation remains
-focused on packaging, identity, and delegation so two implementations cannot
-quietly emerge.
+Canonical package tests own algorithms, schemas, and operational behavior.
+Bridge validation owns packaging, identity, and delegation. Duplicating the
+product implementation or its complete suite under the old name would create a
+second authority rather than stronger compatibility.
 
-## Publication Claims
+## Publication Decisions
 
-Name the distribution, version, channel, and artifact when reporting a release.
-“Bijux Canon released `X`” is insufficient evidence that every compatibility
-distribution exists at `X`. For environments that need a preserved name,
-resolve or inspect that exact distribution before updating the lockfile.
+For every channel, record:
 
-See [dependency continuity](dependency-continuity.md) for the exact-pin contract
-and [validation strategy](validation-strategy.md) for executable acceptance
-checks.
+| Field | Example meaning |
+| --- | --- |
+| distribution | `bijux-rag`, not the repository family in general |
+| version | exact normalized package version |
+| source reference | repository tag and commit used for the build |
+| artifact | wheel/source archive name and digest, or container reference and digest |
+| canonical pair | owner artifact and identical version |
+| channel | PyPI, TestPyPI, GHCR, or GitHub Release |
+| workflow evidence | run identity and successful package-specific job |
+| consumer evidence | lockfile, image digest, or resolver result selecting the artifact |
+
+“Bijux Canon version `X` was released” cannot establish that every compatibility
+distribution exists at `X`. Verify each preserved distribution required by an
+environment before updating its lockfile or rollback image.
+
+## Failed or Partial Releases
+
+If a bridge artifact publishes but its matching canonical artifact does not,
+the exact dependency should make fresh resolution fail. Preserve that failure;
+do not widen metadata or republish altered bytes under the same version.
+
+If canonical publication succeeds but the bridge fails, canonical consumers
+may proceed while preserved-name consumers remain on the last verified pair.
+Repair the release configuration or source and publish a new repository
+version. Package-index immutability and consumer provenance are more important
+than forcing version symmetry after the fact.
+
+Use [dependency continuity](dependency-continuity.md) for resolver behavior and
+[validation strategy](validation-strategy.md) for the executable proof chain.

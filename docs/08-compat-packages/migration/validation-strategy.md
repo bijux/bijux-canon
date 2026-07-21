@@ -1,5 +1,5 @@
 ---
-title: Validation Strategy
+title: Compatibility Validation
 audience: mixed
 type: how-to
 status: canonical
@@ -7,120 +7,161 @@ owner: bijux-canon-compat-docs
 last_reviewed: 2026-07-21
 ---
 
-# Validation Strategy
+# Compatibility Validation
 
-Compatibility validation proves continuity and migration at the same time.
-Legacy installs, imports, and commands must keep working for supported users,
-while canonical packages remain the only owner of implementation behavior.
+Compatibility validation proves that a preserved identity delegates to one
+canonical implementation from source declaration through installed behavior.
+It also proves migration readiness by exercising the same canonical surface a
+consumer will use after the bridge is removed.
 
-## Supported Mapping
-
-| Legacy distribution | Legacy import | Canonical package |
-| --- | --- | --- |
-| `bijux-canon` | `bijux_canon` | `bijux-canon-runtime` |
-| `agentic-flows` | `agentic_flows` | `bijux-canon-runtime` |
-| `bijux-agent` | `bijux_agent` | `bijux-canon-agent` |
-| `bijux-rag` | `bijux_rag` | `bijux-canon-ingest` |
-| `bijux-rar` | `bijux_rar` | `bijux-canon-reason` |
-| `bijux-vex` | `bijux_vex` | `bijux-canon-index` |
-
-Each compatibility distribution installs the canonical distribution at the
-same version. Its legacy module delegates public attributes to the canonical
-runtime, and its `__main__` dispatches the canonical CLI while preserving the
-legacy executable name.
-
-## Proof Layers
+## Proof Stack
 
 ```mermaid
 flowchart LR
-    metadata["distribution metadata"]
-    install["same-version canonical dependency"]
-    import["legacy import bridge"]
-    command["legacy command dispatch"]
-    behavior["canonical behavior"]
-    migration["canonical consumer configuration"]
+    inventory["workspace mapping"]
+    source["bridge layout and metadata hook"]
+    build["wheel and source archive"]
+    install["isolated same-version pair"]
+    imports["root and nested module identity"]
+    commands["console and python -m dispatch"]
+    behavior["canonical success and failure"]
+    consumer["canonical consumer workflow"]
 
-    metadata --> install --> import --> command --> behavior --> migration
+    inventory --> source --> build --> install --> imports --> commands --> behavior --> consumer
 ```
 
-### Publication metadata
+Each layer catches a different class of defect. An import from a checkout
+cannot validate built dependencies; archive inspection cannot validate command
+dispatch; a help command cannot validate nested-module identity; and bridge
+tests cannot prove a consumer's historical artifacts remain readable.
 
-Verify the legacy distribution name, canonical mapping in the Hatch metadata
-hook, same-version dependency injection, Python support, console entrypoint,
-project URLs, changelog, and package data. A wheel that imports locally but
-declares the wrong dependency is not a valid compatibility release.
+## Package Mapping
 
-### Import bridge
+| Bridge source directory | Distribution | Preserved root | Canonical owner |
+| --- | --- | --- | --- |
+| `compat-bijux-canon` | `bijux-canon` | `bijux_canon` | `bijux-canon-runtime` |
+| `compat-agentic-flows` | `agentic-flows` | `agentic_flows` | `bijux-canon-runtime` |
+| `compat-bijux-agent` | `bijux-agent` | `bijux_agent` | `bijux-canon-agent` |
+| `compat-bijux-rag` | `bijux-rag` | `bijux_rag` | `bijux-canon-ingest` |
+| `compat-bijux-rar` | `bijux-rar` | `bijux_rar` | `bijux-canon-reason` |
+| `compat-bijux-vex` | `bijux-vex` | `bijux_vex` | `bijux-canon-index` |
 
-Verify that the package contains `__init__.py`, `__main__.py`,
-`runtime_alias.py`, and `py.typed`. The bridge must provide canonical public
-attributes through `__getattr__` and `__dir__`; it must not copy canonical
-implementations into the legacy namespace.
+## Repository Contract Checks
 
-### Command bridge
-
-Install the built compatibility wheel into an isolated environment and run the
-legacy command's help or a side-effect-free contract action. Confirm that
-arguments, exit semantics, and structured output come from the canonical CLI.
-
-### Runtime behavior
-
-Run the package-local bridge test against the installed distribution. Test a
-small representative API surface, including error propagation. Avoid a large
-duplicate suite: canonical behavior belongs to the canonical package tests,
-while compatibility tests prove delegation.
-
-### Documentation and navigation
-
-Verify that the package README identifies its alias role, canonical owner,
-install command, legacy executable, public API re-export, compatibility
-contract, migration guide, handbook page, changelog, and any retired repository.
-All published links must be absolute and usable from PyPI.
-
-## Repository Checks
-
-The focused repository contracts are:
+From the repository root, run the focused compatibility contracts:
 
 ```bash
-pytest packages/bijux-canon-dev/tests/test_compat_package_contract.py
-pytest packages/bijux-canon-dev/tests/test_publish_metadata.py \
-  -k 'compatibility or legacy_continuity'
+.tox/test-dev/bin/python -m pytest \
+  packages/bijux-canon-dev/tests/test_compat_package_contract.py \
+  packages/bijux-canon-dev/tests/test_publish_metadata.py \
+  -k 'compatibility or legacy_continuity' \
+  --basetemp=artifacts/compat-validation/pytest -q
 ```
 
-Package-local bridge tests live under each compatibility package's
-`tests/unit/` directory. Build validation uses the compatibility package make
-profile, which installs the mapped canonical source before lint and tests and
-writes release evidence under that package's artifact directory.
+These checks validate workspace inventory, required bridge files, forwarding
+machinery, canonical entrypoint imports, distribution metadata, project URLs,
+README routing, exact dependency-hook source, and console targets. They are
+source and publication-contract evidence; they do not replace built-wheel
+installation.
 
-## Detecting Unfinished Migration
+Run the package-local bridge test for the package being changed. For example:
 
-Search consumer-owned dependency files, source, tests, workflows, deployment
-configuration, and runbooks for legacy distributions, imports, and commands.
-Exclude the compatibility packages, their catalog pages, migration history, and
-tests that intentionally assert continuity.
+```bash
+.tox/test-dev/bin/python -m pytest \
+  packages/compat-bijux-rag/tests/unit/test_bijux_rag_compatibility_bridge.py \
+  --basetemp=artifacts/compat-validation/pytest-bijux-rag -q
+```
 
-A raw repository-wide count is not retirement evidence because it mixes active
-usage with the compatibility implementation itself. Classify every match as:
+Package-local tests check exported names, selected nested-module identity,
+bridge-local module behavior, version forwarding, and canonical command
+dispatch without duplicating the canonical product suite.
 
-- supported external dependency;
+## Build and Install Evidence
+
+Use the compatibility package build profile so the canonical source mapping,
+metadata hook, archive contents, and package data follow the same path as a
+release candidate. Direct all build evidence to the package's `artifacts/`
+location.
+
+Inspect both wheel and source archive for:
+
+- distribution name and normalized version;
+- exact canonical dependency;
+- preserved console script target;
+- `__init__.py`, `runtime_alias.py`, `__main__.py`, and `py.typed`;
+- README, overview, changelog, license, and notice; and
+- current repository, handbook, migration, and security URLs.
+
+Install the bridge and canonical wheels into a fresh environment without
+workspace or editable sources. Run `python -m pip check`, inspect installed
+versions, import the preserved and canonical roots, and execute the preserved
+console and module routes. Retain artifact hashes and resolver output.
+
+## Import and Command Assertions
+
+For each bridge, prove:
+
+| Assertion | Expected result |
+| --- | --- |
+| root import | exposes canonical public attributes and version |
+| representative product submodule | preserved and canonical names resolve to the same module object |
+| `runtime_alias` and `__main__` | remain bridge-local infrastructure |
+| unknown/private import | fails or remains unsupported rather than creating copied behavior |
+| console `--help` | reaches the canonical command under the preserved executable name |
+| `python -m <preserved_root>` | follows the same canonical dispatcher |
+| invalid arguments or expected domain failure | canonical exit status and error meaning pass through unchanged |
+
+For `bijux-vex`, test the preserved command even though the canonical index
+distribution has no renamed console script. For `bijux-rar`, inspect installed
+distributions because the command can also be registered by the canonical
+reason package.
+
+## Consumer Migration Evidence
+
+After bridge continuity passes, validate the consumer directly against the
+canonical owner:
+
+1. replace the dependency and regenerate the lockfile;
+2. replace root, nested, and string-based imports;
+3. replace console and module invocations with a canonical interface;
+4. load representative historical caches, indexes, traces, manifests, or
+   databases;
+5. run one normal workflow and one expected failure;
+6. build and deploy the canonical image or environment; and
+7. exercise restart, rollback, and recovery without the bridge installed.
+
+The bridge test and canonical consumer test answer different questions. The
+first proves continuity during migration; the second proves the bridge can
+eventually be removed.
+
+## Classify Remaining Names
+
+Search dependency files, source, generated configuration, workflows,
+deployment definitions, images, notebooks, plugins, and runbooks. Classify
+each match as:
+
+- supported consumer dependency;
 - active internal dependency;
-- intentional compatibility declaration;
-- historical or migration documentation; or
-- stale usage to remove.
+- compatibility implementation or contract test;
+- historical artifact, changelog, or retired-repository evidence;
+- migration guidance; or
+- stale use to remove.
 
-Track the owner and removal condition for the first two categories.
+A raw match count is not retirement evidence. Record the owner, environment,
+surface, canonical destination, and removal condition for active consumer and
+internal dependencies.
 
-## Release Acceptance
+## Acceptance Outcomes
 
-A compatibility release is ready when:
+| Outcome | Interpretation |
+| --- | --- |
+| source contracts pass, build/install not run | repository delegation is coherent; release candidate is not yet proven |
+| wheel installs, import identity fails | bridge packaging or alias defect; do not publish |
+| imports pass, command differs | entrypoint continuity defect; do not publish |
+| bridge passes, canonical consumer fails | migration or canonical compatibility gap; retain bridge and investigate owner |
+| all layers pass, supported consumers remain | release bridge and continue migration |
+| all layers and consumer completion records pass | evaluate [retirement conditions](retirement-conditions.md) |
 
-- its canonical dependency is pinned to the identical version;
-- both wheel and source archive contain the bridge and documentation files;
-- the legacy import and command work from the built wheel;
-- canonical exceptions and exits pass through without reinterpretation;
-- metadata and published links identify the canonical owner; and
-- no new internal consumer uses the legacy surface.
-
-Retirement requires stronger evidence than a green compatibility build. Use
-[Migration Guidance](migration-guidance.md) to move consumers and the retirement
-criteria to decide when continuity is no longer required.
+Retain exact commands, package versions, artifact hashes, environment identity,
+and results with every verdict. A compatibility claim without the tested
+surface and artifact pair is not reproducible.
