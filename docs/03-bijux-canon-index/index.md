@@ -4,41 +4,55 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Index Handbook
 
-`bijux-canon-index` owns vector execution, provenance-aware retrieval, and replayable index behavior. It turns prepared ingest output into retrieval surfaces that downstream packages can inspect and reuse without guessing how search happened.
+`bijux-canon-index` executes vector work under an explicit contract. A request
+declares its intent, execution mode, determinism posture, budget, artifact
+identity, and backend requirements before the engine selects resources. The
+result records provenance and cost rather than returning an unexplained list of
+neighbors.
 
-The main failure this handbook prevents is smearing retrieval concerns across ingest, reasoning, and runtime. If vector execution and replay behavior are not owned explicitly here, every later layer starts making hidden assumptions about how evidence was found.
-
-## What The Reader Should See First
-
-Index is the retrieval accountability layer. It accepts prepared material,
-executes search through declared vector and query contracts, and hands forward
-results that carry enough provenance for another package to explain why a piece
-of evidence was returned.
+Deterministic execution is the supported baseline. Non-deterministic execution
+is bounded by declared randomness, approximation, witness, memory, latency, and
+replay policies; it is never presented as bitwise-equivalent exact search.
 
 ```mermaid
 flowchart LR
-    prepared["prepared ingest output"]
-    plan["execution plan"]
-    backend["vector backend"]
-    result["retrieval result"]
-    replay["replay record"]
-    reason["reasoning package"]
+    request["ExecutionRequest"]
+    policy["intent + mode + budget"]
+    capabilities["backend capability resolution"]
+    execution["exact or bounded execution"]
+    artifact["ExecutionArtifact + provenance"]
+    review["explain, replay, compare"]
 
-    prepared --> plan --> backend --> result --> reason
-    plan --> replay
-    backend --> replay
-    result --> replay
+    request --> policy --> capabilities --> execution --> artifact --> review
+    capabilities -. refusal .-> review
 ```
 
-Index earns trust by making retrieval inspectable after the fact. The point is
-not just to return matches. The point is to make it obvious which prepared
-inputs, query choices, and backend behavior produced those matches so later
-reasoning does not have to guess how evidence was found.
+## Execution Vocabulary
+
+| Declaration | Values | Why it is recorded |
+| --- | --- | --- |
+| intent | exact validation, reproducible research, exploratory search, production retrieval | explains why loss or nondeterminism is acceptable |
+| mode | strict, bounded, exploratory | selects refusal and tolerance behavior |
+| contract | deterministic, non-deterministic | establishes the replay claim that may be made |
+| budget | latency, memory, error, and approximation bounds | turns resource use into an input rather than an accident |
+| identity | artifact, run, correlation, backend, index, and parameter identities | makes execution and comparison addressable |
+
+## Public Surfaces
+
+- the Typer application exposes workspace initialization, capabilities, ingest,
+  execute, explain, replay, compare, validation, diagnostics, artifacts, run
+  listing, vector-store utilities, and non-deterministic performance commands
+- the HTTP API exposes create, ingest, execute, explain, replay, artifact,
+  artifact listing, run listing, and backend capabilities operations
+- plugin packages demonstrate a remote backend, a sentence-transformers
+  provider, and a reusable backend template
+- the package root currently exports only `__version__`; callers use the
+  domain, application, contract, and interface modules deliberately
 
 ## What This Package Owns
 
@@ -52,13 +66,13 @@ reasoning does not have to guess how evidence was found.
 - claim interpretation, reasoning policy, or reviewer-facing verification semantics
 - top-level runtime authority above retrieval execution and trace collection
 
-## Boundary Test
+## Ownership Test
 
 If the disputed behavior decides what gets embedded, stored, retrieved,
 compared, or replayed during search, it belongs here. If it decides what a
 claim means or whether a run is acceptable to keep, it does not.
 
-## First Proof Check
+## Implementation Anchors
 
 - `packages/bijux-canon-index/src/bijux_canon_index` for the owned retrieval implementation boundary
 - `apis/bijux-canon-index/v1/schema.yaml` for the tracked caller-facing schema
@@ -73,7 +87,7 @@ claim means or whether a run is acceptable to keep, it does not.
 - open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need local workflow, diagnostics, release, or recovery guidance
 - open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the question is whether the package has proved its promises strongly enough
 
-## Pages In This Package
+## Reference Areas
 
 - [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/)
@@ -81,8 +95,10 @@ claim means or whether a run is acceptable to keep, it does not.
 - [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/)
 - [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/)
 
-## Leave This Handbook When
+## Refusal Is A Result
 
-- the question is now about what evidence means rather than how it was found
-- the next step is a concrete interface, workflow, benchmark, or replay test
-- the concern belongs to ingest preparation below or runtime authority above
+Backend unavailability, missing capabilities, invalid vectors, budget
+violations, corrupt artifacts, backend divergence, and unsupported replay have
+distinct error types. Strict mode refuses work that cannot satisfy its declared
+contract. Bounded and exploratory modes may permit approximation only when the
+request records the corresponding limits and intent.

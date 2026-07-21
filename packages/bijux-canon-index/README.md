@@ -48,6 +48,59 @@ capability profiles, replay semantics, or provenance-aware result comparison,
 start here. If you need document preparation, runtime governance, or repository
 tooling, you are outside this package's boundary.
 
+## Execution Contract
+
+Every execution combines four declarations:
+
+| Declaration | Supported values | Effect |
+| --- | --- | --- |
+| execution intent | `exact_validation`, `reproducible_research`, `exploratory_search`, `production_retrieval` | records why a particular loss and replay posture is acceptable |
+| execution mode | `strict`, `bounded`, `exploratory` | controls refusal, tolerance, and diagnostic behavior |
+| execution contract | `deterministic`, `non_deterministic` | distinguishes exact replay claims from bounded approximation |
+| execution budget | latency, memory, error, candidate, and ANN limits | constrains resource use and approximation before execution |
+
+An `ExecutionRequest` becomes an `ExecutionPlan`, an `ExecutionSession`, an
+`ExecutionResult`, and—when materialized—an `ExecutionArtifact`. Provenance
+records backend and parameter identity so `explain`, `replay`, and `compare`
+operate on evidence rather than inference.
+
+```mermaid
+flowchart LR
+    request["request + intent"] --> plan["validated plan"]
+    plan --> registry["backend registry"]
+    registry --> engine["vector execution engine"]
+    engine --> result["result + cost"]
+    result --> artifact["artifact + provenance"]
+    artifact --> replay["explain / replay / compare"]
+```
+
+## Command Surface
+
+The repository contains a complete Typer application under
+`bijux_canon_index.interfaces.cli.app`. The current package metadata does **not**
+register a `bijux-canon-index` console script, so source and wheel users must
+not assume that executable exists. The application can be invoked explicitly:
+
+```bash
+python -m bijux_canon_index.interfaces.cli.app capabilities
+python -m bijux_canon_index.interfaces.cli.app execute \
+  --vector '[0.2, 0.8]' \
+  --execution-contract deterministic \
+  --execution-intent exact_validation \
+  --execution-mode strict
+```
+
+The missing console-script registration is a packaging limitation, not a
+documentation alias. HTTP and in-process users are unaffected.
+
+## HTTP Contract
+
+The checked-in v1 schema exposes backend capabilities, corpus creation,
+ingestion, vector execution, explanation, replay, artifact materialization,
+artifact listing, and run listing. See
+[`apis/bijux-canon-index/v1/schema.yaml`](../../apis/bijux-canon-index/v1/schema.yaml)
+and its pinned JSON and schema hash.
+
 ## What This Package Takes And Produces
 
 - takes: declared vector execution requests, backend capability profiles, and embedding or store adapter inputs
@@ -76,6 +129,19 @@ tooling, you are outside this package's boundary.
 - runtime-wide authority, persistence, or replay policy
 - repository maintenance automation
 
+## Failure And Replay Semantics
+
+- strict execution refuses unsupported capability, invalid-vector, and budget
+  combinations before presenting a result as valid
+- deterministic and non-deterministic runs have different support levels and
+  different replay claims
+- approximate runs can record witness mode, target recall, candidate limits,
+  ANN parameters, low-signal policy, and an explicit non-replayable declaration
+- replay can refuse changed indexes or parameters instead of silently comparing
+  unlike executions
+- corrupt artifacts, unavailable backends, backend divergence, and unsupported
+  replay remain distinct failures
+
 ## Source map
 
 - [`src/bijux_canon_index/core`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/core) for stable primitives and errors
@@ -95,9 +161,12 @@ tooling, you are outside this package's boundary.
 - [Error model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/error-model/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md)
 
-## Primary entrypoint
+## Entrypoints
 
-- console script: `bijux-canon-index`
+- HTTP application and v1 OpenAPI contract
+- in-process application and domain modules
+- module-invoked Typer application at `bijux_canon_index.interfaces.cli.app`
+- no registered console script in the current package metadata
 
 ## Release Readiness
 
