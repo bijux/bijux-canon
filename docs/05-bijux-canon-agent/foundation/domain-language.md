@@ -17,15 +17,24 @@ contracts owned by other packages.
 ```mermaid
 flowchart LR
     T[Task goal and document] --> P[Pipeline definition]
-    P --> L[Lifecycle transitions]
-    L --> R[Role executions]
-    R --> J[Decision and confidence]
-    J --> E[Epistemic verdict]
-    E --> F[Final result]
-    R --> X[Run trace]
-    F --> C[Outcome comparison]
-    X --> C
+    P --> L[Lifecycle authority]
+    L --> R[Role invocation]
+    R --> O[Role output or typed error]
+    O --> M[Merge and judgment]
+    M --> V[Verification or veto]
+    V --> F[Finalization]
+    R --> X[Ordered trace]
+    O --> X
+    M --> X
+    V --> X
+    F --> X
+    X --> C[Outcome reconstruction]
 ```
+
+The controller owns permission to advance. Roles contribute bounded work but
+do not advance themselves, declare whole-run acceptance, or rewrite prior trace
+entries. This distinction makes an orchestration decision attributable even
+when several roles use the same provider or model.
 
 ## Orchestration
 
@@ -42,6 +51,10 @@ flowchart LR
 The lifecycle describes permission and order. A role result describes local
 work. Neither alone establishes that the whole pipeline was accepted.
 
+An orchestrator is therefore not a privileged reasoning role. It coordinates
+transitions and retained state. The reason package owns evidence-to-claim
+meaning; the runtime owns admission of the complete workflow result.
+
 ## Decisions and stopping
 
 | Term | Exact meaning |
@@ -56,6 +69,11 @@ work. Neither alone establishes that the whole pipeline was accepted.
 A pass with low confidence, an uncertain outcome, a verification veto, and an
 aborted run communicate different facts. Preserve every field instead of
 collapsing them into “success” or “failure.”
+
+Convergence is also independent from correctness. It reports that selected
+signals stabilized under a declared window and strategy. A stable incorrect
+answer can converge, and a correct but varying provider output can fail to do
+so.
 
 ## Trace identity and replayability
 
@@ -87,3 +105,16 @@ pipeline again.
 The CLI writes these artifacts to fixed paths beneath the selected output
 directory. It does not create a content-addressed run directory, manifest, or
 atomic bundle, so each invocation should receive an isolated output directory.
+
+## Distinctions that must remain visible
+
+| Do not collapse | Why the distinction matters |
+| --- | --- |
+| role and lifecycle controller | contributing work is different from authorizing the next transition |
+| decision and confidence | a categorical judgment is not a probability score |
+| epistemic verdict and terminal status | knowledge posture is not execution completion |
+| convergence and correctness | stability does not establish validity |
+| stop reason and termination reason | policy choice and execution classification answer different questions |
+| trace reconstruction and re-execution | reading retained outcomes does not reproduce provider behavior |
+| structured log and run trace | diagnostics do not replace the governed causal record |
+| agent finalization and runtime acceptance | publishing a pipeline result does not admit a complete Canon run |
