@@ -4,25 +4,67 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Compatibility Commitments
 
-Compatibility commitments for `bijux-canon-index` define how changes to retrieval behavior are supposed to be reviewed and announced. Stability language is only credible when the breakage process is explicit too.
+The canonical distribution and import are `bijux-canon-index` and
+`bijux_canon_index`. The canonical wheel currently exposes its CLI through the
+module entry point:
 
-## What To Check
+```bash
+python -m bijux_canon_index.interfaces.cli.app capabilities
+```
 
-- name which surfaces carry real compatibility pressure
-- tie breaking changes to docs, changelog, versioning, and validation together
-- treat vague stability claims as weaker than clear limits and explicit break rules
+It does not register a `bijux-canon-index` console command. Automation should
+use the module form instead of depending on an executable that is not packaged.
 
-## First Proof Check
+## Legacy Name
 
-- `src` and boundary-facing modules for the owning implementation surface
-- `apis/bijux-canon-index/v1/schema.yaml` or tracked examples for the documented contract surface
-- `tests` for executable confirmation that the contract still holds
+`bijux-vex` is a synchronized compatibility distribution. It preserves the
+`bijux_vex` import and registers the legacy `bijux-vex` command, which invokes
+the canonical CLI application.
 
-## Bottom Line
+```mermaid
+flowchart LR
+    LegacyDist[bijux-vex distribution] --> LegacyImport[bijux_vex]
+    LegacyImport --> Canonical[bijux_canon_index]
+    LegacyCommand[bijux-vex command] --> CLI[canonical CLI app]
+    CanonicalDist[bijux-canon-index distribution] --> Canonical
+    Module[python -m canonical CLI module] --> CLI
+```
 
-If callers depend on `bijux-canon-index` for retrieval behavior, the contract needs to be named as clearly as the implementation.
+The alias installs runtime submodule aliases and forwards root attributes,
+`__all__`, and interactive discovery. Because the canonical root intentionally
+exports only `__version__`, application types should still be imported from
+their documented owning namespaces under either package name.
+
+## Contract Boundaries
+
+Name compatibility does not override data compatibility. The following surfaces
+have independent change rules:
+
+- the v1 OpenAPI request and response schemas;
+- execution artifact schema and artifact versions;
+- run-directory file meanings and replay equivalence;
+- fingerprint inputs, ranking semantics, and backend capabilities; and
+- enums that govern contract, intent, mode, lifecycle, and refusal behavior.
+
+A compatibility alias cannot load an unsupported artifact version or turn a
+non-replayable run into a replayable one.
+
+## Migration
+
+New integrations should depend on `bijux-canon-index`, import
+`bijux_canon_index`, and invoke the canonical module CLI. Existing consumers can
+migrate these surfaces independently:
+
+1. change the installed distribution;
+2. replace `bijux_vex` imports;
+3. replace `bijux-vex` commands with the canonical module invocation; and
+4. replay a fixed execution and compare fingerprints, result order, and
+   declared equivalence.
+
+See the [bijux-vex catalog entry](../../08-compat-packages/catalog/bijux-vex.md)
+for package-level details.
