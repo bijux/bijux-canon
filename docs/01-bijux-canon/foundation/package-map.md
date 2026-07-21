@@ -9,83 +9,95 @@ last_reviewed: 2026-07-21
 
 # Package Map
 
-`bijux-canon` separates evidence preparation, retrieval, reasoning,
-orchestration, and execution authority. The separation is deliberate: each
-package produces an artifact that can be inspected before a more powerful
-layer acts on it.
+The repository contains five canonical product packages, one internal
+maintainer package, and six published compatibility distributions. The package
+name tells a caller which contract it is choosing; the directory location alone
+does not establish whether a package is public, canonical, or released.
 
-The repository contains six primary packages. Five provide product behavior;
-`bijux-canon-dev` supplies repository-owned verification and release tooling.
-Six compatibility distributions preserve established import and command names
-while directing behavior to the canonical packages.
+## Package Families
 
 ```mermaid
-flowchart LR
-    source["source material"] --> ingest["ingest<br/>clean documents and chunks"]
-    ingest --> index["index<br/>retrieval results and provenance"]
-    index --> reason["reason<br/>claims, evidence, and verification"]
-    reason --> agent["agent<br/>plans, roles, and execution traces"]
+flowchart TD
+    workspace["bijux-canon workspace"]
+    product["canonical product packages"]
+    support["internal maintainer package"]
+    continuity["compatibility distributions"]
 
-    manifest["flow manifest"] --> runtime["runtime<br/>policy and run authority"]
-    ingest --> runtime
-    index --> runtime
-    reason --> runtime
-    agent --> runtime
+    workspace --> product
+    workspace --> support
+    workspace --> continuity
 
-    dev["dev<br/>repository verification"] -. validates .-> ingest
-    dev -. validates .-> index
-    dev -. validates .-> reason
-    dev -. validates .-> agent
-    dev -. validates .-> runtime
+    product --> ingest["ingest"]
+    product --> index["index"]
+    product --> reason["reason"]
+    product --> agent["agent"]
+    product --> runtime["runtime"]
+    support --> dev["bijux-canon-dev"]
+    continuity --> aliases["6 direct aliases"]
 ```
 
-The left-to-right path describes the usual evidence flow, not a requirement to
-use every package. Each canonical package remains useful at its own boundary.
-The runtime composes the product packages and decides whether an execution is
-permitted, persisted, replayable, and acceptable.
+The root `pyproject.toml` records these sets explicitly. Public release tooling
+uses `public_release_packages`; repository checks include
+`internal_support_packages`; compatibility inventory is not inferred from a
+name prefix.
 
-## Canonical packages
+## Canonical Product Packages
 
-| Package | Owns | Principal artifacts | Does not own |
-| --- | --- | --- | --- |
-| `bijux-canon-ingest` | cleaning, chunking, embedding handoff, structural deduplication | clean documents, chunks, processing results | retrieval ranking or claim validity |
-| `bijux-canon-index` | vector execution, backend capability checks, retrieval provenance | plans, retrieval results, run records | interpretation of retrieved evidence |
-| `bijux-canon-reason` | evidence-addressed plans, claims, support spans, verification | problem specifications, traces, claim graphs, verification reports | multi-agent scheduling or runtime admission |
-| `bijux-canon-agent` | role-based orchestration, lifecycle transitions, convergence, trace replay | agent inputs and outputs, plans, events, terminal traces | final authority over whether a run is allowed |
-| `bijux-canon-runtime` | manifests, execution modes, policy arbitration, persistence, resume, replay | flow results, run records, verification decisions, finalized traces | silently repairing invalid package artifacts |
-| `bijux-canon-dev` | package inventory checks, documentation contracts, API drift, release metadata | validation results and repository tooling | product runtime behavior |
+| Distribution | Public Python package | Command | Owns | Characteristic evidence |
+| --- | --- | --- | --- | --- |
+| `bijux-canon-ingest` | `bijux_canon_ingest` | `bijux-canon-ingest` | normalization, chunking, deterministic preparation, ingest-local retrieval utilities | input identity, clean documents, chunks, processing results |
+| `bijux-canon-index` | `bijux_canon_index` | none | vector execution, backend capability checks, result provenance, execution comparison | `ExecutionRequest`, `ExecutionArtifact`, ranked result records |
+| `bijux-canon-reason` | `bijux_canon_reason` | `bijux-canon-reason` | problem specifications, evidence-addressed claims, checks, reasoning replay | manifests, traces, claim graphs, verification reports |
+| `bijux-canon-agent` | `bijux_canon_agent` | `bijux-canon-agent` | role orchestration, lifecycle transitions, convergence, trace recording | pipeline definition, ordered events, terminal `RunTrace` |
+| `bijux-canon-runtime` | `bijux_canon_runtime` | `bijux-canon-runtime` | manifest admission, execution mode, policy, persistence, resume, whole-run replay | verdicts, run records, finalized traces, replay and diff results |
 
-## Compatibility distributions
+Index contains a Typer command application for its compatibility surface, but
+the canonical distribution intentionally does not publish a console script.
+New integrations should use its typed Python or HTTP contracts. Existing
+`bijux-vex` command automation remains available through the compatibility
+distribution.
 
-Compatibility packages are migration surfaces, not parallel implementations.
-Their names map to canonical owners in the repository package catalog:
+## Repository Support
 
-| Distribution | Canonical owner |
-| --- | --- |
-| `bijux-canon` | `bijux-canon-runtime` |
-| `agentic-flows` | `bijux-canon-runtime` |
-| `bijux-agent` | `bijux-canon-agent` |
-| `bijux-rag` | `bijux-canon-ingest` |
-| `bijux-rar` | `bijux-canon-reason` |
-| `bijux-vex` | `bijux-canon-index` |
+`bijux-canon-dev` is an internal support package. It owns repository inventory,
+documentation configuration and badge checks, API drift and freeze checks,
+dependency and security gates, SBOM requirement generation, version resolution,
+and publication guards. It is part of workspace validation but is excluded from
+the public release package list.
 
-Applications starting new integrations should import the canonical package
-whose contract they need. Existing applications can use the compatibility
-distribution while following its migration guide and deprecation policy.
+An application should never need `bijux-canon-dev` to execute product behavior.
+If a product package depends on it at runtime, the ownership boundary has been
+crossed in the wrong direction.
 
-## Choosing an entry point
+## Compatibility Distributions
 
-- Start with **ingest** when raw material must become stable, addressable
-  chunks.
-- Start with **index** when the input is already prepared and retrieval plans,
-  backend capabilities, or replay matter.
-- Start with **reason** when evidence must support structured claims and a
-  verification report.
-- Start with **agent** when multiple roles or tools must follow an explicit,
-  inspectable lifecycle.
-- Start with **runtime** when one manifest must govern composition, execution
-  mode, persistence, and acceptance.
+| Preserved distribution | Canonical dependency | Preserved command |
+| --- | --- | --- |
+| `bijux-canon` | `bijux-canon-runtime` | `bijux-canon` |
+| `agentic-flows` | `bijux-canon-runtime` | `agentic-flows` |
+| `bijux-agent` | `bijux-canon-agent` | `bijux-agent` |
+| `bijux-rag` | `bijux-canon-ingest` | `bijux-rag` |
+| `bijux-rar` | `bijux-canon-reason` | `bijux-rar` |
+| `bijux-vex` | `bijux-canon-index` | `bijux-vex` |
 
-The [ownership model](ownership-model.md) defines where cross-package decisions
-belong. The [testing and validation guide](../operations/testing-and-validation.md)
-maps public claims to executable evidence.
+These packages are direct continuity bridges. They depend on their canonical
+owner, re-export canonical modules, and exercise identity or command parity in
+their tests. They do not contain an independent implementation. New code should
+name the canonical distribution; existing code can migrate one import,
+submodule, or command boundary at a time.
+
+## Composition Rules
+
+- Depend on the lowest package that owns the required decision.
+- Pass typed artifacts across package boundaries instead of importing private
+  implementation modules from a neighbor.
+- Keep acceptance and persistence policy in runtime, even when a lower package
+  provides the data being judged.
+- Treat compatibility names as aliases at the edge, not as internal
+  architecture.
+- Use root metadata for package membership and release eligibility; use package
+  code and tests for behavior.
+
+The [ownership model](ownership-model.md) covers disputed boundaries. The
+[compatibility catalog](../../08-compat-packages/catalog/index.md) records the
+exact legacy-to-canonical mappings.

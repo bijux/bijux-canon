@@ -9,102 +9,98 @@ last_reviewed: 2026-07-21
 
 # Platform Overview
 
-Bijux Canon is a family of Python packages for building evidence-bearing
-knowledge workflows. It separates document preparation, retrieval, reasoning,
-agent execution, and runtime governance so that every handoff can be inspected
-without treating an entire application as one opaque operation.
+Bijux Canon is a contract-first Python package family for evidence-bearing
+knowledge work. It separates source preparation, vector execution, reasoning,
+orchestration, and whole-run authority so that a reviewer can locate the
+decision, its inputs, and its retained evidence without treating an application
+as one opaque operation.
 
-The packages can be adopted independently. Together, they form a pipeline in
-which source material becomes a governed result.
+The packages compose, but composition is optional. A service can prepare
+documents without adopting runtime, use index behind its own API, or invoke
+reason without agent orchestration. The durable architecture is the boundary
+each package owns, not a required deployment diagram.
 
-## The Package Chain
+## From Source To Governed Record
 
 ```mermaid
 flowchart LR
-    source["source documents"]
-    ingest["bijux-canon-ingest<br/>clean, chunk, embed"]
-    index["bijux-canon-index<br/>store, retrieve, trace"]
-    reason["bijux-canon-reason<br/>plan, claim, verify"]
-    agent["bijux-canon-agent<br/>coordinate execution"]
-    runtime["bijux-canon-runtime<br/>apply policy and persist runs"]
-    result["governed result"]
+    source["source material"]
+    ingest["ingest<br/>normalize and prepare"]
+    index["index<br/>execute retrieval"]
+    reason["reason<br/>form and check claims"]
+    agent["agent<br/>coordinate roles"]
+    runtime["runtime<br/>authorize and retain"]
+    record["governed run record"]
 
-    source --> ingest --> index --> reason --> agent --> runtime --> result
+    source --> ingest --> index --> reason --> agent --> runtime --> record
 ```
 
-This diagram describes responsibilities, not a mandatory deployment topology.
-An application may use ingest with another retrieval engine, call reason
-directly from a service, or use runtime without the agent package. The stable
-boundary is the contract each package owns.
+Each arrow is a review boundary. The receiving package should be able to
+validate what it accepts, and the sending package should expose enough identity
+and provenance for the handoff to be examined later.
 
-## What Each Boundary Owns
-
-| Package | Owns | Produces or records |
+| Boundary | Principal input | Principal retained evidence |
 | --- | --- | --- |
-| `bijux-canon-ingest` | deterministic preparation of source material | cleaned documents, chunks, embeddings, and local indexes |
-| `bijux-canon-index` | retrieval and execution provenance | query results, run metadata, status, and backend-specific state |
-| `bijux-canon-reason` | evidence-linked reasoning | specifications, plans, traces, verification records, and fingerprints |
-| `bijux-canon-agent` | orchestration of bounded agent work | final results and execution traces |
-| `bijux-canon-runtime` | policy-aware flow execution | governed run records, decisions, traces, and replay state |
+| ingest | bytes, records, and preparation configuration | source identity, normalized documents, chunks, processing results, typed failures |
+| index | prepared documents or vectors plus an execution request | capability resolution, identifiers, ranked results, execution artifact, provenance |
+| reason | problem specification and addressable evidence | plan, claims, support references, trace, verification report |
+| agent | pipeline definition, role inputs, and run configuration | ordered calls, lifecycle events, convergence decision, terminal trace |
+| runtime | flow manifest, dataset, policy, and lower-layer outputs | admission verdict, finalized trace, persisted record, replay comparison |
 
-`bijux-canon-dev` supports repository tooling and documentation; it is not a
-runtime dependency for applications. Compatibility distributions preserve
-established import and command surfaces while delegating implementation to the
-canonical packages.
+## Authority Is Deliberately Narrow
 
-## A Result Is More Than a Value
+The same word can mean different things at different boundaries. “Replay” in
+index compares retrieval executions. Reason replay checks retained reasoning
+invariants and provenance. Agent replay reconstructs a recorded summary; it
+does not call providers again. Runtime replay evaluates the complete stored run
+within runtime's declared boundary. Always pair a replay claim with the owning
+package and the artifacts it retained.
 
-The platform is designed around a stronger output model than “the call
-returned successfully.” A trustworthy run connects the returned value to the
-inputs, configuration, decisions, and durable records that produced it.
+Likewise, a successful result is not automatically an accepted run. Ingest can
+successfully prepare material that later lacks useful evidence. Index can
+return ranked results that do not support a claim. Agent can complete a
+pipeline that runtime policy refuses to retain. These are visible boundary
+outcomes, not contradictions.
+
+## Select The Owning Package
+
+| If you need to decide | Use | Do not delegate to it |
+| --- | --- | --- |
+| how source material becomes stable, addressable preparation output | `bijux-canon-ingest` | retrieval backend policy or claim validity |
+| how a vector operation executes, refuses, ranks, or diverges | `bijux-canon-index` | document normalization or evidence interpretation |
+| whether evidence references support structured claims | `bijux-canon-reason` | role scheduling or whole-run admission |
+| which bounded role runs next and why orchestration stops | `bijux-canon-agent` | final persistence and acceptance policy |
+| whether a composed run may execute, persist, resume, or replay | `bijux-canon-runtime` | rewriting lower-package semantics |
+
+Index separates its state backend from its optional vector-store adapter. The
+built-in execution state backends are memory, SQLite, and HNSW-backed state;
+vector-store capability is resolved independently and may come from a
+registered plugin. Remote adapters and the experimental pgvector path are not
+part of the frozen v1 contract.
+
+## Contract And Evidence Surfaces
 
 ```mermaid
 flowchart TD
-    input["input identity"] --> execution["bounded execution"]
-    config["resolved configuration"] --> execution
-    policy["policy decision"] --> execution
-    execution --> value["result value"]
-    execution --> evidence["trace and provenance"]
-    execution --> state["durable run state"]
-    value --> review["review or replay"]
-    evidence --> review
-    state --> review
+    imports["typed Python imports"] --> behavior["package behavior"]
+    command["console command, where published"] --> behavior
+    http["versioned OpenAPI contract"] --> behavior
+    behavior --> tests["focused executable checks"]
+    behavior --> artifacts["run artifacts and provenance"]
+    tests --> claim["bounded support for a claim"]
+    artifacts --> claim
 ```
 
-The exact record varies by package. Ingest emphasizes content identity and
-reproducible transformation. Index records retrieval execution. Reason writes
-claim and verification evidence. Agent captures orchestration traces. Runtime
-adds policy and run-mode decisions.
+No single surface proves the entire system. Python exports establish an
+in-process contract. OpenAPI records HTTP shape. Tests exercise selected
+semantics. Run artifacts show what happened in one execution. Strong claims
+name the relevant surfaces and remain inside their combined boundary.
 
-## Choosing an Entry Point
+## Continue By Responsibility
 
-- Start with **Ingest** when raw files or records need deterministic cleaning,
-  chunking, deduplication, or embedding.
-- Start with **Index** when the main problem is storing and retrieving material
-  across memory, SQLite, vector, or external backends.
-- Start with **Reason** when evidence must be turned into inspectable claims or
-  a replayable reasoning record.
-- Start with **Agent** when multiple bounded operations need orchestration and a
-  final traceable result.
-- Start with **Runtime** when execution modes, policy decisions, persistence,
-  observation, or replay are the primary concern.
-
-For an end-to-end introduction, continue with the
-[repository quickstart](../getting-started/quickstart.md). Package handbooks
-then document the concrete API, CLI, storage, and compatibility contracts for
-each boundary.
-
-## Repository Map
-
-| Path | Purpose |
-| --- | --- |
-| `packages/` | canonical and compatibility Python distributions |
-| `apis/` | versioned schema sources and generated contract artifacts |
-| `docs/` | public handbook, package guides, operations, and compatibility references |
-| `configs/` | repository-owned tool configuration |
-| `makes/` | root and package command composition |
-| `artifacts/` | local builds, reports, run records, and other generated output |
-
-The repository keeps these concerns separate for the same reason the platform
-keeps its packages separate: ownership should be visible in both code and
-evidence.
+- [Package map](package-map.md) lists canonical and compatibility ownership.
+- [Ownership model](ownership-model.md) resolves cross-package decisions.
+- [Testing and validation](../operations/testing-and-validation.md) maps
+  repository claims to checks.
+- [Compatibility packages](../../08-compat-packages/index.md) maps preserved
+  names to canonical owners.
