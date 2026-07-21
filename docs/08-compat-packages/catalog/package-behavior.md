@@ -4,53 +4,95 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Package Behavior
 
-Each compatibility package should stay intentionally thin. Its job is to
-preserve a narrow bridge to the canonical package through metadata, imports,
-commands, and documentation routing.
+A compatibility distribution is executable delegation. It installs a canonical
+package at the exact same version, forwards imports to canonical module objects,
+and preserves an established command name. It does not copy or wrap product
+algorithms.
 
-## Behavior Model
+## Bridge Anatomy
 
 ```mermaid
-flowchart LR
-    legacy["legacy package surface"]
-    bridge["thin compatibility behavior"]
-    canon["canonical package behavior"]
-    limit["no new product identity"]
+flowchart TD
+    pyproject["pyproject.toml"]
+    hook["hatch_build.py"]
+    init["compat root __init__.py"]
+    finder["runtime_alias.py"]
+    main["compat __main__.py"]
+    canonical["canonical package"]
+    tests["bridge + workspace contracts"]
 
-    legacy --> bridge --> canon
-    limit --> bridge
+    pyproject --> hook --> canonical
+    pyproject --> main --> canonical
+    init --> finder --> canonical
+    init --> canonical
+    hook --> tests
+    finder --> tests
+    main --> tests
 ```
 
-This page should make compatibility behavior feel constrained on purpose. The
-package exists to redirect and preserve continuity, not to grow a second
-feature surface around the old name.
+## Build-Time Dependency
 
-## Expected Behavior
+The compatibility `pyproject.toml` declares version and dependencies as dynamic.
+Its metadata hook reads `canonical-name` and writes one exact requirement using
+the resolved bridge version. The resulting wheel therefore cannot float to a
+different canonical minor or patch version.
 
-- preserve legacy name continuity for installs, imports, or commands
-- point clearly at the canonical replacement in package metadata and docs
-- avoid growing a separate feature surface or product identity
+This dependency belongs to built metadata; absence of a literal dependencies
+list in the source `pyproject.toml` is intentional. Inspect a built wheel or the
+metadata-hook tests when reviewing the resolved requirement.
 
-## Failure Signs
+## Import Forwarding
 
-- the compatibility package starts carrying new behavior of its own
-- documentation makes the legacy name sound like a preferred starting point
-- release activity exists only to mirror canonical releases without a real
-  dependent environment behind it
+The root `__init__.py` imports the canonical package, publishes the canonical
+`__all__`, forwards attribute lookup, and exposes canonical names to interactive
+discovery. It also installs a meta-path finder for nested imports.
 
-## First Proof Check
+For a non-local path, the finder:
 
-- `packages/compat-*`
-- compatibility package `README.md` files
-- release and retirement rules in the migration handbook
+1. removes the compatibility root prefix;
+2. checks whether the corresponding canonical module exists;
+3. imports that canonical module;
+4. registers the same module object under the compatibility path.
 
-## Design Pressure
+Using one object preserves type and class identity across mixed imports. The
+finder excludes locally owned bridge modules such as `runtime_alias` and
+`__main__`.
 
-If a compatibility package starts accumulating local behavior, the bridge has
-turned into an unofficial product line. This page has to keep the acceptable
-surface narrow enough that retirement still looks realistic.
+## Command Delegation
+
+Each bridge registers its preserved executable directly against the canonical
+entrypoint, and its local `__main__.py` launches that same application for
+`python -m <compat_import>`. It must not introduce a second parser or translate
+arguments independently.
+
+`bijux-vex` is a special continuity case: it registers the canonical index
+Typer application even though `bijux-canon-index` has no console script of its
+own. This preserves existing automation without declaring the old command to be
+the canonical architecture.
+
+## Verified And Unverified Claims
+
+| Claim | Repository evidence | Boundary |
+| --- | --- | --- |
+| bridge installs the matching canonical release | metadata hook and build tests | resolved artifact metadata, not source text alone |
+| root exports follow canonical exports | bridge unit tests | documented public exports |
+| representative nested types retain identity | nested import identity tests | tested paths, not every private module forever |
+| CLI module resolves to canonical identity | CLI module identity tests | module identity, not every external shell environment |
+| console target delegates to canonical entrypoint | project metadata and compatibility contracts | registered target; behavior still belongs to canonical tests |
+| compatibility package is releasable | workspace inventory and publication tests | eligibility, not proof that a channel published it |
+
+## Forbidden Divergence
+
+A bridge has diverged if it contains product algorithms, its own schema, a
+separate parser, bridge-only configuration semantics, independent storage, or a
+bug fix absent from the canonical owner. Correct the canonical package first and
+keep the compatibility change limited to delegation or migration support.
+
+See the [canonical targets](../migration/canonical-targets.md) for exact
+destinations and [validation strategy](../migration/validation-strategy.md) for
+migration evidence.

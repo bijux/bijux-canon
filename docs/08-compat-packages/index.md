@@ -65,6 +65,11 @@ look similar:
 | runtime behavior | canonical tests pass through the bridge where applicable | one successful example |
 | release | bridge and canonical artifacts derive from the same tag and version | matching version strings alone |
 
+The repository currently verifies root exports, selected nested module identity,
+package layout, canonical dependency metadata, and registered console targets.
+Those checks are strong evidence for delegation at the tested surfaces; they do
+not promise that an arbitrary undocumented private import will remain available.
+
 A bridge may contain alias machinery and a local `__main__`; it must not contain
 a second product implementation. New behavior, schemas, examples, and fixes
 belong to the canonical package first.
@@ -116,8 +121,10 @@ make a partial migration permanent.
 ## Retirement Rule
 
 A preserved legacy name stays only when it protects a real dependent
-environment or a documented migration window. Habit, nostalgia, or naming
-symmetry are not enough.
+environment or a documented migration window. No removal date is implied by
+the existence of these pages. A retirement decision needs usage evidence,
+release communication, and validation that supported consumers have moved.
+Habit or naming symmetry alone is not enough to extend a bridge indefinitely.
 
 ## Migration Proof
 
@@ -126,3 +133,7 @@ imports, command invocations, configuration names, artifact readers, and
 deployment images use the canonical identity and pass the canonical package's
 tests. Replacing only the distribution name can leave runtime imports or shell
 automation on the compatibility path.
+
+For `bijux-vex`, command migration is not a rename: `bijux-canon-index` does not
+publish a console script. Move that automation to the canonical typed Python or
+HTTP surface before removing the compatibility package.
