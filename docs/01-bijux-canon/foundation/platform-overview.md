@@ -4,61 +4,107 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Platform Overview
 
-`bijux-canon` is a multi-package system because preparation, retrieval,
-reasoning, orchestration, and runtime governance become easier to review when
-they stay distinct.
+Bijux Canon is a family of Python packages for building evidence-bearing
+knowledge workflows. It separates document preparation, retrieval, reasoning,
+agent execution, and runtime governance so that every handoff can be inspected
+without treating an entire application as one opaque operation.
 
-## Platform Chain
+The packages can be adopted independently. Together, they form a pipeline in
+which source material becomes a governed result.
+
+## The Package Chain
 
 ```mermaid
 flowchart LR
-    ingest["ingest prepares source material"]
-    index["index makes retrieval explicit"]
-    reason["reason turns evidence into claims"]
-    agent["agent coordinates traceable work"]
-    runtime["runtime decides governed acceptance"]
+    source["source documents"]
+    ingest["bijux-canon-ingest<br/>clean, chunk, embed"]
+    index["bijux-canon-index<br/>store, retrieve, trace"]
+    reason["bijux-canon-reason<br/>plan, claim, verify"]
+    agent["bijux-canon-agent<br/>coordinate execution"]
+    runtime["bijux-canon-runtime<br/>apply policy and persist runs"]
+    result["governed result"]
 
-    ingest --> index --> reason --> agent --> runtime
+    source --> ingest --> index --> reason --> agent --> runtime --> result
 ```
 
-The platform claim only holds if each package can be understood as one
-defensible handoff in that chain. Readers should leave this page with the
-sequence in mind before they open any local package section.
+This diagram describes responsibilities, not a mandatory deployment topology.
+An application may use ingest with another retrieval engine, call reason
+directly from a service, or use runtime without the agent package. The stable
+boundary is the contract each package owns.
 
-## One End-To-End Scenario
+## What Each Boundary Owns
 
-A source document is prepared into deterministic material by ingest. Index
-turns that material into replayable retrieval behavior with provenance-rich
-results. Reason converts the retrieved evidence into inspectable claims. Agent
-coordinates the work that uses those claims. Runtime decides whether the run is
-acceptable, replayable, and durable.
+| Package | Owns | Produces or records |
+| --- | --- | --- |
+| `bijux-canon-ingest` | deterministic preparation of source material | cleaned documents, chunks, embeddings, and local indexes |
+| `bijux-canon-index` | retrieval and execution provenance | query results, run metadata, status, and backend-specific state |
+| `bijux-canon-reason` | evidence-linked reasoning | specifications, plans, traces, verification records, and fingerprints |
+| `bijux-canon-agent` | orchestration of bounded agent work | final results and execution traces |
+| `bijux-canon-runtime` | policy-aware flow execution | governed run records, decisions, traces, and replay state |
 
-That sequence is why the repository behaves like a platform rather than a loose
-set of packages. Each package hands a controlled artifact or responsibility to
-the next one, and the root preserves the shared rules that keep those handoffs
-legible.
+`bijux-canon-dev` supports repository tooling and documentation; it is not a
+runtime dependency for applications. Compatibility distributions preserve
+established import and command surfaces while delegating implementation to the
+canonical packages.
 
-## What Platform Drift Looks Like
+## A Result Is More Than a Value
 
-- a root helper starts owning product behavior
-- a package begins explaining more than one stage of the chain honestly
-- a later package quietly redefines the contract of an earlier package instead
-  of consuming it
+The platform is designed around a stronger output model than “the call
+returned successfully.” A trustworthy run connects the returned value to the
+inputs, configuration, decisions, and durable records that produced it.
 
-## Concrete Anchors
+```mermaid
+flowchart TD
+    input["input identity"] --> execution["bounded execution"]
+    config["resolved configuration"] --> execution
+    policy["policy decision"] --> execution
+    execution --> value["result value"]
+    execution --> evidence["trace and provenance"]
+    execution --> state["durable run state"]
+    value --> review["review or replay"]
+    evidence --> review
+    state --> review
+```
 
-- `packages/` for the canonical package boundaries
-- `apis/` for shared schema sources and pinned artifacts
-- `Makefile`, `makes/`, and `.github/workflows/` for shared enforcement
-- `docs/` for the handbook structure that mirrors the split
+The exact record varies by package. Ingest emphasizes content identity and
+reproducible transformation. Index records retrieval execution. Reason writes
+claim and verification evidence. Agent captures orchestration traces. Runtime
+adds policy and run-mode decisions.
 
-## Design Pressure
+## Choosing an Entry Point
 
-If a package starts absorbing its neighbors' meaning, the platform stops being
-a reviewable chain and becomes a pile of late-stage convenience. This page has
-to keep the package split legible enough that readers can challenge drift.
+- Start with **Ingest** when raw files or records need deterministic cleaning,
+  chunking, deduplication, or embedding.
+- Start with **Index** when the main problem is storing and retrieving material
+  across memory, SQLite, vector, or external backends.
+- Start with **Reason** when evidence must be turned into inspectable claims or
+  a replayable reasoning record.
+- Start with **Agent** when multiple bounded operations need orchestration and a
+  final traceable result.
+- Start with **Runtime** when execution modes, policy decisions, persistence,
+  observation, or replay are the primary concern.
+
+For an end-to-end introduction, continue with the
+[repository quickstart](../getting-started/quickstart.md). Package handbooks
+then document the concrete API, CLI, storage, and compatibility contracts for
+each boundary.
+
+## Repository Map
+
+| Path | Purpose |
+| --- | --- |
+| `packages/` | canonical and compatibility Python distributions |
+| `apis/` | versioned schema sources and generated contract artifacts |
+| `docs/` | public handbook, package guides, operations, and compatibility references |
+| `configs/` | repository-owned tool configuration |
+| `makes/` | root and package command composition |
+| `artifacts/` | local builds, reports, run records, and other generated output |
+
+The repository keeps these concerns separate for the same reason the platform
+keeps its packages separate: ownership should be visible in both code and
+evidence.
