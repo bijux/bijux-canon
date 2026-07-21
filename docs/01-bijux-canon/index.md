@@ -57,6 +57,37 @@ The root release configuration is the source of truth for these sets. A
 directory under `packages/` is not automatically public, canonical, or eligible
 for publication.
 
+## Read From The Decision Outward
+
+Start at the layer that made the decision, then move outward only when the
+question crosses a repository boundary:
+
+```mermaid
+flowchart TD
+    question["decision under review"]
+    product{"product behavior?"}
+    package["owning package handbook"]
+    shared{"cross-package contract?"}
+    root["repository handbook"]
+    automation{"validation or publication?"}
+    maintain["maintenance handbook"]
+    continuity{"preserved name?"}
+    compat["compatibility handbook"]
+
+    question --> product
+    product -->|yes| package
+    product -->|no| shared
+    shared -->|yes| root
+    shared -->|no| automation
+    automation -->|yes| maintain
+    automation -->|no| continuity
+    continuity -->|yes| compat
+```
+
+This routing prevents root-level configuration from being mistaken for product
+semantics. For example, `pyproject.toml` can prove that a distribution is in the
+release set; only the owning package can prove what an execution request means.
+
 ## Trace A Shared Contract
 
 A public contract can cross the root without transferring product ownership.

@@ -69,7 +69,7 @@ sequence describes ownership, not a mandatory monolithic deployment.
 Ingest decides how source material is prepared. Index decides how vector work executes and is explained. Reason decides how evidence supports a claim. Agent decides how role-specific work is coordinated. Runtime decides whether the resulting run is acceptable and durable.</div>
 
 <div class="bijux-panel-grid">
-  <div class="bijux-panel"><h3>Five canonical packages</h3><p>Each package has typed Python surfaces, a command boundary, package-local tests, and a versioned HTTP schema.</p></div>
+  <div class="bijux-panel"><h3>Five canonical packages</h3><p>Each package has typed Python surfaces, package-local tests, and a versioned HTTP schema. Ingest, reason, agent, and runtime also publish canonical commands.</p></div>
   <div class="bijux-panel"><h3>Eleven distributions</h3><p>Five canonical product packages and six explicit compatibility aliases are published from one tagged source line.</p></div>
   <div class="bijux-panel"><h3>Evidence before confidence</h3><p>Determinism, replay, verification, and compatibility claims are bounded by checked-in contracts and tests rather than inferred from a successful demonstration.</p></div>
 </div>
@@ -169,6 +169,21 @@ sequenceDiagram
 | `bijux-canon-agent` | role-based orchestration and trace-backed agent workflows | you are reviewing how multi-step agent work is coordinated and explained |
 | `bijux-canon-runtime` | governed execution, replay, persistence, and final acceptability | you need the authority layer that decides whether a run is acceptable and durable |
 
+## Choose An Integration Surface
+
+| Need | Install | Begin with |
+| --- | --- | --- |
+| normalize, clean, chunk, or prepare source material | `bijux-canon-ingest` | [ingest installation and setup](02-bijux-canon-ingest/operations/installation-and-setup.md) |
+| execute vector operations through a declared backend contract | `bijux-canon-index` | [index entrypoints and examples](03-bijux-canon-index/interfaces/entrypoints-and-examples.md) |
+| build claims and verify their evidence references | `bijux-canon-reason` | [reason operator workflows](04-bijux-canon-reason/interfaces/operator-workflows.md) |
+| coordinate role-specific work and retain its trace | `bijux-canon-agent` | [agent CLI surface](05-bijux-canon-agent/interfaces/cli-surface.md) |
+| authorize and retain a complete governed run | `bijux-canon-runtime` | [runtime operator workflows](06-bijux-canon-runtime/interfaces/operator-workflows.md) |
+
+The package boundaries are compositional: install several when the application
+crosses several authorities, but keep each decision at its owning boundary.
+Compatibility packages are for continuity of an existing distribution, import,
+or command name; they are not an alternative architecture.
+
 ## Shared Handbooks
 
 - [Repository Handbook](01-bijux-canon/index.md) explains the root-owned design boundary, shared workflow, and package seams
@@ -187,11 +202,11 @@ sequenceDiagram
 | a compatibility name is equivalent | dependency pin, module identity, command parity, and canonical tests | successful installation |
 | a release contains the intended package | tagged source, build manifest, publication guard, and published artifact | a green build job |
 
-## When Sources Disagree
+## Reconcile Conflicting Evidence
 
-Documentation can lag implementation. Resolve a disagreement by inspecting the
-owning package's public facade and schema, the code that makes the disputed
-decision, the narrowest relevant test, and the artifact emitted by a real run.
-The strongest claim is the intersection of those sources, not whichever one is
-most convenient. Correct stale documentation rather than repeating it across
-handbooks.
+When two surfaces appear to disagree, inspect the owning package's public
+facade and schema, the code that makes the disputed decision, the narrowest
+relevant test, and the artifact emitted by a real run. Treat the supported
+claim as the intersection of those sources. A schema without a live route, a
+command without a parity test, or a replay label without retained identities is
+not enough to establish the broader behavior.

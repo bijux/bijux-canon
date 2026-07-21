@@ -74,8 +74,6 @@ bundle per package, uploads distributions to PyPI, publishes release bundles to
 their exact GHCR package pages under the `bijux` account, and attaches the same
 staged assets to the GitHub Release.
 
-Current synchronized release line: `v0.3.9` dated `2026-07-04`.
-
 The six compatibility distributions in this repository are real alias
 packages, not migration-only placeholders. Five preserve retired public names,
 and one preserves the shorter family-root `bijux-canon` runtime name. All six
@@ -115,7 +113,10 @@ has to disguise another layer's failure as success.
 The public contract is larger than Python imports:
 
 - Python distributions and typed root imports provide in-process use.
-- Console commands provide automation-friendly entry points.
+- Canonical console commands provide automation-friendly entry points for
+  ingest, reason, agent, and runtime. Index is an in-process execution library;
+  its preserved `bijux-vex` compatibility distribution supplies the historical
+  command name.
 - Versioned OpenAPI documents under `apis/<package>/v1/` pin HTTP behavior for
   all five canonical packages.
 - Package tests cover local semantics; API, invariant, integration, end-to-end,
@@ -126,6 +127,39 @@ The public contract is larger than Python imports:
 Start with the owning package instead of installing the entire family by
 habit. The packages are independently publishable and intentionally do not
 present one catch-all import surface.
+
+## Install By Responsibility
+
+Install the package that owns the decision your application needs to make:
+
+```bash
+python -m pip install bijux-canon-ingest
+python -m pip install bijux-canon-index
+python -m pip install bijux-canon-reason
+python -m pip install bijux-canon-agent
+python -m pip install bijux-canon-runtime
+```
+
+These are independent distributions, not installation tiers. An ingest-only
+application does not need runtime; a retrieval integration can depend on index
+without importing agent orchestration. Use `bijux-canon-runtime` when the
+application must apply whole-run policy, persist governed records, or compare
+replay results.
+
+After installation, inspect the owning public surface before wiring a workflow:
+
+```bash
+bijux-canon-ingest --help
+bijux-canon-reason --help
+bijux-canon-agent --help
+bijux-canon-runtime --help
+```
+
+For index integrations, begin with the
+[index handbook](https://bijux.io/bijux-canon/03-bijux-canon-index/) and its
+typed execution contracts. Existing `bijux-vex` automation remains available
+through the compatibility package, but new integrations should target
+`bijux-canon-index` directly.
 
 ## Read The Repository By Ownership
 
