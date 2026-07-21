@@ -4,88 +4,103 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # Documentation System
 
-The `bijux-canon` handbook exists to solve three reader problems quickly:
-choosing the right owner, finding the proof behind a claim, and knowing when a
-page has reached the edge of its authority.
-
-The site is organized around one landing page, one repository handbook, one
-five-branch handbook for each canonical product package, one maintenance
-handbook, and one compatibility handbook. That structure is useful only if it
-reduces routing mistakes and shortens the path from prose to checked-in proof.
-
-## Documentation Model
+The Bijux Canon site is organized by authority. It helps a reader identify the
+component that made a decision, understand the retained evidence, and recognize
+where a guarantee ends. The handbook complements source, schemas, tests, and
+artifacts; it does not substitute for them.
 
 ```mermaid
-flowchart LR
-    landing["landing and repository handbook"]
-    packages["canonical package handbooks"]
-    maintain["maintenance handbook"]
-    compat["compatibility handbook"]
-    proof["code, tests, schemas, workflows, and metadata"]
-
-    landing --> packages
-    landing --> maintain
-    landing --> compat
-    packages --> proof
-    maintain --> proof
-    compat --> proof
+flowchart TD
+    H[Site landing] --> R[Repository handbook]
+    H --> P[Canonical package handbooks]
+    H --> M[Maintenance handbook]
+    H --> C[Compatibility handbook]
+    R --> S[Shared contracts and package map]
+    P --> B[Product behavior and artifacts]
+    M --> O[Verification and publication machinery]
+    C --> L[Legacy names and canonical targets]
+    S --> E[Checked-in evidence]
+    B --> E
+    O --> E
+    L --> E
 ```
 
-Read the handbook as a routing system rather than a library shelf. Every branch
-exists to answer one ownership question and then move the reader into code,
-tests, schemas, workflows, or package metadata that can support the claim.
+## Handbook map
 
-## Reader Routes
-
-| If the question starts with | Open first | Expect proof in |
+| Section | Answers | Does not own |
 | --- | --- | --- |
-| repository-wide rules, package seams, or shared governance | the repository handbook | `mkdocs.yml`, `Makefile`, `makes/`, `.github/workflows/`, `pyproject.toml` |
-| canonical product behavior | the owning package handbook | `packages/<package>/src`, `packages/<package>/tests`, `apis/` |
-| maintainer automation, release posture, or repository health | the maintenance handbook | `packages/bijux-canon-dev`, `makes/`, `.github/workflows/` |
-| older or shorter public names | the compatibility handbook | `packages/compat-*`, migration docs, package metadata |
+| [Repository handbook](../index.md) | system boundaries, package map, shared contracts, root operations | package-local algorithms or runtime semantics |
+| [Ingest](../../02-bijux-canon-ingest/index.md) | source preparation, chunks, embeddings, local retrieval | governed vector execution or claim meaning |
+| [Index](../../03-bijux-canon-index/index.md) | vector contracts, backends, ranking, approximation, replay | source transformation or evidence interpretation |
+| [Reason](../../04-bijux-canon-reason/index.md) | evidence-to-claim records, verification, reasoning replay | role scheduling or whole-run authority |
+| [Agent](../../05-bijux-canon-agent/index.md) | roles, lifecycle, providers, convergence, trace | claim truth or runtime admission |
+| [Runtime](../../06-bijux-canon-runtime/index.md) | flow authority, effects, persistence, recovery, replay verdict | reimplementation of lower-package meaning |
+| [Maintenance](../../07-bijux-canon-maintain/index.md) | Make contracts, helper modules, workflows, release and docs publication | end-user product behavior |
+| [Compatibility](../../08-compat-packages/index.md) | older distributions, imports, commands, and migration | new canonical semantics |
 
-## What This System Prevents
+## Evidence model
 
-- root pages that drift into package-local product explanation
-- package pages that hide their ownership boundary behind generic prose
-- maintainer pages that look like product docs
-- compatibility pages that quietly feel canonical instead of transitional
+Different claims require different proof. Follow the nearest link from prose to
+the owned representation:
 
-## Current Proof Model
+| Claim in the handbook | Strongest checked-in evidence |
+| --- | --- |
+| Python interface exists | package metadata, public import, type contract, focused test |
+| CLI behavior exists | registered entry point or module command, exit and output tests |
+| HTTP operation exists | handler plus OpenAPI source, pin/hash agreement, live contract test |
+| artifact is stable | schema or model, canonical serializer, round-trip and tamper tests |
+| replay is supported | retained inputs, identity policy, frozen execution, structured comparison |
+| release is publishable | tagged version, built distributions, publication guard, staged assets |
+| compatibility is preserved | alias metadata, direct delegation, parity tests, migration route |
 
-- `mkdocs.yml` defines the published structure readers actually navigate
-- `docs/` carries the handbook entry surfaces and topic pages
-- `packages/`, `apis/`, `Makefile`, `makes/`, and `.github/workflows/` supply
-  the concrete proof behind most cross-page claims
+Schema presence alone does not prove implementation. A rendered example does
+not prove executable behavior. A passing check proves only the rule it actually
+evaluated.
 
-## Page Contract
+## Page conventions
 
-Every strong page in this site should do four things in order:
+Public pages use the vocabulary of the reader-facing contract:
 
-1. state what surface owns the topic
-2. say what the surface does not own
-3. point to the checked-in proof that can support the claim
-4. route the reader away once another surface has stronger authority
+- diagrams show authority, data, or execution flow rather than editorial
+  structure;
+- examples use registered commands and real artifact paths;
+- tables separate implemented behavior, external responsibility, and known
+  limitation;
+- failures remain visible rather than being converted into aspirational prose;
+- links route to the owner when another section has stronger authority; and
+- review dates identify when checked-in behavior was last reconciled with the
+  explanation.
 
-## Fix The Weakest Surface First
+Maintainer procedures belong in the maintenance handbook. Product pages may
+name a validation command when it helps users or contributors reproduce a
+contract, but they do not carry repository policy or internal planning notes.
 
-Improve the page that most often sends readers to the wrong owner, not the page
-that already reads well. In this repository that usually means fixing a blurred
-boundary, a missing proof path, or a route block that sends readers in circles.
+## Reading a guarantee
 
-## Open This Page When
+For any documented guarantee, ask four questions:
 
-- the main question is where a topic belongs in the published handbook
-- a page is starting to blur repository, package, maintenance, or compatibility ownership
-- the docs structure itself is under review rather than one package behavior
+1. Which package or repository surface owns the decision?
+2. Which input identity, policy, or configuration constrains it?
+3. Which artifact or executable check records the result?
+4. Which adjacent responsibility remains outside the guarantee?
 
-## Design Pressure
+If a page cannot answer those questions, treat its statement as orientation
+rather than assurance and continue to the owning contract.
 
-If the docs system optimizes for page polish instead of routing accuracy, it
-starts producing beautiful detours. The structure has to keep readers moving
-toward the right owner and the right proof.
+## Known limits of the site
+
+The handbook is versioned with the repository branch being viewed. Published
+package versions may have older behavior; use the matching tag, package
+changelog, and distribution metadata for historical claims. External services,
+provider models, and deployment policy can also change independently of the
+repository. Their state must be captured by the application when a reproducible
+claim depends on it.
+
+The site earns trust by narrowing each statement to evidence that can be found,
+executed, or inspected—not by presenting every component as complete or
+equivalent.
