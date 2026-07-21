@@ -48,6 +48,18 @@ helpers, safeguards, and tree folds. Application, CLI, HTTP, storage, embedding,
 and vector adapters stay behind their owning modules and are resolved lazily
 where compatibility requires root-level access.
 
+```mermaid
+flowchart LR
+    source[RawDoc or CSV]
+    clean[normalized CleanDoc]
+    chunks[chunks with offsets]
+    store[JSONL or local index]
+    retrieve[ranked candidates]
+    answer[extractive answer + citations]
+
+    source --> clean --> chunks --> store --> retrieve --> answer
+```
+
 ## Minimal Transformation
 
 ```python
@@ -98,12 +110,19 @@ health, chunking, index construction, retrieval, and extractive answering. The
 checked-in schema, pinned OpenAPI JSON, and schema hash are release artifacts;
 implementation output is tested against them.
 
-## What This Package Takes And Produces
+## Inspect The Evidence Chain
 
-- takes: raw documents, ingest configuration, and package-local retrieval assembly inputs
-- produces: cleaned records, chunks, retrieval-ready artifacts, and ingest boundary failures when source data breaks contract
-- guarantees: deterministic transforms stay separable from adapters and the root import remains safe for dependency-light consumers
-- does not do: own runtime replay policy, expose every internal helper as a stable promise, or define vector execution semantics for the rest of canon
+| Result | Evidence to retain | Claim boundary |
+| --- | --- | --- |
+| cleaned document | source identity, normalization configuration, `CleanDoc` | repeatable preparation, not source truth |
+| chunk | parent document, start/end offsets, chunk geometry, text | traceable segmentation while the prepared parent is retained |
+| local index | backend, corpus fingerprint, schema version, prepared records | reproducible ingest-local retrieval, not general vector execution |
+| ranked candidates | index identity, query, filters, scores, chunk metadata | what this backend ranked, not corpus completeness |
+| extractive answer | candidates plus exact citations | evidence used by assembly, not factual certification |
+
+Parse, validation, safeguard, transformation, retry, and adapter failures
+remain typed and stage-specific. An empty result is not substituted for a
+failed preparation stage.
 
 ## Public API Routing
 
@@ -115,7 +134,7 @@ Reach into submodules only when you need a specific boundary:
 - `bijux_canon_ingest.interfaces` for CLI and HTTP edges
 - `bijux_canon_ingest.config` for builder-style package configuration
 
-## Legacy continuity
+## Legacy Continuity
 
 - compatibility package: [`bijux-rag`](https://pypi.org/project/bijux-rag/)
 - legacy import root: `bijux_rag`
@@ -123,18 +142,17 @@ Reach into submodules only when you need a specific boundary:
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 - retired repository target: [https://github.com/bijux/bijux-rag](https://github.com/bijux/bijux-rag) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
-## What this package owns
+## Package Boundary
 
-- document cleaning, normalization, and chunking
-- ingest-local retrieval and indexing assembly
-- package-local CLI and HTTP boundaries
-- ingest-specific adapters, safeguards, and observability helpers
+Ingest owns the path from raw source shape to deterministic prepared material,
+including its dependency-light local retrieval workflow. `bijux-canon-index`
+owns declared vector execution, backend capability negotiation, execution
+artifacts, and cross-backend replay. Reasoning, orchestration, and whole-run
+acceptance remain with reason, agent, and runtime respectively.
 
-## What this package does not own
-
-- standalone vector execution semantics
-- runtime-wide governance, persistence, or replay authority
-- repository tooling and release automation
+Downstream code should consume stable records, identifiers, offsets, and
+fingerprints. It should not repair missing provenance or reinterpret an ingest
+failure as evidence that no matching content exists.
 
 ## Failure Semantics
 
@@ -148,7 +166,7 @@ Reach into submodules only when you need a specific boundary:
 - Importing `bijux_canon_ingest` does not eagerly import optional CLI, HTTP, or
   orchestration dependencies.
 
-## Source map
+## Source Map
 
 - [`src/bijux_canon_ingest/processing`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/processing) for deterministic document transforms
 - [`src/bijux_canon_ingest/retrieval`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval) for retrieval-oriented models and assembly
@@ -157,7 +175,7 @@ Reach into submodules only when you need a specific boundary:
 - [`src/bijux_canon_ingest/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/interfaces) for CLI and HTTP edges
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/tests) for behavior, layout, and corpus-backed checks
 
-## Read this next
+## Read This Next
 
 - [Package guide](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
 - [Package overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/)
@@ -167,12 +185,7 @@ Reach into submodules only when you need a specific boundary:
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md)
 
-## Primary entrypoint
+## Primary Entrypoint
 
 - console script: `bijux-canon-ingest`
-
-## Release Readiness
-
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- package history: [`CHANGELOG.md`](CHANGELOG.md)
