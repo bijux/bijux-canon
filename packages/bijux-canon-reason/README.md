@@ -97,9 +97,8 @@ bijux-canon-reason replay \
 identifier. The manifest and invariant checksum bind the inputs, plan, trace,
 runtime descriptor, schema version, and producer version.
 
-The `eval` command exists, but its suite selector is explicitly marked as a
-placeholder in the current implementation. It must not be treated as evidence
-of a mature configurable evaluation catalog.
+The `eval` command exists, but its suite selector is currently a fixed stub. It
+must not be treated as evidence of a mature configurable evaluation catalog.
 
 ## HTTP Contract
 
@@ -108,14 +107,21 @@ trace retrieval, verification, and replay. Its source, pinned representation,
 and digest live under
 [`apis/bijux-canon-reason/v1/`](../../apis/bijux-canon-reason/v1/).
 
-## What This Package Takes And Produces
+## Evaluate A Reasoning Claim
 
-- takes: evidence bundles, reasoning plans, verification gates, and package-local tool inputs
-- produces: structured claims, reasoning step outputs, verification outcomes, and inspectable reasoning artifacts
-- guarantees: reasoning behavior stays explicit enough to test and challenge, with verification attached to the reasoning surface itself
-- does not do: persist runtime-wide state, own replay authority, or replace ingest and retrieval package boundaries
+| Question | Evidence to inspect | What is not enough |
+| --- | --- | --- |
+| Where did the claim originate? | claim kind, introducing event, plan node, stable identity | final prose alone |
+| Which bytes support it? | evidence identity, exact span, snippet digest, `SupportRef` | a source title or confidence score |
+| Was it validated or rejected? | verification checks, findings, claim status, policy disposition | trace completion alone |
+| Is the run complete? | manifest, file digests, invariant checksum, producer and schema versions | presence of a run directory |
+| Did replay match? | original and replay fingerprints plus diff summary | similar-looking output |
 
-## Legacy continuity
+Verification proves that registered checks passed over retained evidence. It
+does not prove corpus completeness, scientific truth, or correctness of an
+unstated inference.
+
+## Legacy Continuity
 
 - compatibility package: [`bijux-rar`](https://pypi.org/project/bijux-rar/)
 - legacy import root: `bijux_rar`
@@ -123,18 +129,17 @@ and digest live under
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 - retired repository target: [https://github.com/bijux/bijux-rar](https://github.com/bijux/bijux-rar) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
-## What this package owns
+## Package Boundary
 
-- reasoning plans, claims, and evidence-aware reasoning models
-- execution of reasoning steps and local tool dispatch
-- verification and provenance checks that belong to reasoning itself
-- package-local CLI and API boundaries
+Reason owns content-addressed planning, local tool execution, evidence-linked
+claims, reasoning traces, and reasoning-level verification. It consumes
+prepared and retrieved evidence without taking ownership of source
+normalization or vector ranking. Agent may coordinate several reasoning calls;
+runtime decides whether the resulting whole run is acceptable and durable.
 
-## What this package does not own
-
-- runtime persistence, replay authority, or execution governance
-- ingest and index engines
-- repository tooling and release automation
+Downstream consumers should preserve the run manifest and exact support
+references. Rebuilding a citation from display text loses the byte-level
+contract that verification and replay depend on.
 
 ## Verification And Failure Semantics
 
@@ -149,7 +154,7 @@ and digest live under
 - disk, wall-time, CPU, corpus-size, and retrieval limits are explicit runtime
   controls, not undocumented environment behavior
 
-## Source map
+## Source Map
 
 - [`src/bijux_canon_reason/planning`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/planning) for planning behavior
 - [`src/bijux_canon_reason/reasoning`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/reasoning) for claim and reasoning semantics
@@ -158,7 +163,7 @@ and digest live under
 - [`src/bijux_canon_reason/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/interfaces) and [`src/bijux_canon_reason/api`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/api) for boundaries
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/tests) for executable protection of the package contract
 
-## Read this next
+## Read This Next
 
 - [Package guide](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
 - [Ownership boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/)
@@ -168,12 +173,7 @@ and digest live under
 - [Test strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md)
 
-## Primary entrypoint
+## Primary Entrypoint
 
 - console script: `bijux-canon-reason`
-
-## Release Readiness
-
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- package history: [`CHANGELOG.md`](CHANGELOG.md)
