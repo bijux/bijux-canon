@@ -4,42 +4,65 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Capability Map
 
-The capability map for `bijux-canon-ingest` should let a reviewer connect a package promise to the code that carries it. If a capability cannot be tied to a stable module area, it is not owned clearly enough yet.
-
-## Capability Flow
+`bijux-canon-ingest` combines deterministic document preparation with a compact
+local retrieval path and reusable execution safeguards. The capabilities share
+typed records, explicit results, and configuration, but they retain distinct
+ownership and evidence.
 
 ```mermaid
 flowchart LR
-    source["source handling needs"]
-    modules["processing, retrieval, interfaces, and safeguards"]
-    outputs["prepared records and ingest diagnostics"]
+    source["source rows and text"]
+    prepare["filter, clean, chunk"]
+    enrich["embed, observe, deduplicate"]
+    persist["CSV / JSONL / local index"]
+    retrieve["rank, answer, evaluate"]
+    evidence["IDs, offsets, citations, diagnostics"]
 
-    source --> modules --> outputs
+    source --> prepare --> enrich --> persist --> retrieve --> evidence
 ```
 
-This page should make ingest capability look like a traceable chain from messy
-source handling to explicit handoff output. If the reviewer cannot point from
-promise to module to output, the package seam is weaker than it sounds.
+## Preparation capabilities
 
-## Capability To Code
+| Capability | Primary implementation | Produced evidence | Boundary |
+| --- | --- | --- | --- |
+| Typed source admission | `core/types.py`, readers, strict interface models | `RawDoc` or explicit read failure | does not establish source accuracy or licensing |
+| Deterministic cleaning | `processing/`, configured cleaners and rules | immutable `CleanDoc` and observations | offsets after cleaning address normalized text |
+| Policy-driven filtering | predicates and safe rule evaluation | retained/rejected records and reports | caller policy, not source governance |
+| Overlapping chunking | chunkers, tail policies, span validation | stable chunk index, offsets, text, and SHA-256 identity | identity changes when source, span, or text changes |
+| Embedding | hash baseline and optional sentence-transformers adapter | vector plus optional `EmbeddingSpec` | hash vectors are not semantic evidence |
+| Structural deduplication | document pipeline dedup stage | deterministic first occurrence by structural key | does not detect paraphrases or semantic duplicates |
+| Streaming composition | `streaming/`, `fp/`, and result folds | ordered lazy values or typed errors | observations that need the full corpus materialize it |
 
-- `processing/` owns cleaning, normalization, and chunking before retrieval begins
-- `retrieval/` owns ingest-side record shaping and handoff-ready assembly
-- `interfaces/` and `safeguards/` own the package surfaces that make ingest behavior repeatable and defensible
+## Retrieval and execution capabilities
 
-## Visible Outputs
+| Capability | Primary implementation | Produced evidence | Boundary |
+| --- | --- | --- | --- |
+| Local lexical index | `retrieval/` BM25 implementation | persisted index identity, ordered scores and chunks | package-local reference path |
+| Local dense index | NumPy cosine implementation | index metadata, embedding identity, ranked chunks | scores are specific to metric and model |
+| Extractive answering | retrieval answer workflow | answer text and resolvable chunk citations | does not establish truth or corpus completeness |
+| Offline evaluation | evaluation command and checked-in corpus | deterministic metrics and case results | measures the declared corpus, not general quality |
+| Retry and circuit breaking | `safeguards/` | bounded attempts, breaker state, typed failure | activated only when the caller composes it |
+| Resource and cache policy | resource, memoization, and effect primitives | lifetime, cache, and failure records | host owns distributed transactions and retention |
+| CLI and HTTP adapters | `interfaces/` | stable files, responses, exit/status semantics | HTTP default index state is process-local |
 
-- normalized source material
-- chunk collections and retrieval-ready records
-- ingest diagnostics that explain how preparation behaved
+## Capability selection
 
-## Design Pressure
+- Use the document-oriented pipeline when structural deduplication and
+  materialized observations are required.
+- Use the lazy pipeline when streaming composition is the principal need and
+  its narrower post-processing contract is acceptable.
+- Use the local retrieval commands for bounded, inspectable applications and
+  reference evaluation.
+- Use `bijux-canon-index` when retrieval requires backend capability
+  negotiation, governed execution, or replayable vector provenance.
+- Supply explicit safeguards around external readers, models, stores, and
+  effects; the core pipeline does not add hidden retry or cache semantics.
 
-Capabilities stop being trustworthy when they exist mostly in prose and only
-loosely in module boundaries. Ingest has to keep preparation promises tied to
-named code areas and visible outputs.
+The [invariants](../quality/invariants.md) define the laws behind these
+capabilities, and the [known limitations](../quality/known-limitations.md)
+state where their guarantees end.
