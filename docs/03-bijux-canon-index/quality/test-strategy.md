@@ -14,7 +14,25 @@ provenance, and public-interface compatibility. That separation is essential:
 an adapter can return plausible neighbors while violating determinism,
 isolation, or replay contracts.
 
-## Evidence layers
+## Evidence Layers
+
+```mermaid
+flowchart LR
+    core["core invariants and ABI"]
+    domain["scoring, budgets, artifacts"]
+    adapter["backend and store conformance"]
+    execution["orchestration and isolation"]
+    replay["golden replay and provenance"]
+    public["HTTP and CLI contracts"]
+
+    core --> domain --> adapter --> execution --> replay
+    execution --> public
+    replay --> public
+```
+
+The conformance layer prevents one adapter's success from being mistaken for a
+package-wide guarantee. Replay and public-boundary gates then establish that
+the chosen backend and its evidence remain observable outside the engine.
 
 | Test family | Principal claim |
 | --- | --- |
@@ -71,3 +89,11 @@ false claim. Add conformance coverage when another backend could repeat it,
 and add golden replay coverage when serialized artifacts or fingerprints are
 affected. This ensures the suite can identify whether a later regression came
 from the algorithm, adapter, provenance chain, or public interface.
+
+## Claims Outside The Test Boundary
+
+The suite does not establish universal recall, latency, or capacity; certify an
+unreviewed plugin; prove the security of an external vector service; or make
+ANN output mathematically exact. Those claims require a named dataset,
+backend, parameters, dependency versions, hardware, service configuration, and
+retained execution evidence.

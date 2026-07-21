@@ -13,6 +13,27 @@ Vector systems can return plausible neighbors while violating exactness,
 identity, budget, or replay claims. Index therefore treats silent capability
 drift as a larger architectural risk than an explicit refusal.
 
+## Where A Plausible Result Can Diverge
+
+```mermaid
+flowchart LR
+    request["execution request"]
+    plan["immutable plan"]
+    capability["capability resolution"]
+    runner["exact or ANN runner"]
+    result["ranked result"]
+    artifact["execution artifact"]
+
+    request --> plan --> capability --> runner --> result --> artifact
+    capability -. "dishonest declaration" .-> result
+    runner -. "metric or parameter drift" .-> result
+    result -. "unstable ties or partial budget" .-> artifact
+```
+
+The artifact must describe the path that executed, not merely the path the
+request preferred. A typed refusal is safer than silently substituting a
+runner whose capability changes the claim.
+
 ## Risk Register
 
 | Risk | Misleading outcome | Control |
