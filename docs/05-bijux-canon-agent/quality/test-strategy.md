@@ -13,7 +13,25 @@ Agent tests prove orchestration through contracts, state transitions, trace
 evidence, and failure paths. Model quality and provider integration are tested
 separately so a live response cannot conceal a broken lifecycle.
 
-## Evidence layers
+## Evidence Layers
+
+```mermaid
+flowchart LR
+    contract["strict role contracts"]
+    lifecycle["kernel and lifecycle"]
+    pipeline["pipeline outcomes"]
+    convergence["convergence and termination"]
+    trace["trace and replayability"]
+    boundary["CLI and HTTP parity"]
+    live["opt-in provider integration"]
+
+    contract --> lifecycle --> pipeline --> convergence --> trace --> boundary
+    pipeline -. "separate evidence" .-> live
+```
+
+Provider contact is deliberately outside the deterministic proof chain. A live
+response demonstrates connectivity and adapter behavior; lifecycle and trace
+correctness come from controlled tests whose inputs and time can be fixed.
 
 | Test family | Principal claim |
 | --- | --- |
@@ -66,3 +84,11 @@ convergence, trace, or interface. Add a pipeline-level test when the defect
 changes final status or artifact completeness. Add parity coverage when CLI
 and HTTP could interpret the same request differently, and add a live test only
 when the defect is specific to an external provider boundary.
+
+## Claims Outside The Test Boundary
+
+The suite does not establish that a model is truthful, safe, unbiased, or fit
+for a decision; that a convergence score implies correctness; or that a
+provider will reproduce a response. Those claims require declared evaluation
+data, provider and model identity, policy review, and retained production
+evidence beyond orchestration tests.

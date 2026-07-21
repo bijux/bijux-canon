@@ -13,6 +13,28 @@ Agent systems fail structurally when role output, orchestration policy, and run
 evidence become indistinguishable. A fluent final answer can hide an invalid
 lifecycle, an unrecorded model change, or a veto that was ignored.
 
+## Authority And Evidence Flow
+
+```mermaid
+flowchart LR
+    input["pipeline input"]
+    control["orchestration control"]
+    roles["passive agent roles"]
+    converge["convergence decision"]
+    final["typed final outcome"]
+    trace["ordered run trace"]
+
+    input --> control --> roles --> control --> converge --> final
+    control --> trace
+    roles --> trace
+    converge --> trace
+    roles -. "must not own lifecycle" .-> final
+```
+
+Control decides who acts and why execution stops. Roles contribute bounded
+outputs. The trace records both; it must not allow a role's fluent response to
+stand in for a lifecycle or acceptance decision.
+
 ## Risk Register
 
 | Risk | Misleading outcome | Control |
