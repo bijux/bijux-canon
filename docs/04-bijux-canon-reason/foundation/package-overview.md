@@ -4,53 +4,117 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Package Overview
 
-`bijux-canon-reason` exists to turn retrieved evidence into inspectable claims, checks, and reasoning artifacts. It owns the logic that makes conclusions reviewable instead of leaving meaning scattered across prompts, retrieval output, and workflow code.
+`bijux-canon-reason` turns evidence into typed, inspectable claims. It models a
+problem, builds a content-addressed plan, executes bounded steps, records an
+event trace, and verifies that claims remain connected to their support.
 
-## Role Model
+The central output is not prose alone. It is a reasoning bundle that lets a
+reviewer inspect what was asked, what ran, which evidence supported each claim,
+and whether replay reconstructed the same trace.
+
+## Reasoning Lifecycle
 
 ```mermaid
 flowchart LR
-    evidence["retrieved evidence"]
-    reason["reasoning and verification"]
-    claims["claims and reasoning artifacts"]
-    downstream["agent and runtime consumers"]
+    problem["ProblemSpec"]
+    plan["content-addressed Plan"]
+    execute["step and tool execution"]
+    claim["Claim with support references"]
+    trace["ordered Trace events"]
+    verify["VerificationReport"]
+    bundle["manifest-bound run bundle"]
 
-    evidence --> reason --> claims --> downstream
+    problem --> plan --> execute
+    execute --> claim
+    execute --> trace
+    claim --> verify
+    trace --> verify
+    verify --> bundle
 ```
 
-This page should make reason feel like the package where evidence becomes
-meaning in a reviewable form. The package earns its place only if a reader can
-see how claims are produced without shifting that burden onto orchestration.
+Equivalent canonical problem content produces the same specification identity.
+Plans, traces, and other core models also carry content-derived identifiers,
+making identity part of the evidence chain rather than a random label added
+after execution.
 
-## Boundary Verdict
+## Public Model
 
-If the disputed behavior decides what evidence means, how a claim is checked, or which reasoning artifact should exist after evaluation, it belongs here. If it only fetches evidence or coordinates multiple steps, it does not.
+| Model or helper | Role |
+| --- | --- |
+| `ProblemSpec` | declares the question, constraints, expected output, and schema version |
+| `Plan` and `PlanNode` | define ordered work and dependencies |
+| `ToolRequest` and `ToolResult` | bind an invocation to its recorded result |
+| `EvidenceRef` and `SupportRef` | locate the material supporting a claim |
+| `Claim` | represents a typed conclusion with support |
+| `Trace` | preserves ordered execution and reasoning events |
+| `VerificationReport` | records invariant, provenance, and grounding findings |
+| fingerprint helpers | canonicalize and compare durable reasoning records |
 
-## What This Package Makes Possible
+These models and their validators are available from `bijux_canon_reason`.
+Execution, verification, serialization, retrieval, and API behavior remain in
+their owning submodules.
 
-- reviewers can inspect how evidence became a claim instead of inferring intent from raw outputs
-- verification logic stays close to the reasoning decision it protects
-- agent and runtime layers can consume reasoning artifacts without re-owning reasoning policy
+## Create a Verified Run
 
-## Tempting Mistakes
+```bash
+bijux-canon-reason run \
+  --spec problem.json \
+  --preset default \
+  --seed 0 \
+  --artifacts-dir artifacts/bijux-canon-reason \
+  --fail-on-verify \
+  --json
+```
 
-- hiding reasoning policy inside retrieval scoring or output shaping
-- letting orchestration code decide claim meaning because it is closer to the workflow
-- using runtime persistence as a substitute for reasoning clarity
+The run command writes the specification, plan, trace, verification report,
+trace fingerprint, runtime metadata, and a bound manifest into one run
+directory. `--fail-on-verify` prevents a successful command status when the
+verification report contains findings; it does not erase the evidence.
 
-## First Proof Check
+## Verification Layers
 
-- `packages/bijux-canon-reason/src/bijux_canon_reason` for the reasoning boundary in code
-- `packages/bijux-canon-reason/tests` for claim, verification, and provenance evidence
-- `packages/bijux-canon-reason/README.md` for the public package contract
+Verification covers more than schema validity:
 
-## Design Pressure
+- plan topology and trace ordering;
+- tool-request and tool-result linkage;
+- claim-to-support linkage and exact evidence spans;
+- evidence digests and retrieval provenance;
+- insufficient-evidence handling and finalization;
+- invariant checksums used by replay.
 
-The pressure on reason is to keep claim formation explicit instead of letting
-meaning leak into retrieval tuning or workflow glue. If claim policy becomes
-hard to locate, the evidence chain becomes harder to defend.
+A final sentence can look plausible while one of these layers is broken. The
+report preserves that distinction so callers can enforce their own acceptance
+policy.
+
+## Replay Semantics
+
+Replay uses the stored specification, plan, recorded tool results, and governed
+provenance artifacts. It does not silently replace historical tool calls with
+new live results. The reconstructed trace receives its own fingerprint and is
+diffed against the original.
+
+Fingerprint equality establishes equality of the canonical trace record under
+the implemented replay contract. It does not establish that the original
+evidence was true or that a different reasoning method would reach the same
+claim.
+
+## Ownership Boundary
+
+Reason owns claim formation, support linkage, verification, reasoning traces,
+and replay of those records. It can consume retrieval evidence, but it does not
+own general-purpose indexing. It can produce artifacts for an agent or runtime,
+but it does not own orchestration authority or system-wide run acceptance.
+
+The `bijux-rar` command and compatibility distribution preserve the established
+legacy surface. New code should use `bijux-canon-reason` and
+`bijux_canon_reason`; consult
+[compatibility commitments](../interfaces/compatibility-commitments.md) before
+changing an existing integration.
+
+Continue with [installation and setup](../operations/installation-and-setup.md)
+or [entrypoint examples](../interfaces/entrypoints-and-examples.md).
