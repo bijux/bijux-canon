@@ -38,52 +38,112 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-Alias distribution for `bijux-canon-agent`.
+`bijux-agent` preserves an earlier distribution, import root, and command for
+[`bijux-canon-agent`](../bijux-canon-agent/README.md). It lets existing agent
+integrations keep their established identities while orchestration behavior,
+policy, traces, and releases remain owned by the canonical package.
 
-Install this package if you need the legacy package name and CLI command while
-running the same agent behavior as `bijux-canon-agent`.
+The bridge adds no scheduler, provider adapter, convergence policy, lifecycle
+event, or trace format of its own.
 
 ## Install
 
 ```bash
 python3.11 -m pip install bijux-agent
 bijux-agent --help
+python3.11 -m bijux_agent --help
 ```
 
-## What It Does
+The built wheel requires `bijux-canon-agent` at exactly the same release as the
+bridge, so compatibility cannot silently span different agent contracts.
 
-- re-exports the public Python API from `bijux-canon-agent`
-- resolves legacy submodules such as `bijux_agent.interfaces.cli.entrypoint` to
-  the same canonical modules used by `bijux_canon_agent`
-- dispatches the same CLI entrypoint through the legacy `bijux-agent` command
-- keeps the legacy distribution installable while steering new work to
-  `bijux-canon-agent`
-- avoids becoming a second home for agent orchestration logic or release
-  ownership
+## Identity Map
 
-## Compatibility Contract
+| Consumer surface | Preserved identity | Canonical identity |
+| --- | --- | --- |
+| distribution | `bijux-agent` | `bijux-canon-agent` |
+| Python package | `bijux_agent` | `bijux_canon_agent` |
+| console command | `bijux-agent` | `bijux-canon-agent` |
+| module execution | `python -m bijux_agent` | `python -m bijux_canon_agent` |
+| CLI module | `bijux_agent.interfaces.cli.entrypoint` | `bijux_canon_agent.interfaces.cli.entrypoint` |
+| representative contract | `bijux_agent.contracts.execution_plan.ExecutionPlan` | `bijux_canon_agent.contracts.execution_plan.ExecutionPlan` |
 
-If this works:
+```mermaid
+flowchart LR
+    integration["existing agent integration"]
+    bridge["bijux-agent bridge"]
+    imports["bijux_agent imports"]
+    command["bijux-agent command"]
+    agent["bijux-canon-agent"]
+
+    integration --> bridge -->|"exact release pin"| agent
+    integration --> imports -->|"canonical module objects"| agent
+    integration --> command -->|"canonical CLI"| agent
+```
+
+## Agent Semantics
+
+The compatibility root mirrors the canonical package's declared `__all__` and
+forwards attribute access. Nested aliases resolve to the same canonical module
+objects, so an `ExecutionPlan` imported through either root is the same class.
+That protects type checks, dependency-injection registries, and serializers
+when both names coexist during migration.
+
+The executable and module entrypoint call the canonical agent CLI directly.
+The bridge does not rewrite role definitions, tool permissions, model calls,
+convergence decisions, lifecycle events, output, or exit status.
+
+## Verify A Consumer
+
+Confirm the import boundary used by the integration:
 
 ```python
-from bijux_canon_agent import API_VERSION
+from bijux_agent.contracts.execution_plan import (
+    ExecutionPlan as CompatibilityPlan,
+)
+from bijux_canon_agent.contracts.execution_plan import (
+    ExecutionPlan as CanonicalPlan,
+)
+
+assert CompatibilityPlan is CanonicalPlan
 ```
 
-the alias package is expected to support the same import through:
-
-```python
-from bijux_agent import API_VERSION
+```bash
+bijux-agent --help
+python3.11 -m bijux_agent --help
 ```
 
-The alias package also keeps `bijux_agent.interfaces.cli.entrypoint` pointed at
-the canonical agent CLI module, while preserving the executable name
-`bijux-agent`.
+Then execute representative accepted and refused orchestration cases. Compare
+exit status, structured results, ordered tool/model interactions, lifecycle
+events, and trace artifacts. Import identity cannot validate provider
+configuration, secrets, or a consumer's policy wiring.
+
+## Migrate To Canonical Agent Ownership
+
+New integrations should depend on `bijux-canon-agent`, import
+`bijux_canon_agent`, and invoke `bijux-canon-agent`. Existing integrations
+should also search beyond ordinary source imports:
+
+1. replace distribution requirements and lock-file entries;
+2. replace root and nested imports;
+3. replace command calls in scripts, images, schedulers, and runbooks;
+4. inspect pipeline manifests, plugin registries, dependency injection,
+   provider configuration, fixtures, and serialized dotted paths;
+5. compare representative successful and refused orchestration evidence; and
+6. remove the bridge only after deployed consumers no longer request its
+   distribution, package, or command.
+
+Private paths from the earlier package are not promoted to permanent canonical
+API by the alias mechanism.
 
 ## Read Next
 
-- canonical package: [bijux-canon-agent](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent)
-- canonical handbook: [bijux-canon-agent handbook](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
-- legacy handbook: [bijux-agent alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/)
-- migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository: [bijux/bijux-agent](https://github.com/bijux/bijux-agent)
-- changelog: [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-agent/CHANGELOG.md)
+- [Agent handbook](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
+  for orchestration behavior and evidence
+- [Compatibility contract](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-agent/)
+  for preserved identity details
+- [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+  for a complete consumer inventory
+- [Retired repository](https://github.com/bijux/bijux-agent) for historical
+  context
+- [Package changelog](CHANGELOG.md) for release history
