@@ -121,13 +121,20 @@ Verification proves that registered checks passed over retained evidence. It
 does not prove corpus completeness, scientific truth, or correctness of an
 unstated inference.
 
-## Legacy Continuity
+## Package Continuity
 
-- compatibility package: [`bijux-rar`](https://pypi.org/project/bijux-rar/)
-- legacy import root: `bijux_rar`
-- legacy command: `bijux-rar`
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-rar](https://github.com/bijux/bijux-rar) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+[`bijux-rar`](https://pypi.org/project/bijux-rar/) is an exact-version
+compatibility distribution for this package. It preserves the `bijux_rar`
+import root and delegates to canonical reasoning modules. The
+`bijux-canon-reason` distribution currently registers both the
+`bijux-canon-reason` and `bijux-rar` commands against the same canonical
+application; command continuity does not make the old Python root canonical.
+
+Use `bijux_canon_reason` and `bijux-canon-reason` in new integrations. Follow
+the [migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+to validate plans, claims, traces, provenance, and stored-artifact readers. The
+former [`bijux/bijux-rar`](https://github.com/bijux/bijux-rar) repository is
+historical; current implementation authority is this repository.
 
 ## Package Boundary
 

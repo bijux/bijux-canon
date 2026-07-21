@@ -115,13 +115,21 @@ An `ExecutionArtifact` is evidence of a vector operation under one declared
 contract. It does not prove corpus completeness, semantic relevance, or the
 truth of downstream claims.
 
-## Legacy Continuity
+## Package Continuity
 
-- compatibility package: [`bijux-vex`](https://pypi.org/project/bijux-vex/)
-- legacy import root: `bijux_vex`
-- legacy command: `bijux-vex`
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-vex](https://github.com/bijux/bijux-vex) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+[`bijux-vex`](https://pypi.org/project/bijux-vex/) is an exact-version
+compatibility distribution for this package. It preserves the `bijux_vex`
+import root and `bijux-vex` command while delegating execution to canonical
+index modules. `bijux-canon-index` intentionally publishes no console script,
+so there is no `bijux-canon-index` command to use as a direct replacement.
+
+Use `bijux_canon_index` in new Python integrations or adopt the versioned HTTP
+contract. Follow the
+[migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+to replace command automation deliberately and compare ranked results, typed
+failures, and execution evidence. The former
+[`bijux/bijux-vex`](https://github.com/bijux/bijux-vex) repository is
+historical; current implementation authority is this repository.
 
 ## Package Boundary
 

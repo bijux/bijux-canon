@@ -499,8 +499,8 @@ def test_canonical_package_readmes_publish_legacy_continuity() -> None:
         retired_repos = expectation["retired_repos"]
 
         if (
-            "## Legacy continuity" not in readme
-            and "## Package continuity" not in readme
+            "## Legacy Continuity" not in readme
+            and "## Package Continuity" not in readme
         ):
             failures.append(f"{package_name}: missing package continuity section")
         for compatibility_package in compatibility_packages:

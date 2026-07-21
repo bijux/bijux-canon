@@ -153,14 +153,21 @@ and nondeterminism resources required by their policy.
 
 ## Package Continuity
 
-- compatibility packages: [`bijux-canon`](https://pypi.org/project/bijux-canon/), [`agentic-flows`](https://pypi.org/project/agentic-flows/)
-- preserved import roots: `bijux_canon`, `agentic_flows`
-- preserved commands: `bijux-canon`, `agentic-flows`
-- alias expectation: the preserved names above should resolve to the same
-  runtime API and command behavior as `bijux-canon-runtime`
-- family-root alias handbook: [bijux-canon alias handbook](https://bijux.io/bijux-canon/08-compat-packages/catalog/bijux-canon/)
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/agentic-flows](https://github.com/bijux/agentic-flows) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+[`bijux-canon`](https://pypi.org/project/bijux-canon/) and
+[`agentic-flows`](https://pypi.org/project/agentic-flows/) are exact-version
+compatibility distributions for this package. They preserve the
+`bijux_canon` / `agentic_flows` import roots and the `bijux-canon` /
+`agentic-flows` commands while delegating to runtime's modules and CLI. Neither
+is an umbrella install for the complete package family or a separate runtime
+implementation.
+
+Use `bijux_canon_runtime` and `bijux-canon-runtime` in new integrations. See
+the [compatibility catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/)
+for verified mappings and the
+[migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+for consumer changes. The former
+[`bijux/agentic-flows`](https://github.com/bijux/agentic-flows) repository is
+historical; current implementation authority is this repository.
 
 ## Package Boundary
 

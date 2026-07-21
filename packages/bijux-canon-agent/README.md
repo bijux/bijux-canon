@@ -129,11 +129,17 @@ subordinate to the trace and workflow contract, not the other way around.
 
 ## Package Continuity
 
-- compatibility package: [`bijux-agent`](https://pypi.org/project/bijux-agent/)
-- previous import root: `bijux_agent`
-- previous command: `bijux-agent`
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-agent](https://github.com/bijux/bijux-agent) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+[`bijux-agent`](https://pypi.org/project/bijux-agent/) is an exact-version
+compatibility distribution for this package. It preserves the `bijux_agent`
+import root and `bijux-agent` command while resolving public exports, nested
+modules, and command execution through `bijux-canon-agent`.
+
+Use `bijux_canon_agent` and `bijux-canon-agent` in new integrations. Follow the
+[migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+to inventory dependency files, nested imports, pipeline configuration, and
+entrypoints. The former
+[`bijux/bijux-agent`](https://github.com/bijux/bijux-agent) repository is
+historical; current implementation authority is this repository.
 
 ## Package Boundary
 

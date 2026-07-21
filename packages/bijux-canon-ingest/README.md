@@ -134,13 +134,19 @@ Reach into submodules only when you need a specific boundary:
 - `bijux_canon_ingest.interfaces` for CLI and HTTP edges
 - `bijux_canon_ingest.config` for builder-style package configuration
 
-## Legacy Continuity
+## Package Continuity
 
-- compatibility package: [`bijux-rag`](https://pypi.org/project/bijux-rag/)
-- legacy import root: `bijux_rag`
-- legacy command: `bijux-rag`
-- canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
-- retired repository target: [https://github.com/bijux/bijux-rag](https://github.com/bijux/bijux-rag) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
+[`bijux-rag`](https://pypi.org/project/bijux-rag/) is an exact-version
+compatibility distribution for this package. It preserves the `bijux_rag`
+import root and `bijux-rag` command while delegating normalization, chunking,
+typed results, and failures to `bijux-canon-ingest`. The preserved “RAG” name
+does not make the bridge an owner of retrieval or reasoning behavior.
+
+Use `bijux_canon_ingest` and `bijux-canon-ingest` in new integrations. Follow
+the [migration guide](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
+to validate source configuration and prepared-output consumers as well as
+imports. The former [`bijux/bijux-rag`](https://github.com/bijux/bijux-rag)
+repository is historical; current implementation authority is this repository.
 
 ## Package Boundary
 
