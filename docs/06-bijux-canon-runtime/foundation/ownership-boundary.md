@@ -4,48 +4,71 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Ownership Boundary
 
-`bijux-canon-runtime` owns governed execution authority above the lower package family. Use it when a behavior looks close enough to local execution below that runtime might absorb work it should merely govern.
-
-## Boundary Map
+Runtime authority decides whether composed work may execute, persist, resume,
+and count as acceptable replay. It governs lower-layer evidence without
+re-owning how that evidence was produced.
 
 ```mermaid
-flowchart LR
-    run["run acceptance problem"]
-    runtime["runtime ownership"]
-    records["governed run records"]
-    neighbors["lower-package semantics and maintainer automation belong elsewhere"]
+flowchart TD
+    decision{"What must be decided?"}
+    prepare["source representation"]
+    retrieve["vector execution"]
+    interpret["claim support"]
+    coordinate["role progression"]
+    govern["flow authority, persistence, replay"]
 
-    run --> runtime --> records
-    runtime --> neighbors
+    decision --> prepare --> ingest["ingest"]
+    decision --> retrieve --> index["index"]
+    decision --> interpret --> reason["reason"]
+    decision --> coordinate --> agent["agent"]
+    decision --> govern --> runtime["runtime"]
 ```
 
-This page should make runtime feel like the authority layer for the package
-chain. The boundary works only when runtime can judge prior work without
-re-owning how lower packages produced it.
+## Decision table
 
-## Use This Boundary Test
+| Change | Owner | Reason |
+| --- | --- | --- |
+| change normalized chunk identity | ingest | changes the prepared record |
+| change exact/ANN execution contract | index | changes retrieval authority |
+| change whether exact bytes ground a derived claim | reason | changes reasoning evidence |
+| change critique/verifier role sequence | agent | changes workflow progression |
+| require a dataset descriptor before flow execution | runtime | changes admission authority |
+| reject a finalized flow after verification arbitration | runtime | changes acceptance policy |
+| permit bounded replay under previously declared variance | runtime | changes governed replay verdict |
 
-- keep the work here when it changes acceptance, persistence, replay, execution authority, or run governance
-- move the work down when it changes package-local semantics in ingest, index, reason, or agent
-- move the work out to maintenance when it changes repository-wide automation rather than runtime behavior itself
+## Lower-package handoff
 
-## Borderline Example
+Runtime receives typed artifacts, retrieval evidence, reasoning bundles,
+verification results, agent traces, tool records, and declared failures. Those
+records retain their lower-layer meaning. Runtime adds tenant, flow, plan,
+environment, policy, event, entropy, persistence, and replay relationships.
 
-A new persistence acceptance rule belongs here. A new agent-specific retry policy does not, even if runtime observes the final result.
+If required lower-layer evidence is missing or invalid, runtime refuses or
+marks the flow non-certifiable. It must not reconstruct provenance from final
+text or silently relax a contract.
 
-## First Proof Check
+## Verification and arbitration
 
-- `packages/bijux-canon-runtime/src` for the owned implementation boundary
-- `packages/bijux-canon-runtime/tests` for proof that the boundary survives change
-- neighboring handbook roots in agent and the lower canonical packages when the work still looks plausible elsewhere
+Verification engines record what they checked, which rules passed or failed,
+their targets, cost, classification, and reason. Arbitration applies a policy
+fingerprint and rule to those immutable observations. The arbitration decision
+does not rewrite engine results.
 
-## Design Pressure
+## Runtime and maintenance
 
-The pressure on runtime is to apply authority without swallowing package-local
-semantics or repository automation. If acceptance policy becomes a vague excuse
-for late-stage code placement, the boundary has already failed.
+Runtime owns executable product behavior. Repository checks, synchronized
+standards, release mechanics, and documentation publication belong to the
+maintenance system. A command that operates the repository is not runtime
+authority merely because it runs late in delivery.
+
+## Ownership test
+
+Ask whether the behavior changes a lower-layer semantic record or the authority
+over a composed flow. The former remains with its producer. The latter belongs
+here when it affects manifest admission, mode, budget, causal recording,
+verification arbitration, persistence, resume, or replay verdict.

@@ -4,48 +4,77 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Scope and Non-Goals
 
-The scope of `bijux-canon-runtime` is explicit authority over runs. It is not a convenient place for any code that happens late in execution.
-
-## Scope Map
+`bijux-canon-runtime` owns end-to-end execution authority. It resolves a
+tenant-bound manifest, plans ordered work, enforces mode and budgets, records
+causal events and entropy, arbitrates verification, persists governed state,
+and judges replay under the original acceptance contract.
 
 ```mermaid
 flowchart LR
-    inputs["lower-package outputs"]
-    scope["runtime scope"]
-    records["durable governed runs"]
-    refuse["package-local semantics and maintainer automation stay out of scope"]
+    lower["ingest, index, reason, agent outputs"]
+    manifest["flow manifest + policy"]
+    runtime["authority + execution + arbitration"]
+    record["finalized trace + persisted projections"]
+    verdict["accepted / rejected / non-certifiable"]
 
-    inputs --> scope --> records
-    scope --> refuse
+    lower --> manifest --> runtime --> record --> verdict
 ```
 
-This page should make runtime look narrow for a reason. It owns the verdict,
-the persistence model, and the replay contract, but it should stop before
-becoming a second home for whatever lower packages leave unresolved.
+## In scope
 
-## In Scope
+- immutable flow, step, dataset, artifact, execution-plan, compatibility, and
+  replay contracts;
+- tenant, dependency, dataset, environment, package, policy, resolver, and plan
+  identity;
+- plan, dry-run, live, observe, and unsafe mode semantics;
+- execution authority, step/retrieval/reasoning/agent adapters, causal event
+  recording, checkpoints, interruptions, and resume;
+- resource and entropy budgets, nondeterministic intent, allowed variance, and
+  semantic warnings for reduced guarantees;
+- verification engine results, contradiction handling, arbitration policy,
+  certifiability, and final trace authority;
+- migration-owned DuckDB persistence, artifact lineage and payload stores,
+  typed reconstruction, inspection, comparison, and failure explanation;
+- replay envelopes, exact/bounded acceptability, semantic diffs, drift
+  analysis, and replay verdicts.
 
-- acceptance policy for governed runs
-- persistence and replay behavior tied to runtime authority
-- runtime-facing interfaces and artifacts that define what a durable run means
+## Non-goals
 
-## Non-Goals
+| Not owned here | Owning boundary |
+| --- | --- |
+| Parsing and normalizing source data | `bijux-canon-ingest` |
+| Vector ranking and backend execution semantics | `bijux-canon-index` |
+| Claim grounding and reasoning verification facts | `bijux-canon-reason` |
+| Role lifecycle, convergence, and pipeline trace production | `bijux-canon-agent` |
+| Reimplementing lower-layer semantics to make a flow pass | never runtime authority |
+| Distributed queues, multi-writer databases, cluster scheduling, or external transactions | deployment and integration platform |
+| Authentication, filesystem isolation, encryption, backups, or secret management | hosting system |
+| Repository synchronization, release mechanics, or maintainer policy | maintenance tooling and handbook |
 
-- package-local semantics owned by ingest, index, reason, or agent
-- maintainer automation that belongs to the maintenance handbook
-- convenience features that never affect governed run outcomes
+## Authority limits
 
-## Scope Check
+A finalized trace is a closed record, not automatic acceptance. Arbitration can
+accept, reject, or mark it non-certifiable under a declared policy. Runtime
+verification proves registered rules and budgets were applied; it does not
+certify source truth, scientific validity, legal compliance, or model
+calibration.
 
-If the change makes runtime broader without making run authority easier to explain, it is probably misplaced.
+DuckDB is a durable single-writer execution store. It cannot roll back an
+external provider call or filesystem effect. Integrations whose effects may be
+retried after interruption require their own idempotency or compensation.
 
-## Design Pressure
+## Scope test
 
-If runtime grows by collecting every late-stage concern, authority becomes less
-explicit rather than more. The non-goals keep governed execution separate from
-both package-local behavior and repository operations.
+A change belongs here when it alters authorization, ordered flow execution,
+verification arbitration, governed persistence, resume, or replay acceptance.
+If it changes the meaning of a lower-package record, runtime should consume the
+corrected record rather than absorb its implementation.
+
+See the [capability map](capability-map.md) and
+[known limitations](../quality/known-limitations.md) for the complete authority
+and infrastructure boundary.
