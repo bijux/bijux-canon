@@ -4,84 +4,100 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Architecture
 
-Open this section when the question is structural: where ingest logic lives, how preparation flows through modules, and where the package stops before retrieval semantics take over.
+The ingest architecture separates stable domain records from pipeline
+assembly, edge adapters, and optional integrations. A caller can use the
+document pipeline, the retrieval commands, or the HTTP surface without making
+the domain layer depend on those entrypoints.
 
-## Structural Shape
-
-Ingest architecture is a preparation pipeline with explicit adapters at the
-edges. Source material enters through interface code, application workflows
-assemble the run, processing modules normalize and chunk content, and retrieval
-modules shape handoff records without becoming the long-term owner of search
-semantics.
+## Dependency shape
 
 ```mermaid
 flowchart LR
-    interfaces["interfaces"]
-    application["application services"]
-    config["config"]
-    processing["processing stages"]
-    retrieval["retrieval handoff"]
-    observability["pipeline records"]
-    infra["storage and adapters"]
-    downstream["index package"]
+    edges["CLI and HTTP interfaces"]
+    app["application workflows"]
+    config["validated configuration"]
+    processing["clean, chunk, embed, deduplicate"]
+    retrieval["index, rank, answer, evaluate"]
+    safeguards["retry, breaker, resource, rules"]
+    adapters["files, JSONL, MessagePack, optional providers"]
+    records["typed records and results"]
 
-    interfaces --> application
-    config --> application
-    application --> processing --> retrieval --> downstream
-    processing --> observability
-    retrieval --> infra
+    edges --> app
+    config --> app
+    app --> processing --> retrieval
+    app --> safeguards
+    processing --> records
+    retrieval --> records
+    retrieval --> adapters
+    edges --> adapters
 ```
 
-The architectural story here should let a reader follow one preparation run
-without reading code first. Interfaces admit the input, application code
-assembles the run, processing makes the content stable, and retrieval surfaces
-shape the handoff into index. Observability and storage matter because they
-let that pipeline stay inspectable without moving retrieval ownership upward
-into ingest.
+The arrows describe orchestration dependencies. Typed records and explicit
+results carry data across boundaries; interfaces translate external input and
+failure into those contracts. Optional providers remain adapters rather than
+becoming requirements of the core preparation path.
 
-## Read These First
+## Execution shapes
 
-- open [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/) first when you need the fastest route from a behavior question to the owning code area
-- open [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/) when you need the real path from source input to prepared output
-- open [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/) when a change could blur the handoff into downstream packages
+### Document preparation
 
-## Structural Risk
+The configured pipeline reads source rows, validates fields, normalizes text,
+assigns identity, chunks content, optionally embeds and deduplicates it, then
+writes inspectable output. This is the package's preparation authority.
 
-The main architectural risk here is letting preparation behavior leak into retrieval behavior because the handoff seam is weak or poorly named.
+### Local retrieval
 
-## First Proof Check
+The retrieval command group builds a persisted local index, loads its chunk
+records, ranks candidates, and produces extractive answers or evaluation
+results. BM25 and NumPy cosine are separate index implementations behind a
+common local workflow; their scores are not interchangeable measures.
 
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/application` for pipeline assembly and services
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for core preparation flow
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for handoff-ready assembly
-- `packages/bijux-canon-ingest/tests` for proof that the structure still defends deterministic preparation
+### HTTP service
 
+The HTTP adapter exposes health, chunking, index construction, retrieval, and
+answering. Its default store is memory-backed, so process restart and
+multi-worker deployment change state availability unless an application adds
+an explicit persistence boundary.
 
-## Pages In This Section
+## Module ownership
 
-- [Module Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/module-map/)
-- [Dependency Direction](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/dependency-direction/)
-- [Execution Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/execution-model/)
-- [State and Persistence](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/state-and-persistence/)
-- [Integration Seams](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/integration-seams/)
-- [Error Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/error-model/)
-- [Extensibility Model](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/extensibility-model/)
-- [Code Navigation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/code-navigation/)
-- [Architecture Risks](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/architecture-risks/)
+| Area | Owns |
+| --- | --- |
+| `core` and `result` | records, identifiers, options, results, and failure values |
+| `config` | environment and file configuration parsing and validation |
+| `processing` | preparation stages and deterministic content transforms |
+| `application` | use-case assembly without transport policy |
+| `retrieval` | local indexes, ranking, extractive answers, and evaluation |
+| `interfaces` | CLI, HTTP, serialization, and external error translation |
+| `safeguards`, `streaming`, and `fp` | bounded execution, stream composition, and functional primitives |
+| `infra` and integrations | storage and optional third-party adapters |
 
-## Leave This Section When
+## Architectural invariants
 
-- leave for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the structural question is already a public contract question
-- leave for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
-- leave for [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
+- Stable record types cross layers; transport objects do not become the domain
+  model by accident.
+- Configuration is resolved before work begins and can be represented in run
+  evidence.
+- Optional integrations fail at their boundary rather than silently changing
+  the default execution path.
+- Persisted index metadata and chunk data remain paired; loading only one is
+  not a valid recovery strategy.
+- Citation identifiers resolve to the exact chunk set used to construct the
+  answer.
 
-## Design Pressure
+## Navigate the architecture
 
-If an architectural explanation here starts to sound like retrieval semantics,
-the package boundary is already drifting. Ingest stays strong by making the
-handoff to index cleaner, not by quietly absorbing search ownership.
+| Need | Guide |
+| --- | --- |
+| Locate an implementation owner | [Module map](module-map.md) |
+| Follow a complete run | [Execution model](execution-model.md) |
+| Understand allowed dependency direction | [Dependency direction](dependency-direction.md) |
+| Inspect persisted and process-local state | [State and persistence](state-and-persistence.md) |
+| Add or replace an adapter | [Integration seams](integration-seams.md) and [Extensibility model](extensibility-model.md) |
+| Trace failures across layers | [Error model](error-model.md) |
+| Review known structural hazards | [Architecture risks](architecture-risks.md) |

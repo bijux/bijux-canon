@@ -4,69 +4,80 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Foundation
 
-Open this section when the hard question is why `bijux-canon-ingest` owns the work before retrieval begins. These pages should settle whether a proposed change makes prepared source material more predictable or merely pushes another package problem upstream.
+`bijux-canon-ingest` turns source material into deterministic records that can
+be inspected, persisted, retrieved, and cited. Its authority begins with input
+normalization and ends at the retrieval-ready handoff. It does not decide what
+a claim means, whether a conclusion is justified, or how a multi-package run is
+scheduled.
 
-## Boundary Model
+## Package boundary
 
 ```mermaid
 flowchart LR
-    source["source material"]
-    package["ingest boundary"]
-    preparation["preparation rules"]
-    handoff["prepared handoff"]
-    nextowner["index ownership"]
-    drift["retrieval or policy drift"]
+    source["files and source text"]
+    prepare["normalize, identify, chunk"]
+    retrieve["local retrieval and cited extraction"]
+    reason["reasoning and verification"]
+    runtime["workflow authority"]
 
-    source --> package --> preparation --> handoff --> nextowner
-    package --> drift
+    source --> prepare --> retrieve --> reason
+    runtime -. schedules .-> prepare
+    runtime -. schedules .-> retrieve
 ```
 
-The foundation story for ingest is only credible if a reader can see where
-messy source material stops being tolerated and where downstream search
-ownership begins. This section should make that boundary legible before anyone
-starts arguing about modules or commands.
+The package deliberately contains a complete local path from documents to
+ranked chunks and extractive answers. That path is useful for compact
+applications and reproducible examples. Repository-wide index ownership still
+belongs to `bijux-canon-index`; evidence interpretation belongs to
+`bijux-canon-reason`; orchestration belongs to `bijux-canon-runtime`.
 
-## Read These First
+## What the package owns
 
-- open [Ownership Boundary](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/ownership-boundary/) first when a change could belong in index, reason, agent, or runtime instead
-- open [Package Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/) when you need the shortest stable description of the package role
-- open [Lifecycle Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/lifecycle-overview/) when the question is how raw source material becomes prepared handoff output
+| Responsibility | Contract | Primary guide |
+| --- | --- | --- |
+| Source preparation | stable document identity, normalized text, and typed records | [Package overview](package-overview.md) |
+| Segmentation | deterministic chunks with source identity and normalized-text offsets | [Lifecycle overview](lifecycle-overview.md) |
+| Local retrieval | persisted BM25 or NumPy cosine indexes and ranked candidates | [Capability map](capability-map.md) |
+| Extractive answers | answers whose citations resolve to retrieved chunks | [Ownership boundary](ownership-boundary.md) |
+| Resilient execution primitives | results, options, streams, retry, breaker, resource, and rule controls | [Dependencies and adjacencies](dependencies-and-adjacencies.md) |
 
-## The Mistake This Section Prevents
+## Boundary decisions
 
-The most common mistake here is expanding ingest to hide uncertainty that really belongs in retrieval, reasoning, or runtime policy.
+Use these distinctions before extending the package:
 
-## First Proof Check
+- A transformation belongs here when it makes the same source become the same
+  prepared representation under the same configuration.
+- A retrieval implementation belongs here when it is the package's local,
+  persistence-backed document path. Shared indexing policy and cross-package
+  index services belong in `bijux-canon-index`.
+- A scoring or verification rule does not belong here when it interprets the
+  evidentiary meaning of a result; that is reasoning authority.
+- Scheduling, tenancy, authentication, and durable service lifecycle are
+  deployment concerns, not implicit ingest guarantees.
 
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for source preparation ownership
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for the handoff seam into downstream work
-- `packages/bijux-canon-ingest/tests` for evidence that the boundary still holds under change
+## Important limits
 
-## Pages In This Section
+- Chunk offsets refer to normalized Python strings, not byte positions in the
+  original file.
+- The hash embedding is a deterministic baseline, not a semantic model.
+- The default HTTP index store is process-local and does not provide tenancy,
+  authentication, or durable service storage.
+- The lightweight lazy pipeline and the document pipeline do not promise
+  identical transformation steps; structural deduplication is a documented
+  distinction.
 
-- [Package Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/)
-- [Scope and Non-Goals](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/scope-and-non-goals/)
-- [Ownership Boundary](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/ownership-boundary/)
-- [Repository Fit](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/repository-fit/)
-- [Capability Map](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/capability-map/)
-- [Domain Language](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/domain-language/)
-- [Lifecycle Overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/lifecycle-overview/)
-- [Dependencies and Adjacencies](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/dependencies-and-adjacencies/)
-- [Change Principles](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/change-principles/)
+## Read by question
 
-## Leave This Section When
-
-- leave this section for [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the dispute is already about a CLI, schema, artifact, or import surface
-- leave this section for [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when the real problem is setup, diagnostics, release, or recovery
-- leave this section for [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the boundary is already understood and the open question is proof
-
-## Design Pressure
-
-If a page here starts defending retrieval quality or later workflow policy, the
-package boundary is already slipping. Ingest stays coherent by making input
-predictable, then handing the work forward.
+| Question | Guide |
+| --- | --- |
+| Why does ingest exist? | [Package overview](package-overview.md) |
+| What is intentionally outside its authority? | [Scope and non-goals](scope-and-non-goals.md) |
+| Where does ownership pass to another package? | [Ownership boundary](ownership-boundary.md) |
+| How does it fit into the monorepo? | [Repository fit](repository-fit.md) |
+| Which terms have precise meanings? | [Domain language](domain-language.md) |
+| Which changes preserve the contract? | [Change principles](change-principles.md) |
