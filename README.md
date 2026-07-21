@@ -1,5 +1,16 @@
 # bijux-canon
 
+`bijux-canon` is a contract-first Python system for turning source material
+into evidence-bearing, inspectable runs. Five canonical packages separate
+preparation, retrieval, reasoning, orchestration, and runtime authority so a
+reviewer can identify who made each decision and which artifact supports it.
+
+The project is built for work that must survive review after execution. It
+keeps API schemas in the repository, records provenance at retrieval and
+reasoning boundaries, emits agent traces, and gives runtime policy the final
+authority over persistence and replay. Determinism does not make a model
+correct; it makes the execution conditions and resulting evidence inspectable.
+
 <!-- bijux-canon-badges:generated:start -->
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-0F766E)](https://github.com/bijux/bijux-canon/blob/main/LICENSE)
@@ -43,17 +54,6 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-`bijux-canon` is a contract-first Python system for turning source material
-into evidence-bearing, inspectable runs. Five canonical packages separate
-preparation, retrieval, reasoning, orchestration, and runtime authority so a
-reviewer can identify who made each decision and which artifact supports it.
-
-The project is built for work that must survive review after execution. It
-keeps API schemas in the repository, records provenance at retrieval and
-reasoning boundaries, emits agent traces, and gives runtime policy the final
-authority over persistence and replay. Determinism does not make a model
-correct; it makes the execution conditions and resulting evidence inspectable.
-
 ## Trust Model
 
 `bijux-canon` narrows claims to the evidence a run actually retains:
@@ -69,10 +69,10 @@ correct; it makes the execution conditions and resulting evidence inspectable.
 Missing evidence produces a narrower claim or an explicit refusal. It is not
 reconstructed from a plausible final answer.
 
-This repository publishes `11` packages. Each release tag builds one staged
-bundle per package, uploads distributions to PyPI, publishes release bundles to
-their exact GHCR package pages under the `bijux` account, and attaches the same
-staged assets to the GitHub Release.
+This repository defines `11` publishable package records. PyPI, GHCR, and
+GitHub Release are independent publication workflows. Each resolves the
+checked-in release matrix and invokes the same reusable artifact-building
+contract for its own run; destination success must be verified separately.
 
 The six compatibility distributions in this repository are real alias
 packages, not migration-only placeholders. Five preserve retired public names,
@@ -202,8 +202,35 @@ retired standalone repository.
   outcomes rather than silently coercing invalid work into plausible output.
 - **Compatibility is observable.** Legacy distributions, imports, and commands
   are implemented as explicit alias packages with canonical targets.
-- **Release evidence is shared.** PyPI distributions, GHCR bundles, and GitHub
-  release assets are built from the same tagged source line.
+- **Release custody is explicit.** Each destination records its source SHA,
+  package matrix, named staged artifact, permissions, and publication result.
+
+## Release Custody
+
+```mermaid
+flowchart LR
+    source["source SHA + release matrix"]
+    builder["reusable artifact builder"]
+    pypi["PyPI workflow"]
+    ghcr["GHCR workflow"]
+    github["GitHub Release workflow"]
+    pd["package-pypi-dist"]
+    rd["package-release"]
+
+    source --> pypi --> builder --> pd
+    source --> ghcr --> builder --> rd
+    source --> github --> builder --> rd
+```
+
+There is no repository-local workflow that atomically publishes all three
+destinations. Each destination builds from its workflow run, consumes the
+named artifact produced in that run, and reports its own result. A PyPI success
+does not establish GHCR or GitHub Release success, and registry acceptance does
+not by itself prove downstream installation or SBOM validity.
+
+The [release workflow handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/release-workflows/)
+documents inputs, artifact names, authentication, permissions, and refusal
+behavior for each destination.
 
 ## Package Map
 

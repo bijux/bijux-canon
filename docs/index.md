@@ -202,6 +202,31 @@ or command name; they are not an alternative architecture.
 | a compatibility name is equivalent | dependency pin, module identity, command parity, and canonical tests | successful installation |
 | a release contains the intended package | tagged source, build manifest, publication guard, and published artifact | a green build job |
 
+## Follow Release Custody
+
+```mermaid
+flowchart TD
+    S[Source SHA and checked-in matrix] --> P[PyPI workflow]
+    S --> O[GHCR workflow]
+    S --> G[GitHub Release workflow]
+    P --> B[Reusable artifact builder]
+    O --> B
+    G --> B
+    B --> D[Named package artifacts]
+    D --> R[Destination-specific publication result]
+```
+
+The three publication workflows are independent. Each calls the reusable
+artifact builder from its own run, retains named package artifacts, and grants
+write permission only at its destination boundary. The repository does not
+claim an atomic all-destination release, nor does one successful destination
+prove the others.
+
+For a release review, record the source SHA, release tag, resolved package
+matrix, artifact name, destination workflow, and final publication job. See
+[release workflows](07-bijux-canon-maintain/gh-workflows/release-workflows.md)
+for the exact custody and refusal contracts.
+
 ## Reconcile Conflicting Evidence
 
 When two surfaces appear to disagree, inspect the owning package's public
