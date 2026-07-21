@@ -130,10 +130,10 @@ nav:
           - Quality: 02-bijux-canon-ingest/quality/index.md
           - Test Strategy: 02-bijux-canon-ingest/quality/test-strategy.md
           - Invariants: 02-bijux-canon-ingest/quality/invariants.md
-          - Review Checklist: 02-bijux-canon-ingest/quality/review-checklist.md
-          - Documentation Standards: 02-bijux-canon-ingest/quality/documentation-standards.md
-          - Definition of Done: 02-bijux-canon-ingest/quality/definition-of-done.md
-          - Dependency Governance: 02-bijux-canon-ingest/quality/dependency-governance.md
+          - Preparation Review: 02-bijux-canon-ingest/quality/review-checklist.md
+          - Public Claim Standards: 02-bijux-canon-ingest/quality/documentation-standards.md
+          - Release Acceptance: 02-bijux-canon-ingest/quality/definition-of-done.md
+          - Dependency Authority: 02-bijux-canon-ingest/quality/dependency-governance.md
           - Change Validation: 02-bijux-canon-ingest/quality/change-validation.md
           - Known Limitations: 02-bijux-canon-ingest/quality/known-limitations.md
           - Risk Register: 02-bijux-canon-ingest/quality/risk-register.md
@@ -187,10 +187,10 @@ nav:
           - Quality: 03-bijux-canon-index/quality/index.md
           - Test Strategy: 03-bijux-canon-index/quality/test-strategy.md
           - Invariants: 03-bijux-canon-index/quality/invariants.md
-          - Review Checklist: 03-bijux-canon-index/quality/review-checklist.md
-          - Documentation Standards: 03-bijux-canon-index/quality/documentation-standards.md
-          - Definition of Done: 03-bijux-canon-index/quality/definition-of-done.md
-          - Dependency Governance: 03-bijux-canon-index/quality/dependency-governance.md
+          - Retrieval Review: 03-bijux-canon-index/quality/review-checklist.md
+          - Public Claim Standards: 03-bijux-canon-index/quality/documentation-standards.md
+          - Release Acceptance: 03-bijux-canon-index/quality/definition-of-done.md
+          - Backend Dependency Authority: 03-bijux-canon-index/quality/dependency-governance.md
           - Change Validation: 03-bijux-canon-index/quality/change-validation.md
           - Known Limitations: 03-bijux-canon-index/quality/known-limitations.md
           - Risk Register: 03-bijux-canon-index/quality/risk-register.md
@@ -244,10 +244,10 @@ nav:
           - Quality: 04-bijux-canon-reason/quality/index.md
           - Test Strategy: 04-bijux-canon-reason/quality/test-strategy.md
           - Invariants: 04-bijux-canon-reason/quality/invariants.md
-          - Review Checklist: 04-bijux-canon-reason/quality/review-checklist.md
-          - Documentation Standards: 04-bijux-canon-reason/quality/documentation-standards.md
-          - Definition of Done: 04-bijux-canon-reason/quality/definition-of-done.md
-          - Dependency Governance: 04-bijux-canon-reason/quality/dependency-governance.md
+          - Claim and Evidence Review: 04-bijux-canon-reason/quality/review-checklist.md
+          - Public Claim Standards: 04-bijux-canon-reason/quality/documentation-standards.md
+          - Evidence Release Acceptance: 04-bijux-canon-reason/quality/definition-of-done.md
+          - Reasoning Dependency Authority: 04-bijux-canon-reason/quality/dependency-governance.md
           - Change Validation: 04-bijux-canon-reason/quality/change-validation.md
           - Known Limitations: 04-bijux-canon-reason/quality/known-limitations.md
           - Risk Register: 04-bijux-canon-reason/quality/risk-register.md
@@ -301,10 +301,10 @@ nav:
           - Quality: 05-bijux-canon-agent/quality/index.md
           - Test Strategy: 05-bijux-canon-agent/quality/test-strategy.md
           - Invariants: 05-bijux-canon-agent/quality/invariants.md
-          - Review Checklist: 05-bijux-canon-agent/quality/review-checklist.md
-          - Documentation Standards: 05-bijux-canon-agent/quality/documentation-standards.md
-          - Definition of Done: 05-bijux-canon-agent/quality/definition-of-done.md
-          - Dependency Governance: 05-bijux-canon-agent/quality/dependency-governance.md
+          - Orchestration Review: 05-bijux-canon-agent/quality/review-checklist.md
+          - Public Claim Standards: 05-bijux-canon-agent/quality/documentation-standards.md
+          - Orchestration Release Acceptance: 05-bijux-canon-agent/quality/definition-of-done.md
+          - Provider and Runtime Dependencies: 05-bijux-canon-agent/quality/dependency-governance.md
           - Change Validation: 05-bijux-canon-agent/quality/change-validation.md
           - Known Limitations: 05-bijux-canon-agent/quality/known-limitations.md
           - Risk Register: 05-bijux-canon-agent/quality/risk-register.md
@@ -358,10 +358,10 @@ nav:
           - Quality: 06-bijux-canon-runtime/quality/index.md
           - Test Strategy: 06-bijux-canon-runtime/quality/test-strategy.md
           - Invariants: 06-bijux-canon-runtime/quality/invariants.md
-          - Review Checklist: 06-bijux-canon-runtime/quality/review-checklist.md
-          - Documentation Standards: 06-bijux-canon-runtime/quality/documentation-standards.md
-          - Definition of Done: 06-bijux-canon-runtime/quality/definition-of-done.md
-          - Dependency Governance: 06-bijux-canon-runtime/quality/dependency-governance.md
+          - Runtime Authority Review: 06-bijux-canon-runtime/quality/review-checklist.md
+          - Public Authority Claims: 06-bijux-canon-runtime/quality/documentation-standards.md
+          - Governed Run Acceptance: 06-bijux-canon-runtime/quality/definition-of-done.md
+          - Runtime Dependency Authority: 06-bijux-canon-runtime/quality/dependency-governance.md
           - Change Validation: 06-bijux-canon-runtime/quality/change-validation.md
           - Known Limitations: 06-bijux-canon-runtime/quality/known-limitations.md
           - Risk Register: 06-bijux-canon-runtime/quality/risk-register.md
