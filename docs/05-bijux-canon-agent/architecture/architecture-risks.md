@@ -4,24 +4,80 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Architecture Risks
 
-Architecture risks in `bijux-canon-agent` are the ways the code can stop defending role coordination, workflow order, and traces. The point is to surface those risks early enough that reviewers can challenge them before they harden.
+Agent systems fail structurally when role output, orchestration policy, and run
+evidence become indistinguishable. A fluent final answer can hide an invalid
+lifecycle, an unrecorded model change, or a veto that was ignored.
 
-## What To Check
+## Risk Register
 
-- rank the risks by how much they blur package ownership or weaken proof quality
-- watch for risk patterns that pull reason and runtime concerns into `bijux-canon-agent`
-- treat unexplained complexity as a risk, even when tests are still green
+| Risk | Misleading outcome | Control |
+| --- | --- | --- |
+| role-policy leakage | a prompt or role decides lifecycle authority | keep transitions and limits in pipeline control |
+| model identity drift | replay labels survive provider, model, or temperature changes | bind model metadata and hashes to the trace |
+| false convergence | stable low-quality or oscillating output is accepted | record strategy, window, scores, reason, and limits |
+| veto erasure | normally completed calls are reported as a passing run | preserve decision and termination independently |
+| partial artifact pair | final result exists without a valid trace or vice versa | use a fresh directory and validate both files |
+| batch evidence collapse | one primary success hides other file failures | retain per-file outcomes with the primary artifact |
+| credential overreach | every CLI operation requires unrelated provider secrets | isolate secrets and keep the constraint visible |
+| HTTP capability overclaim | request config implies unsupported provider control | document and enforce the fixed offline v1 posture |
 
-## First Proof Check
+## Orchestration Can Absorb Neighboring Semantics
 
-- `src/bijux_canon_agent` and tracked workflow surfaces for the structural ownership boundary
-- `tests` for determinism and traceability evidence for executable confirmation that the structure still holds
+Agent owns who acts next and why execution stops. It does not own the truth of a
+reason claim or runtime-wide acceptance. Putting evidence interpretation into a
+planner prompt or deployment authority into a verifier role creates policy that
+cannot be reviewed independently from model output.
 
-## Bottom Line
+Use typed handoffs to reason and runtime instead of widening role prompts.
 
-If `bijux-canon-agent` needs hidden structure to defend role coordination, workflow order, and traces, the architecture is already too opaque.
+## Replayability Can Be Declared Too Easily
+
+Zero temperature is required but not sufficient. Replay also needs input,
+configuration, prompt, model, pipeline-definition, contract, and convergence
+identity. Provider nondeterminism or an unpinned model can remain even at zero
+temperature. The trace must report its actual replay classification rather than
+infer it from one setting.
+
+## Convergence Can Reward Repetition
+
+A stable verdict or confidence sequence can converge even when the underlying
+content is poor. Convergence describes orchestration stability, not correctness.
+Verification, quality thresholds, epistemic status, and evidence review remain
+separate gates. Maximum-iteration termination must not be relabeled as
+convergence.
+
+## Artifact Publication Is Not Transactional
+
+Trace and final result use ordinary separate writes. Reusing one output root
+can combine a new result with an old trace after interruption. Allocate a fresh
+root for every material attempt, then load the trace, reconstruct the outcome,
+and compare the public result before publication.
+
+## Batch Output Needs Its Own Contract
+
+The CLI can process a directory but the canonical final artifact is derived
+from the first successful entry. A consumer that keeps only that file loses the
+batch's remaining successes and failures. Batch automation must retain the
+complete processing summary or isolate inputs into separate run directories.
+
+## Bootstrap Credentials Expand Exposure
+
+The CLI loads `.env` and validates four provider keys before argument parsing.
+That increases secret exposure for help, dry-run, local, and replay operations.
+Use approved secret injection, restrict process environments, never commit
+`.env`, and do not treat key presence as provider health or authorization.
+
+## Observability Can Leak Source and Prompts
+
+Structured logs and traces may contain document content, prompts, role output,
+failure details, and model metadata. Apply redaction, access, and retention at
+the output root. Telemetry must observe lifecycle decisions without becoming
+an alternate ungoverned record of sensitive work.
+
+See [security and safety](../operations/security-and-safety.md) and
+[known limitations](../quality/known-limitations.md) for current controls.
