@@ -1,47 +1,96 @@
 ---
 title: bijux-rar
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # bijux-rar
 
-`bijux-rar` remains published so existing environments can keep using the legacy
-reasoning package name while migrating toward `bijux-canon-reason`. New work should start at
-the canonical package, not here.
+`bijux-rar` preserves the earlier reasoning distribution and Python import for
+`bijux-canon-reason`. The canonical package owns problem plans, structured
+claims, evidence references, reasoning traces, verification, and provenance.
+The bridge contains no independent inference or verification implementation.
 
-## Canonical Target
+## Identity Contract
 
-- distribution: `bijux-canon-reason`
-- Python import: `bijux_canon_reason`
-- command: `bijux-canon-reason`
-- package handbook: <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
+| Surface | Preserved identity | Canonical identity |
+| --- | --- | --- |
+| distribution | `bijux-rar` | `bijux-canon-reason` |
+| Python root | `bijux_rar` | `bijux_canon_reason` |
+| preferred command | `bijux-rar` | `bijux-canon-reason` |
+| nested CLI module | `bijux_rar.interfaces.cli` | `bijux_canon_reason.interfaces.cli` |
+| representative nested type | `bijux_rar.core.Claim` | `bijux_canon_reason.core.Claim` |
 
-## Preserved Surfaces
+```mermaid
+flowchart LR
+    dist["bijux-rar distribution"]
+    pin["bijux-canon-reason<br/>exact version"]
+    imports["bijux_rar imports"]
+    oldcmd["bijux-rar command"]
+    newcmd["bijux-canon-reason command"]
 
-- the published `bijux-rar` distribution name
-- the `bijux_rar` Python import surface
-- the `bijux-rar` command name
+    dist --> pin
+    imports --> pin
+    oldcmd --> pin
+    newcmd --> pin
+```
 
-## When To Keep It
+The canonical reason distribution currently registers both
+`bijux-canon-reason` and `bijux-rar` to the same application. The compatibility
+distribution also registers `bijux-rar` to that canonical application so the
+command remains available to consumers that still install the old
+distribution. This command continuity does not make the old Python root
+canonical.
 
-Keep `bijux-rar` only while a documented dependent environment still relies on
-the legacy name. Once installs, imports, and command usage move to `bijux-canon-reason`,
-the compatibility package becomes retirement debt.
+## Existing And Canonical Usage
 
-## First Proof Check
+```bash
+python -m pip install bijux-rar
+bijux-rar --help
+python -m bijux_rar --help
+```
 
-- `packages/compat-bijux-rar`
-- the compatibility package `README.md`
-- the canonical handbook at <https://bijux.io/bijux-canon/04-bijux-canon-reason/>
-- shared retirement rules in
-  <https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/>
+```python
+from bijux_rar import Claim, validate_plan
+```
 
-## Repository Transition
+New dependencies and source imports use:
 
-The former standalone repository at <https://github.com/bijux/bijux-rar> is retired in favor of
-<https://github.com/bijux/bijux-canon>. The legacy package remains only as a
-bridge to the canonical package inside the monorepo.
+```bash
+python -m pip install bijux-canon-reason
+bijux-canon-reason --help
+```
+
+```python
+from bijux_canon_reason import Claim, validate_plan
+```
+
+The root exports are forwarded, the tested nested `Claim` import retains
+canonical identity, and the compatibility CLI module resolves to the canonical
+module object.
+
+## Migrate Evidence-Bearing Consumers
+
+Reason integrations frequently retain plans, claims, traces, and provenance.
+Inventory dependency and import names alongside serialized dotted paths,
+artifact readers, schema assumptions, command invocations, and any code that
+compares concrete types. Validate representative accepted and refused cases;
+command discovery alone does not prove evidence semantics.
+
+The [reason handbook](../../04-bijux-canon-reason/index.md) is authoritative
+for current behavior. Compatibility checks establish delegation and selected
+identity invariants, not permanent support for private modules or every
+historical artifact representation.
+
+## Repository Ownership
+
+Current source, issues, release metadata, and documentation are owned by
+`bijux/bijux-canon`. The former `bijux/bijux-rar` repository is historical
+context rather than a second implementation source.
+
+Continue with [dependency continuity](../migration/dependency-continuity.md)
+for the release pin and [migration guidance](../migration/migration-guidance.md)
+for the complete consumer surface.
