@@ -50,40 +50,58 @@ canonical index distribution does not register its own console script. This is
 an observable asymmetry in current packaging, not proof that the compatibility
 package owns index behavior.
 
-## Handbook Sections
+## What Equivalence Means
 
-- [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/) for the
-  exact legacy names still shipped, the surfaces they preserve, and the
-  canonical packages they point to
-- [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/) for
-  continuity rules, validation, release posture, and retirement conditions
+Compatibility is a set of observable surfaces, not a statement that two names
+look similar:
 
-## Compatibility Package Map
-
-| Compatibility package | Canonical target | Reader action |
+| Surface | Required evidence | Insufficient evidence |
 | --- | --- | --- |
-| `bijux-canon` | `bijux-canon-runtime` | use the bridge only when an existing environment still expects the shorter family-root runtime name |
-| `agentic-flows` | `bijux-canon-runtime` | use the bridge only while migrating execution and replay surfaces |
-| `bijux-agent` | `bijux-canon-agent` | move orchestration imports, commands, and docs to the canonical agent package |
-| `bijux-rag` | `bijux-canon-ingest` | move document preparation and retrieval-preparation work to ingest docs |
-| `bijux-rar` | `bijux-canon-reason` | move reasoning, claim, and verification review to reason docs |
-| `bijux-vex` | `bijux-canon-index` | move vector execution and retrieval provenance review to index docs |
+| installation | exact canonical dependency and synchronized version | both wheels install independently |
+| root import | forwarded attributes, `__all__`, and discovery | one symbol imports |
+| submodule import | alias and canonical names resolve to the same module object | duplicate implementations with similar APIs |
+| module execution | bridge `__main__` invokes the canonical entrypoint | a separate parser with matching options |
+| console command | preserved script delegates arguments, output, and exit status | command name exists |
+| runtime behavior | canonical tests pass through the bridge where applicable | one successful example |
+| release | bridge and canonical artifacts derive from the same tag and version | matching version strings alone |
 
-## Start With
+A bridge may contain alias machinery and a local `__main__`; it must not contain
+a second product implementation. New behavior, schemas, examples, and fixes
+belong to the canonical package first.
 
-- Open [Catalog](https://bijux.io/bijux-canon/08-compat-packages/catalog/)
-  when you already have a legacy name and need the current canonical target.
-- Open [Migration](https://bijux.io/bijux-canon/08-compat-packages/migration/)
-  when the question is whether the bridge is still justified, how to migrate off
-  it, or when it can be retired.
+## Resolve A Preserved Name
 
-## Proof Path
+| Existing name | Canonical destination | Migration focus |
+| --- | --- | --- |
+| `bijux-canon` | `bijux-canon-runtime` | distribution, import, command, runtime artifacts |
+| `agentic-flows` | `bijux-canon-runtime` | execution manifests, replay commands, imports |
+| `bijux-agent` | `bijux-canon-agent` | orchestration imports, configuration, commands |
+| `bijux-rag` | `bijux-canon-ingest` | preparation imports, commands, artifact readers |
+| `bijux-rar` | `bijux-canon-reason` | reasoning imports, run directories, verification commands |
+| `bijux-vex` | `bijux-canon-index` | vector contracts, module command, provenance artifacts |
 
-- `packages/compat-*` contains the shipped bridges.
-- compatibility package `README.md` files should name the canonical targets.
-- canonical package handbooks under `docs/02-...` through `docs/06-...` own
-  current behavior.
-- migration pages under `docs/08-compat-packages/migration/` explain when a bridge is still justified.
+Start with the [catalog](catalog/index.md) for exact package behavior and the
+[migration handbook](migration/index.md) for continuity and retirement rules.
+
+## Migrate Without Splitting Identity
+
+```mermaid
+flowchart LR
+    dependencies[dependency metadata]
+    imports[root and submodule imports]
+    commands[console and module commands]
+    config[configuration and environment]
+    artifacts[artifact readers and images]
+    parity[canonical tests and parity checks]
+
+    dependencies --> imports --> commands --> config --> artifacts --> parity
+```
+
+Move and verify one observable surface at a time. Mixing bridge imports with
+canonical artifact readers can leave identity embedded in caches, manifests,
+or automation even after dependency metadata changes. Keep the bridge until
+all dependent environments have moved; do not add new bridge-only behavior to
+make a partial migration permanent.
 
 ## Compatibility Invariants
 

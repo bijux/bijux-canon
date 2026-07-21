@@ -48,38 +48,48 @@ Generated logs, reports, SBOMs, build products, and test output belong under
 repository locations because they are versioned contract sources, not local run
 products.
 
-## Verification Path
+## Choose A Check By The Claim
 
-1. identify the package or shared contract that changed
-2. run its narrow package target and inspect the artifact output
-3. run the applicable root aggregation target
-4. confirm the matching workflow trigger and publication dependency
-5. treat a skipped, missing, or stale check as unresolved evidence
+| Claim to establish | Narrow evidence | Broader evidence when needed |
+| --- | --- | --- |
+| one package still satisfies its local contract | package Make target and retained report | root package matrix for shared dependency changes |
+| an HTTP schema is synchronized | schema lint, generated diff, pin and hash validation | live contract tests for implemented routes |
+| documentation remains publishable | strict MkDocs build, link and publication contracts | docs deployment job for hosting behavior |
+| a dependency change is admissible | lock resolution, policy check, focused package tests | security audit and affected package matrix |
+| a package can be released | build, metadata, wheel/sdist validation, publication guard | tagged PyPI, GHCR, and GitHub release workflows |
+| a compatibility bridge remains equivalent | alias imports, module identity, command parity | canonical package tests under the tagged version |
 
-## Handbook Sections
+Use the narrowest check that exercises the changed contract. Root aggregation
+is necessary when shared metadata, dependencies, API governance, or release
+membership changed; repeating every expensive lane is not stronger evidence
+for a documentation-only edit.
 
-- [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) for repository-health helper code,
-  schema governance, release support, quality gates, and supply-chain tooling
-- [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) for the shared `make` interface,
-  package dispatch, CI target families, and release-facing command surfaces
-- [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) for GitHub Actions entrypoints,
-  reusable workflow contracts, release publication, and docs deployment
+## Read A Failed Check
 
-## Start With
+```mermaid
+flowchart LR
+    input[governed input]
+    helper[bijux-canon-dev rule]
+    target[Make target]
+    workflow[workflow job]
+    artifact[retained output]
+    verdict[exit status and diagnosis]
 
-- Open [bijux-canon-dev](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/) when the question is which helper code or test
-  owns a repository-health rule.
-- Open [makes](https://bijux.io/bijux-canon/07-bijux-canon-maintain/makes/) when the concern begins at `Makefile`, shared targets, or package
-  dispatch.
-- Open [gh-workflows](https://bijux.io/bijux-canon/07-bijux-canon-maintain/gh-workflows/) when the concern begins in GitHub Actions triggers, job
-  graphs, or publication orchestration.
+    input --> helper --> target --> workflow
+    helper --> artifact
+    target --> artifact
+    workflow --> artifact
+    artifact --> verdict
+```
 
-## Proof Path
+Start at the first layer that made the disputed decision. A helper failure is
+not repaired by changing workflow presentation. A missing Make dependency is
+not a product-package defect. A workflow permission or trigger error is not
+evidence that the underlying check passed or failed.
 
-- `packages/bijux-canon-dev/` is the maintainer helper package.
-- `makes/` is the checked-in command surface.
-- `.github/workflows/` is the checked-in workflow contract.
-- `artifacts/` is the default destination for local check output and generated run products.
+Retained output belongs under `artifacts/`. A command line without its governed
+input, exit status, and diagnostic output is not sufficient evidence of a
+maintenance decision.
 
 ## Repository-Specific Checks
 
@@ -104,3 +114,11 @@ repository policy, PR approval, docs deployment, and PyPI, GHCR, and GitHub
 release publication. A successful docs deployment does not imply package tests
 passed; a successful package build does not imply publication guards passed;
 and a reusable workflow does not broaden the permissions of its caller.
+
+## Continue By Surface
+
+| Surface | Handbook |
+| --- | --- |
+| repository-health commands, schema rules, release guards, SBOM and audit helpers | [bijux-canon-dev](bijux-canon-dev/index.md) |
+| root targets, package dispatch, environment ownership, CI and release commands | [Make system](makes/index.md) |
+| triggers, reusable jobs, permissions, documentation deployment, and publication | [GitHub workflows](gh-workflows/index.md) |
