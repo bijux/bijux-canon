@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Error Model
@@ -44,6 +44,46 @@ Topology is checked before any node executes. This prevents partial traces from
 being mistaken for complete runs. The executor's default policy is fail-fast;
 callers using the Python API may opt out and inspect accumulated tool failures.
 
+## Failure Ownership by Boundary
+
+The boundary that can state the violated contract owns the primary error. Later
+layers may add context, but they must preserve the original classification.
+
+| Boundary | Owns | Must preserve |
+| --- | --- | --- |
+| request adapter | malformed or schema-invalid input | field path and validation detail |
+| planner | invalid dependencies or cyclic topology | invariant identifier and offending nodes |
+| runtime adapter | tool invocation or declared-output failure | tool identity, request linkage, and failed result |
+| artifact writer | missing files or digest mismatch | expected path or digest and observed value |
+| verifier | structural, grounding, provenance, or finalization finding | check ID, severity, and referenced evidence |
+| replay comparator | difference between original and replay artifacts | compared identities and structural difference |
+
+```mermaid
+stateDiagram-v2
+    [*] --> Requested
+    Requested --> Rejected: schema invalid
+    Requested --> Planned: topology valid
+    Planned --> ExecutionFailed: tool or runtime failure
+    Planned --> Executed: actions complete
+    Executed --> VerifiedWithFindings: report contains findings
+    Executed --> VerifiedClear: report has no retained findings
+    VerifiedWithFindings --> Published: policy gate disabled
+    VerifiedWithFindings --> Gated: policy gate enabled
+    VerifiedClear --> Published
+    Published --> ReplayDifferent: structural diff found
+    Published --> ReplayEquivalent: comparison passes
+    Rejected --> [*]
+    ExecutionFailed --> [*]
+    Gated --> [*]
+    ReplayDifferent --> [*]
+    ReplayEquivalent --> [*]
+```
+
+`Published` in this model means the artifact set was written; it does not mean
+that verification was clear. The retained report is authoritative about that
+difference. Similarly, `ReplayDifferent` is a completed comparison, not a
+transport exception.
+
 ## Findings are data
 
 A verification failure is not an exception. `verify_trace` returns a report
@@ -69,3 +109,8 @@ run directory. A consumer should treat the manifest and digests as the
 integrity boundary and the verification report as the semantic assessment.
 Neither an exit status of zero nor a digest match alone establishes that a
 claim is scientifically true.
+
+For automation, inspect the structured report or replay result before applying
+the CLI policy gate. Exit status `2` communicates that an enabled gate rejected
+the findings; it intentionally does not collapse their invariant IDs,
+severities, or evidence references into a single boolean.

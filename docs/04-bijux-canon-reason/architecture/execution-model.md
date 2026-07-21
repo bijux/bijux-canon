@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Execution Model
@@ -98,6 +98,55 @@ The fingerprint comparison is therefore the end of a verification chain, not a
 standalone equality test. A missing plan, changed pinned corpus, mismatched
 retrieval provenance, or invalid checksum prevents replay from claiming
 equivalence.
+
+## Proof Gates
+
+Each boundary answers a narrower question than the one after it. Passing an
+earlier gate does not imply that later evidence exists.
+
+| Gate | Question answered | Evidence produced |
+| --- | --- | --- |
+| specification | is the requested problem well formed? | validated `ProblemSpec` and stable identity |
+| planning | is there an acyclic, dependency-complete route to an answer? | content-addressed plan and ordered nodes |
+| execution | did each scheduled action produce its declared output? | canonical events, tool results, evidence, and claims |
+| verification | do trace structure and support relationships satisfy the selected policy? | typed checks, findings, and summary counts |
+| finalization | is the artifact set complete and internally fingerprinted? | runtime metadata, trace fingerprint, and manifest |
+| replay | can frozen inputs reproduce a comparable execution? | replay trace and structural diff |
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Planner
+    participant Executor
+    participant Verifier
+    participant RunStore
+    Caller->>Planner: validated ProblemSpec
+    Planner-->>Executor: content-addressed Plan
+    Executor->>Executor: emit ordered events and support links
+    Executor-->>Verifier: trace, claims, and evidence
+    Verifier-->>RunStore: VerificationReport
+    RunStore->>RunStore: fingerprint files and write manifest
+    RunStore-->>Caller: immutable run directory
+    Note over Caller,RunStore: replay reads the artifact set; it does not reconstruct omitted inputs
+```
+
+The manifest establishes file integrity, the verification report establishes
+which semantic checks passed, and replay establishes a comparison under frozen
+inputs. None of those layers proves an external scientific proposition by
+itself. They make the route from request to claim inspectable and falsifiable.
+
+## Completion and Insufficient Evidence
+
+`insufficient_evidence` is a completed typed output when execution reaches that
+conclusion through the plan. It is not equivalent to a missing evidence file, a
+failed retrieval call, or an aborted executor. The former can be verified and
+replayed as a reasoning outcome; the latter are failures to construct the
+promised evidence path.
+
+A run becomes publishable only after its core files, provenance files,
+fingerprints, and manifest agree. Consumers should start at the manifest and
+verification report, then inspect individual claims and support spans. A loose
+`trace.jsonl` file is useful diagnostic material, not a complete run artifact.
 
 See [Artifact Contracts](../interfaces/artifact-contracts.md) for the on-disk
 evidence set and [Failure Recovery](../operations/failure-recovery.md) for
