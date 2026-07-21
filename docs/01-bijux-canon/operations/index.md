@@ -4,77 +4,152 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Operations
 
-The operations section covers the shared procedures that keep the package split
-credible after code changes: local workflow, validation, schema review,
-artifact handling, release flow, and review discipline.
-
-The main mistake this section should prevent is operational folklore. Shared
-work should be discoverable from checked-in commands, workflows, schemas, and
-docs instead of from CI archaeology or private maintainer memory.
-
-## Operating Loop
-
-Operations pages should make the shared work loop visible: a contributor
-changes a package or root contract, runs the relevant local command, leaves
-artifacts in the repository-owned output area, and lets CI repeat the same
-intent before release.
+Repository operations coordinate five canonical packages, six compatibility
+distributions, shared HTTP contracts, documentation, and publication. The
+default operating rule is simple: begin at the owner of the changed claim,
+prove it locally, and widen validation only for boundaries that actually
+changed.
 
 ```mermaid
 flowchart LR
-    change["change intent"]
-    local["local make and package checks"]
-    artifacts["artifacts output"]
-    review["review gate"]
-    ci["CI and release workflows"]
-    publish["published result"]
-    apis["apis contracts"]
-    workflows["workflow source"]
-
-    change --> local --> artifacts --> review --> ci --> publish
-    change --> apis
-    ci --> workflows
+    classify[Classify the change] --> owner[Select owning surface]
+    owner --> implement[Change behavior and contract]
+    implement --> focused[Run focused evidence]
+    focused --> shared{Cross-package surface?}
+    shared -- no --> review[Review artifacts and diff]
+    shared -- yes --> repository[Run relevant repository checks]
+    repository --> review
+    review --> release[Tagged publication when intended]
 ```
 
-Repository operations should read like a closed loop, not like a bag of
-commands. A maintainer starts from one explicit change, runs the checked-in
-entrypoints, leaves machine output in `artifacts/`, and relies on review and
-CI to replay the same intent. If a step cannot be traced to one of those
-surfaces, it is operational folklore rather than repository procedure.
+## Route by Change
 
-## Start Here
+| Change | Primary owner | First operational route |
+| --- | --- | --- |
+| ingest, retrieval, reasoning, agent, or runtime behavior | canonical package | package operations and focused tests |
+| shared OpenAPI representation | owning package plus root schema governance | [API and Schema Governance](api-and-schema-governance.md) |
+| root package inventory or command dispatch | root metadata and `makes/` | [Automation Surfaces](automation-surfaces.md) |
+| public handbook content or navigation | `docs/` and `mkdocs.yml` | [Testing and Validation](testing-and-validation.md) |
+| older package, import, or command name | compatibility distribution | [Compatibility Handbook](../../08-compat-packages/index.md) |
+| build, SBOM, release, or repository-health rule | `bijux-canon-dev` and workflows | [Maintenance Handbook](../../07-bijux-canon-maintain/index.md) |
 
-- open [Contributor Workflows](https://bijux.io/bijux-canon/01-bijux-canon/operations/contributor-workflows/) for the shortest route through normal repository work
-- open [Testing and Validation](https://bijux.io/bijux-canon/01-bijux-canon/operations/testing-and-validation/) when you need to know which shared proof must run before acceptance
-- open [API and Schema Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/api-and-schema-governance/) when the concern is contract drift or reviewed schema change
-- open [Release and Versioning](https://bijux.io/bijux-canon/01-bijux-canon/operations/release-and-versioning/) when the concern is tag behavior, package publication, or release discipline
-- open [Automation Surfaces](https://bijux.io/bijux-canon/01-bijux-canon/operations/automation-surfaces/) when you need to know which shared root automation owns the current action
+Root operations do not replace package operations. A package owns its domain
+invariants and local recovery. The root becomes relevant when the change
+alters a shared representation, package family, site, or release decision.
 
-## Pages In This Section
+## Local Entry Points
 
-- [Local Development](https://bijux.io/bijux-canon/01-bijux-canon/operations/local-development/)
-- [Testing and Validation](https://bijux.io/bijux-canon/01-bijux-canon/operations/testing-and-validation/)
-- [Release and Versioning](https://bijux.io/bijux-canon/01-bijux-canon/operations/release-and-versioning/)
-- [API and Schema Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/api-and-schema-governance/)
-- [Contributor Workflows](https://bijux.io/bijux-canon/01-bijux-canon/operations/contributor-workflows/)
-- [Automation Surfaces](https://bijux.io/bijux-canon/01-bijux-canon/operations/automation-surfaces/)
-- [Artifact Governance](https://bijux.io/bijux-canon/01-bijux-canon/operations/artifact-governance/)
-- [Review Expectations](https://bijux.io/bijux-canon/01-bijux-canon/operations/review-expectations/)
-- [Change Management](https://bijux.io/bijux-canon/01-bijux-canon/operations/change-management/)
+The root Makefile exposes the maintained command graph. Discover commands from
+the current checkout:
 
-## First Proof Checks
+```bash
+make help
+make list-all
+make -C packages/bijux-canon-runtime help
+```
 
-- `Makefile` and `makes/` for shared command entrypoints and routing
-- `.github/workflows/` for repository-wide automation and release execution
-- `apis/` for schema governance surfaces that affect shared review
-- the relevant package handbook once the action stops being truly shared
+Use narrow targets during development:
 
-## Leave This Section When
+```bash
+# Public site, navigation, and strict rendering
+make docs-check
 
-- the work is already local to one package's own operations surface
-- the real question is repository intent rather than repository procedure
-- the next step is maintainer-helper implementation detail instead of the shared workflow contract
+# One package's test surface
+make -C packages/bijux-canon-reason test
+
+# Shared OpenAPI freeze and package drift checks
+make api
+
+# Workspace lock consistency
+make lock-check
+```
+
+`make check`, `make all`, and `make test-all` intentionally aggregate broad or
+expensive work. They are release or repository-confidence routes, not the
+default response to a local documentation or package change.
+
+## Evidence by Boundary
+
+```mermaid
+flowchart TD
+    claim[Changed claim]
+    domain{Domain behavior?}
+    public{Public contract?}
+    persistent{Artifact or replay?}
+    publication{Release surface?}
+
+    claim --> domain
+    domain -- yes --> package[Focused package invariant or workflow test]
+    domain -- no --> public
+    public -- yes --> contract[Schema, CLI, import, or compatibility test]
+    public -- no --> persistent
+    persistent -- yes --> replay[Integrity, migration, and replay evidence]
+    persistent -- no --> publication
+    publication -- yes --> release[Build, metadata, SBOM, and publication guards]
+```
+
+Generated evidence belongs beneath `artifacts/`. A rendered site proves that
+Markdown and navigation build; it does not prove product behavior. A broad CI
+lane cannot compensate for a missing assertion at the package that owns the
+claim.
+
+## Shared Contract Operations
+
+Five OpenAPI directories each retain source YAML, canonical pinned JSON, and a
+digest. An HTTP change needs implementation evidence and representation
+evidence. Use freeze checks for agreement within the checked-in schema set and
+drift checks for agreement with the application-generated schema.
+
+Artifact changes require their own authority review. Product run evidence,
+local validation output, and release assets have different finalization,
+integrity, and retention rules. Follow [Artifact Governance](artifact-governance.md)
+before copying or publishing a generated file.
+
+## Review and Acceptance
+
+Before a change is accepted, establish:
+
+- the owner of every changed decision;
+- the public and persisted representations affected;
+- the narrow validation that proves the changed claim;
+- any compatibility, migration, recovery, or replay consequence;
+- the generated artifacts produced by validation and where they were stored;
+- the release boundary, if the change is intended for publication.
+
+Inspect both source changes and generated diagnostics. A successful command
+with an unexpected schema diff, warning, veto, non-certifiable trace, or empty
+artifact set is not successful evidence.
+
+## Publication Boundary
+
+Versions resolve from Git tags and flow into each independently installable
+distribution. Publication builds and validates package artifacts before any
+upload. Compatibility packages share the release line but preserve their own
+metadata and forwarding contracts.
+
+Publication is irreversible: never replace a released version with different
+bytes. Correct a defect in source, create a new version, and retain the failed
+release evidence. See [Release and Versioning](release-and-versioning.md) for
+the exact ownership split.
+
+## Operational Guides
+
+| Need | Guide |
+| --- | --- |
+| prepare the uv workspace and use package-local loops | [Local Development](local-development.md) |
+| choose focused versus repository-wide checks | [Testing and Validation](testing-and-validation.md) |
+| understand root command delegation | [Automation Surfaces](automation-surfaces.md) |
+| govern source, pins, hashes, and live HTTP behavior | [API and Schema Governance](api-and-schema-governance.md) |
+| classify generated, retained, and published artifacts | [Artifact Governance](artifact-governance.md) |
+| coordinate a cross-surface change | [Change Management](change-management.md) |
+| review ownership, evidence, and compatibility | [Review Expectations](review-expectations.md) |
+| build and publish versioned distributions | [Release and Versioning](release-and-versioning.md) |
+
+For product-specific installation, configuration, diagnostics, and recovery,
+continue in the owning package handbook. For helper implementation, CI fan-out,
+SBOMs, and repository-health internals, continue in the maintenance handbook.
