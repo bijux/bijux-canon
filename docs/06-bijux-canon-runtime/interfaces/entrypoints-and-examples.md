@@ -60,13 +60,12 @@ verification gates.
 bijux-canon-runtime run flow.json \
   --policy policy.json \
   --db-path artifacts/bijux-canon-runtime/runs.duckdb \
-  --strict-determinism \
-  --json
+  --strict-determinism
 ```
 
-The returned run identifier addresses the persisted trace and its associated
-events, artifacts, envelopes, budgets, verification results, interventions,
-and replay evidence.
+Plain output includes the run identifier that addresses persisted state. The
+current live `--json` rendering omits that identifier, so capture it from plain
+output before using `inspect run --json` for the complete persisted trace.
 
 ## CLI: inspect, replay, and compare
 
@@ -93,8 +92,10 @@ bijux-canon-runtime diff run <first-run-id> <second-run-id> \
 Replay exits with contract-violation status when a semantic diff is present.
 Use `explain failure` to retrieve the last persisted failure event and
 `validate db` to confirm that an execution store is readable. `plan`,
-`dry-run`, `unsafe-run`, `diff`, `explain`, and `validate` are implemented but
-currently suppressed from top-level help output.
+`dry-run`, `unsafe-run`, `diff`, `explain`, and `validate` are parsed but
+currently suppressed from top-level help output. `unsafe-run` cannot yet reach
+execution through the CLI because unsafe mode requires a verification policy
+and that subcommand exposes no `--policy` option.
 
 ## HTTP: current implementation boundary
 
