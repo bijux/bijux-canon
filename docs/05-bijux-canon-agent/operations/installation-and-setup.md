@@ -13,6 +13,15 @@ last_reviewed: 2026-07-21
 includes the orchestration pipeline, CLI, OpenAI adapter, structured contracts,
 trace support, and YAML configuration.
 
+```mermaid
+flowchart LR
+    P[Install package] --> C[Resolve credentials and configuration]
+    C --> I[Validate input and output custody]
+    I --> R[Run governed pipeline]
+    R --> T[Inspect result and complete trace]
+    T --> H[Retain both artifacts together]
+```
+
 ## Install
 
 ```bash
@@ -121,9 +130,14 @@ curl --fail-with-body http://127.0.0.1:8000/v1/health
 
 ```bash
 make install
-make -C packages/bijux-canon-agent help
-make -C packages/bijux-canon-agent test
+make -f makes/packages/bijux-canon-agent.mk \
+  -C packages/bijux-canon-agent help
+make test PACKAGE=bijux-canon-agent
 ```
+
+Package Makefiles are repository profiles under `makes/packages/`; the package
+directory does not contain a standalone Makefile. Use the root dispatcher for
+normal checks and the explicit profile form when inspecting package targets.
 
 Use `make docs-check` for handbook changes and widen validation only for
 contracts that cross package or API boundaries.
