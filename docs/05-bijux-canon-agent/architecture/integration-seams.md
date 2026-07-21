@@ -9,94 +9,99 @@ last_reviewed: 2026-07-21
 
 # Integration Seams
 
-Agent integrations cross five distinct boundaries: task input, pipeline
-configuration, provider execution, trace/result artifacts, and downstream run
-authority. Keeping them distinct prevents a convenient adapter from becoming
-hidden orchestration policy.
+Agent integrations cross content, control, provider, artifact, and runtime
+boundaries. These seams must remain separate: a model adapter supplies role
+content, while typed orchestration owns lifecycle authority. A convenient
+provider or CLI wrapper must not become hidden approval policy.
 
-## Seam Map
+## Orchestration Handoff
 
 ```mermaid
 flowchart LR
-    input["document + task goal"] --> contract["AgentInput and file boundary"]
-    config["YAML pipeline policy"] --> controller["canonical pipeline"]
-    contract --> controller
-    provider["model adapter"] --> roles["bounded role agents"]
+    input["AgentInput and source identity"] --> controller["typed pipeline control"]
+    config["resolved policy and hashes"] --> controller
+    provider["model adapter and metadata"] --> roles["passive roles"]
     controller --> roles
-    roles --> trace["RunTrace"]
-    trace --> result["PipelineResult"]
-    result --> files["final_result.json + run_trace.json"]
-    files --> downstream["runtime, audit, or replay"]
+    roles --> observations["validated role outputs"]
+    observations --> controller
+    controller --> trace["ordered RunTrace"]
+    trace --> result["derived PipelineResult"]
+    result --> runtime["runtime admission"]
 ```
 
-## Input Seam
+The feedback edge carries observations, not authority. Roles cannot select
+their own transitions, erase vetoes, or declare terminal success outside typed
+control.
 
-In-process integrations construct immutable `AgentInput` values with a task
-goal, payload, context identity, agent type, and execution mode. The CLI accepts
-a file or directory, resolves supported documents, and applies one configured
-task goal across the selected inputs.
+## Seam Contracts
 
-Input identity must remain stable outside observational timestamp and nonce
-fields. If file bytes, task meaning, or material context change, use a new
-identity and do not reuse cached or replay labels from the earlier work.
+| Seam | Required input | Agent produces | Refusal boundary |
+| --- | --- | --- | --- |
+| task input | immutable task goal, payload, context, source identity, execution mode | normalized `AgentInput` and attempt identity | changed bytes or meaning under reused identity |
+| configuration | YAML plus explicit overrides | resolved limits, retry, feedback, logging and model configuration with hashes | untracked override or invalid policy |
+| provider | declared model adapter, credentials, timeout and metadata | schema-validated role output and actual model metadata | authentication, rate limit, timeout, provider or schema failure |
+| controller | valid input, resolved policy, passive role observations | lifecycle transitions, convergence, veto, stop and termination states | forbidden transition or incompatible terminal state |
+| trace/result | complete ordered trace and derived public fields | `run_trace.json` and `final_result.json` | missing mandatory field, schema failure, or parity mismatch |
+| runtime | full agent evidence and authority-neutral result | no implicit run acceptance | runtime policy rejects or cannot establish complete custody |
 
-## Configuration Seam
+## Input And Configuration Identity
 
-YAML supplies pipeline limits, retry policy, feedback rules, logging, and model
-metadata. Constructor parameters take precedence over pipeline parameters,
-then top-level values, then defaults. Preserve the resolved configuration and
-its hash with a delivered trace; retaining only the source YAML can miss
-overrides.
+In-process callers construct `AgentInput` values. The CLI resolves a file or
+directory and applies the configured task goal to selected inputs. If source
+bytes, task meaning, or material context changes, issue a new identity; do not
+reuse cached, comparable, or replayable labels from the earlier attempt.
 
-Model metadata is part of trace validity. Provider, model name, temperature,
-and token limits must describe the execution that actually occurred.
+Configuration precedence is constructor parameters, pipeline parameters,
+top-level values, then defaults. Archive the resolved configuration and its
+hash. Retaining source YAML alone loses command-line and constructor overrides.
+The recorded provider, model, temperature, and token limit must describe the
+actual call, not only the intended configuration.
 
-## Provider Seam
+## Provider Admission
 
-`llm.adapter_factory` maps declared models to provider adapters. Adapters return
-role outputs and model metadata through the package contract. They also expose
-network, authentication, rate-limit, timeout, and provider-version failure
-domains that pipeline retry policy must classify explicitly.
+```mermaid
+flowchart TD
+    adapter["provider adapter"] --> identity{"model metadata complete?"}
+    identity -->|no| reject["reject call evidence"]
+    identity -->|yes| effect{"network and retry policy declared?"}
+    effect -->|no| reject
+    effect -->|yes| output{"output validates?"}
+    output -->|no| reject
+    output -->|yes| record["record role observation"]
+```
 
-The current CLI requires OpenAI, Anthropic, HuggingFace, and DeepSeek keys
-before parsing any command, even when a local or single-provider workflow is
-selected. This is a CLI bootstrap constraint, not a four-provider execution
-contract.
+Provider adapters expose authentication, network, timeout, rate-limit, version,
+and retry failure domains. A retry policy must distinguish transient reads from
+effects that cannot safely repeat.
 
-## CLI Artifact Seam
+The CLI currently requires OpenAI, Anthropic, HuggingFace, and DeepSeek keys
+before command dispatch, including offline-oriented commands. This bootstrap
+constraint does not mean a workflow executes all four providers.
 
-A successful non-dry run writes `result/final_result.json` and
-`trace/run_trace.json` under the caller's output root. The result is derived
-from the trace and stores a relative trace path. The files are written
-separately and have no manifest or transactional completion marker.
+## CLI, HTTP, And Replay
 
-Directory execution can process several files, while the final artifact uses
-the first successful entry as its primary result. Batch integrations must also
-retain per-file success and failure reporting; one primary result does not
-summarize every input.
+A successful non-dry CLI run writes `result/final_result.json` and
+`trace/run_trace.json`. They are separate writes without a manifest or
+transactional completion marker. Directory execution may process multiple
+files while the primary artifact reflects the first successful entry. Batch
+consumers must retain every per-file outcome and reconcile the full input set.
 
-## HTTP Seam
+The HTTP application exposes a fixed deterministic offline
+`simple`/`extractive` pipeline. Its narrow configuration schema does not grant
+arbitrary role, provider, backend, or model selection. It is a distinct
+integration posture from the provider-backed CLI.
 
-The v1 ASGI factory exposes a fixed deterministic offline
-`simple`/`extractive` pipeline. Although the schema accepts a narrow config
-object, clients do not gain arbitrary role, provider, backend, or model
-selection. The API is a separate integration posture from the provider-backed
-CLI.
+Replay upgrades and validates the stored trace, reconstructs the public result,
+and compares the adjacent result when available. It does not call providers.
+Non-zero temperature and incomplete replay identity restrict replayability.
 
-## Replay Seam
+## Runtime Admission
 
-Replay loads and upgrades trace schema, validates replay fields, reconstructs
-the public result, and compares an adjacent final result when available. It
-does not call providers again. A trace using non-zero temperature cannot claim
-deterministic replayability.
+Runtime needs input and task identity, resolved configuration, pipeline hash,
+model metadata, complete trace, per-input outcomes, convergence and termination
+state, and final result. It may accept, reject, and persist the wider run; it
+must not rewrite agent history, turn interruption into completion, or convert a
+verification veto into success.
 
-## Downstream Runtime Seam
-
-Runtime should receive task and input identity, resolved configuration hash,
-pipeline-definition hash, model metadata, complete trace, convergence and
-termination state, and final result. It may apply broader acceptance and
-persistence policy, but it must not rewrite agent history or convert an agent
-veto into success.
-
-See [configuration](../interfaces/configuration-surface.md) and
-[artifact contracts](../interfaces/artifact-contracts.md) for concrete fields.
+See [configuration](../interfaces/configuration-surface.md) for precedence and
+[artifact contracts](../interfaces/artifact-contracts.md) for evidence fields.

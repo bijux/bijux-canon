@@ -9,13 +9,27 @@ last_reviewed: 2026-07-21
 
 # State and Persistence
 
-Agent keeps working state in memory while the pipeline runs and writes a small
-durable evidence set at the CLI boundary. The caller chooses the output root;
-the package does not maintain a global run database.
+Agent keeps pipeline state in memory and writes a compact evidence pair at the
+CLI boundary. The caller owns the output root. There is no global run database,
+manifest, multi-writer coordination, or atomic directory commit.
 
-## Artifact Layout
+## State Lifecycle
 
-For `--out <output-root>`, a successful non-dry run produces:
+```mermaid
+flowchart TD
+    input["input and task identity"] --> working["in-memory controller state"]
+    config["resolved configuration"] --> working
+    provider["role calls and observations"] --> working
+    working --> trace["trace/run_trace.json"]
+    trace --> derived["reconstructed PipelineResult"]
+    derived --> result["result/final_result.json"]
+    trace --> parity{"result-trace parity"}
+    result --> parity
+    parity -->|pass| publish["caller publishes evidence pair"]
+    parity -->|fail| quarantine["caller quarantines attempt"]
+```
+
+For `--out <output-root>`, a successful non-dry run writes:
 
 ```text
 <output-root>/
@@ -25,71 +39,70 @@ For `--out <output-root>`, a successful non-dry run produces:
     └── run_trace.json
 ```
 
+Keep the relative layout intact because the final result references the trace
+relative to the output root.
+
+## Durable Evidence
+
+| Artifact | Carries | Does not carry automatically |
+| --- | --- | --- |
+| `run_trace.json` | schema, run identity, hashes, model metadata, ordered entries, replay data, convergence, failures, terminal status | source file bytes, resolved YAML as a standalone file, external provider environment |
+| `final_result.json` | verdict, confidence, epistemic status, stop and termination reasons, convergence, runtime version, model metadata, trace path | complete per-file batch summary or independent derivation history |
+
+Dry-run or no-success output records a veto-shaped result without a trace path.
+It must not be presented as completed provider execution.
+
+## Publication Is Caller-Owned
+
+The two files use ordinary separate writes. Process interruption can leave one
+missing or partially written. Reusing a directory can combine a result from one
+attempt with a trace from another.
+
 ```mermaid
 flowchart LR
-    config["resolved configuration"] --> pipeline["in-memory pipeline state"]
-    input["document and task goal"] --> pipeline
-    pipeline --> trace["trace/run_trace.json"]
-    trace --> result["result/final_result.json"]
-    trace --> replay["reconstructed outcome"]
-    result --> compare["field comparison"]
-    replay --> compare
+    attempt["fresh attempt directory"] --> require{"both files present?"}
+    require -->|no| reject["reject publication"]
+    require -->|yes| load["load and validate trace"]
+    load --> reconstruct["reconstruct public result"]
+    reconstruct --> compare{"public fields match?"}
+    compare -->|no| reject
+    compare -->|yes| context{"input and resolved config retained?"}
+    context -->|no| bounded["publish only bounded agent evidence"]
+    context -->|yes| complete["publish caller-manifested attempt"]
 ```
 
-The final result stores its trace path relative to the output root. Keep the
-directory structure intact when moving or archiving the evidence pair.
+Use a fresh output directory for every material attempt. Before publication,
+require both files, validate the trace, reconstruct `PipelineResult`, compare it
+with the final result, and bind the pair to input digest, task identity, resolved
+configuration, and attempt identity in the caller's manifest.
 
-## Durable Fields
+## Batch State
 
-`run_trace.json` carries the trace schema version, run identity and timestamps,
-pipeline and configuration hashes, model metadata, ordered entries, replay
-metadata, convergence state, failures, and terminal status.
+Directory execution can yield several per-file successes and failures while
+the primary final artifact represents the first successful entry. A batch
+publisher must preserve a typed outcome for every selected input, reconcile
+selected, successful, failed, skipped, and missing counts, and keep each
+artifact pair associated with its input identity. The primary result is not a
+batch completion signal.
 
-`final_result.json` carries the derived verdict, confidence, epistemic status,
-stop and termination reasons, convergence fields, runtime version, model
-metadata, and relative trace path. In a dry run or when no successful entry is
-available, the final result records a veto-shaped outcome with no trace path;
-it must not be presented as a completed provider execution.
+## Replay And Correction
 
-## Write Guarantees and Limits
+Replay derives state from recorded entries after schema validation and declared
+upgrade mappings. When the adjacent final result exists, replay compares public
+fields and classifies mismatch. It does not repeat provider calls or prove that
+unretained source bytes are unchanged.
 
-The two files are written separately with ordinary filesystem writes. There is
-no run manifest, atomic directory commit, or transactional status marker. A
-process interruption can therefore leave one file missing or partially
-written, and reusing an output directory can mix evidence from different
-attempts.
+Never edit a trace to make a result pass parity. Preserve the failed pair, run a
+new attempt in a fresh directory, and link the replacement in caller-owned
+publication metadata.
 
-Use a fresh output directory for every material run. Before publishing a
-result, require both files, load and validate the trace, reconstruct the
-pipeline result, and compare it with `final_result.json`.
+## Retention And Access
 
-## Replay Is Reconstruction
+Traces can contain prompts, model outputs, failure details, and
+document-derived content. Apply classification, encryption, access control,
+retention, deletion, and backup to the complete attempt directory. Logs are
+diagnostics and do not substitute for the structured trace.
 
-Replay validates and upgrades the stored trace schema, then derives the outcome
-from recorded entries. If an adjacent final result exists, it compares public
-fields and classifies mismatches. Replay does not repeat provider calls or
-prove that the source document is still unchanged unless the integration also
-preserves and checks source identity.
-
-A trace can be labeled replayable only when its required hashes and model
-metadata exist and its recorded temperature is zero. Non-deterministic model
-sampling must remain visible in replay status.
-
-## Operational Storage Guidance
-
-- Allocate one output root per input or batch execution.
-- Store configuration and input digests alongside the evidence pair when the
-  surrounding system needs complete provenance.
-- Restrict trace access: prompts, model outputs, failures, and document-derived
-  content may be sensitive.
-- Do not edit a trace to repair a final result; preserve the failed pair and run
-  again into a new directory.
-- Treat logs as diagnostics, not a substitute for the structured trace.
-
-The package does not define retention, encryption at rest, or multi-writer
-coordination. Deployments must supply those controls around the caller-owned
-output root.
-
-See [artifact contracts](../interfaces/artifact-contracts.md) for field-level
-details and [failure recovery](../operations/failure-recovery.md) for handling
-partial output.
+See [artifact contracts](../interfaces/artifact-contracts.md) for field
+semantics and [failure recovery](../operations/failure-recovery.md) for partial
+output handling.
