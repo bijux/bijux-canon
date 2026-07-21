@@ -97,19 +97,29 @@ operational constraint; it does not mean each run contacts all four providers.
 
 ## HTTP Contract
 
-`POST /v1/run` accepts text, a task goal, a context identifier, and optional
-role/config overrides. It returns a result or structured error together with
-run and trace-schema identity. `GET /v1/health` provides process health. The v1
-schema currently constrains strategy to `extractive` and backend to `simple`;
-the checked-in contract is
+`POST /v1/run` accepts text, a task goal, a context identifier, and a bounded
+configuration object. The current handler validates that object but executes a
+fixed offline pipeline: `simple` backend, `extractive` strategy, and the five
+default roles. Configuration values do not currently alter execution. A
+successful response carries the pipeline result; `trace_metadata` is part of
+the response model but is not currently populated by the handler.
+
+`GET /v1/health` provides process health. The checked-in contract is
 [`apis/bijux-canon-agent/v1/schema.yaml`](../../apis/bijux-canon-agent/v1/schema.yaml).
 
-## What This Package Takes And Produces
+## Evaluate A Pipeline Outcome
 
-- takes: declared agent workflows, role-specific inputs, local orchestration settings, and package-local boundary requests
-- produces: deterministic agent traces, role outputs, operator-facing artifacts, and explicit workflow failures when orchestration contracts are broken
-- guarantees: role orchestration stays inspectable and trace-backed instead of collapsing into one opaque tool invocation
-- does not do: decide runtime replay acceptance, own ingest or index package behavior, or treat provider integrations as cross-package authority
+| Question | Evidence to inspect | What is not enough |
+| --- | --- | --- |
+| Which roles were authorized? | pipeline definition, resolved configuration, role order | installed provider adapters |
+| What ran and in which order? | lifecycle transitions and per-agent call records | final artifact alone |
+| Why did execution stop? | termination reason, convergence decision, vetoes, failures | a `success` field without trace context |
+| Is the trace complete? | schema version, run fingerprint, mandatory entries, completeness validation | a log file |
+| Can the result be governed downstream? | `PipelineResult`, trace identity, failure artifact, telemetry | provider response text detached from its run |
+
+Deterministic orchestration means the controller's declared ordering and
+decisions are inspectable. It does not make a remote model deterministic or
+prove that convergence produced a correct artifact.
 
 ## Dependency Surface
 
@@ -117,7 +127,7 @@ Treat the base package as the canonical orchestration surface. CLI, HTTP,
 provider, and template integrations are package-owned extensions that must stay
 subordinate to the trace and workflow contract, not the other way around.
 
-## Package continuity
+## Package Continuity
 
 - compatibility package: [`bijux-agent`](https://pypi.org/project/bijux-agent/)
 - previous import root: `bijux_agent`
@@ -125,18 +135,17 @@ subordinate to the trace and workflow contract, not the other way around.
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 - retired repository target: [https://github.com/bijux/bijux-agent](https://github.com/bijux/bijux-agent) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
-## What this package owns
+## Package Boundary
 
-- agent role implementations and the helpers that are specific to those roles
-- deterministic orchestration of the local agent pipeline
-- trace-backed result artifacts that explain what happened during a run
-- package-local CLI and HTTP boundaries for invoking agent workflows
+Agent owns role implementations, lifecycle transitions, execution ordering,
+convergence, veto handling, failure artifacts, and trace production. Reason
+owns evidence and claim semantics used inside reasoning-capable roles. Runtime
+owns acceptance, durable run persistence, and governed replay above the
+pipeline.
 
-## What this package does not own
-
-- runtime-wide persistence, replay acceptance, or execution governance
-- ingest and index engines that belong to other package boundaries
-- repository tooling, release automation, or root-level quality workflows
+Provider adapters remain edge integrations. Their presence does not authorize
+a provider, broaden the v1 HTTP contract, or transfer provider nondeterminism
+into the deterministic orchestration core.
 
 ## Trace And Failure Guarantees
 
@@ -150,7 +159,7 @@ subordinate to the trace and workflow contract, not the other way around.
 - API errors carry code, message, and HTTP status instead of overloading a
   nominally successful result payload
 
-## Source map
+## Source Map
 
 - [`src/bijux_canon_agent/agents`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/agents) for role-local behavior
 - [`src/bijux_canon_agent/pipeline`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/pipeline) for execution flow
@@ -159,7 +168,7 @@ subordinate to the trace and workflow contract, not the other way around.
 - [`src/bijux_canon_agent/traces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/traces) for durable trace-facing models
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/tests) for executable package truth
 
-## Read this next
+## Read This Next
 
 - [Package guide](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
 - [Ownership boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/)
@@ -169,12 +178,7 @@ subordinate to the trace and workflow contract, not the other way around.
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md)
 
-## Primary entrypoint
+## Primary Entrypoint
 
 - console script: `bijux-canon-agent`
-
-## Release Readiness
-
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- package history: [`CHANGELOG.md`](CHANGELOG.md)
