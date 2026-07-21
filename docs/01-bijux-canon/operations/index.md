@@ -50,7 +50,8 @@ the current checkout:
 ```bash
 make help
 make list-all
-make -C packages/bijux-canon-runtime help
+make -f makes/packages/bijux-canon-runtime.mk \
+  -C packages/bijux-canon-runtime help
 ```
 
 Use narrow targets during development:
@@ -60,7 +61,7 @@ Use narrow targets during development:
 make docs-check
 
 # One package's test surface
-make -C packages/bijux-canon-reason test
+make test PACKAGE=bijux-canon-reason
 
 # Shared OpenAPI freeze and package drift checks
 make api
@@ -72,6 +73,10 @@ make lock-check
 `make check`, `make all`, and `make test-all` intentionally aggregate broad or
 expensive work. They are release or repository-confidence routes, not the
 default response to a local documentation or package change.
+
+Package directories do not contain standalone Makefiles. Root targets dispatch
+through profiles under `makes/packages/`; supply the profile explicitly only
+when inspecting a package's target catalog.
 
 ## Evidence by Boundary
 

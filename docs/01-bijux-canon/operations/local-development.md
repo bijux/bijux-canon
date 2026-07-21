@@ -51,10 +51,10 @@ flowchart LR
     wider -- yes --> shared --> review
 ```
 
-Package source, tests, metadata, and local Make targets live together under
-`packages/<package-name>/`. Root targets dispatch to packages declared in
-`makes/packages.mk`; the aliases there also show which compatibility
-distribution corresponds to each canonical package.
+Package source, tests, and metadata live under `packages/<package-name>/`.
+Package Make profiles live under `makes/packages/`, and root targets dispatch
+through the inventory in `makes/packages.mk`. The aliases there also show which
+compatibility distribution corresponds to each canonical package.
 
 Examples of narrow feedback loops:
 
@@ -63,11 +63,16 @@ Examples of narrow feedback loops:
 make docs-check
 
 # Inspect package-specific commands.
-make -C packages/bijux-canon-ingest help
+make -f makes/packages/bijux-canon-ingest.mk \
+  -C packages/bijux-canon-ingest help
 
 # Run the owning package's default test surface.
-make -C packages/bijux-canon-ingest test
+make test PACKAGE=bijux-canon-ingest
 ```
+
+Do not omit the profile from a direct package invocation: package directories
+do not contain standalone Makefiles. Prefer the root dispatcher for normal
+test, lint, quality, API, build, and SBOM work.
 
 Avoid `make check`, `make all`, and `make test-all` as inner-loop commands.
 They intentionally aggregate repository-wide work. Use them when the change
