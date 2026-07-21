@@ -9,79 +9,93 @@ last_reviewed: 2026-07-21
 
 # State and Persistence
 
-Runtime persists execution authority in DuckDB. The store is an audit, resume,
-and replay boundary: it records causal state produced by execution, while
-transient executor objects and caches remain in memory.
+Runtime persists execution authority and causal evidence in DuckDB. The store
+supports audit, resume, and replay; it does not own transient executor objects,
+external payload durability, or effects committed in other systems.
 
-## Stored Evidence
+## Stored Evidence Graph
 
 ```mermaid
 flowchart TD
-    run["run identity and contract"] --> db["DuckDB execution store"]
-    steps["normalized plan steps"] --> db
+    contract["run, tenant, manifest, mode, policy"] --> db[("DuckDB")]
+    dataset["dataset descriptor"] --> db
+    plan["normalized steps and dependencies"] --> db
     events["ordered events and checkpoints"] --> db
     tools["tool invocations and entropy"] --> db
-    artifacts["artifacts, parentage, and evidence"] --> db
-    verify["claims, verification, and arbitration"] --> db
+    artifacts["artifacts, parents, evidence, claims"] --> db
+    verification["verification and arbitration"] --> db
     db --> inspect["inspect and explain"]
-    db --> resume["resume from durable causal state"]
+    db --> resume["resume causal history"]
     db --> replay["replay and semantic diff"]
 ```
 
 The governed schema includes runs, datasets, normalized steps, events,
-checkpoints, artifacts and parent edges, evidence, claim identifiers, tool
-invocations, entropy budgets and use, non-determinism intent, replay envelopes,
-verification state, schema migrations, and the active schema-contract hash.
+checkpoints, artifact parentage, evidence, claim identifiers, tool invocations,
+entropy budgets and use, nondeterminism intent, replay envelopes, verification,
+arbitration, migrations, and the schema-contract hash.
 
-## Run Lifecycle
+## Lifecycle And Commit Signals
 
-`begin_run` registers the dataset, allocates a run identifier, writes the plan
-contract and mode, and initializes the run as not finalized. Execution appends
-causally ordered records. `finalize_run` binds the finalized trace, verification
-policy fingerprint, resolver identity, contradiction and arbitration state,
+| State | Durable evidence | Allowed operation | Prohibited interpretation |
+| --- | --- | --- | --- |
+| planned | resolved plan returned in memory; no run row in plan mode | review or export plan | tool execution or persisted-run claim |
+| in progress | run, dataset, plan, causal events and optional checkpoint | inspect, diagnose, or resume after authority validation | completed or replay-equivalent claim |
+| finalized | immutable final trace and linked execution evidence | inspect, compare, and replay under retained policy | mutation or continuation of the same history |
+| non-certifiable | execution evidence with explicit certification restriction | inspect and diagnose bounded outcome | certified acceptance or strict replay claim |
+
+Preparation registers the dataset, begins the run, and stores normalized steps.
+Execution appends causally ordered evidence. Finalization binds the trace,
+verification policy, resolver identity, contradiction and arbitration state,
 entropy exhaustion, and certifiability.
 
-These lifecycle states remain distinct:
+## Single-Writer And External Transactions
 
-- **planned**: no persisted run exists in plan mode;
-- **in progress**: a run exists but is not finalized and may be resumable;
-- **finalized**: the trace boundary is closed and supports inspection or replay;
-- **non-certifiable**: execution evidence exists, but the run cannot make the
-  stronger replay or acceptance claim.
+The store takes a sibling lock file and assumes one writer. A writer must close
+the store to release its connection and lock. Another process must not delete a
+live lock to force access.
 
-## Single-Writer Boundary
+Store methods commit their own related records, but DuckDB cannot transact with
+an external API, filesystem, vector service, or model provider. An effect can
+succeed before the event or checkpoint becomes durable.
 
-The DuckDB store acquires a sibling lock file and assumes one writer. It does
-not promise concurrent mutation semantics. A long-lived process must close the
-store to release its connection and lock; a second writer should not remove a
-lock merely to force access.
+```mermaid
+sequenceDiagram
+    participant Runtime
+    participant External as External system
+    participant Store as DuckDB store
 
-The store commits groups of related records as its methods complete, but it is
-not the transaction manager for external tools or application side effects. A
-persisted event cannot roll back a provider call, filesystem write, or service
-mutation that occurred outside DuckDB.
+    Runtime->>Store: record authorized intent
+    Runtime->>External: execute with idempotency identity
+    External-->>Runtime: result or failure
+    Runtime->>Store: append invocation, evidence, and event
+    Runtime->>Store: checkpoint successful step
+    Note over Runtime,Store: crash before checkpoint requires safe deduplication or compensation
+```
 
-## Read and Write Capabilities
+Resume is safe only when the executor's effect contract makes repeating or
+reconciling the gap safe.
 
-Write and read stores are separate interfaces. Live and resumed execution use
-write capability; inspection and replay use read capability. This separation
-allows review paths to run without accidental mutation authority.
+## Resume Authority
 
-Resume loads the last durable events, artifacts, evidence, tool invocations,
-entropy use, claims, and checkpoint indexes. It must revalidate tenant,
-manifest, plan, dataset, policy, and store identity before adding new causal
-history. Changed authority requires a new run, not continuation of the old one.
+Resume loads the latest durable events, artifacts, evidence, tool invocations,
+entropy use, claim IDs, and checkpoint indexes. Before appending history, it
+must revalidate tenant, manifest, plan, dataset, mode, policy, store, executor,
+and artifact identities. Any meaning-bearing mismatch creates a new run rather
+than continuing the old one.
 
-## Schema Governance
+Finalized traces are immutable. Corrections and changed authority require a
+linked successor run.
 
-The package ships ordered migrations, a canonical schema contract, and its
-hash. Opening a store applies or validates that governed schema. Direct table
-edits, untracked migrations, or copying only selected tables may leave a
-database syntactically readable but semantically unsuitable for replay.
+## Schema, Backup, And Restore
 
-Back up the DuckDB file only when the writer is quiescent or through a
-DuckDB-compatible snapshot procedure. Preserve the schema metadata with the
-data, and verify a restored copy with:
+Ordered migrations and the canonical schema-contract hash govern database
+shape. Direct table edits, untracked migrations, or partial-table copies can
+leave a syntactically readable database that is semantically invalid for resume
+or replay.
+
+Back up only when the writer is quiescent or through a DuckDB-compatible
+snapshot mechanism. Preserve manifests, policies, external payloads, and
+resolver data required by stored references. Validate a restored database with:
 
 ```bash
 bijux-canon-runtime validate db \
@@ -89,16 +103,20 @@ bijux-canon-runtime validate db \
   --json
 ```
 
-## Retention and Access
+Then inspect representative finalized and incomplete runs, resolve artifact
+payloads, and perform a policy-appropriate replay. File readability alone does
+not prove recoverability.
 
-- Set an explicit database path for every deployment.
-- Restrict access by tenant and operating-system identity; traces and evidence
-  may contain sensitive derived content.
-- Retain source manifests, policies, and external artifact payloads alongside
-  the database when replay depends on them.
-- Preserve incomplete and failed runs for investigation instead of editing
-  their terminal state.
-- Test restoration and replay, not only file-level backup success.
+## Retention And Access
+
+- Configure an explicit database and artifact root for every deployment.
+- Enforce tenant access with host and storage identities, not only record fields.
+- Retain incomplete and failed runs as evidence; never edit terminal status to
+  simplify reporting.
+- Encrypt and control traces, evidence, prompts, provider metadata, and payloads
+  according to their data classification.
+- Test checkpoint recovery, artifact restoration, and replay at the required
+  retention horizon.
 
 See [artifact contracts](../interfaces/artifact-contracts.md) for the persisted
 model and [failure recovery](../operations/failure-recovery.md) for resume and

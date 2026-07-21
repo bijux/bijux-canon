@@ -9,94 +9,102 @@ last_reviewed: 2026-07-21
 
 # Integration Seams
 
-Runtime integrates contracts that have different authority and failure modes.
-Each seam is explicit so a deployment can tell which component supplied an
-identity, performed a side effect, retained evidence, or decided acceptance.
+Runtime composes contracts with different owners and different failure modes.
+Its integration job is to preserve authority: who supplied the dataset, who
+defined the plan, which executor could create effects, which verifier produced
+findings, which policy arbitrated them, and which store retained the result.
+
+## Authority Map
 
 ```mermaid
 flowchart LR
-    caller[Python or CLI caller] --> manifest[FlowManifest / ExecutionPlan]
-    manifest --> app[execute_flow]
-    lower[ingest, index, reason, agent outputs] --> app
-    policy[authority and verification policy] --> app
-    app --> executor[step executors and tools]
-    app --> verify[verification and arbitration]
-    app --> runstore[(DuckDB execution store)]
-    executor --> artifacts[artifact store / external systems]
-    runstore --> operator[inspect, resume, replay, diff]
-    http[HTTP v1 probes] -. health and readiness .-> app
+    caller["caller authority"] --> manifest["FlowManifest or ExecutionPlan"]
+    lower["canonical package evidence"] --> prepare["runtime preparation"]
+    manifest --> prepare
+    policy["verification and replay policy"] --> prepare
+    prepare --> execute["authority-bearing execution context"]
+    execute --> executor["step executors and external effects"]
+    execute --> verify["verification and arbitration"]
+    execute --> store[("DuckDB execution store")]
+    executor --> payloads["artifact and external systems"]
+    store --> inspect["inspect, resume, replay, diff"]
 ```
 
-## Manifest and plan seam
+Runtime may accept or refuse the composed run. It does not take ownership of
+ingest normalization, index geometry, reason support semantics, or agent role
+lifecycle.
 
-The stable Python entry point accepts a `FlowManifest` or resolved
-`ExecutionPlan`, plus an explicit `RunMode` and execution resources. A manifest
-declares tenant, dataset, agents, dependencies, retrieval contracts,
-verification gates, determinism, entropy, and replay posture. Planning resolves
-that declaration into ordered, fingerprinted execution; it does not execute a
-tool or create a stored run.
+## Seam Contracts
 
-Callers that retain a plan must treat its manifest, dataset, environment, and
-policy fingerprints as one contract. Replacing any part while reusing the old
-plan identity defeats replay comparison and is rejected at the application
-boundary.
+| Seam | Required input | Runtime records or decides | Refusal boundary |
+| --- | --- | --- | --- |
+| manifest and plan | tenant, dataset, dependency graph, package identities, determinism and replay posture | ordered fingerprinted execution plan | changed or incomplete authority identity |
+| lower package | governed artifact plus producer identity and status | linkage into the whole-run evidence graph | opaque payload, missing provenance, incompatible status |
+| executor | declared effect class, credentials, entropy, idempotency and failure mapping | intent, invocation, causal events, result, checkpoint | unauthorized effect or unsafe retry semantics |
+| artifact store | payload identity, digest, parentage, resolver | metadata and evidence references | unresolved, corrupt, or untrusted payload |
+| verification | registered rules over claims, evidence, artifacts and entropy | complete findings and rule coverage | missing mandatory rule or invalid evidence |
+| arbitration | fingerprinted policy and verification statuses | accept, reject, or non-certifiable decision | policy mismatch or prohibited finding |
+| execution store | read or write capability with tenant scope | causal history, checkpoint, final trace and replay inputs | wrong authority, schema, tenant, or finalized state |
+| client surface | validated Python/CLI request or implemented HTTP operation | result or structured refusal | schema-only HTTP run/replay operation |
 
-## Canonical package seam
+## Canonical Package Custody
 
-Runtime consumes governed outputs from the lower canonical packages:
-
-| Producer | Runtime consumes | Authority that remains with the producer |
+| Producer | Runtime consumes | Producer retains authority over |
 | --- | --- | --- |
-| ingest | dataset identity, normalized source state, provenance | source acquisition and normalization |
-| index | retrieval contracts and indexed dataset identity | backend, metric, and retrieval semantics |
-| reason | evidence-addressed reasoning and claims | claim construction and evidence linkage |
-| agent | role outputs, decisions, and provider events | role lifecycle and provider adaptation |
+| ingest | dataset identity, normalized source state, provenance | acquisition, normalization, chunk coordinates |
+| index | execution artifact, backend identity, ranked evidence, completion class | vector geometry, capability and retrieval semantics |
+| reason | claims, exact supports, verification report, reason bundle | claim construction and evidence linkage |
+| agent | task identity, ordered trace, decisions, convergence and termination | role orchestration and provider adaptation |
 
-An integration should pass stable identifiers and hashes, not infer identity
-from display names or reconstruct provenance from logs.
+Pass stable identifiers, hashes, classifications, and complete artifacts. Display
+names and logs are not cross-package identity.
 
-## Executor and side-effect seam
+## Executor Admission
 
-Step executors receive a resolved step and authority-bearing context. Tool and
-agent calls occur beyond the execution database's transaction boundary. The
-runtime records intent, causal events, results, entropy, and checkpoints, but a
-committed DuckDB row cannot roll back an external API call or filesystem write.
-Live integrations therefore need idempotency keys or their own compensation
-strategy.
+```mermaid
+flowchart TD
+    candidate["executor candidate"] --> authority{"authorized for this step?"}
+    authority -->|no| reject["refuse executor"]
+    authority -->|yes| effects{"effect and retry semantics declared?"}
+    effects -->|no| reject
+    effects -->|yes| entropy{"entropy source within policy?"}
+    entropy -->|no| reject
+    entropy -->|yes| artifacts{"artifact protocol and failure mapping valid?"}
+    artifacts -->|no| reject
+    artifacts -->|yes| admit["admit executor"]
+```
 
-The runtime artifact interface may point to a separate payload store. DuckDB
-retains artifact identity, hashes, parentage, and evidence relationships; it is
-not proof that every external payload remains available.
+External tools execute beyond DuckDB's transaction. Runtime can record intent,
+invocation, result, entropy, and checkpoint, but it cannot roll back a provider
+call, filesystem write, or service mutation. A mutating executor therefore
+requires an idempotency key, deduplication, or compensation that survives
+resume.
 
-## Verification seam
+DuckDB records artifact identity, hashes, parentage, and evidence references.
+Payload availability remains the artifact store's responsibility and must be
+verified before an artifact supports acceptance or replay.
 
-Verification engines consume recorded claims, evidence, artifacts, entropy,
-and configured rules. Arbitration then turns their statuses into a governed
-decision under a fingerprinted policy. These are two distinct seams: a rule
-result is evidence for arbitration, and an arbitration decision is not a claim
-that the underlying scientific statement is true.
+## Verification, Persistence, And Replay
 
-## Persistence and replay seam
+Verification creates rule findings; arbitration applies policy to those
+findings. An arbitration pass is not factual truth. Retain rule identity,
+coverage, findings, policy fingerprint, decision, and certifiability together.
 
-The execution store exposes separate read and write capabilities. Execution
-and resume require write authority; inspection, explanation, and comparison
-can use read authority. The DuckDB implementation is single-writer and guarded
-by a sibling lock file. It is appropriate for a local governed execution
-record, not shared concurrent mutation across workers.
+Write capability is required for execution and resume. Read capability is
+sufficient for inspection and comparison. The DuckDB implementation is
+single-writer and local. Replay compares a new execution with retained plan,
+dataset, envelope, trace, policy, environment, and artifact identity under the
+original exact or bounded rule.
 
-Replay loads the retained plan, dataset descriptor, envelope, trace, and policy
-evidence, then compares a new execution under the original acceptability rule.
-Exact and bounded replay are explicit policies. A persisted second run is not,
-by itself, evidence of equivalence.
+## Client Surfaces
 
-## Command, HTTP, and compatibility seams
+The CLI invokes the canonical application and renders machine-readable
+failures. `bijux-canon` and `agentic-flows` are compatibility commands to the
+same runtime authority.
 
-The canonical CLI loads manifests and policy, invokes the same application
-surface, and renders machine-readable failures. The `bijux-canon` and
-`agentic-flows` commands are compatibility entry points to that implementation.
+The HTTP application implements health, readiness, schemas, headers, and
+failure envelopes. Its run and replay endpoints return `501 Not Implemented`.
+OpenAPI presence must not be interpreted as remote execution capability.
 
-The v1 HTTP application currently provides health and readiness probes. Run
-and replay request schemas are tracked, but their endpoints return `501 Not
-Implemented`; clients must not interpret schema presence as executable remote
-runtime support. See [API Surface](../interfaces/api-surface.md) and
-[Compatibility Commitments](../interfaces/compatibility-commitments.md).
+See [API surface](../interfaces/api-surface.md) for endpoint posture and
+[artifact contracts](../interfaces/artifact-contracts.md) for runtime custody.
