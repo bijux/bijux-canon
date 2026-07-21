@@ -4,48 +4,71 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Ownership Boundary
 
-`bijux-canon-ingest` owns the part of the system that makes source material predictable before retrieval begins. Use it when a change looks plausible here and somewhere else at the same time.
-
-## Boundary Map
+Ingest authority is transformation authority. It decides how source material
+becomes immutable documents, chunks, local indexes, ranked candidates, and
+extractive citations under declared configuration.
 
 ```mermaid
-flowchart LR
-    source["source ambiguity"]
-    ingest["ingest ownership"]
-    handoff["prepared records and artifacts"]
-    neighbors["retrieval, reasoning, orchestration, and run authority belong elsewhere"]
+flowchart TD
+    change{"What invariant changes?"}
+    representation["source representation"]
+    vector["governed vector execution"]
+    meaning["claim support or verification"]
+    orchestration["role order or convergence"]
+    authority["run acceptance or replay policy"]
 
-    source --> ingest --> handoff
-    ingest --> neighbors
+    change --> representation
+    change --> vector
+    change --> meaning
+    change --> orchestration
+    change --> authority
+
+    representation --> ingest["bijux-canon-ingest"]
+    vector --> index["bijux-canon-index"]
+    meaning --> reason["bijux-canon-reason"]
+    orchestration --> agent["bijux-canon-agent"]
+    authority --> runtime["bijux-canon-runtime"]
 ```
 
-This page should make one decision easier: is the problem still about making
-source material stable, or has it already become someone else's behavior? The
-boundary works only when the handoff to the next package stays visible.
+## Decision table
 
-## Use This Boundary Test
+| Change | Owner | Reason |
+| --- | --- | --- |
+| normalize whitespace before chunk identity is computed | ingest | changes the prepared representation |
+| alter overlap, tail handling, or structural deduplication | ingest | changes chunk boundaries, order, or identity |
+| add a local lexical scoring option for the compact retrieval path | ingest | extends the package-owned reference workflow |
+| select an eligible backend under exact/ANN and replay contracts | index | governs vector execution across backend capabilities |
+| decide that cited bytes support a derived statement | reason | changes claim grounding and verification |
+| retry a role because workflow convergence has not been reached | agent | changes orchestration lifecycle |
+| permit or reject a completed flow under tenant policy | runtime | changes final run authority |
 
-- keep the work here when it removes ambiguity from source material before any search or reasoning step starts
-- move the work to `bijux-canon-index` when it changes retrieval execution, vector behavior, or replay semantics
-- move the work upward when it changes claim meaning, workflow coordination, or run acceptance policy
+## The local retrieval seam
 
-## Borderline Example
+Both ingest and index contain retrieval-related code, but their authority is
+different:
 
-A parser tweak that stabilizes chunk boundaries belongs here. A tweak that changes retrieval ranking because chunk shape happened to expose the problem does not.
+- ingest owns a local document workflow that makes preparation testable and
+  provides BM25/NumPy reference retrieval and cited extraction;
+- index owns explicit execution intent, artifact materialization, backend
+  capability negotiation, exact or bounded ANN execution, and replay evidence.
 
-## First Proof Check
+Moving from the first to the second is not triggered by corpus size alone. The
+boundary is crossed when retrieval needs governed backend choice, execution
+contracts, cross-run identity, or replay semantics.
 
-- `packages/bijux-canon-ingest/src` for the owned implementation boundary
-- `packages/bijux-canon-ingest/tests` for proof that the boundary survives change
-- neighboring handbook roots in index, reason, agent, and runtime when the work still looks plausible elsewhere
+## Handoff contract
 
-## Design Pressure
+Downstream consumers receive stable source and chunk identity, normalized
+text, offsets within that text, embeddings when configured, metadata, and
+explicit result or failure values. They must not reinterpret normalized
+offsets as original byte offsets or assume hash embeddings carry semantic
+meaning.
 
-The pressure on ingest is to solve source instability without turning into a
-hidden home for retrieval or reasoning fixes. If a change only makes sense once
-search or claim behavior enters the story, the boundary has already moved.
+The owner of a defect is the layer whose invariant was false. A changed chunk
+caused by normalization belongs here; a correct chunk ranked incorrectly under
+a declared vector contract belongs in index.

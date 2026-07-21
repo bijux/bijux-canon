@@ -4,48 +4,73 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Scope and Non-Goals
 
-The scope of `bijux-canon-ingest` is narrower than “anything near the front of the pipeline.” It owns preparation work that makes later packages less ambiguous, not work that makes them less inconvenient.
-
-## Scope Map
+`bijux-canon-ingest` owns deterministic preparation of document material and a
+compact local retrieval path built over the prepared records. It makes source
+transformation, chunk identity, local ranking, and extractive citation visible;
+it does not own platform-wide retrieval governance or interpretive authority.
 
 ```mermaid
 flowchart LR
-    source["messy source material"]
-    scope["ingest scope"]
-    handoff["prepared downstream input"]
-    refuse["retrieval quality, claim meaning, and run authority stay out of scope"]
+    source["source rows and text"]
+    preparation["normalize, identify, chunk, embed"]
+    local["local index, retrieve, ask, evaluate"]
+    handoff["prepared records + cited candidates"]
+    platform["governed index / reasoning / runtime"]
 
-    source --> scope --> handoff
-    scope --> refuse
+    source --> preparation --> local --> handoff --> platform
 ```
 
-This page should show ingest as a narrowing step, not as a general prelude to
-the whole platform. The scope stays healthy when it produces stable prepared
-input and then stops.
+## In scope
 
-## In Scope
+- strict records for raw documents, cleaned documents, chunk spans,
+  embeddings, errors, and observations;
+- deterministic filtering, normalization, chunking, tail policy, structural
+  deduplication, and reference embeddings;
+- lazy and materialized pipeline composition, result folds, streaming,
+  scheduling, and explicit effect boundaries;
+- local BM25 and NumPy cosine indexes, ranked retrieval, extractive answers,
+  citations, and offline evaluation;
+- CSV, JSONL, MessagePack, CLI, Python, and HTTP adapter contracts;
+- opt-in retry, circuit breaker, cache, resource, rule, and telemetry
+  primitives for callers composing external work.
 
-- cleaning, normalization, and chunking before search begins
-- ingest records and artifacts that become the explicit handoff into downstream packages
-- package-local interfaces and safeguards required to run ingest work repeatably
+## Non-goals
 
-## Non-Goals
+| Not owned here | Owning boundary |
+| --- | --- |
+| Source truth, licensing, safety, or authority | source-governance process supplied by the application |
+| Semantic quality of an embedding model | selected model and its evaluation evidence |
+| Cross-backend capability negotiation and governed vector replay | `bijux-canon-index` |
+| Whether a retrieved passage supports a claim | `bijux-canon-reason` |
+| Role scheduling, convergence, and agent traces | `bijux-canon-agent` |
+| Run acceptance, durable workflow authority, and policy replay | `bijux-canon-runtime` |
+| Authentication, tenant isolation, distributed storage, or queue semantics | deploying system |
 
-- deciding retrieval quality, search replay, or vector-store behavior
-- deciding what evidence means once claims and checks are being formed
-- deciding whether a run is durable, governed, or acceptable to keep
+## Important distinctions
 
-## Scope Check
+The in-package retrieval implementation is intentional. It provides a local,
+inspectable document-to-answer path and deterministic evaluation baseline. It
+does not replace the index package's execution artifacts, backend capability
+contracts, or replay policy.
 
-If the change makes later packages depend on ingest for anything beyond prepared input, the package is growing past its job.
+The document-oriented and lazy pipelines also have different contracts. The
+document pipeline materializes observations and performs structural
+deduplication; the minimal lazy path does not promise identical
+post-processing. Callers choose the behavior explicitly.
 
-## Design Pressure
+## Scope test
 
-If ingest starts absorbing work because downstream packages would rather not own
-their own ambiguity, the package becomes broader without becoming clearer. The
-non-goals have to stay explicit enough to resist that pull.
+A change belongs here when its primary invariant concerns how a source becomes
+an addressable prepared or locally retrievable record. If the primary question
+is what a ranking guarantees across backends, what evidence means, which role
+runs, or whether a complete run is accepted, the change belongs at the next
+authority boundary.
+
+See the [capability map](capability-map.md) for implemented surfaces and
+[known limitations](../quality/known-limitations.md) for the guarantees they do
+not provide.
