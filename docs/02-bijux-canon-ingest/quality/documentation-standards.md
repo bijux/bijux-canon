@@ -1,28 +1,60 @@
 ---
-title: Documentation Standards
+title: Public Claim Standards
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
-# Documentation Standards
+# Public Claim Standards
 
-Documentation standards for `bijux-canon-ingest` should keep the handbook reader-first, direct, and evidence-backed. Consistency matters only when it helps readers trust what they are being told.
+Claims about ingest are scoped by the evidence retained with a preparation
+run. The package can establish structural and execution properties; it cannot
+promote those properties into claims about source truth or semantic relevance.
 
-## What To Check
+```mermaid
+flowchart LR
+    source[Source record]
+    config[Preparation configuration]
+    chunks[Addressable chunks]
+    index[Reference index]
+    metrics[Recorded evaluation]
 
-- prefer durable filenames and headings that name the real question the page answers
-- tie prose to code paths, artifacts, contracts, or tests instead of abstract template language
-- treat filler, meta-doc prose, and unsupported certainty as documentation defects
+    source --> config --> chunks --> index --> metrics
+```
 
-## First Proof Check
+## Claim vocabulary
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+| Public wording | Evidence required | Bound on the claim |
+| --- | --- | --- |
+| deterministic cleaning | identical normalized text for the same input and configuration | excludes caller-supplied or version-drifting cleaners |
+| stable chunk identity | matching document identity, offsets, text, and resulting digest | changes when any identity input changes |
+| ordered preparation | stable document and span order through the selected pipeline | does not imply distributed exactly-once delivery |
+| validated embedding | vector dimension matches the declared specification | does not establish semantic usefulness |
+| replayable preparation | source identity, configuration, adapter identity, and retained outputs are available | external services can still drift |
+| retrieval baseline | metrics reproduce for the named corpus and model profile | does not generalize to another corpus or production model |
+| citation retained | answer output resolves to a stored chunk and span | does not establish source authority or entailment |
 
-## Bottom Line
+## Artifact references
 
-If `bijux-canon-ingest` cannot explain why `prepared ingest behavior` should be trusted after a change, the quality work is still incomplete.
+Commands and examples identify the files that carry the claim: source
+descriptors, prepared records, saved-index envelopes, configuration, metrics,
+and failure reports. A digest is described as an identity check, not as proof
+of correctness. A schema is described as an interface contract, not as proof
+that a deployment is available or secure.
+
+## Limits remain visible
+
+Reader-facing examples distinguish the document-oriented pipeline from the
+minimal lazy pipeline, structural deduplication from semantic deduplication,
+normalized string offsets from original byte offsets, and local reference
+retrieval from governed indexing in `bijux-canon-index`.
+
+When an optional model or application adapter enters the path, its name,
+version, parameters, and failure behavior join the claim boundary. Omitting
+that identity makes reproducibility unknown rather than implied.
+
+See [invariants](invariants.md) for executable laws and
+[risk register](risk-register.md) for the uncertainty that remains after those
+laws pass.

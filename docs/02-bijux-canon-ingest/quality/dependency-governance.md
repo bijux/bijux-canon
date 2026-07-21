@@ -1,28 +1,64 @@
 ---
-title: Dependency Governance
+title: Dependency Authority
 audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
-# Dependency Governance
+# Dependency Authority
 
-Dependency governance for `bijux-canon-ingest` matters because new libraries can reshape authority, setup, and risk around prepared ingest behavior. Dependency review should stay technical rather than ceremonial.
+Every ingest dependency joins a different part of the trust boundary. Version
+compatibility is necessary, but the decisive question is which package may
+change data identity, numerical output, serialization, or network behavior.
 
-## What To Check
+```mermaid
+flowchart LR
+    models[Pydantic]
+    codec[MessagePack]
+    numerics[NumPy]
+    api[FastAPI and Uvicorn]
+    config[PyYAML]
+    ingest[Prepared ingest contract]
 
-- name the dependency change that actually affects trust, setup, or package authority
-- tie dependency additions or removals to docs, validation, and release impact where needed
-- treat convenience-driven dependency growth as a quality cost, not a free upgrade
+    models --> ingest
+    codec --> ingest
+    numerics --> ingest
+    api --> ingest
+    config --> ingest
+```
 
-## First Proof Check
+## Production dependencies
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+| Dependency boundary | Authority introduced | Evidence required when it changes |
+| --- | --- | --- |
+| Pydantic | validation, coercion, strict-field, and serialization behavior | invalid/extra-field matrix and stable envelope snapshots |
+| MessagePack | binary representation and persisted-index decoding | round trip, corrupt input, and incompatible-envelope rejection |
+| NumPy | vector representation, dtype, dimensions, and numerical operations | dimension/metric tests and repeated deterministic fixtures |
+| FastAPI and Uvicorn | HTTP validation, error translation, schema, and serving behavior | OpenAPI drift, request/response contracts, and failure mapping |
+| PyYAML | configuration parsing and scalar interpretation | valid/invalid configuration fixtures and resolved-value comparison |
 
-## Bottom Line
+An optional embedder, reader, storage adapter, or caller-provided stage adds
+its own version and semantics even when it is not a declared core dependency.
+Record that identity with outputs used for comparison or replay.
 
-If `bijux-canon-ingest` cannot explain why `prepared ingest behavior` should be trusted after a change, the quality work is still incomplete.
+## Boundary rules
+
+- A codec upgrade must not silently reinterpret an existing saved index.
+- A validation upgrade must not widen accepted input without an explicit
+  contract decision.
+- A numerical upgrade requires comparison of vector and ranking behavior, not
+  only import success.
+- An HTTP upgrade requires the checked-in schema and live application behavior
+  to agree.
+- Retrieval-provider and governed-backend dependencies belong in
+  `bijux-canon-index` when they own capability negotiation or replay policy.
+
+Dependency locks and audit reports establish resolved versions and known
+advisories. They do not establish semantic compatibility. The corresponding
+domain, persistence, interface, or evaluation evidence closes that gap.
+
+Use [test strategy](test-strategy.md) to locate the owning suites and
+[risk register](risk-register.md) to assess residual model, codec, and service
+exposure.
