@@ -69,19 +69,39 @@ numeric range. `embedding` may be omitted; when present, it must be non-empty.
 The computed text length is available in memory but excluded from canonical
 serialization.
 
-The core pipeline's richer `Chunk` and the edge `ChunkModel` serve different
-purposes. Converting through `to_core_chunk` or `from_core_chunk` preserves the
-fields supported by the edge model; it is not a lossless serialization of every
-core chunk field.
+The core pipeline's retrieval `Chunk` and the edge `ChunkModel` serve different
+purposes. The serialization adapters operate on the functional-programming
+core chunk, not the retrieval chunk described above. `to_core_chunk()` retains
+`text` and `metadata`; `from_core_chunk()` returns those same fields.
+`embedding` is not transferred in either direction. Document identity, offsets,
+ordinal, title, category, and embedding specification are outside this adapter.
+
+## Identity and Projection Map
+
+Every projection has a deliberate loss boundary:
+
+| Transition | Preserved | Recomputed or changed | Not carried |
+| --- | --- | --- | --- |
+| `RawDoc` to `CleanDoc` | document ID, title, categories | normalized abstract | original abstract bytes |
+| `CleanDoc` to retrieval chunk | document ID, selected text, source offsets | ordinal and `chunk_id` | unselected document text |
+| unembedded to embedded chunk | all chunk fields | embedding tuple | nothing when the same chunk is enriched |
+| `ChunkModel` to FP core chunk | text, metadata | core path becomes empty | embedding and retrieval identity |
+| FP core chunk to `ChunkModel` | text, metadata | version defaults to `1` | path and embedding |
+
+Only the first three transitions belong to the retrieval pipeline. The last two
+are an edge-model interoperability path. Do not use that path to checkpoint a
+retrieval chunk or to move vectors between systems.
 
 ## File Boundaries
 
-The document CLI reads CSV records and writes one chunk per JSONL line. Treat
-the output file as a complete handoff artifact:
+The document CLI reads CSV records and writes one successful chunk per JSONL
+line. Expected failures are returned or rendered separately; they are not
+interleaved with successful rows in the output file. Treat the output as a
+projection with an accompanying run context:
 
 - write it to a new path or replace it atomically at the surrounding workflow;
 - retain the input and effective configuration when reproducibility matters;
-- validate every line before building an index; and
+- validate every line and the expected row count before building an index; and
 - do not infer an embedding model solely from vector length.
 
 Expected boundary failures are represented with `Result` values. Unexpected
