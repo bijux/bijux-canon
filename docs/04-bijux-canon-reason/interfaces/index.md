@@ -4,81 +4,72 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Interfaces
 
-Open this section when the question is contractual: which reasoning entrypoints, artifacts, payloads, and imports are real promises rather than merely visible implementation details.
+Reason interfaces expose both execution and review. A caller can create a run,
+while a reviewer can inspect its plan, typed trace, findings, provenance,
+fingerprints, and manifest without depending on private Python objects.
 
-## Contract Surface
+## Surface map
 
-Reason interfaces are reviewer-facing contracts. They expose how callers start
-a reasoning run, what artifact shapes come back, how provenance and checks are
-serialized, and which public imports are stable enough for downstream packages
-to use without copying internal policy.
+| Surface | Use | Contract |
+| --- | --- | --- |
+| Python | embed planning, execution, verification, and replay | immutable typed models, runtime protocols, readers, and workflows |
+| CLI | create, verify, replay, evaluate, and scaffold specifications | exit status plus JSON or file artifacts |
+| HTTP v1 runs | create and inspect file-backed reasoning runs | run metadata, manifest, trace, verification, and replay operations |
+| HTTP v1 items | lightweight soft-deleted item state | numeric identity, name, description, and documented restore behavior |
+| Run directory | retain reasoning evidence | core files, optional evidence/provenance, replay output |
+| OpenAPI schema | generate and validate clients | versioned route and payload vocabulary |
+
+## Run artifact relationship
 
 ```mermaid
-flowchart LR
-    caller["caller or reviewer"]
-    cli["CLI surface"]
-    api["API surface"]
-    artifacts["claims and checks"]
-    serialization["serialized outputs"]
-    imports["public imports"]
-    schema["tracked schema"]
-    downstream["agent or runtime"]
-
-    caller --> cli --> artifacts
-    caller --> api --> artifacts
-    artifacts --> serialization --> downstream
-    imports --> artifacts
-    api --> schema
+flowchart TD
+    spec["spec.json"] --> plan["plan.json"]
+    plan --> trace["trace.jsonl"]
+    trace --> verify["verify.json"]
+    trace --> fingerprint["fingerprint.txt"]
+    spec --> metadata["run_meta.json"]
+    plan --> metadata
+    trace --> metadata
+    verify --> manifest["manifest.json"]
+    fingerprint --> manifest
+    metadata --> manifest
+    provenance["evidence / provenance"] --> manifest
 ```
 
-Reason interfaces matter because other tools and reviewers consume the meaning
-they emit. The important promise is not only that a run can be started, but
-that claims, checks, and provenance can be serialized and reused without
-copying hidden package policy.
+The files protect different properties. The semantic trace ID, byte-level
+trace fingerprint, plan/evidence/runtime invariant checksum, and per-file
+manifest digests overlap deliberately but are not interchangeable. The
+manifest is internally consistent, not self-authenticating.
 
-## Read These First
+## Automation semantics
 
-- open [Data Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/data-contracts/) first when the issue is about claim, check, or provenance payload shape
-- open [Artifact Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/artifact-contracts/) when downstream tools depend on stable reasoning outputs
-- open [Compatibility Commitments](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/compatibility-commitments/) when a reasoning-surface change may break reviewers or callers
+- `run` writes the bundle even when verification finds failures unless
+  `--fail-on-verify` promotes them to exit `2`; automation must inspect the
+  report in either case.
+- JSON `verify` exits `2` when findings exist. The separately invoked command
+  writes `verify.verify.json`, not the original run-time `verify.json`.
+- Replay comparison completing is not the same as fingerprints matching. CLI
+  mismatch policy and HTTP response status must be interpreted with the diff.
+- HTTP item request models currently accept fields that are not persisted;
+  only documented returned fields are durable item metadata.
+- Trace and manifest readers reject unsafe relative paths and malformed
+  records rather than normalizing them silently.
 
-## Contract Risk
+## Contract index
 
-The main contract risk here is letting reviewer-facing reasoning artifacts drift without naming which shapes and entrypoints are actually supported.
-
-## First Proof Check
-
-- `packages/bijux-canon-reason/src/bijux_canon_reason/interfaces` for CLI, serialization, and access guard boundaries
-- `packages/bijux-canon-reason/src/bijux_canon_reason/api/v1` for HTTP route and OpenAPI model surfaces
-- `apis/bijux-canon-reason/v1/schema.yaml` for tracked schema visibility
-- `packages/bijux-canon-reason/tests` for claim, provenance, and compatibility evidence
-
-
-## Pages In This Section
-
-- [CLI Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/cli-surface/)
-- [API Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/api-surface/)
-- [Configuration Surface](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/configuration-surface/)
-- [Data Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/data-contracts/)
-- [Artifact Contracts](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/artifact-contracts/)
-- [Entrypoints and Examples](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/entrypoints-and-examples/)
-- [Operator Workflows](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/operator-workflows/)
-- [Public Imports](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/public-imports/)
-- [Compatibility Commitments](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/compatibility-commitments/)
-
-## Leave This Section When
-
-- leave for [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the contract dispute is really a package-boundary dispute
-- leave for [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when a surface question reveals structural drift underneath it
-- leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) or [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the boundary is clear and the question becomes execution or proof
-
-## Design Pressure
-
-If downstream tools treat a reasoning artifact as stable but this page does not
-name it, the contract has already escaped the docs. The interface surface has
-to state which outputs are intentionally reusable.
+| Need | Guide |
+| --- | --- |
+| Operate `run`, `verify`, `replay`, or `eval` | [CLI surface](cli-surface.md) |
+| Integrate item and run routes | [API surface](api-surface.md) |
+| Configure roots, guards, budgets, and retrieval | [Configuration surface](configuration-surface.md) |
+| Construct specs, plans, evidence, claims, and traces | [Data contracts](data-contracts.md) |
+| Validate or export a run directory | [Artifact contracts](artifact-contracts.md) |
+| Compose package modules directly | [Public imports](public-imports.md) |
+| Follow end-to-end caller journeys | [Operator workflows](operator-workflows.md) |
+| Assess schema or artifact evolution | [Compatibility commitments](compatibility-commitments.md) |
+| Start from executable examples | [Entrypoints and examples](entrypoints-and-examples.md) |

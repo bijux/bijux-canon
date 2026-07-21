@@ -4,78 +4,77 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Architecture
 
-Open this section when the question is structural: where claims and checks are formed, how reasoning steps flow through the package, and how the code keeps meaning visible instead of scattering it.
+Reasoning is organized as a chain of independently reviewable boundaries:
+problem modeling, content-addressed planning, runtime execution, evidence and
+claim recording, verification, and artifact finalization. No final prose can
+replace the trace that connects those boundaries.
 
-## Structural Shape
-
-Reason architecture centers on explicit reasoning artifacts. Core models define
-claims, plans, traces, and verification results; execution modules run steps
-and tools; verification modules check structure and provenance; trace modules
-make the result replayable rather than just plausible.
+## Execution structure
 
 ```mermaid
 flowchart LR
-    evidence["evidence input"]
-    core["core models"]
-    execution["execution runtime"]
-    reasoning["reasoning logic"]
-    verification["verification checks"]
-    traces["trace records"]
-    output["reasoning artifact"]
+    interfaces["CLI / HTTP / Python"]
+    workflow["application run workflow"]
+    planning["planner + content IDs"]
+    execution["runtime + tool dispatch"]
+    models["claims, evidence, trace events"]
+    verification["registered invariant checks"]
+    artifacts["fingerprints + manifest"]
 
-    evidence --> core --> execution --> reasoning --> verification --> output
-    execution --> traces --> output
-    core --> output
+    interfaces --> workflow --> planning --> execution
+    execution --> models --> verification --> artifacts
+    planning --> models
 ```
 
-The architectural point of reason is that interpretation stays inspectable.
-Models define the shapes that matter, execution runs the step, reasoning logic
-forms the conclusion, verification constrains it, and traces preserve enough
-history for comparison or replay later.
+## Proof boundaries
 
-## Read These First
+| Boundary | Input | Output | Invariant |
+| --- | --- | --- | --- |
+| problem | caller description, constraints, expected output | `ProblemSpec` with stable identity | canonical content determines identity when none is supplied |
+| plan | problem specification | directed nodes and dependencies | node and plan IDs change when meaningful content changes |
+| execution | validated plan and runtime descriptor | ordered typed events | calls, results, evidence, claims, and action completion remain linked |
+| grounding | registered evidence and claim support | byte spans and snippet hashes | referenced bytes exist and match the recorded digest |
+| verification | plan, trace, runtime, evidence | complete findings and summary | failures remain visible even when policy permits process success |
+| finalization | all retained run material | fingerprint, metadata, and manifest | serialized trace and declared files are integrity-checkable |
 
-- open [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/) first when you need the owning code area for a reasoning concern
-- open [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/) when you need the path from evidence input to reasoning output
-- open [Integration Seams](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/integration-seams/) when a change could blur retrieval, orchestration, or runtime boundaries
+## Runtime choices
 
-## Structural Risk
+The default runtime is seeded and local. A problem declaring
+`needs_retrieval` may use the pinned BM25 path with recorded corpus, chunk, and
+index provenance. Other callers can inject an `ExecutionRuntime`, but runtime
+kind, mode, tool versions, and configuration fingerprints then become part of
+run identity and the replay contract.
 
-The main architectural risk here is hiding reasoning policy in the wrong layer until no one can point to the module that actually decided what a claim means.
+Replay uses recorded tool returns through a frozen runtime. It asks whether the
+retained inputs and results reproduce the governed trace; it does not re-attest
+that an external tool or source would produce the same content today.
 
-## First Proof Check
+## Module authority
 
-- `packages/bijux-canon-reason/src/bijux_canon_reason/core/models` for claims, planning, trace, and verification models
-- `packages/bijux-canon-reason/src/bijux_canon_reason/execution` for runtime and tool execution boundaries
-- `packages/bijux-canon-reason/src/bijux_canon_reason/verification` for checks that keep claims reviewable
-- `packages/bijux-canon-reason/tests` for proof that claims, checks, and provenance stay aligned
+| Area | Authority |
+| --- | --- |
+| `core/models` | problem, plan, claim, trace, and verification contracts |
+| `planning` | intermediate representation and plan construction |
+| `execution` | action ordering, tool dispatch, evidence registration, runtime descriptors, and replay runtime |
+| `reasoning` and `retrieval` | extractive reasoning and local pinned-corpus BM25 reference paths |
+| `verification` | structural, provenance, support, and registered invariant checks |
+| `traces` | invariant checksum, replay, fingerprint comparison, and structural diff |
+| `application` | complete run construction and artifact finalization |
+| `interfaces` and `api/v1` | serialization, access guards, CLI, HTTP, and file boundaries |
 
+## Navigate the design
 
-## Pages In This Section
-
-- [Module Map](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/module-map/)
-- [Dependency Direction](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/dependency-direction/)
-- [Execution Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/execution-model/)
-- [State and Persistence](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/state-and-persistence/)
-- [Integration Seams](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/integration-seams/)
-- [Error Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/error-model/)
-- [Extensibility Model](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/extensibility-model/)
-- [Code Navigation](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/code-navigation/)
-- [Architecture Risks](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/architecture-risks/)
-
-## Leave This Section When
-
-- leave for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the structural question is already a public contract question
-- leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the issue is running, diagnosing, or releasing the package rather than explaining its shape
-- leave for [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the structure is clear and the real question is whether the package has proved it strongly enough
-
-## Design Pressure
-
-If a reader cannot point to where meaning is formed versus where meaning is
-checked, the package has already blurred its own reasoning policy. The
-architecture page should keep those responsibilities separate and visible.
+| Need | Guide |
+| --- | --- |
+| Locate a model or implementation owner | [Module map](module-map.md) and [Code navigation](code-navigation.md) |
+| Follow one complete run and replay | [Execution model](execution-model.md) |
+| Understand allowed dependencies | [Dependency direction](dependency-direction.md) |
+| Distinguish immutable records from filesystem state | [State and persistence](state-and-persistence.md) |
+| Integrate another runtime or evidence source | [Integration seams](integration-seams.md) and [Extensibility model](extensibility-model.md) |
+| Understand controlled outcomes and failures | [Error model](error-model.md) |
+| Review architectural failure modes | [Architecture risks](architecture-risks.md) |
