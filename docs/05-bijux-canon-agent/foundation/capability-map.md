@@ -4,42 +4,74 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Capability Map
 
-The capability map for `bijux-canon-agent` should let a reviewer connect workflow promises to the code that coordinates roles and emits traces. If orchestration behavior cannot be mapped clearly, the package starts to look magical.
-
-## Capability Flow
+`bijux-canon-agent` provides role-based workflow control whose lifecycle,
+decisions, convergence, termination, and trace can be inspected independently
+of the final text. Provider access is an adapter capability, not the source of
+orchestration authority.
 
 ```mermaid
 flowchart LR
-    workflow["workflow promises"]
-    modules["application, role modules, services, interfaces, and artifacts"]
-    outputs["trace-bearing orchestration output"]
+    input["task goal + context"]
+    definition["pipeline definition"]
+    lifecycle["owned transitions"]
+    roles["bounded role calls"]
+    merge["shard merge + validation"]
+    converge["convergence + termination"]
+    output["PipelineResult + RunTrace"]
 
-    workflow --> modules --> outputs
+    input --> definition --> lifecycle --> roles --> merge --> converge --> output
 ```
 
-This page should show orchestration capability as something a reviewer can
-locate, not something they have to trust. Workflow claims need a visible path
-through modules and traces.
+## Workflow capabilities
 
-## Capability To Code
+| Capability | Owning area | Produced evidence |
+| --- | --- | --- |
+| Strict role contracts | `contracts/` | immutable inputs, outputs, errors, plans, and runtime records |
+| Canonical pipeline definition | `pipeline/definition.py` and canonical pipeline | role eligibility, lifecycle phases, transitions, terminal states |
+| Lifecycle control | `pipeline/control/` | validated transition, stop reason, causal order |
+| Role registry | `pipeline/agent_registry.py` | explicit role-to-implementation resolution |
+| Bounded role execution | `agents/` | role output or typed error with call metadata |
+| Input sharding and merge | `pipeline/execution/` and `pipeline/results/` | shard status, merged result, warnings, revisions, action plan |
+| Goal-aware final validation | result finalization | success/failure state that cannot be cached as success when invalid |
+| Cache selection | preparation and runtime support | context-derived key and explicit cache-hit state |
 
-- `application/` and orchestration flows own role sequencing and workflow coordination
-- agent services and role modules own the behavior of local actors inside a workflow
-- `interfaces/` and artifacts own the surfaces where callers and operators inspect workflow behavior
+## Decision and evidence capabilities
 
-## Visible Outputs
+| Capability | Owning area | Produced evidence |
+| --- | --- | --- |
+| Convergence evaluation | `pipeline/convergence/` | strategy, window, snapshots, hash, verdict history, reason |
+| Termination classification | `pipeline/termination.py` | completion, convergence, failure, abort, or exhaustion |
+| Epistemic disposition | pipeline epistemic models | pass/veto and epistemic status separate from execution success |
+| Versioned trace | `traces/` | header metadata, ordered entries, run fingerprint, replay fields |
+| Trace validation | `pipeline/trace_validation/` | ordering, completeness, epistemic, and replayability findings |
+| Trace reconstruction | replay support | terminal result projection and documented summary parity |
+| Structured observability | `observability/` and execution telemetry | stages, shards, duration, counters, contextual logs |
+| Provider adapters | `llm/` | provider/model identity, prompt/model hashes, usage, result or error |
 
-- trace-bearing workflow execution records
-- role-specific outputs that remain attributable to a step and an order
-- agent-facing contracts that expose orchestration intentionally
+## Role capabilities
 
-## Design Pressure
+The package includes bounded roles for file reading, summarization, critique,
+validation, stage execution, planning, judging, and verification. A role
+supplies local behavior within the active lifecycle phase. It cannot override
+the controller, invent a terminal transition, or silently become runtime
+authority.
 
-Agent capability starts to look magical when role coordination and trace output
-cannot be tied back to named code areas. The package has to keep workflow
-promises grounded in visible modules and artifacts.
+## Public boundary
+
+Python exposes the complete composition model. The CLI runs files or immediate
+directory entries and publishes result/trace files. HTTP v1 deliberately runs
+one fixed offline `simple`/`extractive` pipeline. Source-level model adapters do
+not expand that versioned HTTP contract.
+
+Convergence proves only that a configured condition was observed. Trace replay
+proves retained fields are coherent. Neither establishes model correctness or
+recreates a remote provider's historical serving environment.
+
+See [Invariants](../quality/invariants.md) for lifecycle and trace laws and
+[Known limitations](../quality/known-limitations.md) for model, convergence,
+replay, credential, and hosting boundaries.
