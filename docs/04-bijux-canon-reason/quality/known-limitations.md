@@ -9,66 +9,100 @@ last_reviewed: 2026-07-21
 
 # Known Limitations
 
-Verification establishes that an artifact satisfies declared structural,
-provenance, and grounding rules. It does not establish that a real-world claim
-is true, complete, current, or appropriate for a consequential decision.
+`bijux-canon-reason` verifies declared relationships among plans, tool events,
+evidence bytes, claims, and artifacts. It does not verify reality. A trace can
+be structurally impeccable and still rely on a false, stale, biased, or
+irrelevant source.
 
-## Epistemic limits
+## What Verification Means
 
-- A valid support span proves that recorded bytes support the trace's linkage;
-  it does not prove the source is accurate or authoritative.
-- Confidence is an explicit claim field, not a calibrated probability supplied
-  automatically by the verifier.
-- Hashes detect changed content but cannot detect a faithfully hashed falsehood.
-- The verifier checks declared support relationships. It cannot discover all
-  omitted counterevidence or unstated assumptions.
-- An `insufficient_evidence` outcome is a controlled refusal, not evidence that
-  no answer exists.
+```mermaid
+flowchart LR
+    structure["structural validity"] --> provenance["provenance validity"]
+    provenance --> grounding["declared grounding"]
+    grounding --> adequacy["domain adequacy"]
+    adequacy --> truth["real-world truth"]
 
-Human or domain-specific review remains necessary wherever source selection,
-interpretation, uncertainty, or consequences exceed the declared checks.
+    package["package verification"] -. "covers" .-> structure
+    package -. "covers" .-> provenance
+    package -. "covers bounded rules" .-> grounding
+    reviewer["domain review"] -. "required" .-> adequacy
+    world["external validation"] -. "required" .-> truth
+```
 
-## Reference backend limits
+| Verification layer | What a passing check establishes | What remains open |
+| --- | --- | --- |
+| structure | plan topology, event lifecycle, identifiers, and schemas satisfy implemented invariants | whether the selected plan is sufficient |
+| provenance | recorded bytes, digests, paths, runtime identity, and manifests agree | whether the source was authorized, authoritative, or current |
+| grounding | claims have the support relationships required by the selected policy | whether support is persuasive, complete, or correctly interpreted |
+| domain adequacy | not established automatically | counterevidence, assumptions, calibration, and decision thresholds |
+| truth | not established automatically | the state of the world and consequences of acting |
 
-The bundled reasoner is extractive and the local retrieval path uses BM25 over
-checked-in or caller-provided corpus material. These components provide a
-deterministic reference path, not a claim of state-of-the-art retrieval or
-general reasoning. Chunk sizing, overlap, tokenization, corpus composition,
-and BM25 parameters materially affect available evidence.
+A support span proves byte linkage. A hash proves content identity. A confidence
+field records a claim made by a producer. None of these is, by itself, a truth
+test or a calibrated probability.
 
-Corpus byte limits constrain input size, but the package is not a distributed
-search service. Very large, frequently changing, or remote corpora belong
-behind a retrieval integration with its own availability and provenance
-contract.
+`insufficient_evidence` is a governed refusal to complete a claim under the
+available evidence. It does not prove that no answer exists.
 
-## Replay limits
+## Reference Reasoning And Retrieval
 
-Replay is deliberately frozen: recorded tool results are reused instead of
-calling external tools again. It proves that the recorded inputs and results
-produce the same governed trace. It does not prove that an external source
-would return the same content now.
+The bundled reasoner is extractive, and the local retrieval path uses BM25.
+They provide an inspectable offline reference, not general-purpose reasoning or
+state-of-the-art retrieval. Corpus composition, tokenization, chunk size,
+overlap, BM25 parameters, and query wording all change which evidence becomes
+available.
 
-Retrieval replay refuses tampered local corpus, index, or provenance artifacts.
-An external URI alone is not re-fetched and re-attested. Archive source
-material with the run when future verification depends on its exact bytes.
+Corpus byte guards constrain reads but do not make the package a distributed
+search service. Large, changing, remote, or multi-tenant corpora require an
+index integration with explicit availability, freshness, authorization, and
+provenance contracts.
 
-## Evaluation and interface limits
+## Replay Is Snapshot Replay
 
-- Evaluation workflow code and metrics artifacts are implemented, but the CLI
-  `--suite` help still describes named suites as a placeholder surface. Treat
-  suite discovery and packaged suite names as provisional until that public
-  contract is finalized.
-- Metrics aggregate the cases supplied to a suite. They do not generalize
-  beyond the corpus, prompts, constraints, and expected outcomes represented
-  there.
-- API and CLI size guards protect declared request and artifact reads; they are
-  not substitutes for deployment-level quotas, authentication, isolation, or
-  malware/content screening.
+Replay reuses recorded tool results; it does not call live tools again. Equal
+replay fingerprints establish that the recorded inputs and snapshots produce
+the same governed trace under the supported canonicalization and runtime
+protocol. They do not establish that a provider, URI, or corpus would return
+the same information today.
 
-## Resource limits
+Local evidence, corpus, index, and provenance artifacts are checked for drift
+when available. A URI without archived bytes cannot be re-attested. If future
+review depends on exact evidence, archive those bytes and their source metadata
+with the run.
 
-Optional run disk, wall-time, and CPU budgets are process-level guardrails
-applied by the artifact workflow. They are not a scheduler, sandbox, or hard
-real-time guarantee. A tool may consume remote resources beyond what local
-measurements capture. Hosting systems must enforce their own process,
-filesystem, network, and credential boundaries.
+## Evaluation Metrics Are Bounded Proxies
+
+Current evaluation summaries measure properties of produced traces:
+
+- alignment rate is the share of emitted claims with at least one evidence
+  support link;
+- the reported faithfulness value is the mean support-link count among
+  supported claims, not a semantic entailment score;
+- `recall_at_k` and `mrr` currently indicate whether any evidence was
+  registered, not relevance-judged information-retrieval recall or reciprocal
+  rank;
+- verification failure counts summarize implemented checks, not the complete
+  error space.
+
+Do not publish these values under conventional retrieval or faithfulness names
+without their definitions. A domain evaluation must add relevance judgments,
+expected claims or refusals, counterevidence cases, and consequences appropriate
+to the intended use.
+
+## Operational Guards
+
+Artifact-workflow disk, wall-time, and CPU budgets are process-level checks,
+not a scheduler, sandbox, hard deadline, or remote-resource limit. The
+interface rate limiter is best-effort, in-memory, and process-local; it does not
+coordinate workers or survive restart. API size guards do not provide
+authentication, tenant isolation, malware screening, or network egress policy.
+
+The evaluation command supports workflow and metrics artifacts, but named
+suite discovery is not yet a stable public catalogue. Callers must supply and
+version the exact suite material rather than depend on an implied packaged
+benchmark name.
+
+See the [risk register](risk-register.md) for observable hazards and the
+[test strategy](test-strategy.md) for the evidence behind the bounded package
+claims.
