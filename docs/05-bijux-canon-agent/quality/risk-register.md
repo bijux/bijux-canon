@@ -9,77 +9,87 @@ last_reviewed: 2026-07-21
 
 # Risk Register
 
-Agent owns bounded role orchestration: call order, lifecycle, convergence,
-termination, and trace evidence. Its risks arise when persuasive role output
-quietly acquires authority, or when a final result is separated from the
-decisions and failures that produced it.
+Agent output is persuasive by design, which makes authority leakage the primary
+hazard. A role response must never acquire the ability to approve itself,
+rewrite lifecycle policy, hide a veto, or convert an interrupted execution into
+success. The final result and trace must describe the same attempt.
 
-## Risk Topology
+## Authority And Evidence Flow
 
 ```mermaid
 flowchart TD
-    request["pipeline request"]
-    policy["control policy"]
-    role["role execution"]
-    transition["lifecycle transition"]
-    convergence["convergence or termination"]
-    outcome["final outcome"]
-    trace["trace artifact"]
+    policy["typed control policy"] --> call["role call"]
+    call --> output["untrusted role output"]
+    output --> validation["schema and policy validation"]
+    validation --> transition["controlled transition"]
+    transition --> terminal["decision and termination"]
+    transition --> trace["ordered trace"]
+    terminal --> result["final result"]
+    trace --> parity{"result-trace parity"}
+    result --> parity
 
-    request --> policy --> role --> transition --> convergence --> outcome
-    policy --> trace
-    role --> trace
-    transition --> trace
-    convergence --> trace
-    role -. "authority leakage" .-> outcome
+    output -. "must not control" .-> transition
 ```
 
-## Active Risks And Controls
+## Persistent Risks
 
-| Risk | Consequence | Preventive control | Detection evidence | Residual exposure |
+| Hazard | Severity | Detection signal | Required control | Residual owner |
 | --- | --- | --- | --- | --- |
-| a role prompt or output decides lifecycle policy | model text bypasses reviewable orchestration rules | keep roles passive and transitions in typed control | passive-agent, no-lifecycle-override, kernel, and workflow-graph invariants | prompts can still influence the content presented to policy |
-| model, prompt, or configuration identity drifts | traces appear comparable across different executions | retain model metadata, prompt hash, configuration, and replay classification | prompt-hash, defaults-versioning, trace-field, and replayability tests | providers can change behavior behind a stable model name |
-| convergence is mistaken for correctness | repeated or oscillating low-quality output is accepted | distinguish strategy, window, score, reason, and terminal limit | convergence strategy, snapshot, oscillation, and outcome tests | convergence metrics depend on chosen signals |
-| maximum iterations or interruption is relabeled success | incomplete work appears finalized | typed termination and failure taxonomy | lifecycle, transition, interrupt, failure, and pipeline outcome tests | consumers can ignore status and display only content |
-| veto or validation findings disappear | a normally completed call is reported as accepted | preserve decision, issues, and terminal status independently | validator, verifier, key-set, completeness, and final-model tests | external presentation layers can collapse detailed outcomes |
-| trace omits or reorders lifecycle evidence | final output cannot be reconstructed or audited | mandatory fields, ordered events, schema version, and canonical hashing | trace ordering, mandatory-field, reconstruction, hash, and schema snapshot tests | observational timestamps remain environment-sensitive |
-| result and trace artifacts come from different attempts | a plausible pair describes no actual run | fresh output root and post-write reconstruction comparison | artifact-boundary, CLI, dry-run, and replay-mismatch tests | separate filesystem writes are not one transaction |
-| batch summary hides per-file failures | one successful artifact masks incomplete processing | retain typed outcome for every shard or file | shard merging, batch support, failure assembly, and pipeline tests | consumers can retain only the primary artifact |
-| provider credentials are loaded too broadly | secrets are exposed to operations that do not need them | isolate secret injection and provider setup | environment, CLI, dry-run, and adapter tests | process environments remain deployment-controlled |
-| trace and telemetry expose prompts or source content | observability becomes an ungoverned sensitive record | redact, restrict, and retain according to deployment policy | trace serialization and logging tests | package tests cannot classify the sensitivity of inputs |
+| role text alters lifecycle or approval policy | critical | a transition lacks a typed controller decision or derives authority from free text | keep roles passive; allow only validated control transitions | workflow owner |
+| prompt, model, provider, or configuration drifts | high | prompt hash, model metadata, runtime version, or adapter configuration differs | bind complete execution identity to every comparable trace | provider integrator |
+| schema-valid model output is treated as factual | critical | content passes type validation but fails evidence or domain review | treat output as untrusted; route truth claims through reason and policy | decision owner |
+| convergence is relabeled correctness | critical | accepted content has stability or confidence evidence but no adequacy evidence | preserve convergence semantics separately from epistemic verdict and decision | API consumer |
+| maximum iterations, interruption, or exhaustion is relabeled success | critical | termination and stop reasons conflict with displayed status | require typed terminal classification before exposing content | application owner |
+| veto, validation issue, or epistemic failure disappears | critical | final result omits issues present in trace or controller state | make result-trace parity a release gate | artifact owner |
+| trace omits or reorders lifecycle evidence | high | entries violate order, mandatory fields, schema, or canonical hash | validate trace before finalization and after load | trace owner |
+| final result and trace come from different attempts | critical | reconstructed result differs from `final_result.json` | use a fresh output root, stable attempt identity, and post-write comparison | CLI or storage owner |
+| schema upgrade silently weakens old evidence | high | an upgraded record defaults a meaning-bearing field without provenance | retain source schema, explicit upgrade mapping, and replay classification | compatibility owner |
+| shard or batch summary hides local failures | high | aggregate success coexists with failed or missing shard outcomes | retain an outcome and termination reason per shard; reconcile counts | batch owner |
+| retry repeats an external tool effect | critical | more than one attempt uses no idempotency identity for a mutating call | classify retry safety and delegate effects to governed runtime authority | tool integrator |
+| broad CLI key validation expands secret exposure | high | offline command fails without unrelated provider keys or receives all keys | isolate process; prefer focused library paths; restrict environment capture | service operator |
+| trace or telemetry retains sensitive prompts and source data | critical | artifact or log scan finds restricted input, response, or credentials | allowlist trace fields; redact before persistence; enforce retention policy | data controller |
 
-## Evidence Routing
+## Outcome Release Gate
 
 ```mermaid
 flowchart LR
-    change["agent change"]
-    authority{"lifecycle or role authority?"}
-    outcome{"convergence or final outcome?"}
-    surface{"trace, CLI, HTTP, or provider?"}
-    invariants["layering and lifecycle invariants"]
-    pipeline["convergence and outcome tests"]
-    boundary["trace, parity, and opt-in integration"]
-
-    change --> authority
-    authority -->|yes| invariants
-    authority -->|no| outcome
-    outcome -->|yes| pipeline
-    outcome -->|no| surface
-    surface -->|yes| boundary
+    candidate["candidate outcome"] --> terminal{"terminal state valid?"}
+    terminal -->|no| reject["reject release"]
+    terminal -->|yes| verdict{"decision and epistemic verdict compatible?"}
+    verdict -->|no| reject
+    verdict -->|yes| trace{"trace complete and replay class explicit?"}
+    trace -->|no| reject
+    trace -->|yes| parity{"result matches trace?"}
+    parity -->|no| reject
+    parity -->|yes| release["release with full status"]
 ```
 
-A provider change usually takes two routes: deterministic adapter and trace
-tests for the owned contract, plus opt-in live evidence for connectivity. Live
-tests must not replace lifecycle, failure, or replayability coverage.
+The release payload must include decision, confidence semantics, epistemic
+verdict, convergence reason and iterations, stop reason, termination reason,
+issues, trace path or identity, runtime version, and replay classification.
+Consumers may simplify presentation only if they preserve rejection, refusal,
+interruption, and partial states.
 
-## Operational Interpretation
+## Evidence Required By Change
 
-Agent can prove that orchestration followed its declared control and retained
-an inspectable trace. It cannot prove that role content is true or that a
-converged answer is safe to act upon. Evidence interpretation belongs to reason
-and whole-run admission belongs to runtime.
+- Role or prompt changes require passive-agent, schema rejection, prompt/model
+  identity, and adversarial-output evidence.
+- Lifecycle and controller changes require allowed and forbidden transitions,
+  veto, interruption, exhaustion, failure, and terminal-state evidence.
+- Convergence changes require stability, confidence, oscillation, window,
+  threshold, maximum-iteration, and false-convergence scenarios.
+- Trace and result changes require mandatory fields, ordering, canonical hash,
+  schema upgrade, reconstruction, missing artifact, and mismatch tests.
+- Provider changes require deterministic adapter tests plus opt-in live
+  connectivity evidence; live calls cannot replace control-law coverage.
+- Shard or batch changes require per-item failure retention, count
+  reconciliation, merge conflict, and aggregate-termination evidence.
 
-Use [architecture risks](../architecture/architecture-risks.md) for failure
-mechanisms, [test strategy](test-strategy.md) for executable evidence, and
-[known limitations](known-limitations.md) for unsupported deployment claims.
+Agent proves that declared orchestration controls ran and produced inspectable
+evidence. Reason owns claim support, runtime owns effect admission, and the host
+owns isolation and secrets. None of those responsibilities can be inferred from
+a fluent final answer.
+
+See [known limitations](known-limitations.md) for unsupported claims and
+[architecture risks](../architecture/architecture-risks.md) for failure
+mechanisms.

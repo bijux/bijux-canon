@@ -9,62 +9,93 @@ last_reviewed: 2026-07-21
 
 # Known Limitations
 
-The package governs orchestration state and evidence. It does not make a model
-deterministic, turn confidence into calibrated truth, or provide deployment
-isolation for tools and credentials.
+`bijux-canon-agent` governs role orchestration, lifecycle transitions,
+convergence observations, termination, and trace evidence. It does not grant a
+model authority, prove role content true, calibrate confidence automatically,
+or isolate tool effects from the host.
 
-## Model limits
+## Authority Boundary
 
-- A model can produce an incorrect result that satisfies the output schema.
-- Agent confidence is bounded structurally but is not automatically calibrated
-  against real-world correctness.
-- Temperature zero is required for the package's replayable designation, but a
-  provider may still change model weights, serving infrastructure, or hidden
-  behavior. Record provider, model name, token bound, runtime version, and
-  prompt/model hashes.
-- Live-provider tests require external credentials and service availability;
-  they are separate from deterministic default evidence.
+```mermaid
+flowchart LR
+    request["request and control policy"] --> roles["passive role calls"]
+    roles --> observations["typed observations"]
+    observations --> controller["lifecycle and decision control"]
+    controller --> outcome["outcome and termination"]
+    controller --> trace["trace evidence"]
 
-## Convergence limits
+    roles -. "content, not authority" .-> controller
+    host["runtime and host"] -. "effect authority" .-> roles
+```
 
-Convergence means a configured strategy observed stability or another declared
-condition. Stable agents can agree on a wrong result, oscillation detection can
-stop before discovering a better result, and a maximum-iteration stop is not
-success. Consumers must inspect the convergence type, reason, decision
-artifact, epistemic verdict, and termination reason together.
+Roles propose or assess content. Typed control code owns transitions, stop
+conditions, veto handling, and final status. A custom workflow assembled from
+lower-level primitives does not inherit the canonical workflow's evidence or
+authority separation unless it declares and validates equivalent transitions,
+terminal states, and trace fields.
 
-The canonical workflow is intentionally opinionated. Custom graphs can use the
-workflow primitives, but they do not inherit the standard lifecycle's evidence
-unless they declare and validate equivalent transitions and trace fields.
+## Model Output Is Untrusted Input
 
-## Replay limits
+A provider response can satisfy its schema and still be false, unsafe,
+irrelevant, or adversarial. Temperature zero is necessary for the package's
+replayable classification, but it is not sufficient to reproduce a hosted
+model. Provider weights, routing, serving code, hidden system context, safety
+policy, and dependencies can change behind the same public model name.
 
-Trace reconstruction proves that deterministic fields and recorded metadata
-are coherent. It does not re-create an external provider's historical serving
-environment. Timestamps are observational and excluded from deterministic
-snapshots. A trace with incomplete replay fields or non-zero temperature is
-non-replayable by contract.
+Retain provider, model, maximum token bound, temperature, runtime and contract
+versions, prompt hash, model hash, adapter configuration, and relevant tool
+identity. Confidence remains an agent-produced value until calibrated against
+representative outcomes for the intended domain.
 
-Replay evidence also depends on retained inputs and artifacts. A hash can show
-that content changed; it cannot recover content that was never stored.
+## Convergence And Completion Are Different
 
-## CLI and credential limits
+| Signal | What it establishes | What it does not establish |
+| --- | --- | --- |
+| stability | the configured signal remained within its threshold and window | correctness, adequacy, or independence among roles |
+| confidence-only convergence | a configured confidence condition was met | calibrated probability or evidentiary support |
+| oscillation | the monitor detected a repeated pattern and stopped | that either repeated answer is acceptable |
+| maximum iterations | the configured iteration ceiling was reached | convergence or success |
+| verification veto | a control rejected the candidate | that another acceptable candidate does not exist |
+| completed termination | the workflow reached a completed terminal state | that downstream policy should accept or act on the content |
 
-The current CLI validates all four registered provider keys before parsing the
-selected command. Consequently, help, dry-run, and replay invocation through
-that entry point require `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`,
-`HUGGINGFACE_API_KEY`, and `DEEPSEEK_API_KEY`, even when the chosen operation
-does not contact every provider. Library APIs and focused trace utilities do
-not inherently require all four keys.
+Consumers must interpret decision outcome, epistemic verdict, convergence
+reason, stop reason, termination reason, issues, and trace identity together.
+Displaying only answer text or a `converged` Boolean discards essential status.
 
-This behavior is stricter than least-privilege command-specific validation and
-should be accounted for in local automation. Never place keys in trace
-metadata, configuration snapshots, logs, or committed fixtures.
+## Replay Reconstructs Recorded State
 
-## Operational boundary
+Trace reconstruction checks canonical fields and can compare the reconstructed
+`PipelineResult` with `final_result.json`. It does not invoke providers again or
+recreate their historical serving environment. Observational timestamps are
+excluded from deterministic snapshots. Missing replay fields, provider drift,
+non-zero temperature, or absent input artifacts restrict the replay claim.
 
-The package writes trace and result artifacts and provides structured failure
-handling. It is not a process sandbox, distributed scheduler, secrets manager,
-or durable multi-host event store. File access, provider rate limits, network
-policy, cancellation, tenant isolation, artifact retention, and recovery
-remain responsibilities of the host and `bijux-canon-runtime` where applicable.
+A digest can identify retained content and detect change; it cannot recover
+prompts, inputs, provider responses, or tools that were never archived. Trace
+schema upgrades make older records readable under declared mappings, but do not
+invent missing historical evidence.
+
+## CLI Credential Coupling
+
+The current CLI validates all registered provider keys before dispatching the
+selected command. Consequently, even help, dry-run, and replay through that
+entry point require `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`,
+`HUGGINGFACE_API_KEY`, and `DEEPSEEK_API_KEY`. Library APIs and focused trace
+utilities do not inherently require all four.
+
+This is broader than least-privilege, command-specific secret loading. Do not
+work around it by placing credentials in configuration files, trace metadata,
+logs, fixtures, or shell history. Isolate the CLI process and inject only from
+an approved secret provider.
+
+## Deployment Boundary
+
+The package is not a process sandbox, distributed scheduler, credential broker,
+or transactional multi-host trace store. Tool file access, network egress,
+provider quotas, cancellation, tenant isolation, artifact retention, and effect
+recovery belong to `bijux-canon-runtime` and the hosting system. Live-provider
+tests are opt-in connectivity evidence; they do not replace deterministic
+orchestration and trace tests.
+
+See the [risk register](risk-register.md) for operational hazards and the
+[test strategy](test-strategy.md) for executable evidence.
