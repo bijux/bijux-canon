@@ -9,10 +9,10 @@ last_reviewed: 2026-07-21
 
 # bijux-canon-dev
 
-`bijux-canon-dev` is the repository's internal policy implementation. It turns
-rules about APIs, documentation, dependencies, security, supply-chain evidence,
-and publication into importable Python modules with focused tests. Make targets
-and workflows call those modules; end-user applications do not.
+`bijux-canon-dev` is the repository's maintenance-policy implementation. It
+turns rules about APIs, documentation, dependencies, security, supply-chain
+evidence, and publication into importable Python modules with focused tests.
+Make targets and workflows call those modules; product applications do not.
 
 ## Control Path
 
@@ -51,6 +51,7 @@ runs. Tests protect the rule independently of either orchestration layer.
 | `release.version_resolver` | version used by build and SBOM operations | build, publication, SBOM targets | resolved SCM version |
 | `sbom.requirements_writer` | dependency input for SBOM generation | SBOM targets | package-specific requirements file |
 | `packages.*` | agent hygiene, index plugin contracts, runtime dependency allowlist | package profiles | package-bound diagnostics |
+| `trusted_process` | validated execution of repository-owned absolute commands | version, quality, and package-maintenance helpers | completed process or typed command failure |
 
 These modules are invoked with `python -m ...` from checked-in Make fragments;
 the package does not publish a general-purpose console command. That keeps each
@@ -75,7 +76,7 @@ the intended permissions and dependencies.
 
 | Question | Continue with |
 | --- | --- |
-| Which behavior belongs in this internal package? | [Package overview](package-overview.md) and [scope and non-goals](scope-and-non-goals.md) |
+| Which behavior belongs in this maintenance package? | [Package overview](package-overview.md) and [scope and non-goals](scope-and-non-goals.md) |
 | Where is a helper implemented? | [Module map](module-map.md) |
 | Which check protects quality or dependencies? | [Quality gates](quality-gates.md) |
 | How are audit results evaluated? | [Security gates](security-gates.md) |
