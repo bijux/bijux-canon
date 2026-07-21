@@ -50,47 +50,58 @@ The HTTP v1 contract intentionally supports the `extractive` strategy and
 `simple` backend. Additional provider adapters in the source tree do not expand
 that versioned API contract automatically.
 
-## What This Package Owns
+## Follow One Workflow Decision
 
-- coordination of agent roles, steps, and deterministic workflow progression
-- trace-producing orchestration surfaces that explain what the agent did and in what order
-- agent-facing contracts that sit above reasoning and below runtime governance
+| Decision | Owning record | Evidence expected in the trace |
+| --- | --- | --- |
+| which roles may participate | `PipelineDefinition` and validated configuration | role identity, configuration fingerprint, and declared order |
+| which role runs next | lifecycle controller and execution plan | transition, preceding outcome, and causal index |
+| whether a provider call succeeded | per-agent call record | provider/model identity, input reference, status, usage, and error |
+| whether work converged | convergence evaluator | criterion, prior state, candidate state, and decision |
+| why execution stopped | pipeline finalization | terminal reason, completed and failed work, vetoes, and trace status |
+| what the caller receives | `PipelineResult` or failure artifact | final artifact identity, partial results, telemetry, and trace reference |
 
-## What This Package Does Not Own
+The final artifact is not the audit trail. Review the ordered calls,
+transitions, vetoes, and convergence decision before treating the artifact as
+the result of the declared pipeline.
 
-- retrieval and reasoning semantics in the lower package family
-- acceptance, persistence, and replay authority for governed runs
-- repository-wide maintainer automation and release governance
+## Orchestration Trust Boundary
 
-## Ownership Test
+Agent owns role lifecycle and workflow progression. Reason owns the semantics
+of evidence-backed claims supplied to a role; runtime owns final acceptance,
+persistence, and replay policy above the pipeline. Agent preserves those
+inputs and outputs in its trace rather than silently taking over either
+decision.
 
-If the change decides how roles coordinate, which step runs next, or what
-trace a workflow must emit, it belongs here. If the change decides what a
-claim means or whether a whole run counts, it belongs elsewhere.
+Provider adapters are also outside the deterministic core. A trace can record
+which provider and model were invoked, with which policy and observed result.
+It cannot make a remote model deterministic or prove the provider honored an
+unstated guarantee.
 
-## Implementation Anchors
+## Evidence And Limits
 
-- `packages/bijux-canon-agent/src/bijux_canon_agent` for the orchestration implementation boundary
-- `packages/bijux-canon-agent/src/bijux_canon_agent/pipeline` for workflow planning, execution, convergence, and finalization
-- `packages/bijux-canon-agent/src/bijux_canon_agent/traces` for trace serialization and replayability
-- `packages/bijux-canon-agent/tests` for proof that coordination remains deterministic and inspectable
-- `apis/bijux-canon-agent/v1/schema.yaml` for the tracked caller-facing schema
+| Claim | Evidence to inspect | Limit |
+| --- | --- | --- |
+| the pipeline followed its definition | configuration fingerprint, ordered transitions, role records | does not prove role output quality |
+| execution converged | declared criterion, evaluation records, terminal decision | convergence may still settle on an incorrect artifact |
+| a veto affected the outcome | veto record, source role, target, finalization decision | absence from a summary is not absence from the trace |
+| replay reconstructed history | versioned trace, schema validation, causal ordering | reconstruction does not re-execute provider behavior |
+| telemetry is complete | call and lifecycle coverage plus trace-complete status | cannot include events the host or provider never exposed |
 
-## Start Here
+The [entrypoint examples](interfaces/entrypoints-and-examples.md) show the
+Python, CLI, replay, and bounded HTTP contracts. The v1 HTTP surface supports
+the documented offline strategy; source-level provider adapters do not expand
+that schema automatically.
 
-- open [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/) when the question is why this package exists or where its ownership stops
-- open [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when you need module boundaries, dependency flow, or execution shape
-- open [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
-- open [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/) when you need local workflow, diagnostics, release, or recovery guidance
-- open [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the question is whether the package has proved its promises strongly enough
+## Continue By Question
 
-## Reference Areas
-
-- [Foundation](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/)
-- [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/)
-- [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/)
-- [Operations](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/)
-- [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/)
+| Question | Next page |
+| --- | --- |
+| which responsibilities belong to an agent workflow? | [Foundation](foundation/index.md) |
+| how do contracts, pipeline control, roles, adapters, and traces connect? | [Architecture](architecture/index.md) |
+| which Python, CLI, HTTP, configuration, and artifact contracts are callable? | [Interfaces](interfaces/index.md) |
+| how do I run, observe, diagnose, replay, or recover a pipeline? | [Operations](operations/index.md) |
+| which invariants defend ordering, convergence, failure, and trace completeness? | [Quality](quality/index.md) |
 
 ## Current Operational Constraint
 

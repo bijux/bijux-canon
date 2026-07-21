@@ -56,48 +56,74 @@ the dataclass alone does not prove that a flow is executable.
 - `observe` captures evidence without granting normal execution authority
 - `unsafe` is an explicit reduced-guarantee mode, not an alias for live
 
-## What This Package Owns
+## Follow One Governed Run
 
-- run acceptance and replay policy above the lower package family
-- runtime persistence boundaries and durable runtime-facing artifacts
-- execution authority that governs agent coordination rather than replacing it
+```mermaid
+stateDiagram-v2
+    [*] --> Resolved: manifest + policy
+    Resolved --> Planned: contracts and identities valid
+    Planned --> Completed: executable mode
+    Planned --> [*]: plan mode
+    Completed --> Finalized: trace and semantics valid
+    Finalized --> Accepted: policy accepts
+    Finalized --> Rejected: policy refuses
+    Finalized --> NonCertifiable: evidence is insufficient
+    Accepted --> Replayed: retained envelope compared
+```
 
-## What This Package Does Not Own
+Plan mode stops after resolution and returns no run identifier or trace. Other
+modes require an execution store and the resources appropriate to their
+authority. A finalized trace can describe a rejected or non-certifiable run;
+finalization means the record is closed, not that policy accepted it.
 
-- ingest, index, reasoning, or agent-specific semantics inside their own packages
-- repository-wide maintainer automation that belongs in the maintenance handbook
-- package-local convenience behavior that never affects governed runs
+## Read A Runtime Result
 
-## Ownership Test
+| Record | Question it answers | Failure if absent or inconsistent |
+| --- | --- | --- |
+| manifest and resolved plan | what was authorized, ordered, and fingerprinted? | the run has no stable execution contract |
+| dataset descriptor | which exact data state was admissible? | dataset drift cannot be distinguished from replay drift |
+| authority and verification policy | who permitted effects and how findings were arbitrated? | completion can be mistaken for acceptance |
+| event trace and checkpoints | what happened, in which causal order? | resume and failure analysis become speculative |
+| artifacts, evidence, claims, and tool calls | what the run consumed and produced | outputs lose lineage |
+| entropy use and replay envelope | which variance was declared and retained? | determinism claims exceed captured evidence |
+| replay verdict and diff | whether a later run satisfies the original policy | similar final content can be mislabeled equivalent |
 
-If the issue is whether a run should be accepted, persisted, replayed, or
-rejected under explicit policy, it belongs here. If the issue is how a lower
-package produced its local result, runtime should consume that result rather
-than re-own the behavior.
+## Runtime Trust Boundary
 
-## Implementation Anchors
+Runtime governs lower-package results; it does not recreate them. Ingest owns
+source preparation, index owns vector execution, reason owns claim/evidence
+semantics, and agent owns role lifecycle. Runtime binds their governed outputs
+to authority, policy, persistence, and replay.
 
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/application/execute_flow.py` for governed execution entrypoints
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/observability` for durable replay and trace surfaces
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/core/authority.py` for explicit runtime authority rules
-- `packages/bijux-canon-runtime/src/bijux_canon_runtime/model/execution` for replay envelopes, traces, verdicts, and run modes
-- `packages/bijux-canon-runtime/tests` for acceptance, replay, and persistence evidence
+The DuckDB execution store retains causal run state and supports inspection,
+resume, and replay. It is a single-writer local store, not a transaction manager
+for external tools. A database commit cannot undo a provider call or filesystem
+write; live integrations need idempotency or compensation beyond the store.
 
-## Start Here
+## Evidence And Limits
 
-- open [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/) when the question is why this package exists or where its ownership stops
-- open [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/) when you need module boundaries, dependency flow, or execution shape
-- open [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
-- open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need local workflow, diagnostics, release, or recovery guidance
-- open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is whether the package has proved its promises strongly enough
+| Claim | Evidence to inspect | Limit |
+| --- | --- | --- |
+| a run was accepted | finalized trace, verification results, arbitration decision, certifiability | acceptance is only under the declared policy |
+| resume preserved authority | tenant, manifest, plan, dataset, policy, checkpoint, store identity | changed authority requires a new run |
+| replay is exact | original envelope, retained inputs, event and artifact identity, zero disallowed diff | cannot control state never captured |
+| bounded replay is acceptable | original allowed variance and evaluated semantic diff | tolerance cannot be invented after divergence |
+| storage is complete | schema contract, finalized records, external artifact availability | metadata does not guarantee payload retention |
 
-## Reference Areas
+The [entrypoint examples](interfaces/entrypoints-and-examples.md) begin with
+plan mode, then show persisted execution, inspection, replay, and diff. The v1
+HTTP application currently implements health and readiness; run and replay
+requests return `501 Not Implemented`.
 
-- [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/)
-- [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/)
-- [Interfaces](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/)
-- [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/)
-- [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/)
+## Continue By Question
+
+| Question | Next page |
+| --- | --- |
+| why is runtime the final execution authority? | [Foundation](foundation/index.md) |
+| how do planning, execution, verification, storage, and replay connect? | [Architecture](architecture/index.md) |
+| which Python, CLI, HTTP, configuration, and artifact contracts are callable? | [Interfaces](interfaces/index.md) |
+| how do I operate, inspect, resume, replay, secure, or recover a run? | [Operations](operations/index.md) |
+| which invariants defend authority, persistence, entropy, and replay? | [Quality](quality/index.md) |
 
 ## Replay Is A Verdict
 
