@@ -4,70 +4,81 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Operations
 
-Open this section when you need to run index work repeatably: install it, exercise retrieval flows, diagnose replay drift, release it, or recover from failure without guessing what the package expected.
+Operate index as an evidence-producing execution service. The safe path starts
+with capability discovery, makes storage locations explicit, materializes an
+artifact under a declared contract, and retains a complete run before making a
+replay claim.
 
-## Operating Loop
+## Operating lifecycle
 
 ```mermaid
 flowchart LR
-    setup["setup"]
-    query["run retrieval flow"]
-    inspect["inspect replay output"]
-    recover["recover from drift"]
-    release["release package"]
-    proof["tests and artifacts"]
+    configure["resolve config and state paths"]
+    discover["capabilities, audit, doctor"]
+    ingest["ingest documents and vectors"]
+    materialize["materialize artifact"]
+    execute["execute and explain"]
+    retain["retain complete run"]
+    compare["replay or compare"]
 
-    setup --> query --> inspect --> recover --> release
-    query --> proof
-    inspect --> proof
+    configure --> discover --> ingest --> materialize --> execute --> retain --> compare
+    discover -. incompatible .-> configure
+    compare -. drift .-> discover
 ```
 
-Index operations need to make replayability practical, not rhetorical. A
-maintainer should be able to move from a clean setup to a reproducible query
-path, inspect the replay evidence, and recover from drift without treating the
-backend as a black box.
+## Persistence boundaries
 
-## Read These First
+| State | Default | Operational consequence |
+| --- | --- | --- |
+| execution ledger | SQLite at `artifacts/bijux-canon-index/state/session.sqlite` | use an explicit `BIJUX_CANON_INDEX_STATE_PATH` in automation because relative paths depend on the working directory |
+| run evidence | `artifacts/bijux-canon-index/runs` | preserve each complete three-file run directory; override with `BIJUX_CANON_INDEX_RUN_DIR` when required |
+| memory backend | process-local | state does not survive a new process |
+| vector store | selected URI and adapter options | vector persistence does not replace the ledger or run record |
 
-- open [Installation and Setup](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/installation-and-setup/) first when you need a clean package starting point
-- open [Observability and Diagnostics](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/observability-and-diagnostics/) when retrieval or replay behavior no longer matches expectation
-- open [Failure Recovery](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/failure-recovery/) when index output or search behavior has already gone wrong
+## Operational evidence
 
-## Operational Risk
+| Question | Evidence |
+| --- | --- |
+| Was the backend eligible? | capability report, audit output, selected backend metadata |
+| What actually ran? | artifact identity, normalized request, plan fingerprint, run metadata |
+| Did execution finish? | `status.json` equals `complete` and a readable `result.json` exists |
+| Why did a result rank here? | explain payload joining document, chunk, vector, metric, score, artifact, and execution |
+| Is replay equivalent? | original and replay fingerprints, mismatch details, randomness policy, tolerance decision |
+| Is approximate quality acceptable? | target bounds, witness result, ANN parameters, decision trace, observed metrics |
 
-The main operational risk here is hiding retrieval and replay assumptions in environment state or one-off debugging habits.
+## Incident routing
 
-## First Proof Check
+| Symptom | Inspect first | Safe response |
+| --- | --- | --- |
+| No run directory | initialization, artifact resolution, and early validation | correct the pre-execution failure; do not invent run evidence |
+| Run remains incomplete | status, process interruption, and result-file presence | preserve for diagnosis, then rerun; never load it as success |
+| Run is failed | recorded reason and details | address the typed cause before retrying |
+| Deterministic replay differs | vector, configuration, backend, determinism, and plan fingerprints | refuse equivalence until the divergence is explained |
+| ANN replay differs | index hash, adapter version, parameters, seed, bounds, and witness | apply the declared equivalence policy; never claim bit identity |
+| Backend cannot satisfy request | current capabilities and v1 exclusions | select an eligible supported backend or change the declared contract explicitly |
 
-- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
-- `tests` and runnable workflows for evidence that the package can be operated repeatably
-- release notes and version metadata when the work changes caller expectations
+## Security and deployment boundary
 
-## Pages In This Section
+The HTTP application does not supply authentication, authorization, tenant
+isolation, provider credential governance, or network sandboxing. Run files are
+atomically replaced but are not self-authenticating as a set. Apply deployment
+controls externally, redact vector-store credentials in diagnostics, and add a
+digest or signature when evidence crosses a trust boundary.
 
-- [Installation and Setup](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/installation-and-setup/)
-- [Local Development](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/local-development/)
-- [Common Workflows](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/common-workflows/)
-- [Observability and Diagnostics](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/observability-and-diagnostics/)
-- [Performance and Scaling](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/performance-and-scaling/)
-- [Failure Recovery](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/failure-recovery/)
-- [Release and Versioning](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/release-and-versioning/)
-- [Security and Safety](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/security-and-safety/)
-- [Deployment Boundaries](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/deployment-boundaries/)
+## Operate by need
 
-## Leave This Section When
-
-- leave for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the live problem is contract shape rather than package operation
-- leave for [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when a workflow problem exposes structural drift underneath it
-- leave for [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the package runs but the real question is whether the evidence is strong enough
-
-## Design Pressure
-
-If replay drift can only be diagnosed by backend intuition or private habits,
-the package is not operationally honest enough yet. The checked-in workflow
-needs to expose how search behavior is examined and recovered.
+| Need | Guide |
+| --- | --- |
+| Install the package and supported extras | [Installation and setup](installation-and-setup.md) |
+| Work against isolated local state | [Local development](local-development.md) |
+| Execute normal exact and bounded journeys | [Common workflows](common-workflows.md) |
+| Read run files and diagnose drift | [Observability and diagnostics](observability-and-diagnostics.md) |
+| Plan vector count, latency, memory, and ANN behavior | [Performance and scaling](performance-and-scaling.md) |
+| Recover artifacts, runs, or backends | [Failure recovery](failure-recovery.md) |
+| Define production controls | [Security and safety](security-and-safety.md) and [Deployment boundaries](deployment-boundaries.md) |
+| Release a compatibility-sensitive change | [Release and versioning](release-and-versioning.md) |

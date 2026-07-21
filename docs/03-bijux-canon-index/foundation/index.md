@@ -4,69 +4,69 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Foundation
 
-Open this section when you need the durable answer to why `bijux-canon-index` owns retrieval behavior instead of leaving search semantics smeared across ingest, reasoning, or runtime. These pages should make the search boundary easy to defend before anyone argues about code shape.
+`bijux-canon-index` owns governed vector execution. It receives identified
+documents and vectors, binds them to an immutable execution artifact, selects
+a capable backend, executes an exact or explicitly bounded plan, and retains
+the provenance needed to explain and compare the result.
 
-## Boundary Model
+## Authority boundary
 
 ```mermaid
 flowchart LR
-    prepared["prepared input"]
-    package["index boundary"]
-    retrieval["retrieval execution"]
-    provenance["replay and provenance"]
-    handoff["evidence handoff"]
-    blur["ingest or reasoning blur"]
+    ingest["prepared documents and vectors"]
+    request["intent, mode, contract, budget"]
+    index["governed vector execution"]
+    evidence["results, fingerprints, run record"]
+    reason["claim evaluation"]
 
-    prepared --> package --> retrieval --> provenance --> handoff
-    package --> blur
+    ingest --> request --> index --> evidence --> reason
 ```
 
-The foundation story for index has to make retrieval feel like a first-class
-responsibility. Prepared input arrives from ingest, search happens here through
-explicit contracts, and replayable evidence leaves for later interpretation.
-That line is what keeps search from becoming hidden glue.
+Index does not repair source normalization, decide whether a passage supports
+a claim, or schedule an end-to-end workflow. It establishes a narrower and
+testable fact: which vector operation ran under which declared contract, and
+which ordered results it produced.
 
-## Read These First
+## Core commitments
 
-- open [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/) first when retrieval logic could be confused with ingest preparation or reasoning meaning
-- open [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/) when you need the shortest stable description of the package role
-- open [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/) when the question is how prepared input becomes replayable retrieval output
+| Commitment | Meaning | Evidence |
+| --- | --- | --- |
+| Declared intent | exact validation, reproducible research, exploration, and production retrieval are distinguishable | normalized request and run metadata |
+| Capability negotiation | a backend is eligible only when it satisfies the requested contract and metric | capabilities report and resolved plan |
+| Deterministic baseline | strict deterministic work uses exact scoring and refuses incompatible execution | artifact contract, plan fingerprint, ordered results |
+| Honest approximation | ANN behavior carries randomness, error, resource, witness, and replay policy | approximation report and decision trace |
+| Addressable execution | artifacts, runs, correlations, backends, indexes, and parameters have recorded identities | response, ledger, and run directory |
+| Governed comparison | replay evaluates fingerprints and equivalence policy, not result resemblance alone | replay or comparison payload |
 
-## The Mistake This Section Prevents
+## What the result does not prove
 
-The most common mistake here is treating vector execution as a background implementation detail instead of a contract-defining package responsibility.
+An `ExecutionArtifact` and complete run record establish execution provenance.
+They do not establish that the corpus is complete, that the embedding captures
+the intended meaning, that a neighbor is relevant, or that a retrieved passage
+supports a conclusion. Those claims require source and reasoning evidence.
 
-## First Proof Check
+## Supported boundary and exclusions
 
-- `packages/bijux-canon-index/src/bijux_canon_index` for the owned retrieval implementation boundary
-- `packages/bijux-canon-index/apis` for the schema surfaces tied to caller expectations
-- `packages/bijux-canon-index/tests` for replay and provenance proof
+The v1 boundary centers on synchronous local governed execution. Remote
+backends, asynchronous services, and streaming search are excluded from the v1
+contract. The pgvector adapter remains experimental and is excluded from the
+v1 freeze. Adapter code may exist without becoming a supported contract; use
+capability discovery and the documented exclusions rather than inferring
+support from module presence.
 
-## Pages In This Section
+## Read by decision
 
-- [Package Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/package-overview/)
-- [Scope and Non-Goals](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/scope-and-non-goals/)
-- [Ownership Boundary](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/ownership-boundary/)
-- [Repository Fit](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/repository-fit/)
-- [Capability Map](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/capability-map/)
-- [Domain Language](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/domain-language/)
-- [Lifecycle Overview](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/lifecycle-overview/)
-- [Dependencies and Adjacencies](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/dependencies-and-adjacencies/)
-- [Change Principles](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/change-principles/)
-
-## Leave This Section When
-
-- leave this section for [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the live question is a command, API, artifact, or import contract
-- leave this section for [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when the issue is running, diagnosing, or releasing the package
-- leave this section for [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when you are already convinced about the boundary and need proof that it survives change
-
-## Design Pressure
-
-If retrieval is described as just backend detail or just caller convenience,
-the package has already lost its reason to exist. This section has to keep
-execution, provenance, and handoff visibly tied together.
+| Decision | Guide |
+| --- | --- |
+| Understand the package in one pass | [Package overview](package-overview.md) |
+| Decide whether work belongs here | [Ownership boundary](ownership-boundary.md) and [Scope and non-goals](scope-and-non-goals.md) |
+| Match capabilities to user intent | [Capability map](capability-map.md) |
+| Follow artifact and run lifecycles | [Lifecycle overview](lifecycle-overview.md) |
+| Use terms such as contract, mode, artifact, and replay precisely | [Domain language](domain-language.md) |
+| Understand adjacent package responsibilities | [Repository fit](repository-fit.md) and [Dependencies and adjacencies](dependencies-and-adjacencies.md) |
+| Review a contract-changing proposal | [Change principles](change-principles.md) |
