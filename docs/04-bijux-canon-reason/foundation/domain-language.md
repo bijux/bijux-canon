@@ -17,16 +17,25 @@ essential when a result is reviewed or replayed later.
 ```mermaid
 flowchart LR
     S[ProblemSpec] --> P[Plan]
-    P --> E[Typed trace events]
-    E --> C[Claims]
-    E --> V[VerificationReport]
+    P --> X[Execution]
+    E[Registered evidence] --> X
+    X --> T[Typed trace]
+    T --> C[Claims]
     C --> R[SupportRef]
-    R --> Q[Claim, evidence, or tool call]
-    E --> F[Trace fingerprint]
+    R --> E
+    R --> C
+    R --> U[Tool call]
+    T --> V[VerificationReport]
+    T --> F[Trace fingerprint]
     P --> I[Invariant checksum]
-    E --> I
+    T --> I
     D[RuntimeDescriptor] --> I
 ```
+
+The arrows express custody, not truth. A plan governs execution, execution
+records events, and support connects a claim to retained material. Verification
+can establish that those relationships are internally sound; it cannot turn a
+source into an authority or a supported claim into a fact about the world.
 
 ## Problem and plan
 
@@ -73,6 +82,11 @@ An evidence reference says which bytes were registered. A support reference
 says which exact portion supports a claim. A claim without the required support
 is still representable, but verification can reject it.
 
+Confidence, status, and support are independent dimensions. High confidence
+does not compensate for missing support. A `validated` status records a governed
+decision under the active checks; it does not certify source quality or external
+truth. `assumed` identifies a premise even when that premise is well supported.
+
 ## Verification
 
 | Term | Exact meaning |
@@ -102,3 +116,15 @@ When retrieval provenance is recorded, it also requires the pinned corpus,
 index, and provenance document. Replay does not currently validate
 `manifest.json`; consumers that require whole-bundle integrity must verify the
 manifest's file digests separately.
+
+## Distinctions that must survive serialization
+
+| Do not collapse | Why the distinction matters |
+| --- | --- |
+| plan and trace | intended work can differ from recorded execution |
+| evidence and support | retaining bytes does not identify which bytes justify a claim |
+| support and truth | byte-addressable grounding does not establish source authority or factual correctness |
+| confidence and status | an assessment score is not an acceptance decision |
+| insufficient evidence and failure | an honest governed outcome is not malformed execution |
+| replay and re-run | frozen reproduction tests retained inputs; live execution introduces new state |
+| trace fingerprint and manifest | event equality and whole-bundle file integrity cover different surfaces |
