@@ -1,28 +1,59 @@
 ---
 title: Public Imports
-audience: mixed
-type: explanation
+audience: developers
+type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Public Imports
 
-Public imports for `bijux-canon-runtime` define which Python-facing symbols callers may depend on without reaching into internals. Import visibility should follow the contract, not accidental package layout.
+The root package is the primary execution facade:
 
-## What To Check
+```python
+from bijux_canon_runtime import FlowManifest, RunMode, execute_flow
+```
 
-- start with the import root: `packages/bijux-canon-runtime/src/bijux_canon_runtime`
-- separate supported imports from merely reachable internal symbols
-- treat undocumented import usage as unstable even if it currently works
+`RunMode` and `execute_flow` are resolved lazily, keeping manifest-only imports
+lightweight. Calling `execute_flow(manifest)` without a configuration selects
+live strict execution; use an explicit `ExecutionConfig` when planning,
+observing, resuming, or binding governed stores and policies.
 
-## First Proof Check
+## Public Facades
 
-- `src` and boundary-facing modules for the owning implementation surface
-- `apis/bijux-canon-runtime/v1/schema.yaml` or tracked examples for the documented contract surface
-- `tests` for executable confirmation that the contract still holds
+| Need | Import surface |
+| --- | --- |
+| execution entrypoint | `bijux_canon_runtime` or `bijux_canon_runtime.runtime` |
+| planning and flow boundary | `bijux_canon_runtime.application` |
+| stable plan, trace, and replay models | `bijux_canon_runtime.model` |
+| identifiers and semantic enums | `bijux_canon_runtime.ontology` |
+| verification orchestration | `bijux_canon_runtime.verification` |
+| versioned HTTP schemas and ASGI app | `bijux_canon_runtime.api.v1` |
 
-## Bottom Line
+```python
+from bijux_canon_runtime import RunMode, execute_flow
+from bijux_canon_runtime.application.execute_flow import ExecutionConfig
+from bijux_canon_runtime.model import FlowManifest
+from bijux_canon_runtime.ontology import DeterminismLevel
+```
 
-If callers depend on `bijux-canon-runtime` for runtime authority surfaces, the contract needs to be named as clearly as the implementation.
+`FlowManifest` construction validates its dataclass shape. Execute through the
+application boundary so contract validation, planning, determinism enforcement,
+trace finalization, and persistence remain in the governed lifecycle.
+
+## Model and API Boundaries
+
+The stable model facade exports `FlowManifest`, `ExecutionPlan`,
+`ExecutionTrace`, and `ReplayEnvelope`. The ontology facade owns typed IDs and
+enums used across those models. The API facade exports `FlowRunRequest`,
+`FlowRunResponse`, `ReplayRequest`, `FailureEnvelope`, and the ASGI app.
+
+Avoid importing lifecycle preparation helpers, concrete executors, DuckDB
+schema internals, or modules marked as internal. They implement the public
+facades and can change as long as the governed contracts remain intact.
+
+`bijux_canon` and `agentic_flows` forward the canonical package for compatibility.
+New integrations should use `bijux_canon_runtime`; see
+[Compatibility Commitments](compatibility-commitments.md) for correspondence
+and migration rules.

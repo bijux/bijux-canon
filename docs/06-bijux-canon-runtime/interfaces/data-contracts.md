@@ -1,28 +1,90 @@
 ---
 title: Data Contracts
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Data Contracts
 
-Data contracts for `bijux-canon-runtime` cover the structured payloads another tool or package may parse, store, compare, or replay. If a shape matters outside one function call, it should be named explicitly.
+Runtime authority begins with a manifest, becomes a resolved plan, and ends as
+a finalized trace plus governed evidence. Policy values remain part of that
+chain; they are not ambient configuration that can be omitted from replay.
 
-## What To Check
+```mermaid
+flowchart LR
+    Manifest[FlowManifest] --> Validate[contract validation]
+    Validate --> Plan[ExecutionPlan]
+    Policy[verification and non-determinism policies] --> Execute
+    Plan --> Execute
+    Execute --> Result[FlowRunResult]
+    Result --> Trace[ExecutionTrace]
+    Result --> Records[artifacts, evidence, reasoning, verification]
+    Trace --> Store[DuckDB execution store]
+    Records --> Store
+```
 
-- name the stable payload shapes behind governed run records, replay artifacts, and runtime outputs
-- separate internal working models from exported or downstream-consumed structures
-- treat silent payload drift as a compatibility event, not a cosmetic change
+## Flow Manifest
 
-## First Proof Check
+`FlowManifest` is an immutable declaration of execution authority. It records:
 
-- `src` and boundary-facing modules for the owning implementation surface
-- `apis/bijux-canon-runtime/v1/schema.yaml` or tracked examples for the documented contract surface
-- `tests` for executable confirmation that the contract still holds
+- specification, flow, tenant, and lifecycle state;
+- determinism level, replay mode, and acceptable replay variance;
+- entropy budget and declared non-deterministic intent;
+- replay envelope and dataset descriptor;
+- agent and dependency inventory; and
+- retrieval contracts and verification gates.
 
-## Bottom Line
+Construction establishes the structure, not complete semantic validity. The
+flow contract validates cross-field rules before planning. A caller must not
+treat a successfully constructed dataclass as an executable authorization.
 
-If callers depend on `bijux-canon-runtime` for runtime authority surfaces, the contract needs to be named as clearly as the implementation.
+## Execution Configuration
+
+`ExecutionConfig` selects plan, dry-run, live, observer, or unsafe behavior
+through `RunMode` and binds the execution dependencies: verification policy,
+non-determinism policy, artifact and execution stores, budget, observers,
+parent-child flow identity, resume identity, and strict-determinism posture.
+Replay is a separate workflow over a retained run and read store.
+
+`for_manifest()` aligns the effective determinism level with the manifest while
+retaining these dependencies. Executable modes require explicit authority and
+storage; plan mode returns a resolved plan without a trace or run ID.
+
+## Policy Records
+
+`NonDeterminismPolicy` bounds allowed entropy and intent sources, minimum and
+maximum magnitude, variance class, and justification requirements. An intent
+outside those bounds is a contract violation, not a warning.
+
+`VerificationPolicy` binds the verification level, failure behavior,
+randomness tolerance, arbitration policy, required evidence, rule-cost limit,
+rules, and the rule IDs that halt or escalate execution. Verification results
+state what each engine observed; arbitration records the policy decision across
+those observations.
+
+## Run Result
+
+`FlowRunResult` returns the resolved plan, finalized trace, artifacts, retrieved
+evidence, reasoning bundles, verification results, arbitrations, and persisted
+run ID. Its collections are distinct because they carry different authority:
+
+- an `Artifact` records immutable provenance and content identity;
+- `RetrievedEvidence` binds evidence to retrieval and content identity;
+- a reasoning bundle links steps and claims to evidence; and
+- verification records show checks and the resulting governed decision.
+
+## HTTP Boundary
+
+The v1 request models reject unknown fields and require explicit manifest,
+input, dataset, policy, mode, and replay identity. `FailureEnvelope` classifies
+contract failures separately from successful flow responses. The execution
+endpoints are currently unimplemented, however, so these schemas describe a
+versioned boundary—not a promise that HTTP execution is operational.
+
+Changes to tenant or flow identity, policy meaning, plan hashing, event order,
+entropy accounting, replay acceptability, or failure classification are
+compatibility-sensitive. See [Artifact Contracts](artifact-contracts.md) for
+the persisted authority record.

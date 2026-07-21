@@ -4,57 +4,69 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Compatibility Commitments
 
-Compatibility commitments for `bijux-canon-runtime` define how changes to
-runtime authority surfaces are supposed to be reviewed and announced. Stability
-language is only credible when the breakage process is explicit too.
+The canonical distribution, import, and command are `bijux-canon-runtime`,
+`bijux_canon_runtime`, and `bijux-canon-runtime`.
 
-Runtime compatibility here includes more than one old repository name. The
-canonical runtime package still preserves two direct continuity distributions:
-`agentic-flows` for the retired standalone runtime identity and `bijux-canon`
-for the shorter family-root runtime identity. Both are real alias packages that
-must resolve to the same runtime behavior, not migration-only stubs.
+Runtime also preserves two synchronized compatibility identities:
 
-## What To Check
+| Distribution | Import | Command | Purpose |
+| --- | --- | --- | --- |
+| `bijux-canon` | `bijux_canon` | `bijux-canon` | shorter family-root name |
+| `agentic-flows` | `agentic_flows` | `agentic-flows` | former standalone runtime name |
 
-- name which surfaces carry real compatibility pressure
-- tie breaking changes to docs, changelog, versioning, and validation together
-- treat vague stability claims as weaker than clear limits and explicit break rules
+```mermaid
+flowchart LR
+    CanonicalDist[bijux-canon-runtime] --> Runtime[bijux_canon_runtime]
+    FamilyDist[bijux-canon] --> FamilyImport[bijux_canon]
+    FormerDist[agentic-flows] --> FormerImport[agentic_flows]
+    FamilyImport --> Runtime
+    FormerImport --> Runtime
+    FamilyCLI[bijux-canon] --> Entry[canonical CLI entrypoint]
+    FormerCLI[agentic-flows] --> Entry
+    RuntimeCLI[bijux-canon-runtime] --> Entry
+```
 
-## Runtime Alias Surfaces
+Both alias imports install runtime submodule aliases and forward the canonical
+root export set, attribute lookup, and interactive discovery. Both alias
+commands invoke the canonical CLI entrypoint. They are continuity packages, not
+separate runtimes.
 
-- preserved distributions: `bijux-canon`, `agentic-flows`
-- preserved import roots: `bijux_canon`, `agentic_flows`
-- preserved commands: `bijux-canon`, `agentic-flows`
-- canonical authority surface: `bijux-canon-runtime`
+## Preserved Behavior
 
-If one of those preserved names stops behaving like the canonical runtime
-surface, the break is not cosmetic. It is a runtime compatibility regression.
+Under every name, these contracts must agree:
 
-## Review Rule
+- manifest parsing, planning, execution modes, and refusal behavior;
+- flow, tenant, dataset, artifact, evidence, and run identity;
+- determinism and entropy policy enforcement;
+- trace finalization, schema storage, replay, and diff semantics;
+- verification results and arbitration decisions; and
+- CLI option meaning, exit status, and machine-readable output.
 
-- change runtime alias behavior only when the canonical runtime package, alias
-  package README files, compatibility handbook pages, and release notes move
-  together
-- prefer executable alias parity checks over prose-only claims
-- reject changes that leave compatibility names installable but behaviorally
-  different from the canonical runtime package without an explicit break
-  decision
+Import-name compatibility cannot override an unsupported schema contract or
+turn a non-certifiable trace into an acceptable replay.
 
-## First Proof Check
+## Explicit Limits
 
-- `src` and boundary-facing modules for the owning implementation surface
-- `packages/compat-bijux-canon` and `packages/compat-agentic-flows` for the
-  preserved alias package contract
-- `apis/bijux-canon-runtime/v1/schema.yaml` or tracked examples for the documented contract surface
-- `tests` for executable confirmation that the contract still holds
+Only names exported by the canonical root or documented public facades carry a
+Python compatibility commitment. Storage implementation details, lifecycle
+helpers, and concrete executors remain internal. The v1 HTTP schema is a tracked
+contract, but run and replay endpoints currently return `501`; alias packages
+do not change that implementation status.
 
-## Bottom Line
+## Migration
 
-If callers depend on `bijux-canon-runtime` through either the canonical name or
-its preserved alias names, the contract needs to be named as clearly as the
-implementation.
+New integrations should use the canonical distribution, import, and command.
+Migrate existing deployments one surface at a time, then compare a fixed
+manifest in plan mode and a retained run through validated store records. For
+executable parity, compare plan hash, policy and environment fingerprints,
+ordered events, artifact hashes, and replay verdict—not merely the displayed
+command output.
+
+See the [bijux-canon](../../08-compat-packages/catalog/bijux-canon.md) and
+[agentic-flows](../../08-compat-packages/catalog/agentic-flows.md) catalog
+entries for package-specific installation details.
