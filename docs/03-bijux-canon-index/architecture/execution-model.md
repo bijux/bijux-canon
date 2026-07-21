@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Execution Model
@@ -45,6 +45,23 @@ The boundary payload names why and how retrieval may execute:
 Resource limits reject oversized queries and `top_k` values before execution.
 An artifact must be selected explicitly unless the active ledger contains
 exactly one. The request and artifact contracts must match.
+
+## Admission Contract
+
+Admission answers whether the requested result can be defended before backend
+work begins. It combines request intent, artifact identity, backend capability,
+and budget rather than treating each as an unrelated option.
+
+| Requested property | Required evidence before execution | Refusal condition |
+| --- | --- | --- |
+| deterministic result | strict mode, exact path, compatible metric and dimension | ANN requested, incompatible mode, or replay guarantee unavailable |
+| bounded approximation | non-deterministic contract, explicit randomness, budget, ANN capability | undeclared randomness, absent limits, or unsupported backend |
+| replayable run | stable artifact, plan fingerprint, backend identity, replayable randomness | original run or selected backend cannot establish replayability |
+| authorized mutation | matching artifact state and caller authority | stale version, ownership conflict, or authorization denial |
+
+Admission success is not a promise that execution will complete. It establishes
+that the selected path can satisfy the declared contract if its backend and
+budgets hold. Later failures retain that admitted contract in the run record.
 
 ## Planning and Capability Checks
 
@@ -92,6 +109,35 @@ their decision trace when one is available.
 A run begins as `incomplete`, becomes `complete` only after `result.json` is
 written, and becomes `failed` with a reason when governed error handling records
 the failure. Incomplete and failed runs are not loadable as successful evidence.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Admitted: request and artifact accepted
+    Admitted --> Incomplete: run directory created
+    Incomplete --> Incomplete: plan and provenance recorded
+    Incomplete --> Complete: result written and final status committed
+    Incomplete --> Failed: governed failure recorded
+    Complete --> Loadable: integrity checks pass
+    Failed --> Inspectable: failure reason retained
+    Incomplete --> RecoverableEvidence: interrupted run retained
+    Loadable --> [*]
+    Inspectable --> [*]
+    RecoverableEvidence --> [*]
+```
+
+The result file precedes the `complete` marker. Readers use the marker as the
+publication boundary and do not infer success from the presence of a plan,
+provenance file, or partial backend output. Failure recording preserves an
+inspectable terminal state; it does not promote partial results into a valid
+retrieval response.
+
+## Result Semantics
+
+An empty ordered result set is a successful retrieval outcome when execution
+completed under the admitted contract. A refusal has no result set. A budget
+failure may carry partial candidates as diagnostic evidence, but those
+candidates have not satisfied the requested top-`k` contract. Consumers must
+branch on run status and contract fields before reading result IDs.
 
 ## Ownership Map
 

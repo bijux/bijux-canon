@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Error Model
@@ -58,6 +58,48 @@ budget failures. Preserve that envelope across HTTP or CLI boundaries. Mapping
 it to an empty candidate list makes a contract failure indistinguishable from
 a valid search with no matches.
 
+## Outcome and State Are Independent
+
+The error type explains why work stopped; the run state explains what was
+durably published. Keeping both dimensions avoids treating a stored diagnostic
+as a completed search.
+
+| Outcome | Run state | Consumer rule |
+| --- | --- | --- |
+| admission refusal | no executable run, or retained refusal envelope | change the request, capability, authority, or budget named by the refusal |
+| backend failure after admission | `failed` when failure finalization succeeds | inspect provenance and retryability; never read it as a result |
+| process interruption | `incomplete` | retain for diagnosis or explicit recovery; never load as complete |
+| budget failure with partial candidates | `failed` with diagnostic partials | use partials only to explain exhausted work |
+| valid search with no matches | `complete` with an empty ordered result set | accept as a successful negative retrieval result |
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Orchestrator
+    participant RunStore
+    participant Backend
+    Client->>Orchestrator: governed execution request
+    Orchestrator->>Orchestrator: validate and admit contract
+    alt refused before execution
+        Orchestrator-->>Client: refusal envelope
+    else admitted
+        Orchestrator->>RunStore: begin incomplete run
+        Orchestrator->>Backend: execute fingerprinted plan
+        alt backend completes
+            Backend-->>Orchestrator: ordered results
+            Orchestrator->>RunStore: write result, then mark complete
+            Orchestrator-->>Client: result and provenance
+        else governed failure
+            Orchestrator->>RunStore: mark failed with reason
+            Orchestrator-->>Client: typed failure
+        end
+    end
+```
+
+If the process disappears before terminal status is written, `incomplete`
+remains the truthful state. Recovery may inspect or supersede that run, but it
+must not edit history to claim the interrupted execution completed.
+
 ## Exact and approximate failures
 
 Deterministic requests require strict mode and reject ANN settings.
@@ -77,3 +119,8 @@ missing or corrupt, index or parameter identity changed, the backend diverged,
 or the comparison exceeded policy. Each cause changes the conclusion. Never
 report “replay mismatch” without the identity and contract dimension that
 differed.
+
+Retryability is advisory and local to the failure. A retry creates new
+execution evidence unless the documented recovery path explicitly resumes the
+same incomplete run. It must repeat admission checks because backend identity,
+artifact state, authority, and remaining budget may have changed.
