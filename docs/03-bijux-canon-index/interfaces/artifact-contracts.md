@@ -65,6 +65,12 @@ Writes are atomic at the individual file boundary. `status.json` is written as
 `result.json` captures the primitive execution result, ordered vector IDs, and
 the non-deterministic decision trace when present.
 
+The run directory is a lifecycle record, not an append-only evidence bundle.
+`RunStore.load()` accepts only `complete`; it refuses `incomplete` and `failed`
+runs even when `metadata.json` or `result.json` exists. Preserve `status.json`
+with the other files because it is the commit marker for this three-file
+protocol.
+
 ## Result and Explanation Payloads
 
 An execution response contains ordered vector IDs plus the correlation,
@@ -87,6 +93,24 @@ Compare artifacts by content and configuration fingerprints before comparing
 result order. Compare runs through their recorded metadata and execution
 results. A result mismatch is evidence to investigate, while a missing or
 changed contract is grounds to refuse equivalence.
+
+## Evidence Join Procedure
+
+To audit one returned vector:
+
+1. use the response `execution_id` to locate the execution ledger record;
+2. list runs, select the correlation-prefixed directory whose metadata matches
+   the response correlation ID, and require its status to be `complete`;
+3. confirm that `metadata.json` names the expected artifact and fingerprints;
+4. find the vector in the ordered IDs and primitive result rows;
+5. resolve vector, chunk, and document through the ledger; and
+6. compare the artifact contract and fingerprints before replaying or comparing
+   scores.
+
+The run files are not self-authenticating. Atomic replacement protects each
+JSON file from a partial write, but there is no run manifest or signature that
+binds the three files together. If a run crosses a trust boundary, package it
+with an external digest or signature and verify that envelope before loading.
 
 ## Compatibility Boundary
 

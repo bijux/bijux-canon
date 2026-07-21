@@ -40,8 +40,15 @@ before backend execution.
 
 ## Execution Request
 
-`ExecutionRequest` requires a request ID, query text or vector, `top_k`, an
-`ExecutionContract`, and an `ExecutionIntent`. Its contract and mode must agree:
+`ExecutionRequest` structurally carries a request ID, optional query text,
+optional vector, `top_k`, an `ExecutionContract`, and an `ExecutionIntent`. The
+core constructor enforces contract, intent, mode, and non-deterministic policy
+relationships. It does not by itself require query material or a positive
+`top_k`; the HTTP validators enforce those boundary rules. Code constructing
+core requests directly must validate the operation-specific fields before
+execution.
+
+The contract and mode must agree:
 
 - deterministic execution requires `strict` mode and forbids non-deterministic
   settings;
@@ -53,6 +60,27 @@ before backend execution.
 `ExecutionBudget` makes latency, memory, error, vector-count, distance, and ANN
 probe limits part of the request. `NDSettings` makes approximation policy part
 of the request. Neither should be reconstructed from logs after execution.
+
+## Identity Through the Query Path
+
+The identifiers are related by explicit joins, not by a shared string:
+
+| Identity | Allocated by | Resolves to |
+| --- | --- | --- |
+| `document_id` | corpus producer | source document |
+| `chunk_id` | chunk producer | span owned by a document |
+| `vector_id` | embedding producer | vector owned by a chunk |
+| `artifact_id` | materialization caller | corpus, index configuration, and execution contract |
+| `request_id` | query caller | ranked `Result` rows through `Result.request_id` |
+| `execution_id` | execution runtime | plan, signature, result set, and persisted run |
+| correlation ID | interface lifecycle | request-facing tracking value and run-directory prefix |
+
+An execute response exposes ordered `vector_id` values, the correlation ID,
+and the runtime `execution_id`. The on-disk run ID appends a generated suffix to
+the correlation ID and is not returned as a separate field. The response does
+not expose document or chunk identity, scores, or rank fields. Resolve those
+through explanation and retained ledger state; never parse one identifier to
+manufacture another.
 
 ## Boundary Payloads
 
@@ -66,10 +94,11 @@ directly. Unknown fields are rejected. Important request rules include:
   policy; and
 - artifact materialization accepts only `exact` or `ann` as an index mode.
 
-Responses preserve ordered vector identifiers and the identity needed to audit
-them. Execute, explain, and replay responses carry the execution contract,
-status, replayability, and execution ID. Replay additionally returns original
-and replay fingerprints, mismatch details, and non-deterministic sources.
+Responses preserve ordered vector identifiers and the identity needed to locate
+their audit context. Execute, explain, and replay responses carry the execution
+contract, status, replayability, and execution ID. Replay additionally returns
+original and replay fingerprints, mismatch details, and non-deterministic
+sources.
 
 ## Core Result Versus API Result
 
