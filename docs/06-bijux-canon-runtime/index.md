@@ -4,40 +4,57 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Runtime Handbook
 
-`bijux-canon-runtime` is the execution authority layer in `bijux-canon`. It decides when lower-package work becomes an acceptable, replayable, durable run instead of a merely successful execution trace.
+`bijux-canon-runtime` is the authority that resolves a `FlowManifest`, checks
+dataset and dependency state, plans ordered execution, enforces budgets and
+verification gates, records causally ordered events, and decides whether a run
+may be persisted or accepted for replay.
 
-The main failure this handbook prevents is treating runtime as a miscellaneous bucket for late-stage plumbing. Runtime exists to own acceptance, replay, persistence, and governed execution authority. If those decisions leak downward, no one can say why one run counts and another does not.
-
-## What The Reader Should See First
-
-Runtime is where a run becomes governable. Lower packages can prepare,
-retrieve, reason, and orchestrate correctly, but runtime decides whether the
-combined execution satisfies policy, whether its artifacts can be persisted,
-and whether another reviewer can replay or compare it later.
+A completed lower-layer call is not automatically a valid runtime step. The
+runtime distinguishes execution failure from verification failure, records
+authority and human interventions, and binds replay to the original flow,
+dataset, policy, environment, plan, artifact, and entropy identities.
 
 ```mermaid
 flowchart LR
-    trace["agent trace"]
-    policy["runtime policy"]
-    authority["authority check"]
-    store["artifact store"]
-    analysis["replay and drift analysis"]
-    verdict["run verdict"]
+    manifest["FlowManifest"]
+    resolve["resolve datasets + contracts"]
+    plan["immutable ExecutionPlan"]
+    execute["budgeted step execution"]
+    verify["verification arbitration"]
+    persist["trace + artifacts + run record"]
+    replay["replay verdict + diff"]
 
-    trace --> policy --> authority --> verdict
-    authority --> store --> analysis --> verdict
-    trace --> store
+    manifest --> resolve --> plan --> execute --> verify --> persist --> replay
+    verify -. rejection .-> replay
 ```
 
-Runtime is the first layer allowed to say whether the whole run counts. The
-handbook should therefore emphasize authority, persistence, and replay over
-late-stage plumbing. If a reader cannot tell why one run is acceptable and
-another is only observable or replayable, the runtime story is still weak.
+## Manifest Authority
+
+| Manifest field | Runtime decision |
+| --- | --- |
+| flow, tenant, state, agents, dependencies | who owns the run and which order is valid |
+| dataset descriptor and deprecation policy | whether the exact data identity is admissible |
+| retrieval contracts and verification gates | which lower-layer evidence and checks are mandatory |
+| determinism level and nondeterminism intent | which variability is declared rather than accidental |
+| entropy budget and allowed variance | how much uncertainty the run may consume |
+| replay envelope, mode, and acceptability | which future execution can count as a replay |
+
+`FlowManifest` is structural; semantic validity is enforced during resolution,
+planning, authority checks, execution, verification, and replay. Constructing
+the dataclass alone does not prove that a flow is executable.
+
+## Run Modes
+
+- `plan` resolves and plans without executing steps
+- `dry-run` exercises runtime preparation without live side effects
+- `live` executes under declared policy and records the run
+- `observe` captures evidence without granting normal execution authority
+- `unsafe` is an explicit reduced-guarantee mode, not an alias for live
 
 ## What This Package Owns
 
@@ -51,14 +68,14 @@ another is only observable or replayable, the runtime story is still weak.
 - repository-wide maintainer automation that belongs in the maintenance handbook
 - package-local convenience behavior that never affects governed runs
 
-## Boundary Test
+## Ownership Test
 
 If the issue is whether a run should be accepted, persisted, replayed, or
 rejected under explicit policy, it belongs here. If the issue is how a lower
 package produced its local result, runtime should consume that result rather
 than re-own the behavior.
 
-## First Proof Check
+## Implementation Anchors
 
 - `packages/bijux-canon-runtime/src/bijux_canon_runtime/application/execute_flow.py` for governed execution entrypoints
 - `packages/bijux-canon-runtime/src/bijux_canon_runtime/observability` for durable replay and trace surfaces
@@ -74,7 +91,7 @@ than re-own the behavior.
 - open [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/) when you need local workflow, diagnostics, release, or recovery guidance
 - open [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/) when the question is whether the package has proved its promises strongly enough
 
-## Pages In This Package
+## Reference Areas
 
 - [Foundation](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/06-bijux-canon-runtime/architecture/)
@@ -82,8 +99,9 @@ than re-own the behavior.
 - [Operations](https://bijux.io/bijux-canon/06-bijux-canon-runtime/operations/)
 - [Quality](https://bijux.io/bijux-canon/06-bijux-canon-runtime/quality/)
 
-## Leave This Handbook When
+## Replay Is A Verdict
 
-- the disputed behavior is really local to ingest, index, reason, or agent
-- the next step is a concrete interface, policy model, replay surface, or test
-- the issue belongs to repository-health automation rather than execution authority
+Replay analysis can accept, reject, or qualify a comparison based on policy,
+dataset evolution, environment, entropy, event order, verification results,
+and stored-envelope identity. A replay mismatch remains a mismatch even when
+the new run produces superficially similar content.

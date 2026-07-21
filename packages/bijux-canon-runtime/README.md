@@ -47,6 +47,72 @@ If you need to understand plan versus run modes, replay acceptance, trace
 capture, execution-store behavior, or non-determinism policy enforcement, start
 here.
 
+## Authority Model
+
+```mermaid
+flowchart LR
+    manifest["FlowManifest"] --> resolver["contract + dataset resolution"]
+    resolver --> plan["ExecutionPlan"]
+    plan --> execution["budgeted execution"]
+    execution --> arbitration["verification arbitration"]
+    arbitration --> store["DuckDB run + artifact store"]
+    store --> replay["replay envelope + verdict"]
+```
+
+The manifest declares flow and tenant identity, state, determinism level,
+replay acceptability, entropy budget, replay envelope, dataset descriptor,
+agents, dependencies, retrieval contracts, verification gates, allowed
+variance, nondeterminism intent, and replay mode. It is immutable structural
+input; resolution and execution enforce semantic validity.
+
+Runtime authority is narrower than arbitrary orchestration power. Authority
+tokens constrain who may execute or override a decision. Verification rules
+run at declared phases, and arbitration determines whether findings block,
+qualify, or permit continuation. Human intervention is recorded as replayable
+state rather than an invisible exception.
+
+## Run Modes
+
+| Mode | Execution | Persistence and authority posture |
+| --- | --- | --- |
+| `plan` | resolves and constructs the immutable plan | no step execution |
+| `dry-run` | exercises preparation and checks | no normal live side effects |
+| `live` | runs declared steps | full policy, trace, verification, and persistence path |
+| `observe` | observes execution evidence | does not silently acquire live authority |
+| `unsafe` | permits explicitly reduced guarantees | remains labelled unsafe in the run record |
+
+## CLI Workflow
+
+```bash
+bijux-canon-runtime run flow.json \
+  --policy policy.json \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --strict-determinism --json
+
+bijux-canon-runtime replay flow.json \
+  --policy policy.json \
+  --run-id <run-id> \
+  --tenant-id <tenant-id> \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --strict-determinism --json
+
+bijux-canon-runtime inspect run <run-id> \
+  --tenant-id <tenant-id> \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb --json
+```
+
+The CLI also implements `plan`, `dry-run`, `unsafe-run`, run diff, failure
+explanation, and database validation commands. Those commands are currently
+suppressed from the top-level help display; their presence must not be confused
+with the three prominently advertised commands.
+
+## HTTP Contract
+
+The v1 API exposes flow execution and replay plus health and readiness probes.
+Responses carry run identity, status, result data, replay acceptability, and a
+structured failure envelope. The contract is pinned under
+[`apis/bijux-canon-runtime/v1/`](../../apis/bijux-canon-runtime/v1/).
+
 ## What This Package Takes And Produces
 
 - takes: validated flow manifests or resolved execution plans plus explicit execution policy
@@ -94,6 +160,17 @@ Expected shape:
 - agent composition policy
 - ingest or index domain ownership
 - repository tooling and release support
+
+## Persistence And Replay Evidence
+
+- execution traces use stable event identity and causal ordering
+- artifacts carry type, scope, producer, run, dataset, and contract identity
+- the DuckDB execution store persists runs, events, envelopes, budgets,
+  verification results, interventions, and replay analysis
+- replay compares stored and current policy, dataset, environment, plan,
+  entropy, and artifact identities before issuing a verdict
+- crash recovery and partial failure retain recorded state rather than
+  presenting an incomplete run as complete
 
 ## Source map
 
