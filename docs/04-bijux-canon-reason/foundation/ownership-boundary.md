@@ -4,48 +4,69 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Ownership Boundary
 
-`bijux-canon-reason` owns the moment where evidence becomes a claim, check, or reasoning artifact. Use it when policy could easily be hidden in retrieval output below or workflow code above.
-
-## Boundary Map
+Reason authority is the relationship between evidence and explicit claims. It
+owns how support is represented and verified, while leaving evidence retrieval,
+role scheduling, and final workflow acceptance to their respective layers.
 
 ```mermaid
-flowchart LR
-    evidence["retrieved evidence"]
-    reason["reason ownership"]
-    claims["claims, checks, and reasoning artifacts"]
-    neighbors["retrieval below and orchestration or authority above belong elsewhere"]
+flowchart TD
+    change{"Which record changes?"}
+    representation["source/chunk record"]
+    retrieval["execution artifact/ranking"]
+    claim["claim/support/finding"]
+    workflow["role transition/convergence"]
+    authority["flow verdict/replay acceptance"]
 
-    evidence --> reason --> claims
-    reason --> neighbors
+    change --> representation --> ingest["ingest"]
+    change --> retrieval --> index["index"]
+    change --> claim --> reason["reason"]
+    change --> workflow --> agent["agent"]
+    change --> authority --> runtime["runtime"]
 ```
 
-This page should show reason as the package that turns evidence into explicit
-meaning. The boundary holds when readers can stop here before workflow or
-runtime language starts taking over.
+## Decision table
 
-## Use This Boundary Test
+| Change | Owner | Reason |
+| --- | --- | --- |
+| change chunk normalization or byte mapping | ingest | changes evidence representation before reasoning |
+| change ANN candidates, scoring, or replay bounds | index | changes retrieval execution rather than interpretation |
+| add a check that derived claims have valid exact support | reason | changes grounding and verification semantics |
+| add a planner node kind or content-identity input | reason | changes the reasoning record itself |
+| repeat critique after an unsatisfactory verifier role | agent | changes role lifecycle and workflow control |
+| reject the entire flow when reasoning is non-certifiable | runtime | changes end-to-end acceptance policy |
 
-- keep the work here when it changes claim formation, verification, provenance interpretation, or reasoning artifacts
-- move the work down to `bijux-canon-index` when it changes how evidence is fetched or replayed
-- move the work upward when it changes multi-step coordination or final run authority
+## Index-to-reason handoff
 
-## Borderline Example
+Reason consumes identified evidence and retrieval provenance. It may retain a
+pinned local corpus/index for the reference workflow, but it does not reinterpret
+the index package's score as support. Support is established separately through
+an evidence identity, exact byte interval, and snippet hash.
 
-A new verification rule belongs here. A new workflow rule for when verification should run belongs in agent.
+This distinction prevents a high-ranked passage from becoming an accepted
+claim merely because retrieval considered it similar.
 
-## First Proof Check
+## Reason-to-agent handoff
 
-- `packages/bijux-canon-reason/src` for the owned implementation boundary
-- `packages/bijux-canon-reason/tests` for proof that the boundary survives change
-- neighboring handbook roots in index, agent, and runtime when the work still looks plausible elsewhere
+Reason produces a self-contained plan, trace, claim set, verification report,
+and manifested run. Agent may schedule reasoning-related roles and preserve
+their outputs, but it must not rewrite claim status or hide findings inside
+workflow summaries. Conversely, reason does not decide whether another role
+should run or whether convergence has occurred.
 
-## Design Pressure
+## Reason-to-runtime handoff
 
-The pressure on reason is to keep claim policy local instead of letting meaning
-leak into search tuning below or workflow code above. Once readers need another
-package to explain a claim, the ownership story has weakened.
+Runtime can apply flow policy to reasoning evidence. It may accept, reject, or
+mark a run non-certifiable, but the underlying verification findings remain
+unchanged. Arbitration over a complete flow is not a second reason verifier.
+
+## Ownership test
+
+Locate the false invariant. Ranking and backend provenance point to index.
+Claim kind, support linkage, evidence bytes, check outcomes, and reasoning-run
+integrity point to reason. Role order points to agent. Final authority points
+to runtime.
