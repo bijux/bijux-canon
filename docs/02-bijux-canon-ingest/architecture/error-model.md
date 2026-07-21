@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Error Model
@@ -72,6 +72,46 @@ Recovery must produce a value whose meaning is valid for the downstream stage.
 Replacing a failed embedding with a zero vector or a failed index load with an
 empty index conceals the failure and is not a safe recovery.
 
+## Partial progress and recovery ownership
+
+Ingest does not give every execution shape the same atomicity. A configuration
+failure happens before useful work and invalidates the run. A lazy stream may
+already have yielded successful records when a later record fails. A
+partitioning collector can intentionally retain both successes and failures.
+Those are different states and should remain different in an application run
+record.
+
+| Observed state | Safe interpretation | Recovery owner |
+| --- | --- | --- |
+| no record admitted | run configuration or source boundary failed | caller repairs configuration or source access |
+| successes followed by `ErrInfo` | prefix results exist; the stream is not globally complete | caller applies its declared fold or checkpoint policy |
+| successes and failures partitioned | mixed result set was explicitly requested | caller publishes both populations and their counts |
+| retry exhausted | the original stage failure remains authoritative | adapter policy reports attempts; caller decides whether to resume |
+| unexpected exception crossed an interface | the interface lacked an expected mapping | boundary owner investigates and extends the mapping deliberately |
+
+```mermaid
+stateDiagram-v2
+    [*] --> Validating
+    Validating --> Rejected: configuration invalid
+    Validating --> Processing: contract valid
+    Processing --> Processing: Ok yielded or collected
+    Processing --> Recovering: retryable Err
+    Recovering --> Processing: retry succeeds
+    Recovering --> Incomplete: retry exhausted
+    Processing --> Incomplete: fail-fast Err
+    Processing --> Mixed: partition completed with errors
+    Processing --> Complete: source exhausted without errors
+    Rejected --> [*]
+    Incomplete --> [*]
+    Mixed --> [*]
+    Complete --> [*]
+```
+
+`recoverable` means a policy is allowed to attempt the same operation again; it
+does not mean a retry is safe without idempotency. Source readers, embedding
+services, and storage adapters must declare their own side-effect and duplicate
+handling behavior.
+
 ## Interface semantics
 
 The pipeline CLI uses exit `2` for argument or configuration errors, exit `1`
@@ -86,3 +126,8 @@ Pass stable chunks, indexes, candidates, and structured failures to downstream
 packages. Do not convert an ingest failure into an index miss, unsupported
 claim, agent veto, or runtime policy violation. The package that first breaks
 its contract owns the failure description.
+
+At a successful boundary, publish the chunks and the observations needed to
+interpret them. At an incomplete or mixed boundary, also publish the failure
+population, stopping policy, and last durable source position. Downstream
+packages should never have to infer completeness from a non-empty chunk list.

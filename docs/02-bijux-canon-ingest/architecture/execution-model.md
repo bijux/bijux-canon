@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Execution Model
@@ -45,9 +45,52 @@ Both paths preserve the same semantic order:
 5. remove structural duplicates; and
 6. return chunks at the application boundary.
 
+That order is part of the contract. In particular, deduplication compares
+fully formed chunks after embedding; it does not erase source records before
+their offsets and embedding outcomes are known.
+
 The path-based boundary, `run_ingest_pipeline_path`, adds source IO without
 changing the core. Reader failures are returned as `Err`; successful reads enter
 the same document pipeline and return `Ok((chunks, observations))`.
+
+## Run Contract
+
+The caller chooses whether completion means consuming an iterator or receiving
+a materialized report. The choice affects memory and observability, but not the
+meaning of an accepted chunk.
+
+| Concern | Lazy path | Materialized path |
+| --- | --- | --- |
+| input custody | records are pulled as downstream demand advances | input records are retained for run-level accounting |
+| output custody | each result is yielded to the caller | chunks and observations return together |
+| failure control | the caller folds, partitions, or stops the result stream | the runner returns the completed collection or boundary failure |
+| observation | compose a tap or fold over results | bounded counts, samples, and warnings are returned |
+| memory posture | bounded by caller consumption and stage behavior | proportional to retained input, stages, and output |
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Reader
+    participant Pipeline
+    participant Embedder
+    participant Tap
+    Caller->>Reader: request source records
+    loop demand-driven records
+        Reader-->>Pipeline: RawDoc
+        Pipeline->>Pipeline: filter, clean, and chunk
+        Pipeline->>Embedder: ChunkWithoutEmbedding
+        Embedder-->>Pipeline: vector or classified failure
+        Pipeline-->>Tap: immutable stage snapshot
+        Pipeline-->>Caller: Chunk or Err
+    end
+    Note over Caller,Pipeline: materialized execution consumes the same sequence and adds a bounded run summary
+```
+
+The pipeline does not claim transactional rollback across an external reader,
+embedder, and downstream index. Once a lazy caller has consumed a value, that
+value is part of the caller's partial state. A resumable application therefore
+retains source identity and the last accepted result rather than assuming a
+failed iterator can be restarted without duplication.
 
 ## Values at the Boundaries
 
@@ -84,6 +127,11 @@ are deterministic for the same inputs and configuration. An external embedder
 may introduce its own model, version, or numerical variability. Callers that
 require replay must pin those embedding inputs and retain the resulting
 embedding specification with the index artifact.
+
+Determinism also depends on input order. Stable chunk identity makes duplicate
+detection repeatable, but the order in which distinct records arrive remains
+observable in the output stream and run summary. Callers must pin or record
+source ordering when order itself is evidence.
 
 ## Implementation Map
 
