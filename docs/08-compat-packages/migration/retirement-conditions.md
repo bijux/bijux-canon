@@ -9,79 +9,111 @@ last_reviewed: 2026-07-21
 
 # Retirement Conditions
 
-A compatibility distribution can stop receiving releases only after every
-supported consumer has left every preserved surface it uses. A clean search in
-this repository is useful internal evidence, but it cannot establish the state
-of external applications, deployment images, notebooks, or automation.
+A compatibility distribution may stop receiving releases only when every
+supported consumer has left every preserved surface it uses. Retirement is an
+evidence decision about dependencies, imports, commands, configuration,
+artifacts, deployments, and recovery—not a judgment based on bridge age or
+repository search alone.
 
-## Decision Model
+## Decision Path
 
 ```mermaid
 flowchart TD
-    inventory["named consumer inventory"]
-    surfaces["dependency, import, command, config, artifact"]
-    migrated{"all supported consumers migrated?"}
-    evidence["consumer validation and deployment evidence"]
-    announce["publish retirement notice and final support boundary"]
-    stop["stop future bridge releases"]
-    keep["keep bridge and record remaining owner"]
+    scope["define supported consumers and environments"]
+    inventory["inventory every preserved surface"]
+    migrate["validate canonical cutover"]
+    deploy["observe deployed and recovery paths"]
+    complete{"all records complete?"}
+    missing["retain bridge and assign missing evidence"]
+    notice["announce final support boundary"]
+    final["build and verify final bridge release"]
+    cease["stop new bridge releases"]
+    archive["retain migration and historical artifact guidance"]
 
-    inventory --> surfaces --> migrated
-    migrated -->|no| keep
-    migrated -->|yes| evidence --> announce --> stop
+    scope --> inventory --> migrate --> deploy --> complete
+    complete -->|"no"| missing
+    missing --> inventory
+    complete -->|"yes"| notice --> final --> cease --> archive
 ```
 
-## Required Evidence
+No later action may compensate for an incomplete earlier one. A retirement
+notice cannot replace consumer validation, and a final release cannot establish
+that recovery images no longer need the old identity.
+
+## Required Consumer Evidence
 
 | Surface | Evidence before retirement |
 | --- | --- |
-| distribution | dependency manifests and lockfiles use the canonical package in every supported environment |
-| root and nested imports | source, generated configuration, plugin paths, and type-checking pass with canonical imports |
-| console command | scripts, workflows, images, service units, and runbooks use the canonical integration |
+| distribution | manifests and lockfiles resolve the canonical package in every supported environment |
+| root and nested imports | source, generated code, notebooks, type checking, and plugin strings use canonical modules |
+| console command | scripts, workflows, images, service units, monitoring, and runbooks use a canonical interface |
 | module execution | no supported caller relies on `python -m <preserved_root>` |
-| configuration | environment variables, entrypoint strings, and integration configuration have a canonical owner |
-| stored artifacts | representative retained records remain readable or have an explicit conversion and rollback path |
-| operations | deployed versions and rollback images no longer require the bridge |
-| documentation | installation and recovery guidance no longer directs users to the preserved identity |
+| configuration | environment variables, entrypoint strings, cache namespaces, and integration configuration have canonical ownership |
+| stored state | representative caches, indexes, traces, manifests, and databases remain readable or have a governed conversion and rollback path |
+| deployment | active images, scheduled jobs, and rollback media no longer install the bridge |
+| operations | incident, restore, replay, and disaster-recovery procedures pass without the bridge |
+| communication | installation, security, support, and recovery guidance names the canonical owner and final bridge boundary |
 
-For `bijux-vex`, command retirement additionally requires a deployed Python or
-HTTP index integration because no `bijux-canon-index` executable exists. For
-`bijux-rar`, the continued availability of the `bijux-rar` command from the
-canonical reason distribution does not prove that the old distribution and
-Python import are unused.
+Every record needs a named consumer, accountable owner, environment, canonical
+version, validation result, deployment evidence, and rollback boundary. An
+unknown consumer is not a completed record.
 
-## Evidence That Is Insufficient Alone
+## Package-Specific Gates
 
-- no legacy-name matches in the monorepo;
-- a green canonical package test suite;
-- successful installation of the canonical distribution;
+- `bijux-canon` and `agentic-flows` share `bijux-canon-runtime` as owner.
+  Retiring one bridge does not establish that consumers of the other have moved.
+- `bijux-vex` has no same-spelling canonical console replacement. Every command
+  consumer must move to the index Python or HTTP interface and validate its
+  request, refusal, result, and provenance handling.
+- `bijux-rar` command availability can come from the canonical reason package.
+  A successful `bijux-rar` invocation does not prove that the compatibility
+  distribution or `bijux_rar` import has disappeared.
+- Artifact-heavy ingest, index, reason, and runtime consumers must exercise
+  historical reads. Import migration cannot establish serialized compatibility.
+
+## Insufficient Evidence
+
+None of these signals is sufficient by itself:
+
+- no preserved-name matches in this repository;
+- a green canonical package suite;
+- successful installation of a canonical wheel;
 - low or unavailable package-index download counts;
-- elapsed time since migration guidance was published; or
-- the absence of a recently reported compatibility issue.
+- elapsed time since migration guidance was published;
+- absence of recent compatibility issues; or
+- one production environment completing a canonical workflow.
 
-Each signal omits consumer identity or an exercised boundary. Pair repository
-searches with named owners and validation from the environments the project
-still supports.
+Each omits either consumer scope or an exercised boundary. Combine repository
+evidence with named environment owners, lockfile and image inspection,
+representative workflows, historical artifact checks, and recovery validation.
 
 ## Retirement Record
 
-Record the canonical replacement, last supported bridge version, affected
-surfaces, known consumers, validation evidence, notice location, final release
-date, and rollback boundary. Existing published artifacts may remain available
-even after new releases stop; state that policy explicitly so “retired” is not
-mistaken for “all historical artifacts were removed.”
+The decision record contains:
 
-Source removal, workspace-inventory removal, release-matrix removal, and
-publication cessation are separate changes. Keep the repository coherent at
-each commit and do not remove migration guidance while users of historical
-artifacts may still encounter the old identity.
+1. preserved distribution, import root, commands, and canonical owner;
+2. final supported bridge version and canonical version;
+3. supported consumer inventory with completion evidence;
+4. unresolved or explicitly unsupported consumers;
+5. notice location, communication date, and support boundary;
+6. final build, metadata, import, command, and publication evidence;
+7. source, workspace, automation, and release surfaces to remove;
+8. historical artifact availability and documentation policy; and
+9. rollback and incident-response procedure after release cessation.
 
-## When Evidence Is Incomplete
+Published files may remain downloadable after new releases stop. State that
+separately from source removal and support cessation so “retired” is not
+misread as “all historical artifacts were deleted.”
 
-Retain the bridge and identify the missing consumer or proof owner. The bridge
-is safer than an unverified removal as long as it remains a thin exact-version
-delegate and does not acquire product behavior.
+## Decision Outcomes
 
-Use [migration guidance](migration-guidance.md) to move each consumer and
-[release policy](release-policy.md) to distinguish the last built artifact from
-the last published artifact.
+| Evidence state | Outcome |
+| --- | --- |
+| supported consumer still uses a preserved surface | retain and test the bridge |
+| consumer ownership is unknown | retain the bridge and assign the inventory gap |
+| canonical cutover works but rollback still installs the bridge | retain until recovery evidence is canonical |
+| all consumer records complete but no notice/final release exists | prepare retirement; do not stop releases yet |
+| all records, notice, final artifact, and rollback evidence complete | execute the [retirement playbook](retirement-playbook.md) |
+
+Keeping a verified thin bridge is safer than unproven removal. Keeping it
+without an owner, migration record, or tests is not a retirement strategy.
