@@ -4,53 +4,107 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Package Overview
 
-`bijux-canon-index` exists to make retrieval behavior explicit, replayable, and reviewable. It turns prepared ingest output into embeddings, index state, and retrieval results that downstream packages can inspect instead of merely trust.
+`bijux-canon-index` executes vector retrieval under an explicit contract. A
+request states its intent, determinism posture, limits, and backend needs; the
+package selects a compatible execution path and records enough evidence to
+explain or replay the result.
 
-## Role Model
+This is broader than a vector-store client and narrower than a reasoning
+system. Index owns how retrieval runs, not what a retrieved passage means.
+
+## Execution Model
 
 ```mermaid
 flowchart LR
-    prepared["prepared ingest output"]
-    index["retrieval and indexing behavior"]
-    results["replayable retrieval results"]
-    downstream["reason, agent, and runtime consumers"]
+    request["declared query or vector request"]
+    validate["validate intent, contract, and budgets"]
+    select["select compatible capabilities"]
+    execute["exact or bounded ANN execution"]
+    provenance["record result and provenance"]
+    consume["explain, compare, or replay"]
 
-    prepared --> index --> results --> downstream
+    request --> validate --> select --> execute --> provenance --> consume
 ```
 
-This page should let a reader picture index as the package that owns retrieval
-semantics in the open. The result is not just search output; it is search
-behavior that later packages can replay, compare, and review.
+A deterministic request can require an exact path. A non-deterministic request
+must declare its randomness, replay posture, and bounds rather than inheriting
+them invisibly from an adapter.
 
-## Boundary Verdict
+## What the Package Owns
 
-If the work changes how search is executed, replayed, compared, or exposed as retrieval output, it belongs here. If it changes source preparation, claim meaning, or governed run policy, it does not.
+| Surface | Responsibility |
+| --- | --- |
+| execution contracts | intent, deterministic or bounded mode, refusal posture, and resource budgets |
+| artifacts | corpus and index identity used by execution requests |
+| backend capabilities | availability and behavior of memory, SQLite, HNSW, FAISS, Qdrant, and excluded adapters |
+| provenance | run metadata, status, results, explanations, and replay inputs |
+| comparison | deterministic and approximate-result evaluation under named criteria |
+| interfaces | module CLI and v1 HTTP operations over the same application boundary |
 
-## What This Package Makes Possible
+SQLite and in-memory resources provide local paths. Optional dependencies add
+HNSW, FAISS, Qdrant, and YAML configuration support. The pgvector adapter is
+currently an experimental v1 exclusion; its presence in the source tree is not
+a stable production claim.
 
-- retrieval behavior becomes a named contract instead of an accidental consequence of backend code
-- provenance and replay stay attached to search results that later packages rely on
-- index-specific search assumptions stop leaking into reasoning and runtime layers
+## Inspect Before Executing
 
-## Tempting Mistakes
+The canonical wheel currently exposes a module CLI rather than a
+`bijux-canon-index` console script:
 
-- treating vector execution as infrastructure plumbing instead of package-owned behavior
-- burying caller-facing retrieval differences inside plugins or backend adapters
-- using runtime authority to paper over unclear retrieval semantics
+```bash
+python -m bijux_canon_index.interfaces.cli.app capabilities
+```
 
-## First Proof Check
+Capability output reveals the selected backend, available adapters, and
+supported execution contracts. Automation should inspect it rather than assume
+that an optional native or service backend is installed.
 
-- `packages/bijux-canon-index/src/bijux_canon_index` for retrieval ownership in code
-- `packages/bijux-canon-index/apis` for tracked caller-facing schemas
-- `packages/bijux-canon-index/tests` for replay and provenance evidence
+## A Declared Request
 
-## Design Pressure
+```bash
+python -m bijux_canon_index.interfaces.cli.app execute \
+  --vector '[0.2, 0.8]' \
+  --artifact-id corpus-retention \
+  --execution-contract deterministic \
+  --execution-intent exact_validation \
+  --execution-mode strict \
+  --top-k 5
+```
 
-The pressure on index is to keep retrieval logic visible enough that later
-packages never need to guess what happened inside search. If retrieval policy
-spills into adapters or downstream code, the package boundary stops paying off.
+The command validates the request, executes through a compatible backend, and
+writes a run record. `--dry-run` renders a plan without retrieval; `--explain`
+adds an explanation to the response. Non-deterministic execution adds explicit
+seed, randomness-source, boundedness, and witness options.
+
+## Public Boundaries
+
+The package root intentionally exposes version metadata only. Import engine,
+domain, or request types from their owning modules; undocumented root-level
+re-exports are not a compatibility contract.
+
+The supported interfaces are:
+
+- `bijux_canon_index.application` for orchestration and execution engines;
+- `bijux_canon_index.core` and `bijux_canon_index.domain` for contract types;
+- `python -m bijux_canon_index.interfaces.cli.app` for command workflows;
+- `bijux_canon_index.api.v1.app:app` for the FastAPI application.
+
+## Ownership Boundary
+
+Index accepts prepared material and returns retrieval evidence. It does not own
+source cleaning, decide the truth of a claim, coordinate agent authority, or
+approve a governed runtime run. Keeping those responsibilities outside the
+package prevents backend behavior from becoming hidden application policy.
+
+The `bijux-vex` compatibility distribution preserves its established import
+and command surface while routing to this implementation. New integrations
+should use the canonical module and consult
+[compatibility commitments](../interfaces/compatibility-commitments.md).
+
+Continue with [installation and setup](../operations/installation-and-setup.md)
+or the [execution model](../architecture/execution-model.md).

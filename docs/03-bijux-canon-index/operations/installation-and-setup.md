@@ -1,28 +1,132 @@
 ---
 title: Installation and Setup
 audience: mixed
-type: explanation
+type: how-to
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Installation and Setup
 
-Installation and setup for `bijux-canon-index` should tell a maintainer which checked-in files define a valid starting point. If setup for retrieval and replay behavior depends on local folklore, the package is not operationally ready.
+`bijux-canon-index` supports Python 3.11 through 3.14. Install the base package
+for the typed execution engine, module CLI, FastAPI application, and local
+memory or SQLite paths. Add extras only for the adapters an environment uses.
 
-## What To Check
+## Install
 
-- start from package metadata, README framing, and explicit dependencies
-- separate required setup from optional local conveniences
-- treat smoke checks as part of setup rather than as an afterthought
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install bijux-canon-index
+```
 
-## First Proof Check
+The canonical wheel does not currently register a `bijux-canon-index`
+executable. Verify the import and invoke the Typer application as a module:
 
-- `pyproject.toml`, `README.md`, and boundary-facing entrypoints for checked-in operating truth
-- `tests` and runnable workflows for executable confirmation that the runbook still works
-- release notes and version metadata when the work changes caller expectations
+```bash
+python -c "import bijux_canon_index; print(bijux_canon_index.__version__)"
+python -m bijux_canon_index.interfaces.cli.app --help
+python -m bijux_canon_index.interfaces.cli.app capabilities
+```
 
-## Bottom Line
+## Choose Optional Capabilities
 
-If `bijux-canon-index` cannot be operated repeatably under change, the operational documentation is still incomplete.
+```bash
+# YAML configuration files
+python -m pip install 'bijux-canon-index[config]'
+
+# hnswlib approximate-nearest-neighbor execution
+python -m pip install 'bijux-canon-index[nd]'
+
+# NumPy, FAISS, and Qdrant client adapters
+python -m pip install 'bijux-canon-index[vdb]'
+
+# Uvicorn and API validation dependencies
+python -m pip install 'bijux-canon-index[api]'
+```
+
+Extras install client libraries, not external services. A Qdrant deployment
+still needs an accessible service and its own authentication, persistence, and
+backup configuration. Capability discovery reports whether an adapter can
+actually be used in the current environment.
+
+## Initialize Local State
+
+```bash
+mkdir -p artifacts/bijux-canon-index
+python -m bijux_canon_index.interfaces.cli.app init \
+  --config-path artifacts/bijux-canon-index/config.toml
+python -m bijux_canon_index.interfaces.cli.app doctor
+```
+
+By default, SQLite state, embedding cache, and run records stay under
+`artifacts/bijux-canon-index/`. For a service or scheduled job, pin the run
+directory rather than relying on its working directory:
+
+```bash
+export BIJUX_CANON_INDEX_RUN_DIR=/var/lib/bijux-canon-index/runs
+```
+
+The selected operating-system user must be able to create and atomically
+replace files in that directory.
+
+## Run a Smoke Execution
+
+```bash
+python -m bijux_canon_index.interfaces.cli.app execute \
+  --vector '[0.2, 0.8]' \
+  --artifact-id setup-smoke \
+  --execution-contract deterministic \
+  --execution-intent exact_validation \
+  --execution-mode strict \
+  --top-k 1 \
+  --dry-run
+
+python -m bijux_canon_index.interfaces.cli.app list-runs --limit 5
+```
+
+The dry run validates planning without claiming that retrieval occurred. Use a
+real artifact and omit `--dry-run` only after the chosen backend and corpus are
+configured.
+
+## Serve the HTTP Boundary
+
+With the `api` extra installed:
+
+```bash
+uvicorn bijux_canon_index.api.v1.app:app \
+  --host 127.0.0.1 \
+  --port 8000
+```
+
+Then inspect capabilities:
+
+```bash
+curl --fail-with-body http://127.0.0.1:8000/capabilities
+```
+
+## Repository Checkout
+
+```bash
+make install
+make -C packages/bijux-canon-index help
+make -C packages/bijux-canon-index test
+```
+
+Use `make docs-check` for handbook changes. Repository-wide validation is
+reserved for changes that cross package, API, build, or release boundaries.
+
+## Setup Checklist
+
+- The canonical import and module CLI resolve from the same environment.
+- Capability output matches the intended deterministic or ANN execution mode.
+- Optional native libraries and external services are installed separately and
+  report healthy.
+- State, cache, and run paths are explicit and writable.
+- The application understands which backend state must accompany run evidence
+  for replay.
+
+Continue with [state and persistence](../architecture/state-and-persistence.md)
+and [entrypoint examples](../interfaces/entrypoints-and-examples.md).
