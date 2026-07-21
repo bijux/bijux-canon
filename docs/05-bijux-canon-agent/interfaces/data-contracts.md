@@ -98,5 +98,24 @@ A trace marked replayable cannot declare non-zero model temperature. If the
 execution cannot satisfy that constraint, mark it non-replayable rather than
 publishing a misleading replay promise.
 
+## Validation Surfaces
+
+Two validators answer different questions:
+
+| Validator | Establishes | Does not establish |
+| --- | --- | --- |
+| trace payload validation | supported schema version, run ID presence, non-empty entry list, runtime compatibility | lifecycle order, entry completeness, or replay parity |
+| canonical `TraceValidator` | phase order, allowed transitions and agents, phase semantics, lifecycle completeness, epistemic consistency, replay-critical fields | byte integrity or equivalence to `final_result.json` |
+
+Loading a trace for replay performs schema upgrade and payload validation. It
+does not invoke the canonical lifecycle validator. A consumer accepting traces
+from outside the producing workflow should run both validations before deriving
+a decision.
+
+`PipelineResult.from_trace()` is a projection from the final entry. It derives
+status, decision, epistemic verdict, confidence, and stop reason and requires
+header model metadata. It is not a re-execution of the agents and does not
+recompute prompts, scores, convergence, or model output.
+
 See [Execution Model](../architecture/execution-model.md) for how these values
 are produced.

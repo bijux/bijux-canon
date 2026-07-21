@@ -60,6 +60,13 @@ The comparison is semantic: verdict, confidence, epistemic state, and stop
 reason matter. A missing summary is reported as a skipped comparison, not a
 match.
 
+That parity check does not compare runtime version, termination reason,
+convergence fields, model metadata, trace path, configuration hash, pipeline
+definition hash, prompts, or run fingerprint. Those fields remain evidence to
+inspect separately. “MATCH” means only that the four decision fields agree; it
+does not mean the trace is byte-identical, fully lifecycle-valid, or reproduced
+by another model invocation.
+
 Timestamps and the UUID-based run ID are observational. Configuration,
 definition, prompts, model identity, decision state, convergence, and
 fingerprints are evidence-bearing. Ignore expected clock variation only; never
@@ -81,3 +88,24 @@ earlier run. Publish defensively:
 Artifacts may contain source text, prompts, model output, errors, and metadata.
 Apply access controls and retention policy to the complete output root. See
 [Data Contracts](data-contracts.md) for the record-level invariants.
+
+## Acceptance Procedure
+
+For a retained or imported output root:
+
+1. require `final_result.json` and parse it as a decision summary;
+2. if `trace_path` is absent, accept only the explicit veto semantics and do not
+   infer why execution was unavailable from the summary alone;
+3. if `trace_path` is present, require a relative path that resolves below the
+   output root and points to the expected trace file;
+4. upgrade and validate the trace schema, then run canonical lifecycle
+   validation against the pipeline definition;
+5. reconstruct the decision projection and compare the four parity fields;
+6. separately compare runtime, model, convergence, termination, configuration,
+   definition, prompt, and fingerprint evidence; and
+7. authenticate the directory externally when producer identity or tamper
+   resistance matters.
+
+The package does not publish a manifest or signature for this layout. Hashing
+or signing the complete validated directory is therefore a responsibility of
+the publishing workflow.
