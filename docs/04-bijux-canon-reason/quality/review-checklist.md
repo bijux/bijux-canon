@@ -1,28 +1,64 @@
 ---
-title: Review Checklist
+title: Claim and Evidence Review
 audience: mixed
-type: explanation
+type: how-to
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
-# Review Checklist
+# Claim and Evidence Review
 
-The review checklist for `bijux-canon-reason` should keep review fast without letting it become shallow. The point is to catch trust failures around reasoning and verification behavior before they ship.
+Review reconstructs the path from a problem specification to every finalized
+claim. Begin with the claimed guarantee, then follow its identifiers and bytes
+backward through the retained bundle.
 
-## What To Check
+```mermaid
+flowchart TD
+    claim[Final claim or refusal]
+    supports[Support edges]
+    evidence[Retained evidence bytes]
+    events[Claim and tool events]
+    plan[Plan and specification]
 
-- check whether the package boundary, contract, and proof story still agree
-- confirm that code, docs, and tests moved together when behavior changed
-- treat unclear filenames, symbols, or release notes as quality issues, not cosmetic ones
+    claim --> supports --> evidence --> events --> plan
+```
 
-## First Proof Check
+## Structure and execution
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+- Are plan identifiers unique, dependencies present, and the graph acyclic?
+- Do trace indices increase monotonically and every started step finish?
+- Does every tool return reference one known call, with failure behavior
+  retained rather than omitted?
+- Are runtime descriptor, preset, seed, schema, and canonicalization identity
+  present wherever reproducibility is claimed?
 
-## Bottom Line
+## Evidence and claims
 
-If `bijux-canon-reason` cannot explain why `reasoning and verification behavior` should be trusted after a change, the quality work is still incomplete.
+- Does every support reference resolve to a governed path within the run root?
+- Are byte spans valid and snippet hashes recomputed against retained content?
+- Can a derived claim be traced through intermediate supports without a gap?
+- Is insufficiency explicit when the available evidence cannot meet the
+  requested constraint?
+
+## Verification and bundle custody
+
+- Does the report include every applicable registered check and its details?
+- Do negative fixtures fail at the intended invariant rather than an earlier,
+  unrelated parser?
+- Do manifest digests, run metadata, trace checksum, and core files describe
+  the same execution?
+- Is an incomplete directory impossible to consume as a completed bundle?
+
+## Replay and behavioral evidence
+
+- Does replay use recorded tool results and pinned retrieval artifacts only?
+- Are corpus, index, plan, or provenance changes rejected or exposed in the
+  structured diff?
+- Does an answer-quality claim identify the corpus, cases, constraints,
+  expected refusal behavior, and metrics?
+- Are truth, authority, freshness, and consequential fitness left to explicit
+  source governance and domain review?
+
+Conclude with [evidence release acceptance](definition-of-done.md) and compare
+the claim with [known limitations](known-limitations.md).
