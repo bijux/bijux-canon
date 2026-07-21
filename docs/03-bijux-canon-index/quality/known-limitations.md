@@ -9,61 +9,88 @@ last_reviewed: 2026-07-21
 
 # Known Limitations
 
-The package can make retrieval decisions inspectable; it cannot make an
-approximate algorithm exact, guarantee that a remote backend remains stable,
-or establish that the indexed corpus is correct.
+`bijux-canon-index` can prove which retrieval contract was requested, which
+capability was selected, and which artifact was retained. It cannot turn an
+approximate search into an exact one, certify upstream vectors, or freeze a
+remote service that changes outside the run.
 
-## Approximation and backend limits
+## Exactness, Determinism, And Replay
 
-- Non-deterministic execution is a bounded, explicitly declared surface. ANN
-  libraries may still vary by implementation version, build flags, hardware,
-  concurrency, and index construction order.
-- A seed controls only randomness honored by the selected runner. It does not
-  neutralize unrecorded backend nondeterminism.
-- Strict replay can compare recorded ANN identity and parameters only when the
-  runner exposes that metadata. Missing provenance is a refusal boundary, not
-  evidence that the environment was unchanged.
-- Cross-backend conformance protects common contracts, not identical ranking.
-  Exact and ANN execution can legitimately return different neighbors.
-- Optional FAISS, HNSW, and Qdrant integrations add their own installation,
-  availability, persistence, retry, and version constraints.
+```mermaid
+flowchart TD
+    request["execution request"] --> contract{"declared contract"}
+    contract -->|deterministic| exact["deterministic-capable backend"]
+    contract -->|bounded approximation| ann["ANN runner and budget"]
+    exact --> artifact["execution artifact"]
+    ann --> artifact
+    artifact --> compare{"later comparison"}
+    compare -->|same identity and result| reproduced["reproduced"]
+    compare -->|declared divergence| explained["bounded divergence"]
+    compare -->|missing identity| refuse["refuse replay claim"]
+```
 
-## Quality and budget limits
+These terms are deliberately different:
 
-Retrieval correctness means the engine honored its declared plan. It does not
-mean the embedding model represents the domain well or that the returned
-evidence is sufficient for a conclusion. Compare ANN outcomes with an exact
-baseline and use domain evaluation data before setting quality bounds.
+| Claim | Package meaning | Important exclusion |
+| --- | --- | --- |
+| deterministic execution | the request uses a backend and scoring path classified as deterministic, with canonical ordering and recorded identity | it does not certify that upstream vectors were generated deterministically |
+| replayable artifact | the artifact contains the identity needed by the declared execution contract | it does not bundle an external database, model, ANN binary, or service snapshot |
+| bounded approximation | approximation sources and limits are declared and recorded | it does not promise the same neighbors as exact search |
+| cross-backend conformance | adapters obey the common transaction, isolation, and query contracts | it does not promise identical floating-point scores or ranking across every backend and build |
 
-Latency and memory budget fields are currently enforced through deterministic
-execution-cost estimates and counter proxies, not operating-system resource
-meters. They are useful contract bounds and regression signals, but they are
-not wall-clock deadlines or process memory limits. Infrastructure-level
-resource enforcement remains the caller's responsibility.
+A seed governs only randomness consumed by the selected implementation. Library
+version, compiler flags, hardware, thread scheduling, index build order, and
+remote state can still change ANN output. Strict replay must refuse an equality
+claim when that identity is unavailable.
 
-## Persistence and interface limits
+## Resource Budgets Are Contract Proxies
 
-- The filesystem `RunStore` uses atomic file replacement for individual JSON
-  records. It is not a multi-host transactional database and does not provide
-  distributed locking.
-- Incomplete and failed runs are retained for diagnosis but cannot be loaded as
-  complete outcomes.
-- Artifact portability depends on supported canonical versions, backend
-  metadata, and available adapters. A portable execution record does not
-  bundle an external vector database or ANN binary.
-- The package contains a Typer application but currently does not publish a
-  `bijux-canon-index` console-script entry point. Direct library/API use and
-  module invocation remain available; automation should not assume that
-  command name is installed.
+Vector, distance-computation, and ANN-probe limits are counters the engine can
+reason about directly. Latency and memory fields are checked through execution
+estimates and deterministic proxies. They are not operating-system wall-clock
+deadlines, resident-set-size limits, container quotas, or protection against a
+backend process exhausting its own resources.
 
-## Security boundary
+Use infrastructure controls for hard CPU, time, memory, network, and storage
+ceilings. Treat the package budgets as reproducible planning and classification
+evidence. A result classified as partial or refused because of a budget must not
+be relabeled as an ordinary top-`k` result.
 
-Authorization contracts and metadata redaction operate inside the package's
-declared interfaces. Deployment authentication, transport security, secret
-storage, tenant isolation, and backend access control must be supplied by the
-hosting system. Provenance should record identifiers and decisions without
-copying secrets into result artifacts.
+## Backend And Persistence Boundaries
 
-Use exact execution when equality is required. Use ANN only when the execution
-intent, acceptable loss, budget, randomness, and replay policy are all explicit
-enough for a later reviewer to interpret divergence.
+| Surface | Supported boundary | Outside the boundary |
+| --- | --- | --- |
+| in-memory and SQLite stores | local conformance, deterministic transactions, run isolation | multi-host consensus, service failover, cross-process cache coherence |
+| FAISS and HNSW adapters | optional local ANN integration when the dependency is installed | invariant ranking across native builds, architectures, or thread settings |
+| Qdrant integration | adapter-level capability and metadata handling | service availability, tenancy, backups, rolling-upgrade equivalence |
+| filesystem `RunStore` | atomic replacement of each JSON record and explicit lifecycle status | one atomic transaction spanning metadata, result, status, native index files, and remote state |
+| execution artifact | canonical package-owned execution record | archive of external indexes, plugins, secrets, or model assets |
+
+Remote backends, asynchronous service orchestration, streaming search, and a
+frozen pgvector contract are not part of the stable surface. Optional code being
+importable is not evidence that a feature belongs to the supported contract.
+
+## Interface Boundary
+
+The package exposes Python and HTTP surfaces and contains a Typer application,
+but it does not install a `bijux-canon-index` console command. Automation must
+not assume that command exists. The `bijux-vex` package is a compatibility
+surface with its own continuity constraints; it is not the name of the
+canonical index contract.
+
+Authorization decisions and metadata redaction apply only at package-owned
+interfaces. Authentication, TLS, secret management, service-to-service
+identity, tenant configuration, and backend access control belong to the host.
+Execution artifacts should contain identifiers and decisions, never credentials
+or unrestricted vector payloads.
+
+## Interpreting Retrieval Quality
+
+Contract correctness means the engine honored the plan. It does not mean the
+embedding space represents the domain, the corpus contains the answer, or the
+returned neighbors justify a conclusion. Establish quality with a versioned
+evaluation corpus, an exact baseline, declared relevance metrics, and the same
+backend identity used in production.
+
+See the [risk register](risk-register.md) for failure signals and response
+controls, and the [test strategy](test-strategy.md) for executable evidence.

@@ -9,77 +9,84 @@ last_reviewed: 2026-07-21
 
 # Risk Register
 
-Index owns execution claims, not merely neighbor lists. A trustworthy result
-connects the request, immutable plan, actual capability, backend identity,
-ranked output, budgets, and retained artifact. Any break in that chain can
-produce plausible output that cannot support replay or audit.
+Index owns the truth of an execution claim. A neighbor list is insufficient:
+the request, vector geometry, capability decision, backend identity, budget,
+ranking, lifecycle status, and artifact must describe one execution. Plausible
+results assembled from mismatched generations are a high-severity failure.
 
-## Risk Topology
-
-```mermaid
-flowchart TD
-    vectors["vectors and identities"]
-    intent["execution intent"]
-    resolve["capability resolution"]
-    backend["backend execution"]
-    rank["scores and ordering"]
-    record["ledger and artifact"]
-    replay["replay or comparison"]
-
-    vectors --> intent --> resolve --> backend --> rank --> record --> replay
-    resolve -. "capability drift" .-> replay
-    backend -. "state drift" .-> replay
-    rank -. "metric or tie drift" .-> replay
-    record -. "partial finalization" .-> replay
-```
-
-## Active Risks And Controls
-
-| Risk | Consequence | Preventive control | Detection evidence | Residual exposure |
-| --- | --- | --- | --- | --- |
-| vector dimension, metric, or normalization mismatch | scores are valid numbers for the wrong geometry | bind vector contract and scoring policy to the execution plan | dimension, scoring, request-validation, and cross-backend tests | upstream embeddings can be mislabeled before index receives them |
-| backend overstates exactness or capability | ANN or fallback output is presented as an exact result | validate declared capability and refuse dishonest backends | dishonest-backend, ANN fallback, and execution-contract tests | plugin behavior outside reviewed calls remains external code |
-| unstable tie ordering | identical scores produce different result order | canonical secondary ordering and serialization | scoring, tie-break, determinism, and output snapshot tests | backend floating-point changes can alter whether scores tie |
-| backend parameters or state drift | replay executes against a materially different index | fingerprint runner, parameters, artifact, and state | backend drift, provenance fingerprint, and golden replay tests | remote services can mutate outside package control |
-| budget exhaustion is flattened into normal top-`k` | partial evidence looks complete | typed budget limits, partial classification, and refusal | budget enforcement and slow-budget scenarios | callers can ignore the partial or refusal status |
-| run, tenant, or authorization isolation fails | one execution reads or mutates another's state | scoped resources, authorization checks, and execution isolation | authz, cross-run isolation, concurrency, and store conformance tests | external service tenancy must be configured correctly |
-| transaction or artifact finalization is partial | ledger, run record, and native files disagree | explicit lifecycle states and atomicity contracts | transaction misuse, atomicity, lifecycle, corruption, and multi-artifact scenarios | no package-level transaction controls an external service backup |
-| idempotency key binds to different intent | a repeated request returns unrelated prior output | include normalized request identity in idempotency semantics | API idempotency and orchestration tests | consumer-provided keys can still be reused incorrectly |
-| provenance leaks vectors or service metadata | retained evidence exposes sensitive inputs or topology | redact metadata and bound retained diagnostics | vector-store redaction and provenance tests | deployment policy determines what data is sensitive |
-| compatibility CLI is mistaken for a canonical console contract | new automation depends on `bijux-vex` indefinitely | publish Python/HTTP as canonical surfaces and label CLI continuity explicitly | packaging, public API, and compatibility bridge tests | existing command consumers require deliberate redesign |
-
-## Evidence Routing
+## Trust Chain
 
 ```mermaid
 flowchart LR
-    change["index change"]
-    math{"scoring or vector law?"}
-    backend{"adapter or persistence?"}
-    evidence{"artifact or replay?"}
-    core["core and domain tests"]
-    conform["backend conformance and isolation"]
-    gates["provenance, replay, API/CLI gates"]
+    corpus["corpus and vectors"] --> plan["immutable plan"]
+    plan --> capability["capability resolution"]
+    capability --> execution["backend execution"]
+    execution --> ranking["score and tie policy"]
+    ranking --> commit["lifecycle commit"]
+    commit --> artifact["artifact and provenance"]
 
-    change --> math
-    math -->|yes| core
-    math -->|no| backend
-    backend -->|yes| conform
-    backend -->|no| evidence
-    evidence -->|yes| gates
+    corpus -. "geometry drift" .-> ranking
+    capability -. "fallback drift" .-> artifact
+    execution -. "state drift" .-> artifact
+    commit -. "partial finalization" .-> artifact
 ```
 
-Changes commonly require multiple routes. A new ANN adapter needs domain
-capability checks, backend conformance, exact-versus-ANN comparison, drift and
-replay evidence, plus boundary tests for any new public configuration.
+## Persistent Risks
 
-## Operational Interpretation
+| Hazard | Severity | Detection signal | Required control | Residual owner |
+| --- | --- | --- | --- | --- |
+| vector dimension, metric, or normalization is mislabeled | critical | ingestion contract differs from plan or exact-baseline scores shift abruptly | bind dimension, metric, normalization, model identity, and corpus fingerprint to the plan | embedding producer |
+| backend claims a capability it does not honor | critical | conformance probe or execution evidence contradicts the capability report | validate capability before execution; refuse dishonest or unsupported fallbacks | adapter owner |
+| an ANN fallback is presented as exact | critical | artifact execution contract, approximation report, and selected backend disagree | require explicit fallback policy and retain the actual path | application owner |
+| tie ordering or floating-point behavior drifts | high | result IDs change while scores are equal or near the tie threshold | canonical secondary ordering; compare score and result fingerprints | backend owner |
+| native index or remote state drifts after planning | high | runner, vector, parameter, native-artifact, or service fingerprint changes | verify identity immediately before execution and replay; rebuild or refuse on mismatch | storage operator |
+| estimated budget is treated as a hard resource limit | high | host time or memory exceeds policy while package counters remain within bounds | enforce infrastructure limits separately; preserve package budget classification | deployment operator |
+| budget exhaustion is returned as normal top-`k` | critical | requested `k`, returned count, completion status, and refusal/partial reason do not reconcile | make completion class mandatory at every consumer boundary | API consumer |
+| transaction commits only part of the execution generation | critical | run status, result, ledger, and native artifacts reference different identities | stage one generation, verify it, then atomically publish the generation pointer | persistence owner |
+| idempotency key is reused with different normalized intent | high | the same key maps to more than one request fingerprint | bind key to normalized request identity and reject conflicts | client owner |
+| tenant or authorization scope leaks across runs | critical | result or mutation references a resource outside the authorized scope | authorize normalized intent and resources; run cross-tenant isolation checks | service operator |
+| provenance contains vectors, credentials, or topology secrets | critical | artifact schema or redaction scan finds restricted fields | allowlist retained metadata; store secret references rather than values | data controller |
+| replay compares against missing external state | high | artifact identity exists but the referenced backend generation cannot be resolved | retain immutable backend snapshots or label the execution non-replayable | deployment operator |
+| compatibility command is mistaken for the canonical API | medium | new automation depends on compatibility-only output or flags | publish Python/HTTP schemas as authority and isolate compatibility tests | integration owner |
 
-These hazards persist even when the default in-memory and SQLite paths pass.
-Deployment owners must additionally govern plugin provenance, remote service
-tenancy, backups, resource ceilings, dependency versions, and benchmark
-context. Report performance and quality with the exact execution identity.
+## Result Acceptance
 
-Use [architecture risks](../architecture/architecture-risks.md) for failure
-mechanisms, [test strategy](test-strategy.md) for executable evidence, and
-[known limitations](known-limitations.md) for exclusions from the stable
-contract.
+```mermaid
+flowchart TD
+    result["candidate result"] --> lifecycle{"run complete?"}
+    lifecycle -->|no| reject["reject result"]
+    lifecycle -->|yes| identity{"plan and backend identities match?"}
+    identity -->|no| reject
+    identity -->|yes| class{"completion class explicit?"}
+    class -->|no| reject
+    class -->|refused or partial| constrained["handle as constrained evidence"]
+    class -->|complete| quality{"quality gate applicable?"}
+    quality -->|failed| reject
+    quality -->|passed or not required| accept["accept with artifact"]
+```
+
+Consumers must branch on lifecycle and completion class before inspecting the
+neighbors. A partial result may be useful, but only when its exhausted dimension,
+actual cost, returned count, and approximation report travel with it.
+
+## Evidence Required By Change
+
+- Vector-law or scoring changes require dimension, normalization, metric,
+  tie-break, canonicalization, and exact-baseline evidence.
+- Adapter changes require capability honesty, transaction, isolation,
+  concurrency, corruption, and cross-backend conformance evidence.
+- ANN changes require exact-versus-approximate quality comparison, parameter and
+  native-index identity, budget exhaustion, randomness, and replay evidence.
+- Artifact or lifecycle changes require interrupted-finalization, incompatible
+  schema, missing state, tamper, and golden replay scenarios.
+- Interface changes require strict request validation, refusal mapping,
+  authorization, redaction, idempotency, and schema snapshots.
+
+The package can expose and refuse unsafe states; it cannot operate backups,
+configure remote tenancy, pin native libraries, or select an acceptable recall
+threshold for a domain. The residual owner must close those controls before a
+deployment claims reproducible retrieval.
+
+See [known limitations](known-limitations.md) for unsupported claims and
+[architecture risks](../architecture/architecture-risks.md) for failure
+mechanisms.
