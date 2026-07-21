@@ -1,48 +1,93 @@
 ---
 title: bijux-canon
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # bijux-canon
 
-`bijux-canon` remains published so existing environments can keep using the
-shorter family-root runtime name while the canonical package stays
-`bijux-canon-runtime`. New work should start at the canonical package, not
-here.
+`bijux-canon` is the short-name compatibility distribution for
+`bijux-canon-runtime`. It preserves an established family-root install, Python
+import, and command while runtime remains the sole owner of execution,
+admission, persistence, resume, and replay behavior.
 
-## Canonical Target
+This bridge does not represent the entire package family. Installing it gives
+you runtime compatibility, not an umbrella dependency on ingest, index,
+reason, and agent.
 
-- distribution: `bijux-canon-runtime`
-- Python import: `bijux_canon_runtime`
-- command: `bijux-canon-runtime`
-- package handbook: <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
+## Identity Contract
 
-## Preserved Surfaces
+| Surface | Preserved identity | Canonical identity |
+| --- | --- | --- |
+| distribution | `bijux-canon` | `bijux-canon-runtime` |
+| Python root | `bijux_canon` | `bijux_canon_runtime` |
+| console command | `bijux-canon` | `bijux-canon-runtime` |
+| nested CLI module | `bijux_canon.interfaces.cli.entrypoint` | `bijux_canon_runtime.interfaces.cli.entrypoint` |
+| representative nested type | `bijux_canon.model.flows.manifest.FlowManifest` | `bijux_canon_runtime.model.flows.manifest.FlowManifest` |
 
-- the published `bijux-canon` distribution name
-- the `bijux_canon` Python import surface
-- the `bijux-canon` command name
+```mermaid
+flowchart LR
+    install["install bijux-canon"]
+    pin["exact same-version dependency"]
+    runtime["bijux-canon-runtime"]
+    import["bijux_canon imports"]
+    command["bijux-canon command"]
 
-## When To Keep It
+    install --> pin --> runtime
+    import --> runtime
+    command --> runtime
+```
 
-Keep `bijux-canon` only while a documented dependent environment still relies
-on the shorter family-root name. Once installs, imports, and command usage move
-to `bijux-canon-runtime`, the compatibility package becomes retirement debt.
+The built compatibility wheel depends on
+`bijux-canon-runtime==<bridge-version>`. Import forwarding and command
+delegation therefore operate against the matching runtime release rather than
+a floating compatible range.
 
-## First Proof Check
+## Use An Existing Integration
 
-- `packages/compat-bijux-canon`
-- the compatibility package `README.md`
-- the canonical handbook at <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
-- shared retirement rules in
-  <https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/>
+```bash
+python -m pip install bijux-canon
+bijux-canon --help
+python -m bijux_canon --help
+```
 
-## Repository Fit
+At the Python facade, established imports continue to resolve:
 
-This alias does not stand in for a retired standalone repository. It preserves
-the shorter runtime family-root distribution inside the consolidated
-`bijux-canon` repository.
+```python
+from bijux_canon import FlowManifest
+```
+
+The compatibility root follows runtime's `__all__`, and representative nested
+imports are tested for canonical object identity. Product semantics and their
+documentation remain in the [runtime handbook](../../06-bijux-canon-runtime/index.md).
+
+## Choose The Canonical Package For New Work
+
+```bash
+python -m pip install bijux-canon-runtime
+bijux-canon-runtime --help
+```
+
+```python
+from bijux_canon_runtime import FlowManifest
+```
+
+Use the canonical identity in new dependencies, source code, services, and
+runbooks. Existing consumers can migrate dependency, import, and executable
+surfaces independently as long as both distributions are not mistaken for
+separate implementations.
+
+## Evidence And Limits
+
+Repository checks verify same-version dependency generation, root export
+forwarding, representative nested module identity, and direct CLI delegation.
+They do not turn private runtime modules into a permanent API, prove every
+historical artifact readable, or guarantee a consumer's provider and storage
+configuration.
+
+Follow [migration guidance](../migration/migration-guidance.md) to inventory a
+consumer and [retirement conditions](../migration/retirement-conditions.md)
+before removing the short-name dependency.

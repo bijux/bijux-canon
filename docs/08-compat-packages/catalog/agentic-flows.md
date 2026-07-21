@@ -1,47 +1,89 @@
 ---
 title: agentic-flows
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # agentic-flows
 
-`agentic-flows` remains published so existing environments can keep using the legacy
-runtime package name while migrating toward `bijux-canon-runtime`. New work should start at
-the canonical package, not here.
+`agentic-flows` is a compatibility distribution for
+`bijux-canon-runtime`. It preserves the former runtime distribution, import,
+and executable identities after implementation ownership moved into the Bijux
+Canon repository.
 
-## Canonical Target
+The name can suggest agent-only orchestration, but its canonical target is
+runtime, not `bijux-canon-agent`. Runtime owns whole-flow admission,
+persistence, resume, and replay; agent owns bounded role orchestration.
 
-- distribution: `bijux-canon-runtime`
-- Python import: `bijux_canon_runtime`
-- command: `bijux-canon-runtime`
-- package handbook: <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
+## Identity Contract
 
-## Preserved Surfaces
+| Surface | Preserved identity | Canonical identity |
+| --- | --- | --- |
+| distribution | `agentic-flows` | `bijux-canon-runtime` |
+| Python root | `agentic_flows` | `bijux_canon_runtime` |
+| console command | `agentic-flows` | `bijux-canon-runtime` |
+| nested CLI module | `agentic_flows.interfaces.cli.entrypoint` | `bijux_canon_runtime.interfaces.cli.entrypoint` |
+| representative nested type | `agentic_flows.model.flows.manifest.FlowManifest` | `bijux_canon_runtime.model.flows.manifest.FlowManifest` |
 
-- the published `agentic-flows` distribution name
-- the `agentic_flows` Python import surface
-- the `agentic-flows` command name
+```mermaid
+flowchart LR
+    legacy["agentic-flows identity"]
+    bridge["same-version bridge"]
+    runtime["bijux-canon-runtime behavior"]
+    agent["bijux-canon-agent<br/>separate responsibility"]
 
-## When To Keep It
+    legacy --> bridge --> runtime
+    agent -. "composes beneath runtime" .-> runtime
+```
 
-Keep `agentic-flows` only while a documented dependent environment still relies on
-the legacy name. Once installs, imports, and command usage move to `bijux-canon-runtime`,
-the compatibility package becomes retirement debt.
+The built bridge pins `bijux-canon-runtime` to the bridge's exact version.
+Its root import forwards runtime's public exports, nested aliases resolve to
+canonical module objects, and both console and module execution call the
+runtime CLI.
 
-## First Proof Check
+## Use An Existing Integration
 
-- `packages/compat-agentic-flows`
-- the compatibility package `README.md`
-- the canonical handbook at <https://bijux.io/bijux-canon/06-bijux-canon-runtime/>
-- shared retirement rules in
-  <https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/>
+```bash
+python -m pip install agentic-flows
+agentic-flows --help
+python -m agentic_flows --help
+```
 
-## Repository Transition
+```python
+from agentic_flows import FlowManifest
+```
 
-The former standalone repository at <https://github.com/bijux/agentic-flows> is retired in favor of
-<https://github.com/bijux/bijux-canon>. The legacy package remains only as a
-bridge to the canonical package inside the monorepo.
+The bridge supports continuity while a dependent application moves. Runtime
+behavior, configuration, artifacts, and current API guidance are documented in
+the [runtime handbook](../../06-bijux-canon-runtime/index.md).
+
+## Migrate To Runtime Ownership
+
+```bash
+python -m pip install bijux-canon-runtime
+bijux-canon-runtime --help
+```
+
+```python
+from bijux_canon_runtime import FlowManifest
+```
+
+Update distribution metadata, root and nested imports, executable calls,
+container entrypoints, and serialized dotted paths. The former standalone
+repository URL is historical context; current source, issues, releases, and
+documentation belong to `bijux/bijux-canon`.
+
+## Evidence And Limits
+
+Repository contracts verify the exact dependency pin, representative exports
+and nested type identity, the CLI module identity, and the canonical console
+target. These checks do not promise that every private path from the former
+repository remains importable or that an old deployment's external providers
+and stored artifacts need no migration.
+
+Use [import surfaces](import-surfaces.md) for alias mechanics and
+[migration guidance](../migration/migration-guidance.md) for a complete
+consumer migration.
