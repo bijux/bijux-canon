@@ -18,6 +18,18 @@ The executable requires special care: `bijux-canon-index` intentionally
 publishes no canonical console script. There is no `bijux-canon-index` command
 to substitute for `bijux-vex`.
 
+## Choose A Replacement Boundary
+
+| Consumer need | Supported boundary | Migration implication |
+| --- | --- | --- |
+| keep deployed command automation running | `bijux-vex` bridge command | retain the compatibility distribution |
+| embed index behavior in Python | documented `bijux_canon_index` facade | replace imports and validate returned contracts |
+| retain a command boundary without a console script | `python -m bijux_canon_index.interfaces.cli.app` | replace invocation and compare structured results |
+| integrate across a service boundary | versioned HTTP API | map requests and responses to published schemas |
+
+Do not create or document a nonexistent `bijux-canon-index` executable as a
+migration shortcut.
+
 ## Identity Contract
 
 | Surface | Preserved identity | Canonical identity |
@@ -47,6 +59,32 @@ The bridge command delegates to the canonical index Typer application, but its
 continued presence is a compatibility property. It must not be interpreted as
 a canonical command contract for new systems.
 
+## How Alias Identity Is Preserved
+
+The `bijux_vex` root forwards the canonical package's declared exports. For a
+non-local nested path, the bridge resolves the same suffix under
+`bijux_canon_index` and registers that canonical module under the preserved
+name.
+
+```mermaid
+sequenceDiagram
+    participant C as Consumer
+    participant B as bijux_vex facade
+    participant I as bijux_canon_index
+    participant E as Execution evidence
+
+    C->>B: import ExecutionPlan or invoke bijux-vex
+    B->>I: resolve canonical module or Typer app
+    I-->>C: canonical type, result, or refusal
+    C->>I: execute replacement boundary
+    I-->>E: fingerprints, ranking, provenance, replay verdict
+    E-->>C: migration comparison
+```
+
+This prevents duplicate plan types in validators, registries, and serializers.
+It does not prove that command automation has selected the correct canonical
+replacement boundary.
+
 ## Existing Import Continuity
 
 ```bash
@@ -73,6 +111,10 @@ from bijux_canon_index.core.runtime.execution_plan import ExecutionPlan
 Prefer the documented public facade over a deep path whenever it exports the
 operation or type required by the consumer.
 
+The preserved executable and `python -m bijux_vex` call the canonical Typer
+application without rewriting capabilities, execution contracts, backend
+selection, ranking, failures, provenance, artifacts, or replay verdicts.
+
 ## Replace Command Integrations Deliberately
 
 Do not mechanically rename `bijux-vex` to `bijux-canon-index`. Instead:
@@ -85,10 +127,24 @@ Do not mechanically rename `bijux-vex` to `bijux-canon-index`. Instead:
    representative cases; and
 5. keep the bridge installed until every deployed command caller has moved.
 
+Acceptance evidence should include:
+
+- package manifests and lock files resolving `bijux-canon-index`;
+- source, dynamic imports, plugins, and serialized paths using
+  `bijux_canon_index`;
+- each former command caller mapped to the Python facade, canonical module CLI,
+  or versioned HTTP API;
+- representative capability decisions, plan and configuration fingerprints,
+  ranked ordering and scores, typed failures, provenance, artifact identity,
+  and replay or comparison verdicts;
+- deployed environments no longer requiring the `bijux-vex` distribution or
+  executable.
+
 The [index handbook](../../03-bijux-canon-index/index.md) defines current
 behavior and supported integration surfaces. The bridge's identity tests do
 not freeze arbitrary internal modules, private CLI behavior, or all historical
-artifact layouts.
+artifact layouts. Exact and approximate retrieval require different comparison
+evidence; similar neighbor lists alone do not establish replay parity.
 
 ## Repository Ownership
 
