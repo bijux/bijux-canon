@@ -29,7 +29,7 @@ flowchart LR
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-agent.mk \
+make -f "$PWD/makes/packages/bijux-canon-agent.mk" \
   -C packages/bijux-canon-agent help
 ```
 
@@ -41,9 +41,11 @@ make lint PACKAGE=bijux-canon-agent
 make quality PACKAGE=bijux-canon-agent
 ```
 
-The package profile provisions `packages/bijux-canon-agent/.venv` and routes
-reports into `artifacts/`. There is no package-local Makefile; direct invocation
-requires the repository profile path.
+The package profile provisions the canonical environment under
+`artifacts/bijux-canon-agent/venv`; `packages/bijux-canon-agent/.venv` is a
+convenience link to it. Reports remain under `artifacts/`. There is no
+package-local Makefile; direct invocation requires the absolute repository
+profile path because Make applies `-C` before resolving `-f`.
 
 ## Start with the nearest workflow invariant
 
@@ -99,12 +101,33 @@ make build PACKAGE=bijux-canon-agent
 Use `make docs-check` when role, trace, convergence, provider, artifact, or
 replay terminology changes.
 
+## Read the Package Evidence
+
+| Surface | Repository evidence |
+| --- | --- |
+| focused and package tests | `artifacts/bijux-canon-agent/test/` |
+| API schema and contract checks | `artifacts/bijux-canon-agent/api/` |
+| wheel and source archive checks | `artifacts/bijux-canon-agent/build/` |
+| software bill of materials | `artifacts/bijux-canon-agent/sbom/` |
+| workflow fixtures | the fixture-specific output directory under `artifacts/` |
+
+The HTTP evidence covers the fixed offline application and its published
+schema. Provider-adapter evidence belongs to focused adapter tests or an
+explicit live integration run; an API report does not establish parity with
+the provider-configurable CLI.
+
 ## Preserve result and trace together
 
 Every material fixture should retain the pipeline definition, resolved
 configuration hash, provider metadata, ordered trace, terminal outcome, stop
 reason, termination reason, confidence, and epistemic verdict. The result and
 trace must reconcile even for veto, abort, partial failure, and dry-run paths.
+
+`final_result.json` names its trace path. Resolve that path within the same run
+directory, reconstruct the terminal outcome from the trace, and compare the
+verdict, confidence, epistemic status, stop reason, and termination reason.
+Missing or divergent records are failed custody, not a successful run with a
+documentation exception.
 
 See [change validation](../quality/change-validation.md) and
 [artifact contracts](../interfaces/artifact-contracts.md) for the evidence

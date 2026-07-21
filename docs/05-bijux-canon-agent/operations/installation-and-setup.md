@@ -61,6 +61,18 @@ Do not commit `.env` or place secrets in the YAML pipeline configuration. This
 all-provider check is a current CLI bootstrap limitation; a selected workflow
 may use only one provider or the local pipeline.
 
+The credential boundary differs by surface:
+
+| Surface | Credential behavior | Intended use |
+| --- | --- | --- |
+| `bijux-canon-agent` CLI | validates all four variables before command dispatch | provider-configurable runs and CLI replay |
+| v1 HTTP API | does not use CLI credential bootstrap or accept provider selection | fixed offline application contract |
+| owned Python interfaces | can receive local or stub dependencies directly | deterministic unit and workflow tests |
+| live adapter tests | use the selected provider's approved secret injection | connectivity and provider integration evidence |
+
+Placeholder values are appropriate only for tests that never cross a provider
+boundary. They must not make a live test appear configured.
+
 ## Create a Configuration
 
 Save a controlled configuration as `agent.yml`:
@@ -114,6 +126,16 @@ artifacts/bijux-canon-agent/runs/report-17/trace/run_trace.json
 The package does not atomically commit this pair. Do not reuse the directory
 for a retry; choose a new run path and preserve the earlier failure evidence.
 
+Classify the directory before accepting it:
+
+| State | Interpretation |
+| --- | --- |
+| neither file exists | no completed result was retained |
+| `final_result.json` exists without its named trace | incomplete custody; do not certify or replay the outcome |
+| trace exists without the result | execution evidence exists, but the public terminal summary is incomplete |
+| both exist and replay reports `MATCH` | the trace-derived outcome agrees with the retained result |
+| both exist but replay differs | preserve the directory as failure evidence and reject the outcome |
+
 ## Use the Offline HTTP Boundary
 
 The v1 API requires FastAPI but does not use the CLI bootstrap or accept
@@ -130,7 +152,7 @@ curl --fail-with-body http://127.0.0.1:8000/v1/health
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-agent.mk \
+make -f "$PWD/makes/packages/bijux-canon-agent.mk" \
   -C packages/bijux-canon-agent help
 make test PACKAGE=bijux-canon-agent
 ```
@@ -138,6 +160,7 @@ make test PACKAGE=bijux-canon-agent
 Package Makefiles are repository profiles under `makes/packages/`; the package
 directory does not contain a standalone Makefile. Use the root dispatcher for
 normal checks and the explicit profile form when inspecting package targets.
+The absolute profile path remains valid after Make applies `-C`.
 
 Use `make docs-check` for handbook changes and widen validation only for
 contracts that cross package or API boundaries.

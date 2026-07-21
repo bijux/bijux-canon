@@ -101,6 +101,30 @@ Verification creates `verify.verify.json`; replay creates
 `replay/trace.jsonl` and compares canonical fingerprints. Neither operation
 silently overwrites the original run evidence.
 
+## Interpret the Bundle Verdict
+
+The commands answer different questions. Treating them as interchangeable
+weakens the review trail.
+
+| Observation | What it establishes | What it does not establish |
+| --- | --- | --- |
+| `run` exits successfully | the specification was accepted and a bundle was written | that every verification check passed |
+| `verify --fail-on-verify` exits successfully | the retained plan, trace, evidence references, and support structure satisfy the verifier | that a cited source is authoritative or that a claim is true in the world |
+| `replay --fail-on-diff` exits successfully | frozen inputs reproduce the governed invariant and canonical trace fingerprint | that a live source or external tool would return the same material now |
+| a claim has support edges | the claim points to retained evidence records | that the cited span entails the claim without domain review |
+
+The review unit is the complete run directory:
+
+| Record | Review purpose |
+| --- | --- |
+| `spec.json` and `plan.json` | bind the declared question to the executed dependency graph |
+| `trace.jsonl` | preserves ordered execution and evidence-registration events |
+| `provenance/` | retains pinned retrieval inputs, chunks, and content identities when retrieval is used |
+| `verify.json` and `verify.verify.json` | distinguish verification performed during the run from an explicit later verification |
+| `fingerprint.txt` and `run_meta.json` | bind the trace to runtime, seed, preset, and schema metadata |
+| `manifest.json` | inventories bundle files and digests for custody checks |
+| `replay/` | keeps replay output separate from the original evidence |
+
 ## Serve the API
 
 Install the API extra for Uvicorn and API validation dependencies:
@@ -120,14 +144,16 @@ on storage with the required durability and access controls.
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-reason.mk \
+make -f "$PWD/makes/packages/bijux-canon-reason.mk" \
   -C packages/bijux-canon-reason help
 make test PACKAGE=bijux-canon-reason
 ```
 
 Package Makefiles are repository profiles under `makes/packages/`; the package
 directory does not contain a standalone Makefile. Use the root dispatcher for
-normal checks and the explicit profile form to inspect package targets.
+normal checks and the explicit profile form to inspect package targets. The
+profile path is absolute because Make applies `-C` before opening files named
+by `-f`.
 
 Use `make docs-check` for public handbook changes. Run broader package or
 repository lanes only when the changed contract requires them.

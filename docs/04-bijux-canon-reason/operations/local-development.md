@@ -29,7 +29,7 @@ flowchart LR
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-reason.mk \
+make -f "$PWD/makes/packages/bijux-canon-reason.mk" \
   -C packages/bijux-canon-reason help
 ```
 
@@ -41,10 +41,13 @@ make lint PACKAGE=bijux-canon-reason
 make quality PACKAGE=bijux-canon-reason
 ```
 
-The profile provisions `packages/bijux-canon-reason/.venv` and keeps generated
-evidence under `artifacts/`. The package directory has no standalone Makefile;
-`make -C packages/bijux-canon-reason <target>` is therefore not a valid
-command unless the repository profile is supplied with `-f`.
+The profile provisions the canonical environment under
+`artifacts/bijux-canon-reason/venv`; `packages/bijux-canon-reason/.venv` is a
+convenience link to that environment. Generated reports remain under
+`artifacts/`. The package directory has no standalone Makefile;
+`make -C packages/bijux-canon-reason <target>` is therefore not a valid command
+unless the repository profile is supplied with `-f`. Use the absolute profile
+path because Make applies `-C` before resolving `-f`.
 
 ## Start with the nearest invariant
 
@@ -87,6 +90,24 @@ make build PACKAGE=bijux-canon-reason
 Use `make docs-check` when reader-visible artifact meaning or limitations
 change. Verification terminology must stay precise: a passing structural and
 grounding report is not proof of source authority or real-world truth.
+
+## Read the Package Evidence
+
+Root dispatch gives every package a stable evidence root. Inspect the record
+that corresponds to the command instead of treating a zero exit status as the
+only result.
+
+| Surface | Repository evidence |
+| --- | --- |
+| focused and package tests | `artifacts/bijux-canon-reason/test/` |
+| API schema and contract checks | `artifacts/bijux-canon-reason/api/` |
+| wheel and source archive checks | `artifacts/bijux-canon-reason/build/` |
+| software bill of materials | `artifacts/bijux-canon-reason/sbom/` |
+| reasoning fixtures | the fixture-specific run directory under `artifacts/` |
+
+A review of reasoning behavior should reconcile the test report with the run
+bundle that exercised it. Package-gate evidence establishes repository
+conformance; the run bundle establishes the scientific and causal record.
 
 ## Preserve the full review unit
 
