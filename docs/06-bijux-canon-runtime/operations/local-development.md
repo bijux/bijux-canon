@@ -29,7 +29,7 @@ flowchart LR
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-runtime.mk \
+make -f "$PWD/makes/packages/bijux-canon-runtime.mk" \
   -C packages/bijux-canon-runtime help
 ```
 
@@ -42,9 +42,11 @@ make quality PACKAGE=bijux-canon-runtime
 ```
 
 The package profile installs canonical workspace dependencies into
-`packages/bijux-canon-runtime/.venv` and routes generated evidence under
-`artifacts/`. The package directory has no standalone Makefile; direct commands
-require the repository profile path.
+`artifacts/bijux-canon-runtime/venv`;
+`packages/bijux-canon-runtime/.venv` is a convenience link to that canonical
+environment. Generated evidence remains under `artifacts/`. The package
+directory has no standalone Makefile; direct commands require the absolute
+repository profile path because Make applies `-C` before resolving `-f`.
 
 ## Start with the nearest authority invariant
 
@@ -68,6 +70,21 @@ packages/bijux-canon-runtime/.venv/bin/python -m pytest \
 Exercise accepted, rejected, and non-certifiable outcomes. A successful live
 run alone cannot prove that authority refusal or evidence insufficiency remains
 honest.
+
+## Reconcile the Authority Chain
+
+Each layer owns a different decision. A fixture is credible only when those
+decisions can be followed without inferring missing authority.
+
+| Layer | Owned record | Failure to reject |
+| --- | --- | --- |
+| manifest and resolver | identities, dependencies, determinism posture, replay envelope, and resolved plan | structurally valid but semantically inadmissible flow |
+| execution mode | permission to plan, simulate, observe, execute, or enter unsafe behavior | effects outside the selected mode |
+| step and effect boundary | authorization, idempotency key, receipt, and terminal effect state | unauthorized or ambiguously completed effect |
+| verifier | immutable check results over retained reasoning, evidence, and artifacts | malformed or unsupported verification input |
+| policy arbitration | policy fingerprint, decision, and certifiability | a check result that policy does not permit |
+| persistence | tenant, run, event order, checkpoints, finalization, and replay envelope | partial, cross-tenant, or non-finalized state |
+| replay comparison | structural, semantic, entropy, policy, dataset, and temporal differences | drift outside declared acceptability |
 
 ## Use isolated stores and controlled effects
 
@@ -96,6 +113,20 @@ Use the build lane for root imports, workspace dependencies, package data,
 schema hashes, entry points, or distribution metadata. Use focused regression
 tests when dataset evolution, policy compatibility, temporal drift, crash
 recovery, or cross-process replay changes.
+
+## Read the Package Evidence
+
+| Surface | Repository evidence |
+| --- | --- |
+| focused and package tests | `artifacts/bijux-canon-runtime/test/` |
+| API schema, drift, and contract checks | `artifacts/bijux-canon-runtime/api/` |
+| wheel and source archive checks | `artifacts/bijux-canon-runtime/build/` |
+| software bill of materials | `artifacts/bijux-canon-runtime/sbom/` |
+| manual authority fixtures | isolated DuckDB stores and referenced payloads under `artifacts/` |
+
+The API report proves the published HTTP boundary, including its explicit
+unimplemented responses. The DuckDB fixture proves persisted CLI or library
+execution. Neither substitutes for the other.
 
 ## Preserve the governed review unit
 

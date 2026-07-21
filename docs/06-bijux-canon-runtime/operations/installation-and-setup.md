@@ -56,6 +56,20 @@ bijux-canon-runtime plan \
 Plan mode is the safest setup check. It validates and resolves the flow without
 executing steps, writing a trace, or allocating a run identifier.
 
+The command determines how much authority is exercised:
+
+| Command | Effects and persistence | Appropriate use |
+| --- | --- | --- |
+| `plan` | resolves contracts without executing steps or writing a run | manifest and dependency review |
+| `dry-run` | exercises dry-run contracts against an explicit store without live authority | execution-shape and refusal checks |
+| `run` | performs governed live execution with the supplied verification policy | accepted operational work |
+| `unsafe-run` | enters the explicit unsafe execution mode | isolated evidence for behavior that cannot meet the governed live posture |
+| `replay` | executes against a persisted envelope and compares the new record with the original | declared replay-acceptability checks |
+
+`unsafe-run` is not a faster form of `run`. Its mode is part of the retained
+record and prevents unsafe execution from being presented as governed live
+authority.
+
 For an installed-wheel integration, create equivalent application-owned
 `flow.json` and `policy.json` files from the
 [data contracts](../interfaces/data-contracts.md). Do not copy identifiers,
@@ -105,6 +119,27 @@ Confirm that the trace is finalized, dataset identity matches the manifest,
 and the arbitration, entropy, artifact, evidence, and event records agree with
 the intended authority.
 
+## Replay Under the Original Identity
+
+Replay requires the current manifest and policy as well as the original run
+and tenant identities:
+
+```bash
+bijux-canon-runtime replay \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --policy packages/bijux-canon-runtime/examples/boring/policy.json \
+  --run-id <run-id> \
+  --tenant-id tenant-a \
+  --db-path artifacts/bijux-canon-runtime/runs.duckdb \
+  --strict-determinism \
+  --json
+```
+
+A clean replay means the comparison found no difference outside the declared
+contract. A contract-violation exit identifies a blocking difference; retain
+its reason code and JSON diff. Replay does not establish that external facts
+remain true, and an acceptability threshold does not erase an observed drift.
+
 ## HTTP Health and Readiness
 
 The API extra supports operational probes:
@@ -130,7 +165,7 @@ request boundary.
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-runtime.mk \
+make -f "$PWD/makes/packages/bijux-canon-runtime.mk" \
   -C packages/bijux-canon-runtime help
 make test PACKAGE=bijux-canon-runtime
 make docs-check
@@ -139,6 +174,7 @@ make docs-check
 Package Makefiles are repository profiles under `makes/packages/`; the package
 directory does not contain a standalone Makefile. Use the root dispatcher for
 normal checks and the explicit profile form when inspecting package targets.
+The absolute profile path remains valid after Make applies `-C`.
 
 Use package and documentation checks for the first feedback loop. Broader
 repository lanes are appropriate only when a change crosses shared contracts.
