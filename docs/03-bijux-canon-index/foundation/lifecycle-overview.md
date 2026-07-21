@@ -4,41 +4,73 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Lifecycle Overview
 
-The index lifecycle starts with prepared ingest output and ends when retrieval behavior has been executed, recorded, and exposed clearly enough for reasoning or runtime to inspect.
-
-## Lifecycle Flow
+The index lifecycle separates corpus admission, artifact materialization, and
+execution. A query cannot become a governed result until its artifact and
+backend capabilities agree with the declared contract.
 
 ```mermaid
 flowchart LR
-    prepared["prepared ingest output"]
-    entry["index entrypoints"]
-    retrieval["embedding, indexing, and retrieval"]
-    results["recorded retrieval results"]
+    discover["discover capabilities"]
+    admit["ingest documents + vectors"]
+    materialize["materialize immutable artifact"]
+    request["normalize execution request"]
+    plan["validate + fingerprint plan"]
+    execute["exact or bounded ANN"]
+    finalize["persist result + complete run"]
+    review["explain / replay / compare"]
 
-    prepared --> entry --> retrieval --> results
+    discover --> admit --> materialize --> request --> plan --> execute --> finalize --> review
 ```
 
-This page should show retrieval as one continuous package-owned flow. Readers
-should be able to see how prepared input becomes replayable search behavior
-without drifting into reasoning or runtime authority.
+## Admission and materialization
 
-## Lifecycle Shape
+1. Inspect the active engine, backend, metric, ANN, store, plugin, and resource
+   capabilities.
+2. Admit documents with supplied vectors or an explicitly selected embedding
+   provider.
+3. Materialize an artifact that binds ordered vector content, corpus identity,
+   metric, scoring version, construction parameters, index configuration, and
+   deterministic or non-deterministic contract.
+4. Refuse attempts to rebind an existing artifact identity to a different
+   execution contract.
 
-- prepared input reaches index entrypoints and package workflows
-- embedding, indexing, retrieval, and comparison logic execute under named module ownership
-- results leave the package with provenance and replay context attached
+## Execution
 
-## Handoff Point
+1. Normalize intent, mode, contract, budget, identity, and randomness policy.
+2. Resolve the requested artifact and reject request/artifact disagreement.
+3. Validate metric, dimension, exact/ANN, replay, and resource requirements
+   against backend capabilities.
+4. Build and fingerprint the immutable execution plan.
+5. Execute exact scoring, or ANN candidate retrieval with its declared
+   parameters and optional exact rescoring.
+6. Collect ordered IDs, scores, cost, warnings, stability, replayability, and
+   approximation evidence.
 
-The lifecycle stops before claim meaning or run authority. `bijux-canon-reason` and `bijux-canon-runtime` own those next decisions.
+## Finalization and review
 
-## Design Pressure
+The application records the execution in the ledger and writes the run
+directory. A run begins `incomplete`, becomes `failed` with a reason on a
+governed failure, or becomes `complete` only after its result file is durable.
+Only complete runs can support normal replay loading.
 
-If the lifecycle cannot stop at retrieval results with provenance attached,
-index is either under-explained or taking on downstream meaning. The package
-has to end with inspectable search behavior, not with an implicit next step.
+Explanation resolves a result through document, chunk, vector, score, artifact,
+backend, and execution identity. Replay validates recorded contracts and
+fingerprints before comparing output. Deterministic mismatch is failure;
+non-deterministic divergence is interpreted only through the policy declared
+before the original execution.
+
+## Persistence lifecycles
+
+The execution ledger, vector store, execution artifact, and run directory are
+different records. They may share identities but do not replace one another.
+For auditable retention, preserve the artifact definition and complete run
+directory together, plus access to any external vector-store state required by
+the adapter.
+
+The lifecycle ends with reviewable retrieval evidence. Claim formation begins
+in reason; final workflow acceptance begins in runtime.
