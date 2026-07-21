@@ -4,60 +4,87 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Ownership Model
 
-The repository is easiest to trust when ownership can be stated in layers
-without hesitation.
-
-The canonical packages own product behavior. The repository root owns only what
-truly crosses package boundaries. The maintenance handbook owns repository
-health tooling. Compatibility material owns legacy continuity while it still
-points readers back toward the canonical package family.
-
-## Layer Model
+Authority in `bijux-canon` follows the artifact being decided. A package owns
+the meaning and validity of its artifacts; the runtime owns whether a composed
+run may proceed; repository tooling owns whether the published package family
+remains internally consistent.
 
 ```mermaid
-flowchart LR
-    packages["canonical packages own product behavior"]
-    root["repository root owns shared truth"]
-    maintain["maintenance owns repository health tooling"]
-    compat["compatibility owns legacy continuity"]
+flowchart TB
+    subgraph product["Product contracts"]
+        ingest["ingest artifacts"]
+        index["retrieval artifacts"]
+        reason["reasoning artifacts"]
+        agent["orchestration artifacts"]
+    end
 
-    root --> packages
-    maintain --> root
-    compat --> packages
+    runtime["runtime authority<br/>admit · execute · verify · persist · replay"]
+    repository["repository authority<br/>inventory · schemas · docs · release metadata"]
+    compat["compatibility authority<br/>legacy surface · migration · deprecation"]
+
+    ingest --> runtime
+    index --> runtime
+    reason --> runtime
+    agent --> runtime
+    repository -. checks .-> product
+    repository -. checks .-> runtime
+    compat -. delegates .-> product
+    compat -. delegates .-> runtime
 ```
 
-This page should let a reader name the repository layers without hesitation.
-The model is working only when each layer explains a distinct kind of
-responsibility rather than acting as overflow for the others.
+## Decision rights
 
-- product behavior belongs in `packages/bijux-canon-*`
-- shared governance belongs in the repository handbook and root automation
-- maintainer automation belongs in `packages/bijux-canon-dev` and the
-  maintenance handbook
-- legacy continuity belongs in `packages/compat-*` and the compatibility
-  handbook
+| Decision | Owner | Evidence of authority |
+| --- | --- | --- |
+| whether a document or chunk satisfies ingestion contracts | `bijux-canon-ingest` | domain types, processing results, ingest tests |
+| whether a backend can execute a retrieval plan | `bijux-canon-index` | capability declarations, plan validation, execution trace |
+| whether claims are grounded in recorded evidence | `bijux-canon-reason` | support references, byte spans, evidence hashes, verification report |
+| whether orchestration reached a valid terminal state | `bijux-canon-agent` | lifecycle events, convergence decision, terminal trace |
+| whether a composed execution is permitted and acceptable | `bijux-canon-runtime` | manifest, run mode, policy decisions, verification result |
+| whether repository contracts are synchronized and publishable | `bijux-canon-dev` and root automation | inventory, schema, documentation, packaging, and release checks |
+| how an older public name delegates and retires | the corresponding compatibility package | shims, warnings, migration documentation, compatibility tests |
 
-## Conflict Case
+## Handoff rules
 
-If a release check needs to enforce one rule across ingest, index, and runtime,
-the rule belongs at the root or in maintenance. If a helper script starts
-encoding ingest-local retrieval preparation, that logic belongs back in
-`bijux-canon-ingest` even if the script lives under root tooling today.
+Package boundaries do not erase provenance. A consumer should retain the
+producer's stable identifiers, fingerprints, and trace data rather than
+reconstructing their meaning later. This produces four practical rules:
 
-## What Would Change This Model
+1. **Validate at ingress.** Reject an invalid upstream artifact before adding
+   downstream state.
+2. **Preserve identity.** Keep content hashes, plan fingerprints, evidence
+   references, and event identifiers through the handoff.
+3. **Add decisions; do not rewrite history.** Runtime and orchestration layers
+   append policy or lifecycle decisions instead of altering source evidence.
+4. **Fail at the owning boundary.** Retrieval capability failures belong to
+   index; unsupported evidence belongs to reason; execution-policy failures
+   belong to runtime.
 
-The model should change only when a responsibility is genuinely shared across
-more than one package and can be proven from shared code, schemas, workflows,
-or release assets. Convenience, history, or contributor familiarity are not
-enough.
+## Cross-package changes
 
-## Design Pressure
+A change is cross-package when it alters a shared schema, a runtime composition
+contract, a compatibility promise, or repository publication metadata. The
+behavior still begins in the package that owns the artifact. The repository
+layer then verifies that consumers, frozen API material, documentation, and
+release metadata agree.
 
-Ownership models decay when convenience beats clarity. If one layer starts
-collecting work simply because it is nearby, every later review pays for that
-shortcut.
+Shared tooling must not become a second product implementation. For example,
+an API drift checker may compare a generated schema with the checked-in
+contract, but it must not decide how an ingest chunk is normalized. Likewise,
+the runtime may reject an unverifiable reasoning artifact, but the reason
+package remains the owner of grounding semantics.
+
+## Compatibility ownership
+
+Compatibility distributions may translate names, imports, arguments, or
+result shapes required by their declared contract. They do not acquire
+ownership of canonical behavior. Bug fixes belong in the canonical package
+unless the defect exists only in the compatibility boundary.
+
+This rule keeps migrations observable: users can see which surface is stable,
+which owner implements it, and where a behavioral correction will land.

@@ -4,87 +4,88 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Package Map
 
-The package map is the clearest explanation of the product idea in this
-repository. Each canonical package owns one part of a larger system, and the
-handoff between them is the design.
+`bijux-canon` separates evidence preparation, retrieval, reasoning,
+orchestration, and execution authority. The separation is deliberate: each
+package produces an artifact that can be inspected before a more powerful
+layer acts on it.
 
-This page should make the repository feel intentional. It is not a list of
-folders. It is the contract that keeps preparation, retrieval, reasoning,
-orchestration, and runtime authority from collapsing into one vague layer.
+The repository contains six primary packages. Five provide product behavior;
+`bijux-canon-dev` supplies repository-owned verification and release tooling.
+Six compatibility distributions preserve established import and command names
+while directing behavior to the canonical packages.
 
 ```mermaid
 flowchart LR
-    raw["raw source"]
-    prepared["prepared material"]
-    retrieved["retrieval result"]
-    claims["reasoning artifact"]
-    trace["agent trace"]
-    verdict["runtime verdict"]
-    maintain["maintenance handbook"]
-    compat["compatibility handbook"]
+    source["source material"] --> ingest["ingest<br/>clean documents and chunks"]
+    ingest --> index["index<br/>retrieval results and provenance"]
+    index --> reason["reason<br/>claims, evidence, and verification"]
+    reason --> agent["agent<br/>plans, roles, and execution traces"]
 
-    raw -->|bijux-canon-ingest| prepared
-    prepared -->|bijux-canon-index| retrieved
-    retrieved -->|bijux-canon-reason| claims
-    claims -->|bijux-canon-agent| trace
-    trace -->|bijux-canon-runtime| verdict
-    maintain --> verdict
-    compat --> prepared
-    compat --> retrieved
-    compat --> claims
-    compat --> trace
-    compat --> verdict
+    manifest["flow manifest"] --> runtime["runtime<br/>policy and run authority"]
+    ingest --> runtime
+    index --> runtime
+    reason --> runtime
+    agent --> runtime
+
+    dev["dev<br/>repository verification"] -. validates .-> ingest
+    dev -. validates .-> index
+    dev -. validates .-> reason
+    dev -. validates .-> agent
+    dev -. validates .-> runtime
 ```
 
-Read the package family as a pressure-tested handoff chain. Every package
-narrows the meaning of the next step. Ingest makes input stable enough to use.
-Index makes retrieval explainable. Reason makes evidence interpretable. Agent
-makes workflow order inspectable. Runtime decides whether the whole run counts.
-The maintainer and compatibility handbooks matter only because they protect or
-route that chain without becoming substitute product owners.
+The left-to-right path describes the usual evidence flow, not a requirement to
+use every package. Each canonical package remains useful at its own boundary.
+The runtime composes the product packages and decides whether an execution is
+permitted, persisted, replayable, and acceptable.
 
-## Responsibility Chain
+## Canonical packages
 
-| Package | Core role | What it hands forward |
-| --- | --- | --- |
-| `bijux-canon-ingest` | deterministic preparation of input material | normalized, retrieval-ready material |
-| `bijux-canon-index` | retrieval execution and provenance-rich result handling | replayable evidence retrieval state |
-| `bijux-canon-reason` | evidence-aware reasoning, claims, and verification | inspectable conclusions tied to evidence |
-| `bijux-canon-agent` | role-based orchestration and trace-backed workflow control | coordinated multi-step work with explicit traces |
-| `bijux-canon-runtime` | governed execution, replay, persistence, and final acceptability | accepted or replayable run outcomes |
+| Package | Owns | Principal artifacts | Does not own |
+| --- | --- | --- | --- |
+| `bijux-canon-ingest` | cleaning, chunking, embedding handoff, structural deduplication | clean documents, chunks, processing results | retrieval ranking or claim validity |
+| `bijux-canon-index` | vector execution, backend capability checks, retrieval provenance | plans, retrieval results, run records | interpretation of retrieved evidence |
+| `bijux-canon-reason` | evidence-addressed plans, claims, support spans, verification | problem specifications, traces, claim graphs, verification reports | multi-agent scheduling or runtime admission |
+| `bijux-canon-agent` | role-based orchestration, lifecycle transitions, convergence, trace replay | agent inputs and outputs, plans, events, terminal traces | final authority over whether a run is allowed |
+| `bijux-canon-runtime` | manifests, execution modes, policy arbitration, persistence, resume, replay | flow results, run records, verification decisions, finalized traces | silently repairing invalid package artifacts |
+| `bijux-canon-dev` | package inventory checks, documentation contracts, API drift, release metadata | validation results and repository tooling | product runtime behavior |
 
-## Why The Boundaries Matter
+## Compatibility distributions
 
-| Boundary | What improves when it stays explicit | What gets worse when it blurs |
-| --- | --- | --- |
-| ingest to index | retrieval can be reviewed against stable prepared input | retrieval bugs get misdiagnosed as document-cleaning problems |
-| index to reason | claims can cite evidence without re-owning search | reasoning code starts compensating for hidden retrieval behavior |
-| reason to agent | workflows can coordinate verified artifacts instead of raw impressions | orchestration becomes an unreviewable reasoning policy |
-| agent to runtime | run acceptance can evaluate a complete trace | runtime becomes a miscellaneous bucket for workflow shortcuts |
+Compatibility packages are migration surfaces, not parallel implementations.
+Their names map to canonical owners in the repository package catalog:
 
-## Common Misreads
+| Distribution | Canonical owner |
+| --- | --- |
+| `bijux-canon` | `bijux-canon-runtime` |
+| `agentic-flows` | `bijux-canon-runtime` |
+| `bijux-agent` | `bijux-canon-agent` |
+| `bijux-rag` | `bijux-canon-ingest` |
+| `bijux-rar` | `bijux-canon-reason` |
+| `bijux-vex` | `bijux-canon-index` |
 
-- ingest is not the long-term owner of retrieval execution
-- index is not the owner of reasoning semantics
-- reason is not the owner of orchestration or final runtime authority
-- agent is not the owner of package-local scientific truth
-- runtime is not the place to absorb behavior merely because it sits last in the chain
+Applications starting new integrations should import the canonical package
+whose contract they need. Existing applications can use the compatibility
+distribution while following its migration guide and deprecation policy.
 
-## First Proof Checks
+## Choosing an entry point
 
-- `packages/` for the canonical boundaries themselves
-- `apis/` for the checked-in contracts that expose package behavior
-- package handbook roots for the owned promises behind each name
-- `Makefile`, `makes/`, and `.github/workflows/` only when the question is
-  about shared enforcement rather than package behavior
+- Start with **ingest** when raw material must become stable, addressable
+  chunks.
+- Start with **index** when the input is already prepared and retrieval plans,
+  backend capabilities, or replay matter.
+- Start with **reason** when evidence must support structured claims and a
+  verification report.
+- Start with **agent** when multiple roles or tools must follow an explicit,
+  inspectable lifecycle.
+- Start with **runtime** when one manifest must govern composition, execution
+  mode, persistence, and acceptance.
 
-## Leave This Page When
-
-- one package clearly owns the behavior under review
-- the next step is a package-local contract, workflow, or test surface
-- the question is really about shared enforcement rather than package ownership
+The [ownership model](ownership-model.md) defines where cross-package decisions
+belong. The [testing and validation guide](../operations/testing-and-validation.md)
+maps public claims to executable evidence.
