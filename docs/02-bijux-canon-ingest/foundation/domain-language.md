@@ -14,6 +14,24 @@ vocabulary separates source identity, text transformation, vector generation,
 and downstream search so that a “successful ingest” cannot hide a changed
 corpus.
 
+```mermaid
+flowchart LR
+    source["source document"]
+    clean["clean document"]
+    chunk["addressable chunks"]
+    embed["embedding specification"]
+    index["local retrieval index"]
+    candidate["ranked candidates"]
+    citation["extractive citation"]
+
+    source --> clean --> chunk --> embed --> index --> candidate --> citation
+```
+
+Each transition changes what can be claimed. Source identity survives cleaning;
+chunk offsets describe normalized text; embedding identity qualifies numeric
+vectors; and a citation identifies retrieved support without interpreting its
+truth.
+
 ## Source and Preparation
 
 | Term | Meaning |
