@@ -48,6 +48,62 @@ is produced, or where agent-facing CLI and HTTP behavior lives, start here. If
 you need replay governance, runtime persistence, or cross-package execution
 authority, you are probably looking for `bijux-canon-runtime` instead.
 
+## Pipeline Contract
+
+```mermaid
+flowchart LR
+    input["document input"] --> plan["execution plan"]
+    plan --> kernel["agent execution kernel"]
+    kernel --> roles["reader / summarizer / critique / validator / stage runner"]
+    roles --> convergence["convergence + termination"]
+    convergence --> outcome["PipelineResult"]
+    kernel --> trace["RunTrace"]
+    roles --> trace
+    convergence --> trace
+```
+
+The pipeline owns ordering and lifecycle, not the private reasoning inside a
+role. `AgentExecutionKernel` controls call order and lifecycle callbacks;
+`PipelineController` controls transitions; convergence strategies decide
+whether another pass is justified; finalization joins status, output, failure,
+telemetry, and trace completeness into one result.
+
+Agent states (`pending`, `running`, `success`, `failed`, `aborted`) are distinct
+from pipeline states (`init`, `running`, `judging`, `verified`, `done`,
+`aborted`). Failure modes distinguish timeout, transient, validation, and fatal
+conditions. A veto is not rewritten as an approval simply because some earlier
+roles succeeded.
+
+## CLI Workflow
+
+```bash
+bijux-canon-agent run documents/ \
+  --config examples/reference-config.yml \
+  --out artifacts/bijux-canon-agent
+
+bijux-canon-agent run report.txt \
+  --config examples/reference-config.yml \
+  --out artifacts/bijux-canon-agent \
+  --dry-run
+
+bijux-canon-agent replay <trace.json>
+```
+
+The current entrypoint loads the environment and requires
+`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `HUGGINGFACE_API_KEY`, and
+`DEEPSEEK_API_KEY` **before** it parses the command. This means help, dry-run,
+and replay also require those four variables today. That behavior is a known
+operational constraint; it does not mean each run contacts all four providers.
+
+## HTTP Contract
+
+`POST /v1/run` accepts text, a task goal, a context identifier, and optional
+role/config overrides. It returns a result or structured error together with
+run and trace-schema identity. `GET /v1/health` provides process health. The v1
+schema currently constrains strategy to `extractive` and backend to `simple`;
+the checked-in contract is
+[`apis/bijux-canon-agent/v1/schema.yaml`](../../apis/bijux-canon-agent/v1/schema.yaml).
+
 ## What This Package Takes And Produces
 
 - takes: declared agent workflows, role-specific inputs, local orchestration settings, and package-local boundary requests
@@ -81,6 +137,18 @@ subordinate to the trace and workflow contract, not the other way around.
 - runtime-wide persistence, replay acceptance, or execution governance
 - ingest and index engines that belong to other package boundaries
 - repository tooling, release automation, or root-level quality workflows
+
+## Trace And Failure Guarantees
+
+- traces carry schema version, run fingerprint, ordered entries, and field
+  classifications used by replay and validation
+- trace validators support the governed schema versions explicitly rather than
+  accepting arbitrary historical shapes
+- completion checks reject outcomes that omit mandatory trace evidence
+- failure artifacts preserve category, class, message, stage, and relevant
+  execution context
+- API errors carry code, message, and HTTP status instead of overloading a
+  nominally successful result payload
 
 ## Source map
 
