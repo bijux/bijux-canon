@@ -28,13 +28,14 @@ flowchart LR
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-ingest.mk \
+make -f "$PWD/makes/packages/bijux-canon-ingest.mk" \
   -C packages/bijux-canon-ingest help
 ```
 
-The package profile creates `packages/bijux-canon-ingest/.venv` when a
-package target needs it. Root dispatch keeps the repository configuration and
-artifact routing intact:
+Repository setup materializes `packages/bijux-canon-ingest/.venv` as a stable
+alias to `artifacts/bijux-canon-ingest/venv`; the environment itself remains in
+the artifact tree. Root dispatch keeps repository configuration and output
+routing intact:
 
 ```bash
 make test PACKAGE=bijux-canon-ingest
@@ -43,7 +44,9 @@ make quality PACKAGE=bijux-canon-ingest
 ```
 
 Do not use `make -C packages/bijux-canon-ingest <target>` without the profile
-path: the package directory intentionally has no standalone Makefile.
+path: the package directory intentionally has no standalone Makefile. A direct
+profile path must be absolute because Make changes directory before resolving
+`-f`.
 
 ## Run a focused proof first
 
@@ -79,6 +82,11 @@ Use the API lane only for request, response, handler, or schema changes:
 make api PACKAGE=bijux-canon-ingest
 ```
 
+The ingest profile uses the live-contract API mode. The lane compares the
+application-generated document with `apis/bijux-canon-ingest/v1/schema.yaml`
+and exercises the configured HTTP contract. A passing schema parser without
+application drift evidence is not equivalent.
+
 Use `make docs-check` for handbook changes. Use the package build when imports,
 package data, entry points, or distribution metadata changed:
 
@@ -88,6 +96,18 @@ make build PACKAGE=bijux-canon-ingest
 
 Generated reports, caches, local indexes, and diagnostic runs belong under
 `artifacts/`. Do not place them beside source modules or documentation.
+
+## Inspect The Artifact Tree
+
+| Path | Expected evidence |
+| --- | --- |
+| `artifacts/bijux-canon-ingest/test/` | pytest, coverage, and test cache output |
+| `artifacts/bijux-canon-ingest/api/` | generated OpenAPI, drift, and contract-test output |
+| `artifacts/bijux-canon-ingest/build/` | wheel, source distribution, and Twine validation log |
+| `artifacts/bijux-canon-ingest/sbom/` | production and development dependency documents |
+
+The presence of a directory is not a verdict. Inspect the target status and
+the expected non-empty file before reporting evidence.
 
 ## Finish with reconstructable evidence
 

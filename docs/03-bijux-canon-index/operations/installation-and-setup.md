@@ -61,6 +61,20 @@ still needs an accessible service and its own authentication, persistence, and
 backup configuration. Capability discovery reports whether an adapter can
 actually be used in the current environment.
 
+## Read Capability Output Conservatively
+
+| Field | Operational meaning |
+| --- | --- |
+| `available` | required client code can be loaded in this environment |
+| `status` or `experimental` | stability posture, not merely import success |
+| `deterministic_exact` | whether the exact path promises deterministic scoring |
+| `consistency` | visibility guarantee expected after mutation |
+| `replayable` | whether the declared backend path can support the package replay contract |
+| `notes` | exclusions, fallback behavior, or unavailable native support |
+
+An available adapter is not a healthy service. Probe the selected backend,
+exercise a refusal path, and retain the capability report with the run.
+
 ## Initialize Local State
 
 ```bash
@@ -120,14 +134,15 @@ curl --fail-with-body http://127.0.0.1:8000/capabilities
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-index.mk \
+make -f "$PWD/makes/packages/bijux-canon-index.mk" \
   -C packages/bijux-canon-index help
 make test PACKAGE=bijux-canon-index
 ```
 
 Package Makefiles are repository profiles under `makes/packages/`; the package
 directory does not contain a standalone Makefile. Use the root dispatcher for
-normal checks and the explicit profile form when inspecting package targets.
+normal checks. The explicit profile path is absolute because Make changes
+directory before resolving `-f`; use that form when inspecting package targets.
 
 Use `make docs-check` for handbook changes. Repository-wide validation is
 reserved for changes that cross package, API, build, or release boundaries.

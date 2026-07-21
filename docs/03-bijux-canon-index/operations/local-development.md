@@ -29,7 +29,7 @@ flowchart LR
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-index.mk \
+make -f "$PWD/makes/packages/bijux-canon-index.mk" \
   -C packages/bijux-canon-index help
 ```
 
@@ -41,10 +41,11 @@ make lint PACKAGE=bijux-canon-index
 make quality PACKAGE=bijux-canon-index
 ```
 
-The package profile creates its environment and routes reports under the
-repository `artifacts/` tree. Do not invoke `make -C
-packages/bijux-canon-index` without `-f makes/packages/bijux-canon-index.mk`;
-there is no package-local Makefile.
+The package profile creates its environment under
+`artifacts/bijux-canon-index/venv`; `packages/bijux-canon-index/.venv` is a
+stable alias. Do not invoke `make -C packages/bijux-canon-index` without an
+absolute `-f` profile path; there is no package-local Makefile, and Make applies
+the directory change before resolving a relative profile.
 
 ## Start with the nearest contract test
 
@@ -94,6 +95,23 @@ diff.
 Use `make build PACKAGE=bijux-canon-index` when imports, package data, optional
 dependencies, API freeze assets, or distribution metadata changed. Use `make
 docs-check` for handbook changes.
+
+The index build profile is intentionally stronger than packaging alone: its
+configured pre-targets include formatting, lint, tests, quality, security, and
+SBOM generation. Use the focused target during development and reserve `build`
+for a distribution boundary that needs that wider evidence.
+
+## Inspect The Artifact Tree
+
+| Path | Expected evidence |
+| --- | --- |
+| `artifacts/bijux-canon-index/test/` | test, coverage, and benchmark output |
+| `artifacts/bijux-canon-index/api/` | generated schema and freeze/drift diagnostics |
+| `artifacts/bijux-canon-index/release/` | wheel, source distribution, checksums, and release metadata |
+| `artifacts/bijux-canon-index/sbom/` | dependency inputs, CycloneDX output, and summary |
+
+The API freeze proves representation agreement. It does not prove an external
+vector service is reachable, configured, or behaviorally conformant.
 
 ## Preserve comparison evidence
 

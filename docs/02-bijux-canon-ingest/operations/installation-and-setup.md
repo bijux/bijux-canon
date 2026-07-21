@@ -42,6 +42,19 @@ New applications should install the canonical distribution. Install
 `bijux-rag` only when an existing application still requires the legacy
 `bijux_rag` import or `bijux-rag` command.
 
+## Choose The Command Family
+
+The executable exposes two operational paths:
+
+| Path | Shape | Use it for |
+| --- | --- | --- |
+| configured preparation | `bijux-canon-ingest <input.csv> --config <config.yml> [--out <chunks.jsonl>]` | the configuration-driven source-to-chunk pipeline |
+| retrieval utilities | `bijux-canon-ingest index ...`, `retrieve`, `ask`, or `eval` | building and querying local retrieval artifacts |
+
+The top-level help describes configured preparation. Subcommand help describes
+retrieval utilities. Inspect the exact path you intend to automate; options
+from one family are not interchangeable with the other.
+
 ## Prepare a First Input
 
 The command workflow accepts CSV documents. A minimal file has the fields
@@ -73,7 +86,8 @@ bijux-canon-ingest index build \
 bijux-canon-ingest retrieve \
   --index artifacts/ingest/policies.index \
   --query "privileged access" \
-  --top-k 3
+  --top-k 3 \
+  --out artifacts/ingest/retrieval.json
 ```
 
 BM25 requires no model download. The `numpy-cosine` backend can use the
@@ -101,21 +115,35 @@ The root import is the stable home for dependency-light primitives. Import
 application, interface, storage, or adapter modules only when the integration
 needs that boundary.
 
+## Retain The Preparation Evidence
+
+| Evidence | Why it matters |
+| --- | --- |
+| original source identity and stable `doc_id` values | connects output to caller-owned input |
+| resolved `RagEnv` or configuration file | records cleaning, chunk size, overlap, and tail behavior |
+| index file and selected backend | identifies the retrieval representation |
+| embedder name and model descriptor | bounds vector reproducibility |
+| retrieval output with ranked citations | preserves the observed query result |
+
+BM25 output does not establish semantic embedding parity. A deterministic
+`hash16` embedding establishes repeatable local behavior, not semantic quality.
+
 ## Repository Checkout
 
 For contribution work from the monorepo root:
 
 ```bash
 make install
-make -f makes/packages/bijux-canon-ingest.mk \
+make -f "$PWD/makes/packages/bijux-canon-ingest.mk" \
   -C packages/bijux-canon-ingest help
 make test PACKAGE=bijux-canon-ingest
 ```
 
 Package Makefiles are repository profiles under `makes/packages/`; there is no
 standalone `Makefile` inside the package directory. Use the root dispatcher for
-normal checks. Use the explicit profile form only to inspect or invoke a
-package-owned target directly.
+normal checks. The explicit profile path is absolute because Make applies `-C`
+before opening `-f`; use this form only to inspect or invoke a package-owned
+target directly.
 
 Use `make docs-check` for public documentation. Repository-wide `make check`
 and `make test-all` are broader release or integration lanes, not the default
