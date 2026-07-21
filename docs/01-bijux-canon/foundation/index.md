@@ -4,92 +4,88 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Foundation
 
-The foundation section explains the design boundary that keeps package
-ownership explicit: why the repository exists, where authority changes hands,
-which terms stay stable, and which changes would weaken that clarity.
+Bijux Canon is a family of independently useful Python packages joined by
+explicit contracts. The repository coordinates those contracts, their public
+documentation, and their release evidence; each product package retains
+authority over its own behavior.
 
-The main mistake this section should prevent is treating the root as a
-convenient overflow area. These pages exist so a reviewer can tell, early and
-plainly, whether a change belongs in shared governance or in one owning
-package.
+That separation is the foundation of the system. It lets a reader answer three
+questions without treating the repository as one opaque application:
 
-## Foundation Map
+1. Which package owns this decision?
+2. Which contract crosses the boundary?
+3. Which artifact or check supports the resulting claim?
 
-Foundation pages should make the repository's authority model visible before a
-reader gets lost in package detail. The root explains why the split exists,
-where the shared workspace boundary sits, and which decision rules protect the
-package family from slow boundary drift.
+## Architecture At A Glance
 
 ```mermaid
 flowchart LR
-    intent["platform intent"]
-    scope["repository scope"]
-    layout["workspace layout"]
-    packages["package map"]
-    language["domain language"]
-    decisions["decision rules"]
-    package["owning package handbook"]
-    blur["root creep"]
+    source["source material"]
+    ingest["ingest<br/>prepare"]
+    index["index<br/>retrieve"]
+    reason["reason<br/>evaluate"]
+    agent["agent<br/>orchestrate"]
+    runtime["runtime<br/>authorize and retain"]
+    evidence["governed evidence"]
 
-    intent --> scope --> layout --> packages --> language --> decisions
-    scope --> package
-    decisions --> blur
+    source --> ingest --> index --> reason --> agent --> runtime --> evidence
 ```
 
-Foundation pages should help a reviewer defend the split out loud. They are not
-there to decorate the repository with theory. They exist to answer why the
-root owns anything at all, where that authority stops, and which terms or rules
-must stay stable if package boundaries are going to remain believable.
+The arrows describe common composition, not mandatory deployment. A service
+may adopt one package, substitute an implementation behind a declared
+capability, or compose the complete flow. The stable architecture is the
+ownership boundary around each decision.
 
-## Start Here
+## Find The Right Foundation
 
-- open [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/) for the shortest statement of the repository design
-- open [Repository Scope](https://bijux.io/bijux-canon/01-bijux-canon/foundation/repository-scope/) when you need to know what the root may document, enforce, or coordinate
-- open [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/) when you need the line between the root and a package
-- open [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/) when you want to read the split as owned responsibilities instead of directory names
-- open [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/) before making a cross-package change that might blur authority
+| Question | Read | What it resolves |
+| --- | --- | --- |
+| What problem does the package family solve? | [Platform overview](platform-overview.md) | the source-to-evidence model and the limits of each package |
+| What belongs at repository root? | [Repository scope](repository-scope.md) | coordination authority versus product behavior |
+| Where are contracts, code, checks, and generated outputs? | [Workspace layout](workspace-layout.md) | the physical map of authoritative surfaces |
+| Which package owns a capability or preserved name? | [Package map](package-map.md) | canonical, support, and compatibility distributions |
+| Who decides when a concern crosses boundaries? | [Ownership model](ownership-model.md) | decision authority and escalation paths |
+| What do shared architectural terms mean? | [Domain language](domain-language.md) | stable vocabulary for contracts, evidence, and compatibility |
+| How does published guidance relate to code? | [Documentation system](documentation-system.md) | handbook ownership and executable publication checks |
+| What makes a cross-package change acceptable? | [Change principles](change-principles.md) | invariants for coherent changes |
+| Where does an ambiguous change belong? | [Decision rules](decision-rules.md) | a repeatable routing test |
 
-## Pages In This Section
+## Ownership Before Composition
 
-- [Platform Overview](https://bijux.io/bijux-canon/01-bijux-canon/foundation/platform-overview/)
-- [Repository Scope](https://bijux.io/bijux-canon/01-bijux-canon/foundation/repository-scope/)
-- [Workspace Layout](https://bijux.io/bijux-canon/01-bijux-canon/foundation/workspace-layout/)
-- [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/)
-- [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/)
-- [Domain Language](https://bijux.io/bijux-canon/01-bijux-canon/foundation/domain-language/)
-- [Documentation System](https://bijux.io/bijux-canon/01-bijux-canon/foundation/documentation-system/)
-- [Change Principles](https://bijux.io/bijux-canon/01-bijux-canon/foundation/change-principles/)
-- [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/)
+```mermaid
+flowchart TD
+    question["behavior or contract question"]
+    owner{"one product package owns the decision?"}
+    package["use that package handbook"]
+    shared{"shared membership, schema, docs, or release concern?"}
+    root["use repository handbook"]
+    maintenance["use maintainer handbook"]
 
-## Concrete Anchors
+    question --> owner
+    owner -->|yes| package
+    owner -->|no| shared
+    shared -->|yes| root
+    shared -->|automation health| maintenance
+```
 
-- `packages/` for the first ownership check when root scope feels arguable
-- `pyproject.toml` for the declared workspace boundary
-- [Package Map](https://bijux.io/bijux-canon/01-bijux-canon/foundation/package-map/) and [Ownership Model](https://bijux.io/bijux-canon/01-bijux-canon/foundation/ownership-model/) for
-  the clearest statement of authority changes
-- [Decision Rules](https://bijux.io/bijux-canon/01-bijux-canon/foundation/decision-rules/) for the root-level test of whether a
-  proposed change strengthens or blurs the split
+Package ownership comes before repository convenience. Normalization policy
+belongs to ingest, retrieval execution to index, claim support to reason, role
+coordination to agent, and run admission and retention to runtime. Root tooling
+may invoke or verify those decisions, but it does not become their second
+implementation home.
 
-## Read Across The Repository
+## Continue By Intent
 
-- open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) when you need to run, validate, release, or review shared work
-- open the owning product handbook when a boundary question resolves into one package's local behavior
-- open the [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the issue is repository-health automation rather than repository intent
-
-## Design Pressure
-
-The split should remain easier to defend after a change than before it. If a
-proposal simplifies one local task only by making ownership boundaries harder
-to explain, the proposal is weakening the repository even if it reduces
-short-term friction.
-
-## Leave This Section When
-
-- the question has narrowed to one package contract, workflow, or proof surface
-- the concern is operational enforcement rather than repository intent
-- the issue lives in maintainer-only automation instead of root-owned design logic
+- For product behavior, choose the owning package from the
+  [package map](package-map.md), then follow its handbook.
+- For repository commands, validation, releases, and contribution flow, use
+  [Operations](../operations/index.md).
+- For repository-health automation and enforcement internals, use the
+  [Maintainer handbook](../../07-bijux-canon-maintain/index.md).
+- For preserved distribution, import, and command names, use
+  [Compatibility packages](../../08-compat-packages/index.md).
