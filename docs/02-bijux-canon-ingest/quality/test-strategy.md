@@ -14,7 +14,25 @@ streaming execution and public boundaries. Each layer answers a different
 question; no single end-to-end example substitutes for the domain laws below
 it.
 
-## Evidence layers
+## Evidence Layers
+
+```mermaid
+flowchart LR
+    laws["value and effect laws"]
+    transform["cleaning, chunking, dedup"]
+    stream["ordering and backpressure"]
+    application["pipeline composition"]
+    boundary["CLI, HTTP, persistence"]
+    quality["offline retrieval quality"]
+
+    laws --> transform --> stream --> application --> boundary
+    transform --> quality
+    boundary --> quality
+```
+
+Failures should be diagnosed at the leftmost layer that owns the invariant.
+The offline quality layer is deliberately separate: semantic usefulness cannot
+be inferred from type, serialization, or orchestration correctness.
 
 | Test family | Principal claim |
 | --- | --- |
@@ -75,3 +93,11 @@ adding broader coverage. Broader checks are justified when the defect crossed
 a public interface, persistence format, or package boundary. This keeps a
 future failure close to its cause and preserves the distinction between
 transformation correctness and retrieval quality.
+
+## Claims Outside The Test Boundary
+
+The suite does not certify the accuracy of arbitrary third-party embedding
+models, the fitness of a corpus for a scientific question, the security of a
+deployment, or reproducibility when model and adapter identity are omitted.
+Those claims require production configuration, retained provenance, corpus
+governance, and environment-specific evidence in addition to package tests.

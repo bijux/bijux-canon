@@ -13,6 +13,28 @@ Ingest failures often remain syntactically valid: chunks still exist, vectors
 still have numbers, and an index still returns candidates. The dangerous risks
 are therefore semantic drift and lost provenance, not only crashes.
 
+## Failure Propagation
+
+```mermaid
+flowchart LR
+    source["source identity"]
+    normalize["normalization"]
+    chunk["chunk spans and IDs"]
+    embed["embedding adapter"]
+    persist["cache and index artifacts"]
+    downstream["downstream evidence"]
+
+    source --> normalize --> chunk --> embed --> persist --> downstream
+    normalize -. "silent text drift" .-> downstream
+    chunk -. "citation misalignment" .-> downstream
+    embed -. "ranking drift" .-> downstream
+    persist -. "stale or partial state" .-> downstream
+```
+
+A downstream query can succeed after any dotted failure path. Acceptance must
+therefore examine identity and provenance, not only whether the final index
+loads.
+
 ## Risk Register
 
 | Risk | Failure signal | Required control |
