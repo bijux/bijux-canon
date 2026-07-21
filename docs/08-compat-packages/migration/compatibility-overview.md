@@ -9,82 +9,111 @@ last_reviewed: 2026-07-21
 
 # Compatibility Overview
 
-The compatibility layer preserves six public identities while implementation
-remains in five canonical `bijux-canon-*` packages. It provides continuity for
-installed distributions, Python imports, module execution, and console commands
-without creating parallel product implementations.
+The compatibility layer preserves six distribution, import, module-execution,
+and command identities while all product behavior remains in five canonical
+packages. Every bridge is version-locked to its owner and delegates at runtime;
+none carries an independent algorithm, schema, or storage implementation.
 
-`bijux-canon` is the shorter runtime-family identity. The other five bridges
-preserve earlier product names: `agentic-flows`, `bijux-agent`, `bijux-rag`,
-`bijux-rar`, and `bijux-vex`.
+## Bridge Anatomy
 
-## Resolution Path
+```mermaid
+flowchart TB
+    subgraph wheel["compatibility distribution"]
+        metadata["Hatch metadata hook"]
+        init["forwarding __init__"]
+        alias["runtime alias finder"]
+        main["local __main__"]
+        script["preserved console script"]
+        marker["py.typed"]
+    end
+
+    owner["canonical distribution and implementation"]
+    metadata -->|"owner == bridge version"| owner
+    init --> owner
+    alias --> owner
+    main --> owner
+    script --> owner
+    marker -. "typing marker for preserved root" .-> init
+```
+
+The build hook receives the VCS-derived package version and writes one exact
+canonical dependency into built metadata. The forwarding root exposes
+canonical public attributes and discovery. The meta-path finder maps non-local
+legacy submodules to canonical module objects. `__main__` and the console entry
+delegate to the canonical command application.
+
+## Preserved Identities
+
+| Bridge | Canonical owner | Migration consequence |
+| --- | --- | --- |
+| `bijux-canon` | `bijux-canon-runtime` | move runtime imports, command automation, manifests, and run-store tooling |
+| `agentic-flows` | `bijux-canon-runtime` | move flow imports and commands to the same runtime owner |
+| `bijux-agent` | `bijux-canon-agent` | move orchestration imports, provider configuration, and traces |
+| `bijux-rag` | `bijux-canon-ingest` | move preparation imports, commands, caches, and artifact readers |
+| `bijux-rar` | `bijux-canon-reason` | move reasoning imports and run-bundle verification |
+| `bijux-vex` | `bijux-canon-index` | move imports and redesign command automation around Python or HTTP |
+
+Two preserved identities target runtime. That is intentional: one protects the
+shorter `bijux-canon` family name and one protects the former
+`agentic-flows` product name. Both resolve to one canonical implementation and
+must agree on its exact version when installed together.
+
+## Local and Aliased Modules
+
+Not every module under a preserved root is the same kind of object:
+
+| Module | Ownership | Identity expectation |
+| --- | --- | --- |
+| preserved root `__init__` | bridge | forwards canonical exports but remains the preserved root module |
+| `runtime_alias` | bridge | installs the alias machinery and is not a product API |
+| `__main__` | bridge | dispatches the canonical command under the preserved module name |
+| mapped product submodule | canonical owner | preserved and canonical import names resolve to the same module object |
+
+This distinction prevents the bridge's own loader and entrypoint code from
+being mistaken for a second implementation. Consumer migration should target
+canonical product modules, not the bridge-local machinery.
+
+## Compatibility Evidence
 
 ```mermaid
 flowchart LR
-    install["preserved distribution"]
-    hook["same-version dependency hook"]
-    root["forwarding import root"]
-    finder["submodule alias finder"]
-    command["preserved command"]
-    canonical["canonical implementation"]
-
-    install --> hook --> canonical
-    install --> root --> canonical
-    root --> finder --> canonical
-    install --> command --> canonical
+    source["bridge source"] --> build["wheel and source archive"]
+    build --> metadata["exact dependency and console target"]
+    build --> layout["alias files, docs, legal files, py.typed"]
+    metadata --> install["isolated install"]
+    layout --> install
+    install --> import["root and nested import identity"]
+    install --> command["console and python -m delegation"]
+    import --> result["continuity verdict"]
+    command --> result
 ```
 
-Each bridge's Hatch metadata hook pins its canonical dependency to the resolved
-compatibility version. Its root package forwards canonical exports. A
-meta-path finder maps non-local compatibility submodules to the same canonical
-module objects. The local `__main__` module and registered console script call
-the canonical entrypoint.
+Continuity is supported only at surfaces exercised by this chain. Source-tree
+imports do not prove built metadata; a command name in `pyproject.toml` does not
+prove installed dispatch; a shared version string does not prove publication;
+and one successful call does not establish compatibility for private imports.
 
-## Preserved Surfaces
+## Behavior and Artifact Boundary
 
-| Surface | Bridge responsibility | Verification |
-| --- | --- | --- |
-| distribution | publish the preserved name and depend on the exact canonical version | build metadata and publication contract tests |
-| root import | expose canonical `__all__`, attributes, version, and discovery | bridge unit tests |
-| submodule import | resolve selected nested paths to canonical module identity | identity assertions in each bridge test |
-| `python -m` | invoke the owning package's command application | local `__main__.py` and command tests |
-| console script | register the preserved executable name against the canonical entrypoint | project metadata and workspace compatibility tests |
-| type marker | ship `py.typed` for the compatibility import root | package layout contract |
+Canonical packages define public values, errors, exit semantics, schemas, and
+artifact meaning. A compatibility bridge passes those through. It cannot make
+an artifact compatible merely by preserving an old module name, and it cannot
+translate a canonical refusal into legacy success.
 
-These are tested commitments, not a license to depend on every private module
-reachable through the alias finder. Supported product behavior, schemas, and
-examples remain those of the canonical owner.
+During migration, test the consumer's historical artifacts with canonical
+readers. Index files, caches, manifests, traces, and databases may contain
+package, schema, backend, or model identity that import forwarding cannot
+change. When conversion is necessary, preserve the original and produce a new
+artifact with its own canonical identity.
 
-## Canonical Ownership
+## Lifecycle Boundary
 
-| Bridge | Canonical owner | Migration shape |
-| --- | --- | --- |
-| `bijux-canon` | `bijux-canon-runtime` | direct distribution, import, and command rename |
-| `agentic-flows` | `bijux-canon-runtime` | move flow manifests and runtime automation to runtime identity |
-| `bijux-agent` | `bijux-canon-agent` | direct distribution, import, and command rename |
-| `bijux-rag` | `bijux-canon-ingest` | move preparation imports, commands, and artifact readers |
-| `bijux-rar` | `bijux-canon-reason` | move reasoning imports, commands, and run readers |
-| `bijux-vex` | `bijux-canon-index` | replace distribution and imports; redesign command automation around Python or HTTP |
+Keep a bridge while a named supported consumer still requires one of its
+preserved surfaces or while an announced migration window remains active. Stop
+adding new dependencies on it immediately: new consumers should start on the
+canonical owner.
 
-The last row is intentionally asymmetric. `bijux-vex` preserves a command whose
-canonical distribution does not publish a renamed equivalent.
-
-## Compatibility Boundary
-
-A bridge may own alias plumbing, local command launchers, packaging metadata,
-tests, and migration notes. It must not own algorithms, schemas, storage
-semantics, configuration policy, or new user-facing features. A defect in
-canonical behavior is fixed in the canonical package and then observed through
-the bridge.
-
-## Lifecycle Evidence
-
-Keeping or retiring a bridge is an operational decision. Evidence should cover
-known dependency pins, imports in deployed code, command invocations, container
-references, artifact readers, and an announced support window. Absence from this
-repository's source is not proof that external consumers no longer exist.
-
-Continue with [canonical targets](canonical-targets.md) for exact destinations,
-[migration guidance](migration-guidance.md) for a runnable inventory process,
-and [retirement conditions](retirement-conditions.md) for closure evidence.
+Retirement requires consumer evidence, not age or repository tidiness. Follow
+[migration guidance](migration-guidance.md) for cutover,
+[validation strategy](validation-strategy.md) for executable proof, and
+[retirement conditions](retirement-conditions.md) for the final decision.
