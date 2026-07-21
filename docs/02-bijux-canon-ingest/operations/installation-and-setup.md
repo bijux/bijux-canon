@@ -13,6 +13,15 @@ last_reviewed: 2026-07-21
 includes typed document processing, MessagePack serialization, NumPy retrieval,
 the CLI, and the FastAPI boundary.
 
+```mermaid
+flowchart LR
+    P[Install package] --> I[Verify import and CLI]
+    I --> S[Prepare identified source rows]
+    S --> B[Build local index]
+    B --> Q[Retrieve and inspect citations]
+    Q --> H[Retain configuration and artifact identity]
+```
+
 ## Install the Canonical Package
 
 ```bash
@@ -98,14 +107,19 @@ For contribution work from the monorepo root:
 
 ```bash
 make install
-make -C packages/bijux-canon-ingest help
-make -C packages/bijux-canon-ingest test
+make -f makes/packages/bijux-canon-ingest.mk \
+  -C packages/bijux-canon-ingest help
+make test PACKAGE=bijux-canon-ingest
 ```
 
-Use the package tests for the first feedback loop and `make docs-check` for
-public documentation. Repository-wide `make check` and `make test-all` are
-broader release or integration lanes, not required for routine documentation
-work.
+Package Makefiles are repository profiles under `makes/packages/`; there is no
+standalone `Makefile` inside the package directory. Use the root dispatcher for
+normal checks. Use the explicit profile form only to inspect or invoke a
+package-owned target directly.
+
+Use `make docs-check` for public documentation. Repository-wide `make check`
+and `make test-all` are broader release or integration lanes, not the default
+feedback loop for a package-local change.
 
 ## Setup Checklist
 
