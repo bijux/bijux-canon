@@ -80,21 +80,18 @@ Ingest decides how source material is prepared. Index decides how vector work ex
 <a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
 
-## Read The Site By Ownership
+## Find The Authority
 
-| If you need to review | Start here | Expect checked-in proof in |
+| Question | Owning handbook | Strongest starting evidence |
 | --- | --- | --- |
-| cross-package boundaries, shared rules, or handbook routing | the repository handbook | `mkdocs.yml`, `pyproject.toml`, `Makefile`, `makes/`, `.github/workflows/` |
-| canonical product behavior | the owning package handbook | `packages/<package>/src`, `packages/<package>/tests`, `apis/` |
-| repository-health automation or release posture | the maintenance handbook | `packages/bijux-canon-dev`, `makes/`, `.github/workflows/` |
-| older or shorter compatibility names | the compatibility handbook | `packages/compat-*`, migration docs, package metadata |
-
-## What It Takes And Produces
-
-- takes: governed documents, retrieval corpora, execution manifests, and policy contracts
-- produces: ingest artifacts, vector execution outputs, reasoning bundles, agent traces, and replayable runtime records
-- guarantees: explicit package ownership, checked-in API schemas, deterministic or bounded execution modes, and reviewable release surfaces
-- does not do: promise model correctness, hide cross-package coupling behind one import, or treat one successful run as sufficient evidence
+| How did source bytes become retrieval-ready material? | [Ingest](02-bijux-canon-ingest/index.md) | normalized records, chunk configuration, source identity, and typed failures |
+| Why did vector execution select, rank, refuse, or diverge? | [Index](03-bijux-canon-index/index.md) | request contract, capability resolution, execution artifact, and provenance |
+| What evidence supports this claim? | [Reason](04-bijux-canon-reason/index.md) | exact support spans, content hashes, reasoning trace, and verification report |
+| Why did this role run, and why did the workflow stop? | [Agent](05-bijux-canon-agent/index.md) | pipeline definition, ordered calls, convergence decision, and complete trace |
+| May this run be accepted, retained, resumed, or replayed? | [Runtime](06-bijux-canon-runtime/index.md) | manifest, authority, policy, finalized trace, execution store, and replay verdict |
+| Which root rule proves packages and releases agree? | [Repository](01-bijux-canon/index.md) | workspace metadata, API pins, Make targets, and workflows |
+| Which check or publication path enforces repository health? | [Maintenance](07-bijux-canon-maintain/index.md) | maintainer command, exit status, artifact, and workflow job |
+| What does an older installation, import, or command map to? | [Compatibility](08-compat-packages/index.md) | bridge metadata, alias identity tests, and canonical target |
 
 ## System Map
 
@@ -129,13 +126,6 @@ The product flow moves left to right through the five canonical packages. The
 repository section covers shared boundaries, maintenance covers verification
 and publication machinery, and compatibility maps preserved names to the
 canonical packages that own current behavior.
-
-## Start Here
-
-- open the [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) when the question crosses package boundaries or touches shared root rules
-- open one product handbook when the behavior already belongs to ingest, index, reason, agent, or runtime
-- open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
-- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older or shorter distribution, import, or command name is still in play
 
 ## Handoff Contracts
 
@@ -181,25 +171,27 @@ sequenceDiagram
 
 ## Shared Handbooks
 
-- [Repository Handbook](https://bijux.io/bijux-canon/01-bijux-canon/) explains the root-owned design boundary, shared workflow, and package seams
-- [Maintainer Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
-- [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) documents preserved continuity names and the migration pressure back toward canonical package ownership
+- [Repository Handbook](01-bijux-canon/index.md) explains the root-owned design boundary, shared workflow, and package seams
+- [Maintainer Handbook](07-bijux-canon-maintain/index.md) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
+- [Compatibility Handbook](08-compat-packages/index.md) documents preserved continuity names and the migration pressure back toward canonical package ownership
 
-## Proof Surfaces
+## Match Evidence To The Claim
 
-- `mkdocs.yml` for the published navigation source
-- `packages/` for the package split this page is introducing
-- `docs/` for the handbook entry pages that route readers into the repository
-- `apis/` for tracked contract artifacts that support package-level claims
-- `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` for the catalog tooling behind the handbook structure
+| Claim | Prefer | Not sufficient by itself |
+| --- | --- | --- |
+| a Python or CLI contract is stable | public facade, contract page, compatibility test, and caller example | an internal helper name |
+| an HTTP operation is available | schema, server route, live contract test, and documented status | OpenAPI presence alone |
+| a result is deterministic | normalized inputs, configuration, identity, trace, and repeated comparison | a fixed random seed alone |
+| evidence supports a claim | exact content reference, digest, claim state, and verification result | confidence text or a citation label |
+| a run is replayable | retained inputs, plan, policy, environment, entropy, trace, and replay verdict | similar final output |
+| a compatibility name is equivalent | dependency pin, module identity, command parity, and canonical tests | successful installation |
+| a release contains the intended package | tagged source, build manifest, publication guard, and published artifact | a green build job |
 
-Source and tests under `packages/` establish package behavior. Versioned files
-under `apis/` establish HTTP contracts. `Makefile`, `makes/`, and GitHub
-workflows establish shared verification and release behavior. The site routes
-to those sources; it does not replace them as executable evidence.
+## When Sources Disagree
 
-## Leave This Page When
-
-- one package or shared handbook clearly owns the question
-- the next step is a concrete interface, workflow, schema, test, or release surface
-- the issue is known to be maintainer-only or legacy-only
+Documentation can lag implementation. Resolve a disagreement by inspecting the
+owning package's public facade and schema, the code that makes the disputed
+decision, the narrowest relevant test, and the artifact emitted by a real run.
+The strongest claim is the intersection of those sources, not whichever one is
+most convenient. Correct stale documentation rather than repeating it across
+handbooks.

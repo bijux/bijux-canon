@@ -44,9 +44,9 @@
 <!-- bijux-canon-badges:generated:end -->
 
 `bijux-canon` is a contract-first Python system for turning source material
-into governed, inspectable runs. Five canonical packages separate preparation,
-retrieval, reasoning, orchestration, and runtime authority so that every
-handoff has an owner and every durable result has a contract.
+into evidence-bearing, inspectable runs. Five canonical packages separate
+preparation, retrieval, reasoning, orchestration, and runtime authority so a
+reviewer can identify who made each decision and which artifact supports it.
 
 The project is built for work that must survive review after execution. It
 keeps API schemas in the repository, records provenance at retrieval and
@@ -54,12 +54,20 @@ reasoning boundaries, emits agent traces, and gives runtime policy the final
 authority over persistence and replay. Determinism does not make a model
 correct; it makes the execution conditions and resulting evidence inspectable.
 
-## What It Takes And Produces
+## Trust Model
 
-- takes: governed documents, retrieval corpora, execution manifests, and policy contracts
-- produces: ingest artifacts, vector execution outputs, reasoning bundles, agent traces, and replayable runtime records
-- guarantees: explicit package ownership, checked-in API schemas, deterministic or bounded execution modes, and reviewable release surfaces
-- does not do: promise model correctness, hide cross-package coupling behind one import, or treat one successful run as sufficient evidence
+`bijux-canon` narrows claims to the evidence a run actually retains:
+
+| Claim | Evidence required | What that evidence does not prove |
+| --- | --- | --- |
+| source preparation is repeatable | normalized records, chunk configuration, input identity, and typed failures | that the source itself is correct |
+| retrieval is reproducible | execution request, backend capabilities, index identity, ranked results, and provenance | that the most relevant evidence exists in the corpus |
+| a claim is supported | exact evidence spans, content digests, claim status, verification report, and reasoning trace | factual truth beyond the registered checks |
+| agent work is auditable | ordered role calls, convergence decision, terminal status, and complete trace | that a provider behaved deterministically |
+| a run is replayable | manifest, dataset and plan identities, policy, entropy record, finalized trace, and replay envelope | equivalence outside the declared replay boundary |
+
+Missing evidence produces a narrower claim or an explicit refusal. It is not
+reconstructed from a plausible final answer.
 
 This repository publishes `11` packages. Each release tag builds one staged
 bundle per package, uploads distributions to PyPI, publishes release bundles to
@@ -185,80 +193,43 @@ Repository-owned developer tooling also lives here in
 [`packages/bijux-canon-dev`](packages/bijux-canon-dev), but it is for
 maintaining the workspace rather than for end-user installation.
 
-## Choose Your Entry Point
+## Choose By The Decision You Need To Review
 
-- Start with `bijux-canon-runtime` if you care about governed execution, policy,
-  replay, and system-level control.
-- Start with `bijux-canon-agent` if you need agent orchestration and
-  deterministic workflow execution.
-- Start with `bijux-canon-ingest` if your main problem is preparing, chunking,
-  and shaping source material for downstream use.
-- Start with `bijux-canon-reason` if you need a reasoning-side runtime with
-  explicit run artifacts and state boundaries.
-- Start with `bijux-canon-index` if retrieval and vector execution are the main
-  concern.
+| Decision under review | Canonical package | First evidence to inspect |
+| --- | --- | --- |
+| how bytes became normalized records and chunks | `bijux-canon-ingest` | prepared records, configuration, and input identity |
+| why a backend accepted, refused, or ranked a vector request | `bijux-canon-index` | `ExecutionRequest`, capabilities, and `ExecutionArtifact` provenance |
+| how evidence became a claim | `bijux-canon-reason` | support references, content hashes, trace, and verification report |
+| why a role ran and how the workflow terminated | `bijux-canon-agent` | `PipelineDefinition`, `PipelineResult`, and versioned `RunTrace` |
+| whether the complete run may be retained or replayed | `bijux-canon-runtime` | `FlowManifest`, policy, finalized trace, and replay verdict |
 
-## Documentation Paths
+The [published handbook](https://bijux.io/bijux-canon/) follows the same
+ownership map. Use the [compatibility handbook](docs/08-compat-packages/index.md)
+only for preserved distribution, import, submodule, or command names; current
+behavior belongs to the canonical package.
 
-- Repository handbook: [Repository handbook](https://bijux.io/bijux-canon/)
-- Repository handbook source: [`docs/index.md`](docs/index.md)
-- Repository overview section: [`docs/01-bijux-canon`](docs/01-bijux-canon)
-- Compatibility handbook: [`docs/08-compat-packages`](docs/08-compat-packages)
-- Maintenance handbook: [`docs/07-bijux-canon-maintain`](docs/07-bijux-canon-maintain)
+## Verify A Claim
 
-If you want the fastest high-level orientation, start with the repository
-handbook and then jump to the package docs that match the layer you care about.
+The repository keeps four proof surfaces separate:
 
-## Proof Surfaces
+- `packages/<package>/src` implements package behavior;
+- `packages/<package>/tests` exercises local and cross-boundary invariants;
+- `apis/<package>/v1` records the versioned HTTP schema, pinned representation,
+  and hash; and
+- run artifacts record what happened in one execution.
 
-- `packages/` owns the publishable package boundaries
-- `apis/` holds checked-in contract artifacts
-- `docs/` routes readers to the owning handbook and proof surface
-- `Makefile`, `makes/`, and `.github/workflows/` own shared automation and release behavior
+None substitutes for the others. A checked-in schema does not prove its server
+is implemented, a passing unit test does not make a scientific claim true, and
+a completed run does not establish replay without its identities and policy.
 
-## Where `bijux-canon` Fits
+## Work With The Repository
 
-`bijux-canon` is not trying to be the most magical framework in the room. It is
-trying to be one of the clearest.
-
-Its place in the community is the gap between:
-
-- quick demos that are easy to start but hard to trust later
-- heavyweight enterprise systems that bury the actual execution model under too
-  much machinery
-
-`bijux-canon` is for people who want explicit boundaries, honest contracts,
-clear artifacts, and a codebase that still makes sense after the first demo.
-
-## Start Here
-
-- Want the whole picture: read [`docs/index.md`](docs/index.md)
-- Want package-level entry points: browse [`packages/`](packages)
-- Want checked-in API contracts: browse [`apis/`](apis)
-- Want workspace automation: run `make help`
-- Want to build the handbook locally: run `make docs-check` or `make docs-serve`
-- Want contributor guidance: read [`CONTRIBUTING.md`](CONTRIBUTING.md)
-
-## Local Artifact Contract
-
-- transient local outputs belong under `artifacts/`, not as ad hoc root-level
-  cache or build directories
-- the shared root environment lives at `artifacts/root/check-venv/`
-- the MkDocs site builds to `artifacts/root/docs/site/`
-
-## Repository Design
-
-The root keeps only the assets that truly need repository ownership:
-
-- `apis/` for checked-in contract artifacts
-- `configs/` for shared tool configuration
-- `docs/` for the root handbook
-- `makes/` for automation and orchestration
-- `.github/workflows/` for CI and release flow
-- `packages/` for the publishable distributions
-
-That split is intentional. It keeps package code local, shared governance
-visible, and repository policy discoverable for both human readers and tooling.
+- Read the [documentation map](docs/index.md) for package and evidence routing.
+- Browse [packages](packages) for canonical and compatibility distributions.
+- Browse [API contracts](apis) for checked-in HTTP schemas.
+- Run `make help` for the supported local command surface.
+- Run `make docs-check` for the strict documentation build.
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing a change.
 
 ## License
 
