@@ -9,73 +9,101 @@ last_reviewed: 2026-07-21
 
 # Known Limitations
 
-Runtime governance makes authority and divergence visible. It does not make an
-external tool trustworthy, convert structural verification into factual truth,
-or provide distributed infrastructure by itself.
+`bijux-canon-runtime` makes execution authority, causal history, verification,
+and divergence inspectable. It does not make an external tool trustworthy,
+turn registered checks into factual truth, or provide distributed isolation and
+durability by itself.
 
-## Execution limits
+## Mode Guarantees
 
-- The default library call selects live, strict execution, but a non-plan run
-  still requires an explicit execution store and, for live/observe/unsafe,
-  verification policy. Defaults do not create hidden production resources.
-- `unsafe` is an explicit escape surface. It records relaxed configuration and
-  requires a finalized trace, but it does not enforce live mode's full
-  verification-coverage rule. Its results must not be labeled equivalent to a
-  governed live run.
-- `dry-run` exercises resolution, event, artifact, and persistence contracts
-  through a simulated executor. It cannot predict every side effect, latency,
-  provider failure, or permission error of live integrations.
-- `observe` governs an observed execution; it cannot reconstruct events that
-  the host never supplied.
+```mermaid
+flowchart LR
+    manifest["manifest and authority"] --> mode{"run mode"}
+    mode -->|plan| plan["resolved plan only"]
+    mode -->|dry-run| simulated["simulated execution trace"]
+    mode -->|observe| observed["host-supplied observed events"]
+    mode -->|live| governed["governed live execution"]
+    mode -->|unsafe| unsafe["relaxed, non-equivalent execution"]
+```
 
-## Determinism and replay limits
+| Mode | Package output | Claim that must not be made |
+| --- | --- | --- |
+| `plan` | resolved immutable plan; no execution trace or run ID | that any tool ran, side effect was authorized, or result was verified |
+| `dry-run` | simulated events, artifacts, and persisted lifecycle evidence | that live permissions, latency, provider behavior, or side effects were exercised |
+| `observe` | governance over events supplied by the host | that omitted host activity was reconstructed or controlled |
+| `live` | execution under declared authority, determinism, verification, and persistence contracts | that external content is true or external effects are transactionally reversible |
+| `unsafe` | explicit relaxed execution with finalized evidence | equivalence to a governed live run or eligibility for certification |
 
-A stable seed and exact replay policy cannot control nondeterminism outside the
-recorded boundary. Provider changes, parallel hardware, wall-clock services,
-mutable remote data, unversioned tools, and incomplete environment capture can
-still cause divergence. Strict mode is a refusal policy over declared evidence,
-not a proof that the universe was deterministic.
+Non-plan runs require an explicit execution store. Live, observe, and unsafe
+execution also require the applicable verification policy. Defaults select
+behavior; they do not create hidden databases, credentials, or deployment
+resources.
 
-Replay detects changes represented in the envelope, fingerprints, events, and
-dataset descriptors. It cannot recover deleted external artifacts or compare
-state that was never recorded. Human intervention is replayable only when its
-decision and relevant input are captured as governed events.
+## Replay Is Evidence-Bounded
 
-## Verification limits
+Strict replay is a refusal policy over the captured envelope. It can detect
+differences in recorded authority, plan, policy fingerprint, dataset descriptor,
+environment fingerprint, entropy use, events, tools, and artifacts. It cannot
+compare a field that was never captured or recover an external artifact that
+was deleted.
 
-Runtime verification evaluates registered structural and epistemic rules,
-budgets, evidence references, artifact hashes, and arbitration policy. A passing
-decision proves those rules passed. It does not certify scientific truth,
-legal compliance, model calibration, or the completeness of the rule registry.
+A seed cannot control provider upgrades, mutable remote data, wall-clock
+services, parallel hardware, unversioned tools, or hidden host state. Bounded
+acceptability permits only the differences declared in the original replay
+policy; it must not be selected retrospectively after seeing a favorable
+result. Human intervention is replayable only when the decision and its
+meaning-bearing input are retained as governed events.
 
-Permissive arbitration or verification failure modes are visible policy
-choices. Downstream consumers must inspect the arbitration decision and
-`non_certifiable` state rather than treating every finalized trace as accepted.
+## Verification Is Not Truth Certification
 
-## Persistence limits
+A passing arbitration establishes that registered structural, epistemic,
+budget, evidence, artifact, and policy rules produced the recorded decision. It
+does not establish scientific truth, legal compliance, model calibration, or
+completeness of the rule registry. Permissive arbitration and verification
+failure modes are policy choices and must remain visible with the
+`non_certifiable` classification.
 
-DuckDB provides durable local execution state, migrations, and guarded writer
-access. It is not a replicated multi-region event store. Host failure during an
-external side effect can occur between that effect and its checkpoint; an
-integration must provide idempotency when retrying could duplicate work.
+The host remains responsible for deciding which rules are mandatory for the
+use case and whether acting on a verified claim is allowed.
 
-Artifact storage and the execution database also require host-level backup,
-encryption, retention, access control, and capacity management. Tenant
-identifiers in contracts do not replace filesystem or database isolation.
+## Persistence And Recovery
 
-## CLI discoverability
+DuckDB is a durable local execution store with migrations and a filesystem
+single-writer guard. It is not a replicated service, consensus system, or
+multi-region event log. Copying or editing the database outside the protocol
+bypasses its lock and append-only expectations.
 
-The runtime implements `plan`, `dry-run`, `unsafe-run`, `diff run`,
-`explain failure`, `validate db`, and `inspect run`, but several of these are
-suppressed from top-level argparse help. They remain callable and tested; users
-should consult the command reference rather than assume the visible help list
-is the complete interface. The HTTP contract is the primary versioned
-integration surface.
+Checkpoints are written after successful steps. An external side effect can
+occur before its corresponding checkpoint becomes durable. Runtime cannot
+atomically commit its DuckDB transaction and a provider call, filesystem
+mutation, or remote database write. Resumable integrations therefore require
+idempotency identity, deduplication, or compensation at the executor boundary.
 
-## Deployment boundary
+Artifact payloads and the execution database require host-level backup,
+encryption, retention, access control, integrity monitoring, and capacity
+management. Tenant identifiers in records are not filesystem or database
+isolation.
 
-The package is not a process sandbox, queue, cluster scheduler, identity
-provider, or secret manager. Execute untrusted tools behind operating-system or
-container isolation, authorize store access outside the in-process authority
-token, and keep credentials out of manifests, traces, replay envelopes, and
-artifacts.
+## HTTP And CLI Posture
+
+The HTTP application publishes request and response schemas, health, readiness,
+header validation, and failure envelopes. `/api/v1/flows/run` and
+`/api/v1/flows/replay` currently return `501 Not Implemented` after header
+validation. Schema presence is not executable capability; clients must not use
+those endpoints for production execution or replay.
+
+The CLI supplies working execution and inspection paths, but several commands
+are suppressed from top-level argparse help, including operational commands
+documented in the command reference. Help output is therefore not a complete
+capability inventory.
+
+## Deployment Boundary
+
+Runtime is not a process sandbox, queue, cluster scheduler, identity provider,
+or secret manager. Execute untrusted tools behind operating-system or container
+isolation; enforce tenant access outside the in-process authority token; and
+keep credentials out of manifests, traces, replay envelopes, artifacts, and
+diagnostic events.
+
+See the [risk register](risk-register.md) for failure signals and controls, and
+the [test strategy](test-strategy.md) for executable evidence.
