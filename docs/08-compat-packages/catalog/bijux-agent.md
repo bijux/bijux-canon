@@ -1,47 +1,95 @@
 ---
 title: bijux-agent
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # bijux-agent
 
-`bijux-agent` remains published so existing environments can keep using the legacy
-agent package name while migrating toward `bijux-canon-agent`. New work should start at
-the canonical package, not here.
+`bijux-agent` preserves the earlier distribution, import, and command names
+for the canonical `bijux-canon-agent` package. Calls still execute the
+canonical agent implementation: bounded role orchestration, ordered tool and
+model interactions, convergence decisions, lifecycle events, and run traces.
 
-## Canonical Target
+The bridge adds no alternate scheduler, provider adapter, execution policy, or
+trace format.
 
-- distribution: `bijux-canon-agent`
-- Python import: `bijux_canon_agent`
-- command: `bijux-canon-agent`
-- package handbook: <https://bijux.io/bijux-canon/05-bijux-canon-agent/>
+## Identity Contract
 
-## Preserved Surfaces
+| Surface | Preserved identity | Canonical identity |
+| --- | --- | --- |
+| distribution | `bijux-agent` | `bijux-canon-agent` |
+| Python root | `bijux_agent` | `bijux_canon_agent` |
+| console command | `bijux-agent` | `bijux-canon-agent` |
+| nested CLI module | `bijux_agent.interfaces.cli.entrypoint` | `bijux_canon_agent.interfaces.cli.entrypoint` |
+| representative nested type | `bijux_agent.contracts.execution_plan.ExecutionPlan` | `bijux_canon_agent.contracts.execution_plan.ExecutionPlan` |
 
-- the published `bijux-agent` distribution name
-- the `bijux_agent` Python import surface
-- the `bijux-agent` command name
+```mermaid
+flowchart LR
+    consumer["existing agent consumer"]
+    dist["bijux-agent distribution"]
+    pin["bijux-canon-agent<br/>exact version"]
+    facade["canonical facade and modules"]
+    cli["canonical agent CLI"]
 
-## When To Keep It
+    consumer --> dist --> pin
+    dist --> facade --> pin
+    dist --> cli --> pin
+```
 
-Keep `bijux-agent` only while a documented dependent environment still relies on
-the legacy name. Once installs, imports, and command usage move to `bijux-canon-agent`,
-the compatibility package becomes retirement debt.
+## Existing And Canonical Usage
 
-## First Proof Check
+An existing environment can retain its names while migration is scheduled:
 
-- `packages/compat-bijux-agent`
-- the compatibility package `README.md`
-- the canonical handbook at <https://bijux.io/bijux-canon/05-bijux-canon-agent/>
-- shared retirement rules in
-  <https://bijux.io/bijux-canon/08-compat-packages/migration/retirement-conditions/>
+```bash
+python -m pip install bijux-agent
+bijux-agent --help
+python -m bijux_agent --help
+```
 
-## Repository Transition
+```python
+from bijux_agent import API_VERSION
+from bijux_agent.contracts.execution_plan import ExecutionPlan
+```
 
-The former standalone repository at <https://github.com/bijux/bijux-agent> is retired in favor of
-<https://github.com/bijux/bijux-canon>. The legacy package remains only as a
-bridge to the canonical package inside the monorepo.
+New code uses the canonical identities:
+
+```bash
+python -m pip install bijux-canon-agent
+bijux-canon-agent --help
+```
+
+```python
+from bijux_canon_agent import API_VERSION
+from bijux_canon_agent.contracts.execution_plan import ExecutionPlan
+```
+
+The nested `ExecutionPlan` imports resolve to the same class object. This
+matters when old and new imports coexist during a rollout: type comparisons
+and registries do not see bridge-created wrapper classes.
+
+## Migration Risks
+
+Search beyond ordinary imports. Agent integrations often place module paths in
+pipeline manifests, plugin registries, provider configuration, dependency
+injection wiring, test fixtures, and serialized execution plans. Change those
+surfaces deliberately and verify the consumer's real orchestration path.
+
+The [agent handbook](../../05-bijux-canon-agent/index.md) defines current
+behavior. Compatibility verifies alias identity and delegation; it does not
+guarantee that every private module from an earlier standalone repository is a
+supported canonical API or that historical provider behavior remains fixed.
+
+## Repository Ownership
+
+Current source, issues, release metadata, and documentation are owned by
+`bijux/bijux-canon`. The former `bijux/bijux-agent` repository URL is useful
+for historical context, not as a second source of current implementation
+authority.
+
+Continue with [import surfaces](import-surfaces.md) for nested alias behavior
+and [migration guidance](../migration/migration-guidance.md) for a complete
+consumer inventory.
