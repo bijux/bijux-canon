@@ -1,28 +1,74 @@
 ---
 title: Known Limitations
 audience: mixed
-type: explanation
+type: reference
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Known Limitations
 
-Known limitations keep `bijux-canon-reason` credible by naming what it does not promise. Trust improves when limits are explicit enough that readers do not have to discover them the hard way.
+Verification establishes that an artifact satisfies declared structural,
+provenance, and grounding rules. It does not establish that a real-world claim
+is true, complete, current, or appropriate for a consequential decision.
 
-## What To Check
+## Epistemic limits
 
-- name the limits that still affect reasoning and verification behavior
-- separate honest limits from temporary bugs or one-off breakages
-- treat omitted limitations as quality debt because they mislead callers about trust boundaries
+- A valid support span proves that recorded bytes support the trace's linkage;
+  it does not prove the source is accurate or authoritative.
+- Confidence is an explicit claim field, not a calibrated probability supplied
+  automatically by the verifier.
+- Hashes detect changed content but cannot detect a faithfully hashed falsehood.
+- The verifier checks declared support relationships. It cannot discover all
+  omitted counterevidence or unstated assumptions.
+- An `insufficient_evidence` outcome is a controlled refusal, not evidence that
+  no answer exists.
 
-## First Proof Check
+Human or domain-specific review remains necessary wherever source selection,
+interpretation, uncertainty, or consequences exceed the declared checks.
 
-- `tests` and package-local validation surfaces for executable evidence
-- caller-facing docs, limits, and risks for the trust story readers actually receive
-- release notes and change records when the work alters what others may safely assume
+## Reference backend limits
 
-## Bottom Line
+The bundled reasoner is extractive and the local retrieval path uses BM25 over
+checked-in or caller-provided corpus material. These components provide a
+deterministic reference path, not a claim of state-of-the-art retrieval or
+general reasoning. Chunk sizing, overlap, tokenization, corpus composition,
+and BM25 parameters materially affect available evidence.
 
-If `bijux-canon-reason` cannot explain why `reasoning and verification behavior` should be trusted after a change, the quality work is still incomplete.
+Corpus byte limits constrain input size, but the package is not a distributed
+search service. Very large, frequently changing, or remote corpora belong
+behind a retrieval integration with its own availability and provenance
+contract.
+
+## Replay limits
+
+Replay is deliberately frozen: recorded tool results are reused instead of
+calling external tools again. It proves that the recorded inputs and results
+produce the same governed trace. It does not prove that an external source
+would return the same content now.
+
+Retrieval replay refuses tampered local corpus, index, or provenance artifacts.
+An external URI alone is not re-fetched and re-attested. Archive source
+material with the run when future verification depends on its exact bytes.
+
+## Evaluation and interface limits
+
+- Evaluation workflow code and metrics artifacts are implemented, but the CLI
+  `--suite` help still describes named suites as a placeholder surface. Treat
+  suite discovery and packaged suite names as provisional until that public
+  contract is finalized.
+- Metrics aggregate the cases supplied to a suite. They do not generalize
+  beyond the corpus, prompts, constraints, and expected outcomes represented
+  there.
+- API and CLI size guards protect declared request and artifact reads; they are
+  not substitutes for deployment-level quotas, authentication, isolation, or
+  malware/content screening.
+
+## Resource limits
+
+Optional run disk, wall-time, and CPU budgets are process-level guardrails
+applied by the artifact workflow. They are not a scheduler, sandbox, or hard
+real-time guarantee. A tool may consume remote resources beyond what local
+measurements capture. Hosting systems must enforce their own process,
+filesystem, network, and credential boundaries.
