@@ -79,13 +79,47 @@ and, when retrieval artifacts exist, against the chunk manifest.
 
 `run_meta.json` retains the runtime kind and mode, tool names and versions,
 configuration fingerprints, producer version, runtime fingerprint, and
-invariant checksum. The checksum covers the plan, trace, and runtime descriptor.
-It detects a cross-file change that could remain invisible when inspecting one
-file in isolation.
+invariant checksum. The invariant checksum covers the complete plan, the
+ordered evidence IDs from the trace, and the runtime descriptor. It does not
+cover every trace event or claim; `fingerprint.txt` and the manifest protect the
+trace bytes.
 
 The manifest covers all core files except itself, every file under
 `provenance/`, and every evidence path registered by the trace. Verify the
 manifest before exporting, comparing, or replaying a run.
+
+## What Each Digest Proves
+
+| Digest or identity | Inputs | Trust question answered |
+| --- | --- | --- |
+| run ID | spec ID, preset, seed, runtime fingerprint | which governed run configuration was selected |
+| trace ID | typed events, metadata, linked IDs, protocol and canonicalization versions | whether the semantic trace content changed |
+| trace fingerprint | exact `trace.jsonl` bytes | whether the serialized trace changed |
+| invariant checksum | plan, evidence-ID order, runtime descriptor | whether execution structure and evidence ordering still agree |
+| manifest entries | bytes of retained core, provenance, and evidence files | whether a retained file changed |
+
+These values overlap by design but are not interchangeable. In particular, the
+manifest does not include itself, and the invariant checksum is not a digest of
+the entire trace.
+
+## Acceptance Order
+
+For an imported or retained run:
+
+1. resolve the run below the configured artifact root without following an
+   untrusted path;
+2. parse `manifest.json` as a relative-path-to-SHA-256 mapping;
+3. hash every listed file, reject missing or extra required core files, and do
+   not treat the manifest as self-authenticating;
+4. compare `fingerprint.txt` with the exact bytes of `trace.jsonl`;
+5. load the spec, plan, trace, report, and runtime descriptor through their typed
+   readers;
+6. recompute the invariant checksum and semantic trace identity; and
+7. inspect verification failures before accepting any final claim.
+
+When the run crosses a trust boundary, authenticate the manifest with an
+external signature or trusted digest. Internal consistency can reveal changed
+files, but it cannot prove who produced the directory.
 
 ## Resource Enforcement
 

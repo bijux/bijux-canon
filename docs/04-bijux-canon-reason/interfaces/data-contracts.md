@@ -66,9 +66,27 @@ snippet. `EvidenceRef` identifies its URI, whole-content hash, span, chunk, and
 safe relative content path.
 
 Evidence paths reject absolute paths, drive prefixes, backslashes, and parent
-traversal. Span and hash validation occurs when records are constructed; cross-
-record verification then confirms that cited bytes and registered evidence
-agree.
+traversal. Construction validates support spans and snippet-hash syntax,
+evidence spans, chunk-ID syntax, and path safety. `EvidenceRef.sha256` is carried
+as a string at model construction; the run builder establishes its meaning by
+hashing the referenced file and requiring an exact match. Cross-record
+verification then confirms that cited bytes and registered evidence agree.
+
+## Validation Layers
+
+Validation is intentionally cumulative:
+
+| Boundary | What it establishes | What it does not establish |
+| --- | --- | --- |
+| model construction | field shape, discriminators, span form, safe path syntax, content-derived IDs | file existence or semantic support |
+| trace serialization | canonical header/event records and stable newline bytes | evidence-file integrity |
+| run construction | registered file existence and whole-file SHA-256 equality | claim support correctness |
+| trace verification | event order, references, spans, support hashes, plan and provenance relationships | external truth of a supported claim |
+| manifest verification | retained file bytes match recorded digests | scientific or logical correctness |
+
+A validated model can still name unavailable evidence. A manifest-valid run can
+still contain rejected claims or failed verification checks. Consumers must use
+the layer that answers their actual trust question.
 
 ## Verification Records
 
@@ -81,6 +99,11 @@ All core records inherit the frozen `StableModel` contract: unknown fields are
 forbidden, defaults are validated, aliases are resolved explicitly, and models
 cannot be mutated after validation. Changing ID inputs, discriminators, event
 order, span meaning, or version fields is compatibility-sensitive.
+
+Content-derived IDs identify typed semantic records; they are not substitutes
+for the exact-byte trace fingerprint or run manifest. Two serializations can
+represent the same semantic record while differing at the byte layer, and the
+artifact contract records both distinctions.
 
 See [Artifact Contracts](artifact-contracts.md) for the canonical on-disk
 representation of these records.
