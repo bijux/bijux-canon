@@ -57,41 +57,44 @@ The root release configuration is the source of truth for these sets. A
 directory under `packages/` is not automatically public, canonical, or eligible
 for publication.
 
-## What Readers Can Safely Assume Here
+## Trace A Shared Contract
 
-- root pages may define shared rules, but they do not redefine product behavior
-- a claim about package semantics should become stronger when you leave this section
-- every repository-level statement should be traceable to checked-in proof
+A public contract can cross the root without transferring product ownership.
+An HTTP change, for example, begins with the package that owns behavior and
+then moves through repository-governed representations and checks:
 
-## Shared Proof Surfaces
+```mermaid
+flowchart LR
+    behavior[package behavior]
+    schema[OpenAPI source]
+    pin[pinned schema + hash]
+    tests[package and live contract tests]
+    docs[caller documentation]
+    release[tagged package artifacts]
 
-| Claim family | Check here first |
-| --- | --- |
-| package set, workspace boundaries, and shared metadata | `pyproject.toml`, `packages/` |
-| docs routing and public handbook structure | `mkdocs.yml`, `docs/` |
-| shared automation and local command entrypoints | `Makefile`, `makes/` |
-| CI, release, and deploy behavior | `.github/workflows/` |
-| API storage and schema review | `apis/` |
+    behavior --> schema --> pin --> tests --> docs --> release
+```
 
-## Start Here
+The schema records the caller contract; the implementation and live contract
+tests establish availability. The pin and hash expose drift. Documentation
+explains the supported operation. Tagged artifacts determine what users can
+actually install. A green result at one point does not erase a mismatch at
+another.
 
-- open [Foundation](https://bijux.io/bijux-canon/01-bijux-canon/foundation/) for repository shape, split logic, ownership boundaries, and shared terminology
-- open [Operations](https://bijux.io/bijux-canon/01-bijux-canon/operations/) for contributor workflow, validation posture, release flow, and review rules
-- open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) when the concern is helper code, Make routing, workflow fan-out, or repository-health automation
-- open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older or shorter compatibility name, preserved import root, or migration question is still active
-- leave this handbook as soon as the behavior is clearly local to one canonical package
+## Root Evidence By Question
 
-## What This Handbook Owns
+| Question | Authoritative root surface | Continue in |
+| --- | --- | --- |
+| Which packages participate in the workspace and release? | `pyproject.toml`, workspace metadata, release package guards | [package map](foundation/package-map.md) |
+| Which HTTP representation is governed? | `apis/<package>/v1/schema.yaml`, pin, and hash | owning package interface handbook |
+| Which local command composes validation? | `Makefile` and `makes/` | [maintainer Make handbook](../07-bijux-canon-maintain/makes/index.md) |
+| Which event triggers CI or publication? | `.github/workflows/` | [workflow handbook](../07-bijux-canon-maintain/gh-workflows/index.md) |
+| Which pages are published and where? | `mkdocs.yml` and `docs/` | [documentation system](foundation/documentation-system.md) |
+| What does an older package name execute? | compatibility package metadata and alias tests | [compatibility catalog](../08-compat-packages/catalog/index.md) |
 
-- why the repository is split into canonical packages instead of one combined surface
-- root-owned workflow, validation, release, artifact, and documentation rules
-- the seams where one package hands authority to another package or to a shared root rule
-
-## What This Handbook Does Not Own
-
-- ingest, index, reason, agent, or runtime behavior inside the product handbooks
-- helper implementation detail that belongs in the maintainer handbook
-- compatibility-alias migration policy that belongs in the compatibility handbook
+Product semantics remain in ingest, index, reason, agent, or runtime. Helper
+implementation remains in the maintenance handbook. The root establishes how
+those surfaces agree; it does not become a second source for their behavior.
 
 ## Shared Package Map
 
@@ -125,3 +128,13 @@ pinned representation, hash, implementation tests, and package docs together.
 A change that alters release membership must update root metadata and release
 guards. A change that alters only one package's domain semantics remains in
 that package even when shared verification runs afterward.
+
+## Continue By Intent
+
+| Intent | Next page |
+| --- | --- |
+| understand why the repository is split this way | [Foundation](foundation/index.md) |
+| inspect package ownership, workspace layout, and documentation structure | [Foundation](foundation/index.md) |
+| contribute, validate, release, or recover | [Operations](operations/index.md) |
+| inspect automation implementation and CI fan-out | [Maintenance Handbook](../07-bijux-canon-maintain/index.md) |
+| migrate a preserved distribution or import name | [Compatibility Packages](../08-compat-packages/index.md) |

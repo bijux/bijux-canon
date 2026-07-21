@@ -47,47 +47,56 @@ workflow. `bijux-canon-index` remains the owner of declared vector execution,
 backend capability negotiation, provenance-rich execution artifacts, and
 replay comparison across vector backends.
 
-## What This Package Owns
+## Follow One Prepared Document
 
-- document cleaning, normalization, and chunking before retrieval
-- ingest-side records and artifacts that downstream packages accept as prepared input
-- deterministic preparation workflows that remove source ambiguity before indexing
+| Boundary | Retained evidence | Review question |
+| --- | --- | --- |
+| parse | source identifier, input fields, adapter result | were the intended bytes accepted without silent coercion? |
+| clean | `CleanConfig`, normalized text, safeguard outcome | which rules changed the source and which content was refused? |
+| chunk | chunk geometry, parent identity, offsets, chunk records | can every chunk be traced to its exact prepared parent? |
+| persist | JSONL records or local index manifest | can a later process load the same prepared material? |
+| retrieve | query, index identity, ranked candidates, citations | which ingest-local records produced this extractive answer? |
 
-## What This Package Does Not Own
+The first reviewable result is not the answer text. It is the chain from source
+identity through configuration and chunk offsets to ranked records. The
+[entrypoint examples](interfaces/entrypoints-and-examples.md) show the Python,
+CSV, local-index, and HTTP forms of that chain.
 
-- vector execution, retrieval replay, and backend index behavior
-- claim formation, reasoning policy, or multi-step orchestration semantics
-- runtime acceptance, persistence, and governed replay authority
+## Boundary With Index
 
-## Ownership Test
+Ingest owns preparation and its dependency-light BM25 or NumPy-cosine local
+workflow. Index owns declared vector execution across backend capabilities,
+budgets, provenance-rich execution artifacts, and replay comparison. Move the
+question to index when backend selection, approximation, vector execution, or
+cross-backend comparison becomes the disputed decision.
 
-If the question is still about making source material predictable before any
-vector store or reasoning step touches it, it belongs here. If the question
-starts with retrieval quality, claim behavior, agent coordination, or run
-acceptance, it belongs somewhere else.
+```text
+source bytes -> ingest records and chunks -> index execution request
+```
 
-## Implementation Anchors
+Reason, agent, and runtime may consume ingest artifacts. They must not repair
+missing source identity, invent chunk provenance, or reinterpret a preparation
+failure as empty evidence.
 
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for deterministic preparation logic
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for retrieval-ready records and assembly owned before index handoff
-- `packages/bijux-canon-ingest/src/bijux_canon_ingest/interfaces` for CLI, HTTP, serialization, and caller-facing boundaries
-- `packages/bijux-canon-ingest/tests` for the proof that prepared output stays stable under change
+## Evidence And Limits
 
-## Start Here
+| Claim | Evidence to inspect | Limit |
+| --- | --- | --- |
+| cleaning is deterministic | input identity, normalized configuration, output record, repeated serialization | does not prove source truth |
+| a chunk is traceable | parent identity, offsets, text, stable record shape | depends on retaining the prepared parent |
+| local retrieval is reproducible | index type and identity, corpus records, query, ranking output | applies to the ingest-local backend, not every vector backend |
+| an extractive answer is cited | candidate records and cited spans | does not establish that the corpus is complete |
+| bulk processing handled failure honestly | policy, typed `ErrInfo`, stage context, error counts | collected errors still require caller disposition |
 
-- open [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/) when the question is why this package exists or where its ownership stops
-- open [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/) when you need module boundaries, dependency flow, or execution shape
-- open [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
-- open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need local workflow, diagnostics, release, or recovery guidance
-- open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the question is whether the package has proved its promises strongly enough
+## Continue By Question
 
-## Reference Areas
-
-- [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/)
-- [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/)
-- [Interfaces](https://bijux.io/bijux-canon/02-bijux-canon-ingest/interfaces/)
-- [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/)
-- [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/)
+| Question | Next page |
+| --- | --- |
+| what belongs inside the preparation boundary? | [Foundation](foundation/index.md) |
+| how do processing, application, and adapters depend on one another? | [Architecture](architecture/index.md) |
+| which Python, CLI, HTTP, and storage contracts are callable? | [Interfaces](interfaces/index.md) |
+| how do I install, run, diagnose, or recover a pipeline? | [Operations](operations/index.md) |
+| what evidence protects deterministic preparation? | [Quality](quality/index.md) |
 
 ## Failure Boundaries
 
