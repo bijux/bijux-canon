@@ -75,7 +75,7 @@ contains:
 | `verify.json` | verification report produced with the run |
 | `fingerprint.txt` | canonical trace fingerprint |
 | `run_meta.json` | schema, producer, and runtime identity |
-| `manifest.json` | bound inventory and invariant checksum |
+| `manifest.json` | SHA-256 inventory of the initial run files |
 
 ## Verify and replay an existing run
 
@@ -96,7 +96,8 @@ bijux-canon-reason replay \
 
 Standalone verification writes `verify.verify.json` beside the trace. Replay
 writes a replay trace and compares canonical fingerprints; it does not invoke
-live tools in place of the recorded results.
+live tools in place of the recorded results. The invariant checksum replay
+uses is recorded in `run_meta.json` and trace metadata.
 
 ## Serve the HTTP API
 

@@ -63,8 +63,10 @@ failed report when it is part of an audit trail.
 ## Replay without reinterpreting history
 
 Replay reconstructs the reasoning path from frozen artifacts and recorded tool
-results. It checks the manifest and invariant checksum, emits a replay trace,
-and compares its canonical fingerprint with the original.
+results. It checks the invariant checksum, validates retrieval provenance when
+present, emits a replay trace, and compares its canonical fingerprint with the
+original. It does not read `manifest.json`; verify the manifest's file digests
+as a separate whole-bundle integrity check.
 
 A fingerprint mismatch means the reconstructed event record differs. Inspect
 the diff summary, producer and schema versions, runtime fingerprint, plan,
