@@ -14,7 +14,25 @@ undeclared entropy, incomplete verification, mutable traces, corrupt stores,
 environment drift, and unacceptable replay. The suite checks refusal paths as
 carefully as successful execution.
 
-## Evidence layers
+## Evidence Layers
+
+```mermaid
+flowchart LR
+    contracts["manifest and data contracts"]
+    authority["policy and authority"]
+    execution["causal execution"]
+    persistence["store and recovery"]
+    replay["drift and replay verdict"]
+    boundary["CLI and HTTP contracts"]
+
+    contracts --> authority --> execution --> persistence --> replay
+    execution --> boundary
+    replay --> boundary
+```
+
+The proof chain requires both success and refusal evidence. A test that only
+executes a flow cannot establish that changed authority, missing artifacts, or
+unacceptable variance would be rejected.
 
 | Test family | Principal claim |
 | --- | --- |
@@ -75,3 +93,11 @@ state: contract, planner, executor, verifier, trace, or store. Add end-to-end
 coverage when a credible-looking `FlowRunResult` could have escaped. Add replay
 coverage whenever the changed data participates in a fingerprint, envelope,
 dataset descriptor, policy decision, or persisted trace.
+
+## Claims Outside The Test Boundary
+
+The suite does not make external side effects transactional, enforce host or
+tenant isolation, prove factual truth, or guarantee exact replay when a
+provider, dataset, tool, or environment was not fully captured. Those claims
+require integration-owned idempotency, deployment controls, retained payloads,
+and explicit environment evidence.
