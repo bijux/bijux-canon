@@ -76,6 +76,43 @@ run ID. Its collections are distinct because they carry different authority:
 - a reasoning bundle links steps and claims to evidence; and
 - verification records show checks and the resulting governed decision.
 
+`FlowRunResult` is frozen at the dataclass boundary, but its collections are
+lists. Freezing prevents field reassignment; it does not make the contained
+lists immutable or give the whole result a content identity. Treat the result
+as an owned in-process handoff. Do not mutate it after publication, and do not
+use object equality as proof that two executions are equivalent.
+
+## Authority Joins
+
+Runtime records join through typed identities and tenant scope:
+
+| Relationship | Required join |
+| --- | --- |
+| run to flow | `tenant_id`, `run_id`, and `flow_id` |
+| artifact lineage | artifact ID plus parent artifact IDs within the tenant |
+| evidence to retrieval contract | evidence ID, content hash, and vector contract ID |
+| claim to execution | claim ID retained by the finalized trace and run store |
+| event to plan | event step index against the normalized plan action |
+| tool call to replay evidence | tool ID plus input and output fingerprints |
+| verification to artifact | checked or target artifact IDs plus policy fingerprint |
+
+An ID without its tenant and governing contract is not sufficient authority.
+Content hashes establish payload identity but do not establish producer,
+parentage, scope, or verification outcome.
+
+## Construction and Enforcement
+
+Most runtime records are immutable structural dataclasses. The flow contract,
+planner, execution lifecycle, persistence layer, and replay guard enforce the
+cross-record rules. Direct construction therefore proves that fields were
+supplied, not that a manifest is executable, a trace is finalized, an artifact
+belongs to the tenant, or replay is acceptable.
+
+The finalized trace is intentionally inaccessible before finalization. A
+persisted run can also exist before finalization for checkpoint and resume.
+Readers must distinguish resumable state from completed authority rather than
+treating the presence of a run ID as success.
+
 ## HTTP Boundary
 
 The v1 request models reject unknown fields and require explicit manifest,

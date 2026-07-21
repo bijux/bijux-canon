@@ -68,7 +68,9 @@ escalate or halt on selected rules without rewriting what an engine observed.
 
 ## DuckDB Execution Store
 
-The execution store is the durable run boundary. Its governed records include:
+The execution store is the durable audit-and-replay boundary. It is explicitly
+single-writer and is not the transaction coordinator for live execution. Its
+governed records include:
 
 - runs, datasets, and normalized plan actions;
 - ordered execution events and checkpoints;
@@ -83,6 +85,32 @@ live and resumed execution use the write store. The schema is migration-owned;
 editing tables outside that contract can make a syntactically readable database
 semantically unreplayable.
 
+Persistence methods commit their own record groups: run creation, steps,
+events, tools, entropy, artifacts, evidence, claims, and finalization are not
+one database-wide commit. An interruption may leave a valid resumable run with
+`finalized = false` and a subset of later records. This is expected lifecycle
+state, not completed execution evidence.
+
+## Stored Projection
+
+The store reconstructs replay-oriented domain records rather than preserving a
+generic serialized `FlowRunResult`:
+
+| In-process record | Persisted representation | Round-trip boundary |
+| --- | --- | --- |
+| execution plan | normalized run and step tables | plan authority and hashes, not the original Python object graph |
+| execution trace | run row plus events, tools, entropy, claims, and child flows | events, tools, and entropy retain entry order; claims and children are identity sets |
+| artifact | artifact row plus parent-edge rows | payload bytes remain in the artifact store |
+| evidence | ordered evidence rows | source URI, score, content hash, determinism, and vector contract only |
+| reasoning bundle | claim IDs; evidence and artifacts occupy separate tables | full reasoning bundle and its internal links are not a dedicated table |
+| verification result and arbitration | finalized trace decision and policy fingerprint | full per-engine result objects are not dedicated tables |
+
+Loaded trace, event, artifact, evidence, tool, and dataset models are
+reconstructed with specification version `v1`; individual model
+`spec_version` values are not stored as per-row fields. Schema migrations and
+the active schema contract hash govern the database representation. Treat a
+change in that normalization as a storage compatibility change.
+
 ## Replay Acceptability
 
 Replay verdicts are `acceptable`, `acceptable_with_warnings`, `unacceptable`,
@@ -91,6 +119,27 @@ accept event, artifact, and evidence differences only when the declared
 acceptability permits them; plan, tenant, environment, dataset, policy, or
 replay-envelope differences remain blocking. A non-certifiable observed trace
 cannot be promoted to acceptable by a permissive diff policy.
+
+## Acceptance Procedure
+
+Before treating a persisted run as authoritative:
+
+1. open it through the migration-aware read store, never by ad hoc table reads;
+2. select by both tenant ID and run ID;
+3. require a finalized trace for completed-run claims, or explicitly enter the
+   checkpoint/resume workflow for an unfinished run;
+4. load artifacts, evidence, tools, entropy, and claims through typed readers,
+   preserving declared order where the record contract defines it, and resolve
+   artifact payloads through the separate artifact store;
+5. compare plan, tenant, environment, dataset, replay envelope, determinism,
+   policy, and lifecycle structure with the replay guard;
+6. apply the declared replay mode and acceptability only after structural diffs
+   are known; and
+7. preserve the database, migrations, schema contract hash, and external
+   artifact payloads as one governed retention set.
+
+A readable DuckDB file is not by itself evidence of a finalized, tenant-valid,
+or replay-acceptable run.
 
 See [Execution Model](../architecture/execution-model.md) for the lifecycle that
 produces and freezes these records.
