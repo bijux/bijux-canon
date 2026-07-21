@@ -13,6 +13,15 @@ last_reviewed: 2026-07-21
 verification, CLI, and deterministic retrieval path do not require an external
 LLM provider.
 
+```mermaid
+flowchart LR
+    P[Install package] --> S[Declare ProblemSpec]
+    S --> R[Run deterministic workflow]
+    R --> V[Verify retained support]
+    V --> Y[Replay with frozen inputs]
+    Y --> H[Preserve complete bundle]
+```
+
 ## Install
 
 ```bash
@@ -111,9 +120,14 @@ on storage with the required durability and access controls.
 
 ```bash
 make install
-make -C packages/bijux-canon-reason help
-make -C packages/bijux-canon-reason test
+make -f makes/packages/bijux-canon-reason.mk \
+  -C packages/bijux-canon-reason help
+make test PACKAGE=bijux-canon-reason
 ```
+
+Package Makefiles are repository profiles under `makes/packages/`; the package
+directory does not contain a standalone Makefile. Use the root dispatcher for
+normal checks and the explicit profile form to inspect package targets.
 
 Use `make docs-check` for public handbook changes. Run broader package or
 repository lanes only when the changed contract requires them.
