@@ -42,11 +42,61 @@
 ingest artifacts and retrieval-ready structures. It is where cleaning,
 chunking, package-local retrieval assembly, and ingest-facing boundaries live.
 
-This package should help a maintainer answer practical questions such as:
+The dependency-light root import exposes immutable document types,
+deterministic transforms, streaming combinators, typed `Result`/`Option`
+helpers, safeguards, and tree folds. Application, CLI, HTTP, storage, embedding,
+and vector adapters stay behind their owning modules and are resolved lazily
+where compatibility requires root-level access.
 
-- how does a source document become stable ingest output
-- where do retrieval-oriented assembly steps belong
-- which code is pure transformation logic and which code is adapter work
+## Minimal Transformation
+
+```python
+from bijux_canon_ingest import RagEnv, RawDoc, chunk_doc, clean_doc
+
+source = RawDoc(
+    doc_id="policy-17",
+    title="Retention policy",
+    abstract="  Keep signed run records for seven years.  ",
+    categories="governance",
+)
+
+clean = clean_doc(source)
+chunks = chunk_doc(clean, RagEnv(chunk_size=48, overlap=8))
+assert chunks[0].doc_id == "policy-17"
+```
+
+Cleaning normalizes abstract whitespace and case. Chunking validates positive
+chunk size, non-negative overlap smaller than the chunk size, and an explicit
+tail policy (`emit_short`, `drop`, or `pad`). The resulting offsets and document
+identity make later retrieval evidence traceable to its source.
+
+## Command Workflows
+
+```bash
+# Run a configured CSV-to-JSONL preparation pipeline.
+bijux-canon-ingest documents.csv --config pipeline.json --out chunks.jsonl
+
+# Build and query a deterministic local BM25 index.
+bijux-canon-ingest index build \
+  --input documents.csv --out corpus.index --backend bm25
+bijux-canon-ingest retrieve \
+  --index corpus.index --query "retention period" --top-k 5
+bijux-canon-ingest ask \
+  --index corpus.index --query "How long are records retained?"
+```
+
+`index build` also supports `numpy-cosine`; embeddings can use deterministic
+`hash16` or the optional sentence-transformer adapter. `eval` consumes a suite
+directory containing `queries.jsonl` and can compare metrics with a baseline
+and tolerance.
+
+## HTTP Contract
+
+The v1 API pins five operations in
+[`apis/bijux-canon-ingest/v1/schema.yaml`](../../apis/bijux-canon-ingest/v1/schema.yaml):
+health, chunking, index construction, retrieval, and extractive answering. The
+checked-in schema, pinned OpenAPI JSON, and schema hash are release artifacts;
+implementation output is tested against them.
 
 ## What This Package Takes And Produces
 
@@ -85,6 +135,18 @@ Reach into submodules only when you need a specific boundary:
 - standalone vector execution semantics
 - runtime-wide governance, persistence, or replay authority
 - repository tooling and release automation
+
+## Failure Semantics
+
+- Pipeline parse failures render structured JSON and exit with status `2`.
+- Processing and adapter failures exit with status `1` and retain error code,
+  message, and stage.
+- `Result` collectors let callers choose fail-fast, bounded error collection,
+  partitioning, recovery, or error-rate termination explicitly.
+- Retry policies classify retriable errors and preserve input ordering; circuit
+  breakers and truncation policies remain opt-in.
+- Importing `bijux_canon_ingest` does not eagerly import optional CLI, HTTP, or
+  orchestration dependencies.
 
 ## Source map
 

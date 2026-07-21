@@ -4,42 +4,48 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Ingest Handbook
 
-`bijux-canon-ingest` owns deterministic document preparation, chunking, and retrieval-ready shaping. It is the package that turns raw source material into stable inputs the rest of the system can trust.
+`bijux-canon-ingest` turns source documents into deterministic records, chunks,
+local retrieval indexes, ranked candidates, and extractive answers with
+citations. It supports both small in-process transformations and file-backed
+pipelines without making HTTP, CLI, or orchestration dependencies mandatory at
+package import time.
 
-The main failure this handbook prevents is treating ingest like a convenient place for every upstream cleanup, retrieval tweak, or workflow shortcut. Ingest should only grow when the change makes prepared source material more predictable, not when another package wants to offload its own complexity.
-
-## What The Reader Should See First
-
-Ingest is the preparation gate. It takes source material that may be noisy,
-partial, duplicated, or inconsistently shaped and produces material that later
-packages can treat as intentional input. The value is not that ingest does
-everything near documents. The value is that it stops uncertainty from leaking
-into retrieval, reasoning, and runtime review.
+Ingest owns uncertainty in source shape. Invalid chunk geometry, malformed CSV
+rows, unsafe filtering rules, retry exhaustion, and circuit-breaker decisions
+remain explicit results rather than becoming silent changes to downstream
+evidence.
 
 ```mermaid
 flowchart LR
-    source["source material"]
-    config["ingest configuration"]
-    processing["processing pipeline"]
-    retrieval["retrieval-ready records"]
-    tests["tests and invariants"]
-    interfaces["caller surfaces"]
-    downstream["downstream packages"]
+    csv["CSV or RawDoc stream"]
+    rules["safe rules + CleanConfig"]
+    clean["CleanDoc"]
+    chunks["ChunkWithoutEmbedding"]
+    index["BM25 or NumPy cosine index"]
+    result["candidates or cited answer"]
 
-    source --> config --> processing --> retrieval --> downstream
-    processing --> tests
-    retrieval --> interfaces
+    csv --> rules --> clean --> chunks --> index --> result
+    rules -. typed ErrInfo .-> result
 ```
 
-Readers should come away with one clear picture: ingest is where messy source
-material stops being tolerated as-is. The package earns its place by making
-preparation reproducible enough that every later package can assume the input
-was shaped on purpose rather than by accident.
+## Available Surfaces
+
+| Surface | Concrete operations | Stable evidence |
+| --- | --- | --- |
+| Python root | `RawDoc`, `CleanDoc`, `RagEnv`, `clean_doc`, `chunk_doc`, streaming combinators, `Result`, retry and breaker helpers | `__all__`, API-freeze tests, typed marker |
+| command | CSV pipeline; `index build`; `retrieve`; `ask`; `eval` | parser tests and end-to-end fixtures |
+| HTTP v1 | health, chunk, index build, retrieve, ask | `apis/bijux-canon-ingest/v1/schema.yaml` |
+| storage | CSV document input, JSONL chunk output, persisted BM25 or NumPy-cosine index | adapter and round-trip tests |
+
+The package-local index and extractive-answer features support an ingest-owned
+workflow. `bijux-canon-index` remains the owner of declared vector execution,
+backend capability negotiation, provenance-rich execution artifacts, and
+replay comparison across vector backends.
 
 ## What This Package Owns
 
@@ -53,14 +59,14 @@ was shaped on purpose rather than by accident.
 - claim formation, reasoning policy, or multi-step orchestration semantics
 - runtime acceptance, persistence, and governed replay authority
 
-## Boundary Test
+## Ownership Test
 
 If the question is still about making source material predictable before any
 vector store or reasoning step touches it, it belongs here. If the question
 starts with retrieval quality, claim behavior, agent coordination, or run
 acceptance, it belongs somewhere else.
 
-## First Proof Check
+## Implementation Anchors
 
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest/processing` for deterministic preparation logic
 - `packages/bijux-canon-ingest/src/bijux_canon_ingest/retrieval` for retrieval-ready records and assembly owned before index handoff
@@ -75,7 +81,7 @@ acceptance, it belongs somewhere else.
 - open [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/) when you need local workflow, diagnostics, release, or recovery guidance
 - open [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/) when the question is whether the package has proved its promises strongly enough
 
-## Pages In This Package
+## Reference Areas
 
 - [Foundation](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/)
 - [Architecture](https://bijux.io/bijux-canon/02-bijux-canon-ingest/architecture/)
@@ -83,8 +89,13 @@ acceptance, it belongs somewhere else.
 - [Operations](https://bijux.io/bijux-canon/02-bijux-canon-ingest/operations/)
 - [Quality](https://bijux.io/bijux-canon/02-bijux-canon-ingest/quality/)
 
-## Leave This Handbook When
+## Failure Boundaries
 
-- the question is now about retrieval execution rather than preparation
-- the next stop is a concrete caller contract, workflow, or test surface
-- the behavior is really owned by reasoning, orchestration, or runtime
+- parsing and configuration failures identify the invalid input or override
+- transformation failures use typed `ErrInfo` values and retain stage context
+- bulk processing can fail fast, collect errors, cap errors, or stop at an
+  explicit error-rate threshold
+- retries, circuit breakers, resource guards, and caches are separate policies;
+  enabling one does not silently imply another
+- optional YAML, Typer, NumPy, sentence-transformer, and HTTP integrations are
+  loaded at their owning boundary rather than on a dependency-light root import
