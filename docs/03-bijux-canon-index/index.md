@@ -54,46 +54,68 @@ flowchart LR
 - the package root currently exports only `__version__`; callers use the
   domain, application, contract, and interface modules deliberately
 
-## What This Package Owns
+## Follow One Vector Execution
 
-- embedding and vector-store execution tied to prepared ingest output
-- retrieval behavior that stays provenance-aware and replayable under review
-- index-facing contracts and artifacts that downstream packages rely on during search
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Policy
+    participant Registry
+    participant Backend
+    participant Artifact
 
-## What This Package Does Not Own
+    Caller->>Policy: ExecutionRequest
+    Policy->>Registry: required capabilities + mode
+    Registry->>Backend: resolved backend and parameters
+    Backend-->>Artifact: vectors, rankings, cost, provenance
+    Artifact-->>Caller: result or typed refusal
+```
 
-- source preparation and chunk shaping before indexing begins
-- claim interpretation, reasoning policy, or reviewer-facing verification semantics
-- top-level runtime authority above retrieval execution and trace collection
+| Boundary | Evidence retained | Review question |
+| --- | --- | --- |
+| request | intent, mode, contract, budget, identities, parameters | what was the caller actually asking the engine to guarantee? |
+| resolution | backend registration and capability profile | why was this backend eligible? |
+| execution | normalized vectors, metric, limits, seed or declared variance | which choices can change ranking or reproducibility? |
+| result | artifact identity, results, provenance, cost, warnings | can the output be tied to the request and backend that produced it? |
+| comparison | original and replay artifacts plus tolerance policy | is the difference exact, acceptable, unexplained, or refused? |
 
-## Ownership Test
+Inspect capabilities before execution. The
+[entrypoint examples](interfaces/entrypoints-and-examples.md) demonstrate both
+strict deterministic work and honestly declared approximate work.
 
-If the disputed behavior decides what gets embedded, stored, retrieved,
-compared, or replayed during search, it belongs here. If it decides what a
-claim means or whether a run is acceptable to keep, it does not.
+## Retrieval Trust Boundary
 
-## Implementation Anchors
+Index begins after source material has a stable prepared identity. It does not
+repair chunking or normalization, and it does not interpret a retrieved span as
+a supported claim. Its authority is the vector operation between those
+boundaries: embedding/provider selection, backend capability negotiation,
+index identity, metric semantics, budgets, ranking, execution provenance, and
+replay comparison.
 
-- `packages/bijux-canon-index/src/bijux_canon_index` for the owned retrieval implementation boundary
-- `apis/bijux-canon-index/v1/schema.yaml` for the tracked caller-facing schema
-- `packages/bijux-canon-index/src/bijux_canon_index/domain/provenance` for audit, replay, and lineage behavior
-- `packages/bijux-canon-index/tests` for replay, provenance, and retrieval correctness evidence
+An `ExecutionArtifact` establishes what the engine did under a declared
+contract. It does not establish corpus completeness, semantic relevance, or
+truth. Those stronger questions require source evidence and reasoning-level
+verification.
 
-## Start Here
+## Evidence And Limits
 
-- open [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/) when the question is why this package exists or where its ownership stops
-- open [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/) when you need module boundaries, dependency flow, or execution shape
-- open [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
-- open [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/) when you need local workflow, diagnostics, release, or recovery guidance
-- open [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/) when the question is whether the package has proved its promises strongly enough
+| Claim | Evidence to inspect | Limit |
+| --- | --- | --- |
+| execution was exact | strict mode, exact-capable backend, metric and parameter identity, artifact provenance | numerical implementation differences may still require comparison |
+| approximation stayed bounded | declared error and resource bounds, backend witness, observed metrics | a bound is not a guarantee outside the measured contract |
+| replay is acceptable | original request and artifact, current capabilities, diff, tolerance policy | similar neighbors alone are insufficient |
+| a plugin is compatible | registry contract, capability declaration, conformance results | registration does not make the backend trustworthy |
+| a ranking is reviewable | query and corpus identity, scores, metric, backend, artifact lineage | does not prove relevance or factual support |
 
-## Reference Areas
+## Continue By Question
 
-- [Foundation](https://bijux.io/bijux-canon/03-bijux-canon-index/foundation/)
-- [Architecture](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/)
-- [Interfaces](https://bijux.io/bijux-canon/03-bijux-canon-index/interfaces/)
-- [Operations](https://bijux.io/bijux-canon/03-bijux-canon-index/operations/)
-- [Quality](https://bijux.io/bijux-canon/03-bijux-canon-index/quality/)
+| Question | Next page |
+| --- | --- |
+| where does vector authority start and stop? | [Foundation](foundation/index.md) |
+| how do domain, application, registry, and adapters depend on one another? | [Architecture](architecture/index.md) |
+| which Python, CLI, HTTP, plugin, and artifact contracts are callable? | [Interfaces](interfaces/index.md) |
+| how do I configure, operate, inspect, or recover execution? | [Operations](operations/index.md) |
+| which tests defend exactness, provenance, replay, and plugins? | [Quality](quality/index.md) |
 
 ## Refusal Is A Result
 

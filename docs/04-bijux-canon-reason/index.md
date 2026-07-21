@@ -53,48 +53,66 @@ The invariant checksum binds plan, trace, and runtime descriptor. Replay checks
 fingerprints and emits a diff summary; it does not declare equivalence merely
 because the final answer looks similar.
 
-## What This Package Owns
+## Follow One Claim
 
-- claim formation, reasoning-side verification, and provenance-aware reasoning records
-- logic that turns retrieval output into inspectable conclusions and supporting checks
-- reasoning artifacts that agent and runtime layers can consume without reinterpreting intent
+```mermaid
+flowchart LR
+    problem[ProblemSpec]
+    plan[content-addressed Plan]
+    evidence[retrieved EvidenceRef]
+    support[exact SupportRef span]
+    claim[typed Claim]
+    checks[verification findings]
+    run[manifested run]
 
-## What This Package Does Not Own
+    problem --> plan --> evidence --> support --> claim --> checks --> run
+```
 
-- document preparation and retrieval execution below the reasoning boundary
-- multi-step orchestration policy above one reasoning-capable step
-- runtime acceptance, persistence, and final replay authority for whole runs
+| Claim field | Meaning | Evidence required for review |
+| --- | --- | --- |
+| kind | observed, assumed, or derived | the trace action that introduced it |
+| status | proposed, validated, or rejected | verification findings and policy disposition |
+| support | exact evidence relationship | evidence identity, byte span, and snippet digest |
+| confidence | bounded assessment attached to the claim | declared method and supporting record; confidence is not evidence |
+| identity | content-addressed claim reference | canonical serialization of the claim contract |
 
-## Ownership Test
+Evidence references are byte-sensitive. Normalizing or replacing the source
+after a support span is recorded changes the content contract even when the
+rendered sentence looks the same.
 
-If the issue is about what evidence means, how a claim is verified, or which
-reasoning artifact should exist after evaluation, it belongs here. If the
-issue is about how evidence was fetched or how multiple steps are coordinated,
-it does not.
+## Reasoning Trust Boundary
 
-## Implementation Anchors
+Reason consumes prepared or retrieved evidence and produces claims, checks,
+and a manifested reasoning run. It does not own how a vector backend ranked the
+evidence, how an agent schedules several reasoning calls, or whether runtime
+policy accepts the whole flow.
 
-- `packages/bijux-canon-reason/src/bijux_canon_reason` for the owned reasoning implementation boundary
-- `packages/bijux-canon-reason/src/bijux_canon_reason/core/models` for claim, verification, planning, and trace models
-- `packages/bijux-canon-reason/src/bijux_canon_reason/verification` for structural and provenance checks
-- `packages/bijux-canon-reason/tests` for proof that claims, verification, and provenance stay aligned
-- `packages/bijux-canon-reason/README.md` for the package-level contract readers see before code
+The verifier checks registered structure, provenance, hashes, support, tool
+capabilities, and replay invariants. A passing report means those checks passed
+over the retained record. It does not certify that every relevant source was
+retrieved or that a scientific conclusion is true.
 
-## Start Here
+## Review A Run In Order
 
-- open [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the question is why this package exists or where its ownership stops
-- open [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/) when you need module boundaries, dependency flow, or execution shape
-- open [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is about commands, APIs, schemas, imports, or artifacts that callers may treat as stable
-- open [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when you need local workflow, diagnostics, release, or recovery guidance
-- open [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/) when the question is whether the package has proved its promises strongly enough
+1. Confirm `spec.json` and `plan.json` describe the intended problem and graph.
+2. Follow evidence and tool events in `trace.jsonl` before reading final prose.
+3. Match every validated claim to its `SupportRef` and content digest.
+4. Read `verify.json`, including warnings and rejected findings.
+5. Confirm `manifest.json` covers the retained files and their digests.
+6. Use `fingerprint.txt` and replay output only after the run is complete.
 
-## Reference Areas
+The [entrypoint examples](interfaces/entrypoints-and-examples.md) show how to
+create, verify, and replay that directory without discarding failed findings.
 
-- [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/)
-- [Architecture](https://bijux.io/bijux-canon/04-bijux-canon-reason/architecture/)
-- [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/)
-- [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/)
-- [Quality](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/)
+## Continue By Question
+
+| Question | Next page |
+| --- | --- |
+| which reasoning concepts and responsibilities are stable? | [Foundation](foundation/index.md) |
+| how do planning, execution, evidence, verification, and manifests connect? | [Architecture](architecture/index.md) |
+| which Python, CLI, HTTP, and artifact contracts are callable? | [Interfaces](interfaces/index.md) |
+| how do I create, inspect, verify, replay, or recover a run? | [Operations](operations/index.md) |
+| which invariants bound support, hashes, traces, and replay? | [Quality](quality/index.md) |
 
 ## Verification Boundaries
 
