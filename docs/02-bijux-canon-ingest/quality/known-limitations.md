@@ -9,62 +9,87 @@ last_reviewed: 2026-07-21
 
 # Known Limitations
 
-The package provides deterministic preparation primitives and reference
-retrieval components. It is not a document understanding service, a durable
-distributed queue, or a guarantee that an external embedding model is stable.
+`bijux-canon-ingest` makes preparation behavior explicit and inspectable. It
+does not certify the source material, provide distributed delivery semantics,
+or make an external embedding service reproducible. The distinction matters:
+a deterministic transform can faithfully preserve a bad or unauthorized
+source.
 
-## Model and retrieval limits
+## Supported Claim Boundary
 
-- `HashEmbedder` is a dependency-free deterministic baseline. Its vectors are
-  not semantically meaningful and must not be used as evidence of retrieval
-  quality.
-- `SentenceTransformersEmbedder` is optional, loads its model lazily, and
-  inherits model availability, version, hardware, and upstream numerical
-  behavior. Pin and record those inputs for reproducible work.
-- The in-package dense and lexical indexes are reference implementations for
-  preparation and evaluation. Use `bijux-canon-index` when backend capability
-  negotiation, governed execution, or replayable retrieval is required.
-- An embedding dimension is enforced only when an `EmbeddingSpec` is available
-  at the embedding/index boundary. A bare `Chunk` does not infer model truth
-  from vector length.
+```mermaid
+flowchart LR
+    source["caller-governed source"]
+    prepare["validated preparation"]
+    chunks["chunks, offsets, and observations"]
+    retrieval["reference retrieval"]
+    decision["downstream use"]
 
-## Pipeline limits
+    source --> prepare --> chunks --> retrieval --> decision
+    prepare -. "package guarantee" .-> chunks
+    source -. "not certified" .-> decision
+    retrieval -. "not a quality guarantee" .-> decision
+```
 
-- The minimal lazy pipeline filters, cleans, chunks, and embeds without the
-  structural deduplication performed by the document-oriented pipeline. Choose
-  the API by its documented contract; do not assume all entry points
-  materialize identical post-processing.
-- Document observations require materialization. Their memory use grows with
-  the input and produced chunk count.
-- Chunk offsets are Python string offsets in normalized text. They are not byte
-  offsets into the original file and may no longer align after whitespace or
-  case normalization.
-- Structural deduplication recognizes structural equality. It does not detect
-  paraphrases, near-duplicates, copied ideas, or semantically equivalent text.
-- The package does not promise exactly-once distributed processing. Callers
-  integrating queues or remote stores must supply idempotency and transaction
-  semantics appropriate to those systems.
+The package can establish that configured transforms were applied and that
+typed boundaries were respected. It cannot establish that the input is true,
+licensed, complete, safe, representative, or suitable for a decision.
 
-## Operational limits
+## Capability Limits
 
-Retries, circuit breakers, memoization, resource management, and async
-resilience are explicit combinators. The core pipeline does not silently wrap
-external work with them. This preserves visible semantics but means production
-integrations must choose and configure their own policies.
+| Surface | What is guaranteed | What is not guaranteed | Required caller record |
+| --- | --- | --- | --- |
+| cleaning | configured normalization is applied consistently within the same software and configuration set | equivalence to original byte positions or stability across changed Unicode, dependency, or caller preprocessing behavior | source digest, cleaning configuration, package and dependency versions |
+| chunking | ordered spans over normalized Python strings | byte offsets into the original file, semantic paragraph boundaries, or stable spans after configuration changes | normalized-text digest, chunking parameters, tail policy |
+| structural deduplication | removal of structurally equal values at the selected pipeline boundary | paraphrase, near-duplicate, copied-idea, or semantic-identity detection | deduplication entry point and input/output counts |
+| hash embeddings | deterministic, dependency-light vectors for a fixed implementation and dimension | semantic similarity or retrieval quality | embedder name, dimension, and implementation version |
+| sentence-transformer embeddings | adapter validation and lazy model loading | model availability, hardware equivalence, upstream numerical stability, or unchanged remote artifacts | exact model revision, adapter version, device, dimension |
+| reference indexes | local BM25 and NumPy-cosine construction, persistence, and querying | governed backend negotiation, distributed durability, or production service availability | backend, fingerprint, schema version, corpus identity |
+| HTTP index store | process-local access to indexes built through that application instance | survival across process restart, replication, or multi-process consistency | external persistence plan when durability is required |
 
-The standard retry helpers are bounded only by the policy supplied to them.
-Caching changes memory or disk retention and requires a sound cache key.
-Circuit breakers can emit errors or truncate streams depending on the selected
-variant; truncation must not be mistaken for successful completeness.
+Use `bijux-canon-index` when retrieval must be governed through backend
+capability negotiation, execution budgets, and replay evidence.
 
-## Input and contract limits
+## Streaming Is Conditional
 
-Strict interface models reject unknown fields and invalid embeddings, but they
-cannot establish that source text is accurate, licensed, safe, or suitable for
-a downstream decision. Filtering rules encode caller policy; they are not a
-substitute for source governance.
+The lazy pipelines avoid materializing the complete corpus, but bounded memory
+is conditional on the selected combinators and consumers:
 
-When these limits matter, retain the source identifier, normalization and
-chunking configuration, embedding specification, adapter versions, and
-observations with the produced chunks. That record makes a later discrepancy
-diagnosable even when the package cannot eliminate the external uncertainty.
+- document observations materialize their results, so memory grows with the
+  input and emitted chunk count;
+- ordered concurrency buffers completed work until preceding positions arrive;
+- multicast raises `BufferError` when a consumer falls beyond its configured
+  buffer instead of silently discarding values;
+- async gather bounds its queue, but the caller still chooses the queue and
+  concurrency limits;
+- index construction sorts and materializes chunks and embeddings.
+
+These properties prevent an unbounded claim such as “ingest is streaming” from
+being applied to every entry point. Capacity tests must use the actual pipeline,
+observation mode, concurrency policy, and corpus distribution deployed.
+
+## Effects And Recovery
+
+Retries, timeouts, breakers, resource scopes, and memoization are explicit
+combinators. The core pipeline does not add them around external work. A retry
+can repeat a non-idempotent effect; a breaker can terminate a stream; a cache
+can preserve data longer than the source; and cancellation can leave a
+multi-file operation partially complete.
+
+No package operation supplies an exactly-once transaction across source reads,
+embedding calls, index publication, and observations. Queue acknowledgements,
+idempotency keys, staging, atomic publication, retention, and recovery remain
+deployment responsibilities.
+
+## Interpreting An Output
+
+A chunk is trustworthy only to the boundary recorded with it. Retain the
+source identifier and digest, normalized-text digest, offsets, cleaning and
+chunking configuration, embedding specification, package and adapter versions,
+index fingerprint, and terminal observations. Without that record, a later
+ranking or citation discrepancy cannot be separated into source drift,
+transformation drift, model drift, or retrieval drift.
+
+See the [risk register](risk-register.md) for failure signals and controls, and
+the [test strategy](test-strategy.md) for the evidence that protects these
+bounded claims.

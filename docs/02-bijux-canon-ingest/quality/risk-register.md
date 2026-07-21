@@ -9,75 +9,81 @@ last_reviewed: 2026-07-21
 
 # Risk Register
 
-Ingest establishes the identity and structure of material that every
-downstream package treats as evidence. Its highest-impact failures often look
-like successful processing: an index is populated, a query returns text, and
-only later does a reviewer discover that offsets, normalization, or provenance
-changed.
+Ingest failures are dangerous when they remain structurally valid. A corpus can
+produce chunks, build an index, and answer queries while its identity, offsets,
+or completeness have already drifted. This register treats a green API response
+as execution evidence, not proof that the prepared corpus is fit for use.
 
-## Risk Topology
+## Failure Propagation
 
 ```mermaid
 flowchart TD
-    input["source bytes and metadata"]
-    identity["source identity"]
-    transform["cleaning and chunking"]
-    execution["streaming and embedding"]
-    artifact["prepared artifacts"]
-    consumer["index and evidence consumers"]
+    source["source and metadata"]
+    identity["identity and normalization"]
+    partition["chunking and deduplication"]
+    effects["concurrent effects"]
+    publication["artifact publication"]
+    evidence["retrieval and citations"]
 
-    input --> identity --> transform --> execution --> artifact --> consumer
-    identity -. "unstable IDs" .-> consumer
-    transform -. "offset drift" .-> consumer
-    execution -. "loss or reordering" .-> consumer
-    artifact -. "stale or partial publication" .-> consumer
+    source --> identity --> partition --> effects --> publication --> evidence
+    identity -. "silent drift" .-> evidence
+    partition -. "coverage loss" .-> evidence
+    effects -. "partial completion" .-> evidence
+    publication -. "mixed generations" .-> evidence
 ```
 
-## Active Risks And Controls
+## Persistent Risks
 
-| Risk | Consequence | Preventive control | Detection evidence | Residual exposure |
+Impact describes the worst credible effect at the package boundary. Detection
+names the signal an operator can retain, not merely a test that maintainers run.
+
+| Hazard | Impact | Observable signal | Control | Residual owner |
 | --- | --- | --- | --- | --- |
-| source identity changes across equivalent input | duplicates, broken joins, and irreproducible citations | derive stable identity before transformation and retain source metadata | core type round trips, document-input tests, repeated-run comparison | upstream metadata can still be unstable or incomplete |
-| normalization changes content without a contract change | content keys, spans, and downstream rankings drift | explicit cleaning configuration and cache invalidation | cleaning configuration and processing-stage tests | Unicode libraries and caller preprocessing remain external inputs |
-| chunk spans detach from normalized text | citations point to the wrong passage | validate boundaries, tail policy, and stable ordering | chunking, async chunking, and core round-trip tests | consumers can still discard offsets |
-| streaming drops, duplicates, or reorders items | prepared corpora are incomplete while the run appears healthy | bounded fan-in/fan-out, contiguity checks, typed termination | streaming, scheduling, gather, and backpressure law tests | process termination can interrupt a multi-file run |
-| partial failures are flattened into empty success | missing documents become invisible | retain `Result` values, counts, stage, position, and termination reason | result folds, result streams, reports, and pipeline observations | applications can ignore surfaced errors |
-| embedder identity or numerics drift | dimensions or rankings change between runs | record adapter, model, version, dimension, and fingerprint | embedder factory tests plus offline evaluation | external model services may change behind a stable name |
-| stale cache or index state is reused | outputs mix semantics from different configurations | version cache namespaces and validate serialization envelopes | memoization, index loading, codec, and end-to-end persistence tests | no transaction spans every run artifact |
-| sensitive text escapes through logs or samples | source confidentiality is violated | bound observations and redact at interfaces | observability and report tests plus deployment review | package checks cannot determine corpus sensitivity |
-| local retrieval grows into governed index policy | ownership and replay semantics split across packages | keep ingest retrieval a reference seam and move governed execution to index | dependency review and package-boundary checks | convenience APIs can encourage accidental expansion |
+| unstable source identity | high: duplicate content, broken joins, irreproducible citations | equivalent bytes produce different document IDs or one ID maps to different digests | derive identity before transformation; retain source digest and metadata | source adapter owner |
+| normalization or chunk-policy drift | high: changed content keys, spans, and rankings | normalized digest, chunk count, boundary distribution, or tail count changes for the same fixture | version configuration; compare golden corpus manifests before publication | pipeline owner |
+| offsets are interpreted as original bytes | high: citations select the wrong passage | `normalized_text[start:end]` matches while the original byte slice does not | label offset coordinate system; retain normalized text or its resolvable artifact | evidence consumer |
+| structural deduplication is treated as semantic deduplication | medium: repeated claims distort retrieval | high near-duplicate rate remains after structural deduplication | run a separate, declared semantic-duplicate policy when required | corpus curator |
+| ordered concurrency stalls behind a slow item | medium: latency and buffer pressure rise without progress | oldest pending position age and ordered-buffer occupancy increase | bound concurrency and timeouts; expose position and termination reason | deployment operator |
+| unordered execution is mistaken for source order | high: downstream joins or deterministic snapshots drift | completion positions differ while item identities remain stable | select ordered policy or explicitly sort by stable identity before publication | pipeline integrator |
+| expected errors are collapsed into empty success | high: corpus is incomplete without an alarm | input, success, error, and terminal counts do not reconcile | retain `Result` values and observations; reject unreconciled publication | application owner |
+| retry repeats a non-idempotent external effect | high: duplicate writes or charges | attempts exceed one for the same idempotency key | retry only classified transient failures; make side effects idempotent | adapter owner |
+| embedding identity or numerics drift | high: dimensions fail or rankings change | model revision, dimension, vector digest, or evaluation metrics differ | pin and record model inputs; gate publication on dimension and quality checks | model owner |
+| stale cache crosses a semantic boundary | high: mixed cleaning, embedding, or schema semantics | cache namespace does not encode every meaning-bearing input | content-address and version cache keys; verify serialization envelope | cache owner |
+| process-local HTTP index is treated as durable | high: indexes disappear on restart or diverge by worker | index ID is absent after restart or differs between workers | use explicit persistent storage or `bijux-canon-index` | service operator |
+| sensitive text reaches observations | critical: confidentiality breach | raw text or metadata appears in logs, traces, samples, or cache entries | classify and redact before observation; bound sampling and retention | data controller |
 
-## Acceptance By Change Type
+## Publication Gate
 
 ```mermaid
 flowchart LR
-    change["ingest change"]
-    identity{"identity or offsets?"}
-    execution{"ordering or effects?"}
-    boundary{"artifact or public boundary?"}
-    core["core and processing laws"]
-    stream["streaming and effect laws"]
-    e2e["serialization, CLI/HTTP, and e2e"]
-
-    change --> identity
-    identity -->|yes| core
-    identity -->|no| execution
-    execution -->|yes| stream
-    execution -->|no| boundary
-    boundary -->|yes| e2e
+    candidate["candidate corpus"] --> reconcile{"counts reconcile?"}
+    reconcile -->|no| reject["reject publication"]
+    reconcile -->|yes| identity{"identity and config recorded?"}
+    identity -->|no| reject
+    identity -->|yes| quality{"drift checks acceptable?"}
+    quality -->|no| reject
+    quality -->|yes| publish["atomically publish one generation"]
 ```
 
-A change can require more than one path. An embedding-cache change, for
-example, needs adapter identity tests, cache behavior tests, serialization
-evidence, and an offline quality comparison if ranking claims change.
+Before publication, reconcile input, filtered, successful, failed, deduplicated,
+and emitted counts. Then bind the corpus generation to source and normalized
+digests, transform configuration, embedding identity, artifact schema, and index
+fingerprint. Publish that generation atomically; do not assemble a live corpus
+from independently current files.
 
-## Operational Interpretation
+## Change Evidence
 
-No table entry is “closed” merely because its current unit tests pass. These
-are persistent hazards at package boundaries. A release narrows them through
-specific controls and evidence; deployment owners still supply corpus access,
-retention, model governance, storage durability, and recovery procedures.
+Changes to identity, cleaning, chunking, or serialization require golden-corpus
+comparison and round-trip evidence. Changes to scheduling, retry, timeout, or
+breakers require ordering, cancellation, backpressure, and terminal-state
+evidence. Changes to embeddings or retrieval require dimension checks,
+fingerprint comparison, and an offline quality evaluation. HTTP or CLI boundary
+changes additionally require schema or output snapshots.
 
-Use [architecture risks](../architecture/architecture-risks.md) for failure
-mechanisms, [test strategy](test-strategy.md) for executable evidence, and
-[known limitations](known-limitations.md) for deliberately unsupported claims.
+Passing those checks narrows implementation risk; it does not transfer source
+governance, model governance, privacy, durability, or disaster recovery into
+the package. Those responsibilities remain with the residual owners above.
+
+See [known limitations](known-limitations.md) for unsupported claims and
+[architecture risks](../architecture/architecture-risks.md) for the underlying
+failure mechanisms.
