@@ -9,92 +9,98 @@ last_reviewed: 2026-07-21
 
 # Integration Seams
 
-Ingest integrations enter through typed documents and capability boundaries,
-then leave through prepared records, local indexes, candidates, or structured
-errors. Each seam preserves source identity so downstream systems do not need
-to reconstruct provenance from filenames or logs.
+Ingest is the boundary where external material acquires canonical identity,
+normalized text, chunk coordinates, and embedding context. A safe integration
+preserves those decisions as data. It does not ask downstream packages to
+reconstruct them from filenames, logs, or vector length.
 
-## Seam Map
+## Handoff Map
 
 ```mermaid
 flowchart LR
-    files["CSV and files"] --> storage["Storage capability"]
-    callers["Python callers"] --> docs["RawDoc values"]
-    http["HTTP v1"] --> models["strict request models"]
-    storage --> pipeline["application pipeline"]
-    docs --> pipeline
-    models --> pipeline
+    caller["caller-owned bytes and metadata"] --> input["RawDoc or Storage"]
+    http["HTTP request"] --> boundary["strict interface models"]
+    input --> pipeline["clean, filter, chunk, embed"]
+    boundary --> pipeline
     embedder["Embedder capability"] --> pipeline
-    pipeline --> chunks["Chunk values / JSONL"]
-    pipeline --> indexes["versioned local indexes"]
-    indexes --> candidates["candidates and citations"]
-    chunks --> downstream["index, reason, or application code"]
-    candidates --> downstream
+    pipeline --> chunks["prepared chunks"]
+    pipeline --> local["local reference index"]
+    chunks --> index["bijux-canon-index"]
+    local --> app["application retrieval"]
+    chunks --> reason["bijux-canon-reason"]
 ```
 
-## Python Seam
+The left side is caller authority: source acquisition, access, licensing, and
+raw identity. The package owns transformation semantics in the middle. The
+right side receives explicit artifacts and provenance, not an ingest process
+handle.
 
-Use `RawDoc`, `CleanDoc`, `ChunkWithoutEmbedding`, and `Chunk` when the caller
-already owns IO. Pure functions such as `clean_doc` and `chunk_doc` are the
-narrowest seam and carry no server or storage lifecycle.
+## Seam Contracts
 
-Use application services when the caller needs indexing, persistence,
-retrieval, or answering as one use case. Expected failures remain `Result`
-values, allowing the caller to choose fail-fast, partition, retry, or bounded
-collection behavior.
+| Seam | Caller supplies | Ingest returns | Integration must preserve |
+| --- | --- | --- | --- |
+| Python values | `RawDoc` values or already-owned text | `CleanDoc`, `ChunkWithoutEmbedding`, `Chunk`, or `Result` | document identity, normalized offsets, metadata, error context |
+| storage capability | ordered document reads and a writable destination | typed values and adapter outcomes | order, field meaning, row position, atomic publication behavior |
+| embedder capability | text-to-vector implementation | vectors associated with chunks | provider, model revision, dimension, normalization, numerical posture |
+| CLI | paths, configuration, and selected command | JSONL, index artifacts, JSON output, and exit status | stdout/stderr separation, exit category, destination generation |
+| HTTP | strict request envelope | chunks, index identity, candidates, citations, or structured failure | process boundary, request identity, response schema version |
+| downstream package | prepared records and artifact identity | no implicit callback into ingest | chunk identity, coordinate system, configuration and index fingerprints |
 
-## Storage Seam
+## Choose The Narrowest Entry
 
-The `Storage` capability separates document and chunk semantics from files.
-`FileStorage` reads CSV rows into `RawDoc` values and writes chunk JSONL through
-a temporary file, flush, `fsync`, and atomic replacement. Alternative storage
-must preserve ordering, field meaning, and structured failure context.
+Use `clean_doc` and `chunk_doc` when the caller already owns IO and needs pure
+transformations. Use application services when indexing, persistence,
+retrieval, or extractive answering is one declared use case. Use the CLI at a
+process boundary. Use HTTP when request isolation and schema validation are
+needed inside a service deployment.
 
-A storage adapter must not normalize text, invent identifiers, or swallow a
-row failure. Those actions belong to processing or caller policy.
+Expected domain failures remain `Result` values in the Python workflows. The
+caller chooses fail-fast, partition, retry, or bounded aggregation. Converting
+an error to an empty collection destroys the distinction between “no chunks”
+and “preparation failed.”
 
-## Embedding Seam
+## Adapter Obligations
 
-Embedding is the principal repeatability boundary. The pipeline accepts an
-embedder capability; deterministic local hashing and external model adapters
-share that contract. A production integration should bind model identity,
-version, dimensionality, normalization, and numerical posture to the resulting
-index artifact.
+A `Storage` adapter may acquire and publish values; it must not silently clean
+text, invent source identity, reorder records, or discard a row error.
+`FileStorage` reads CSV into `RawDoc` values and publishes chunk JSONL using a
+temporary file, flush, `fsync`, and atomic replacement.
 
-Returning the correct vector length is necessary but insufficient for replay.
-Changing a model behind the same adapter name changes retrieval semantics.
+An embedder adapter may translate text into vectors; it must not redefine chunk
+identity or hide the meaning of the vector space. Dimension validation catches
+shape mismatch, not semantic model drift. Bind model identity and normalization
+to the artifact even when the adapter name is unchanged.
 
-## CLI and Serialization Seams
+## Serialization And Service Boundaries
 
-The `bijux-canon-ingest` command translates CSV, configuration, paths, and
-arguments into application calls. JSONL carries prepared chunks. Versioned
-MessagePack envelopes carry local BM25 and NumPy-cosine indexes. Consumers
-should load these formats through package codecs rather than duplicate their
-schema.
+JSONL is the prepared-record interchange. Versioned MessagePack envelopes
+carry local BM25 and NumPy-cosine reference indexes. Load them through package
+codecs so schema checks and fingerprints remain active.
 
-CLI exit status distinguishes input/configuration errors from processing or
-adapter failures. Automation must preserve that distinction instead of treating
-every non-zero outcome as an empty corpus.
+The HTTP API provides health, chunking, index build, retrieval, and extractive
+answering. Its index registry is in memory. An `index_id` belongs to that
+application process and is neither durable nor shared automatically across
+workers. Cross-process use requires persisted index artifacts or an
+application-owned durable service.
 
-## HTTP Seam
+## Downstream Admission
 
-The v1 FastAPI surface provides health, chunking, index build, retrieval, and
-extractive answering. Its index registry is process-local: an `index_id`
-created in one process is not automatically durable or visible to another.
-Use explicit persisted indexes or an application-owned service layer when
-cross-process continuity is required.
+```mermaid
+flowchart TD
+    output["prepared output"] --> identity{"source and chunk identity present?"}
+    identity -->|no| reject["reject handoff"]
+    identity -->|yes| offsets{"coordinate system and config recorded?"}
+    offsets -->|no| reject
+    offsets -->|yes| embedding{"embedding identity required and present?"}
+    embedding -->|no| reject
+    embedding -->|yes| admit["admit to downstream package"]
+```
 
-## Downstream Handoff
+`bijux-canon-index` begins when backend capability, retrieval intent, budgets,
+and replay become governed execution. `bijux-canon-reason` begins when prepared
+content becomes addressable evidence for claims. Agent and runtime begin only
+when orchestration or whole-run authority is required.
 
-Downstream packages should receive stable chunk identity, offsets, metadata,
-index fingerprints, candidates, citations, and structured failures. They should
-not receive an opaque provider client or rely on ingest logs as provenance.
-
-- `bijux-canon-index` begins where retrieval execution needs governed backend,
-  intent, and replay contracts.
-- `bijux-canon-reason` begins where evidence becomes claims and verification.
-- agent and runtime begin where orchestration and execution authority matter.
-
-See [data contracts](../interfaces/data-contracts.md) and
+See [data contracts](../interfaces/data-contracts.md) for value semantics and
 [artifact contracts](../interfaces/artifact-contracts.md) for serialized
 handoffs.

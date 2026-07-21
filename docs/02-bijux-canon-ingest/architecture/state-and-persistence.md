@@ -9,75 +9,94 @@ last_reviewed: 2026-07-21
 
 # State and Persistence
 
-Most ingest transformations are pure: documents enter as values and prepared
-records leave as values. Persistence appears only at explicit filesystem,
-cache, or index boundaries chosen by the caller.
+Ingest transformations are predominantly value-to-value operations.
+Durability appears only where the caller selects a file, cache, index, or
+service boundary. This keeps retention visible, but it also means that a
+collection of individually valid files is not automatically one coherent
+corpus generation.
 
-## State Model
+## State Classes
 
 ```mermaid
 flowchart TD
-    raw["RawDoc values"] --> transform["clean and chunk"]
-    transform --> memory["in-memory CleanDoc and Chunk values"]
-    memory --> jsonl["atomic JSONL output"]
-    memory --> build["index construction"]
-    build --> msgpack["versioned MessagePack index"]
-    memory --> cache["optional namespaced DiskCache"]
+    source["caller-owned source"] --> values["RawDoc and CleanDoc values"]
+    values --> chunks["Chunk values"]
+    chunks --> jsonl["prepared JSONL"]
+    chunks --> index["MessagePack reference index"]
+    chunks --> cache["optional disk cache"]
+    index --> http["process-local HTTP registry"]
+
+    values -. "ephemeral" .-> chunks
+    jsonl -. "durable file" .-> generation["published corpus generation"]
+    index -. "durable file" .-> generation
+    cache -. "reconstructible" .-> generation
+    http -. "ephemeral" .-> generation
 ```
 
-The library does not select a global data directory. CLI flags and application
-calls receive paths explicitly, so retention, permissions, backup, and cleanup
-remain deployment decisions.
-
-## Durable Formats
-
-| State | Format | Write behavior | Identity or version signal |
+| State | Lifetime | Identity | Recovery posture |
 | --- | --- | --- | --- |
-| prepared chunks | UTF-8 JSON Lines | temporary file, flush, `fsync`, atomic replace | document ID, chunk index, offsets, metadata |
-| BM25 index | MessagePack | written to the caller's path | schema version and index fingerprint |
-| NumPy cosine index | MessagePack | written to the caller's path | schema version, embedding data, and index fingerprint |
-| disk cache entry | arbitrary bytes | temporary sibling followed by atomic replace | namespace, cache version, SHA-256 key filename |
+| Python documents and chunks | process or iterator lifetime | document and chunk IDs, normalized offsets | rerun from retained source and configuration |
+| prepared JSONL | caller-controlled file lifetime | per-record identity plus generation metadata supplied by caller | validate, or rebuild the complete generation |
+| BM25 or NumPy-cosine index | caller-controlled file lifetime | schema version and index fingerprint | load and validate; rebuild from prepared records on failure |
+| disk cache entry | configured cache retention | namespace, caller version, SHA-256 key filename | evict and recompute |
+| HTTP index registry | application-process lifetime | `index_id` derived from index fingerprint | rebuild or reload after restart |
 
-Index fingerprints bind the persisted representation to its content and build
-configuration. Loading detects the serialized backend and reconstructs a
-`StoredIndex` with its backend and fingerprint; unknown or invalid data is
-returned as an error by the application service.
+The library does not select a global data directory. Paths, permissions,
+backup, cleanup, and retention are deployment decisions.
 
-## Atomicity and Failure Scope
+## File Commit Boundaries
 
-Prepared JSONL and cache entries use replace-based writes so readers do not see
-a partially written target under normal same-filesystem operation. An index is
-saved through its backend serializer; callers should write it to a controlled
-location and treat a failed save as an unusable artifact.
+Prepared JSONL and cache entries publish through a temporary sibling and atomic
+replacement on the same filesystem. This prevents ordinary readers from
+seeing a partially written target. It does not make a transaction across
+prepared records, index files, configuration, observations, and downstream
+registrations.
 
-Atomic replacement protects one file. It does not create a transaction across
-chunks, indexes, configuration, and downstream records. When these artifacts
-must move together, write them into a fresh run directory and publish that
-directory only after every required file has succeeded.
+```mermaid
+flowchart LR
+    source["source snapshot"] --> stage["fresh generation directory"]
+    config["transform and model config"] --> stage
+    stage --> chunks["chunks.jsonl"]
+    stage --> index["reference index"]
+    stage --> manifest["generation manifest"]
+    chunks --> verify{"all artifacts validate?"}
+    index --> verify
+    manifest --> verify
+    verify -->|no| quarantine["retain or remove staged generation"]
+    verify -->|yes| publish["atomically publish generation pointer"]
+```
 
-## Cache Semantics
+For a multi-artifact corpus, write into a fresh generation directory. Record
+source and normalized digests, transformation configuration, embedder identity,
+schema versions, index fingerprint, counts, and terminal observations. Validate
+every required artifact before changing the application-visible generation
+pointer.
 
-`DiskCache` stores bytes and leaves serialization to its caller. Cache filenames
-combine a namespace, a caller-supplied version, and a SHA-256 digest of the key.
-Changing transformation or serialization semantics therefore requires a new
-cache version or namespace; otherwise old bytes remain valid from the cache's
-point of view.
+## Cache Identity
+
+`DiskCache` stores bytes; serialization belongs to the caller. Its filename
+identity includes namespace, caller-supplied version, and a SHA-256 key digest.
+Changing cleaning, chunking, embedding, or serialization meaning requires a new
+namespace or version.
 
 `content_hash_key` normalizes chunk text and includes a normalization version
-before computing a BLAKE2b digest. It deliberately identifies content, not an
-entire pipeline execution.
+before calculating a BLAKE2b digest. It identifies normalized content, not the
+source license, complete pipeline configuration, embedder, or corpus
+generation. Do not use it alone as a run or publication identity.
 
-## Operational Guidance
+## Recovery Decisions
 
-- Put command output under a caller-owned directory such as
-  `artifacts/ingest/<run-id>/`.
-- Preserve the pipeline configuration alongside exported chunks and indexes
-  when reproducibility matters.
-- Do not edit MessagePack index files by hand; rebuild from source material.
-- Rotate cache namespaces when normalization, embedding, or serialization
-  semantics change.
-- Validate an index by loading and querying it before treating it as a durable
-  handoff.
+| Failure | Safe response | Unsafe response |
+| --- | --- | --- |
+| interrupted JSONL publication | keep the previous target; inspect or discard the temporary sibling | concatenate partial and previous outputs |
+| invalid MessagePack or fingerprint mismatch | quarantine and rebuild from the recorded generation | edit binary state or ignore the mismatch |
+| stale cache semantics | rotate namespace/version and recompute | assume bytes are valid because the key exists |
+| HTTP process restart | rebuild or load durable index state | assume an old `index_id` still resolves |
+| mixed chunk and index generations | reject the handoff and republish one generation | select independently newest files |
 
-The [artifact contracts](../interfaces/artifact-contracts.md) define the
-reader-visible fields and compatibility expectations for these formats.
+Use a caller-owned root such as `artifacts/ingest/<run-id>/`, restrict access to
+the source classification, and validate an index by loading and querying it
+before downstream publication.
+
+See [artifact contracts](../interfaces/artifact-contracts.md) for durable fields
+and [failure recovery](../operations/failure-recovery.md) for operator actions.
