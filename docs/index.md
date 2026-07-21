@@ -4,26 +4,23 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # Bijux Canon
 
-`bijux-canon` is a package system for deterministic ingest, retrieval,
-reasoning, orchestration, and governed execution. Open this site to find the
-package that owns the behavior under review and the repository rules that keep
-the package handoffs explicit.
+`bijux-canon` turns documents and datasets into governed AI execution records.
+Its five canonical Python packages divide the work into preparation,
+retrieval, reasoning, orchestration, and runtime authority. That separation
+makes the origin of an output, the contract at each handoff, and the owner of a
+failure visible after a run has completed.
 
-The split is the design. Each package owns one operational promise strongly
-enough that you can follow the full system as a chain of accountable
-handoffs instead of treating the repository as one blurred codebase.
-
-One concrete reading path makes that split easier to trust. A source document
-is prepared by `bijux-canon-ingest`, turned into replayable retrieval behavior
-by `bijux-canon-index`, translated into inspectable claims by
-`bijux-canon-reason`, coordinated by `bijux-canon-agent`, and accepted or
-replayed under `bijux-canon-runtime`. The root owns the rules that keep those
-handoffs visible. It does not own the package behavior itself.
+A source document can be cleaned and chunked by `bijux-canon-ingest`, queried
+through a declared backend contract by `bijux-canon-index`, interpreted and
+verified by `bijux-canon-reason`, coordinated through a trace-producing
+`bijux-canon-agent` workflow, and accepted, persisted, or replayed by
+`bijux-canon-runtime`. These packages can also be used independently; the
+sequence describes ownership, not a mandatory monolithic deployment.
 
 <!-- bijux-canon-badges:generated:start -->
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/bijux-canon-runtime/)
@@ -68,13 +65,13 @@ handoffs visible. It does not own the package behavior itself.
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-<div class="bijux-callout"><strong>Start with owned promises, not with directory names.</strong>
-Ingest prepares deterministic material. Index executes retrieval and preserves provenance. Reason turns evidence into inspectable claims. Agent coordinates role-based work with explicit traces. Runtime governs execution, replay, persistence, and final acceptability. The repository handbook explains the seams without pretending the root owns package behavior.</div>
+<div class="bijux-callout"><strong>Choose the package that owns the decision.</strong>
+Ingest decides how source material is prepared. Index decides how vector work executes and is explained. Reason decides how evidence supports a claim. Agent decides how role-specific work is coordinated. Runtime decides whether the resulting run is acceptable and durable.</div>
 
 <div class="bijux-panel-grid">
-  <div class="bijux-panel"><h3>System Shape</h3><p>Five canonical packages carry the product flow, the root explains shared coordination, the maintainer handbook explains repository health, and compatibility docs exist only to bridge older or shorter continuity names.</p></div>
-  <div class="bijux-panel"><h3>Integrity Rule</h3><p>Statements here must stay consistent with checked-in code, schemas, tests, release assets, and published package boundaries.</p></div>
-  <div class="bijux-panel"><h3>Fast Route</h3><p>Open the repository handbook for cross-package seams, a product handbook for owned behavior, the maintainer handbook for automation, and compatibility docs only when an older or shorter continuity name is still in play.</p></div>
+  <div class="bijux-panel"><h3>Five canonical packages</h3><p>Each package has typed Python surfaces, a command boundary, package-local tests, and a versioned HTTP schema.</p></div>
+  <div class="bijux-panel"><h3>Eleven distributions</h3><p>Five canonical product packages and six explicit compatibility aliases are published from one tagged source line.</p></div>
+  <div class="bijux-panel"><h3>Evidence before confidence</h3><p>Determinism, replay, verification, and compatibility claims are bounded by checked-in contracts and tests rather than inferred from a successful demonstration.</p></div>
 </div>
 
 <div class="bijux-quicklinks">
@@ -128,11 +125,10 @@ flowchart LR
     compat --> runtime
 ```
 
-Read the homepage like a chain of ownership. The product story moves left to
-right through the five canonical packages. The repository handbook explains the
-shared boundary rules around that chain. The maintenance handbook proves how
-the repository enforces those rules. The compatibility handbook exists only to
-route old names back to their canonical owners.
+The product flow moves left to right through the five canonical packages. The
+repository section covers shared boundaries, maintenance covers verification
+and publication machinery, and compatibility maps preserved names to the
+canonical packages that own current behavior.
 
 ## Start Here
 
@@ -141,14 +137,10 @@ route old names back to their canonical owners.
 - open the [Maintenance Handbook](https://bijux.io/bijux-canon/07-bijux-canon-maintain/) for automation, Make routing, CI contracts, and repository health
 - open the [Compatibility Handbook](https://bijux.io/bijux-canon/08-compat-packages/) only when an older or shorter distribution, import, or command name is still in play
 
-## One Real Run
+## Handoff Contracts
 
-A useful mental model is a reviewable run. Each layer changes the question that
-the next layer is allowed to ask. Ingest asks whether source material is stable
-enough to hand forward. Index asks whether retrieval happened through an
-auditable contract. Reason asks what the retrieved evidence supports. Agent
-asks how the work should be coordinated. Runtime asks whether the full run can
-be accepted, persisted, and replayed.
+Each layer changes both the artifact and the question that the next layer is
+allowed to answer.
 
 ```mermaid
 sequenceDiagram
@@ -160,13 +152,22 @@ sequenceDiagram
     participant Agent
     participant Runtime
 
-    Reader->>Ingest: provide source material
-    Ingest-->>Index: deterministic chunks and preparation records
-    Index-->>Reason: retrieved evidence with provenance and replay data
-    Reason-->>Agent: claims, checks, and reasoning artifacts
-    Agent-->>Runtime: ordered workflow trace and final package outputs
-    Runtime-->>Reader: accepted, rejected, or replayable run verdict
+    Reader->>Ingest: documents + preparation configuration
+    Ingest-->>Index: chunks + preparation identity
+    Index-->>Reason: ranked evidence + execution provenance
+    Reason-->>Agent: claims + checks + reasoning trace
+    Agent-->>Runtime: ordered outcome + trace metadata
+    Runtime-->>Reader: verdict + persisted record + replay identity
 ```
+
+| Boundary | Contract evidence | Failure remains visible as |
+| --- | --- | --- |
+| source to ingest | `RawDoc`, `CleanDoc`, `Chunk`, configuration, CSV/JSONL adapters | parse, validation, safeguard, or transformation error |
+| ingest to index | prepared records, execution request, backend capability profile | unsupported capability or vector execution failure |
+| index to reason | ranked evidence, provenance, artifact and run identifiers | insufficient or unverifiable evidence |
+| reason to agent | claims, checks, manifest, trace, replay identity | reasoning or verification failure |
+| agent to runtime | pipeline outcome, ordered trace, run configuration | orchestration, convergence, or trace validation failure |
+| runtime to durable record | flow manifest, dataset identity, authority and verification policy | rejection, mismatch, budget violation, or replay drift |
 
 ## Package Handbooks
 
@@ -192,11 +193,10 @@ sequenceDiagram
 - `apis/` for tracked contract artifacts that support package-level claims
 - `packages/bijux-canon-dev/src/bijux_canon_dev/docs/repository_docs_catalog.py` for the catalog tooling behind the handbook structure
 
-Start with `packages/` if the main question is package ownership. Start with
-`mkdocs.yml` if the main question is documentation routing. Start with
-`Makefile`, `makes/`, or `.github/workflows/` if the claim is about shared
-verification or release behavior. If none of those surfaces can support the
-claim quickly, the homepage should be treated as orientation rather than proof.
+Source and tests under `packages/` establish package behavior. Versioned files
+under `apis/` establish HTTP contracts. `Makefile`, `makes/`, and GitHub
+workflows establish shared verification and release behavior. The site routes
+to those sources; it does not replace them as executable evidence.
 
 ## Leave This Page When
 

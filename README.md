@@ -43,13 +43,16 @@
 [![bijux-canon-index docs](https://img.shields.io/badge/docs-index-2563EB?logo=materialformkdocs&logoColor=white)](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 <!-- bijux-canon-badges:generated:end -->
 
-`bijux-canon` is a contract-first Python package family for governed ingest,
-retrieval, reasoning, agent execution, and runtime replay.
+`bijux-canon` is a contract-first Python system for turning source material
+into governed, inspectable runs. Five canonical packages separate preparation,
+retrieval, reasoning, orchestration, and runtime authority so that every
+handoff has an owner and every durable result has a contract.
 
-It exists for teams that need more than "it worked once on my machine." The
-goal is not just to run AI and retrieval workflows, but to run them with clear
-boundaries, stable contracts, checked-in schemas, replayable behavior, and a
-repository layout that stays understandable as the system grows.
+The project is built for work that must survive review after execution. It
+keeps API schemas in the repository, records provenance at retrieval and
+reasoning boundaries, emits agent traces, and gives runtime policy the final
+authority over persistence and replay. Determinism does not make a model
+correct; it makes the execution conditions and resulting evidence inspectable.
 
 ## What It Takes And Produces
 
@@ -70,23 +73,51 @@ packages, not migration-only placeholders. Five preserve retired public names,
 and one preserves the shorter family-root `bijux-canon` runtime name. All six
 re-export canonical package surfaces directly.
 
-## Why `bijux-canon` Exists
+## One System, Five Authorities
 
-Many AI and RAG stacks are easy to start and hard to trust. They often mix
-ingest, indexing, reasoning, orchestration, and runtime policy in one blurred
-layer. That makes systems harder to review, migrate, test, replay, and operate.
+```mermaid
+flowchart LR
+    source["documents and datasets"]
+    ingest["ingest<br/>clean, chunk, prepare"]
+    index["index<br/>execute and explain retrieval"]
+    reason["reason<br/>form and verify claims"]
+    agent["agent<br/>coordinate traced work"]
+    runtime["runtime<br/>authorize, persist, replay"]
+    record["governed run record"]
 
-`bijux-canon` fills that gap by treating these concerns as separate but aligned
-layers:
+    source --> ingest --> index --> reason --> agent --> runtime --> record
+```
 
-- `ingest` prepares and shapes information
-- `index` executes retrieval contracts
-- `reason` manages reasoning-side state and run artifacts
-- `agent` orchestrates deterministic agent workflows
-- `runtime` enforces execution and replay policy above the rest
+| Authority | Accepts | Produces | Refuses to own |
+| --- | --- | --- | --- |
+| `bijux-canon-ingest` | source documents and preparation configuration | cleaned records, chunks, local indexes, retrieval-ready material | vector-backend execution policy |
+| `bijux-canon-index` | declared vector operations, capabilities, and backend inputs | execution artifacts, provenance-rich results, explanations, replay comparisons | document normalization or claim meaning |
+| `bijux-canon-reason` | problems, evidence, retrieval results, and verification rules | claims, checks, manifests, traces, and replayable reasoning runs | workflow choreography or whole-run authority |
+| `bijux-canon-agent` | prompts, files, run configuration, and role-specific work | ordered pipeline outcomes and mandatory trace metadata | runtime acceptance and persistence policy |
+| `bijux-canon-runtime` | flow manifests, datasets, policies, and lower-layer artifacts | accepted or rejected run records, stored artifacts, replay and diff results | reimplementing lower-package semantics |
 
-The result is a stack that is easier to govern, easier to inspect, and easier
-to evolve without losing the plot.
+The boundaries matter most when something fails. Preparation errors remain
+ingest errors; unsupported backend capabilities remain index errors;
+insufficient evidence remains a reasoning result; orchestration failures remain
+traceable agent outcomes; policy violations remain runtime verdicts. No layer
+has to disguise another layer's failure as success.
+
+## Contract Surfaces
+
+The public contract is larger than Python imports:
+
+- Python distributions and typed root imports provide in-process use.
+- Console commands provide automation-friendly entry points.
+- Versioned OpenAPI documents under `apis/<package>/v1/` pin HTTP behavior for
+  all five canonical packages.
+- Package tests cover local semantics; API, invariant, integration, end-to-end,
+  and regression suites protect the handoffs.
+- Compatibility distributions preserve six existing names while canonical
+  ownership remains with the five `bijux-canon-*` packages.
+
+Start with the owning package instead of installing the entire family by
+habit. The packages are independently publishable and intentionally do not
+present one catch-all import surface.
 
 ## Read The Repository By Ownership
 
@@ -118,19 +149,19 @@ The repository also ships `bijux-canon` as a shorter compatibility
 distribution for `bijux-canon-runtime`. It is a real alias package, not a
 retired standalone repository.
 
-## What Makes It Different
+## Engineering Commitments
 
-- Contracts are first-class. API schemas are checked in under `apis/` instead of
-  being an afterthought.
-- Determinism matters. The system is built around bounded execution, traceable
-  behavior, and replay where it matters.
-- Layers stay legible. Each package owns a specific slice of responsibility
-  instead of collapsing into one "do everything" library.
-- Compatibility is explicit. Older and shorter public names are preserved
-  through real alias packages instead of being hidden, silently broken, or left
-  behind as decorative migration stubs.
-- The repository is designed as one system. Docs, schemas, validation, release
-  flow, and automation are meant to stay aligned.
+- **Contracts are checked in.** The OpenAPI source, pinned representation, and
+  schema hash for each canonical HTTP API are versioned under `apis/`.
+- **Replay has preconditions.** A replay claim depends on declared contracts,
+  captured inputs, stable identifiers, and the package's documented
+  determinism boundary.
+- **Failures retain ownership.** Packages expose typed failures and validation
+  outcomes rather than silently coercing invalid work into plausible output.
+- **Compatibility is observable.** Legacy distributions, imports, and commands
+  are implemented as explicit alias packages with canonical targets.
+- **Release evidence is shared.** PyPI distributions, GHCR bundles, and GitHub
+  release assets are built from the same tagged source line.
 
 ## Package Map
 
