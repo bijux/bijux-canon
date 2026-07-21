@@ -36,7 +36,8 @@ flowchart LR
 
 | Intent | Local command | Primary evidence |
 | --- | --- | --- |
-| full verification | `make check` or `make all` | package-specific test, lint, quality, security, API, build, and SBOM output |
+| full verification with lock consistency | `make check` | lock, package-specific test, lint, quality, security, docs, API, build, and SBOM output |
+| full repository surfaces without the lock precondition | `make all` | package-specific test, lint, quality, security, docs, API, build, and SBOM output |
 | exhaustive tests | `make test-all` | slow, evaluation, and real-local test results where configured |
 | API governance | `make api` | schema lint, generated-schema drift, pins, hashes, and live contract tests |
 | documentation | `make docs-check` | strict MkDocs build and hygiene result |
@@ -63,6 +64,21 @@ Use the narrowest check that exercises the changed contract. Root aggregation
 is necessary when shared metadata, dependencies, API governance, or release
 membership changed; repeating every expensive lane is not stronger evidence
 for a documentation-only edit.
+
+## Start With The Changed Surface
+
+| Changed surface | First command | Escalate when |
+| --- | --- | --- |
+| reader-facing Markdown or MkDocs navigation | `make docs-check` | a helper, theme contract, generated reference, or deployment behavior also changed |
+| one `bijux-canon-dev` helper | its focused test module | the helper is shared by several Make or workflow paths |
+| one package's implementation | that package's narrow target or test selection | its public schema, dependency boundary, or downstream handoff changed |
+| root package inventory or lock data | `make lock-check` plus inventory contract tests | public release membership or resolution changed |
+| one OpenAPI contract | owning package API targets | source, pin, hash, or live implementation disagree |
+| workflow trigger, permission, or dependency | workflow contract tests | the invoked command or release output also changed |
+
+Escalation follows affected contracts, not command size. A strict docs build and
+the documentation publication tests are stronger evidence for a handbook-only
+change than an unrelated model evaluation or real-service lane.
 
 ## Read A Failed Check
 

@@ -4,99 +4,90 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-04
+last_reviewed: 2026-07-21
 ---
 
 # bijux-canon-dev
 
-`bijux-canon-dev` is the maintainer package for repository health. It keeps
-schema drift checks, release guards, supply-chain helpers, docs publication
-contracts, and repository-wide validation logic in one place outside the
-end-user product surface.
+`bijux-canon-dev` is the repository's internal policy implementation. It turns
+rules about APIs, documentation, dependencies, security, supply-chain evidence,
+and publication into importable Python modules with focused tests. Make targets
+and workflows call those modules; end-user applications do not.
 
-That boundary matters. Hidden maintainer policy weakens trust quickly, so the
-package should make repository rules inspectable in helper modules, tests, and
-explicit integration points.
-
-## Package Model
+## Control Path
 
 ```mermaid
 flowchart LR
-    helpers["helper modules"]
-    gates["quality, security, schema, release gates"]
-    tests["maintainer tests"]
-    integration["make, workflows, apis"]
-    repo["repository health"]
+    input["governed repository input"]
+    helper["bijux-canon-dev module"]
+    test["focused contract test"]
+    make["Make entrypoint"]
+    workflow["workflow job"]
+    artifact["diagnostic or artifact"]
 
-    helpers --> gates --> integration --> repo
-    tests --> gates
+    input --> helper --> make --> workflow
+    helper --> test
+    helper --> artifact
+    make --> artifact
+    workflow --> artifact
 ```
 
-This page should make `bijux-canon-dev` feel like a real package with a clear
-operating role, not just a bin for repository glue. Helper modules define the
-rules, tests prove them, and checked-in integration points show where those
-rules actually get enforced.
+The helper is the decision owner. Make supplies a stable local command and
+environment. A workflow decides when and with which permissions that command
+runs. Tests protect the rule independently of either orchestration layer.
 
-## What Maintainers Should Expect Here
+## Module Ownership
 
-- helper code that explains repository policy in Python rather than in shell fragments
-- tests that prove the helper package is enforcing the intended contract
-- visible integration seams back into `make`, workflows, docs, schemas, and release gates
+| Module | Governs | Typical caller | Evidence |
+| --- | --- | --- | --- |
+| `api.freeze_contracts` | OpenAPI pins and schema hashes across canonical packages | `makes/api-freeze.mk` | pin/hash comparison and focused API-freeze tests |
+| `api.openapi_drift` | checked-in schema versus application-generated schema | package API Make profiles | generated schema and drift verdict |
+| `docs.mkdocs_config` | effective MkDocs configuration and generated reference inputs | root docs targets | rendered configuration and strict build result |
+| `docs.repository_docs_catalog` | public documentation inventory and generated API references | docs preparation | generated reference tree and publication tests |
+| `docs.badge_sync` | generated badge blocks in repository readmes | `make sync-badges`, `make check-badges` | source-to-rendered comparison |
+| `quality.deptry_scan` | dependency declarations and import use | quality targets | filtered dependency report and exit status |
+| `security.pip_audit_gate` | repository vulnerability policy over audit results | security targets | normalized audit verdict |
+| `release.publication_guard` | package eligibility and publication metadata | release Make surfaces | package/version acceptance or explicit refusal |
+| `release.version_resolver` | version used by build and SBOM operations | build, publication, SBOM targets | resolved SCM version |
+| `sbom.requirements_writer` | dependency input for SBOM generation | SBOM targets | package-specific requirements file |
+| `packages.*` | agent hygiene, index plugin contracts, runtime dependency allowlist | package profiles | package-bound diagnostics |
 
-## Package Pages
+These modules are invoked with `python -m ...` from checked-in Make fragments;
+the package does not publish a general-purpose console command. That keeps each
+rule independently callable without inventing a catch-all maintainer CLI.
 
-- [Package Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/)
-- [Scope and Non-Goals](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/scope-and-non-goals/)
-- [Module Map](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/module-map/)
-- [Quality Gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/quality-gates/)
-- [Security Gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/security-gates/)
-- [Schema Governance](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/schema-governance/)
-- [Release Support](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/release-support/)
-- [SBOM and Supply Chain](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain/)
-- [Operating Guidelines](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/operating-guidelines/)
+## Evidence Chain For A Failure
 
-## Start With
+When a repository gate refuses a change, retain the complete chain:
 
-- Open [Package Overview](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/package-overview/) for the shortest statement of what the
-  maintainer package owns.
-- Open [Module Map](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/module-map/) when you need the code layout first.
-- Open [Quality Gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/quality-gates/), [Security Gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/security-gates/), or [Schema Governance](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/schema-governance/) when the question is an enforcement rule.
-- Open [Release Support](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/release-support/) or [SBOM and Supply Chain](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/sbom-and-supply-chain/) when the concern is publication or provenance.
+1. the exact governed input, such as a schema, package manifest, audit report,
+   or documentation tree;
+2. the helper module and arguments that evaluated it;
+3. the focused test that defines the intended rule;
+4. the Make target or workflow job that supplied execution context;
+5. the exit status and diagnostic artifact under `artifacts/`.
 
-## Module Roots
+Changing only the workflow presentation cannot repair a helper rule. Likewise,
+a direct helper invocation can prove the rule but not that CI triggers it with
+the intended permissions and dependencies.
 
-- `src/bijux_canon_dev/api` for schema drift and API freeze helpers
-- `src/bijux_canon_dev/quality` for repository quality checks
-- `src/bijux_canon_dev/security` for audit gates
-- `src/bijux_canon_dev/release` for publication guards and version resolution
-- `src/bijux_canon_dev/sbom` for requirements and SBOM support
-- `src/bijux_canon_dev/docs` for docs publication and badge support
+## Reader Routes
 
-## Proof Path
-
-- `packages/bijux-canon-dev/src/bijux_canon_dev` carries the helper code.
-- `packages/bijux-canon-dev/tests` carries the executable proof.
-- `apis/`, `Makefile`, and `.github/workflows/` show where the helpers are
-  consumed.
-
-## Review Sequence
-
-When a maintainer rule looks wrong, inspect it in this order:
-
-1. the owning helper module
-2. the test that proves the rule
-3. the `make` or workflow entrypoint that invokes it
-4. the generated artifact or CI output that exposed the problem
+| Question | Continue with |
+| --- | --- |
+| Which behavior belongs in this internal package? | [Package overview](package-overview.md) and [scope and non-goals](scope-and-non-goals.md) |
+| Where is a helper implemented? | [Module map](module-map.md) |
+| Which check protects quality or dependencies? | [Quality gates](quality-gates.md) |
+| How are audit results evaluated? | [Security gates](security-gates.md) |
+| How do schema source, pins, hashes, and generated output relate? | [Schema governance](schema-governance.md) |
+| How are versions and publication eligibility resolved? | [Release support](release-support.md) |
+| How are SBOM inputs and outputs produced? | [SBOM and supply chain](sbom-and-supply-chain.md) |
+| What rules apply when adding a helper? | [Operating guidelines](operating-guidelines.md) |
 
 ## Boundary
 
-`bijux-canon-dev` owns maintainer automation, not product behavior. If a change
-would alter user-facing ingest, index, reason, agent, or runtime semantics,
-this section should stop at the integration seam and hand the explanation back
-to the owning package handbook.
-
-## Design Pressure
-
-If repository policy can only be found in workflow logs or shell fragments, the
-maintainer package is still too hidden. This section has to keep helper code,
-proof, and integration points visibly tied together.
+`bijux-canon-dev` may inspect product packages and invoke their public
+validation surfaces, but it must not become a runtime dependency or a hidden
+home for product semantics. A rule that changes how ingest prepares content,
+index executes a request, reason evaluates support, agent orchestrates roles, or
+runtime admits a run belongs in that canonical package.
