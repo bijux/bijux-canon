@@ -4,70 +4,85 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Operations
 
-Open this section when you need to run agent work repeatably: install it, exercise workflows, diagnose trace drift, release it, or recover from failure without relying on who last touched the package.
+Operate an agent pipeline from terminal evidence backward. Begin with the
+published decision and termination state, validate the trace and its lifecycle,
+then inspect convergence, role output, and logs. A single successful process
+exit or plausible final artifact is not enough.
 
-## Operating Loop
+## Operating lifecycle
 
 ```mermaid
 flowchart LR
-    setup["setup"]
-    run["run workflow"]
-    inspect["inspect trace"]
-    recover["recover execution"]
-    release["release package"]
-    proof["tests and artifacts"]
+    prepare["explicit config + fresh output root"]
+    run["execute file or batch"]
+    result["inspect final result"]
+    trace["validate trace lifecycle"]
+    convergence["inspect convergence + termination"]
+    roles["inspect role evidence + telemetry"]
+    publish["authenticate and retain directory"]
 
-    setup --> run --> inspect --> recover --> release
-    run --> proof
-    inspect --> proof
+    prepare --> run --> result --> trace --> convergence --> roles --> publish
+    result -. no trace .-> prepare
+    trace -. invalid .-> prepare
 ```
 
-Agent operations should make workflow behavior teachable from the repository.
-A maintainer needs one path to execute a flow, inspect the emitted trace, and
-recover when orchestration drifts, without depending on whoever most recently
-debugged the package.
+## Preflight facts
 
-## Read These First
+- The current CLI validates all four registered provider credentials before it
+  parses any command, including help, dry run, and replay. This is an
+  implementation constraint, not a recommendation to over-provision keys.
+- Use the maintained YAML file by explicit path. A missing configuration can
+  degrade to an empty mapping, while non-dry trace production still requires
+  model metadata.
+- Use a fresh output root for every run. Fixed filenames can overwrite or mix
+  evidence from an earlier execution.
+- A directory input processes immediate regular files only; it is not a
+  recursive corpus traversal.
 
-- open [Installation and Setup](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/installation-and-setup/) first when you need a clean package starting point
-- open [Observability and Diagnostics](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/observability-and-diagnostics/) when workflow traces or outputs no longer match expectation
-- open [Failure Recovery](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/failure-recovery/) when workflow execution has already gone wrong
+## Evidence order
 
-## Operational Risk
+| Evidence | Question |
+| --- | --- |
+| `result/final_result.json` | What verdict, epistemic state, convergence, termination, and trace path were published? |
+| `trace/run_trace.json` | Which pipeline, configuration, input, model, prompt, lifecycle, and decision records support it? |
+| persisted pipeline result | Which stages, shards, revisions, warnings, action plan, audit events, and telemetry occurred? |
+| structured logs and counters | Which role or lifecycle boundary explains the retained outcome? |
 
-The main operational risk here is letting orchestration succeed only for people who already know the unwritten workflow path.
+## Incident routing
 
-## First Proof Check
+| Symptom | Inspect first | Safe response |
+| --- | --- | --- |
+| Exit `0` but inputs failed | batch success/failure records and published fallback | accept only explicit artifact semantics; do not use exit status as batch truth |
+| Summary has no trace | dry-run or no-primary-success path | treat as veto without execution evidence |
+| Replay prints `MISMATCH` but exits successfully | the four compared fields and all unexamined trace evidence | fail downstream acceptance explicitly and investigate the full trace |
+| Convergence looks successful but result is weak | strategy, window hash, verdict history, epistemic verdict, termination | evaluate correctness separately; stability is not truth |
+| Provider behavior drifted | provider/model/version, temperature, prompt/model hashes, input and runtime fingerprints | classify the changed evidence; do not claim historical re-execution |
+| Trace and result disagree | schema upgrade, lifecycle validation, trace reconstruction, stale fixed-name files | quarantine the directory and rerun into a fresh root |
+| Role failed last | execution path, shard merge, and final validation | recover the owning boundary rather than bypassing orchestration order |
 
-- `pyproject.toml`, `README.md`, and package-local entrypoints for checked-in operating truth
-- `tests` and runnable workflows for evidence that the package can be operated repeatably
-- release notes and version metadata when the work changes caller expectations
+## Deployment boundary
 
-## Pages In This Section
+The package is not a sandbox, distributed scheduler, secrets manager, durable
+multi-host event store, or tenant-isolation layer. The HTTP adapter also lacks
+independent authentication, rate limiting, body-size enforcement, and artifact
+lookup. Hosts own filesystem access, network policy, provider limits,
+cancellation, concurrency, credential scope, retention, and external artifact
+authentication.
 
-- [Installation and Setup](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/installation-and-setup/)
-- [Local Development](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/local-development/)
-- [Common Workflows](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/common-workflows/)
-- [Observability and Diagnostics](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/observability-and-diagnostics/)
-- [Performance and Scaling](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/performance-and-scaling/)
-- [Failure Recovery](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/failure-recovery/)
-- [Release and Versioning](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/release-and-versioning/)
-- [Security and Safety](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/security-and-safety/)
-- [Deployment Boundaries](https://bijux.io/bijux-canon/05-bijux-canon-agent/operations/deployment-boundaries/)
+## Operate by need
 
-## Leave This Section When
-
-- leave for [Interfaces](https://bijux.io/bijux-canon/05-bijux-canon-agent/interfaces/) when the live problem is contract shape rather than package operation
-- leave for [Architecture](https://bijux.io/bijux-canon/05-bijux-canon-agent/architecture/) when a workflow problem exposes structural drift underneath it
-- leave for [Quality](https://bijux.io/bijux-canon/05-bijux-canon-agent/quality/) when the package runs but the real question is whether the evidence is strong enough
-
-## Design Pressure
-
-If workflow recovery depends on tribal knowledge about trace interpretation,
-the package is not operationally ready. This section has to turn agent
-execution into a repeatable, inspectable routine.
+| Need | Guide |
+| --- | --- |
+| Install extras and satisfy current entrypoint preconditions | [Installation and setup](installation-and-setup.md) |
+| Develop with isolated configuration and artifacts | [Local development](local-development.md) |
+| Run the canonical file and replay journeys | [Common workflows](common-workflows.md) |
+| Diagnose lifecycle, convergence, and provider drift | [Observability and diagnostics](observability-and-diagnostics.md) |
+| Plan sharding, provider, and resource behavior | [Performance and scaling](performance-and-scaling.md) |
+| Recover failed or inconsistent outputs | [Failure recovery](failure-recovery.md) |
+| Define hosting and credential controls | [Security and safety](security-and-safety.md) and [Deployment boundaries](deployment-boundaries.md) |
+| Release a trace- or contract-sensitive change | [Release and versioning](release-and-versioning.md) |
