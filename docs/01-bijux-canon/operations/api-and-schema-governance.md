@@ -4,62 +4,134 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # API and Schema Governance
 
-Shared API artifacts live under `apis/` so schema review does not depend on
-reading package source alone.
+Bijux Canon governs five versioned HTTP contracts under `apis/`: ingest,
+index, reason, agent, and runtime. Each contract has three checked-in
+representations and an owning implementation. Agreement among those surfaces
+is the basis for compatibility review.
 
-This page exists to answer one operational question clearly: when is a schema
-change just local code movement, and when is it a compatibility event that
-needs shared review.
+```text
+apis/<distribution>/v1/
+├── schema.yaml
+├── pinned_openapi.json
+└── schema.hash
+```
 
-## Governance Flow
+| File | Purpose |
+| --- | --- |
+| `schema.yaml` | reviewed OpenAPI source contract |
+| `pinned_openapi.json` | canonicalized JSON representation used for freeze comparison |
+| `schema.hash` | SHA-256 integrity value for the YAML contract |
+
+The owning package supplies the application object, route behavior, and live
+contract tests. A schema can describe an intentionally unavailable operation;
+callers must still observe documented runtime behavior such as `501`.
+
+## Contract Chain
 
 ```mermaid
 flowchart LR
-    change["schema or api change"]
-    roots["tracked schema roots under apis/"]
-    proof["package interface docs and shared checks"]
-    review["explicit compatibility review"]
-
-    change --> roots --> proof --> review
+    model[Request and response models] --> app[HTTP application]
+    app --> generated[Generated OpenAPI]
+    generated --> yaml[schema.yaml]
+    yaml --> pin[pinned_openapi.json]
+    yaml --> digest[schema.hash]
+    app --> live[Live contract tests]
+    yaml --> docs[Caller guidance]
 ```
 
-This page should make schema governance feel procedural rather than implicit.
-A reader needs to see when a change crosses the line from local implementation
-movement into shared compatibility review.
+No single node proves the complete API:
 
-## Compatibility Threshold
+- models without a route describe data, not availability;
+- a route without checked-in schema can drift invisibly;
+- a matching pin and digest prove internal schema consistency, not live
+  behavior;
+- documentation without schema and execution evidence is an unsupported
+  promise.
 
-Treat a change as a shared compatibility event when it changes any caller- or
-reader-facing contract that is tracked outside one module alone, including:
+## Change Classification
 
-- request or response shapes in tracked OpenAPI material
-- pinned schema artifacts under `apis/`
-- field names, required fields, or semantics that more than one package or
-  external caller depends on
-- workflow checks whose purpose is to prove schema alignment
+Treat a change as caller-visible when it alters any of these:
 
-## First Proof Checks
+- path, method, status code, content type, or authentication requirement;
+- required or optional fields, defaults, nullability, or enum values;
+- field meaning, units, ordering, uniqueness, or identifier scope;
+- pagination, limits, error envelopes, or retry semantics;
+- operation availability, including movement between implemented and
+  contract-only status;
+- stable examples used as executable requests.
 
-- `apis/` for the tracked schema roots and pinned artifacts
-- the owning package interface docs for the public contract being changed
-- drift or validation checks under `.github/workflows/` and maintainer tooling
-  when the change claims to stay safe
+A serializer refactor is internal only when the generated contract and live
+behavior remain equivalent. Renaming a Python helper can be private; renaming
+a JSON field is a compatibility event even if both changes are mechanically
+small.
 
-## Shared Schema Roots
+## Compatibility Decisions
 
-- `apis/bijux-canon-agent/v1`
-- `apis/bijux-canon-index/v1`
-- `apis/bijux-canon-ingest/v1`
-- `apis/bijux-canon-reason/v1`
-- `apis/bijux-canon-runtime/v1`
+```mermaid
+flowchart TD
+    change[Proposed API change] --> generated{Generated schema changes?}
+    generated -- no --> behavior{Status or semantics change?}
+    generated -- yes --> consumers[Identify callers and compatibility impact]
+    behavior -- no --> focused[Focused implementation evidence]
+    behavior -- yes --> consumers
+    consumers --> coordinated[Update implementation, schema set, tests, and guidance]
+    coordinated --> freeze[Freeze and drift validation]
+```
 
-## Design Pressure
+Additive changes are not automatically harmless. A new required response
+field can break strict decoders; a new enum member can break exhaustive
+switches; a new endpoint can expose authority the deployment is not prepared
+to grant. Review the semantic contract, not only the OpenAPI diff category.
 
-Schema drift becomes expensive when local code changes look harmless but alter
-what another package, caller, or shared check will read. Governance has to make
-that threshold obvious before review falls back to guesswork.
+For breaking changes, choose an explicit strategy: preserve the old behavior,
+introduce a versioned surface, or publish migration and retirement terms. Do
+not make a pinned file match by hand while leaving the owning implementation
+or callers behind.
+
+## Validation Layers
+
+| Validation | What it establishes | What it cannot establish |
+| --- | --- | --- |
+| OpenAPI lint | document structure and rule compliance | application behavior |
+| freeze check | pin and hash match `schema.yaml` | live schema parity |
+| drift check | generated application schema matches checked-in source | endpoint correctness |
+| live contract test | requests and responses conform during execution | every deployment policy |
+| package tests | domain and interface behavior | cross-package release consistency |
+
+Repository freeze validation canonicalizes YAML and pinned JSON before
+comparison and independently checks the digest. Package profiles generate
+OpenAPI from their application object and write diagnostic output beneath
+`artifacts/` when drift is found.
+
+## Review Record
+
+For a caller-visible API change, retain:
+
+- owning distribution and versioned API directory;
+- before-and-after OpenAPI diff;
+- implementation route and typed model changes;
+- freeze, drift, and focused live-contract results;
+- status-code and error-envelope decisions;
+- compatibility assessment and migration guidance;
+- package version or release in which the change becomes available.
+
+Generated schema output belongs under `artifacts/` unless it is deliberately
+promoted into all three governed files. Never edit only
+`pinned_openapi.json` or `schema.hash` to silence drift.
+
+## Ownership Boundary
+
+The root owns schema representation, freeze policy, and cross-package
+consistency. The product package owns route semantics and availability. The
+deployment owns network exposure, credentials, rate limits, and service-level
+policy. Keeping those authorities separate prevents a checked-in OpenAPI file
+from being mistaken for a production guarantee.
+
+See [Testing and Validation](testing-and-validation.md) for evidence selection,
+[Artifact Governance](artifact-governance.md) for generated-file handling, and
+each package’s interface chapter for operation-specific behavior.
