@@ -4,67 +4,77 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Quality
 
-Open this section when you need to decide whether claims, checks, and reasoning artifacts are proven strongly enough for reviewers and downstream packages to trust.
+Reason quality has two independent dimensions: integrity of the reasoning
+record and behavior of the reference workflow. A bundle can be internally
+valid yet scientifically unhelpful; a plausible answer can be invalid because
+its evidence, support, or trace was corrupted.
 
-## Trust Model
+## Evidence chain
 
 ```mermaid
 flowchart LR
-    strategy["test strategy"]
-    invariants["reasoning invariants"]
-    validation["change validation"]
-    limits["limitations and risk"]
-    trust["trust decision"]
+    model["models + canonical identity"]
+    plan["DAG and execution order"]
+    support["evidence + exact spans"]
+    checks["registered verification"]
+    artifact["fingerprint + manifest"]
+    replay["frozen replay + diff"]
+    evaluation["declared corpus + cases"]
 
-    strategy --> invariants --> validation --> limits --> trust
+    model --> plan --> support --> checks --> artifact --> replay --> evaluation
 ```
 
-Reason quality has to justify interpretation, not only execution. A reviewer
-should be able to see how claim behavior is tested, what must not drift in the
-checks and artifacts, and where the package still names limits instead of
-pretending that explanation alone is proof.
+## Integrity claims
 
-## Read These First
+| Trust claim | Evidence | Failure that must remain visible |
+| --- | --- | --- |
+| identities are stable | canonical serialization and cross-platform fingerprint tests | content change hidden behind reused identity |
+| plans are executable DAGs | planner and topology tests | cycle, missing dependency, duplicate node |
+| trace history is coherent | event ordering, lifecycle, tool-call/return linkage tests | orphan return, unfinished action, unknown step |
+| claims have exact support | span, snippet hash, evidence path, derived-grounding tests | nearby citation or changed bytes accepted as support |
+| verification is complete | one focused pass/fail test per registered check | parser failure masking the intended invariant |
+| run files constrain one another | manifest, fingerprint, checksum, and typed-reader tests | individually plausible but inconsistent files |
+| replay uses frozen evidence | replay gate and changed-corpus refusal tests | live retrieval silently replacing the snapshot |
 
-- open [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/) first when you need the broad proof shape behind reasoning behavior
-- open [Invariants](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/invariants/) when the question is what must not drift across claim and verification behavior
-- open [Change Validation](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/change-validation/) when you need the minimum proof for a safe reasoning change
+## Behavioral claims
 
-## Trust Risk
+Evaluation cases declare corpus, problem constraints, expected verification
+behavior, and acceptable insufficiency. Case and aggregate artifacts expose
+verification failures, insufficiency rate, and failure taxonomy. Retrieval or
+reasoning changes are assessed against those records, not process exit alone.
 
-The main quality risk here is looking explainable on paper while the actual reasoning proof path is too weak to defend under review.
+The local retrieval benchmark is a regression sentinel tied to its recorded
+environment. It is not a service-level objective or evidence that the
+reference extractive workflow generalizes beyond its suite.
 
-## First Proof Check
+## Tamper posture
 
-- `tests` and package-local validation surfaces for executable evidence
-- invariants, limitations, and risk pages for the trust boundaries that still matter after green checks
-- release notes and caller-facing docs when the change alters what readers may safely assume
+The evidence suite deliberately changes source bytes, support spans, corpus and
+index files, plan metadata, tool returns, plan references, and graph topology.
+Each mutation must fail at its owning invariant. This precision matters: a
+generic parse error is weaker evidence than detecting the actual violated
+contract.
 
-## Pages In This Section
+## Evidence routes
 
-- [Test Strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/)
-- [Invariants](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/invariants/)
-- [Review Checklist](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/review-checklist/)
-- [Documentation Standards](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/documentation-standards/)
-- [Definition of Done](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/definition-of-done/)
-- [Dependency Governance](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/dependency-governance/)
-- [Change Validation](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/change-validation/)
-- [Known Limitations](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/known-limitations/)
-- [Risk Register](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/risk-register/)
+| Need | Guide |
+| --- | --- |
+| Understand integrity and behavior test layers | [Test strategy](test-strategy.md) |
+| Review structural, evidence, artifact, and replay laws | [Invariants](invariants.md) |
+| Select proof for a change | [Change validation](change-validation.md) |
+| Apply review questions consistently | [Review checklist](review-checklist.md) |
+| Decide whether evidence is release-ready | [Definition of done](definition-of-done.md) |
+| Review runtime and optional dependencies | [Dependency governance](dependency-governance.md) |
+| Understand epistemic, replay, interface, and resource limits | [Known limitations](known-limitations.md) |
+| Inspect unresolved failure modes | [Risk register](risk-register.md) |
+| Keep public claims within demonstrated evidence | [Documentation standards](documentation-standards.md) |
 
-## Leave This Section When
-
-- leave for [Foundation](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/) when the doubt is really about package ownership rather than proof
-- leave for [Interfaces](https://bijux.io/bijux-canon/04-bijux-canon-reason/interfaces/) when the question is what the contract is rather than whether it is defended
-- leave for [Operations](https://bijux.io/bijux-canon/04-bijux-canon-reason/operations/) when the package already seems trustworthy and the real issue is how to run it repeatably
-
-## Design Pressure
-
-If reasoning trust is reduced to formal checks without explaining what they
-protect, the section becomes shallow again. Proof here has to connect behavior,
-verification, and explicit limits.
+Add regressions at the model, planner, executor, retriever, verifier, or replay
+owner first. Add a manifested-run test when invalid behavior could otherwise
+survive as convincing evidence, and an evaluation case when semantic behavior
+rather than artifact validity changed.
