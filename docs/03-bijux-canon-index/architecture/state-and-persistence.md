@@ -9,33 +9,38 @@ last_reviewed: 2026-07-21
 
 # State and Persistence
 
-Index persists two different kinds of state: backend state that makes a corpus
-searchable, and run evidence that makes an execution reviewable. They have
-different lifecycles and should not share retention assumptions.
+Index has two independent persistence responsibilities: backend state makes a
+corpus searchable; run state makes one execution reviewable. Retaining one
+without the other can preserve an audit record without preserving replayable
+search, or preserve searchable vectors without preserving why a result was
+accepted.
 
-## Persistence Map
+## Persistence Domains
 
 ```mermaid
 flowchart TD
-    corpus["corpus and vectors"] --> backend["backend state"]
-    request["execution request"] --> run["run lifecycle"]
-    backend --> result["retrieval result"]
-    result --> run
-    run --> metadata["metadata.json"]
-    run --> status["status.json"]
-    run --> output["result.json"]
-    backend --> sqlite["SQLite state"]
+    corpus["corpus and vectors"] --> backend["backend generation"]
+    request["execution request"] --> lifecycle["run lifecycle"]
+    backend --> query["retrieval execution"]
+    query --> lifecycle
+    lifecycle --> run["metadata, result, status"]
+    backend --> local["memory or SQLite"]
     backend --> native["HNSW or FAISS files"]
-    backend --> service["Qdrant collection"]
+    backend --> remote["Qdrant collection"]
+    run --> bundle["reviewable execution bundle"]
+    local --> bundle
+    native --> bundle
+    remote --> bundle
 ```
 
-## Run Records
+The arrows into the bundle are identity links, not necessarily copied payloads.
+A run directory does not contain a remote collection or native index unless an
+export workflow explicitly includes it.
 
-The default run root is `artifacts/bijux-canon-index/runs`. Set
-`BIJUX_CANON_INDEX_RUN_DIR` to move it; the legacy
-`BIJUX_VEX_RUN_DIR` variable remains a compatibility fallback.
+## Run Lifecycle
 
-Each run has its own directory:
+The default root is `artifacts/bijux-canon-index/runs`, configurable through
+`BIJUX_CANON_INDEX_RUN_DIR`; `BIJUX_VEX_RUN_DIR` is the compatibility fallback.
 
 ```text
 <run-root>/<run-id>/
@@ -44,55 +49,62 @@ Each run has its own directory:
 └── status.json
 ```
 
-At start, the store writes `status.json` with `incomplete` and then writes
-`metadata.json`. Successful finalization writes `result.json` before changing
-status to `complete`. A failed execution changes status to `failed` and may add
-a reason and details. Each JSON file is written through a temporary sibling and
-atomic replacement.
+The store publishes `incomplete` status before metadata. Successful
+finalization writes the result before changing status to `complete`. Failure
+records `failed` status with optional reason and details. Each JSON file uses a
+temporary sibling and atomic replacement; the directory is not one filesystem
+transaction.
 
-The loader returns only complete runs. Missing, incomplete, or failed runs
-raise a validation error instead of presenting partial output as replayable
-evidence.
+`status=complete` is the commit signal. Load through `RunStore`, which refuses
+missing, incomplete, and failed runs. The presence of `result.json` alone is not
+success evidence.
 
-## Backend State
+## Backend State Inventory
 
-| Backend or subsystem | Typical state | Persistence notes |
-| --- | --- | --- |
-| memory | process-local records and vectors | lost when the process exits |
-| SQLite | `artifacts/bijux-canon-index/state/session.sqlite` by default | transactional local corpus and vector state |
-| embedding cache | `artifacts/bijux-canon-index/cache/embeddings.sqlite` | reusable derived values; safe to rebuild from sources |
-| HNSW | SQLite metadata plus files under an index directory | native index files and metadata must remain consistent |
-| FAISS | `.faiss` index plus metadata | adapter validates backend/version metadata when loading |
-| Qdrant | service-owned collection state | availability, backup, and durability belong to the service deployment |
+| Backend or subsystem | State authority | Persistence contract | Recovery unit |
+| --- | --- | --- | --- |
+| memory | current process | none | rebuild from prepared corpus |
+| SQLite | local database | transactional local corpus and vector state | consistent database backup or rebuild |
+| embedding cache | local SQLite cache | reconstructible derived vectors | evict and recompute from pinned embedder inputs |
+| HNSW | metadata plus native index directory | metadata and native files must match | consistent generation export or rebuild |
+| FAISS | native `.faiss` file plus metadata | load-time backend/version identity checks | consistent file and metadata pair or rebuild |
+| Qdrant | external service collection | deployment-owned durability and tenancy | service snapshot plus collection identity |
 
-The optional pgvector-named adapter is excluded from the frozen v1 contract and
-currently delegates to SQLite-backed resources. Do not plan production
-durability around it as if it were a PostgreSQL integration.
+The pgvector-named adapter currently uses SQLite-backed resources and is not a
+PostgreSQL persistence boundary.
 
-## Atomicity Boundaries
+## Execution Bundle Publication
 
-Run JSON files are individually atomic, but a run directory is not a filesystem
-transaction. Status is the commit signal: consumers should require
-`status=complete` and use the package loader rather than infer success from the
-presence of `result.json`.
+```mermaid
+flowchart LR
+    run["complete run record"] --> bind["bind backend generation identity"]
+    backend["validated backend state"] --> bind
+    config["request, model, metric, and adapter identity"] --> bind
+    bind --> verify{"all references resolvable?"}
+    verify -->|no| audit["retain as audit-only or incomplete"]
+    verify -->|yes| publish["publish replay-capable bundle"]
+```
 
-Native backend files and run evidence are also separate. Copying a run record
-does not copy the corpus or vector index needed to replay it. Export workflows
-must preserve artifact identity and the corresponding backend state, or state
-clearly that only an audit record is being retained.
+An export must state whether it is audit-only or replay-capable. A replay-capable
+bundle resolves the corpus and backend generation, native or service state,
+normalized request, capability decision, adapter versions, result, provenance,
+and completion classification. Copying only the run JSON preserves neither the
+vectors nor the backend state.
 
-## Retention and Recovery
+## Retention And Recovery
 
-- Retain completed run directories for the audit period required by the
-  consuming system.
-- Investigate `incomplete` and `failed` records; do not silently relabel them.
-- Back up SQLite, native index files, and service collections using their
-  backend-specific consistency procedures.
-- Treat the embedding cache as reconstructible unless an application has made
-  it part of a stronger evidence contract.
-- Set the run root explicitly in deployments so working-directory changes do
-  not redirect evidence.
+| Condition | Required response |
+| --- | --- |
+| `incomplete` or `failed` run | retain for diagnosis or remove under policy; never relabel complete |
+| complete run with missing backend state | classify audit-only and refuse replay |
+| native file/metadata mismatch | quarantine generation and rebuild |
+| changed Qdrant collection identity | refuse equality claim and restore the recorded generation if available |
+| embedding cache corruption | evict and recompute; do not promote cache to source authority |
+| working-directory drift | configure absolute deployment roots and verify them at startup |
 
-See [artifact contracts](../interfaces/artifact-contracts.md) for exported
-record fields and [failure recovery](../operations/failure-recovery.md) for
-operator actions.
+Back up each backend using its consistency mechanism. Set the run root
+explicitly, retain completed evidence for the required audit period, and test
+restore—not only backup creation—before claiming recoverability.
+
+See [artifact contracts](../interfaces/artifact-contracts.md) for record fields
+and [failure recovery](../operations/failure-recovery.md) for operator actions.

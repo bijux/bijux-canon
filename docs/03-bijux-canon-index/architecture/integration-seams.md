@@ -9,93 +9,97 @@ last_reviewed: 2026-07-21
 
 # Integration Seams
 
-Index integrates through explicit execution requests, artifact identity,
-capability reports, and provenance. A backend is never “just connected”: its
-metric, dimension, exactness, persistence, replay, and failure behavior become
-part of the execution contract.
+Index turns prepared vectors and declared intent into an execution claim. A
+backend connection alone is not an integration: dimension, metric, exactness,
+capabilities, budgets, persistence identity, failure behavior, and replay
+posture must all cross the seam.
 
-## Seam Map
+## Execution Handoff
 
 ```mermaid
 flowchart LR
-    prepared["prepared vectors and metadata"] --> artifact["execution artifact"]
-    request["intent, mode, contract, budget"] --> engine["VectorExecutionEngine"]
-    artifact --> engine
-    registry["backend capability registry"] --> engine
-    engine --> backend["memory / SQLite / HNSW / FAISS / Qdrant"]
-    backend --> result["ordered result and observed cost"]
-    result --> evidence["run record and provenance"]
-    evidence --> downstream["reason, runtime, audit, replay"]
+    ingest["prepared identities and vectors"] --> artifact["materialized artifact"]
+    caller["intent, contract, mode, top-k, budget"] --> request["ExecutionRequest"]
+    artifact --> engine["VectorExecutionEngine"]
+    request --> engine
+    registry["capability registry"] --> engine
+    engine --> adapter["selected backend adapter"]
+    adapter --> result["ordered results and observed cost"]
+    result --> record["run evidence and provenance"]
+    record --> reason["reason or audit consumer"]
+    record --> replay["replay comparison"]
 ```
 
-## Prepared-Data Seam
+The artifact says what can be searched. The request says what is allowed. The
+capability decision says which backend may execute it. The result and record
+say what actually happened. None can substitute for another.
 
-Ingest or application code supplies vectors, identifiers, metadata, metric,
-and dimension. Index materializes those values into an artifact with a content
-and configuration fingerprint. The handoff must preserve source or chunk
-identity; an anonymous vector cannot later support evidence provenance.
+## Seam Contracts
 
-Index does not clean source text or choose chunk boundaries. If a retrieval
-problem is caused by those transformations, repair ingest and build a new
-artifact rather than compensating in ranking code.
+| Seam | Required input | Produced evidence | Refusal boundary |
+| --- | --- | --- | --- |
+| prepared data | stable record IDs, vectors, dimension, metric, metadata, corpus identity | content/configuration fingerprint and materialized artifact | anonymous vectors, dimension conflict, invalid geometry |
+| execution request | intent, execution contract, mode, `top_k`, budget, randomness posture | immutable normalized plan and request identity | unsupported combination or missing bounded-execution fields |
+| capability registry | available adapter factories and honest reports | selected backend identity and capability decision | unavailable, incompatible, or dishonest backend |
+| backend adapter | validated artifact and plan | ordered candidates, scores, cost, approximation report | transaction, query, budget, drift, or capability failure |
+| persistence | run and backend identities | lifecycle record, result, native-state references | incomplete generation or unresolved backend state |
+| downstream | complete execution result and provenance | no hidden dependency on backend client | partial/refused status, missing corpus identity, missing replay fields |
 
-## Execution Seam
+## Prepared Data Is Not Anonymous Geometry
 
-`ExecutionRequest` declares why and how work may run: intent, deterministic or
-non-deterministic contract, strict/bounded/exploratory mode, `top_k`, budgets,
-and randomness posture. The application engine validates this request against
-artifact and backend capabilities before execution.
+Ingest or application code owns cleaning and chunking. Index receives the
+resulting identifiers, metadata, vectors, metric, and dimension. If preparation
+changes, build a new artifact. Ranking code must not compensate invisibly for
+changed chunk meaning or mislabeled embeddings.
 
-This seam is the preferred Python integration. Passing a raw backend client
-around the application bypasses refusal, cost, provenance, and replay behavior.
+The artifact fingerprint binds content and build configuration. Preserve source
+or chunk identity with every vector so a neighbor can become addressable
+evidence rather than an unexplained row number.
 
-## Backend Seam
+## Backend Admission
 
-The vector-store registry reports availability and constructs adapters. Memory
-and SQLite provide local behavior; HNSW and FAISS add native index state;
-Qdrant connects to service-owned collections. Optional dependencies make a
-backend importable, not operationally ready.
+```mermaid
+flowchart TD
+    candidate["backend candidate"] --> available{"installed and reachable?"}
+    available -->|no| refuse["refuse selection"]
+    available -->|yes| capability{"capabilities satisfy request?"}
+    capability -->|no| refuse
+    capability -->|yes| honesty{"conformance evidence current?"}
+    honesty -->|no| refuse
+    honesty -->|yes| identity{"state and version identity recorded?"}
+    identity -->|no| refuse
+    identity -->|yes| admit["admit backend"]
+```
 
-Every adapter must preserve canonical IDs, ordering, metric semantics,
-dimension validation, and explicit capability refusal. Approximate adapters
-must also expose index parameters, seed/replay conditions, and witness evidence
-required by the request.
+Memory and SQLite provide local execution. HNSW and FAISS add native state.
+Qdrant adds service-owned state. Optional installation proves only that code
+can import; service readiness, native compatibility, and durability require
+separate evidence.
 
-The pgvector-named adapter is currently excluded from the frozen v1 surface and
-delegates to SQLite-backed resources. It is not a PostgreSQL deployment seam.
+The pgvector-named adapter is excluded from the stable contract and delegates
+to SQLite-backed resources. It is not a PostgreSQL integration.
 
-## Plugin Seam
+## Plugin And Interface Boundaries
 
-Plugins can add backend behavior through registration, but they execute Python
-inside the index process. Registration does not grant trust. Operators must pin
-and review plugin code, record its identity and version, and reject capability
-claims that cannot be verified.
+Plugins run Python in the index process. Pin and review them as executable code,
+record their distribution and version, and validate their capability claims.
+They may implement a canonical capability; they may not redefine request,
+artifact, error, budget, or replay semantics.
 
-Plugins may implement a capability; they may not redefine canonical request,
-artifact, error, or replay contracts.
+The supported in-process seam is the typed execution engine. The package also
+publishes versioned HTTP routes for capability discovery, artifacts, execution,
+explanation, and replay. Its Typer application can be invoked as
+`python -m bijux_canon_index.interfaces.cli.app`; the wheel does not install a
+`bijux-canon-index` console command. `bijux-vex` preserves the historical
+command and import surface as a compatibility package.
 
-## Persistence Seam
+## Downstream Handoff
 
-The application ledger stores artifact and execution state. The file-backed
-run store records `metadata.json`, `result.json`, and `status.json` beneath the
-configured run root. A run becomes loadable evidence only after status changes
-to `complete`.
+A reasoning or runtime consumer needs the normalized request, artifact and
+backend identity, ranked records, completion class, observed cost, approximation
+and randomness evidence, provenance, and lifecycle status. Passing only IDs and
+scores erases whether the result was exact, bounded, partial, or replayable.
 
-Native index files, external service collections, ledger records, and run JSON
-are separate persistence domains. Export or replay tooling must bind their
-identities; copying a completed run directory alone does not copy its backend
-state.
-
-## Interface Seams
-
-- The canonical CLI is the module application
-  `python -m bijux_canon_index.interfaces.cli.app`; the wheel currently has no
-  `bijux-canon-index` console script.
-- The v1 HTTP API exposes capability discovery, artifact operations, execution,
-  explanation, and replay through checked schemas.
-- The `bijux-vex` compatibility package preserves the legacy command and import
-  surface while delegating to canonical behavior.
-
-See [configuration](../interfaces/configuration-surface.md) and
-[artifact contracts](../interfaces/artifact-contracts.md) before binding a
-production backend.
+See [configuration](../interfaces/configuration-surface.md) for backend
+selection and [artifact contracts](../interfaces/artifact-contracts.md) for
+the retained execution record.
