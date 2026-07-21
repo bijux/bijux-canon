@@ -14,7 +14,25 @@ reasoning behavior. Integrity tests ask whether plans, traces, evidence, and
 replays are internally trustworthy. Evaluation tests ask how the reference
 workflow behaves on a declared corpus and case set.
 
-## Evidence layers
+## Evidence Layers
+
+```mermaid
+flowchart LR
+    models["models, IDs, fingerprints"]
+    plan["plan topology"]
+    execute["tool and claim execution"]
+    verify["support and provenance checks"]
+    replay["artifact replay and tamper gates"]
+    evaluate["declared-corpus evaluation"]
+
+    models --> plan --> execute --> verify --> replay
+    execute --> evaluate
+    verify --> evaluate
+```
+
+Replay confidence and evaluation quality meet only at the retained artifact.
+A reproducible unsupported answer remains unsupported; a useful answer without
+an inspectable evidence chain remains unaudited.
 
 | Test family | Principal claim |
 | --- | --- |
@@ -80,3 +98,10 @@ retriever, verifier, or trace replay. Add an end-to-end tamper or replay case
 when the defect could have produced a credible-looking run artifact. Add an
 evaluation case when the change affects insufficiency, support selection, or
 answer quality rather than artifact validity alone.
+
+## Claims Outside The Test Boundary
+
+The suite does not establish that a source is true, complete, current, or fit
+for a scientific conclusion. It also does not reproduce live providers during
+frozen replay. Those claims require source governance, domain review, a named
+evaluation corpus, current external checks, and explicit comparison evidence.

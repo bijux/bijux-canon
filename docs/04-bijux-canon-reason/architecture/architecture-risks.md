@@ -13,6 +13,27 @@ Reasoning output can be coherent, deterministic, and still unsupported. The
 architecture therefore protects the evidence chain separately from textual
 quality and treats lost support as a first-class failure.
 
+## How Support Can Be Lost
+
+```mermaid
+flowchart LR
+    corpus["governed source bytes"]
+    retrieval["retrieved span"]
+    plan["reasoning plan"]
+    trace["tool and claim trace"]
+    verify["verification report"]
+    conclusion["final conclusion"]
+
+    corpus --> retrieval --> plan --> trace --> verify --> conclusion
+    corpus -. "digest drift" .-> verify
+    retrieval -. "span mismatch" .-> verify
+    trace -. "unsupported derivation" .-> conclusion
+```
+
+Readable text is not enough. The chain remains trustworthy only when source
+bytes, spans, digests, plan topology, trace linkage, and verification policy
+can all be inspected together.
+
 ## Risk Register
 
 | Risk | Misleading conclusion | Control |
