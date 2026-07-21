@@ -4,25 +4,62 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Compatibility Commitments
 
-Compatibility commitments for `bijux-canon-agent` define how changes to orchestration behavior are supposed to be reviewed and announced. Stability language is only credible when the breakage process is explicit too.
+The canonical distribution, import, and command are `bijux-canon-agent`,
+`bijux_canon_agent`, and `bijux-canon-agent`.
 
-## What To Check
+The synchronized `bijux-agent` compatibility distribution preserves the
+`bijux_agent` import and `bijux-agent` command. Both legacy surfaces delegate to
+the canonical implementation at the same package version.
 
-- name which surfaces carry real compatibility pressure
-- tie breaking changes to docs, changelog, versioning, and validation together
-- treat vague stability claims as weaker than clear limits and explicit break rules
+```mermaid
+flowchart LR
+    LegacyDist[bijux-agent distribution] --> LegacyImport[bijux_agent]
+    LegacyImport --> CanonicalImport[bijux_canon_agent]
+    LegacyCLI[bijux-agent command] --> CanonicalCLI[canonical CLI entrypoint]
+    CanonicalDist[bijux-canon-agent distribution] --> CanonicalImport
+    CanonicalCommand[bijux-canon-agent command] --> CanonicalCLI
+```
 
-## First Proof Check
+The alias forwards root exports, attribute discovery, and runtime submodules.
+It does not maintain separate agent classes, pipeline semantics, traces, or API
+schemas.
 
-- `src` and boundary-facing modules for the owning implementation surface
-- `apis/bijux-canon-agent/v1/schema.yaml` or tracked examples for the documented contract surface
-- `tests` for executable confirmation that the contract still holds
+## Compatibility-Sensitive Surfaces
 
-## Bottom Line
+- contract models exposed from `bijux_canon_agent.contracts`;
+- the pipeline facade and its final status and termination meanings;
+- agent classes exported from `bijux_canon_agent.agents`;
+- v1 HTTP routes, request schemas, and structured errors;
+- CLI commands, option meaning, exit status, and output paths;
+- trace schema versions, replay upgrades, ordering rules, and fingerprints; and
+- decision, failure, epistemic, convergence, and stop-condition semantics.
 
-If callers depend on `bijux-canon-agent` for orchestration behavior, the contract needs to be named as clearly as the implementation.
+The package root intentionally exposes only `API_VERSION`. Reachability through
+an internal module does not create a compatibility promise.
+
+## Artifact Compatibility
+
+The alias name cannot make an invalid trace acceptable. Readers must still
+validate the trace version, lifecycle coverage, replay fields, model metadata,
+and relationship to `final_result.json`. If a future schema requires migration,
+use the explicit trace upgrader and validate the upgraded payload before
+comparison.
+
+## Migration
+
+Prefer canonical names in new code. Existing deployments can move in bounded
+changes:
+
+1. replace the installed distribution;
+2. replace `bijux_agent` imports with `bijux_canon_agent`;
+3. replace `bijux-agent` invocations with `bijux-canon-agent`; and
+4. run the same input and configuration, then compare validated trace and final
+   decision semantics.
+
+See the [bijux-agent catalog entry](../../08-compat-packages/catalog/bijux-agent.md)
+for package-level details.

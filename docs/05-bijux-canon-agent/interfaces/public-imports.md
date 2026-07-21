@@ -1,28 +1,67 @@
 ---
 title: Public Imports
-audience: mixed
-type: explanation
+audience: developers
+type: reference
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Public Imports
 
-Public imports for `bijux-canon-agent` define which Python-facing symbols callers may depend on without reaching into internals. Import visibility should follow the contract, not accidental package layout.
+The package root is intentionally small. It lazily exposes only the HTTP API
+version:
 
-## What To Check
+```python
+from bijux_canon_agent import API_VERSION
+```
 
-- start with the import root: `packages/bijux-canon-agent/src/bijux_canon_agent`
-- separate supported imports from merely reachable internal symbols
-- treat undocumented import usage as unstable even if it currently works
+Import application capabilities from the facade that owns them.
 
-## First Proof Check
+## Supported Facades
 
-- `src` and boundary-facing modules for the owning implementation surface
-- `apis/bijux-canon-agent/v1/schema.yaml` or tracked examples for the documented contract surface
-- `tests` for executable confirmation that the contract still holds
+| Need | Import surface |
+| --- | --- |
+| validated agent calls and outputs | `bijux_canon_agent.contracts` |
+| pipeline construction | `bijux_canon_agent.pipeline` |
+| built-in roles | `bijux_canon_agent.agents` |
+| trace validation and replay models | `bijux_canon_agent.traces` |
+| ASGI application | `bijux_canon_agent.api.v1` |
+| runtime-safe configuration | `bijux_canon_agent.config` |
 
-## Bottom Line
+```python
+from bijux_canon_agent.contracts import AgentInput
+from bijux_canon_agent.enums import AgentType, ExecutionMode
 
-If callers depend on `bijux-canon-agent` for orchestration behavior, the contract needs to be named as clearly as the implementation.
+request = AgentInput(
+    task_goal="Summarize the retention rule without unsupported claims.",
+    payload={"text": "Retain signed records for seven years."},
+    context_id="retention-policy-17",
+    agent_type=AgentType.PLANNER,
+    execution_mode=ExecutionMode.SYNC,
+)
+```
+
+Construction validates the contract but does not execute a role or contact a
+model provider.
+
+## Pipeline, Trace, and API Imports
+
+```python
+from bijux_canon_agent.api.v1 import API_VERSION, create_app
+from bijux_canon_agent.pipeline import AuditableDocPipeline, PipelineDefinition
+from bijux_canon_agent.traces import RunTrace, validate_trace_payload
+```
+
+The pipeline facade is import-light and resolves its implementations lazily.
+The trace facade includes v1 and v2 validators plus the explicit upgrader. The
+API factory owns the deterministic offline HTTP boundary.
+
+Avoid imports from `pipeline.execution`, `interfaces.cli`, individual
+orchestration helpers, or underscore-prefixed modules. Those modules implement
+the facades and may be reorganized without becoming package-root API.
+
+`bijux_agent` forwards the canonical namespace for legacy consumers. New code
+should use `bijux_canon_agent`; see
+[Compatibility Commitments](compatibility-commitments.md) for the migration
+boundary.
