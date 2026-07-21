@@ -101,14 +101,21 @@ artifact listing, and run listing. See
 [`apis/bijux-canon-index/v1/schema.yaml`](../../apis/bijux-canon-index/v1/schema.yaml)
 and its pinned JSON and schema hash.
 
-## What This Package Takes And Produces
+## Evaluate An Execution Result
 
-- takes: declared vector execution requests, backend capability profiles, and embedding or store adapter inputs
-- produces: provenance-aware retrieval results, backend execution artifacts, replay comparison surfaces, and explicit capability failures
-- guarantees: vector execution remains attached to one declared contract instead of one implicit backend assumption
-- does not do: normalize source documents, own runtime persistence, or hide backend divergence behind one undifferentiated API
+| Question | Evidence to inspect | Misleading shortcut |
+| --- | --- | --- |
+| Was the requested contract supported? | intent, mode, capability profile, backend identity | assuming every registered backend supports exact execution |
+| Which data and parameters produced the ranking? | artifact, index/vector-store identity, metric, normalized parameters | keeping only document identifiers and scores |
+| Did approximation remain within policy? | randomness profile, ANN parameters, witness data, budget observations | calling every seeded run deterministic |
+| Can the outcome be replayed? | original artifact, request, fingerprints, current backend state, replay verdict | comparing final neighbor lists without identities |
+| Why was work refused? | typed reason, invariant code, remediation, correlation ID | retrying the same unsupported contract silently |
 
-## Legacy continuity
+An `ExecutionArtifact` is evidence of a vector operation under one declared
+contract. It does not prove corpus completeness, semantic relevance, or the
+truth of downstream claims.
+
+## Legacy Continuity
 
 - compatibility package: [`bijux-vex`](https://pypi.org/project/bijux-vex/)
 - legacy import root: `bijux_vex`
@@ -116,18 +123,17 @@ and its pinned JSON and schema hash.
 - canonical migration guide: [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
 - retired repository target: [https://github.com/bijux/bijux-vex](https://github.com/bijux/bijux-vex) (see [Repository consolidation notes](https://bijux.io/bijux-canon/08-compat-packages/migration/repository-consolidation/))
 
-## What this package owns
+## Package Boundary
 
-- vector execution semantics and backend orchestration
-- provenance-aware result artifacts and replay-oriented comparison
-- plugin-backed vector store, embedding, and runner integration
-- package-local HTTP behavior and related schemas
+Index owns embedding and vector-store execution once input has a stable
+prepared identity. It owns capability negotiation, exact and bounded modes,
+budgets, result provenance, artifacts, and retrieval replay. Ingest owns source
+normalization; reason owns what retrieved evidence means; runtime owns whether
+the full run may be accepted and persisted.
 
-## What this package does not own
-
-- document ingestion and normalization
-- runtime-wide authority, persistence, or replay policy
-- repository maintenance automation
+A plugin extends a registered execution seam. Registration does not make its
+capability declaration accurate or its remote service trustworthy; conformance
+and deployment controls remain necessary.
 
 ## Failure And Replay Semantics
 
@@ -142,7 +148,7 @@ and its pinned JSON and schema hash.
 - corrupt artifacts, unavailable backends, backend divergence, and unsupported
   replay remain distinct failures
 
-## Source map
+## Source Map
 
 - [`src/bijux_canon_index/core`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/core) for stable primitives and errors
 - [`src/bijux_canon_index/domain`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/src/bijux_canon_index/domain) for execution and provenance semantics
@@ -152,7 +158,7 @@ and its pinned JSON and schema hash.
 - [`plugins`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/plugins) for plugin development support
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/tests) for conformance and replay protection
 
-## Read this next
+## Read This Next
 
 - [Package guide](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 - [Architecture overview](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/)
@@ -161,7 +167,7 @@ and its pinned JSON and schema hash.
 - [Error model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/error-model/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md)
 
-## Distribution surfaces
+## Distribution Surfaces
 
 | Surface | Availability | Canonical access |
 | --- | --- | --- |
@@ -175,8 +181,4 @@ Python distribution is available, but it does not prove that a shell command
 was registered. Consumers should select one of the available surfaces
 explicitly and pin the corresponding contract.
 
-## Release Readiness
-
-- release line prepared for publish: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)
+Package history is recorded in [`CHANGELOG.md`](CHANGELOG.md).
