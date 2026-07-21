@@ -23,13 +23,16 @@ for a reproducible development environment.
 git clone https://github.com/bijux/bijux-canon.git
 cd bijux-canon
 make install
+make list
 make list-all
 ```
 
 `make install` syncs the root development group from `pyproject.toml` and
 `uv.lock`. The group includes the canonical packages, compatibility packages,
-and documentation toolchain. `make list-all` prints the package slugs accepted
-by the root command dispatcher.
+and documentation toolchain. `make list` prints primary package slugs;
+`make list-all` adds compatibility package directory slugs. Public aliases such
+as `bijux-rag` are also accepted by the dispatcher and resolve to their
+canonical package.
 
 Use `make help` to see the current root targets rather than relying on a copied
 command list.
@@ -63,7 +66,7 @@ Examples of narrow feedback loops:
 make docs-check
 
 # Inspect package-specific commands.
-make -f makes/packages/bijux-canon-ingest.mk \
+make -f "$PWD/makes/packages/bijux-canon-ingest.mk" \
   -C packages/bijux-canon-ingest help
 
 # Run the owning package's default test surface.
@@ -71,13 +74,35 @@ make test PACKAGE=bijux-canon-ingest
 ```
 
 Do not omit the profile from a direct package invocation: package directories
-do not contain standalone Makefiles. Prefer the root dispatcher for normal
-test, lint, quality, API, build, and SBOM work.
+do not contain standalone Makefiles. Keep the command at the repository root
+and make the profile path absolute; GNU Make processes `-C` before opening a
+relative `-f` path. Prefer the root dispatcher for normal test, lint, quality,
+API, build, and SBOM work.
 
 Avoid `make check`, `make all`, and `make test-all` as inner-loop commands.
 They intentionally aggregate repository-wide work. Use them when the change
 actually requires repository-wide confidence, not as a substitute for locating
 the affected contract.
+
+## Interpret A Package Run
+
+```mermaid
+flowchart TD
+    C[Root dispatch command] --> P[Resolved package profile]
+    P --> E[Selected environment]
+    E --> T[Reusable target contract]
+    T --> S{Exit status}
+    S -- success --> A[Inspect expected artifacts]
+    S -- failure --> D[Inspect package diagnostic and failed-slug summary]
+    A --> R[Review source and generated diff]
+    D --> R
+```
+
+A zero exit status proves only the target's declared checks. Confirm that the
+expected report, schema, build, or SBOM exists and is non-empty before making a
+claim about it. A group target reports all failed slugs after attempting every
+selected package; diagnose the package-level output before rerunning a broader
+root lane.
 
 ## Keep Generated Output Contained
 

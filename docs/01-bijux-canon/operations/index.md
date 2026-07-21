@@ -24,7 +24,7 @@ flowchart LR
     shared -- no --> review[Review artifacts and diff]
     shared -- yes --> repository[Run relevant repository checks]
     repository --> review
-    review --> release[Tagged publication when intended]
+    review --> release[Destination publication when intended]
 ```
 
 ## Route by Change
@@ -49,10 +49,16 @@ the current checkout:
 
 ```bash
 make help
+make list
 make list-all
-make -f makes/packages/bijux-canon-runtime.mk \
+make -f "$PWD/makes/packages/bijux-canon-runtime.mk" \
   -C packages/bijux-canon-runtime help
 ```
+
+`make list` shows the primary packages used by root product checks, including
+`bijux-canon-dev`. `make list-all` also includes the six compatibility package
+directories. A direct profile command must use an absolute `-f` path because
+GNU Make changes directory before opening the requested Makefile.
 
 Use narrow targets during development:
 
@@ -77,6 +83,21 @@ default response to a local documentation or package change.
 Package directories do not contain standalone Makefiles. Root targets dispatch
 through profiles under `makes/packages/`; supply the profile explicitly only
 when inspecting a package's target catalog.
+
+## Package Selection
+
+| Command | Selection | Environment | Failure result |
+| --- | --- | --- | --- |
+| `make test PACKAGE=bijux-canon-reason` | one canonical package | shared root check environment | package status |
+| `make test PACKAGE=bijux-rar` | canonical reason package through compatibility alias | shared root check environment | canonical package status |
+| `make test` | packages tagged `test` in the catalog | shared root check environment | aggregated failed-slug list |
+| `make security PACKAGE=bijux-canon-agent` | one canonical package | package environment | package status |
+| `make build PACKAGE=bijux-canon-index` | one buildable package | package environment | build status and retained artifacts |
+
+Aliases are routing conveniences for the root dispatcher. To test the wrapper
+distribution itself, select its catalog slug such as
+`PACKAGE=compat-bijux-rar`. Dispatch continues across a selected group after a
+failure and returns status `2` with the complete failed package list.
 
 ## Evidence by Boundary
 
@@ -139,8 +160,10 @@ metadata and forwarding contracts.
 
 Publication is irreversible: never replace a released version with different
 bytes. Correct a defect in source, create a new version, and retain the failed
-release evidence. See [Release and Versioning](release-and-versioning.md) for
-the exact ownership split.
+release evidence. PyPI, GHCR, and GitHub Release are independent destination
+workflows; record each result rather than inferring an atomic release from one
+successful job. See [Release and Versioning](release-and-versioning.md) for the
+exact ownership split.
 
 ## Operational Guides
 
