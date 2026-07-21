@@ -74,7 +74,7 @@ flowchart LR
     artifact --> replay["explain / replay / compare"]
 ```
 
-## Command Surface
+## Primary entrypoint
 
 The repository contains a complete Typer application under
 `bijux_canon_index.interfaces.cli.app`. The current package metadata does **not**
@@ -161,12 +161,19 @@ and its pinned JSON and schema hash.
 - [Error model](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/error-model/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-index/CHANGELOG.md)
 
-## Entrypoints
+## Distribution surfaces
 
-- HTTP application and v1 OpenAPI contract
-- in-process application and domain modules
-- module-invoked Typer application at `bijux_canon_index.interfaces.cli.app`
-- no registered console script in the current package metadata
+| Surface | Availability | Canonical access |
+| --- | --- | --- |
+| Python | available | import application and domain modules from `bijux_canon_index` |
+| HTTP | available | serve the application against the pinned v1 OpenAPI contract |
+| module CLI | available | `python -m bijux_canon_index.interfaces.cli.app` |
+| console script | not registered | use the module CLI; do not assume `bijux-canon-index` exists |
+
+This distinction matters for automation: package installation proves that the
+Python distribution is available, but it does not prove that a shell command
+was registered. Consumers should select one of the available surfaces
+explicitly and pin the corresponding contract.
 
 ## Release Readiness
 
