@@ -4,54 +4,104 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-04-26
+last_reviewed: 2026-07-21
 ---
 
 # Automation Surfaces
 
-Repository automation should be visible in named surfaces, not hidden behind
-tribal shortcuts.
-
-## Automation Stack
+Repository automation has four distinct layers: a root command surface,
+reusable Make contracts, Python helpers for rules that need structured logic,
+and GitHub workflows that supply triggers and permissions. Following the
+layers prevents CI behavior from becoming a second, undocumented implementation
+of local checks.
 
 ```mermaid
-flowchart LR
-    makefile["Makefile"]
-    makes["makes/"]
-    workflows[".github/workflows/"]
-    helpers["bijux-canon-dev helpers"]
-
-    makefile --> makes --> workflows --> helpers
+flowchart TD
+    U[Maintainer or workflow caller] --> M[Root Make target]
+    M --> D[Package dispatcher]
+    D --> P[Package profile]
+    P --> C[Reusable Make contract]
+    C --> H[bijux-canon-dev helper]
+    H --> A[Artifact or diagnostic]
+    W[GitHub workflow] --> M
+    W --> P
 ```
 
-This page should make shared automation traceable in one pass. A maintainer
-needs to know where a command starts, where it delegates, and where shared code
-begins without reverse-engineering shell glue.
+## Layer responsibilities
 
-## Automation Order
+| Layer | Owns | Does not own |
+| --- | --- | --- |
+| root `Makefile` and `makes/root.mk` | discoverable repository commands and orchestration groups | package-specific test semantics |
+| `makes/bijux-py/` | reusable install, test, quality, security, API, build, docs, and SBOM contracts | package identity or domain behavior |
+| `makes/packages/` | declarative package bindings, paths, extras, exclusions, and package-specific target composition | copied implementations of shared target families |
+| `packages/bijux-canon-dev` | structured repository rules, comparison logic, and durable diagnostics | product runtime behavior |
+| `.github/workflows/` | triggers, matrices, permissions, concurrency, artifact transfer, and publication | a hidden alternative to checked-in local commands |
 
-Read shared automation in this order:
+## Root command flow
 
-1. `Makefile` for the top-level entrypoint a maintainer is expected to start from
-2. `makes/` for the structured library behind shared commands
-3. `.github/workflows/` for published verification, docs, and release execution
-4. `packages/bijux-canon-dev` for code-bearing maintainer helpers
+`make test PACKAGE=bijux-canon-reason` follows a concrete path:
 
-## Why The Order Matters
+1. the root dispatcher resolves the package or alias from `makes/packages.mk`;
+2. it selects the profile under `makes/packages/`;
+3. it supplies repository, configuration, API, and artifact paths;
+4. the profile includes the reusable package contract;
+5. the target provisions its environment and writes evidence beneath
+   `artifacts/bijux-canon-reason/`; and
+6. the dispatcher aggregates failures and returns a repository-level status.
 
-A top-level command is usually the fastest operational route. A workflow file is
-usually the fastest route when the question starts from CI. `bijux-canon-dev`
-should explain helper behavior, not hide the only honest owner of a repository
-rule.
+The same dispatch family serves `test`, `lint`, `quality`, `security`, `api`,
+`build`, and `sbom`. `PACKAGE=<slug>` narrows a target. Omitting it selects the
+target's declared package group.
 
-## Failure Signals
+## Discover and inspect commands
 
-- a contributor cannot tell which root command is canonical for common work
-- a workflow changes repository-wide behavior but the owning file is not easy to name
-- a helper script starts carrying product logic that belongs in one package
+```bash
+make help
+make list
+make list-all
+make -f "$PWD/makes/packages/bijux-canon-runtime.mk" \
+  -C packages/bijux-canon-runtime help
+```
 
-## Design Pressure
+Package directories have no standalone Makefiles. Supplying the profile path
+is required for direct package inspection; normal execution should use the
+root dispatcher.
 
-Automation becomes opaque when helpers, workflows, and commands can no longer
-be named in order. Once the execution path is guesswork, root tooling starts
-hiding the very behavior it is supposed to make reviewable.
+## Environment and artifacts
+
+Root documentation and shared-helper lanes use a check environment beneath
+`artifacts/`. Package profiles use package environments and package-scoped
+artifact roots. The dispatcher passes absolute paths so changing the invoked
+working directory does not relocate schemas, configuration, or results.
+
+Generated test reports, builds, schemas, logs, caches, SBOMs, and local run
+products must remain beneath `artifacts/` or another governed output directory.
+The dispatcher performs root-pollution cleanup after package work, but cleanup
+is not a substitute for correct output routing.
+
+## Workflow relationship
+
+The verification workflow first checks policy prerequisites and repository
+automation contracts, then calls the reusable package workflow across the
+canonical product packages and `bijux-canon-dev`. Workflows may provide a
+matrix, a Python version, credentials, or an artifact upload boundary. They
+should call the same Make profiles and helper modules used locally.
+
+Generated standards workflows are downstream copies of the shared standards
+source. Their local presence documents execution but does not authorize
+repository-specific edits to generated content.
+
+## Failure interpretation
+
+| Failure | First owner to inspect |
+| --- | --- |
+| unknown package or alias | `makes/packages.mk` catalog and resolver |
+| missing package profile | `makes/packages/` mapping |
+| environment cannot be created | root or package environment contract and lockfile |
+| one package target fails | package profile, reusable target, and generated diagnostic |
+| local command passes but workflow fails | workflow inputs, permissions, runner, matrix, or external service |
+| workflow passes with unexpected artifact | staging and upload contract, not only job status |
+
+Automation is reviewable when the caller, delegated target, rule owner,
+environment, and resulting evidence can all be named without reverse-engineering
+an opaque shell chain.

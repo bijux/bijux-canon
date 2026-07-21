@@ -78,9 +78,14 @@ failure with `|| true`, and the summary is best-effort. Therefore:
 Use the separate validator for an acceptance claim:
 
 ```bash
-make -C packages/bijux-canon-runtime sbom
-make -C packages/bijux-canon-runtime sbom-validate
+make sbom PACKAGE=bijux-canon-runtime
+make -f "$PWD/makes/packages/bijux-canon-runtime.mk" \
+  -C packages/bijux-canon-runtime sbom-validate
 ```
+
+The root dispatcher exposes `sbom`; the validator is a package-profile target.
+Package directories do not contain standalone Makefiles, so direct validation
+must include the repository profile path.
 
 `sbom-validate` refuses a missing CLI, an empty SBOM directory, or any document
 rejected by `cyclonedx validate`. Inspect the generated files and command output
