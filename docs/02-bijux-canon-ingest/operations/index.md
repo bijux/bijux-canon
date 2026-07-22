@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Operations
@@ -52,6 +52,26 @@ flowchart LR
 | HTTP state disappears | worker topology and process restart | rebuild state or supply an application-owned durable store |
 | Citations do not resolve | retrieved chunk set and answer construction | reject the answer and reproduce retrieval from the same index identity |
 | Optional provider is unavailable | installed extra, credentials, network, adapter error | restore the explicit dependency; do not substitute silently |
+
+## Resume from the last trusted boundary
+
+Recovery begins at the first artifact whose identity or completeness cannot be
+established. Repeating the final command is safe only when its inputs are still
+the same:
+
+| Last trusted boundary | Reuse | Rebuild or rerun |
+| --- | --- | --- |
+| source inventory accepted | immutable source snapshot and input schema | configuration resolution, preparation and everything downstream |
+| prepared records accepted | source receipt, effective configuration and complete record set | local index, retrieval, answers and evaluation |
+| local index accepted | matched index/chunk generation and backend metadata | query, answer and evaluation observations |
+| retrieval accepted | query, index identity, ordered candidates and scores | answer construction only, when it is a pure projection of those candidates |
+| cited answer accepted | full preceding chain plus citation resolution | evaluation or downstream consumption, not source preparation |
+
+Do not reuse a partial JSONL file because its last line parses, or an index
+because its directory exists. Establish expected counts, failure disposition,
+format/version identity, digest, and pairing before declaring a checkpoint.
+When an operation can have external effects, record the attempt identity before
+retrying so duplicate work remains detectable.
 
 ## Deployment boundaries
 

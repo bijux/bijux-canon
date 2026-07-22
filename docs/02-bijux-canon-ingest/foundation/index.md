@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Foundation
@@ -21,20 +21,50 @@ scheduled.
 flowchart LR
     source["files and source text"]
     prepare["normalize, identify, chunk"]
-    retrieve["local retrieval and cited extraction"]
-    reason["reasoning and verification"]
-    runtime["workflow authority"]
+    local["ingest-local index,<br/>retrieval, cited extraction"]
+    index["index execution contract"]
+    reason["reasoning evidence contract"]
+    runtime["runtime execution authority"]
 
-    source --> prepare --> retrieve --> reason
-    runtime -. schedules .-> prepare
-    runtime -. schedules .-> retrieve
+    source --> prepare --> local
+    prepare -. prepared-material handoff .-> index
+    local -. candidate handoff .-> reason
+    runtime -. explicit adapter required .-> prepare
+    runtime -. explicit adapter required .-> local
 ```
 
 The package deliberately contains a complete local path from documents to
 ranked chunks and extractive answers. That path is useful for compact
 applications and reproducible examples. Repository-wide index ownership still
 belongs to `bijux-canon-index`; evidence interpretation belongs to
-`bijux-canon-reason`; orchestration belongs to `bijux-canon-runtime`.
+`bijux-canon-reason`; role orchestration belongs to `bijux-canon-agent`; and
+whole-run acceptance, persistence, and replay belong to
+`bijux-canon-runtime`.
+
+The dashed runtime links describe an ownership seam, not a working package-root
+adapter. Runtime currently requests a `retrieve` callable with runtime-shaped
+scope and vector-contract arguments; ingest's implemented retrieval is
+path-based and is not exported from the package root. An integration must map
+those contracts while retaining preparation and index identity.
+
+## The preparation decision
+
+Ingest answers one durable question: **which retrieval-ready records were
+derived from these sources under these exact rules?** A reviewable answer needs
+all of the following:
+
+| Part | Minimum retained identity |
+| --- | --- |
+| source | stable document or byte-set identity plus disposition |
+| rules | effective cleaning, safeguard, chunk and optional embedding configuration |
+| transformation | normalized record, typed failures and stage observations |
+| segmentation | prepared parent, ordered chunk identity, offsets and geometry |
+| persistence | output/index format, digest, location and package version |
+| handoff | receiving boundary plus the exact records and failures transferred |
+
+Retrieval may add ranking and citation observations to that decision. It does
+not retroactively establish the truth, completeness, or authority of the
+source material.
 
 ## What the package owns
 
