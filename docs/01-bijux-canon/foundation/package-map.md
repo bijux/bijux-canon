@@ -57,6 +57,44 @@ New integrations should use its typed Python or HTTP contracts. Existing
 `bijux-vex` command automation remains available through the compatibility
 distribution.
 
+## Installed Dependency Topology
+
+The package graph is intentionally asymmetric. Ingest, index, reason, and
+agent are independently installable product boundaries; none declares another
+canonical product package as a runtime dependency. Runtime composes all four.
+
+```mermaid
+flowchart BT
+    ingest["bijux-canon-ingest"]
+    index["bijux-canon-index"]
+    reason["bijux-canon-reason"]
+    agent["bijux-canon-agent"]
+    runtime["bijux-canon-runtime"]
+    cli["bijux-cli"]
+    store["DuckDB"]
+
+    runtime --> ingest
+    runtime --> index
+    runtime --> reason
+    runtime --> agent
+    runtime --> cli
+    runtime --> store
+```
+
+This topology has concrete consequences:
+
+- installing ingest, index, reason, or agent does not install the other three;
+- installing runtime resolves the four canonical product dependencies within
+  the compatible release range;
+- importing a lower package must not require runtime to be installed;
+- product-to-product handoffs use explicit records and adapters, not an
+  undeclared dependency hidden behind local workspace availability; and
+- the root development environment contains every package, so a successful
+  repository import is not proof that a wheel declares the dependency it uses.
+
+Use built-wheel metadata and an isolated installation when the dependency
+boundary itself is under review.
+
 ## Repository Support
 
 `bijux-canon-dev` is an internal support package. It owns repository inventory,

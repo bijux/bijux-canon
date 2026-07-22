@@ -65,6 +65,39 @@ reconstructing their meaning later. This produces four practical rules:
    index; unsupported evidence belongs to reason; execution-policy failures
    belong to runtime.
 
+## Resolve A Disputed Decision
+
+```mermaid
+flowchart TD
+    decision["disputed behavior or record"]
+    source{"changes source preparation<br/>or chunk identity?"}
+    vector{"changes backend eligibility,<br/>ranking, or replay?"}
+    claim{"changes evidence support,<br/>claim status, or reasoning checks?"}
+    workflow{"changes role ordering,<br/>convergence, or agent trace?"}
+    run{"changes authority, persistence,<br/>acceptance, or whole-run replay?"}
+    repo{"changes package inventory,<br/>release, docs, or schema drift?"}
+
+    decision --> source
+    source -->|yes| ingest["ingest"]
+    source -->|no| vector
+    vector -->|yes| index["index"]
+    vector -->|no| claim
+    claim -->|yes| reason["reason"]
+    claim -->|no| workflow
+    workflow -->|yes| agent["agent"]
+    workflow -->|no| run
+    run -->|yes| runtime["runtime"]
+    run -->|no| repo
+    repo -->|yes| maintenance["maintenance"]
+    repo -->|no| boundary["define the missing contract before coding"]
+```
+
+Choose the owner by the decision being made, not by the package that happens
+to call it. Runtime may invoke retrieval, but index still owns the ranking
+contract. A repository check may reject a schema drift, but the product package
+still owns the route behavior. This distinction keeps review evidence close to
+the implementation capable of changing the result.
+
 ## Cross-package changes
 
 A change is cross-package when it alters a shared schema, a runtime composition
@@ -81,10 +114,17 @@ package remains the owner of grounding semantics.
 
 ## Compatibility ownership
 
-Compatibility distributions may translate names, imports, arguments, or
-result shapes required by their declared contract. They do not acquire
-ownership of canonical behavior. Bug fixes belong in the canonical package
-unless the defect exists only in the compatibility boundary.
+The six current compatibility distributions preserve distribution names,
+Python import identities, module execution, and console entrypoints. They
+delegate arguments, results, exceptions, and exit status without translation.
+They do not acquire ownership of canonical behavior. Bug fixes belong in the
+canonical package unless the defect exists only in dependency injection, alias
+resolution, package contents, or command delegation.
+
+If a future migration requires argument or result translation, that behavior
+must be introduced as an explicit versioned adapter with its own tests and
+retirement policy. It must not be smuggled into these direct aliases while the
+documentation continues to promise object identity and unchanged behavior.
 
 This rule keeps migrations observable: users can see which surface is stable,
 which owner implements it, and where a behavioral correction will land.

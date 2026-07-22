@@ -64,6 +64,24 @@ trace bytes; runtime records causal events and finalization in DuckDB; index
 artifacts retain request and backend provenance. A generic filename is never a
 substitute for those identities.
 
+## There Is No Universal Artifact Envelope
+
+The package family shares custody principles, not one serialized wrapper.
+Readers must select the owning contract before parsing bytes:
+
+| Artifact family | Authoritative shape | Completeness boundary |
+| --- | --- | --- |
+| prepared ingest material | typed records, offsets, effective configuration, persisted index metadata | source identity, rejected-input record, and output fingerprint remain available |
+| vector execution | request, plan/session result, materialized `ExecutionArtifact`, backend provenance | prepared corpus identity and execution envelope remain paired |
+| reasoning run | `spec.json`, `plan.json`, `trace.jsonl`, `verify.json`, fingerprint, metadata, and manifest | the manifested run set validates together |
+| agent workflow | pipeline result or failure artifact plus versioned `RunTrace` | mandatory lifecycle and call evidence is complete |
+| runtime run | manifest, resolved plan, DuckDB records, trace, policies, envelopes, and external payload references | finalization, arbitration, certifiability, and artifact availability agree |
+| release | wheel, sdist, OCI digest, SBOM, source tag, and destination identity | the published bytes—not a later rebuild—are addressable |
+
+Do not deserialize an artifact based only on its extension or move a payload
+without the identities needed by its owner. A JSON document can be structurally
+valid while belonging to the wrong schema, run, tenant, corpus, or producer.
+
 ## Lifecycle
 
 ```mermaid
@@ -154,6 +172,10 @@ Before relying on an artifact, ask:
 - Can it be replayed or regenerated, and are those claims byte-exact or
   semantic?
 - Which retention and access controls apply?
+
+Reject or quarantine the record when those questions cannot be answered. Do
+not repair missing provenance by assigning a new digest to detached bytes: that
+proves the derivative's identity, not its relationship to the original run.
 
 See [API and Schema Governance](api-and-schema-governance.md) for checked-in
 contract artifacts, [Release and Versioning](release-and-versioning.md) for
