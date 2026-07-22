@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Runtime Handbook
@@ -59,6 +59,35 @@ the dataclass alone does not prove that a flow is executable.
 Plan and dry-run deliberately avoid lower-package intelligence, and observe
 evaluates a supplied run. Success in those modes does not establish that the
 live agent, retrieval, vector-contract, and reasoning adapters are callable.
+
+## Inspect The Bundled Execution Plan
+
+Resolve the repository-owned example before granting runtime any execution
+authority:
+
+```bash
+uv run bijux-canon-runtime plan \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --json
+```
+
+The command is useful because every important planning claim has a visible
+field:
+
+| Planning claim | Output to inspect |
+| --- | --- |
+| the intended tenant and flow were admitted | `tenant_id`, `flow_id`, and `flow_state` |
+| the intended data was bound | dataset ID, version, hash, state, and storage URI |
+| dependency order is stable | ordered `steps` and each step's declared dependencies |
+| variability is declared | determinism level, entropy budget, nondeterminism intent, and allowed variance |
+| replay expectations were fixed before execution | replay mode, acceptability, and replay envelope |
+| the resolved contract is addressable | environment fingerprint, resolution metadata, and `plan_hash` |
+
+Plan mode returns neither a run ID nor a trace because nothing executed. Store
+the manifest and plan output together when they are used to authorize later
+work; a `plan_hash` without the declaration it summarizes is not a sufficient
+review record. The [entrypoint guide](interfaces/entrypoints-and-examples.md)
+shows how executable modes add policy, storage, inspection, and replay.
 
 ## Live Composition Status
 

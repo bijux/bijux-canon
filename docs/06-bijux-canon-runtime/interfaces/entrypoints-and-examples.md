@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Entrypoints and Examples
@@ -45,14 +45,40 @@ through `ExecutionConfig`; do not rely on defaults to invent runtime authority.
 
 ## CLI: plan before execution
 
+From a repository checkout, plan the maintained example directly:
+
 ```bash
-bijux-canon-runtime plan flow.json --json
+uv run bijux-canon-runtime plan \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --json
 ```
 
 Plan mode validates and resolves the manifest without executing steps. The
 manifest must declare determinism, replay acceptability, entropy budget,
 replay envelope, dataset identity, agents, retrieval contracts, and
 verification gates.
+
+For an installed distribution, copy the example manifest into an
+application-owned location and invoke the same boundary:
+
+```bash
+bijux-canon-runtime plan flow.json --json
+```
+
+Treat these output fields as a pre-execution review record:
+
+| Field group | Review before execution |
+| --- | --- |
+| flow and tenant | authority belongs to the intended caller and namespace |
+| dataset descriptor | ID, version, hash, lifecycle state, and URI are the intended inputs |
+| steps and dependencies | order and agent identities match the declared flow |
+| determinism and entropy | permitted variance and exhaustion behavior match operational policy |
+| replay envelope | comparison thresholds were fixed before any output was observed |
+| environment and plan fingerprints | the resolved contract can be compared with the eventual run |
+
+Plan success is intentionally weaker than executable readiness. It does not
+open the DuckDB store, load the live lower-package callables, exercise an
+external effect, arbitrate verification, or persist a replayable record.
 
 ## CLI: execute and persist a governed run
 
