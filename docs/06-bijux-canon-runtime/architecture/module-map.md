@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Module Map
@@ -64,6 +64,54 @@ Preparation requires exactly one of a `FlowManifest` or resolved
 without a trace or run identifier. Executable modes require the resources and
 policy appropriate to their authority; finalization checks runtime semantics
 before persisted state is presented as complete.
+
+## Walk one governed run through the architecture
+
+```mermaid
+sequenceDiagram
+    participant Edge as CLI/Python interface
+    participant Contract as manifest + model contracts
+    participant App as application planner
+    participant Execute as runtime execution
+    participant Verify as verification
+    participant Observe as trace capture
+    participant Store as execution + artifact stores
+    participant Replay as replay analysis
+
+    Edge->>Contract: manifest, dataset, policy and mode
+    Contract->>App: validated immutable inputs
+    App->>Execute: plan + authority context
+    Execute-->>Observe: causal events + effect receipts
+    Execute->>Verify: step outputs + declared gates
+    Verify-->>App: findings + arbitration
+    App->>Observe: terminal result + identity
+    Observe->>Store: trace, envelope, budgets and artifacts
+    Store-->>Replay: retained execution evidence
+    Replay-->>Edge: semantic diff + acceptability verdict
+```
+
+Planning fixes the work and its identity before execution. Executors perform
+only the effects admitted by the plan and authority context. Verification
+produces findings before policy arbitrates them. Persistence retains both the
+terminal projection and the evidence needed to challenge or replay it.
+
+## Dependency direction
+
+| Layer | May depend on | Must not acquire |
+| --- | --- | --- |
+| `contracts` / `model` | immutable runtime vocabulary and validation | DuckDB, interfaces or executor implementations |
+| `application` | models, planning policy, execution protocols, verification and persistence protocols | duplicate domain contracts or interface-specific behavior |
+| `runtime.execution` | plan/context contracts, bounded integrations, event and effect protocols | CLI/API concerns or permission to widen authority |
+| `verification` | immutable outputs, evidence and declared gate policy | mutation of the evidence being judged |
+| `observability` | stable events, identities, artifacts and replay envelopes | permission to rewrite execution policy while recording it |
+| `interfaces` | application entry points, loaders and result translation | a second planner, executor or verification policy |
+| `api.v1` | versioned HTTP contracts and readiness dependencies | claims of remote execution while run/replay remain unavailable |
+
+Cross-package executors use lazy integration loaders. A successfully imported
+package is not sufficient proof of a live composition: its root must export the
+required callable (`run`, `retrieve`, `reason`, or `enforce_contract`). Treat a
+missing callable as an explicit integration failure, not as an empty domain
+result or permission to synthesize success.
 
 ## Authority and replay
 
