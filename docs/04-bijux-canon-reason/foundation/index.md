@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Foundation
@@ -22,19 +22,27 @@ flowchart LR
     spec["ProblemSpec"]
     reason["plan, execute, claim, verify"]
     bundle["manifested reasoning run"]
-    agent["agent orchestration"]
-    runtime["workflow acceptance"]
+    reviewer["caller or reviewer"]
+    agent["agent workflow"]
+    runtime["runtime executor"]
 
     retrieval --> reason
     spec --> reason --> bundle
-    agent -. invokes .-> reason
-    bundle --> runtime
+    bundle --> reviewer
+    agent -. explicit adapter required .-> reason
+    runtime -. missing root adapter .-> reason
 ```
 
 The package owns interpretation records, not universal truth. Retrieval order
 and backend scoring remain index concerns. Multi-call scheduling and provider
 policy remain agent concerns. Acceptance of an end-to-end workflow remains a
 runtime concern.
+
+The dashed links do not claim direct composition. Agent does not depend on the
+reason package, and runtime currently requests a root-level `reason` callable
+returning a runtime-owned bundle that the reason root does not export. A host
+adapter must preserve problem, evidence, support, claim, trace, verification,
+and manifest identity before either higher boundary can claim custody.
 
 ## Claim contract
 
@@ -49,6 +57,19 @@ runtime concern.
 A reference to a document is not sufficient grounding. A support record binds
 the claim to exact bytes and a SHA-256 digest so the verifier can distinguish a
 stable source span from a nearby or replaced passage.
+
+## Read a claim as four decisions
+
+| Decision | Owning record | Valid question | Invalid shortcut |
+| --- | --- | --- | --- |
+| evidence admission | `EvidenceRef`, source digest and retrieval provenance | which exact bytes were available to reasoning? | treating a document label as retained evidence |
+| support | `SupportRef`, exact span and snippet digest | which bytes are asserted to support this claim? | accepting a nearby citation or score as support |
+| inference | claim kind, derivation/tool trace and dependencies | how did observed or assumed material become this conclusion? | treating fluent prose or confidence as a derivation |
+| disposition | claim status and verification findings | why is the claim proposed, validated, rejected, or insufficient? | treating process completion as validation |
+
+These decisions remain separately inspectable so a reviewer can accept the
+evidence identity while rejecting the inference, or accept a well-formed run
+whose honest outcome is insufficient evidence.
 
 ## Verification meaning
 

@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Operations
@@ -43,6 +43,24 @@ flowchart LR
 | `run_meta.json` | Which preset, seed, runtime, tools, schema, and producer created the run? |
 | `manifest.json` | Do all declared core, evidence, and provenance files match their digests? |
 | replay diff | Does the frozen execution reproduce the retained trace under the recorded contract? |
+
+## Keep operational verdicts separate
+
+One run can have different answers to each of these questions:
+
+| Verdict | Governing evidence | Operational meaning |
+| --- | --- | --- |
+| execution completion | plan nodes and terminal trace events | the declared work reached a terminal outcome |
+| claim disposition | typed claim status and its support relationships | the claim is proposed, validated, rejected, or retained as insufficient |
+| verification result | registered findings, severities and policy choice | structural and grounding checks passed, warned, or failed |
+| bundle integrity | manifest, fingerprints, invariant checksum and safe paths | the retained files still form the content-addressed run |
+| replay comparison | frozen inputs, replay trace, diff, verdict and reason | the later execution matches or diverges under the recorded contract |
+| process status | command exit code and selected strictness flags | automation received the documented process-level signal |
+
+Do not derive one verdict from another. A command may exit successfully while
+retaining verification findings; a valid bundle may contain an insufficient
+claim; and replay can diverge even when both executions terminate normally.
+Acceptance policy must name which verdicts it requires and retain all of them.
 
 ## Failure routing
 
