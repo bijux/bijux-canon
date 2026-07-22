@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Retrieval Review
@@ -23,6 +23,41 @@ flowchart TD
 
     intent --> resolve --> execute --> retain --> compare
 ```
+
+## Audit one ranking decision
+
+Choose a returned neighbor—preferably one involved in a tie or approximation—
+and reconstruct the decision:
+
+| Question | Evidence to follow |
+| --- | --- |
+| why was this request admissible? | normalized intent, mode, contract, budget, dimensions, metric, and authorization |
+| why was this backend selected? | registry entry, observed capability descriptor, provider availability, and fallback record |
+| which state was searched? | dataset, artifact, index, embedding, and backend-native snapshot identities |
+| why did this item receive this position? | normalized vector, metric, score, stable tie key, filters, top-`k`, and ANN witness where applicable |
+| what did execution cost or omit? | latency, memory, error/approximation budget, truncation, warnings, and partial status |
+| can the result be compared later? | finalized artifact, provenance join, request and result fingerprints, replay policy, and external-state identity |
+
+If the ranking can be explained only by naming the backend, the evidence is
+insufficient. Backend names select implementations; they do not encode the
+request, corpus, parameters, numerical environment, or loss boundary.
+
+## Adversarial scenarios
+
+| Scenario | Required behavior |
+| --- | --- |
+| equal scores arrive in different backend order | canonical tie ordering produces the same ranked result |
+| preferred backend lacks a required capability | explicit refusal or a declared eligible fallback with visible identity |
+| latency, memory, or error budget is exhausted | typed budget outcome; no complete-success classification |
+| ANN seed or witness changes | new execution identity and a structured comparison against the exact or prior baseline |
+| idempotency key is reused with different normalized intent | refusal before resource mutation |
+| artifact says complete but ledger/native state is absent or corrupt | load and replay refusal with the missing boundary named |
+| dataset or index identity changes during replay | blocking diff when the selected replay policy requires equality |
+| compatibility command and canonical interface disagree | investigate canonical behavior and bridge delegation separately |
+
+Run the scenario at the lowest owning layer first, then through the public
+adapter when serialization, authorization, or error mapping is part of the
+claim. A public smoke test alone cannot prove backend or replay semantics.
 
 ## Intent and plan
 
