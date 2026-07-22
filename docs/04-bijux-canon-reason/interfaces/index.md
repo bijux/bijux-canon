@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Interfaces
@@ -45,6 +45,25 @@ The files protect different properties. The semantic trace ID, byte-level
 trace fingerprint, plan/evidence/runtime invariant checksum, and per-file
 manifest digests overlap deliberately but are not interchangeable. The
 manifest is internally consistent, not self-authenticating.
+
+## Inspect a run without executing it
+
+A reviewer does not need the original provider or tool process to reject a
+malformed reasoning record. Open the bundle in this order:
+
+| Inspection | Evidence to compare | Stop or qualify when |
+| --- | --- | --- |
+| containment | run root, safe relative paths, manifest membership | a referenced file escapes the root or an unexpected file is treated as governed evidence |
+| problem and plan | `spec.json`, `plan.json`, their stable IDs and DAG topology | the plan addresses another problem, contains a cycle, or names missing work |
+| execution history | typed records in `trace.jsonl` and their causal links | an action, tool call, evidence load, or claim transition is orphaned or unfinished |
+| support | evidence identity, exact span, snippet bytes and digest | the citation is nearby but not byte-identical, or the evidence snapshot is unavailable |
+| verification | `verify.json`, registered checks, findings and claim status | a report is missing, partial, stale, or inconsistent with the trace |
+| closure | `run_meta.json`, `fingerprint.txt`, invariant checksum and `manifest.json` digests | individually valid files do not form one content-addressed run |
+| replay | frozen inputs, replay output, diff and mismatch policy | live retrieval replaced retained evidence or completion is mistaken for a match |
+
+This order separates safe parsing, structural integrity, evidentiary support,
+and behavioral review. A manifest digest can prove which bytes were retained;
+it cannot prove that the source was authoritative or the inference was sound.
 
 ## Automation semantics
 

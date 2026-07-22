@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Quality
@@ -51,6 +51,23 @@ reasoning changes are assessed against those records, not process exit alone.
 The local retrieval benchmark is a regression sentinel tied to its recorded
 environment. It is not a service-level objective or evidence that the
 reference extractive workflow generalizes beyond its suite.
+
+## Keep integrity and adequacy separate
+
+A reasoning result has at least two independent review dimensions:
+
+| Record integrity | Evidentiary adequacy | Supported disposition |
+| --- | --- | --- |
+| passes | adequate for the declared problem and checks | retain the claim with its exact support, status, findings, and proof limits |
+| passes | insufficient or contradictory | retain a valid non-answer, rejected claim, or explicit insufficiency result |
+| fails | output appears plausible | reject the run record; prose cannot repair broken identity, support, trace, or manifest custody |
+| fails | evidence is also insufficient | reject the record and diagnose the earliest violated invariant before evaluating semantics |
+
+Integrity asks whether the retained objects form the run they claim to form.
+Adequacy asks whether those intact objects support the requested conclusion.
+Do not weaken an integrity rule to preserve a useful-looking answer, and do not
+label an honest insufficiency result defective merely because it declines to
+produce a conclusion.
 
 ## Tamper posture
 
