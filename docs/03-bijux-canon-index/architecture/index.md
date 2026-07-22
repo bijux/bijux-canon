@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Architecture
@@ -78,6 +78,36 @@ ledger owns active documents, vectors, artifacts, transactions, and execution
 records. A complete run directory retains metadata, result data, and a status
 commit marker for later inspection. Vector-store persistence is another
 boundary and does not replace either record.
+
+## Four records, one execution
+
+A reviewable retrieval result is assembled from records with different owners
+and lifetimes. Treating any one of them as the whole execution loses evidence:
+
+```mermaid
+flowchart TD
+    artifact["materialized artifact contract"]
+    ledger["execution ledger"]
+    backend["backend or vector-store state"]
+    run["committed run directory"]
+    artifact --> ledger
+    artifact --> backend
+    backend --> ledger
+    ledger --> run
+```
+
+| Record | Establishes | Does not establish |
+| --- | --- | --- |
+| materialized artifact | eligible corpus identity, vectors, metric and frozen contract | that a backend executed it or that a run completed |
+| execution ledger | active documents, transactions, execution and provenance state | portable completion evidence by itself |
+| backend or vector-store state | implementation-specific index and retrieval capability | artifact identity, policy admission or run finalization |
+| committed run directory | metadata, result and terminal status for inspection | availability of every external backend state or source payload |
+
+Recovery must reconcile all records named by the original request. A readable
+backend cannot replace a missing artifact contract, and a `result.json` without
+the matching metadata and committed status remains an interrupted publication,
+not execution evidence. Replay starts by validating these identities before it
+interprets rank or score differences.
 
 ## Structural invariants
 

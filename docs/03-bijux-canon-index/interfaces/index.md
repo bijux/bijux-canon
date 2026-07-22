@@ -69,6 +69,33 @@ persist the typed request and execution artifact rather than serializing only
 the result list. Run files are complete only when `status.json` agrees with the
 metadata and result records.
 
+## Accept an execution record
+
+Automation should promote an index result only after the interface-specific
+response has been reconciled with the common execution envelope:
+
+1. retain the capability response that made the backend eligible;
+2. serialize the admitted request, including intent, mode, contract, budget,
+   artifact identity, metric and result count;
+3. retain either the typed refusal or the returned execution and correlation
+   identities—an empty neighbor list is not a replacement for a refusal;
+4. when run files are requested, require `metadata.json`, `result.json`, and a
+   terminal `status.json` that name the same execution; and
+5. compare or replay only with the original request, artifact fingerprint,
+   backend identity and tolerance policy present.
+
+| Interface observation | Safe interpretation | Unsafe interpretation |
+| --- | --- | --- |
+| capability appears in discovery | the adapter declared availability for this process | the adapter is conformant or suitable for every contract |
+| request returned neighbors | this execution produced an ordered result | the result is relevant, complete or factually correct |
+| run files exist | publication began | the run is complete without a consistent terminal status |
+| replay returned a diff | recorded executions were compared under the supplied policy | similar rankings are equivalent without an acceptable verdict |
+| plugin loaded | registration and import succeeded | backend semantics, persistence and provenance are trustworthy |
+
+This acceptance protocol is transport-independent. CLI JSON and exit status,
+HTTP body and correlation headers, or Python typed values differ in shape, but
+all must preserve the same execution identity and refusal semantics.
+
 ## Failure and compatibility
 
 - Strict schema validation rejects unknown and malformed fields.
