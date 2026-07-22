@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Security and Safety
@@ -70,6 +70,55 @@ or by the anonymous bucket. The default is disabled, and state is neither
 distributed nor durable. Put externally reachable deployments behind TLS,
 strong identity and authorization, network-level request limits, and durable
 observability.
+
+## Investigate a disputed claim from bytes outward
+
+Do not begin with the generated conclusion. Establish custody in this order:
+
+```mermaid
+flowchart LR
+    manifest["manifested file identity"]
+    file["evidence file digest"]
+    span["byte range + span digest"]
+    support["claim-support edge"]
+    check["check + finding"]
+    status["claim status"]
+    trace["reasoning trace"]
+
+    manifest --> file --> span --> support --> check --> status --> trace
+```
+
+1. verify the manifest and locate the evidence file beneath the authorized
+   artifact root;
+2. recompute the file digest, byte bounds, exact span digest, and cited bytes;
+3. confirm that the support edge names that evidence and the intended claim;
+4. replay applicable checks from retained inputs without calling live external
+   services;
+5. derive the claim status from findings and policy; and
+6. compare the derived status and evidence identities with the trace and
+   exported report.
+
+Stop at the first broken link. A later artifact cannot repair earlier custody,
+and a matching final sentence cannot substitute for a changed evidence byte.
+
+## Security regression matrix
+
+| Mutation or attack | Required behavior |
+| --- | --- |
+| evidence path escapes the run root through traversal or a resolved link | refusal before reading or disclosing the target |
+| evidence file changes after the manifest is written | file-digest failure that identifies the affected record |
+| support keeps the same offset while the cited bytes change | span/snippet digest failure; claim is not treated as supported |
+| a core run file is removed or replaced by a file from another run | manifest or run-identity failure, not partial verification success |
+| verification runs without the governed artifact directory | explicit evidence-check limitation; no file-backed integrity claim |
+| mandatory check is unavailable, raises, or returns contradictory findings | visible unavailable/failure disposition under the selected policy |
+| replay attempts a fresh provider or retriever call | refusal or a clearly separate new execution, never frozen replay |
+| API body omits `Content-Length` or exceeds downstream resource capacity | enclosing proxy/server enforces byte and resource limits independently |
+| shared token, corpus text, or tool output reaches an error/log artifact | disclosure incident; rotate credentials where applicable and protect the run tree |
+
+Preserve the disputed run tree read-only, record who obtained access, and work
+from a copy when investigation tooling could alter timestamps or files. A
+digest can prove that bytes differ; it cannot recover deleted evidence or
+decide whether the source was trustworthy.
 
 ## Safe interpretation
 
