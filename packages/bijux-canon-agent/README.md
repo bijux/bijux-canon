@@ -127,6 +127,17 @@ Treat the base package as the canonical orchestration surface. CLI, HTTP,
 provider, and template integrations are package-owned extensions that must stay
 subordinate to the trace and workflow contract, not the other way around.
 
+The package root deliberately exports only `API_VERSION`. It is not a facade
+for pipeline classes, provider clients, or role implementations. Integrate
+through the documented application, pipeline, interface, and trace modules so
+that dependency ownership remains visible; use the versioned HTTP schema when
+the service boundary is the intended contract.
+
+“Deterministic” applies to declared controller ordering and inspectable
+lifecycle decisions. Provider output may remain nondeterministic, and a
+reconstructed trace is not a re-execution of the provider. Documentation and
+automation should state which of those guarantees they rely on.
+
 ## Package Continuity
 
 [`bijux-agent`](https://pypi.org/project/bijux-agent/) is an exact-version
@@ -174,7 +185,7 @@ into the deterministic orchestration core.
 - [`src/bijux_canon_agent/traces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/src/bijux_canon_agent/traces) for durable trace-facing models
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-agent/tests) for executable package truth
 
-## Read This Next
+## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/05-bijux-canon-agent/)
 - [Ownership boundary](https://bijux.io/bijux-canon/05-bijux-canon-agent/foundation/ownership-boundary/)
@@ -184,7 +195,7 @@ into the deterministic orchestration core.
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-agent/CHANGELOG.md)
 
-## Primary Entrypoint
+## Primary entrypoint
 
 - console script: `bijux-canon-agent`
 - package history: [`CHANGELOG.md`](CHANGELOG.md)

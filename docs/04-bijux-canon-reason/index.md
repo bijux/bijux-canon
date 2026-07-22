@@ -92,6 +92,24 @@ capabilities, and replay invariants. A passing report means those checks passed
 over the retained record. It does not certify that every relevant source was
 retrieved or that a scientific conclusion is true.
 
+## From Candidate To Governed Claim
+
+Evidence changes meaning as it crosses package boundaries. Preserve each
+decision instead of collapsing the chain into a citation list:
+
+| Record | Authority | Still unproven |
+| --- | --- | --- |
+| prepared source record | ingest can account for normalization and segmentation | that the source is true or complete |
+| retrieval execution artifact | index can account for eligibility, ranking, and backend behavior | that a candidate supports a claim |
+| `EvidenceRef` and `SupportRef` | reason can account for the exact bytes cited | that the inference from those bytes is valid |
+| typed claim and verification findings | reason can account for claim status under registered checks | that the surrounding workflow followed policy |
+| agent trace and runtime run record | orchestration and runtime can account for process and acceptance | that the claim is scientifically true beyond its evidence |
+
+A verifier therefore evaluates a retained claim record, not an answer in the
+abstract. When an upstream identity or exact support span is absent, reason
+must report that gap; it cannot replace missing custody with confidence,
+provider reputation, or fluent prose.
+
 ## Review A Run In Order
 
 1. Confirm `spec.json` and `plan.json` describe the intended problem and graph.

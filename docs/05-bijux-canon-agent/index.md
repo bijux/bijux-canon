@@ -78,6 +78,22 @@ which provider and model were invoked, with which policy and observed result.
 It cannot make a remote model deterministic or prove the provider honored an
 unstated guarantee.
 
+## Separate Output, Trace, And Acceptance
+
+Three records answer three different questions:
+
+| Record | Question answered | Owner |
+| --- | --- | --- |
+| role or pipeline output | what content did this execution produce? | role implementation and pipeline |
+| `RunTrace` | which authorized roles, transitions, calls, vetoes, and convergence decisions produced it? | agent |
+| governed run record | was the traced workflow acceptable to persist or replay under run policy? | runtime |
+
+None is a substitute for another. Output without a complete trace is not an
+auditable agent result. A valid trace does not prove that its content is true,
+and runtime acceptance does not rewrite provider behavior or reasoning claim
+status. Cross-package consumers should bind the three identities rather than
+copying only the final artifact.
+
 ## Evidence And Limits
 
 | Claim | Evidence to inspect | Limit |

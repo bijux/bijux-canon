@@ -121,6 +121,19 @@ Verification proves that registered checks passed over retained evidence. It
 does not prove corpus completeness, scientific truth, or correctness of an
 unstated inference.
 
+## Preserve Claim Custody
+
+A consumer needs more than the claim text. Carry the content-addressed claim
+identity, kind and status, exact support references, verification findings,
+plan node, trace identity, and run manifest together. This separates three
+questions that are often conflated: what the source said, what inference was
+made from it, and which checks accepted or rejected that inference.
+
+Agent may schedule work that produces or consumes these records, but its trace
+does not supersede reasoning verification. Runtime may accept a completed
+workflow, but acceptance does not promote a proposed or rejected claim to
+validated status.
+
 ## Package Continuity
 
 [`bijux-rar`](https://pypi.org/project/bijux-rar/) is an exact-version
@@ -170,7 +183,7 @@ contract that verification and replay depend on.
 - [`src/bijux_canon_reason/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/interfaces) and [`src/bijux_canon_reason/api`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/src/bijux_canon_reason/api) for boundaries
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-reason/tests) for executable protection of the package contract
 
-## Read This Next
+## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/04-bijux-canon-reason/)
 - [Ownership boundary](https://bijux.io/bijux-canon/04-bijux-canon-reason/foundation/ownership-boundary/)
@@ -180,7 +193,7 @@ contract that verification and replay depend on.
 - [Test strategy](https://bijux.io/bijux-canon/04-bijux-canon-reason/quality/test-strategy/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-reason/CHANGELOG.md)
 
-## Primary Entrypoint
+## Primary entrypoint
 
 - console script: `bijux-canon-reason`
 - package history: [`CHANGELOG.md`](CHANGELOG.md)
