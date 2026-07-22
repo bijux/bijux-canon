@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Operations
@@ -30,6 +30,23 @@ flowchart LR
     discover -. incompatible .-> configure
     compare -. drift .-> discover
 ```
+
+## Choose the actual entry surface
+
+The canonical distribution does not install a `bijux-canon-index` console
+script. Select an implemented surface deliberately:
+
+| Operating context | Entry surface | State and evidence responsibility |
+| --- | --- | --- |
+| shell or automation | `python -m bijux_canon_index.interfaces.cli.app` with JSON output | retain command, exit status, payload, state path and run directory |
+| service client | versioned HTTP application and schema | retain request/response identity; deploy authentication, isolation and durable state externally |
+| in-process integration | named application, domain, contract and infrastructure modules | caller owns composition and persistence boundaries explicitly |
+| preserved automation | `bijux-vex` compatibility command | verify alias delegation, then plan migration to canonical Python or HTTP ownership |
+
+Do not invent a renamed command from package naming symmetry. Likewise, an
+HTTP schema is not proof that a configured backend, plugin, or vector store is
+available; run capability discovery in the environment that will execute the
+request.
 
 ## Persistence boundaries
 

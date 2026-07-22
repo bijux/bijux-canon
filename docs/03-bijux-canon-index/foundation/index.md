@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Foundation
@@ -50,6 +50,23 @@ They do not establish that the corpus is complete, that the embedding captures
 the intended meaning, that a neighbor is relevant, or that a retrieved passage
 supports a conclusion. Those claims require source and reasoning evidence.
 
+## Read one ranking without overstating it
+
+An ordered result is the end of several owned decisions. Preserve each one:
+
+| Decision | Index evidence | Question still owned elsewhere |
+| --- | --- | --- |
+| corpus eligibility | prepared-record and artifact identity | were the sources normalized and segmented correctly? |
+| request meaning | intent, mode, metric, contract, budget and result count | is this the right retrieval question for the user? |
+| backend eligibility | discovered capabilities, selected backend and effective parameters | is the provider or infrastructure acceptable to the host? |
+| numerical execution | vectors, scoring version, approximation witness, costs and warnings | does the embedding encode the desired semantics? |
+| ordering | result IDs, scores, tie policy, truncation and provenance | does a retrieved passage support a claim? |
+| comparison | original/current artifacts, semantic diff, tolerance and verdict | is the later evidence adequate for the same conclusion? |
+
+Index can prove that a candidate ranked at a position under this execution
+contract. It cannot convert score into truth probability or silently promote a
+bounded observation to exact evidence.
+
 ## Supported boundary and exclusions
 
 The v1 boundary centers on synchronous local governed execution. Remote
@@ -58,6 +75,13 @@ contract. The pgvector adapter remains experimental and is excluded from the
 v1 freeze. Adapter code may exist without becoming a supported contract; use
 capability discovery and the documented exclusions rather than inferring
 support from module presence.
+
+Runtime integration is also a separate boundary. Runtime currently requests a
+package-root `enforce_contract` callable, while the index root exposes only its
+version and the package owns richer request, capability, artifact, provenance,
+and refusal models. Until an explicit adapter preserves those semantics in an
+installed-package execution test, dependency alignment is not evidence that
+runtime enforced an index contract.
 
 ## Read by decision
 
