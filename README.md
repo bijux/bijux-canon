@@ -206,6 +206,42 @@ typed execution contracts. Existing `bijux-vex` automation remains available
 through the compatibility package, but new integrations should target
 `bijux-canon-index` directly.
 
+## Inspect A Governed Plan
+
+The repository includes a manifest that can be resolved without executing a
+provider, retrieval adapter, reasoning adapter, or agent workflow. This is the
+safest concrete starting point for understanding runtime authority:
+
+```bash
+uv sync --frozen
+uv run bijux-canon-runtime plan \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --json
+```
+
+The resulting plan records the flow and tenant, frozen dataset identity,
+ordered steps, determinism level, entropy budget, replay envelope,
+environment fingerprint, and `plan_hash`. It does not allocate a run ID,
+persist a trace, or establish that the four live package adapters are
+callable. That distinction is useful: planning proves that declared authority
+can be normalized into an immutable execution contract without confusing that
+contract with execution.
+
+Read the output in this order:
+
+1. confirm `flow_id`, `tenant_id`, and the dataset hash identify the intended
+   authority boundary;
+2. inspect every resolved step and dependency before trusting execution order;
+3. verify the determinism and entropy declarations match the intended replay
+   claim; and
+4. retain `plan_hash` as the identity against which later execution or replay
+   evidence must be compared.
+
+The example manifest is deliberately uneventful. It demonstrates admission
+and planning, not model quality or end-to-end live composition. Continue with
+the [runtime entrypoint guide](https://bijux.io/bijux-canon/06-bijux-canon-runtime/interfaces/entrypoints-and-examples/)
+before granting execution authority.
+
 ## Read The Repository By Ownership
 
 | If the question is about | Start here | Proof usually lives in |

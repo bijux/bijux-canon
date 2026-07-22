@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Bijux Canon
@@ -80,6 +80,40 @@ Ingest decides how source material is prepared. Index decides how vector work ex
 <a class="md-button" href="https://bijux.io/bijux-canon/07-bijux-canon-maintain/">Open maintenance docs</a>
 <a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
+
+## Start With A Safe Plan
+
+A repository checkout contains a complete example manifest that runtime can
+resolve without invoking live package adapters:
+
+```bash
+uv sync --frozen
+uv run bijux-canon-runtime plan \
+  packages/bijux-canon-runtime/examples/boring/flow.json \
+  --json
+```
+
+```mermaid
+flowchart LR
+    manifest["example FlowManifest"]
+    validate["schema + authority validation"]
+    resolve["dataset + dependency resolution"]
+    plan["immutable plan + plan_hash"]
+    adapters["live package adapters"]
+    store["execution store"]
+
+    manifest --> validate --> resolve --> plan
+    plan -. "not called in plan mode" .-> adapters
+    plan -. "no run allocated" .-> store
+```
+
+Inspect the returned tenant, dataset hash, step order, determinism level,
+entropy budget, replay envelope, environment fingerprint, and `plan_hash`.
+Plan mode proves that the declaration resolves into a reviewable execution
+contract. It does not execute a step, create a trace, persist a run, or prove
+that live cross-package composition works. The
+[runtime entrypoint guide](06-bijux-canon-runtime/interfaces/entrypoints-and-examples.md)
+explains the additional authority and storage required for executable modes.
 
 ## Find The Authority
 
