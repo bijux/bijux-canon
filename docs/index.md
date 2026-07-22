@@ -108,7 +108,12 @@ flowchart LR
     maintain["maintenance handbook"]
     compat["compatibility handbook"]
 
-    source --> ingest --> index --> reason --> agent --> runtime --> accepted
+    source -. ownership .-> ingest
+    ingest -. ownership .-> index
+    index -. ownership .-> reason
+    reason -. ownership .-> agent
+    agent -. ownership .-> runtime
+    runtime --> accepted
     repository --> ingest
     repository --> index
     repository --> reason
@@ -122,15 +127,35 @@ flowchart LR
     compat --> runtime
 ```
 
-The product flow moves left to right through the five canonical packages. The
-repository section covers shared boundaries, maintenance covers verification
-and publication machinery, and compatibility maps preserved names to the
-canonical packages that own current behavior.
+The product responsibility moves left to right through the five canonical
+packages. The dotted links are custody boundaries, not proof of a single
+installed end-to-end command. The repository section covers shared boundaries,
+maintenance covers verification and publication machinery, and compatibility
+maps preserved names to the canonical packages that own current behavior.
+
+## Capability And Composition Status
+
+Each canonical package has package-local contracts and evidence. Cross-package
+runtime composition is a separate contract and is not currently complete:
+
+| Surface | Current status | Trustworthy claim |
+| --- | --- | --- |
+| ingest, index, reason, and agent package-local APIs | independently implemented and tested at their documented boundaries | the owning package can be evaluated on its own contract |
+| runtime planning | resolves and validates a `FlowManifest` without calling lower-package runners | a plan can be reviewed without claiming execution |
+| runtime live adapters | expect root callables named `retrieve`, `enforce_contract`, `reason`, and `run`; the canonical roots do not currently expose the complete set | the architecture identifies intended owners, but installed end-to-end execution is not established |
+| compatibility fallbacks | alias the canonical package implementations | they preserve names; they do not fill missing integration APIs |
+| runtime HTTP run and replay | schema-tracked but return `501 Not Implemented` | schema presence documents the intended boundary, not service availability |
+
+This distinction protects package achievements from being overstated as system
+integration. A host may compose package-local surfaces explicitly, but it must
+own that adapter and validate the resulting custody chain.
 
 ## Handoff Contracts
 
 Each layer changes both the artifact and the question that the next layer is
-allowed to answer.
+allowed to answer. The sequence below describes the evidence that a complete
+composition must preserve; it is not a transcript of a currently verified
+runtime command.
 
 ```mermaid
 sequenceDiagram

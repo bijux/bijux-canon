@@ -112,6 +112,36 @@ explains the supported operation. Tagged artifacts determine what users can
 actually install. A green result at one point does not erase a mismatch at
 another.
 
+## Audit The Runtime Integration Seam
+
+Release membership proves that runtime installs the four lower canonical
+packages; it does not prove that runtime can call them. The executable seam is
+owned by
+`packages/bijux-canon-runtime/src/bijux_canon_runtime/runtime/execution/integration_loaders.py`.
+It requests package-root callables named `retrieve`, `enforce_contract`,
+`reason`, and `run`.
+
+The current ingest, index, reason, and agent roots do not expose that complete
+set, and the runtime suite does not execute those loaders against all four real
+canonical roots. The legacy fallbacks resolve to compatibility aliases of the
+same roots rather than independent adapters. Repository and release checks can
+therefore pass while installed live composition remains unproven.
+
+For an integration claim, require all of the following evidence:
+
+1. an explicit typed adapter owned by the relevant boundary;
+2. an installed environment containing the exact canonical package versions;
+3. a test that resolves every runtime loader without monkeypatching package
+   roots;
+4. one governed live flow that records retrieval, reasoning, agent, and runtime
+   identities; and
+5. a negative case for missing, malformed, and semantically incompatible
+   adapter output.
+
+Until that evidence exists, use the left-to-right system diagram as an
+ownership map and treat package-local execution and runtime plan mode as the
+demonstrated surfaces.
+
 ## Resolve Cross-Surface Disagreement
 
 Repository evidence is deliberately redundant enough to expose drift. When

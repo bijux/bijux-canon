@@ -91,7 +91,12 @@ flowchart LR
     runtime["runtime<br/>authorize, persist, replay"]
     record["governed run record"]
 
-    source --> ingest --> index --> reason --> agent --> runtime --> record
+    source -. ownership handoff .-> ingest
+    ingest -. ownership handoff .-> index
+    index -. ownership handoff .-> reason
+    reason -. ownership handoff .-> agent
+    agent -. ownership handoff .-> runtime
+    runtime --> record
 ```
 
 | Authority | Accepts | Produces | Refuses to own |
@@ -108,6 +113,27 @@ insufficient evidence remains a reasoning result; orchestration failures remain
 traceable agent outcomes; policy violations remain runtime verdicts. No layer
 has to disguise another layer's failure as success.
 
+### Current Composition Boundary
+
+The diagram is an ownership model, not evidence that the installed packages
+currently form a turnkey live pipeline. Runtime resolves four integration
+callables lazily at execution time, while the corresponding canonical package
+roots do not currently publish those callables:
+
+| Runtime integration request | Current canonical root | Consequence |
+| --- | --- | --- |
+| `bijux_canon_ingest.retrieve` | not exported; the package-local retrieval function also requires an `index_path` rather than runtime's scope and vector-contract arguments | an explicit retrieval adapter is required |
+| `bijux_canon_index.enforce_contract` | not exported | runtime cannot use the canonical index root as its vector-contract enforcer |
+| `bijux_canon_reason.reason` | not exported | runtime cannot use the canonical reason root as its reasoning runner |
+| `bijux_canon_agent.run` | not exported; the root intentionally exposes only `API_VERSION` | runtime cannot use the canonical agent root as its agent runner |
+
+The legacy-module fallbacks are aliases to the same canonical roots, so they do
+not supply a missing callable. Package-local Python, CLI, and implemented HTTP
+surfaces remain independently usable, and runtime plan mode does not invoke
+these adapters. Do not claim supported end-to-end live composition until the
+adapter contracts are explicit and an installed-package integration test
+exercises them.
+
 ## Contract Surfaces
 
 The public contract is larger than Python imports:
@@ -120,7 +146,9 @@ The public contract is larger than Python imports:
 - Versioned OpenAPI documents under `apis/<package>/v1/` pin HTTP behavior for
   all five canonical packages.
 - Package tests cover local semantics; API, invariant, integration, end-to-end,
-  and regression suites protect the handoffs.
+  and regression suites protect their selected boundaries. The runtime's
+  package-root adapter seam is not currently covered by a live canonical-package
+  integration test.
 - Compatibility distributions preserve six existing names while canonical
   ownership remains with the five `bijux-canon-*` packages.
 
