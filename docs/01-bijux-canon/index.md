@@ -112,6 +112,24 @@ explains the supported operation. Tagged artifacts determine what users can
 actually install. A green result at one point does not erase a mismatch at
 another.
 
+## Resolve Cross-Surface Disagreement
+
+Repository evidence is deliberately redundant enough to expose drift. When
+two surfaces disagree, resolve the question at the authority that owns it:
+
+| Disagreement | Governing authority | Required follow-through |
+| --- | --- | --- |
+| package metadata versus workspace inventory | root release configuration | correct membership or metadata, then rerun inventory and publication guards |
+| OpenAPI source versus live route | owning product package | reconcile behavior and schema, then refresh the pin, hash, and contract evidence |
+| package README versus exported names | owning package facade and supported modules | correct the reader contract or implementation and protect it with focused tests |
+| compatibility bridge versus canonical behavior | canonical package | fix the canonical owner; the bridge must delegate without translation |
+| local check versus workflow result | the helper and command actually invoked | compare inputs, environment, exit status, and retained artifact before changing orchestration |
+| built artifact versus tagged source | release custody chain | refuse publication until source SHA, package matrix, and artifact identity agree |
+
+The strongest supported statement is the intersection of the governing
+sources, not the most optimistic one. Root automation can detect a mismatch,
+but it cannot redefine product semantics to make the mismatch disappear.
+
 ## Root Evidence By Question
 
 | Question | Authoritative root surface | Continue in |

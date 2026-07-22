@@ -159,6 +159,34 @@ sequenceDiagram
 | agent to runtime | pipeline outcome, ordered trace, run configuration | orchestration, convergence, or trace validation failure |
 | runtime to durable record | flow manifest, dataset identity, authority and verification policy | rejection, mismatch, budget violation, or replay drift |
 
+## One Result, Six Custody Identities
+
+An end-to-end result remains reviewable only when these identities travel
+together:
+
+| Identity | First owner | Question it answers |
+| --- | --- | --- |
+| source identity | ingest | which bytes, records, and preparation configuration entered the system? |
+| prepared-material identity | ingest | which cleaned records and chunks were handed to retrieval? |
+| execution identity | index | which backend, capabilities, index, request, and ranked result produced retrieval evidence? |
+| claim identity | reason | which evidence spans, checks, and status support or refuse a conclusion? |
+| workflow identity | agent | which ordered roles, provider calls, convergence rule, and terminal outcome occurred? |
+| governed-run identity | runtime | which manifest, policy, store record, and replay verdict were accepted as durable? |
+
+```mermaid
+flowchart LR
+    S["source identity"] --> P["prepared material"]
+    P --> E["retrieval execution"]
+    E --> C["claim and verification"]
+    C --> W["workflow trace"]
+    W --> R["governed run"]
+    R -. "reverse audit" .-> S
+```
+
+A final answer is not a seventh authority. It is a projection of this custody
+chain. If one identity is unavailable, narrow the claim to the last intact
+boundary rather than reconstructing the missing handoff from downstream text.
+
 ## Package Handbooks
 
 | Package | Owns | Open It When |

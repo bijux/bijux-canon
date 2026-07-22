@@ -128,6 +128,23 @@ Start with the owning package instead of installing the entire family by
 habit. The packages are independently publishable and intentionally do not
 present one catch-all import surface.
 
+### Interface Shape Is Package-Specific
+
+The five authorities share contract principles, not an identical interface
+shape:
+
+| Package | Package-root contract | Operational entry points |
+| --- | --- | --- |
+| ingest | broad, explicitly enumerated preparation primitives and lazily resolved application exports | canonical CLI and versioned HTTP API |
+| index | package version only at the root; execution contracts live in named application, core, domain, and infrastructure modules | Python and versioned HTTP API; no renamed canonical console script |
+| reason | typed claims, evidence references, plans, traces, checks, validators, and stable hashing helpers | canonical CLI, preserved `bijux-rar` command, and versioned HTTP API |
+| agent | deliberately minimal root exposing `API_VERSION` lazily | canonical CLI, workflow modules, and versioned HTTP API |
+| runtime | `FlowManifest`, `RunMode`, and `execute_flow` | canonical CLI and versioned HTTP API |
+
+Do not infer an import from a sibling package or from a diagram. Confirm the
+owning package's exported names, documented module boundary, command help, or
+HTTP schema. A uniform lifecycle does not justify a fabricated uniform facade.
+
 ## Install By Responsibility
 
 Install the package that owns the decision your application needs to make:
@@ -284,6 +301,12 @@ is implemented, a passing unit test does not make a scientific claim true, and
 a completed run does not establish replay without its identities and policy.
 
 ## Work With The Repository
+
+All transient local outputs belong under `artifacts/`. The root verification
+environment belongs under `artifacts/root/check-venv/`, and a locally rendered
+documentation site belongs under `artifacts/root/docs/site/`. These paths are
+disposable execution products; checked-in schemas, handbooks, and release
+metadata remain in their governed repository locations.
 
 - Read the [documentation map](docs/index.md) for package and evidence routing.
 - Browse [packages](packages) for canonical and compatibility distributions.
