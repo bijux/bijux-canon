@@ -79,6 +79,27 @@ packages, not migration-only placeholders. Five preserve retired public names,
 and one preserves the shorter family-root `bijux-canon` runtime name. All six
 re-export canonical package surfaces directly.
 
+## What Works As Shipped
+
+The repository contains substantial package-local implementations, but the
+working boundary is not the same for every surface. Use this table before
+choosing an example or making an integration claim:
+
+| Capability | Supported entry | Evidence produced | Important limit |
+| --- | --- | --- | --- |
+| deterministic document preparation and local retrieval | ingest Python, CLI, and HTTP v1 | prepared records, chunk identity, persisted local indexes, ranked candidates, citations | not the governed vector-execution contract owned by index |
+| exact or bounded vector execution | index Python, module-invoked CLI, and HTTP v1 | request, capability resolution, execution artifact, provenance, cost, replay comparison | no installed `bijux-canon-index` console script and no runtime contract-enforcement adapter |
+| evidence-backed claim construction and verification | reason Python, CLI, and HTTP v1 | claims, support edges, checks, manifests, traces, replay records | verification is scoped to registered evidence and rules; runtime has no reason adapter |
+| traced role orchestration | agent Python, CLI, replay, and fixed offline HTTP v1 | ordered calls, lifecycle transitions, convergence and termination records, `RunTrace` | provider determinism is not implied; runtime has no agent adapter |
+| manifest resolution, planning, runtime-local policy, storage, inspection, and replay analysis | runtime Python and CLI; HTTP health/readiness | immutable plans, causal traces, stored run projections, arbitration and replay verdicts | HTTP run/replay return `501`; canonical live package adapters are not complete |
+
+The strongest immediately reproducible whole-repository demonstration is
+runtime plan mode because it resolves checked-in authority, data, dependency,
+entropy, and replay declarations without crossing an unavailable live adapter.
+The strongest product demonstrations remain package-local: exercise the
+owning package, retain its evidence record, and state the boundary that was not
+tested. This is more informative than treating co-installation as integration.
+
 ## One System, Five Authorities
 
 ```mermaid

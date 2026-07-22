@@ -115,6 +115,24 @@ that live cross-package composition works. The
 [runtime entrypoint guide](06-bijux-canon-runtime/interfaces/entrypoints-and-examples.md)
 explains the additional authority and storage required for executable modes.
 
+## Choose A First Proof
+
+A useful first run answers one bounded question and leaves an artifact another
+person can inspect. These three paths exercise different authorities; none is
+a substitute for the others.
+
+| Question to prove | Begin with | Retain | Claim you may make |
+| --- | --- | --- | --- |
+| did preparation preserve source and chunk identity? | [ingest one-document example](02-bijux-canon-ingest/index.md#start-with-one-document) | source record, effective `RagEnv`, cleaned record, chunk offsets and text | this input was transformed deterministically under this configuration |
+| did a backend satisfy a declared vector request? | [index capability inspection](03-bijux-canon-index/index.md#start-with-backend-capability-evidence) | capability response, execution request, artifact, provenance and cost | this backend produced this result under this execution envelope |
+| did a manifest resolve into a stable authority contract? | the runtime plan command above | manifest, resolved steps, dataset identity, environment fingerprint and `plan_hash` | this declaration resolved into this immutable plan without executing steps |
+
+Do not begin with a final answer and work backward to a plausible chain. Begin
+with the decision under review, execute the package that owns it, and retain
+the identities needed to connect its input, policy, output, and failure state.
+When several packages are composed by an application, the application also
+owns evidence that each adapter preserved those identities.
+
 ## Find The Authority
 
 | Question | Owning handbook | Strongest starting evidence |
