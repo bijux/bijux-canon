@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Ownership Boundary
@@ -63,6 +63,52 @@ should run or whether convergence has occurred.
 Runtime can apply flow policy to reasoning evidence. It may accept, reject, or
 mark a run non-certifiable, but the underlying verification findings remain
 unchanged. Arbitration over a complete flow is not a second reason verifier.
+
+## Three decisions that must remain separate
+
+| Decision | Owner | Required record | Does not decide |
+| --- | --- | --- | --- |
+| which material ranks for a query | index | request, artifact, backend, metric, score, rank and provenance | whether bytes support a claim |
+| whether a claim is supported and passes checks | reason | claim type/status, exact supports, checks, findings, trace and manifest | whether another role runs or the whole flow is accepted |
+| whether a complete flow is admissible | runtime | manifest, policy, lower-layer evidence, arbitration and replay envelope | what a reason finding originally observed |
+
+A high retrieval score cannot validate a claim. A validated claim cannot
+schedule another role. A runtime acceptance cannot rewrite a rejected claim.
+These are distinct authorities even when one application displays them in a
+single response.
+
+## Minimum reasoning handoff
+
+Reason publishes enough evidence for agent and runtime to preserve, inspect and
+arbitrate its work:
+
+| Handoff field | Custody purpose |
+| --- | --- |
+| problem specification and content identity | identifies the question, constraints and expected output |
+| plan DAG and node identities | exposes intended derivation and verification order |
+| runtime/tool/retrieval descriptors and call records | identifies external execution and evidence acquisition |
+| evidence records and exact content digests/spans | anchors supports to inspectable bytes |
+| claims with type, status, confidence and support references | preserves the epistemic object being reviewed |
+| all checks, findings and unavailable/failure outcomes | prevents a summary from hiding verification coverage |
+| semantic trace, byte fingerprint and invariant checksum | binds ordered reasoning events and integrity evidence |
+| run manifest and replay comparison | binds files into one run and records later divergence |
+
+Agent may embed these records in role inputs or trace entries. Runtime may
+apply flow policy. Neither may replace the packet with final prose and still
+claim to preserve reasoning custody.
+
+## Route a broken handoff
+
+| First false invariant | Owner |
+| --- | --- |
+| wrong source/chunk bytes or missing preparation mapping | ingest |
+| wrong backend/rank/provenance for immutable evidence | index |
+| invalid support span, changed evidence digest, wrong claim status or missing finding | reason |
+| reasoning packet is correct but role order, merge, veto or trace projection is wrong | agent |
+| packet is intact but tenant policy, certification or replay acceptance is wrong | runtime |
+
+The package that detects the break retains it visibly, but ownership follows
+the first false semantic record.
 
 ## Ownership test
 
