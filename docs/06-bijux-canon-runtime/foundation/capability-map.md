@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Capability Map
@@ -61,6 +61,35 @@ recording and persistence path with simulated effects. Live mode requires
 verification coverage. Observe mode governs evidence supplied by an external
 execution. Unsafe mode records reduced guarantees and remains distinguishable
 from live authority.
+
+| Mode | May invoke configured effects | Required authority/evidence | Claim supported |
+| --- | --- | --- | --- |
+| plan | no | valid manifest, dataset, policy declarations and dependency resolution | an immutable plan can be resolved; no run or effect claim |
+| dry-run | simulated only | execution store plus declared simulation behavior | recording/persistence path under simulation, not live integrations |
+| observe | no control over host effects | host-supplied events plus applicable verification policy | governance of the events actually supplied, not omitted activity |
+| live | yes, through configured integrations | store, policy, budgets, adapter authority, effect receipts and verification | governed execution for the recorded integrations and rules |
+| unsafe | effects under explicitly reduced guarantees | store and visible relaxed-policy declaration | retained execution evidence that is not equivalent to governed live work |
+
+Mode is part of the result identity. A successful plan cannot be promoted to a
+run, a dry-run trace cannot certify live permissions, and an unsafe result
+cannot be relabelled after execution.
+
+## Composition capability is currently bounded
+
+Runtime contains planning, execution, verification, persistence, recovery and
+replay machinery, but capability also depends on the callable integration seam:
+
+| Composition | Current status | Evidence-backed interpretation |
+| --- | --- | --- |
+| manifest admission and plan resolution | implemented | can be exercised without lower-package live calls |
+| runtime behavior with injected executor seams | implemented and package-tested | establishes runtime authority, failure, verification and replay semantics |
+| canonical package-root live composition | not currently demonstrated | required `retrieve`, `enforce_contract`, `reason` and `run` callables are not all exported by canonical roots |
+| HTTP flow run and replay | contract validation with `501` response | versioned schema/error compatibility, not remote execution |
+
+The compatibility packages delegate to the same canonical roots and therefore
+do not supply missing adapters. A supported end-to-end live claim requires
+explicit typed adapters and an installed-package test that resolves and
+executes them without substituting seam-specific callables.
 
 ## Interface availability
 

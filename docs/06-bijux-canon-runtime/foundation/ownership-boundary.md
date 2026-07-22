@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Ownership Boundary
@@ -76,6 +76,58 @@ Verification engines record what they checked, which rules passed or failed,
 their targets, cost, classification, and reason. Arbitration applies a policy
 fingerprint and rule to those immutable observations. The arbitration decision
 does not rewrite engine results.
+
+## Authority accumulates without replacing evidence
+
+```mermaid
+flowchart LR
+    produced["lower-package semantic record"]
+    correlated["flow + tenant + plan correlation"]
+    observed["causal events + effects + entropy"]
+    checked["immutable verification findings"]
+    arbitrated["policy arbitration"]
+    persisted["finalized store + payload custody"]
+    replayed["replay diff + verdict"]
+
+    produced --> correlated --> observed --> checked --> arbitrated --> persisted --> replayed
+```
+
+Each runtime stage adds an authority relationship. It may refuse progression,
+but it may not alter an earlier producer record to make the later decision
+pass. A rejected flow can still contain valid ingest, index, reason or agent
+evidence; a successful flow cannot erase a lower-layer failure.
+
+## Minimum governed-run handoff
+
+| Record | Authority preserved |
+| --- | --- |
+| manifest, tenant, dataset and policy identities | who requested what under which declared rules |
+| resolved immutable plan and environment fingerprint | which dependency order and execution environment were admitted |
+| selected mode, budgets, entropy authorization and effect permissions | what execution was allowed to do |
+| lower-package artifacts, evidence, claims, traces and typed failures | producer-owned semantics without runtime reinterpretation |
+| ordered events, tool calls, receipts, unknown outcomes and checkpoints | causal execution and recovery boundary |
+| verification findings and arbitration decision | observations remain distinct from policy acceptance |
+| DuckDB/store identity plus payload hashes and authorized content references | durable metadata and retrievable bytes remain one custody set |
+| finalization/certifiability and replay envelope/diff/verdict | why the run closed and whether later comparison is acceptable |
+
+This packet supports reverse audit from replay verdict to source evidence.
+Database presence, a final answer, or a successful CLI exit alone cannot stand
+in for it.
+
+## Route authority failures
+
+| First false record | Owner |
+| --- | --- |
+| source, normalized document or chunk identity | ingest |
+| vector artifact, capability decision, ranking or retrieval provenance | index |
+| claim support, evidence bytes, checks or reasoning trace | reason |
+| role transition, merge, convergence, termination or agent trace | agent |
+| manifest admission, mode, tenant, effect permission, event order, arbitration, persistence, resume or replay verdict | runtime |
+| repository check, workflow or publication artifact | maintenance system, not runtime |
+
+Runtime must retain and expose an upstream failure, but the producer remains
+responsible for correcting its semantic record. Runtime owns the decision to
+refuse the composed flow because of that failure.
 
 ## Runtime and maintenance
 
