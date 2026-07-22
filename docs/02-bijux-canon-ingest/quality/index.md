@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Quality
@@ -48,6 +48,25 @@ embedding dimensions, persisted index format, citation linkage, or error
 translation require evidence at the owning layer and at every public boundary
 they cross. External-model changes also require model-specific evaluation; the
 deterministic hash profile is not a proxy.
+
+## Accept a preparation result
+
+Review a prepared corpus in custody order. Later evidence cannot repair an
+earlier missing identity:
+
+| Review record | Accept when | Refuse or qualify when |
+| --- | --- | --- |
+| source inventory | every intended input has a stable identity and disposition | inputs are silently omitted or identifiers are reused |
+| effective configuration | normalized cleaning, safeguard, and chunk settings are retained | only a mutable configuration path or defaults are known |
+| transformation record | outputs and typed failures account for the inventory | a successful-record count hides rejected, retried, or truncated inputs |
+| chunk set | each chunk names its prepared parent and valid normalized-text offsets | ordering, overlap, tail handling, or parent custody is ambiguous |
+| persisted artifact | records, index state, format, and digest belong to one versioned unit | files can be mixed across runs or overwritten without detection |
+| retrieval observation | query, backend, index, candidates, scores, and citations remain linked | answer text survives without ranked records and citation identities |
+
+This review establishes repeatable preparation under the recorded rules. It
+does not establish source truth, corpus completeness, semantic embedding
+quality, or downstream claim validity. Record those as separate claims at
+their owning boundaries.
 
 ## Evidence routes
 

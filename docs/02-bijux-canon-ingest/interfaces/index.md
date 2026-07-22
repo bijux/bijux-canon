@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Interfaces
@@ -50,6 +50,25 @@ mapping rather than reinterpret these values.
 retrieval `Chunk` carries the retrieval workflow's data. Conversion is an
 explicit projection; code must not assume every internal field or embedding
 survives every serialized representation.
+
+## Preserve custody across surfaces
+
+The same document can cross several interfaces without every representation
+being interchangeable. Preserve these identities before changing surfaces:
+
+| Decision | Python representation | Serialized or service representation | Refuse the handoff when |
+| --- | --- | --- | --- |
+| source acceptance | `RawDoc` identity and submitted fields | CSV row or HTTP document payload | the source identifier is absent, unstable, or reused for different content |
+| normalization | `CleanDoc` plus effective `CleanConfig` | prepared record plus retained configuration | only normalized text remains and the applied rules cannot be recovered |
+| segmentation | chunk parent, offsets, text, and geometry | JSONL `ChunkModel` or HTTP chunk response | offsets are reinterpreted as original-byte positions or the parent is missing |
+| local indexing | ordered chunks, backend choice, and index identity | MessagePack index directory with matching chunk records | index state and records were copied, versioned, or restored separately |
+| retrieval | query, index identity, candidate IDs, scores, and citations | CLI JSON, HTTP response, or typed retrieval result | an empty result conceals a load, capability, or validation failure |
+
+Choose one representation as the system of record for each boundary. A caller
+may project that record into another surface, but it must retain the owning
+identity and configuration beside the projection. Round-tripping through a
+smaller response model cannot restore an omitted embedding, source mapping, or
+failure disposition.
 
 ## Failure contracts
 
