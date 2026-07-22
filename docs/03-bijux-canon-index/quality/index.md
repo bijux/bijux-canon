@@ -65,7 +65,7 @@ improvement.
 | Govern optional backends and providers | [Dependency governance](dependency-governance.md) |
 | Understand approximation, budget, persistence, and security limits | [Known limitations](known-limitations.md) |
 | Inspect unresolved technical and operational risk | [Risk register](risk-register.md) |
-| Keep public claims evidence-backed | [Documentation standards](documentation-standards.md) |
+| Interpret retrieval verdicts without hiding approximation or drift | [Interpreting retrieval evidence](evidence-interpretation.md) |
 
 A regression belongs first at the layer that made the false claim. Add
 conformance proof when another backend could repeat it, and golden replay proof

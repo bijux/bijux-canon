@@ -84,6 +84,20 @@ identity, tenant configuration, and backend access control belong to the host.
 Execution artifacts should contain identifiers and decisions, never credentials
 or unrestricted vector payloads.
 
+## Runtime Composition Boundary
+
+Runtime's live retrieval path asks the `bijux_canon_index` package root for
+`enforce_contract(vector_contract_id, evidence)` and interprets its return as a
+Boolean verdict. The canonical root exports version metadata only and provides
+no callable with that contract.
+
+Index's native decision is richer than a Boolean: request validation, artifact
+identity, backend capability, budget accounting, approximation evidence,
+provenance, partial results, and typed refusal all affect the result. A durable
+runtime adapter must preserve that record rather than collapse it into an
+unexplained `True` or `False`. The `bijux-vex` compatibility root mirrors the
+canonical package and does not supply the missing integration.
+
 ## Interpreting Retrieval Quality
 
 Contract correctness means the engine honored the plan. It does not mean the

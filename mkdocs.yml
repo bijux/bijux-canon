@@ -188,7 +188,7 @@ nav:
           - Test Strategy: 03-bijux-canon-index/quality/test-strategy.md
           - Invariants: 03-bijux-canon-index/quality/invariants.md
           - Retrieval Review: 03-bijux-canon-index/quality/review-checklist.md
-          - Public Claim Standards: 03-bijux-canon-index/quality/documentation-standards.md
+          - Interpreting Retrieval Evidence: 03-bijux-canon-index/quality/evidence-interpretation.md
           - Release Acceptance: 03-bijux-canon-index/quality/definition-of-done.md
           - Backend Dependency Authority: 03-bijux-canon-index/quality/dependency-governance.md
           - Change Validation: 03-bijux-canon-index/quality/change-validation.md
