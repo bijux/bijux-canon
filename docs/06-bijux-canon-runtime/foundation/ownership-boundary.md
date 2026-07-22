@@ -52,6 +52,24 @@ If required lower-layer evidence is missing or invalid, runtime refuses or
 marks the flow non-certifiable. It must not reconstruct provenance from final
 text or silently relax a contract.
 
+## Record And Payload Authority
+
+Runtime owns the composed artifact record: its ID, tenant, type, producer,
+parents, scope, content hash, and position in execution history. It does not own
+a built-in durable store for the payload bytes. That separation gives three
+parties distinct obligations:
+
+| Authority | Owns | Must prove |
+| --- | --- | --- |
+| lower package | semantic meaning and production of the content | the record represents the output it claims to represent |
+| runtime | composed identity, lineage, tenancy, policy, and replay relationships | the retained record belongs to the governed flow |
+| storage integration | payload publication, retrieval, access, and retention | retrieved bytes hash to the runtime record and are authorized for the tenant |
+
+Neither a lower-package artifact ID nor a runtime database row is sufficient
+to recover content. A host integration must retain the bytes and their runtime
+record as one governed set without allowing storage metadata to override
+runtime authority.
+
 ## Verification and arbitration
 
 Verification engines record what they checked, which rules passed or failed,

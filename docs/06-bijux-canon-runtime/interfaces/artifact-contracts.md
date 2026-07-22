@@ -38,6 +38,31 @@ elsewhere; this contract retains the provenance needed to identify it.
 Artifact IDs alone are not integrity evidence. Compare content hashes and
 parentage, and enforce tenant scope whenever artifacts cross an interface.
 
+### Metadata Is Not Payload Storage
+
+Despite its name, the runtime `ArtifactStore` interface creates, saves, and
+loads `Artifact` records only. It has no byte-write or byte-read operation. The
+default `InMemoryArtifactStore` therefore retains artifact metadata for the
+life of the process; it does not retain the content whose digest appears in
+`content_hash`.
+
+```mermaid
+flowchart LR
+    Bytes[artifact payload bytes] --> Hash[content hash]
+    Hash --> Record[immutable Artifact record]
+    Record --> Registry[ArtifactStore metadata registry]
+    Record --> Database[DuckDB execution evidence]
+    Bytes --> HostStore[host payload store]
+    HostStore --> Verify[hash on retrieval]
+    Record --> Verify
+```
+
+The DuckDB execution store persists the record and its parent edges, not the
+payload bytes. A production integration must bind those records to a durable
+payload store, verify the digest when bytes are written and read, and apply the
+same tenant authorization at both stores. Keeping only the DuckDB file
+preserves lineage metadata but may leave the referenced content unavailable.
+
 ## Finalized Trace
 
 An `ExecutionTrace` binds execution to:
@@ -91,6 +116,11 @@ one database-wide commit. An interruption may leave a valid resumable run with
 `finalized = false` and a subset of later records. This is expected lifecycle
 state, not completed execution evidence.
 
+The writer guard is a neighboring lock file containing a process ID. It is a
+local-filesystem exclusion mechanism, not a distributed lease or DuckDB-level
+authorization boundary. All writers must use the runtime store protocol and
+must agree on filesystem and process identity for the guard to be meaningful.
+
 ## Stored Projection
 
 The store reconstructs replay-oriented domain records rather than preserving a
@@ -130,7 +160,8 @@ Before treating a persisted run as authoritative:
    checkpoint/resume workflow for an unfinished run;
 4. load artifacts, evidence, tools, entropy, and claims through typed readers,
    preserving declared order where the record contract defines it, and resolve
-   artifact payloads through the separate artifact store;
+   artifact payloads through the host payload store, hashing the returned bytes
+   against each runtime record;
 5. compare plan, tenant, environment, dataset, replay envelope, determinism,
    policy, and lifecycle structure with the replay guard;
 6. apply the declared replay mode and acceptability only after structural diffs

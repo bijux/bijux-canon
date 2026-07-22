@@ -79,6 +79,26 @@ atomically commit its DuckDB transaction and a provider call, filesystem
 mutation, or remote database write. Resumable integrations therefore require
 idempotency identity, deduplication, or compensation at the executor boundary.
 
+The single-writer guard uses exclusive creation of a lock file and records the
+writer process ID. Stale-lock recovery tests that PID for liveness. This model
+assumes a local filesystem and a shared interpretation of process IDs; it is
+not a safe coordination protocol across hosts, containers with independent PID
+namespaces, or filesystems whose create and visibility semantics are unsuitable
+for locking.
+
+## Artifact Availability
+
+The default artifact registry is in memory, and the `ArtifactStore` protocol
+stores metadata rather than payload bytes. DuckDB likewise persists artifact
+identity, hash, scope, producer, and parent edges but not content. A completed
+run can therefore remain structurally readable after the process exits while
+its artifact payloads are unavailable.
+
+For durable execution, the host must provide a content store with atomic
+publication, hash verification, tenant authorization, retention, and garbage
+collection tied to run retention. Replay can compare retained content hashes;
+it cannot reconstruct missing bytes from those hashes.
+
 Artifact payloads and the execution database require host-level backup,
 encryption, retention, access control, integrity monitoring, and capacity
 management. Tenant identifiers in records are not filesystem or database
