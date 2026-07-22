@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Security and Safety
@@ -71,6 +71,44 @@ Unexpected HTTP failures currently return their exception text as the error
 message. Treat that as potentially sensitive operational detail: constrain
 external access and avoid secrets in exceptions until a deployment boundary
 redacts internal messages.
+
+## Classify data before a run
+
+The same value may cross several durable surfaces. Define its disclosure and
+retention class before execution:
+
+| Data | Likely destinations | Control question |
+| --- | --- | --- |
+| document and task text | reader output, prompts, provider request, logs, result and replay trace | may this source leave the host and be retained by the provider? |
+| provider credentials | environment/settings and outbound authorization | can any configuration, exception, log or trace serialize the value? |
+| prompt and pipeline definition | provider request, hashes, trace and debugging records | does it contain proprietary policy, examples, or embedded source text? |
+| provider response and usage | role output, merge/judge/validation records, logs and result | who may inspect raw output, safety refusal and billing metadata? |
+| paths and parser diagnostics | logs, errors and trace metadata | do paths reveal tenant, user, mount, or document names? |
+| convergence and veto evidence | trace, final result and replay comparison | is the complete decision history retained even when the result is rejected? |
+
+A hash protects identity, not confidentiality. Small or predictable secrets,
+document identifiers, and prompts may still be guessable; keep sensitive raw
+values and their hashes inside the same authorization boundary unless policy
+explicitly allows disclosure.
+
+## Exercise security failures
+
+| Fault or abuse case | Required behavior |
+| --- | --- |
+| caller selects a path outside the approved CLI input root | enclosing launcher denies it or process isolation prevents access |
+| malformed or adversarial document triggers a reader/native tool failure | typed failure with source lineage; no fallback that silently drops content |
+| document text attempts to direct a privileged role or reveal secrets | content remains untrusted input; provider output cannot change lifecycle or policy authority |
+| provider timeout, cancellation, malformed response or quota failure | bounded call, stable failure class, visible retry/fallback and terminal disposition |
+| plugin or injected component returns an invalid role result | contract refusal before merge, judgment, validation or trace finalization |
+| logs or HTTP errors contain a provider key, source excerpt or internal path | disclosure failure, access containment and credential rotation where applicable |
+| API requests exceed trusted byte/concurrency limits | gateway rejects them before body collection or pipeline work |
+| trace and final result belong to different attempts | identity mismatch; neither artifact is presented as a complete run |
+| artifact directory is shared by mutually untrusted callers | process/root isolation prevents cross-run read, overwrite and enumeration |
+
+For an incident, stop new provider calls, preserve the affected configuration,
+result, trace and logs with restricted access, record provider request/call
+identities, and revoke exposed credentials before replaying. Reproduction must
+use sanitized inputs unless handling policy authorizes the original data.
 
 ## Interpreting results safely
 
