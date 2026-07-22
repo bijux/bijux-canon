@@ -150,6 +150,30 @@ Reach into submodules only when you need a specific boundary:
 - `bijux_canon_ingest.interfaces` for CLI and HTTP edges
 - `bijux_canon_ingest.config` for builder-style package configuration
 
+## Runtime Adapter Status
+
+Runtime's retrieval executor currently looks for a package-root callable named
+`bijux_canon_ingest.retrieve(query, top_k, scope, vector_contract_id)`. This
+package does not export that root callable. Its implemented application service
+is `bijux_canon_ingest.application.retrieve`, which loads a persisted
+`index_path`, accepts optional filters and an embedder, and returns typed
+`Candidate` objects. The two signatures and result contracts are not
+interchangeable.
+
+An end-to-end runtime integration therefore needs an explicit adapter that:
+
+1. resolves runtime scope and vector-contract identity to a retained ingest
+   index and its preparation receipt;
+2. invokes the package-local retrieval service with an explicit index path;
+3. maps candidates to runtime evidence without losing source, chunk, content,
+   score, determinism, or contract identity; and
+4. is tested from installed distributions without adding attributes to the
+   package root at test time.
+
+Until that adapter exists, use the Python, CLI, or HTTP surfaces documented
+above for ingest retrieval. Installation beside runtime is dependency
+availability, not proof that runtime can invoke this package directly.
+
 ## Package Continuity
 
 [`bijux-rag`](https://pypi.org/project/bijux-rag/) is an exact-version

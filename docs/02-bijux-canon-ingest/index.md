@@ -78,6 +78,19 @@ Reason, agent, and runtime may consume ingest artifacts. They must not repair
 missing source identity, invent chunk provenance, or reinterpret a preparation
 failure as empty evidence.
 
+### Runtime Handoff Is Not Yet An Exported Adapter
+
+The implemented ingest retrieval boundary is path-based:
+`bijux_canon_ingest.application.retrieve` opens a persisted index and returns
+typed candidates. Runtime currently requests a different package-root callable
+using query, scope, and vector-contract identity. No canonical root adapter
+currently reconciles those contracts.
+
+This gap does not weaken the package-local ingest workflows; it limits the
+claim that runtime can execute them as a lower-layer step. A trustworthy
+adapter must bind the preparation receipt and index identity to runtime's
+evidence record instead of reducing the handoff to text and score.
+
 ## The Preparation Receipt
 
 Prepared text is admissible downstream only when the preparation decision can
@@ -106,6 +119,7 @@ accurate or complete.
 | cleaning is deterministic | input identity, normalized configuration, output record, repeated serialization | does not prove source truth |
 | a chunk is traceable | parent identity, offsets, text, stable record shape | depends on retaining the prepared parent |
 | local retrieval is reproducible | index type and identity, corpus records, query, ranking output | applies to the ingest-local backend, not every vector backend |
+| runtime consumed ingest retrieval | installed-package adapter test, retained preparation receipt, mapped evidence identities | package co-installation alone does not establish this handoff |
 | an extractive answer is cited | candidate records and cited spans | does not establish that the corpus is complete |
 | bulk processing handled failure honestly | policy, typed `ErrInfo`, stage context, error counts | collected errors still require caller disposition |
 

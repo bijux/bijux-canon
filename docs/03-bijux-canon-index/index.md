@@ -103,6 +103,20 @@ contract. It does not establish corpus completeness, semantic relevance, or
 truth. Those stronger questions require source evidence and reasoning-level
 verification.
 
+### Runtime Enforcement Seam
+
+The current runtime loader requests a root-level `enforce_contract` callable
+that accepts a vector-contract identifier and normalized runtime evidence. The
+index root exposes only its version, and the package does not implement that
+boolean facade. Consequently, runtime dependency metadata identifies index as
+an intended owner but does not establish live contract enforcement.
+
+The durable integration target is not merely a function with the expected
+name. It must preserve index's request, capability, backend, budget,
+provenance, artifact, and refusal semantics while connecting them to runtime's
+tenant and flow identities. Until that mapping is explicit and exercised,
+review index and runtime evidence as separate records.
+
 ## Read The Execution Envelope
 
 A ranked list without its execution envelope is an observation stripped of
@@ -132,6 +146,7 @@ it is not proof that relevant material does not exist.
 | replay is acceptable | original request and artifact, current capabilities, diff, tolerance policy | similar neighbors alone are insufficient |
 | a plugin is compatible | registry contract, capability declaration, conformance results | registration does not make the backend trustworthy |
 | a ranking is reviewable | query and corpus identity, scores, metric, backend, artifact lineage | does not prove relevance or factual support |
+| runtime enforced the vector contract | installed adapter test plus linked runtime and index artifacts | a runtime dependency or contract ID alone |
 
 ## Continue By Question
 

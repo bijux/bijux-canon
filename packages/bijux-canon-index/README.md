@@ -104,6 +104,26 @@ The root import deliberately exposes only `__version__`. Examples that import
 an imagined root-level engine or request facade do not describe a supported
 API, even if equivalent types exist deeper in the package.
 
+## Runtime Contract-Enforcement Status
+
+Runtime's retrieval path attempts to call
+`bijux_canon_index.enforce_contract(vector_contract_id, evidence)` and expects a
+boolean decision. The canonical index root intentionally exposes only
+`__version__`, and no `enforce_contract` function with that contract currently
+exists in the index source tree.
+
+Index's implemented authority is richer than that boolean seam:
+`ExecutionRequest`, capability resolution, execution mode, budget, backend
+identity, result provenance, and `ExecutionArtifact` jointly describe why an
+operation ran or was refused. A future runtime adapter must map runtime's
+contract identifier and normalized evidence into those declared types and
+retain the resulting execution evidence. A permissive boolean shim would hide
+the very policy and provenance this package exists to expose.
+
+Use the application modules, explicit module command, or HTTP API for current
+index execution. Do not cite installation as proof that runtime is enforcing
+index contracts until an installed-package adapter test covers this seam.
+
 ## HTTP Contract
 
 The checked-in v1 schema exposes backend capabilities, corpus creation,
