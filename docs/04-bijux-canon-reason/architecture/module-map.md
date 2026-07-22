@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Module Map
@@ -77,6 +77,51 @@ claim supports, grounding, reasoning completeness, insufficient-evidence
 behavior, finalization, required actions, evidence hashes, and support spans.
 This order prevents a polished final claim from masking a malformed trace or a
 broken evidence chain.
+
+## Walk one claim through the architecture
+
+```mermaid
+sequenceDiagram
+    participant Edge as interfaces/api
+    participant App as application
+    participant Plan as planning
+    participant Exec as execution/retrieval
+    participant Reason as reasoning
+    participant Trace as traces
+    participant Verify as verification
+
+    Edge->>App: ProblemSpec + runtime/evidence inputs
+    App->>Plan: content-addressed specification
+    Plan-->>Exec: ordered PlanNode DAG
+    Exec-->>Trace: steps + tools + evidence events
+    Exec->>Reason: outputs + exact evidence records
+    Reason-->>Trace: claims + SupportRef records or insufficiency
+    App->>Verify: plan + trace + evidence + claims
+    Verify-->>App: complete findings/report
+    App-->>Edge: manifested run + replay identity
+```
+
+Planning cannot manufacture tool results. Execution cannot validate its own
+claim supports merely by emitting them. Reasoning cannot omit a failed check
+from the verification report. Interfaces publish the manifested result and
+typed refusal; they do not synthesize support from final prose.
+
+## Dependency direction
+
+| Layer | May depend on | Must not acquire |
+| --- | --- | --- |
+| `core` / `core.models` | canonical value, identity and validation primitives | runtime providers, filesystem paths, CLI/HTTP or orchestration |
+| `planning` | problem/plan models and stable identity | live tools, evidence mutation or interface policy |
+| `execution` / `retrieval` | plan, runtime/tool protocols and evidence records | authority to mark its own claims validated |
+| `reasoning` | step outputs, evidence and claim/support contracts | workflow role scheduling or whole-flow acceptance |
+| `traces` | typed events and canonical serialization | permission to reinterpret missing history |
+| `verification` | immutable plans, traces, evidence, claims and check registry | permission to rewrite the records it checks |
+| `application` | the complete use-case graph and run artifact custody | duplicate model/check semantics hidden in orchestration |
+| `interfaces` / `api.v1` | application entry points and serializers | reasoning rules embedded in transport handlers |
+
+An external runtime, retriever or tool is supplied through an explicit
+protocol and descriptor. It must not be imported into core models or allowed
+to bypass trace and verification ownership.
 
 ## Package boundaries
 

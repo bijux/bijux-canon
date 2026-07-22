@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Code Navigation
@@ -59,6 +59,42 @@ Paths are relative to
 5. Confirm the claim and findings in `trace.jsonl` and `verify.json`.
 6. Validate `fingerprint.txt`, the invariant checksum in `run_meta.json`, and
    the relevant entries in `manifest.json`.
+
+## Diagnose from the disputed record
+
+| Symptom | Inspect first | Follow into | Evidence that closes the diagnosis |
+| --- | --- | --- | --- |
+| plan changes for identical specification | canonical spec bytes and content ID | planner topology/order and stable identifiers | node/edge diff with deterministic plan fixture |
+| step or tool event is missing/reordered | trace event sequence and lifecycle identifiers | executor, tool dispatch and trace construction | complete start/call/result/finish or typed failure chain |
+| evidence cannot be opened | manifest path, artifact root and content digest | evidence registration and path-safety verification | authorized relative path plus matching file hash |
+| citation text does not match support | support kind, byte bounds and snippet digest | claims model and provenance/span checks | exact byte slice hashes to the recorded digest |
+| claim is validated despite missing support | claim type/status and supports | reasoning emission then applicable check registry | all applicable findings and derived status agree |
+| insufficient evidence becomes a confident claim | retrieval results and insufficiency event | extractive reasoner and finalization checks | explicit insufficient outcome or valid exact support |
+| verifier appears to skip a rule | registry contents, applicability and unavailable-check outcome | check implementation and report aggregation | named finding for every applicable registered check |
+| replay calls a live tool | replay runtime descriptor and call records | `execution/replay_runtime.py` and run workflow | frozen result use or explicit separate new execution |
+| manifest passes after a file changes | per-file digest and run identity | artifact discovery, manifest verification and replay | precise changed/missing/foreign file refusal |
+| CLI and HTTP disagree on the same run | canonical artifact readers and application result | interface serialization/status mapping | same files yield equivalent typed disposition |
+
+Read from the most specific retained identity outward. A verification summary
+is not enough when the underlying finding, evidence span or manifested file is
+the record in dispute.
+
+## Place changes with their evidence owner
+
+| Desired change | Primary location | Required proof expansion |
+| --- | --- | --- |
+| public problem/plan/evidence/claim/trace field | `core/models/` and canonical serializers | identity, schema, version and compatibility fixtures |
+| planning rule or node kind | `planning/` | DAG laws, content identity and execution compatibility |
+| tool/runtime execution behavior | `execution/` | call linkage, limits, typed failures and frozen replay |
+| local evidence lookup | `retrieval/` | corpus identity, ordering, bounds, provenance and drift |
+| claim/support or insufficiency behavior | `reasoning/` | exact supports and corresponding verification cases |
+| invariant or check | `verification/` | positive, negative, unavailable and aggregate-report evidence |
+| trace/replay identity | `traces/` | byte/semantic fingerprints, mismatch and tamper matrix |
+| complete run or artifact layout | `application/` | manifest custody plus CLI/API read/verify/replay paths |
+
+When a transport exposes an existing use case, keep claim and check semantics
+below the transport. When a new model field affects identity, update every
+serializer, manifest and replay comparison that depends on it.
 
 ## Boundary landmarks
 
