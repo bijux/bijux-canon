@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Interfaces
@@ -48,6 +48,26 @@ deterministic or non-deterministic contract, budget, metric, result count, and
 applicable randomness policy. A response preserves correlation, execution,
 artifact, backend, and result identities. Dropping those fields turns a
 reviewable result into an unexplained ranking.
+
+## Keep the caller envelope intact
+
+Every surface must carry the same decision context even though its wire shape
+differs:
+
+| Envelope part | Before execution | After execution | Loss that invalidates review |
+| --- | --- | --- | --- |
+| purpose | intent, mode, deterministic posture | admitted or refused contract | retaining neighbors without the requested guarantee |
+| input | artifact/index identity, vectors, metric, result count | normalized input and effective metric | retaining scores without the eligible corpus and vector identity |
+| resource policy | latency, memory, error, and approximation budgets | observed cost, truncation, warnings, partial status | reporting completion without the budget disposition |
+| implementation | required capabilities and provider/backend constraints | selected backend, version, parameters, plugin identity | naming only the requested backend when fallback executed |
+| result | correlation and execution identity | ordered results, provenance, artifact and run references | copying IDs and scores while discarding execution identity |
+| replay | randomness policy, witness requirements, comparison tolerance | replay diff and verdict | calling similar output equivalent without the original policy |
+
+For CLI automation, retain JSON and process exit status together. For HTTP,
+retain the structured response or refusal with correlation headers. For Python,
+persist the typed request and execution artifact rather than serializing only
+the result list. Run files are complete only when `status.json` agrees with the
+metadata and result records.
 
 ## Failure and compatibility
 

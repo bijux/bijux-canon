@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Quality
@@ -52,6 +52,24 @@ Benchmark results are regression evidence only when dataset, backend,
 parameters, dependency versions, and hardware are retained. Lower latency with
 changed recall or approximation evidence is a different result, not a simple
 improvement.
+
+## Match proof to execution posture
+
+Do not evaluate every vector run with the same assurance argument:
+
+| Execution posture | Evidence required | Refuse the claim when |
+| --- | --- | --- |
+| strict exact | exact-capable backend, stable metric/tie order, immutable artifact, zero disallowed replay diff | fallback, approximation, truncation, or parameter drift occurred |
+| bounded approximation | exact baseline, declared loss/resource budgets, runner witness, observed recall/error and cost | the bound was inferred after execution or the witness is missing |
+| exploratory | declared exploratory intent, complete provenance, warnings and retained candidates | output is promoted to an exact or reproducible result |
+| plugin-backed | capability declaration, registration identity, conformance suite and backend-specific negative cases | discovery success is the only compatibility evidence |
+| cross-backend comparison | identical input/request identity, normalized score meaning, both artifacts and explicit tolerance | ranked lists are compared without metric or capability equivalence |
+| replay | original artifact and policy, current environment/capabilities, semantic diff, verdict and reason | a matching seed or overlapping neighbors is the only comparison |
+
+The strongest valid statement is bounded by the weakest retained part of the
+execution envelope. For example, exact scoring with unknown corpus identity is
+not an exact retrieval claim, and complete provenance with an unmeasured ANN
+witness is not evidence that approximation stayed within budget.
 
 ## Evidence routes
 
