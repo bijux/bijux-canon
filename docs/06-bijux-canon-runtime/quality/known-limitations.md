@@ -39,6 +39,29 @@ execution also require the applicable verification policy. Defaults select
 behavior; they do not create hidden databases, credentials, or deployment
 resources.
 
+## Canonical Live Composition
+
+The live step executors currently resolve four package-root callables that the
+canonical packages do not provide in the required form:
+
+| Boundary | Runtime expects | Current canonical surface |
+| --- | --- | --- |
+| agent | `bijux_canon_agent.run(...)` returning artifact dictionaries | root exports only `API_VERSION`; native execution returns `PipelineResult` and `RunTrace` |
+| retrieval | `bijux_canon_ingest.retrieve(query, top_k, scope, vector_contract_id)` | native retrieval is index-path based and returns typed candidates |
+| vector enforcement | `bijux_canon_index.enforce_contract(contract_id, evidence)` | no root callable; native decision carries plans, capability, budget, provenance and refusal |
+| reasoning | `bijux_canon_reason.reason(...)` returning runtime `ReasoningBundle` | no root callable; native models are reason-owned claims, support, traces and reports |
+
+The preserved `bijux-agent`, `bijux-rag`, `bijux-vex`, and `bijux-rar` roots
+delegate to those canonical surfaces and do not add missing adapters. Runtime
+tests that inject seam-specific callables establish executor, verification,
+replay, and failure behavior; they do not establish installed-package
+composition.
+
+Plan, dry-run, and observe remain useful because they do not invoke lower-
+package intelligence in the same way. A live composition claim requires an
+installed-package test that executes the applicable adapters and preserves
+source, contract, evidence, claim, trace, artifact, and failure identities.
+
 ## Replay Is Evidence-Bounded
 
 Strict replay is a refusal policy over the captured envelope. It can detect

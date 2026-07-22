@@ -74,7 +74,7 @@ compensation contract.
 | Govern DuckDB and lower-layer integrations | [Dependency governance](dependency-governance.md) |
 | Understand execution, replay, verification, persistence, and hosting limits | [Known limitations](known-limitations.md) |
 | Inspect unresolved authority and operational risk | [Risk register](risk-register.md) |
-| Keep public authority claims evidence-backed | [Documentation standards](documentation-standards.md) |
+| Interpret execution, acceptance, persistence, and replay independently | [Interpreting runtime evidence](evidence-interpretation.md) |
 
 Add regressions where refusal belongs: contract, planner, executor, verifier,
 trace, or store. Add end-to-end proof when invalid authority could look like a

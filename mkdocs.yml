@@ -359,7 +359,7 @@ nav:
           - Test Strategy: 06-bijux-canon-runtime/quality/test-strategy.md
           - Invariants: 06-bijux-canon-runtime/quality/invariants.md
           - Runtime Authority Review: 06-bijux-canon-runtime/quality/review-checklist.md
-          - Public Authority Claims: 06-bijux-canon-runtime/quality/documentation-standards.md
+          - Interpreting Runtime Evidence: 06-bijux-canon-runtime/quality/evidence-interpretation.md
           - Governed Run Acceptance: 06-bijux-canon-runtime/quality/definition-of-done.md
           - Runtime Dependency Authority: 06-bijux-canon-runtime/quality/dependency-governance.md
           - Change Validation: 06-bijux-canon-runtime/quality/change-validation.md
