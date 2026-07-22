@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Claim and Evidence Review
@@ -23,6 +23,51 @@ flowchart TD
 
     claim --> supports --> evidence --> events --> plan
 ```
+
+## Reverse one validated claim
+
+Use a validated derived claim because it crosses the most boundaries. Follow
+it backward without consulting unretained provider context:
+
+```mermaid
+sequenceDiagram
+    participant Reviewer
+    participant Claim
+    participant Verification
+    participant Support
+    participant Evidence
+    participant Trace
+    participant Plan
+
+    Reviewer->>Claim: inspect kind, status, identity
+    Claim->>Verification: locate findings that permit status
+    Claim->>Support: enumerate every support edge
+    Support->>Evidence: resolve path, span, and digest
+    Evidence->>Trace: locate registration and retrieval event
+    Trace->>Plan: identify authorized node and dependencies
+```
+
+The audit fails if any arrow depends on a display label, mutable external path,
+or prose reconstruction. Claim and evidence identities must resolve within the
+manifested run, and the report must explain why the final status follows from
+its applicable findings.
+
+## Challenge support and bundle custody
+
+| Mutation | Expected detection |
+| --- | --- |
+| change one retained evidence byte inside a support span | snippet digest or evidence identity failure |
+| keep bytes but move the span outside its registered bounds | support-span validation failure |
+| remove an intermediate derived claim | support-graph or provenance failure |
+| replace a recorded tool result with a live call during replay | frozen-replay or provenance guard failure |
+| omit one applicable verifier result | report completeness failure, not implicit success |
+| combine a plan from one run with a trace from another | checksum, identity, topology, or manifest failure |
+| delete a core run file but leave `manifest.json` | incomplete bundle refusal |
+| change corpus or index identity while preserving answer text | structured replay/provenance difference |
+
+Each negative fixture should reach the invariant it is designed to test. A
+test that fails earlier because its JSON is malformed does not demonstrate
+that support, provenance, or bundle-integrity checks work.
 
 ## Structure and execution
 
