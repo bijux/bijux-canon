@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Retirement Conditions
@@ -69,6 +69,25 @@ deployment and recovery paths were last exercised, which immutable image,
 lockfile, and artifact digests were observed, and when the owner requires
 revalidation. Evidence that predates a supported deployment change is stale
 until that environment is exercised again.
+
+## Retirement Authority
+
+No single green check has authority to retire a public identity. The final
+record joins decisions owned by different parties:
+
+| Decision owner | Decision they must make | Evidence they cannot delegate |
+| --- | --- | --- |
+| consumer owner | active, scheduled, and recovery workloads no longer require the bridge | deployed canonical workflow and rollback exercise |
+| canonical package owner | the replacement interface and historical-state boundary are supported | canonical contract tests and artifact behavior |
+| compatibility package owner | the final bridge remains exact, thin, buildable, and releasable | built metadata, imports, commands, and parity checks |
+| release owner | final artifacts, destination availability, notices, and release cessation are coordinated | tagged source and destination-specific publication evidence |
+| support owner | supported-consumer scope, unknown consumers, final date, and post-retirement response are explicit | approved inventory and communicated support boundary |
+
+An individual may hold several roles, but the decisions remain distinct. A
+package owner cannot infer external deployment completion from repository
+tests, and a consumer owner cannot declare the public bridge retired because
+one application migrated. Retirement is authorized only when the aggregate
+record contains every required decision.
 
 ## Package-Specific Gates
 

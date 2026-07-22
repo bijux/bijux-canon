@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Compatibility Migration
@@ -39,6 +39,34 @@ The bridge provides continuity during this path. It does not make partial
 migration invisible: bridge imports, canonical imports, old command strings,
 and new artifact readers can coexist in one application and still encode
 conflicting identity assumptions.
+
+## Migrate Five Independent Planes
+
+Treat a consumer as migrated only when all five planes have crossed to the
+canonical owner:
+
+```mermaid
+flowchart TD
+    consumer["supported consumer"]
+    identity["distribution + imports"]
+    behavior["Python, command, and HTTP behavior"]
+    state["caches, indexes, traces, manifests, databases"]
+    operations["images, jobs, monitoring, runbooks"]
+    recovery["rollback and disaster recovery"]
+    complete{"all planes canonical?"}
+
+    consumer --> identity --> complete
+    consumer --> behavior --> complete
+    consumer --> state --> complete
+    consumer --> operations --> complete
+    consumer --> recovery --> complete
+```
+
+Identity is often the easiest plane and therefore the easiest one to
+overvalue. A canonical import can succeed while an old service unit still
+invokes the preserved command, a cache embeds the former package identity, or
+the rollback image reinstalls the bridge. Record and validate each plane
+independently so a successful rename cannot conceal operational dependence.
 
 ## Choose by Current Need
 

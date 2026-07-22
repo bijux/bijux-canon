@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Migration Guidance
@@ -65,6 +65,25 @@ repository-wide replacement.
 Keeping these units separate makes a failure attributable. If imports pass but
 artifact reading fails, the bridge can remain while the artifact boundary is
 corrected without restoring old imports.
+
+## Compare The Consumer, Not Just The Names
+
+Capture the same acceptance cases before and after cutover. The record should
+make the comparison explicit:
+
+| Case | Preserved run records | Canonical run records | Required disposition |
+| --- | --- | --- | --- |
+| representative success | inputs, output, exit status, warnings, artifact identities | the same fields under the canonical interface | explain every semantic difference |
+| expected refusal | invalid input and stable failure class | corresponding canonical refusal | refuse migration if the bridge masked or changed failure meaning |
+| historical artifact read | artifact digest, schema/version, reader result | canonical reader result for the same bytes | convert under a governed procedure or retain the bridge |
+| command or API automation | request, response/output, exit status, logs | canonical request mapped to its supported interface | update parsers, probes, and retry policy deliberately |
+| deployment and recovery | image/lock digest and exercised procedure | canonical image/lock digest and exercised procedure | retain rollback only if its support boundary remains explicit |
+
+Exact text equality is not always the right criterion: `bijux-vex` command
+migration, for example, changes the interface to index Python or HTTP. The
+required invariant is preserved consumer meaning—request intent, refusal
+semantics, result provenance, artifact custody, and operational recovery—not a
+synthetic command-name substitution.
 
 ## Direct Rename Example
 

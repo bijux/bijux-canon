@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-compat-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Compatibility Packages
@@ -31,6 +31,36 @@ and not empty deprecation wheels.
 
 `bijux-canon` preserves the shorter family-root identity for runtime. The
 other five names preserve products consolidated into this repository.
+
+## Inspect A Bridge Directly
+
+Use installed metadata and representative module identity to verify what a
+bridge actually supplies. For the ingest bridge:
+
+```python
+from importlib.metadata import version
+
+import bijux_canon_ingest
+import bijux_rag
+from bijux_canon_ingest import core as canonical_core
+from bijux_rag import core as preserved_core
+
+assert version("bijux-rag") == version("bijux-canon-ingest")
+assert bijux_rag.__version__ == bijux_canon_ingest.__version__
+assert preserved_core is canonical_core
+```
+
+These assertions establish three different facts: the environment installed
+matching distribution versions, both roots report the same implementation
+version, and this mapped product submodule resolves to the canonical module
+object. Repeat the check for the exact nested modules a consumer uses; one
+representative identity does not promise arbitrary private-import support.
+
+This inspection also does not establish command parity, artifact readability,
+or live runtime composition. Those are separate executable contracts. Use the
+[validation strategy](migration/validation-strategy.md) for built-wheel and
+command evidence, then exercise the consumer's retained state under the
+canonical reader.
 
 ## One Implementation, Two Names
 
