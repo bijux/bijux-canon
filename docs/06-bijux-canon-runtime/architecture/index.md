@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Architecture
@@ -73,6 +73,41 @@ The stored projection is replay-oriented rather than a generic serialization
 of every in-process object. Use migration-aware typed readers, preserve the
 schema contract hash, and never infer semantic completeness from readable
 tables alone.
+
+## Authority gates
+
+Runtime does not grant one blanket permission to a flow. Authority is checked
+at the boundary where each stronger effect becomes possible:
+
+```mermaid
+flowchart LR
+    declare["manifest declared"] --> resolve{"identities and contracts resolve?"}
+    resolve -->|no| refused["classified refusal"]
+    resolve -->|yes| plan["immutable plan"]
+    plan --> authorize{"mode and authority permit effects?"}
+    authorize -->|plan| planned["plan result; no run allocated"]
+    authorize -->|no| refused
+    authorize -->|yes| execute["budgeted execution + causal events"]
+    execute --> finalize{"trace complete and valid?"}
+    finalize -->|no| incomplete["unfinished or failed run retained"]
+    finalize -->|yes| arbitrate{"verification policy accepts?"}
+    arbitrate --> accepted["accepted record"]
+    arbitrate --> rejected["rejected / non-certifiable record"]
+```
+
+| Gate | Evidence examined | Stronger claim unlocked |
+| --- | --- | --- |
+| resolution | manifest state, tenant, dataset, dependencies, contracts and environment | the declaration can become a stable plan |
+| execution authority | mode, authority token, policy, executor bindings and budgets | declared effects may begin |
+| trace finalization | causal order, required events, artifacts, evidence, claims and entropy | the execution record is closed for arbitration |
+| verification arbitration | engine findings, blocking policy and certifiability | the finalized run may be accepted under this policy |
+| persistence | finalized projection plus resolvable artifact payload custody | the accepted or rejected record can be inspected later |
+| replay | original envelope, retained inputs, current identities and semantic diff | the later observation may receive a replay verdict |
+
+Failure at a later gate does not erase evidence from an earlier one. A rejected
+run can have a valid plan and finalized trace; an interrupted run can retain
+valid checkpoints; and a readable stored record can remain non-certifiable.
+This monotonic evidence model is what makes recovery and refusal auditable.
 
 ## Navigate the design
 

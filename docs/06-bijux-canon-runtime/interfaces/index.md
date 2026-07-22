@@ -60,6 +60,27 @@ sequenceDiagram
 - HTTP authority headers are syntax-checked only; run and replay have no remote
   execution backend despite their versioned schemas.
 
+## Use the least-authoritative surface
+
+Runtime separates inspection from execution so callers do not need to grant
+effect authority merely to understand a flow or retained run:
+
+| Need | Surface | Authority consumed | Result boundary |
+| --- | --- | --- | --- |
+| prove the service process is reachable | HTTP health | none | liveness only |
+| prove configured DuckDB can be opened | HTTP readiness or CLI database validation | storage access, not flow execution | schema/openability, not semantic run integrity |
+| inspect dependency order and replay declarations | CLI or Python plan | manifest resolution only | plan and `plan_hash`; no run ID or trace |
+| inspect retained history | CLI `inspect`, failure explanation, or typed readers | tenant-scoped read access | stored projection; payload availability must be checked separately |
+| compare retained runs | CLI diff or analysis modules | read access to both records | reported differences; process exit does not decide acceptability |
+| execute or resume effects | governed Python or CLI run surface | flow authority, policy, stores, budgets and executor bindings | finalized, arbitrated run or classified failure |
+| request remote run or replay | HTTP v1 schema | no executable authority today | `501 Not Implemented` after request validation |
+
+Start with plan or read-side inspection whenever the question does not require
+new effects. Moving to live execution is a new authority decision: the caller
+must provide working adapters, storage, verification policy, and effect
+controls. A successful health check, readable database, or valid manifest does
+not confer any of those capabilities.
+
 ## Assemble the authority packet
 
 Before an executable call, retain the inputs that authorize work; after the
