@@ -93,6 +93,17 @@ python -m bijux_canon_index.interfaces.cli.app execute \
 The missing console-script registration is a packaging limitation, not a
 documentation alias. HTTP and in-process users are unaffected.
 
+| Integration need | Supported surface | Authority to pin |
+| --- | --- | --- |
+| typed composition | application, domain, contract, and interface modules | imported symbol and distribution version |
+| shell automation | `python -m bijux_canon_index.interfaces.cli.app` | module command and its rendered output contract |
+| service integration | v1 HTTP API | checked-in OpenAPI schema and schema hash |
+| historical automation | `bijux-vex` compatibility package | bridge version plus its exact canonical dependency |
+
+The root import deliberately exposes only `__version__`. Examples that import
+an imagined root-level engine or request facade do not describe a supported
+API, even if equivalent types exist deeper in the package.
+
 ## HTTP Contract
 
 The checked-in v1 schema exposes backend capabilities, corpus creation,
@@ -114,6 +125,11 @@ and its pinned JSON and schema hash.
 An `ExecutionArtifact` is evidence of a vector operation under one declared
 contract. It does not prove corpus completeness, semantic relevance, or the
 truth of downstream claims.
+
+Keep the prepared-input identity and execution artifact together. The former
+shows which ingest-owned material entered the operation; the latter shows how
+index interpreted and ranked that material. Either artifact alone leaves a
+custody gap that replay cannot repair.
 
 ## Package Continuity
 
@@ -166,7 +182,7 @@ and deployment controls remain necessary.
 - [`plugins`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/plugins) for plugin development support
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-index/tests) for conformance and replay protection
 
-## Read This Next
+## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/03-bijux-canon-index/)
 - [Architecture overview](https://bijux.io/bijux-canon/03-bijux-canon-index/architecture/)

@@ -44,7 +44,7 @@ flowchart LR
 
 ## Public Surfaces
 
-- the Typer application exposes workspace initialization, capabilities, ingest,
+- the module-invoked Typer application exposes workspace initialization, capabilities, ingest,
   execute, explain, replay, compare, validation, diagnostics, artifacts, run
   listing, vector-store utilities, and non-deterministic performance commands
 - the HTTP API exposes create, ingest, execute, explain, replay, artifact,
@@ -53,6 +53,12 @@ flowchart LR
   provider, and a reusable backend template
 - the package root currently exports only `__version__`; callers use the
   domain, application, contract, and interface modules deliberately
+
+Package installation does not register a `bijux-canon-index` console script.
+Invoke the application as `python -m bijux_canon_index.interfaces.cli.app`, use
+the versioned HTTP contract, or integrate through the documented application
+and domain modules. The `bijux-vex` executable is a compatibility surface, not
+the canonical command name.
 
 ## Follow One Vector Execution
 
@@ -96,6 +102,26 @@ An `ExecutionArtifact` establishes what the engine did under a declared
 contract. It does not establish corpus completeness, semantic relevance, or
 truth. Those stronger questions require source evidence and reasoning-level
 verification.
+
+## Read The Execution Envelope
+
+A ranked list without its execution envelope is an observation stripped of
+the conditions that produced it. Preserve the envelope through every consumer:
+
+| Envelope field | Decision it makes reviewable |
+| --- | --- |
+| prepared input identity | which ingest-owned corpus or records were eligible? |
+| request and intent | what operation was requested, and why was its loss posture acceptable? |
+| mode, contract, and budget | what had to be exact, bounded, replayable, or refused? |
+| backend and capabilities | which implementation was eligible to execute the request? |
+| index, metric, and parameters | which retrieval state and numerical choices shaped ranking? |
+| result and cost | what was returned, warned, truncated, or spent? |
+| provenance and replay verdict | can this observation be explained and compared later? |
+
+Reasoning may cite candidates from this envelope, but a candidate is not yet a
+verified premise. Its score is backend evidence about ranking, not a truth
+probability. Likewise, no-result is evidence about this declared execution;
+it is not proof that relevant material does not exist.
 
 ## Evidence And Limits
 

@@ -78,6 +78,27 @@ Reason, agent, and runtime may consume ingest artifacts. They must not repair
 missing source identity, invent chunk provenance, or reinterpret a preparation
 failure as empty evidence.
 
+## The Preparation Receipt
+
+Prepared text is admissible downstream only when the preparation decision can
+be reconstructed. Retain a receipt beside the prepared records with these
+identities:
+
+| Identity | What it answers | What is insufficient |
+| --- | --- | --- |
+| source | which input object or byte set entered preparation? | a display name without a digest or stable source identifier |
+| configuration | which cleaning rules, safeguards, and overrides ran? | the name of a configuration file whose contents can change |
+| transformation | which normalization and filtering outcomes occurred? | only the final text |
+| segmentation | which chunk geometry, offsets, and tail policy were applied? | chunk text without its prepared parent |
+| output | which record set or persisted artifact was emitted? | a path that may be overwritten |
+| failures | which inputs were rejected, retried, truncated, or omitted? | a successful-record count alone |
+
+This receipt is the custody transfer to index. Index may attach embeddings,
+backend parameters, rankings, and execution provenance to the prepared
+identities. It must not replace them. A digest match demonstrates identity of
+the retained material; it does not demonstrate that the original source was
+accurate or complete.
+
 ## Evidence And Limits
 
 | Claim | Evidence to inspect | Limit |

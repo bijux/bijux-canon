@@ -84,6 +84,12 @@ identity make later retrieval evidence traceable to its source.
 
 ## Command Workflows
 
+The console script routes two command shapes. With a document path first, it
+runs the configured CSV preparation pipeline. With `index`, `retrieve`, `ask`,
+or `eval` first, it enters the ingest-local retrieval command family. This
+dispatch is intentional: `bijux-canon-ingest --help` describes the preparation
+form, while command-specific help describes the retrieval form.
+
 ```bash
 # Run a configured CSV-to-JSONL preparation pipeline.
 bijux-canon-ingest documents.csv --config pipeline.json --out chunks.jsonl
@@ -101,6 +107,11 @@ bijux-canon-ingest ask \
 `hash16` or the optional sentence-transformer adapter. `eval` consumes a suite
 directory containing `queries.jsonl` and can compare metrics with a baseline
 and tolerance.
+
+These commands do not expose the execution contract of `bijux-canon-index`.
+They are a compact preparation-and-retrieval workflow owned by ingest. Choose
+index when the disputed decision involves backend eligibility, execution
+budget, approximation, replay, or cross-backend comparison.
 
 ## HTTP Contract
 
@@ -123,6 +134,11 @@ implementation output is tested against them.
 Parse, validation, safeguard, transformation, retry, and adapter failures
 remain typed and stage-specific. An empty result is not substituted for a
 failed preparation stage.
+
+For a durable handoff, retain the source identity, effective configuration,
+transformation outcomes, chunk geometry and offsets, output fingerprint, and
+rejected-input record together. A downstream index can add execution evidence
+to that receipt, but it cannot recover preparation evidence that was discarded.
 
 ## Public API Routing
 
@@ -181,7 +197,7 @@ failure as evidence that no matching content exists.
 - [`src/bijux_canon_ingest/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/src/bijux_canon_ingest/interfaces) for CLI and HTTP edges
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-ingest/tests) for behavior, layout, and corpus-backed checks
 
-## Read This Next
+## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/02-bijux-canon-ingest/)
 - [Package overview](https://bijux.io/bijux-canon/02-bijux-canon-ingest/foundation/package-overview/)
@@ -191,7 +207,7 @@ failure as evidence that no matching content exists.
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-ingest/CHANGELOG.md)
 
-## Primary Entrypoint
+## Primary entrypoint
 
 - console script: `bijux-canon-ingest`
 - package history: [`CHANGELOG.md`](CHANGELOG.md)
