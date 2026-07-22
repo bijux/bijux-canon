@@ -88,6 +88,13 @@ The manifest covers all core files except itself, every file under
 `provenance/`, and every evidence path registered by the trace. Verify the
 manifest before exporting, comparing, or replaying a run.
 
+Replay output is created later under `replay/trace.jsonl`; it is not part of
+the original run manifest. Treat that file as a derived comparison artifact,
+not as an extension of the authenticated original record. If replay evidence
+must travel with the run, publish a new external envelope that binds the
+original manifest, the replay trace, the replay result, and the verifier
+identity.
+
 ## What Each Digest Proves
 
 | Digest or identity | Inputs | Trust question answered |
@@ -101,6 +108,25 @@ manifest before exporting, comparing, or replaying a run.
 These values overlap by design but are not interchangeable. In particular, the
 manifest does not include itself, and the invariant checksum is not a digest of
 the entire trace.
+
+## Integrity Is Not Authenticity
+
+The manifest is generated inside the same writable run directory as the files
+it describes. An actor able to replace a run can replace both a file and its
+manifest entry. The internal digests establish consistency after a trusted
+manifest has been selected; they do not establish producer identity or an
+independent time of publication.
+
+| Requirement | Evidence required beyond the run directory |
+| --- | --- |
+| producer identity | signature or authenticated transport bound to the manifest digest |
+| publication time | trusted timestamp, transparency record, or immutable object version |
+| custody after export | storage audit trail and periodic digest verification |
+| replay attestation | separate envelope covering replay bytes and verifier version |
+
+Content-addressed run IDs do not close this gap. A run ID selects a spec,
+preset, seed, and runtime fingerprint; it is not a digest of the complete run
+directory.
 
 ## Acceptance Order
 

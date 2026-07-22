@@ -60,6 +60,14 @@ The comparison is semantic: verdict, confidence, epistemic state, and stop
 reason matter. A missing summary is reported as a skipped comparison, not a
 match.
 
+The built-in replay path performs schema-envelope validation, not the full
+canonical lifecycle validation used while producing a pipeline trace. Its
+loader reconstructs a reduced trace projection and does not retain every
+serialized decision artifact, failure artifact, or run-fingerprint field in
+the reconstructed entries. Consequently, successful loading and summary
+parity are weaker claims than validating every lifecycle phase against the
+original pipeline definition.
+
 That parity check does not compare runtime version, termination reason,
 convergence fields, model metadata, trace path, configuration hash, pipeline
 definition hash, prompts, or run fingerprint. Those fields remain evidence to
@@ -71,6 +79,32 @@ Timestamps and the UUID-based run ID are observational. Configuration,
 definition, prompts, model identity, decision state, convergence, and
 fingerprints are evidence-bearing. Ignore expected clock variation only; never
 use it to excuse a changed deterministic field.
+
+## Schema Compatibility Boundary
+
+An absent `trace_schema_version` is interpreted as schema v1. The current v1
+upgrade is deliberately shallow: it copies the payload, adds the current schema
+marker, and checks only that a run ID and a non-empty entries list exist. It
+does not transform each entry into a complete v2 record, prove lifecycle
+ordering, or rewrite the source artifact. Explicit schema versions newer than
+the runtime supports are rejected.
+
+```mermaid
+flowchart LR
+    Raw[serialized trace] --> Detect{schema version}
+    Detect -->|absent: v1| Mark[add current marker in memory]
+    Detect -->|current| Envelope[validate envelope]
+    Detect -->|newer| Reject[reject]
+    Mark --> Envelope
+    Envelope --> Construct[construct replay projection]
+    Construct --> Parity[compare four summary fields]
+    Construct --> Lifecycle[separate canonical lifecycle validation]
+```
+
+For imported v1 material, archive the original bytes, record the runtime used
+for interpretation, and run canonical lifecycle validation after loading. Do
+not publish the in-memory marker addition as evidence that a semantic migration
+occurred.
 
 ## Publication Limits
 
@@ -99,7 +133,8 @@ For a retained or imported output root:
 3. if `trace_path` is present, require a relative path that resolves below the
    output root and points to the expected trace file;
 4. upgrade and validate the trace schema, then run canonical lifecycle
-   validation against the pipeline definition;
+   validation against the exact pipeline definition outside the built-in replay
+   parity path;
 5. reconstruct the decision projection and compare the four parity fields;
 6. separately compare runtime, model, convergence, termination, configuration,
    definition, prompt, and fingerprint evidence; and

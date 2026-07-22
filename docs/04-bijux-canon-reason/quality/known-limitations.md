@@ -98,6 +98,22 @@ interface rate limiter is best-effort, in-memory, and process-local; it does not
 coordinate workers or survive restart. API size guards do not provide
 authentication, tenant isolation, malware screening, or network egress policy.
 
+The HTTP boundary also has explicit fail-open configuration and transport
+limits:
+
+| Boundary | Implemented behavior | Consequence |
+| --- | --- | --- |
+| API token | `RAR_API_TOKEN` enables exact `x-api-token` comparison; an unset value disables the check | deployments must fail closed in their own configuration policy |
+| request size | the 8 KiB guard checks a parseable `Content-Length` header | missing or malformed length metadata is not a streaming body limit |
+| response size | item responses are serialized in memory and capped at 2 MiB | this is a payload cap, not backpressure or admission control |
+| rate limit | optional per-token or anonymous in-memory minute bucket | limits are neither shared across workers nor durable across restart |
+| media type | XML content types are denied | other content is not thereby trusted or malware-scanned |
+
+Deploy the API behind transport security, authenticated ingress, body-size
+enforcement, coordinated rate limiting, and tenant authorization appropriate to
+the environment. The package guards are defense-in-depth checks, not that
+perimeter.
+
 The evaluation command supports workflow and metrics artifacts, but named
 suite discovery is not yet a stable public catalogue. Callers must supply and
 version the exact suite material rather than depend on an implied packaged
