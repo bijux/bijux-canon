@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Architecture
@@ -63,6 +63,27 @@ The HTTP adapter exposes health, chunking, index construction, retrieval, and
 answering. Its default store is memory-backed, so process restart and
 multi-worker deployment change state availability unless an application adds
 an explicit persistence boundary.
+
+## Commit points and recovery
+
+Ingest has several useful outputs, but only an explicitly retained artifact is
+a recovery point. An in-memory value proves a transformation occurred in one
+process; it does not prove another process can resume the same corpus.
+
+| Boundary | State before the boundary | Commit evidence | Recovery consequence |
+| --- | --- | --- | --- |
+| source acceptance | external CSV row or `RawDoc` | stable source identity plus accepted fields and parse disposition | re-reading mutable input can produce a different preparation run |
+| cleaning | caller-owned source and effective `CleanConfig` | `CleanDoc` plus configuration identity and safeguard outcome | cleaned text alone cannot explain which normalization rules ran |
+| chunking | cleaned parent and `RagEnv` | ordered chunks with parent, offsets, geometry and tail policy | chunks without their parent cannot prove segmentation custody |
+| corpus publication | in-process chunk stream | closed JSONL output and failure summary | a partial file must not be promoted as a complete corpus |
+| local index publication | prepared records and backend configuration | index metadata paired with the exact chunk records | restoring either half alone creates an unverifiable retrieval state |
+| HTTP index state | process-local request and memory store | no durable commit in the default service | restart or another worker may not observe the same index |
+
+This is why the architecture keeps preparation records separate from edge
+responses. A CLI success, an HTTP `200`, or a Python return value describes an
+operation at its own lifecycle boundary. Durable custody additionally requires
+the source, effective policy, output identity, and rejected-input disposition
+to survive together.
 
 ## Module ownership
 

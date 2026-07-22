@@ -70,6 +70,26 @@ identity and configuration beside the projection. Round-tripping through a
 smaller response model cannot restore an omitted embedding, source mapping, or
 failure disposition.
 
+## Choose by custody requirement
+
+Choose an interface by who must retain the preparation record after the call,
+not only by which transport is convenient:
+
+| Requirement | Prefer | Caller must retain |
+| --- | --- | --- |
+| compose deterministic transforms inside an application | Python root and named application modules | typed input, effective configuration, results and typed failures |
+| publish a reviewable prepared corpus | configured CLI pipeline | original source identity, configuration file content, closed JSONL output and failure summary |
+| build a small local retrieval artifact | retrieval CLI or application service | backend choice, index directory, matching chunk records and corpus fingerprint |
+| provide bounded request/response integration | HTTP v1 | request payload, response or structured error, service version and index-lifecycle assumptions |
+| preserve an existing `bijux-rag` consumer | compatibility import or command | exact canonical version and evidence that caller-visible behavior remains equivalent |
+
+The interfaces are deliberately not feature-equivalent. Python exposes the
+widest composition surface; the preparation CLI owns file-oriented bulk work;
+HTTP exposes five bounded operations with process-local default storage; and
+CSV, JSONL, and MessagePack are artifact contracts rather than execution
+engines. Moving between them is an adapter decision that must preserve the
+preparation receipt described in the handbook.
+
 ## Failure contracts
 
 - Python workflows use typed results and exceptions according to the documented
