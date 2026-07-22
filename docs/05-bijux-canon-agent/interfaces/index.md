@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Interfaces
@@ -57,6 +57,26 @@ sequenceDiagram
   the input document.
 - A replay `MATCH` covers verdict, confidence, epistemic state, and stop reason
   only; it is not byte equality or full lifecycle equivalence.
+
+## Accept a published pipeline outcome
+
+Treat the result, trace, and files as related records rather than one success
+flag:
+
+| Record | Confirm | Do not infer |
+| --- | --- | --- |
+| request and definition | goal, context identity, eligible roles, configuration fingerprint and execution mode | that every configured provider or role was invoked |
+| call dispositions | every attempted role or shard has output, veto, typed error, or explicit non-execution | that one successful call makes the batch successful |
+| `PipelineResult` | terminal status, stop reason, convergence result, partial failures, telemetry and artifact identity agree | that converged content is correct or complete |
+| `RunTrace` | mandatory header, ordered transitions and calls, finalization, completeness and replay fields | that provider behavior can be reproduced from metadata |
+| published files | summary, final artifact and trace refer to the same execution and are fully written | that directory presence is transactional publication |
+| interface response | CLI exit/payload or HTTP status/body matches the underlying result | that accepted request fields changed the fixed HTTP pipeline |
+
+The package does not currently publish a run manifest or transactionally bind
+the output directory. A host that needs durable acceptance should hash the
+closed files, record their shared execution identity, and publish them
+atomically at its own storage boundary. Missing trace or partial batch evidence
+must remain visible during that promotion.
 
 ## Contract index
 

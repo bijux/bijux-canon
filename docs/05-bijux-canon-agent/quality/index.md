@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Quality
@@ -51,6 +51,23 @@ default change erases compatibility evidence.
 Live provider tests answer only whether an adapter can contact the provider
 and record its response metadata. They are opt-in evidence and do not replace
 deterministic orchestration tests or representative model evaluation.
+
+## Separate the assurance domains
+
+An auditable agent workflow combines evidence from three domains that cannot
+substitute for one another:
+
+| Assurance domain | What it can establish | Evidence to retain | What remains outside it |
+| --- | --- | --- | --- |
+| orchestration | authorized role order, lifecycle, merge, veto, convergence, termination and trace completeness | deterministic contract tests, transition records, snapshots and `RunTrace` | semantic quality of model output |
+| model/provider | representative task behavior and observed remote-call metadata | declared evaluation set, provider/model identity, prompt/configuration, outputs, failures and usage | repeatability of an external service beyond captured observations |
+| host/publication | file closure, storage identity, access, retention and interface delivery | file hashes, atomic publication record, permissions, CLI/HTTP result and recovery test | correctness of the pipeline decision itself |
+
+A release claim must name which domain it covers. For example, lifecycle
+snapshots can support orchestration compatibility but not summarization
+quality; a live provider success can support connectivity but not replay; and
+an atomically stored trace can support custody but not trace completeness
+unless the agent validator accepted it first.
 
 ## Evidence routes
 
