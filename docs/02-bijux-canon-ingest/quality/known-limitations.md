@@ -50,6 +50,21 @@ licensed, complete, safe, representative, or suitable for a decision.
 Use `bijux-canon-index` when retrieval must be governed through backend
 capability negotiation, execution budgets, and replay evidence.
 
+## Runtime Composition Boundary
+
+Runtime's live retrieval executor expects a package-root callable shaped as
+`retrieve(query, top_k, scope, vector_contract_id)` and a list of runtime-shaped
+evidence dictionaries. `bijux-canon-ingest` does not export that root callable.
+Its application retrieval API is index-path based, accepts an embedder, and
+returns typed candidates under a different contract.
+
+An adapter must therefore resolve the persisted index and embedder, preserve
+source and chunk custody, map score and determinism explicitly, and emit the
+requested vector-contract identity. Package installation, `bijux-rag` alias
+availability, or successful local retrieval does not prove that this runtime
+handoff exists. The compatibility root mirrors the canonical package and does
+not add the missing adapter.
+
 ## Streaming Is Conditional
 
 The lazy pipelines avoid materializing the complete corpus, but bounded memory

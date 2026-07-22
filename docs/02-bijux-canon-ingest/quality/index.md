@@ -61,7 +61,7 @@ deterministic hash profile is not a proxy.
 | Evaluate optional and core dependencies | [Dependency governance](dependency-governance.md) |
 | Understand claims the package cannot make | [Known limitations](known-limitations.md) |
 | Inspect unresolved failure modes | [Risk register](risk-register.md) |
-| Keep public explanations aligned with behavior | [Documentation standards](documentation-standards.md) |
+| Interpret preparation artifacts without overstating their guarantee | [Interpreting preparation evidence](evidence-interpretation.md) |
 
 The appropriate proof is proportional and local: begin with the invariant that
 owns the behavior, add the crossed boundary, and use corpus evaluation only for
