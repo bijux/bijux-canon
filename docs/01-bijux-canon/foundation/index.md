@@ -51,7 +51,7 @@ ownership boundary around each decision.
 | Which package owns a capability or preserved name? | [Package map](package-map.md) | canonical, support, and compatibility distributions |
 | Who decides when a concern crosses boundaries? | [Ownership model](ownership-model.md) | decision authority and escalation paths |
 | What do shared architectural terms mean? | [Domain language](domain-language.md) | stable vocabulary for contracts, evidence, and compatibility |
-| How does published guidance relate to code? | [Documentation system](documentation-system.md) | handbook ownership and executable publication checks |
+| Which record supports a system claim? | [Evidence map](evidence-map.md) | decision ownership, evidence strength, and the boundary of each proof |
 | What makes a cross-package change acceptable? | [Change principles](change-principles.md) | invariants for coherent changes |
 | Where does an ambiguous change belong? | [Decision rules](decision-rules.md) | a repeatable routing test |
 

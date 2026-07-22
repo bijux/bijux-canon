@@ -145,6 +145,6 @@ flowchart TD
 ```
 
 The [Package Map](package-map.md) lists exact distributions and commands. The
-[Documentation System](documentation-system.md) explains site navigation, and
-the [Repository Handbook](../index.md) maps cross-package questions to their
-strongest evidence.
+[Evidence Map](evidence-map.md) connects system claims to the records that can
+support them, and the [Repository Handbook](../index.md) maps cross-package
+questions to their decision owner.

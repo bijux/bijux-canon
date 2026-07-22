@@ -168,7 +168,7 @@ but it cannot redefine product semantics to make the mismatch disappear.
 | Which HTTP representation is governed? | `apis/<package>/v1/schema.yaml`, pin, and hash | owning package interface handbook |
 | Which local command composes validation? | `Makefile` and `makes/` | [maintainer Make handbook](../07-bijux-canon-maintain/makes/index.md) |
 | Which event triggers CI or publication? | `.github/workflows/` | [workflow handbook](../07-bijux-canon-maintain/gh-workflows/index.md) |
-| Which pages are published and where? | `mkdocs.yml` and `docs/` | [documentation system](foundation/documentation-system.md) |
+| Which record supports a cross-package claim? | owned models, schemas, tests, and retained artifacts | [evidence map](foundation/evidence-map.md) |
 | What does an older package name execute? | compatibility package metadata and alias tests | [compatibility catalog](../08-compat-packages/catalog/index.md) |
 
 Product semantics remain in ingest, index, reason, agent, or runtime. Helper

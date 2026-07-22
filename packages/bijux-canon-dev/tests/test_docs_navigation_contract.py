@@ -268,7 +268,7 @@ def test_repository_foundation_leaf_pages_keep_section_sidebar(
         "Package Map",
         "Ownership Model",
         "Domain Language",
-        "Documentation System",
+        "Evidence Map",
         "Change Principles",
         "Decision Rules",
     ]
