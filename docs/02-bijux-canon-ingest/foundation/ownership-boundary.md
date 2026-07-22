@@ -72,3 +72,34 @@ meaning.
 The owner of a defect is the layer whose invariant was false. A changed chunk
 caused by normalization belongs here; a correct chunk ranked incorrectly under
 a declared vector contract belongs in index.
+
+## Coordinate Spaces Are Part Of Custody
+
+Cleaning can change case, whitespace, or retained content before chunking.
+Chunk `start` and `end` therefore address the normalized `CleanDoc` text, not
+the original CSV bytes or characters.
+
+```mermaid
+flowchart LR
+    bytes["source bytes"]
+    parsed["RawDoc fields"]
+    normalized["CleanDoc text"]
+    chunk["chunk text + normalized offsets"]
+    candidate["ranked candidate"]
+
+    bytes -->|decode and parse| parsed
+    parsed -->|cleaning rules| normalized
+    normalized -->|chunk geometry| chunk
+    chunk -->|local retrieval| candidate
+```
+
+| Question | Evidence required |
+| --- | --- |
+| which source entered the pipeline? | source identifier plus retained input identity or digest |
+| which text was segmented? | normalized parent text and effective cleaning configuration |
+| where did a chunk come from? | parent identity, normalized offsets, chunk text, and geometry |
+| can a citation be mapped to original bytes? | an explicit source-to-normalized mapping produced during preparation |
+
+The current chunk contract does not carry a general source-byte mapping. A
+consumer may quote the normalized span and identify its parent, but must not
+claim original-byte coordinates unless it retained an independent mapping.

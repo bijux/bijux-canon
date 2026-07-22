@@ -112,6 +112,24 @@ JSON file from a partial write, but there is no run manifest or signature that
 binds the three files together. If a run crosses a trust boundary, package it
 with an external digest or signature and verify that envelope before loading.
 
+## Run-Store Trust Assumptions
+
+`RunStore` is a compact local lifecycle store, not a hostile-input or
+multi-writer repository boundary.
+
+| Assumption or limit | Current behavior | Operational consequence |
+| --- | --- | --- |
+| run identifiers are trusted | `run_id` becomes a directory component without a package-level identifier policy | validate identifiers before accepting them from an external caller |
+| one writer owns a run | file replacement is atomic, but there is no run lock or compare-and-swap protocol | concurrent writers using one run ID can overwrite one another's metadata, result, or status |
+| files share a trusted directory | no manifest binds the three JSON files | verify an external envelope before moving or loading a run directory |
+| metadata and result fit local resources | JSON reads have no package-level byte, nesting, or record limit | enforce filesystem and payload limits at the deployment boundary |
+| completion is the commit marker | `load()` accepts only `status == "complete"` | never infer completion from the presence of `result.json` |
+| one file replacement is durable enough | the store does not issue an explicit filesystem sync | process-crash atomicity does not establish storage-device durability |
+
+These limits do not invalidate the local protocol; they define where a higher
+assurance deployment must add identifier validation, locking, authenticated
+manifests, resource controls, and durability policy.
+
 ## Compatibility Boundary
 
 Changing schema version, fingerprint inputs, metric meaning, scoring version,

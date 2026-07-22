@@ -51,6 +51,22 @@ process outcome, and embedding identity beside the output when the file is
 intended for replay. A vector alone does not identify the model or normalization
 policy that created it.
 
+The projections are easiest to distinguish by shape. Values below are
+illustrative; field placement is the contract being shown.
+
+```json
+{"title":"Policy","category":"governance","text":"retained text","embedding":[0.0,1.0]}
+```
+
+```json
+{"doc_id":"policy-17","text":"retained text","start":0,"end":13,"metadata":{"title":"Policy"},"embedding":[0.0,1.0]}
+```
+
+Neither writer emits a file header, schema discriminator, producer version,
+configuration digest, source digest, row count, or terminal success marker.
+Those omissions are why a standalone JSONL file cannot prove pipeline
+completion or select its own projection reliably.
+
 ## Retrieval Indexes
 
 `BM25Index.save()` and `NumpyCosineIndex.save()` write MessagePack payloads.
@@ -83,6 +99,30 @@ chunk identities. Dense loading also reconstructs the declared vector array.
 It does not authenticate the file or impose a general input-size limit. Apply
 an external digest or signature and a resource limit when artifacts cross a
 trust boundary.
+
+```mermaid
+flowchart TD
+    bytes["candidate artifact bytes"]
+    envelope{"trusted digest, size limit,<br/>and expected format known?"}
+    decode["decode JSONL or MessagePack"]
+    validate["validate projection, schema,<br/>backend, identities, and shapes"]
+    reconcile["reconcile source count,<br/>failures, and build receipt"]
+    accept["accepted handoff"]
+    reject["reject or quarantine"]
+
+    bytes --> envelope
+    envelope -->|no| reject
+    envelope -->|yes| decode
+    decode --> validate
+    validate -->|invalid| reject
+    validate -->|valid| reconcile
+    reconcile -->|incomplete| reject
+    reconcile -->|complete| accept
+```
+
+The backend loaders cover the validation node, not the external envelope or
+source reconciliation nodes. Calling `load()` successfully is necessary but
+not sufficient for accepting an artifact received from another trust domain.
 
 ## Ownership and Safe Publication
 
