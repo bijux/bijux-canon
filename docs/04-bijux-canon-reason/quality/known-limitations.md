@@ -71,6 +71,21 @@ when available. A URI without archived bytes cannot be re-attested. If future
 review depends on exact evidence, archive those bytes and their source metadata
 with the run.
 
+## Runtime Composition Boundary
+
+Runtime's live reasoning executor asks the `bijux_canon_reason` package root
+for `reason(agent_outputs, evidence, seed)` and requires the result to be the
+runtime-owned `ReasoningBundle` type. The canonical reason root exports its own
+plans, claims, evidence references, traces, verification reports, serializers,
+and validators; it does not export that callable.
+
+A reason-owned wrapper that imports runtime models would reverse the current
+dependency direction because runtime already depends on reason. The adapter
+therefore belongs in runtime or a separate integration boundary and must
+preserve claim identity, exact support, verification status, steps, producer,
+trace, and manifest custody. `bijux-rar` mirrors the canonical root and does not
+make the handoff executable.
+
 ## Evaluation Metrics Are Bounded Proxies
 
 Current evaluation summaries measure properties of produced traces:

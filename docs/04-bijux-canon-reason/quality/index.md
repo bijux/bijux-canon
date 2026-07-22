@@ -72,7 +72,7 @@ contract.
 | Review runtime and optional dependencies | [Dependency governance](dependency-governance.md) |
 | Understand epistemic, replay, interface, and resource limits | [Known limitations](known-limitations.md) |
 | Inspect unresolved failure modes | [Risk register](risk-register.md) |
-| Keep public claims within demonstrated evidence | [Documentation standards](documentation-standards.md) |
+| Review claims from exact support through verification and replay | [Interpreting reasoning evidence](evidence-interpretation.md) |
 
 Add regressions at the model, planner, executor, retriever, verifier, or replay
 owner first. Add a manifested-run test when invalid behavior could otherwise
