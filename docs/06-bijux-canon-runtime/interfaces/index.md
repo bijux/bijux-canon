@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Interfaces
@@ -59,6 +59,28 @@ sequenceDiagram
 - Several callable CLI commands are suppressed from top-level help.
 - HTTP authority headers are syntax-checked only; run and replay have no remote
   execution backend despite their versioned schemas.
+
+## Assemble the authority packet
+
+Before an executable call, retain the inputs that authorize work; after the
+call, require the records that prove how that authority was used:
+
+| Authority concern | Required before execution | Required before accepting the result |
+| --- | --- | --- |
+| ownership | flow, tenant, manifest state and authority context | identical flow/tenant identity on trace, store rows and artifacts |
+| data | dataset ID, version, digest, state, location and deprecation policy | observed dataset identity and any admitted evolution decision |
+| plan | resolved dependencies, ordered work, environment fingerprint and `plan_hash` | every executed or skipped operation accounted for against that plan |
+| variability | determinism level, nondeterminism intent, entropy budget and allowed variance | measured entropy use, warnings and budget disposition |
+| verification | declared gates, rule configuration and arbitration policy | immutable findings, separate arbitration decision and certifiability |
+| effects | mode, executor bindings, credentials/capabilities and idempotency posture | causal events, effect receipts, failures and recovery disposition |
+| persistence | execution-store and artifact-store identities | finalized run record plus resolvable payload hashes and lineage |
+| replay | original envelope and acceptability policy | semantic diff, verdict, reason and compared identities |
+
+If a live lower-package callable cannot be resolved, the authority packet is
+incomplete and execution must fail at that integration boundary. A plan, an
+installed dependency, or a compatibility alias cannot stand in for an
+executor binding. Likewise, DuckDB metadata cannot stand in for artifact or
+evidence payloads that the artifact store no longer resolves.
 
 ## Compatibility boundaries
 

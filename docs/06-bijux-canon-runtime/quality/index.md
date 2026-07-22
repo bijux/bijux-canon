@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Quality
@@ -61,6 +61,26 @@ require refusal when write protocols are violated. Long-horizon cases ensure
 artifact, evidence, claim, tool, and entropy correlations remain intact across
 many steps. External integrations still require their own idempotency or
 compensation contract.
+
+## Require evidence to accumulate
+
+Later runtime states add proof; they do not replace the evidence required by
+earlier states:
+
+| Runtime state | Evidence newly required | Regression that prevents a false promotion |
+| --- | --- | --- |
+| resolved | valid manifest, dataset/dependency decision, policy and environment identity | semantic-invalid and dependency-conflict refusal |
+| planned | immutable ordered work, effective mode, budgets and `plan_hash` | golden-plan and changed-input identity tests |
+| executed | operation outcomes, causal events, effects, entropy use and typed failures | partial-failure, event-order, budget and idempotency tests |
+| finalized | closed immutable trace, required projections and completion semantics | incomplete-trace, mutation and finalization-invariant tests |
+| accepted or rejected | verification findings, arbitration policy, verdict and certifiability | contradiction, rule-failure and policy-mismatch tests |
+| retained | typed DuckDB state plus resolvable artifact/evidence payload identities | migration, hostile-store, round-trip and missing-payload tests |
+| replayed | original envelope, current identities, semantic diff, verdict and reason | changed dataset/policy/environment, fuzz and cross-process tests |
+
+A row that exists in storage does not prove the run reached the state named by
+that row. Tests must reconstruct the required predecessor evidence and refuse
+or qualify records that skip it. This is especially important after recovery,
+migration, manual intervention, or partial external effects.
 
 ## Evidence routes
 
