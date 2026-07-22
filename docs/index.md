@@ -76,6 +76,7 @@ Ingest decides how source material is prepared. Index decides how vector work ex
 
 <div class="bijux-quicklinks">
 <a class="md-button md-button--primary" href="https://bijux.io/bijux-canon/01-bijux-canon/">Open the repository handbook</a>
+<a class="md-button" href="https://bijux.io/bijux-canon/01-bijux-canon/foundation/evidence-map/">Trace a claim to its evidence</a>
 <a class="md-button" href="https://bijux.io/bijux-canon/07-bijux-canon-maintain/">Open maintenance docs</a>
 <a class="md-button" href="https://bijux.io/bijux-canon/08-compat-packages/">Open compatibility docs</a>
 </div>
@@ -240,6 +241,7 @@ or command name; they are not an alternative architecture.
 ## Shared Handbooks
 
 - [Repository Handbook](01-bijux-canon/index.md) explains the root-owned design boundary, shared workflow, and package seams
+- [Evidence Map](01-bijux-canon/foundation/evidence-map.md) traces system claims to their decision owner, retained record, and proof limit
 - [Maintainer Handbook](07-bijux-canon-maintain/index.md) documents helper code, Make surfaces, and workflow contracts that keep the repository healthy
 - [Compatibility Handbook](08-compat-packages/index.md) documents preserved continuity names and the migration pressure back toward canonical package ownership
 
@@ -249,11 +251,17 @@ or command name; they are not an alternative architecture.
 | --- | --- | --- |
 | a Python or CLI contract is stable | public facade, contract page, compatibility test, and caller example | an internal helper name |
 | an HTTP operation is available | schema, server route, live contract test, and documented status | OpenAPI presence alone |
-| a result is deterministic | normalized inputs, configuration, identity, trace, and repeated comparison | a fixed random seed alone |
-| evidence supports a claim | exact content reference, digest, claim state, and verification result | confidence text or a citation label |
-| a run is replayable | retained inputs, plan, policy, environment, entropy, trace, and replay verdict | similar final output |
+| preparation is reproducible | [source, configuration, transformation, output, and observation identity](02-bijux-canon-ingest/quality/evidence-interpretation.md) | matching chunk text without source custody |
+| retrieval is exact or bounded | [artifact, plan, backend capability, budget, approximation, and provenance](03-bijux-canon-index/quality/evidence-interpretation.md) | plausible neighbors or a fixed seed |
+| evidence supports a claim | [exact bytes, support edge, inference kind, findings, and manifested run](04-bijux-canon-reason/quality/evidence-interpretation.md) | confidence text or a citation label |
+| an agent outcome is auditable | [pipeline definition, calls, lifecycle, convergence, terminal state, and trace](05-bijux-canon-agent/quality/evidence-interpretation.md) | final content or a `converged` flag |
+| a run was accepted or replayed | [authority, execution, finalization, arbitration, persistence, and replay verdict](06-bijux-canon-runtime/quality/evidence-interpretation.md) | completion, database presence, or similar output |
 | a compatibility name is equivalent | dependency pin, module identity, command parity, and canonical tests | successful installation |
 | a release contains the intended package | tagged source, build manifest, publication guard, and published artifact | a green build job |
+
+Each link above starts at the artifact a user can inspect. The package quality
+indexes continue into invariants, tests, limitations, and risks when a stronger
+assurance argument is required.
 
 ## Follow Release Custody
 
