@@ -81,6 +81,48 @@ state rather than an invisible exception.
 | `observe` | observes execution evidence | does not silently acquire live authority |
 | `unsafe` | permits explicitly reduced guarantees | remains labelled unsafe in the run record |
 
+Plan and dry-run do not invoke lower-package intelligence. Observe evaluates a
+supplied run. Those modes can prove planning, synthetic execution records, or
+verification behavior without proving that live package adapters are
+callable. Live and unsafe execution cross the adapter boundary when their
+steps require agent, retrieval, vector-contract, or reasoning work.
+
+## Executable Integration Boundary
+
+```mermaid
+flowchart LR
+    manifest["FlowManifest"] --> plan["resolved plan"]
+    plan --> runtime["runtime step executors"]
+    runtime --> adapters["explicit adapters"]
+    adapters --> agent["agent pipeline + trace"]
+    adapters --> ingest["ingest retrieval records"]
+    adapters --> index["index contract verdict"]
+    adapters --> reason["reason claims + support"]
+    adapters --> records["runtime artifacts + evidence + bundle"]
+```
+
+The step executors currently resolve four package-root callables. None is
+provided by the installed canonical package roots:
+
+| Runtime request | Current package truth | Consequence |
+| --- | --- | --- |
+| `bijux_canon_agent.run(...)` | the root exports only `API_VERSION` | no live agent handoff |
+| `bijux_canon_ingest.retrieve(query, top_k, scope, vector_contract_id)` | retrieval is a path-based application API with a different typed contract | no lossless retrieval handoff |
+| `bijux_canon_index.enforce_contract(contract_id, evidence)` | the root exports version metadata only | no live vector-contract verdict |
+| `bijux_canon_reason.reason(...) -> ReasoningBundle` | the root exports reason-owned models and validators, not this callable or runtime type | no live reasoning handoff |
+
+The `bijux-agent`, `bijux-rag`, `bijux-vex`, and `bijux-rar` compatibility roots
+delegate to their canonical packages; they do not supply extra adapter
+behavior. Consequently, aligned package versions and successful imports are
+dependency evidence, not end-to-end execution evidence.
+
+Each adapter must be explicit about model conversion and custody: agent traces
+to runtime artifacts, prepared retrieval records to runtime evidence, index
+decisions to contract verdicts, and reason claims and support to runtime
+bundles. The acceptance bar is an installed-package test that executes every
+applicable loader and verifies identity, failure, and provenance preservation
+through the resulting runtime records.
+
 ## CLI Workflow
 
 ```bash
@@ -105,6 +147,13 @@ The CLI also implements `plan`, `dry-run`, `unsafe-run`, run diff, failure
 explanation, and database validation commands. Those commands are currently
 suppressed from the top-level help display; their presence must not be confused
 with the three prominently advertised commands.
+
+The live `run` syntax above documents the CLI contract. With the canonical
+package family as shipped, a flow that reaches one of the four integrations
+stops at its missing or incompatible callable. Use `plan` to inspect resolution
+without step execution and `dry-run` for the package's intelligence-free
+synthetic trace path; neither is a substitute for a successful live adapter
+test.
 
 ## HTTP Contract
 
@@ -192,13 +241,25 @@ boundary.
 ## Persistence And Replay Evidence
 
 - execution traces use stable event identity and causal ordering
-- artifacts carry type, scope, producer, run, dataset, and contract identity
-- the DuckDB execution store persists runs, events, envelopes, budgets,
-  verification results, interventions, and replay analysis
+- artifacts carry tenant, type, scope, producer, parent, and content-hash
+  identity; the artifact model does not contain the content payload
+- the DuckDB execution store persists run and dataset identity, steps, events
+  and their JSON payloads, checkpoints, artifact metadata, evidence metadata,
+  entropy, tool invocations, and claim identifiers
+- the run row retains the verification-policy fingerprint and arbitration
+  decision, while verification and intervention detail may appear in events;
+  there are no dedicated per-engine verification-result or replay-analysis
+  tables in the current schema
 - replay compares stored and current policy, dataset, environment, plan,
   entropy, and artifact identities before issuing a verdict
 - crash recovery and partial failure retain recorded state rather than
   presenting an incomplete run as complete
+
+The default artifact store is in memory and stores artifact metadata only.
+DuckDB also stores artifact and evidence hashes rather than their content
+payloads. A deployment that needs later content inspection or exact replay
+must retain those payloads in an external content store and bind that custody
+to the recorded hashes; database presence alone is not payload availability.
 
 ## Source Map
 

@@ -56,6 +56,43 @@ the dataclass alone does not prove that a flow is executable.
 - `observe` captures evidence without granting normal execution authority
 - `unsafe` is an explicit reduced-guarantee mode, not an alias for live
 
+Plan and dry-run deliberately avoid lower-package intelligence, and observe
+evaluates a supplied run. Success in those modes does not establish that the
+live agent, retrieval, vector-contract, and reasoning adapters are callable.
+
+## Live Composition Status
+
+```mermaid
+flowchart TD
+    executor["runtime step executor"] --> loader["integration loader"]
+    loader --> adapter["domain-aware adapter required"]
+    adapter --> package["canonical package contract"]
+    adapter --> record["runtime record"]
+    package --> adapter
+```
+
+The current loaders ask package roots for four callables:
+
+| Step boundary | Callable expected by runtime | Current status |
+| --- | --- | --- |
+| agent | `bijux_canon_agent.run` | absent; agent exposes a pipeline-and-trace contract |
+| retrieval | `bijux_canon_ingest.retrieve` | absent at the root; the application retrieval signature and output model differ |
+| vector enforcement | `bijux_canon_index.enforce_contract` | absent; index owns a richer request, capability, provenance, and refusal contract |
+| reasoning | `bijux_canon_reason.reason` returning runtime `ReasoningBundle` | absent; reason owns different claim, support, trace, and verification models |
+
+Compatibility import roots mirror canonical behavior and do not repair these
+seams. This means the package can plan flows, produce dry-run records, observe
+supplied results, and exercise runtime-local policy and storage behavior, while
+a canonical live flow that reaches these loaders is not currently an
+established end-to-end path.
+
+The durable proof is an installed-package integration test, not an import
+check. It must execute the loaders and demonstrate that source, evidence,
+contract, claim, trace, artifact, and failure identities survive conversion
+into runtime-owned records. Until then, live CLI examples describe the runtime
+interface and required policy posture rather than a turnkey composition of all
+canonical packages.
+
 ## Follow One Governed Run
 
 ```mermaid
@@ -118,6 +155,15 @@ resume, and replay. It is a single-writer local store, not a transaction manager
 for external tools. A database commit cannot undo a provider call or filesystem
 write; live integrations need idempotency or compensation beyond the store.
 
+Its schema retains run and dataset identity, steps, event payloads,
+checkpoints, artifact and evidence metadata, entropy use, tool invocations,
+claim identifiers, a verification-policy fingerprint, and the run-level
+arbitration decision. Artifact content and evidence content are not stored in
+those metadata rows. Per-engine verification results and replay analysis also
+do not have dedicated tables. Operators must retain external content by hash
+and must not infer payload availability or full verification detail from the
+presence of a run row.
+
 ## Evidence And Limits
 
 | Claim | Evidence to inspect | Limit |
@@ -127,6 +173,7 @@ write; live integrations need idempotency or compensation beyond the store.
 | replay is exact | original envelope, retained inputs, event and artifact identity, zero disallowed diff | cannot control state never captured |
 | bounded replay is acceptable | original allowed variance and evaluated semantic diff | tolerance cannot be invented after divergence |
 | storage is complete | schema contract, finalized records, external artifact availability | metadata does not guarantee payload retention |
+| live composition works | installed loader execution plus cross-package identity and failure assertions | dependency resolution, plan mode, or dry-run success |
 
 The [entrypoint examples](interfaces/entrypoints-and-examples.md) begin with
 plan mode, then show persisted execution, inspection, replay, and diff. The v1
