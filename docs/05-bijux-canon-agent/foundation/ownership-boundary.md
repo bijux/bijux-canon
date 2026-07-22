@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Ownership Boundary
@@ -61,6 +61,55 @@ Individual role packages perform local work. The pipeline controller owns
 lifecycle transitions and stop conditions. Roles cannot override the phase,
 resume after kernel failure, or finalize the workflow implicitly. This
 separation is defended by architecture invariants, not convention.
+
+## Decision custody through a workflow
+
+```mermaid
+flowchart LR
+    definition["pipeline definition"]
+    controller["controller authorizes transition"]
+    role["role returns output or error"]
+    merge["shard/merge lineage"]
+    gates["judge + validate + veto"]
+    stop["convergence or termination"]
+    trace["PipelineResult + RunTrace"]
+    runtime["runtime acceptance"]
+
+    definition --> controller --> role --> merge --> gates --> stop --> trace
+    trace -. "governed handoff" .-> runtime
+```
+
+The controller may act only through the pipeline definition and lifecycle. A
+role may produce content, findings or failure but cannot authorize its next
+state. Runtime receives the complete agent outcome and may accept or refuse it;
+it does not fill missing calls or transitions.
+
+## Minimum agent handoff
+
+| Field | Custody purpose |
+| --- | --- |
+| input/context and configuration fingerprints | identifies the workload and behavior-bearing configuration |
+| pipeline definition and role implementation versions | identifies eligible roles, transitions and terminal states |
+| ordered transitions and call identities | demonstrates that every role invocation was authorized |
+| outputs, typed errors, retries and fallback decisions | retains success and failure rather than only final content |
+| shard/merge lineage, revisions and warnings | proves that no input disappeared behind aggregation |
+| judgment, validation, critique and veto records | preserves decision gates and targeted artifacts |
+| convergence observations and termination reason | explains why orchestration stopped |
+| epistemic disposition, telemetry and trace-completeness findings | separates execution success from evidence quality |
+| final result and versioned trace identity | permits independent reconstruction and cross-artifact comparison |
+
+Runtime needs this complete packet to arbitrate a flow. Final prose, a success
+flag, or an isolated provider response is not an agent handoff.
+
+## Boundary breach examples
+
+| Breach | Correct owner and response |
+| --- | --- |
+| a role marks an unsupported claim as validated | reason owns claim status; agent records/refuses the invalid role output |
+| a provider asks to skip critique or jump to completion | agent controller refuses the unauthorized transition |
+| merge drops a failed shard | agent retains the shard and produces partial/failed disposition |
+| runtime summary says success while agent trace records veto | runtime comparison refuses the inconsistent handoff; agent trace is not rewritten |
+| valid workflow output is disallowed for a tenant | runtime owns the rejection and retains the intact agent packet |
 
 ## Ownership test
 

@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Capability Map
@@ -60,6 +60,37 @@ validation, stage execution, planning, judging, and verification. A role
 supplies local behavior within the active lifecycle phase. It cannot override
 the controller, invent a terminal transition, or silently become runtime
 authority.
+
+## Capability status by authority
+
+| Status | Capabilities | Required qualification |
+| --- | --- | --- |
+| package-owned orchestration | role contracts, pipeline definition, lifecycle, sharding/merge, convergence, termination and trace validation | deterministic contract/lifecycle evidence under the selected configuration |
+| included local role behavior | file reading, extractive/simple processing, critique, validation, planning, judging and verification implementations | input format, role eligibility, parser/resource and result-contract evidence |
+| provider-dependent | configured remote model calls and provider usage metadata | credentials, client/provider/model identity, network policy, failure handling and live evidence |
+| interface-specific | complete Python composition, file/directory CLI, fixed offline HTTP pipeline | callers use only the capabilities promised by that interface |
+| host-governed | authentication, tenant isolation, sandboxing, egress, durable storage and confidential-data policy | controls outside the package process |
+
+An implementation can exist without being reachable through every public
+surface. In particular, source-level provider adapters do not make the fixed
+offline HTTP operation provider-configurable, and a Python-composed workflow
+does not prove that runtime's package-root live loader can invoke it.
+
+## Interpret workflow outcomes
+
+| Outcome | Evidence that must agree | What it does not mean |
+| --- | --- | --- |
+| converged completion | convergence strategy/window/history, admitted final result, terminal state and complete trace | factual correctness or runtime acceptance |
+| completed without convergence | stopping rule, last candidate, explicit non-convergence and trace | convergence because execution ended normally |
+| partial result | every successful/failed shard, merge lineage, usable artifacts and partial disposition | whole-input success |
+| veto or validation refusal | source role, issues/findings, target artifact, action plan and disposition | provider or infrastructure failure |
+| provider/role failure | call identity, typed error, retries/fallbacks and controller response | empty role content or skipped history |
+| interrupted/aborted | last causal event, lifecycle state, incomplete work and recovery boundary | finalized replayable completion |
+| fatal orchestration failure | terminal reason, partial evidence and non-success interface result | ordinary role-level rejection |
+
+`PipelineResult`, `RunTrace`, interface status/exit behavior and stored artifacts
+must report the same outcome. A trace-first reconstruction should reach the
+same terminal disposition as the summary file.
 
 ## Public boundary
 
