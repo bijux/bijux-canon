@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Agent Handbook
@@ -49,6 +49,46 @@ flowchart LR
 The HTTP v1 contract intentionally supports the `extractive` strategy and
 `simple` backend. Additional provider adapters in the source tree do not expand
 that versioned API contract automatically.
+
+## Start With A Validated Role Request
+
+The package root is intentionally small. Build a request from the contract and
+enum modules that own its meaning:
+
+```python
+from bijux_canon_agent.contracts.runtime_models import AgentInput
+from bijux_canon_agent.enums import AgentType, ExecutionMode
+
+request = AgentInput(
+    task_goal="Summarize the retention obligation with no unsupported claims.",
+    payload={"text": "Keep signed run records for seven years."},
+    context_id="retention-policy-17",
+    agent_type=AgentType.PLANNER,
+    execution_mode=ExecutionMode.SYNC,
+)
+
+print(request.model_dump(mode="json"))
+```
+
+This validates required text, the context identity, role vocabulary, execution
+mode, and immutable request shape. It performs no role selection, provider
+call, lifecycle transition, convergence evaluation, or trace write. Those
+actions begin only when a pipeline or interface boundary accepts the request.
+
+Use the distinction to debug deliberately:
+
+| Observation | Owning boundary |
+| --- | --- |
+| request construction fails | contract validation |
+| role cannot be selected or ordered | pipeline definition and lifecycle controller |
+| provider call fails | role adapter and per-call record |
+| output is rejected or work does not converge | validation, critique, veto, and convergence records |
+| workflow completes but cannot be accepted as a governed run | runtime policy, not agent execution |
+
+For an executable path without remote-provider selection, use the
+[offline v1 HTTP pipeline](interfaces/entrypoints-and-examples.md#http-run-the-offline-v1-pipeline).
+Its `extractive` and `simple` contract is intentionally narrower than the
+provider adapters present in the source tree.
 
 ## Follow One Workflow Decision
 

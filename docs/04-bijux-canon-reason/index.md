@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Reasoning Handbook
@@ -52,6 +52,39 @@ Every CLI-built run writes a directory keyed by a stable run identifier:
 The invariant checksum binds plan, trace, and runtime descriptor. Replay checks
 fingerprints and emits a diff summary; it does not declare equivalence merely
 because the final answer looks similar.
+
+## Start With A Content-Addressed Problem
+
+Create the smallest stable reasoning input before involving a planner, tool,
+retriever, or provider:
+
+```python
+from bijux_canon_reason import ProblemSpec, canonical_dumps
+
+spec = ProblemSpec(
+    description="Determine the retention period supported by the evidence.",
+    constraints={"require_citation": True},
+    expected_output_type="Claim",
+    expected={"subject": "signed run records"},
+    version=1,
+)
+
+print(spec.id)
+print(canonical_dumps(spec.model_dump(mode="json")))
+```
+
+The identifier is derived from canonical content. Reordering the input mapping
+does not create a different problem; changing the description, constraint,
+expected result, or contract version does. Persist the canonical
+representation with the identifier so a reviewer can distinguish an intended
+problem change from execution drift.
+
+Constructing `ProblemSpec` proves only that the problem contract is valid and
+addressable. It does not create a plan, retrieve evidence, execute a tool,
+validate a claim, or produce a complete run. The next durable boundary is the
+[verified CLI run](interfaces/entrypoints-and-examples.md#cli-create-a-verified-run),
+which retains the specification together with its plan, trace, verification
+report, fingerprints, and manifest.
 
 ## Follow One Claim
 
