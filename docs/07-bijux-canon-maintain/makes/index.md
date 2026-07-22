@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Make System
@@ -64,6 +64,40 @@ named fragments.
 `make test-all` is intentionally broader and more expensive than ordinary
 verification. Use it only when the changed contract reaches those test
 surfaces; it is not the default evidence for a Markdown-only change.
+
+## Read Dispatch As A Contract
+
+Root targets select package records by capability and invoke each package
+through its checked-in profile. The dispatch path is part of the result:
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Root as root target
+    participant Catalog as package catalog
+    participant Profile as package profile
+    participant Helper as owned helper or package command
+
+    Caller->>Root: make <intent>
+    Root->>Catalog: select packages with capability
+    Catalog-->>Root: ordered package records
+    Root->>Profile: invoke target with explicit profile
+    Profile->>Helper: run package-specific contract
+    Helper-->>Caller: status + output under artifacts/
+```
+
+This explains three common surprises:
+
+- package directories do not need standalone Makefiles; dispatch supplies the
+  absolute profile with `make -f ... -C packages/<slug> <target>`;
+- a package absent from a capability group is not silently skipped—it was not
+  selected, so the catalog or profile is the first authority to inspect; and
+- a root success means every selected package target succeeded, not that an
+  unselected capability or a separate publication destination was evaluated.
+
+Use `make list` to inspect the primary set, `make list-all` for every canonical
+slug, and `make help` for the live root command surface before assuming a copied
+command still reflects the repository graph.
 
 ## Package Inventory Is Data
 

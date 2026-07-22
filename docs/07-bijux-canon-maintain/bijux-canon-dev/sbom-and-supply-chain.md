@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # SBOM and Supply Chain
@@ -101,6 +101,25 @@ flowchart TD
     valid -- yes --> identity[Confirm package, version, SHA, and scope]
     identity --> retain[Retain with exact release artifact]
 ```
+
+## Supply-Chain Claim Ladder
+
+An SBOM moves through independent decisions. Preserve the evidence for every
+rung actually claimed:
+
+| Claim | Required evidence | Does not establish |
+| --- | --- | --- |
+| dependency input was prepared | package metadata plus generated production or development requirements | successful dependency resolution |
+| inventory was generated | nonempty CycloneDX JSON plus pip-audit completion record | structural validity or vulnerability acceptance |
+| inventory is structurally valid | successful `cyclonedx validate` result for the exact bytes | that every dependency is safe or complete |
+| vulnerability policy accepted the resolution | audit report, ignore policy, and gate verdict | artifact provenance or build reproducibility |
+| SBOM was staged with a release candidate | stable staged name, workflow run, source SHA, and package version | publication at a registry or release page |
+| published SBOM describes a released artifact | destination identity, SBOM digest, wheel/sdist or image digest, and common tagged source | signature, attestation, or runtime safety |
+
+The repository currently provides generation, validation, audit policy, and
+optional release staging as separate surfaces. It does not provide signing or
+a build-provenance attestation. Consumers needing those guarantees must add a
+separate trusted control rather than infer them from CycloneDX presence.
 
 ## Vulnerability Ignores
 

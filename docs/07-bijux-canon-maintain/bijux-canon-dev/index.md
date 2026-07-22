@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # bijux-canon-dev
@@ -56,6 +56,36 @@ runs. Tests protect the rule independently of either orchestration layer.
 These modules are invoked with `python -m ...` from checked-in Make fragments;
 the package does not publish a general-purpose console command. That keeps each
 rule independently callable without inventing a catch-all maintainer CLI.
+
+## Read Each Helper As A Decision Contract
+
+Repository helpers are not ordinary convenience scripts. Each one needs five
+reviewable properties:
+
+```mermaid
+flowchart LR
+    input["typed or governed input"]
+    rule["named decision rule"]
+    result["success or explicit refusal"]
+    diagnostic["actionable diagnostic"]
+    test["focused contract test"]
+
+    input --> rule --> result
+    rule --> diagnostic
+    test --> rule
+```
+
+| Property | Review question |
+| --- | --- |
+| input boundary | does the helper read the exact schema, metadata, report, or package set it claims to govern? |
+| decision semantics | is acceptance defined in Python rather than inferred from shell presentation? |
+| failure semantics | do invalid input, missing tooling, policy refusal, and unexpected failure remain distinguishable? |
+| diagnostics | can a contributor identify the offending package, path, field, or advisory without reproducing CI? |
+| executable contract | does a focused test cover acceptance and refusal independently of Make and workflow orchestration? |
+
+When any property is missing, adding another workflow wrapper makes the rule
+harder to audit rather than more reliable. Extend the owning helper and its
+tests first; then route the stable decision through Make and CI.
 
 ## Evidence Chain For A Failure
 

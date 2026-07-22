@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-dev-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Maintenance Handbook
@@ -48,6 +48,27 @@ Generated logs, reports, SBOMs, build products, and test output belong under
 `artifacts/`. Checked-in API pins and documentation remain in their governed
 repository locations because they are versioned contract sources, not local run
 products.
+
+## Distinguish Maintenance States
+
+A maintenance command moves through several states that must not be collapsed
+into one green or red label:
+
+| State | Evidence available | Claim allowed |
+| --- | --- | --- |
+| selected | target and package inventory resolved | the intended check was addressed by the command graph |
+| started | tool identity, arguments, and governed inputs recorded | the check attempted to evaluate those inputs |
+| completed | every required subprocess returned and expected outputs exist | the check ran to completion |
+| accepted | policy evaluated the outputs and returned its defined success status | the governed input satisfied that check under the recorded policy |
+| retained | logs, reports, hashes, or build products are addressable under `artifacts/` or workflow storage | the decision can be reviewed after execution |
+| enforced | a required workflow consumed the same check and source identity | repository policy required the decision for that event |
+
+For example, an SBOM command may start and still emit no usable CycloneDX
+document; a build may complete while the publication guard refuses its
+metadata; a local docs check may pass without proving that the deployment job
+has permission to publish. Report the strongest state supported by the
+retained evidence rather than translating every zero exit status into
+repository-wide acceptance.
 
 ## Choose A Check By The Claim
 
