@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Module Map
@@ -82,6 +82,51 @@ temperature cannot be labeled replayable.
 Trace completion is stronger than reaching the last function call. The trace
 must satisfy phase order, mandatory evidence, finalization, epistemic status,
 and replay metadata checks before its result is considered complete.
+
+## Walk one terminal decision through the architecture
+
+```mermaid
+sequenceDiagram
+    participant Edge as CLI/API/application
+    participant Definition as pipeline definition
+    participant Control as lifecycle controller
+    participant Kernel as execution kernel
+    participant Role as bounded role
+    participant Decision as merge/judge/convergence
+    participant Trace as trace + result
+
+    Edge->>Definition: input + configuration
+    Definition->>Control: allowed phases, roles and stops
+    Control->>Kernel: authorized stage/call
+    Kernel->>Role: immutable role input
+    Role-->>Kernel: output or typed error
+    Kernel-->>Decision: shard/call lineage
+    Decision-->>Control: continue, veto, converge or terminate
+    Control-->>Trace: ordered transitions + terminal reason
+    Trace-->>Edge: PipelineResult + RunTrace
+```
+
+A role returns local work; it does not select its next phase. The kernel
+executes an authorized call; it does not redefine pipeline policy. Result
+assembly derives from lifecycle, call, merge, gate and termination records
+rather than trusting the last role response.
+
+## Dependency direction
+
+| Layer | May depend on | Must not acquire |
+| --- | --- | --- |
+| `contracts` / `core` | immutable shared vocabulary and validation | provider SDKs, CLI/API or lifecycle orchestration |
+| `agents.*` | role contracts, local collaborators and bounded context | phase transitions, convergence or final workflow authority |
+| `agents.kernel` | role registry/calls and lifecycle callbacks | hidden role selection or stop rules outside the definition/controller |
+| `pipeline` | contracts, roles, lifecycle, convergence, results and trace protocols | runtime tenant/persistence policy or provider-specific public shapes |
+| `llm` | provider adapters behind agent-owned requests/results | lifecycle authority or unredacted SDK objects in public contracts |
+| `traces` / `observability` | ordered agent events and metadata | permission to mutate execution decisions while recording them |
+| `application` | complete workflow composition | duplicate lifecycle semantics outside `pipeline` |
+| `interfaces` / `api.v1` | application entry points, configuration and translation | a second pipeline or interface-specific role semantics |
+
+Architecture invariant tests make these boundaries executable. A convenient
+import that lets a role, provider or HTTP handler advance lifecycle state is a
+boundary violation even when the resulting run appears successful.
 
 ## Package boundaries
 

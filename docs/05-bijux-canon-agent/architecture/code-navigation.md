@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Code Navigation
@@ -59,6 +59,42 @@ Paths are relative to
 5. Follow finalization into the trace and published result projection.
 6. Validate trace ordering, completeness, replay fields, and the exact parity
    subset used by the replay command.
+
+## Diagnose from the terminal evidence
+
+| Symptom | Inspect first | Follow into | Evidence that closes the diagnosis |
+| --- | --- | --- | --- |
+| role runs in the wrong phase | pipeline definition and preceding transition | controller, registry and kernel authorization | allowed-role/transition invariant plus trace order |
+| role returns plausible but malformed output | immutable output/error contract | role implementation then kernel failure mapping | contract refusal retaining call and role identity |
+| input shard disappears | shard statuses and merge lineage | `pipeline/execution/` and `pipeline/results/` | every input has completed/failed disposition |
+| veto is ignored | judge/validation/veto record and target artifact | decision aggregation, controller and result projection | trace-derived terminal outcome retains the veto |
+| convergence occurs too early or never occurs | strategy, window, observations and snapshot hashes | `pipeline/convergence/` and termination | deterministic history reproduces verdict/reason |
+| provider failure becomes empty content | call metadata, retries/fallbacks and typed error | `llm/`, role strategy and kernel response | stable provider failure plus controller disposition |
+| final result disagrees with trace | run/context identities and terminal fields | result reconstruction and trace validation | independently derived outcome matches or blocks publication |
+| replay succeeds with missing fields | trace header, mandatory entries and replayability findings | `traces/` and `pipeline/trace_validation/` | complete versioned trace or explicit refusal |
+| CLI and HTTP disagree | shared application/pipeline result | interface configuration, DTO and status/exit mapping | parity for the overlapping fixed semantics |
+
+Begin with `RunTrace` and `PipelineResult`, then move backward to the first call
+or transition that cannot be derived. Provider logs alone cannot prove that a
+call was authorized or that its output survived merge and validation.
+
+## Place changes at the decision owner
+
+| Desired change | Primary location | Required proof expansion |
+| --- | --- | --- |
+| role input/output/error field | `contracts/` | immutability, strict fields, serialization and interface schemas |
+| local planner/reader/judge/verifier behavior | matching `agents/` package | role regression plus passive-role invariant |
+| pipeline phase, role eligibility or transition | definition and `pipeline/control/` | architecture snapshot, lifecycle and invalid-transition evidence |
+| sharding, scheduling or merge | `pipeline/execution/` / `pipeline/results/` | complete lineage, partial/failure and final outcome cases |
+| convergence or termination rule | `pipeline/convergence/` / termination | stable snapshots, oscillation, exhaustion and trace reconstruction |
+| provider implementation | `llm/` | normalized contract, metadata/redaction and failure matrix |
+| trace field or replay behavior | `traces/` / trace validation | schema/version, completeness, mismatch and reconstruction |
+| CLI or HTTP operation | owning interface | shared pipeline evidence plus schema/status/exit parity |
+
+If an interface needs a new orchestration decision, add it to the package-owned
+pipeline and expose it consistently. If one role needs special lifecycle
+authority, express that authority in the definition/controller rather than in
+the role implementation.
 
 ## Architectural guardrails
 
