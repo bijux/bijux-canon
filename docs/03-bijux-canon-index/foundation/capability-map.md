@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Capability Map
@@ -59,6 +59,37 @@ optional vector-store adapters add capabilities only when installed,
 registered, reachable, and conformant. Remote backends, asynchronous services,
 and streaming search are excluded from the v1 contract; pgvector remains
 experimental and outside the v1 freeze.
+
+## Capability status is evidence-bound
+
+| Status | Meaning | Reader-visible evidence |
+| --- | --- | --- |
+| supported baseline | package-owned contract with exercised local implementation | request/artifact/result fixtures, exact behavior, persistence and replay cases |
+| optional and conformant | installed adapter passed the declared capability and backend suites in the recorded environment | adapter/backend identity, capability report, conformance results and failure cases |
+| available but unadmitted | code or plugin can be imported but lacks current evidence for the requested capability | explicit exclusion/refusal; no supported-result claim |
+| experimental | behavior may be inspected without entering the frozen v1 contract | experimental identity and limits kept separate from v1 evidence |
+| excluded | asynchronous/streaming/remote behavior not promised by v1 | documentation and interface refuse to imply availability |
+
+Capability status applies per operation. An adapter that has query evidence is
+not automatically admitted for ingest, transactions, persistence, replay,
+tenant isolation, or bounded ANN. Inspect the capability report before
+materializing an artifact or selecting an execution plan.
+
+## Interpret execution outcomes
+
+| Outcome | Required record | Claim supported |
+| --- | --- | --- |
+| admission refusal | request identity and violated contract/capability/budget | no execution was authorized |
+| materialization failure | request plus partial artifact state and typed failure | no immutable execution artifact is available |
+| backend failure | artifact, plan, adapter/backend identity, attempts and failure provenance | execution was attempted but produced no admissible complete result |
+| partial result | completed work, missing work, breached budget and explicit partial status | only named candidates/work are usable under the stated limitation |
+| complete exact result | artifact, exact plan, stable order/scores, cost and provenance | ranking is exact under the declared metric and artifact |
+| complete bounded ANN result | approximation/randomness policy, candidates, quality/budget evidence and final ranking | result satisfies the predeclared ANN envelope, not exact equality |
+| replay match or acceptable diff | original/observed identities, semantic diff, envelope, verdict and reason | comparison met the original replay policy |
+| replay mismatch | blocking differences and producer identity | prior execution is not reproduced under the requested rule |
+
+Completion, exactness, determinism and replay acceptability are separate
+properties. A caller must not derive one from another.
 
 ## Choosing an execution path
 
