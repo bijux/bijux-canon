@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Operations
@@ -43,6 +43,21 @@ flowchart LR
   evidence from an earlier execution.
 - A directory input processes immediate regular files only; it is not a
   recursive corpus traversal.
+
+## Choose an operating surface
+
+| Need | Surface | Current operational boundary |
+| --- | --- | --- |
+| configured file or immediate-directory workflow | `bijux-canon-agent` CLI | validates all registered provider credentials before command parsing and publishes fixed-name files |
+| offline bounded service call | HTTP `POST /v1/run` | fixed `simple` backend and `extractive` strategy; request `config` does not alter that pipeline |
+| custom roles, lifecycle or providers | package-owned Python modules | caller must assemble typed definitions, dependencies, trace handling and publication |
+| inspect stored summary fields | replay command | reconstructs a trace and compares four summary fields; not full execution replay |
+| govern acceptance and persistence | runtime through an explicit host adapter | package-root live adapter is not implemented; co-installation is insufficient |
+
+Select the surface whose actual contract matches the operation. Do not route a
+custom provider workflow through the fixed HTTP contract, treat CLI replay as
+model re-execution, or infer runtime acceptance from a locally published agent
+directory.
 
 ## Evidence order
 

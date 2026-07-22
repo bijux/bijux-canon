@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Foundation
@@ -24,13 +24,20 @@ flowchart LR
     runtime["acceptance, persistence, replay policy"]
 
     evidence --> agent
-    definition --> agent --> trace --> runtime
+    definition --> agent --> trace
+    trace -. explicit adapter required .-> runtime
 ```
 
 Agent does not decide whether source evidence is epistemically sufficient; it
 preserves the relevant role inputs and outputs. It also does not confer final
 workflow authority: runtime may accept or reject the pipeline result, but it
 must not reconstruct missing orchestration history.
+
+The runtime handoff is architectural, not currently turnkey. Runtime requests
+a package-root `run` callable with runtime-shaped artifact output; the agent
+root exposes `API_VERSION`, while package-native execution returns a
+`PipelineResult` paired with `RunTrace`. An adapter must preserve pipeline,
+artifact, failure, and trace identity before runtime can claim custody.
 
 ## Owned decisions
 
@@ -54,6 +61,21 @@ imply that every run invokes every role or provider.
 A role's pass or veto is substantive output. Termination explains why the
 controller stopped. Convergence describes a policy observation. These signals
 are related but not interchangeable, and consumers must retain all three.
+
+## Read the outcome as independent signals
+
+| Signal | Question answered | Evidence required | What it cannot establish |
+| --- | --- | --- | --- |
+| role disposition | what did this bounded role return, refuse, or fail to do? | typed role output/error and call metadata | whole-pipeline success |
+| validation or veto | did declared checks admit the candidate? | findings, source role, target and controller response | convergence or factual truth |
+| convergence | did the monitored state satisfy its stopping criterion? | strategy, observations, window and decision reason | correctness of the stable result |
+| termination | why did the controller stop scheduling work? | lifecycle state, completed/failed work and stop reason | acceptance by runtime policy |
+| epistemic verdict | how did the pipeline classify the support posture? | retained inputs, role evidence and verdict record | scientific truth beyond those inputs |
+| trace completeness | can the decision be reconstructed from mandatory records? | versioned ordered `RunTrace` and finalization check | re-execution of remote provider behavior |
+
+`PipelineResult` is the joined projection of these signals, not permission to
+discard them. A consumer that retains only final content loses the evidence
+needed to distinguish completion, agreement, confidence, and acceptance.
 
 ## Trust limits
 
