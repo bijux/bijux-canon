@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Code Navigation
@@ -56,6 +56,40 @@ Paths in this table are relative to
 4. Follow serialization or persistence through `interfaces/` and `retrieval/`.
 5. Confirm the owning unit test before using an end-to-end test to validate the
    cross-boundary path.
+
+## Debug from the observed artifact backward
+
+| Symptom | Inspect first | Then follow | Evidence that closes the diagnosis |
+| --- | --- | --- | --- |
+| source is missing from output | accepted/rejected inventory and typed result | reader, filters, rule evaluation and application partition | stable source identity plus exact rejection/stage record |
+| normalized text changed | `CleanDoc` and effective cleaner configuration | `processing` cleaner order and core identity | before/after document fixture and observation sequence |
+| chunk text is correct but offsets are wrong | chunk parent, normalized text and span validation | chunk geometry/tail policy and materialization | normalized-text slice equals chunk text at recorded offsets |
+| embedding dimensions or identity drift | chunk and `EmbeddingSpec` | embedder factory, adapter/model and vector validation | model/configuration identity plus repeated vector fixture |
+| duplicate survives or valid record disappears | structural key and first-occurrence order | dedup stage and pipeline selection | full input/output order and key comparison |
+| persisted local index cannot load | artifact envelope, backend and fingerprint | retrieval codec, MessagePack schema and version handling | old/new round trip or explicit incompatible/corrupt refusal |
+| citation points to unexpected text | candidate chunk identity and normalized span | ranking, citation assembly and source handoff | candidate-to-chunk-to-parent join with exact normalized bytes |
+| HTTP and CLI disagree | strict boundary model and serialized application result | interface translation after the shared use case | same input/configuration produces equivalent typed disposition |
+| retry hides a deterministic defect | attempt classification and breaker state | safeguard composition around the effectful adapter | first failure, retry decisions and final result remain visible |
+
+Start with the artifact the caller actually observed. Do not jump directly to
+an adapter stack trace: the nearest durable identity usually reveals whether
+the defect entered during parsing, transformation, orchestration, retrieval or
+translation.
+
+## Place a change at the owning layer
+
+| Desired change | Primary location | Required neighboring evidence |
+| --- | --- | --- |
+| new stable source or chunk field | `core` model/identity contract | serialization, public schema and compatibility fixtures |
+| new cleaner, filter or chunking rule | `processing` | invariant/property cases and configured application composition |
+| new complete ingest workflow | `application` | stage-level evidence plus CLI/HTTP use-case coverage as applicable |
+| new local index codec or ranking behavior | `retrieval` | artifact migration/refusal, ranking and citation evidence |
+| new external model/store implementation | `infra` or `integrations` | protocol conformance, failure classification and dependency identity |
+| new command or route | `interfaces` | shared application behavior, boundary schema and error/status mapping |
+
+If the same semantic rule appears in more than one interface, it belongs below
+the interfaces. If adapter-specific behavior changes a core identity, make
+that influence an explicit configuration or contract input.
 
 ## Public boundary landmarks
 

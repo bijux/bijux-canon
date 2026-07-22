@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Module Map
@@ -63,6 +63,49 @@ identity and character offsets. Embedding is an effect boundary: external
 embedders can affect repeatability, while chunk identity is derived from stable
 document identity, offsets, and text. Observability taps may inspect these
 values but must not mutate or replace them.
+
+## Walk one source through the architecture
+
+```mermaid
+sequenceDiagram
+    participant Edge as interfaces/readers
+    participant Core as core
+    participant Processing as processing
+    participant App as application
+    participant Retrieval as retrieval
+    participant Obs as observability
+
+    Edge->>Core: parsed fields + source identity
+    Core-->>Edge: RawDoc or typed refusal
+    App->>Processing: RawDoc + effective configuration
+    Processing-->>Obs: stage observations
+    Processing-->>App: CleanDoc + ordered chunks or typed failures
+    App->>Retrieval: chunks + embedding/index specification
+    Retrieval-->>App: artifact + candidates + citation records
+    App-->>Edge: accepted/rejected inventory + outputs
+```
+
+The interface decodes and translates; it does not decide document identity or
+transformation semantics. `application` selects and orders stages; it does not
+reimplement cleaners or chunkers. `retrieval` consumes prepared material; it
+does not silently normalize or rechunk it. Every refusal returns through the
+same path with source and stage identity intact.
+
+## Dependency direction
+
+| From | May depend on | Must not acquire |
+| --- | --- | --- |
+| `core` | identity and validation primitives | CLI, HTTP, storage, provider or pipeline orchestration |
+| `processing` | core records, explicit configuration and effect protocols | caller paths, transport responses or hidden retry/cache policy |
+| `application` | core, processing, results, safeguards and selected adapters | transformation semantics that belong in an owning stage |
+| `retrieval` | prepared records, embedding/index contracts and codecs | reason-level claim support or governed multi-backend execution policy |
+| `infra` / `integrations` | package protocols and external dependencies | authority to change core records or suppress typed failures |
+| `interfaces` | application use cases, serialization and boundary errors | domain rules duplicated in CLI/HTTP handlers |
+| `observability` | emitted values/events through taps and probes | permission to mutate the observed result |
+
+When a dependency would point upward—for example, a cleaner importing a CLI
+option model—move the behavior-bearing contract downward and keep adapter
+translation at the edge.
 
 ## Where neighboring packages begin
 
