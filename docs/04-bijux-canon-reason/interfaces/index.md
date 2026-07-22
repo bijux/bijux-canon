@@ -79,6 +79,32 @@ it cannot prove that the source was authoritative or the inference was sound.
 - Trace and manifest readers reject unsafe relative paths and malformed
   records rather than normalizing them silently.
 
+## Reconcile interface verdicts
+
+Reason exposes several outcomes because execution, verification, integrity,
+and replay answer different questions. Keep them separate when automating a
+review:
+
+| Observation | Authority | Meaning |
+| --- | --- | --- |
+| command exit status | CLI invocation | whether that command completed under its selected failure policy |
+| claim status and findings | reasoning and verification records | whether registered support and checks admit, qualify, or reject a claim |
+| manifest and fingerprint checks | run-bundle readers | whether the retained files still form the recorded content-addressed run |
+| replay diff and mismatch policy | replay operation | whether retained inputs and tool returns reconstruct an acceptable trace |
+| HTTP status and response body | versioned service boundary | whether the requested route accepted and completed its operation |
+
+These verdicts may legitimately differ. `run` can exit successfully while
+`verify.json` contains findings; a bundle can be byte-integral while its claim
+is rejected; replay can reconstruct a rejected run; and a newly invoked
+verification can produce `verify.verify.json` without rewriting the original
+run-time report. Preserve the filenames, timestamps, check registry, and
+invocation policy needed to explain which verdict is being cited.
+
+When evidence conflicts, trust the narrowest owning record: file digests for
+retained-byte identity, verification findings for registered checks, the claim
+status for reasoning disposition, and replay output for reconstruction. No
+single top-level “success” field supersedes all four.
+
 ## Contract index
 
 | Need | Guide |

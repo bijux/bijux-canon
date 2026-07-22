@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-reason-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Architecture
@@ -53,6 +53,35 @@ run identity and the replay contract.
 Replay uses recorded tool returns through a frozen runtime. It asks whether the
 retained inputs and results reproduce the governed trace; it does not re-attest
 that an external tool or source would produce the same content today.
+
+## Claim review chain
+
+A claim is not born verified. Its disposition becomes reviewable through
+separate records, each of which can narrow or refuse the conclusion. The
+intermediate boxes below are review boundaries, not additional `ClaimStatus`
+values; the model exposes `proposed`, `validated`, and `rejected`.
+
+```mermaid
+flowchart LR
+    proposed["ClaimStatus.proposed"]
+    grounding["exact support inspection"]
+    checks["registered verification findings"]
+    disposition["validated or rejected"]
+    manifested["manifested run bundle"]
+    proposed --> grounding --> checks --> disposition --> manifested
+```
+
+| Review boundary | Required record | Invalid shortcut |
+| --- | --- | --- |
+| support inspection | evidence identity, exact byte span, snippet digest and support edge | accepting a citation label or nearby passage |
+| registered checks | check set, complete findings and verification summary | treating evidence presence as successful inference |
+| claim disposition | claim status retained with every blocking or limiting finding | relying on process exit or final prose alone |
+| bundle finalization | trace, metadata, fingerprints and file digests closed as one run | copying the answer without its rejected claims and findings |
+
+Proposed and rejected claims remain evidence about the run. Removing them from
+the trace would make the final prose easier to read but the reasoning less
+auditable. The architecture therefore finalizes dispositions and failures with
+the same identity discipline as validated claims.
 
 ## Module authority
 
