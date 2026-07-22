@@ -64,7 +64,7 @@ deterministic orchestration tests or representative model evaluation.
 | Govern model providers and optional integrations | [Dependency governance](dependency-governance.md) |
 | Understand model, convergence, replay, credential, and hosting limits | [Known limitations](known-limitations.md) |
 | Inspect unresolved workflow and operational risk | [Risk register](risk-register.md) |
-| Keep public capability claims within evidence | [Documentation standards](documentation-standards.md) |
+| Interpret workflow results together with lifecycle and trace evidence | [Interpreting agent evidence](evidence-interpretation.md) |
 
 Reproduce defects at the narrowest contract, role, lifecycle, convergence,
 trace, or interface owner. Add pipeline-level proof when terminal status or

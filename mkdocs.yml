@@ -302,7 +302,7 @@ nav:
           - Test Strategy: 05-bijux-canon-agent/quality/test-strategy.md
           - Invariants: 05-bijux-canon-agent/quality/invariants.md
           - Orchestration Review: 05-bijux-canon-agent/quality/review-checklist.md
-          - Public Claim Standards: 05-bijux-canon-agent/quality/documentation-standards.md
+          - Interpreting Agent Evidence: 05-bijux-canon-agent/quality/evidence-interpretation.md
           - Orchestration Release Acceptance: 05-bijux-canon-agent/quality/definition-of-done.md
           - Provider and Runtime Dependencies: 05-bijux-canon-agent/quality/dependency-governance.md
           - Change Validation: 05-bijux-canon-agent/quality/change-validation.md

@@ -75,6 +75,22 @@ prompts, inputs, provider responses, or tools that were never archived. Trace
 schema upgrades make older records readable under declared mappings, but do not
 invent missing historical evidence.
 
+## Runtime Composition Boundary
+
+Runtime's live agent executor asks the `bijux_canon_agent` package root for a
+`run(agent_id, seed, inputs_fingerprint, declared_outputs, evidence)` callable
+that returns dictionaries containing artifact identifiers, types, content, and
+optional parent identifiers. The canonical root deliberately exposes only
+`API_VERSION`.
+
+Agent's native workflow requires a validated pipeline definition,
+configuration, and inputs, and returns a `PipelineResult` backed by a
+`RunTrace`. A runtime adapter must define pipeline selection, evidence
+conversion, failure projection, canonical content serialization, artifact
+ancestry, and trace linkage. `bijux-agent` mirrors the canonical package and
+does not add that adapter; equivalent loader failure through both names proves
+alias parity, not live composition.
+
 ## CLI Credential Coupling
 
 The current CLI validates all registered provider keys before dispatching the
