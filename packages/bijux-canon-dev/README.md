@@ -45,6 +45,28 @@ general-purpose console script. Maintainers invoke its focused modules through
 documented Make targets and workflow commands. Its VCS-derived version supports
 workspace builds; it is not a promise of an end-user product release.
 
+## System Integration Evidence
+
+Repository gates establish many independent contracts: package-local behavior,
+schema and documentation consistency, dependency policy, build metadata,
+compatibility alias identity, and release eligibility. They do not currently
+include an installed-package lane that resolves and executes all four live
+runtime integrations against the canonical agent, ingest, index, and reason
+packages.
+
+Runtime tests exercise execution, verification, replay, and failure semantics
+by supplying test callables for those seams. That is valid evidence for the
+runtime protocol, but it is not evidence that the canonical package roots
+provide the required `run`, `retrieve`, `enforce_contract`, and `reason`
+adapters. A coherent release can therefore pass package and bridge checks while
+live system composition remains unproven.
+
+The integration test belongs with runtime because runtime owns the adapter
+protocol and normalized records. Repository maintenance should make that lane
+visible, run it against installed release candidates, and retain its result;
+maintenance code should not manufacture product adapters or weaken domain
+contracts to make the lane pass.
+
 ## Source map
 
 - [`src/bijux_canon_dev/quality`](src/bijux_canon_dev/quality) for repo quality checks

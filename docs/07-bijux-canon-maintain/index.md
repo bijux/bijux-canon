@@ -59,11 +59,28 @@ products.
 | a dependency change is admissible | lock resolution, policy check, focused package tests | security audit and affected package matrix |
 | a package can be released | build, metadata, wheel/sdist validation, publication guard | tagged PyPI, GHCR, and GitHub release workflows |
 | a compatibility bridge remains equivalent | alias imports, module identity, command parity | canonical package tests under the tagged version |
+| canonical packages execute as one live flow | installed runtime adapter test with cross-package identity and failure assertions | release-candidate matrix using built distributions |
 
 Use the narrowest check that exercises the changed contract. Root aggregation
 is necessary when shared metadata, dependencies, API governance, or release
 membership changed; repeating every expensive lane is not stronger evidence
 for a documentation-only edit.
+
+### Current composition gap
+
+The present suite validates runtime behavior with seam-specific test callables,
+but it does not resolve and execute the runtime's four live loaders against the
+installed canonical package roots. Those roots do not currently expose the
+runtime-shaped `run`, `retrieve`, `enforce_contract`, and `reason` callables.
+Package tests, exact version resolution, compatibility parity, and successful
+builds can all be true while the canonical live flow remains unavailable.
+
+The missing assurance lane should install the built release candidates,
+execute representative agent, retrieval, vector-enforcement, and reasoning
+handoffs, and assert custody of source, evidence, contract, claim, trace,
+artifact, and failure identities. Runtime owns those adapters and assertions;
+the root maintenance layer owns making the result visible and required for any
+claim of end-to-end composition.
 
 ## Start With The Changed Surface
 
@@ -148,7 +165,10 @@ and send the reader back to the owning package.
 repository policy, PR approval, docs deployment, and PyPI, GHCR, and GitHub
 release publication. A successful docs deployment does not imply package tests
 passed; a successful package build does not imply publication guards passed;
-and a reusable workflow does not broaden the permissions of its caller.
+and a reusable workflow does not broaden the permissions of its caller. A
+successful release matrix also proves package coherence and publication
+eligibility, not live cross-package execution, unless the installed adapter
+lane is present and passes.
 
 ## Continue By Surface
 

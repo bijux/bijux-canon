@@ -99,6 +99,21 @@ They do not translate arguments, configuration, exit codes, or artifacts.
 Runtime admission, execution, persistence, resume, and replay consequently
 have one implementation and one documentation authority.
 
+## Composition Boundary
+
+The bridge preserves runtime behavior exactly; it does not install the full
+package family and does not contribute adapters between runtime and agent,
+ingest, index, or reason. The canonical runtime currently looks for four
+package-root callables—`run`, `retrieve`, `enforce_contract`, and `reason`—that
+the corresponding canonical roots do not provide in the required form. The
+preserved `bijux_canon` name neither repairs nor conceals that condition.
+
+Import identity, `FlowManifest` identity, CLI delegation, plan mode, and
+dry-run parity prove their named contracts. They do not prove that a live flow
+can invoke the lower packages. That stronger claim requires a separate
+installed-package test that executes the adapters and checks evidence,
+contract, claim, trace, artifact, and failure identity across the handoffs.
+
 ## Verify A Consumer
 
 Exercise the surfaces that the application actually depends on:
@@ -119,7 +134,9 @@ python3.11 -m bijux_canon --help
 For a real workflow, compare exit status, structured output, artifact layout,
 and replay behavior under the compatibility and canonical commands. Matching
 imports alone do not validate a deployment's providers, secrets, storage, or
-historical run data.
+historical run data. When the workflow is live, also verify each canonical
+lower-package adapter; equivalent failures through both names prove bridge
+parity, not successful system composition.
 
 ## Migrate To The Canonical Name
 

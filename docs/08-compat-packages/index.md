@@ -70,11 +70,19 @@ configuration policy, and product examples remain with the canonical owner.
 | console script | the preserved executable delegates to the canonical entrypoint | existence of a command is not proof of artifact compatibility |
 | behavior | canonical exceptions, output, and exit semantics pass through the bridge | the bridge does not add a second behavior contract |
 | release | bridge and owner resolve the repository version together | a shared tag does not prove every artifact was published |
+| runtime composition | aliases expose exactly the canonical runtime and lower-package roots | aliases cannot add missing live adapter callables |
 
 The repository checks root exports, representative nested-module identity,
 runtime-alias layout, exact dependency metadata, console targets, README
 routing, and package contents. Those checks establish the tested surfaces;
 they do not promise continuity for arbitrary undocumented deep imports.
+
+The last limit is especially important for `bijux-canon`. It aliases
+`bijux-canon-runtime`; it is not the complete package family and not an adapter
+bundle. Likewise, `bijux-rag`, `bijux-vex`, `bijux-rar`, and `bijux-agent`
+mirror their canonical roots. If a canonical root lacks a runtime-requested
+callable, its preserved root lacks it too. Alias identity tests and command
+parity therefore cannot establish a live agent-to-retrieval-to-reasoning flow.
 
 ## Locate A Bridge Failure
 
@@ -89,6 +97,7 @@ the owner:
 | preserved command runs but rejects arguments or emits a different result | canonical CLI and bridge delegation target | canonical package unless delegation itself is wrong |
 | product result, artifact, or schema is incorrect through both names | canonical implementation and contract tests | canonical package |
 | historical artifact cannot be read after a name-only migration | consumer inventory and canonical artifact contract | owning product boundary or an explicit migration tool |
+| runtime plan succeeds but live execution cannot load a lower package | runtime loader diagnostics and canonical package adapter contract | runtime-owned integration boundary |
 
 Do not add translation logic to make a bridge conceal a canonical defect. A
 bridge is trustworthy when it preserves identity and exposes canonical behavior
@@ -130,6 +139,14 @@ root and submodule imports, console and module commands, entrypoint strings,
 configuration, container images, artifact readers, and recovery automation use
 the canonical identity. The canonical package must then pass the consumer's
 representative workflow against retained artifacts.
+
+For runtime consumers, representative means more than constructing a
+`FlowManifest`, resolving plan mode, or comparing the two commands. Test the
+live adapters separately against the installed canonical packages and verify
+the resulting evidence, contract, claim, trace, and artifact identities. That
+test may expose an existing canonical integration gap; a compatibility bridge
+must preserve that typed failure rather than hide it with bridge-local product
+logic.
 
 Removing a name from source while a deployed image, plugin declaration, or
 historical artifact reader still needs it is an incomplete migration. Keep the
