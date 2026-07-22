@@ -22,6 +22,29 @@ repository healthy rather than to run the product, it should usually live here.
 - domain models that belong to agent, ingest, index, reason, or runtime packages
 - compatibility bridges whose only job is to preserve older or shorter public names
 
+## How maintenance decisions flow
+
+| Boundary | Responsibility | Evidence returned |
+| --- | --- | --- |
+| `bijux_canon_dev` helper | interpret one repository-specific invariant | structured result, rendered diagnostic, and exit status |
+| Make target | supply environment, paths, and command composition | command log and artifacts under the repository artifact tree |
+| GitHub workflow | select event, permissions, matrix, and retention | immutable workflow run and uploaded evidence |
+| release workflow | bind a tag to validated distributions and destination | registry or release identity for the accepted artifact |
+
+The helper should own a policy only when the rule spans repository structure or
+needs reusable parsing and tests. Product behavior stays with the package that
+implements it; Make remains command composition; workflows remain remote
+enforcement. Moving a failure between those layers to obtain a green result
+would destroy the diagnostic boundary.
+
+## Distribution posture
+
+`bijux-canon-dev` is an internal workspace support package. It is deliberately
+excluded from the repository's public release package set and registers no
+general-purpose console script. Maintainers invoke its focused modules through
+documented Make targets and workflow commands. Its VCS-derived version supports
+workspace builds; it is not a promise of an end-user product release.
+
 ## Source map
 
 - [`src/bijux_canon_dev/quality`](src/bijux_canon_dev/quality) for repo quality checks
@@ -40,9 +63,3 @@ repository healthy rather than to run the product, it should usually live here.
 - [Quality gates](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/quality-gates/)
 - [Release support](https://bijux.io/bijux-canon/07-bijux-canon-maintain/bijux-canon-dev/release-support/)
 - [Changelog](CHANGELOG.md)
-
-## Release Readiness
-
-- release line prepared for source-checkout validation: `0.3.9`
-- release date: `2026-07-04`
-- package changelog: [`CHANGELOG.md`](CHANGELOG.md)

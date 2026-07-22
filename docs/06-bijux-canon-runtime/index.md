@@ -88,6 +88,24 @@ finalization means the record is closed, not that policy accepted it.
 | entropy use and replay envelope | which variance was declared and retained? | determinism claims exceed captured evidence |
 | replay verdict and diff | whether a later run satisfies the original policy | similar final content can be mislabeled equivalent |
 
+## Do Not Collapse Runtime States
+
+Execution, finalization, acceptance, and replay are separate decisions:
+
+| State | What may be claimed | What may not be claimed |
+| --- | --- | --- |
+| executed | declared steps returned outcomes | verification passed or the run is complete |
+| finalized | the trace and required records were closed | policy accepted the run |
+| accepted | arbitration admitted the finalized record under its policy | the result is universally correct |
+| non-certifiable | retained evidence cannot support the requested guarantee | the run necessarily failed to produce useful observations |
+| replay acceptable | the comparison satisfied the original replay policy | the two executions were bitwise identical unless exactness was required and established |
+| replay unacceptable | a disallowed difference or identity mismatch was found | every output from the later execution is false |
+
+This vocabulary prevents a common integrity failure: promoting “the command
+finished” into “the run is valid.” Persist the status, arbitration evidence,
+certifiability, and replay verdict independently so downstream systems cannot
+infer a stronger state from a weaker one.
+
 ## Runtime Trust Boundary
 
 Runtime governs lower-package results; it does not recreate them. Ingest owns

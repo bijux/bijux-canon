@@ -107,6 +107,25 @@ Retained output belongs under `artifacts/`. A command line without its governed
 input, exit status, and diagnostic output is not sufficient evidence of a
 maintenance decision.
 
+## Build A Maintenance Evidence Record
+
+For a consequential check or release decision, retain enough context to answer
+the full chain:
+
+| Evidence | Question answered |
+| --- | --- |
+| source commit and dirty-state status | which repository state was evaluated? |
+| tool and dependency identity | which implementation interpreted that state? |
+| exact command and governed inputs | what decision was requested? |
+| structured report, log, or artifact | what observations supported the verdict? |
+| exit status and policy result | what did the check decide? |
+| workflow run or publication identity | where was the decision enforced or released? |
+
+A green badge is a navigation aid, not this evidence record. Likewise, a local
+success cannot be represented as a CI success, and a build artifact cannot be
+represented as published until the destination accepted that exact artifact.
+The maintenance system earns trust by keeping these identities connected.
+
 ## Repository-Specific Checks
 
 `bijux-canon-dev` freezes and compares OpenAPI contracts, synchronizes badge

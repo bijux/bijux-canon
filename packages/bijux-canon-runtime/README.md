@@ -151,6 +151,17 @@ The default `execute_flow(manifest)` selects live, strict execution; it is not a
 preview. Executable modes need a write store and the verification, authority,
 and nondeterminism resources required by their policy.
 
+The dependency-light package root exposes exactly `FlowManifest`, `RunMode`,
+and `execute_flow`; the latter two are resolved lazily. Broader runtime models,
+stores, policies, and service adapters remain in their owning modules. This
+small root is an integration contract, not evidence that runtime hides the
+lower-package boundaries it governs.
+
+Treat result status as a lattice of distinct facts: step execution, trace
+finalization, verification arbitration, certifiability, acceptance, and replay
+verdict. A consumer that stores only “success” loses the distinction needed to
+audit or safely replay the run.
+
 ## Package Continuity
 
 [`bijux-canon`](https://pypi.org/project/bijux-canon/) and
@@ -198,7 +209,7 @@ boundary.
 - [`src/bijux_canon_runtime/interfaces`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/interfaces) and [`src/bijux_canon_runtime/api`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/src/bijux_canon_runtime/api) for boundaries
 - [`tests`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/tests) and [`examples`](https://github.com/bijux/bijux-canon/tree/main/packages/bijux-canon-runtime/examples) for executable expectations and teaching material
 
-## Read This Next
+## Read this next
 
 - [Package guide](https://bijux.io/bijux-canon/06-bijux-canon-runtime/)
 - [Ownership boundary](https://bijux.io/bijux-canon/06-bijux-canon-runtime/foundation/ownership-boundary/)
@@ -208,7 +219,7 @@ boundary.
 - [Compatibility packages](https://bijux.io/bijux-canon/08-compat-packages/)
 - [Changelog](https://github.com/bijux/bijux-canon/blob/main/packages/bijux-canon-runtime/CHANGELOG.md)
 
-## Primary Entrypoint
+## Primary entrypoint
 
 - console script: `bijux-canon-runtime`
 - package history: [`CHANGELOG.md`](CHANGELOG.md)
