@@ -58,6 +58,18 @@ Every record needs a named consumer, accountable owner, environment, canonical
 version, validation result, deployment evidence, and rollback boundary. An
 unknown consumer is not a completed record.
 
+Repository automation currently validates the six bridge implementations and
+their publication contracts; it does not maintain a machine-readable inventory
+of external consumers or observe their deployments. A green repository suite
+therefore proves that a bridge remains coherent enough to retain or release. It
+is never, by itself, authorization to retire one.
+
+Consumer evidence also needs a declared observation window. Record when the
+deployment and recovery paths were last exercised, which immutable image,
+lockfile, and artifact digests were observed, and when the owner requires
+revalidation. Evidence that predates a supported deployment change is stale
+until that environment is exercised again.
+
 ## Package-Specific Gates
 
 - `bijux-canon` and `agentic-flows` share `bijux-canon-runtime` as owner.
@@ -100,6 +112,11 @@ The decision record contains:
 7. source, workspace, automation, and release surfaces to remove;
 8. historical artifact availability and documentation policy; and
 9. rollback and incident-response procedure after release cessation.
+
+The aggregate record must also state who approved the supported-consumer scope
+and how unknown consumers were handled. Excluding an environment is a support
+decision that requires explicit ownership and communication; silently omitting
+it from the inventory does not convert it into completed evidence.
 
 Published files may remain downloadable after new releases stop. State that
 separately from source removal and support cessation so “retired” is not

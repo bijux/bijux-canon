@@ -90,5 +90,26 @@ dependency allowlist is satisfied, but runtime owns the dependency boundary.
 Move a rule into `bijux-canon-dev` only when the governed fact is genuinely
 repository-wide or requires repository-level inventory.
 
+## Evidence Record
+
+A green exit status is meaningful only with the boundary it exercised. Retain
+enough context for another reviewer to reproduce the verdict:
+
+| Field | Why it is required |
+| --- | --- |
+| source revision and worktree state | identifies the exact inputs under test |
+| owning contract and selected gate | prevents a focused pass from being reported as repository-wide evidence |
+| complete command and environment identity | makes tool, option, and interpreter differences visible |
+| governed input paths | states which files and generated contracts were in scope |
+| result, duration, and refusal diagnostics | distinguishes success, failure, timeout, and skipped work |
+| retained artifact paths and hashes | binds logs, schemas, wheels, or reports used in review |
+| explicit exclusions | records slow, external, destructive, or unavailable evidence that was not collected |
+
+Evidence does not automatically compose upward. A source-layout test does not
+prove a wheel, a wheel import does not prove command behavior, and a repository
+suite cannot observe an external consumer deployment. Publication eligibility
+requires the set of gate records named by the changed contract, not the broadest
+single green command available.
+
 Continue with [security gates](security-gates.md) for vulnerability policy and
 [schema governance](schema-governance.md) for the OpenAPI evidence chain.

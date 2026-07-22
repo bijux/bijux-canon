@@ -72,9 +72,28 @@ Run the package-local bridge test for the package being changed. For example:
   --basetemp=artifacts/compat-validation/pytest-bijux-rag -q
 ```
 
-Package-local tests check exported names, selected nested-module identity,
-bridge-local module behavior, version forwarding, and canonical command
-dispatch without duplicating the canonical product suite.
+Package-local tests load the bridge and canonical source trees directly. They
+check selected root exports and representative nested-module identity; the two
+runtime bridges also check lazy root import behavior. The repository contract
+inspects the declared console target and `__main__` forwarding source. Neither
+layer executes an installed console script, so command dispatch remains a
+built-artifact test.
+
+## Automated Coverage Boundary
+
+The checked-in gates intentionally stop at the repository boundary:
+
+| Evidence layer | Automated here | Not established by that layer |
+| --- | --- | --- |
+| repository contract | workspace inventory, required bridge files, alias-helper source shape, entrypoint declaration, metadata and documentation routing | import behavior of a built wheel |
+| package-local unit test | selected root exports and representative source-tree alias identity | arbitrary private modules, installed metadata, resolver behavior, or console subprocess behavior |
+| release artifact configuration tests | declared wheel/source-archive inclusion and publication metadata policy | actual archive contents or co-installation with a real canonical wheel pair |
+| isolated install | performed by the release or migration operator | consumer configuration, stored-state compatibility, and deployed recovery |
+
+This boundary is deliberate: exhaustive aliasing cannot be inferred from one
+representative nested import, and source-path injection can conceal a missing
+wheel file or dependency. Record source-test success as bridge implementation
+evidence, not installation evidence.
 
 ## Build and Install Evidence
 
