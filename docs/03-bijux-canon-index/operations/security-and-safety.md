@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Security and Safety
@@ -85,3 +85,34 @@ and randomness declarations.
 Replay must refuse changed indexes, parameters, or non-replayable randomness
 when strict comparison is requested. Never weaken a replay refusal to make an
 operational dashboard green; retain the refusal as the accurate safety result.
+
+## Exercise the hostile path
+
+The security review should include observed denials and degraded backend
+behavior, not only configuration inspection:
+
+| Mutation or attack | Required behavior | Evidence to preserve |
+| --- | --- | --- |
+| unauthenticated caller reaches an allow-all bootstrap | enclosing service denies access before index authorization is treated as sufficient | principal, operation, outer decision, and package decision |
+| request exceeds `top_k`, vector, candidate, probe, time, or distance budget | refusal before unbounded work; no partial result presented as complete | requested/allowed budget, consumed work, and typed failure |
+| corpus or vector belongs to another tenant | no read, mutation, provenance disclosure, or cache reuse across the boundary | tenant/scope identities and denial record without sensitive payload |
+| backend URI contains credentials | provenance contains a usable redacted identity and no secret | raw source classification, redacted value, and leak check |
+| native index is truncated, forged, or dimensionally inconsistent | load/query refusal before authoritative result production | artifact fingerprint and failed schema/native invariant |
+| remote mutation times out after dispatch | explicit unknown outcome with idempotency, reconciliation, or refusal | operation identity, attempts, service response, and reconciliation result |
+| plugin raises, blocks, or returns malformed data | isolated typed plugin failure; no retry as a transient backend outage | plugin identity, call boundary, timeout/error, and rejected output class |
+| approximate backend returns low-signal neighbors | declared refusal or degraded result with witness/quality evidence | threshold, observed quality, candidate set, and decision |
+| replay points at changed state or parameters | blocking mismatch with original and observed identities | replay envelope, semantic diff, verdict, and reason |
+
+## Preserve an incident-grade retrieval record
+
+For a disputed or suspicious result, retain the validated request, caller and
+tenant scope, authorization and read-only decisions, budget, execution plan,
+adapter/plugin identity, redacted service identity, index and corpus
+fingerprints, randomness declaration, ranked result, provenance, retries,
+failure classifications, and replay comparison. Preserve native or remote
+snapshots only when authorization and retention policy allow it.
+
+Containment must not erase the evidence needed to explain the result. Disable
+the affected backend or plugin, prevent new mutations, protect the relevant
+run/artifact records from modification, and compare against an exact or known-
+good backend before deciding whether prior results remain admissible.

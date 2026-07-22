@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Backend Dependency Authority
@@ -55,6 +55,37 @@ flowchart LR
 Core dependency audits identify known advisories and resolution conflicts.
 Optional backend evidence additionally needs the environment in which the
 backend actually runs; an uninstalled extra cannot establish conformance.
+
+## Promote a backend dependency with evidence
+
+Evaluate an optional backend against the exact baseline in the same corpus and
+metric. Retain package and native-library versions, platform/CPU identity,
+backend configuration, capability probe, build seed and randomness contract,
+index fingerprint, request, ranked output, cost record, and failure results.
+
+| Backend class | Admission evidence | Refusal evidence |
+| --- | --- | --- |
+| exact in-memory | dtype/dimension/metric matrix, stable tie order, empty and duplicate vectors, exact baseline digest | non-finite values, unsupported metric, dimension mismatch, or unstable tie semantics |
+| HNSW | construction/query parameters, declared randomness, recall against exact, witness behavior, saved-state round trip | undeclared variance, recall below the declared threshold, corrupt native state, or incompatible parameters |
+| FAISS | native build identity, dtype/metric mapping, serialization round trip, exact/approximate classification | unavailable native capability, changed ordering outside the envelope, or unreadable persisted index |
+| Qdrant | server/client identity, collection schema, tenant boundary, consistency posture, retries, failure injection, and result provenance | redacted-but-untraceable endpoint, collection mismatch, partial mutation, ambiguous timeout, or unavailable service |
+| plugin backend | distribution and entry-point identity, declared capability, isolation posture, timeout/failure mapping, conformance suite | undeclared authority, contract translation, process escape assumption, or swallowed plugin failure |
+
+An adapter is admitted only for the capabilities actually observed. Success on
+query does not admit mutation, persistence, replay, tenancy, or approximation;
+each capability needs its own positive and refusal cases.
+
+## Compare dependency changes at three layers
+
+First compare contract behavior: validation, plans, typed failures, and public
+serialization. Then compare retrieval behavior: ranked identities, scores,
+ties, approximation, resource cost, and provenance. Finally compare operational
+behavior: native state, remote transactions, retries, interruption, and replay.
+A clean result at one layer cannot waive a difference at another.
+
+Store the declared tolerance or recall threshold before running the comparison.
+Changing it after observing a favorable result creates a new acceptance rule
+and requires a new evidence record.
 
 Use [test strategy](test-strategy.md) for adapter and replay gates and
 [risk register](risk-register.md) for the residual native and remote-service
