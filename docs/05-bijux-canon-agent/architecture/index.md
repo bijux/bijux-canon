@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-agent-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Architecture
@@ -83,6 +83,45 @@ one source.
 Replay validates and reconstructs stored outcomes. It cannot recreate an
 external provider's past environment, and the current CLI parity check covers
 only a documented subset of the full trace contract.
+
+## Control plane and evidence plane
+
+Agent execution has two coupled paths. The control plane decides what may run;
+the evidence plane records enough context to review that decision afterward.
+
+```mermaid
+flowchart TB
+    subgraph control["control plane"]
+        definition["pipeline definition"] --> lifecycle["lifecycle controller"]
+        lifecycle --> calls["bounded role calls"]
+        calls --> convergence["convergence / veto / termination"]
+        convergence --> finalization["result finalization"]
+    end
+    subgraph evidence["evidence plane"]
+        identity["input + configuration identity"] --> records["ordered call and transition records"]
+        records --> decision["decision + stop reason"]
+        decision --> trace["validated RunTrace"]
+    end
+    definition --> identity
+    lifecycle --> records
+    calls --> records
+    convergence --> decision
+    finalization --> trace
+```
+
+| Control decision | Evidence that must accompany it |
+| --- | --- |
+| admit a role | definition identity, role eligibility and configuration fingerprint |
+| advance lifecycle | prior state, next state, causal index and triggering outcome |
+| accept a role call | provider/model identity, input reference, disposition, usage and error state |
+| merge shards | membership, per-shard disposition, merge rule and validation result |
+| declare convergence or veto | criterion, compared states, source role and recorded decision |
+| finalize | terminal reason, incomplete work, epistemic verdict, trace completeness and result identity |
+
+A result projection is trustworthy only while these paths agree. A completed
+provider call without an authorized transition is not a valid pipeline event;
+a terminal trace without every attempted call is not complete; and a final
+artifact cannot repair either omission.
 
 ## Navigate the design
 

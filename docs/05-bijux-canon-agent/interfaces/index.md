@@ -78,6 +78,26 @@ closed files, record their shared execution identity, and publish them
 atomically at its own storage boundary. Missing trace or partial batch evidence
 must remain visible during that promotion.
 
+## Select a surface by the promise you need
+
+The interfaces do not expose one interchangeable agent operation. Choose the
+narrowest surface whose evidence contract matches the caller's promise:
+
+| Caller promise | Use | Additional responsibility |
+| --- | --- | --- |
+| invoke or compose typed roles and pipeline policies | Python modules | caller owns provider configuration, storage, and publication |
+| process local files and retain result plus trace output | CLI `run` | inspect per-file records; process success alone does not prove batch success |
+| reconstruct a stored outcome | CLI replay or trace readers | current CLI comparison covers only verdict, confidence, epistemic state and stop reason |
+| serve the documented offline extraction workflow | HTTP v1 | treat `config` as non-operative and do not infer provider selection |
+| publish a durable workflow record | host storage boundary around result and `RunTrace` | hash and atomically bind files because the package emits no run manifest |
+| preserve an older command or import | `bijux-agent` compatibility package | pin the canonical version and test caller-visible parity |
+
+For new service integrations, HTTP is intentionally narrower than the Python
+pipeline system. For unattended batch automation, the CLI is intentionally
+more informative than its exit status. For durable acceptance, neither
+transport removes the need to bind the request, result, trace, and published
+files to one execution identity.
+
 ## Contract index
 
 | Need | Guide |
