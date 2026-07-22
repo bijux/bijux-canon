@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Ownership Boundary
@@ -72,6 +72,60 @@ meaning.
 The owner of a defect is the layer whose invariant was false. A changed chunk
 caused by normalization belongs here; a correct chunk ranked incorrectly under
 a declared vector contract belongs in index.
+
+## Minimum preparation handoff
+
+A downstream package should receive one custody packet rather than unrelated
+text and vectors:
+
+| Handoff field | Why it is required |
+| --- | --- |
+| source identity and retained digest/reference | identifies the admitted input without claiming source reliability |
+| reader/parser and effective preparation configuration | explains how bytes or rows became fields and normalized text |
+| `RawDoc` and `CleanDoc` relationship | separates parsed representation from normalized representation |
+| ordered chunk identities, text, parent links and normalized offsets | makes segmentation and citation geometry auditable |
+| embedding specification and vector identity, when present | prevents vectors from being detached from model, dimension and metric assumptions |
+| admitted, rejected and partial-status inventory | prevents downstream success from hiding missing source material |
+| observations, safeguards and typed failures | exposes quality signals and effect-boundary behavior |
+| serialization/index format and artifact fingerprint | makes persisted material loadable or explicitly incompatible |
+
+```mermaid
+flowchart LR
+    source["source identity"]
+    config["reader + preparation config"]
+    prepared["RawDoc + CleanDoc"]
+    chunks["ordered chunks + normalized spans"]
+    optional["embedding spec + vectors"]
+    disposition["accepted + rejected inventory"]
+    packet["preparation handoff"]
+
+    source --> packet
+    config --> packet
+    prepared --> packet
+    chunks --> packet
+    optional --> packet
+    disposition --> packet
+```
+
+If a field is unavailable, the handoff must narrow its claim. For example,
+chunks without a source-to-normalized map may support normalized-text
+citations, but not original-byte coordinates.
+
+## Resolve boundary disputes by the first false record
+
+| Observed problem | Inspect first | Likely owner |
+| --- | --- | --- |
+| source row was decoded into the wrong field | reader output and `RawDoc` | ingest |
+| normalized text or chunk offsets differ under the same configuration | `CleanDoc`, rules and chunk geometry | ingest |
+| vector dimension/specification in the handoff is wrong | embedding output and `EmbeddingSpec` | ingest or its selected embedder boundary |
+| immutable prepared vectors are ranked differently by a declared backend | execution request, backend and result | index |
+| top-ranked bytes do not support the proposed statement | evidence span, support edge and findings | reason |
+| correct preparation output is omitted from a workflow merge | shard/merge lineage and agent trace | agent |
+| prepared artifact is valid but disallowed for the tenant or flow | manifest, policy and runtime verdict | runtime |
+
+Begin at the earliest record whose invariant is false. Later packages retain
+the failure and its identity; they do not become the owner merely because they
+detected it.
 
 ## Coordinate Spaces Are Part Of Custody
 
