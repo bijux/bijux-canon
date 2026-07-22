@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Governed Run Acceptance
@@ -39,6 +39,44 @@ flowchart LR
 | resume or recovery | checkpoint, reconstructed indices, retained effects, interruption, and unknown-state evidence | recovery repeats an effect without idempotency or loses causal history |
 | replay | original envelope, dataset, plan, policy, environment, entropy, semantic diff, verdict, and reason | changed authority or unacceptable drift passes |
 | HTTP boundary | schema and observed health/readiness/`501` behavior | schema presence is presented as implemented run or replay |
+
+## Authority claims form a lattice
+
+A runtime record may support one state without supporting the stronger state
+to its right. Reviewers must name the highest state actually established:
+
+| Established state | What the evidence proves | What it does not prove |
+| --- | --- | --- |
+| resolved or planned | manifest, dataset, dependencies, policy, and mode formed an admissible plan | any step ran or any effect occurred |
+| executed | recorded steps produced effects, outcomes, and causal events | the trace finalized or policy accepted the result |
+| finalized | the event history closed and the store retained its terminal state | verification passed or the result is certifiable |
+| accepted | immutable findings were arbitrated under the named policy | factual truth, universal safety, or acceptance under another policy |
+| non-certifiable | required evidence or checks were absent, failed, or insufficient | that every execution step failed |
+| resumable | the checkpoint, authority, indices, and effect state permit compatible continuation | that continuation is complete or side effects are reversible |
+| replay acceptable | the observed comparison satisfies the original replay envelope | bitwise equality unless exact replay was required and demonstrated |
+
+No later state may be inferred from an earlier one. In particular, a zero exit
+from plan mode, a finalized DuckDB row, and an acceptable bounded replay carry
+different authority.
+
+## Release evidence packet
+
+For each governed-run acceptance decision, retain:
+
+- the exact manifest, normalized policy, dataset descriptor, resolved plan,
+  selected mode, resources, and authority fingerprints;
+- effects, receipts, idempotency identities, unknown outcomes, events, entropy,
+  tool calls, artifacts, evidence, and claims in causal order;
+- immutable verification findings, arbitration, certifiability, checkpoints,
+  store identity, migrations, and the finalized trace; and
+- the replay envelope, comparison inputs, semantic diff, verdict, and reason.
+
+The packet must be sufficient to derive the terminal state without trusting a
+summary field or database filename. Package-local seam tests establish runtime
+behavior but do not establish installed-package live composition. Until the
+canonical adapters described in [known limitations](known-limitations.md) have
+an installed-package execution test, release evidence must state that boundary
+and must not claim end-to-end live composition.
 
 ## Custody boundary
 
