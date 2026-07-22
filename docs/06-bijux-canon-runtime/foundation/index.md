@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Foundation
@@ -18,6 +18,7 @@ persists governed state, and evaluates replay under the original policy.
 
 ```mermaid
 flowchart LR
+    manifest["manifest + dataset + policy"]
     ingest["prepared data"]
     index["retrieval evidence"]
     reason["claims + verification"]
@@ -25,16 +26,35 @@ flowchart LR
     runtime["authority + policy + persistence"]
     verdict["accepted / rejected / non-certifiable"]
 
-    ingest --> runtime
-    index --> runtime
-    reason --> runtime
-    agent --> runtime --> verdict
+    manifest --> runtime --> verdict
+    ingest -. retrieval adapter required .-> runtime
+    index -. enforcement adapter required .-> runtime
+    reason -. reasoning adapter required .-> runtime
+    agent -. agent adapter required .-> runtime
 ```
 
 Runtime governs lower-layer results; it does not recreate their semantics.
 Source normalization remains with ingest, vector execution with index, claim
 grounding with reason, and role orchestration with agent. A lower-layer success
 becomes runtime evidence, not automatic authorization.
+
+The dashed edges are unresolved live integration seams. They describe the
+lower authority whose evidence runtime intends to govern; they do not establish
+that installing the five packages creates an executable stack.
+
+## Current composition status
+
+| Runtime step | Callable requested | Canonical package status |
+| --- | --- | --- |
+| retrieval | `bijux_canon_ingest.retrieve` | absent at the root; implemented ingest retrieval uses a different path-based contract |
+| vector enforcement | `bijux_canon_index.enforce_contract` | absent; index owns richer request, capability, artifact and refusal semantics |
+| reasoning | `bijux_canon_reason.reason` | absent; native claim, support, trace and verification models require mapping |
+| agent execution | `bijux_canon_agent.run` | absent; native execution returns `PipelineResult` with `RunTrace` |
+
+Plan, dry-run, observe, verification, persistence, recovery, and replay logic
+remain independently testable runtime capabilities. A live flow that reaches
+these loaders requires explicit domain-aware adapters and installed-package
+tests proving that identities and typed failures survive each conversion.
 
 ## Manifest decisions
 

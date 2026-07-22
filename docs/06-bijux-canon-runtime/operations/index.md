@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Operations
@@ -30,6 +30,22 @@ flowchart LR
     execute -. interrupted .-> inspect
     replay -. unacceptable .-> plan
 ```
+
+## Choose a mode by demonstrated authority
+
+| Mode or surface | What it demonstrates | Current boundary |
+| --- | --- | --- |
+| `plan` | manifest, dataset, dependency, policy and environment resolve to an immutable plan | allocates no run ID, trace or lower-package execution |
+| `dry-run` | runtime preparation and simulated execution records can be inspected | does not establish provider effects or callable canonical adapters |
+| `observe` | supplied observations can be captured and evaluated without normal execution authority | cannot recover events the host did not provide |
+| `live` | runtime attempts authorized effects and durable recording | canonical lower-package root callables are currently missing; an explicit host adapter is required |
+| `unsafe` | reduced-guarantee execution is explicitly requested | CLI cannot currently supply its required verification policy; use the governed Python surface |
+| HTTP health/readiness | service process responds and the configured DuckDB store can be opened | run and replay routes validate contracts then return `501 Not Implemented` |
+
+Start with the strongest demonstrated surface that answers the operational
+question. Do not use dry-run success as a live readiness result, storage
+readiness as executor readiness, or a versioned HTTP schema as evidence of
+remote run availability.
 
 ## Operational rules
 
