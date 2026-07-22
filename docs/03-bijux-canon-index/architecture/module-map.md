@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Module Map
@@ -81,6 +81,47 @@ A non-deterministic run is not made deterministic by recording its output.
 Replayability depends on the declared randomness, backend and index identity,
 parameters, and witness policy. Strict mode refuses unsupported combinations;
 bounded and exploratory modes permit only the loss posture they declare.
+
+## Walk one query through the architecture
+
+```mermaid
+sequenceDiagram
+    participant Edge as interfaces/api
+    participant App as application
+    participant Domain as domain
+    participant Registry as infra registry
+    participant Runner as exact/ANN runner
+    participant Evidence as provenance/run store
+
+    Edge->>App: validated request
+    App->>Domain: materialize artifact + resolve plan
+    Domain-->>App: immutable identities or refusal
+    App->>Registry: required capabilities
+    Registry-->>App: eligible backend or refusal
+    App->>Runner: artifact + plan + budget
+    Runner-->>App: ordered result + observed cost or typed failure
+    App->>Evidence: result + backend + randomness + lineage
+    Evidence-->>Edge: explainable result/replay record
+```
+
+Backend selection occurs only after request, artifact and capability invariants
+are known. The runner does not decide whether its own behavior satisfies the
+declared contract, and the interface does not translate a refusal into an
+empty successful neighbor list.
+
+## Dependency direction
+
+| Layer | May know | Must not own |
+| --- | --- | --- |
+| `core` | stable primitives, identities, contracts and typed errors | backend SDKs, HTTP/CLI translation or mutable stores |
+| `domain` | core vocabulary and backend-independent execution semantics | provider credentials, transport behavior or interface defaults |
+| `application` | use-case orchestration across domain protocols and supplied implementations | hidden scoring/capability policy outside domain records |
+| `infra` | domain protocols plus concrete backends, runners, plugins and stores | permission to weaken the request, artifact, budget or provenance contract |
+| `interfaces` / `api.v1` | application entry points, DTOs and error mapping | ranking semantics or backend-specific workarounds |
+
+Shared behavior across two backends belongs in domain or conformance contracts.
+An adapter remains responsible for native translation and failure detail, not
+for inventing a package-wide execution rule.
 
 ## Package boundaries
 

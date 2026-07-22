@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Code Navigation
@@ -60,6 +60,40 @@ Paths are relative to
    `infra/run_store.py`.
 6. Confirm the focused unit and conformance tests; add golden replay evidence
    when serialized identity changes.
+
+## Diagnose from the governed record
+
+| Symptom | Inspect first | Follow into | Evidence that resolves ownership |
+| --- | --- | --- | --- |
+| request is unexpectedly refused | normalized request, contract, mode and budget | domain validation then interface translation | violated invariant and stable typed refusal |
+| artifact fingerprint changed | source/vector/configuration identities and build plan | `domain/artifact/` then materialization/storage | field-level fingerprint diff and migration/refusal result |
+| backend is not selected | capability request and exclusions | registry/plugin discovery and adapter capability report | eligible/ineligible decision per required capability |
+| exact ranks or ties differ | metric inputs, normalization and stable ordering rule | `domain/algorithms/` then exact runner | cross-backend exact fixture with ordered IDs/scores |
+| ANN quality or result varies | non-determinism profile, parameters, seed/sources and candidate path | `domain/non_determinism/` then ANN adapter | exact baseline, quality threshold, witness and replay diff |
+| budget appears ignored | requested limit and observed cost record | execution plan, runner accounting and partial/refusal path | consumed dimensions and terminal disposition |
+| explanation cannot join a result | result/artifact/backend/run identities | provenance construction and run finalization | complete query-to-vector-to-rank lineage |
+| persisted run is incomplete or corrupt | run state and three-file identities | `infra/run_store.py`, atomic write and load validation | precise incomplete/corrupt refusal without authoritative load |
+| replay passes changed state | original envelope and observed fingerprints | provenance replay and drift semantics | blocking semantic diff, verdict and reason |
+| CLI and HTTP differ | shared application result and boundary DTOs | render/error mapping at each interface | equivalent request yields equivalent typed outcome |
+
+Begin with the retained request, artifact, result or replay record. Adapter logs
+are supporting evidence; they cannot replace the package-owned identity that
+locates the first broken boundary.
+
+## Place a change without leaking backend policy
+
+| Desired change | Primary location | Evidence expansion |
+| --- | --- | --- |
+| stable execution primitive or ABI field | `core` | identity, serialization, compatibility and public DTO coverage |
+| request, artifact, provenance, drift or ANN semantic | matching `domain/` area | unit laws plus cross-implementation conformance |
+| complete materialize/execute/replay use case | `application/orchestration/` | domain evidence and interface path as applicable |
+| backend, embedder, runner or store | `infra/` | capability declaration, conformance, failure injection and migrations |
+| plugin entry point | `infra/plugins/` | discovery, duplicate/conflict, isolation and malformed implementation cases |
+| command or HTTP operation | `interfaces/` or `api/v1/` | shared application behavior, schema, statuses and typed errors |
+
+If a fix is duplicated in multiple adapters, identify the common invariant and
+move it to the domain contract. If only one SDK needs translation, keep it in
+that adapter and preserve the shared result/error shape.
 
 ## Compatibility landmarks
 
