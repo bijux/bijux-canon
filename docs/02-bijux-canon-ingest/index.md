@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Ingest Handbook
@@ -46,6 +46,40 @@ The package-local index and extractive-answer features support an ingest-owned
 workflow. `bijux-canon-index` remains the owner of declared vector execution,
 backend capability negotiation, provenance-rich execution artifacts, and
 replay comparison across vector backends.
+
+## Start With One Document
+
+The dependency-light Python root exposes the smallest complete preparation
+path. It accepts a typed source, applies canonical cleaning, validates chunk
+geometry, and returns chunks with parent identity and offsets:
+
+```python
+from bijux_canon_ingest import RagEnv, RawDoc, chunk_doc, clean_doc
+
+source = RawDoc(
+    doc_id="policy-17",
+    title="Retention policy",
+    abstract="  Keep signed run records for seven years.  ",
+    categories="governance",
+)
+prepared = clean_doc(source)
+chunks = chunk_doc(prepared, RagEnv(chunk_size=48, overlap=8))
+
+for chunk in chunks:
+    print(chunk.doc_id, chunk.start, chunk.end, chunk.text)
+```
+
+For this input, the single chunk retains `policy-17`, offsets `0..40`, and the
+normalized text `keep signed run records for seven years.`. That result proves
+the behavior of this local transformation under the supplied configuration.
+It does not prove source accuracy, durable persistence, embedding identity, or
+runtime consumption.
+
+When the source is a corpus rather than one object, use the
+[configured CLI pipeline](interfaces/entrypoints-and-examples.md#cli-prepare-a-configured-corpus)
+and retain the JSONL output together with the exact configuration and source
+identity. The transition from an in-memory chunk to a reviewable corpus is an
+artifact-custody decision, not merely a change of entrypoint.
 
 ## Follow One Prepared Document
 

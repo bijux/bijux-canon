@@ -4,7 +4,7 @@ audience: mixed
 type: index
 status: canonical
 owner: bijux-canon-index-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Index Handbook
@@ -59,6 +59,39 @@ Invoke the application as `python -m bijux_canon_index.interfaces.cli.app`, use
 the versioned HTTP contract, or integrate through the documented application
 and domain modules. The `bijux-vex` executable is a compatibility surface, not
 the canonical command name.
+
+## Start With Backend Capability Evidence
+
+Inspect the selected execution environment before submitting a vector:
+
+```bash
+python -m bijux_canon_index.interfaces.cli.app \
+  --format json \
+  capabilities
+```
+
+The response is operational evidence, not a marketing inventory. Read these
+fields before constructing an `ExecutionRequest`:
+
+| Response field | Decision it constrains |
+| --- | --- |
+| `backend` and `storage_backends` | which state implementation was selected and whether persistence is available |
+| `contracts` and `execution_modes` | which exact, bounded, or exploratory requests can be admitted |
+| `metrics` and `max_vector_size` | which vector shape and distance meaning are valid |
+| `vector_stores` | which adapters are available now, with consistency and experimental status |
+| `nd` | which nondeterministic runner is active and whether a fallback changed the execution posture |
+| `plugins` | which external providers or runners were actually discovered |
+
+An adapter listed as unavailable cannot satisfy a request. An adapter marked
+experimental does not become frozen because capability discovery succeeded.
+The default development environment may report a reference ANN runner when
+`hnswlib` is absent; preserve that runner identity with any resulting artifact
+instead of claiming HNSW execution from the requested profile alone.
+
+Continue with a
+[strict deterministic request](interfaces/entrypoints-and-examples.md#execute-a-deterministic-request)
+only after the capability record supports its metric, vector size, contract,
+mode, and storage requirements.
 
 ## Follow One Vector Execution
 
