@@ -148,4 +148,4 @@ permanent API. Depend on documented canonical exports wherever possible.
   for the complete preserved-identity boundary
 - [Migration guidance](https://bijux.io/bijux-canon/08-compat-packages/migration/migration-guidance/)
   for consumer inventory and validation
-- [Package changelog](CHANGELOG.md) for release history
+- [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-canon/CHANGELOG.md) for release history

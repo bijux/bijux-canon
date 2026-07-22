@@ -152,4 +152,4 @@ historical artifact layouts.
   for consumer inventory and acceptance
 - [Retired repository](https://github.com/bijux/bijux-vex) for historical
   context
-- [Package changelog](CHANGELOG.md) for release history
+- [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-vex/CHANGELOG.md) for release history

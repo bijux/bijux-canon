@@ -146,4 +146,4 @@ API by the alias mechanism.
   for a complete consumer inventory
 - [Retired repository](https://github.com/bijux/bijux-agent) for historical
   context
-- [Package changelog](CHANGELOG.md) for release history
+- [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-agent/CHANGELOG.md) for release history

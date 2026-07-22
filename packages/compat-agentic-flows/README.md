@@ -150,4 +150,4 @@ historical context, not the current implementation authority.
   for consumer inventory and acceptance
 - [Retired repository](https://github.com/bijux/agentic-flows) for historical
   context
-- [Package changelog](CHANGELOG.md) for release history
+- [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-agentic-flows/CHANGELOG.md) for release history

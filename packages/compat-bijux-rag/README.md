@@ -145,4 +145,4 @@ old artifact representation part of the canonical API.
   for consumer inventory and acceptance
 - [Retired repository](https://github.com/bijux/bijux-rag) for historical
   context
-- [Package changelog](CHANGELOG.md) for release history
+- [Package changelog](https://github.com/bijux/bijux-canon/blob/main/packages/compat-bijux-rag/CHANGELOG.md) for release history

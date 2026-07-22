@@ -47,6 +47,7 @@ class CompatibilityPackageExpectation(TypedDict):
     distribution: str
     canonical: str
     script: str
+    semantics_heading: str
     retired_repo: str | None
 
 
@@ -60,36 +61,42 @@ COMPATIBILITY_PACKAGES: dict[str, CompatibilityPackageExpectation] = {
         "distribution": "bijux-canon",
         "canonical": "bijux-canon-runtime",
         "script": "bijux-canon",
+        "semantics_heading": "## Runtime Semantics",
         "retired_repo": None,
     },
     "compat-agentic-flows": {
         "distribution": "agentic-flows",
         "canonical": "bijux-canon-runtime",
         "script": "agentic-flows",
+        "semantics_heading": "## Runtime Semantics",
         "retired_repo": "https://github.com/bijux/agentic-flows",
     },
     "compat-bijux-agent": {
         "distribution": "bijux-agent",
         "canonical": "bijux-canon-agent",
         "script": "bijux-agent",
+        "semantics_heading": "## Agent Semantics",
         "retired_repo": "https://github.com/bijux/bijux-agent",
     },
     "compat-bijux-rag": {
         "distribution": "bijux-rag",
         "canonical": "bijux-canon-ingest",
         "script": "bijux-rag",
+        "semantics_heading": "## Preparation Semantics",
         "retired_repo": "https://github.com/bijux/bijux-rag",
     },
     "compat-bijux-rar": {
         "distribution": "bijux-rar",
         "canonical": "bijux-canon-reason",
         "script": "bijux-rar",
+        "semantics_heading": "## Reasoning Semantics",
         "retired_repo": "https://github.com/bijux/bijux-rar",
     },
     "compat-bijux-vex": {
         "distribution": "bijux-vex",
         "canonical": "bijux-canon-index",
         "script": "bijux-vex",
+        "semantics_heading": "## Index Semantics",
         "retired_repo": "https://github.com/bijux/bijux-vex",
     },
 }
@@ -444,9 +451,9 @@ def test_public_release_package_readmes_link_changelog_and_entrypoint() -> None:
         if package_name in COMPATIBILITY_PACKAGES:
             if "## Install" not in readme:
                 missing.append(f"{package_name}: missing install section")
-            if "## Compatibility Contract" not in readme:
+            if "## Identity Map" not in readme or "## Verify A Consumer" not in readme:
                 missing.append(
-                    f"{package_name}: missing compatibility contract section"
+                    f"{package_name}: missing identity map or consumer verification section"
                 )
         elif "## Primary entrypoint" not in readme:
             missing.append(f"{package_name}: missing 'Primary entrypoint' section")
@@ -529,7 +536,9 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
 
         distribution = expectation["distribution"]
         canonical = expectation["canonical"]
+        canonical_import = canonical.replace("-", "_")
         script = expectation["script"]
+        semantics_heading = expectation["semantics_heading"]
         retired_repo = expectation["retired_repo"]
 
         description = str(project.get("description", ""))
@@ -549,31 +558,31 @@ def test_compatibility_packages_preserve_legacy_publication_contract() -> None:
             failures.append(
                 f"{package_name}: description should explain legacy compatibility"
             )
-        if f"Alias distribution for `{canonical}`." not in readme:
+        if f"](../{canonical}/README.md)" not in readme:
             failures.append(
-                f"{package_name}: README should state the alias distribution owner"
+                f"{package_name}: README should link its canonical package owner"
             )
         if "## Install" not in readme:
             failures.append(f"{package_name}: README should include an install section")
-        if "## What It Does" not in readme:
+        if "## Identity Map" not in readme:
             failures.append(
-                f"{package_name}: README should explain the compatibility surface"
+                f"{package_name}: README should publish the preserved identity map"
             )
-        if "## Compatibility Contract" not in readme:
+        if semantics_heading not in readme:
             failures.append(
-                f"{package_name}: README should include a compatibility contract"
+                f"{package_name}: README should explain canonical package semantics"
             )
         if f"{script} --help" not in readme:
             failures.append(
                 f"{package_name}: README should document the legacy console command"
             )
-        if "re-exports the public Python API" not in readme:
+        if canonical_import not in readme:
             failures.append(
-                f"{package_name}: README should explain canonical API re-exports"
+                f"{package_name}: README should identify the canonical import root"
             )
-        if "preserving the executable name" not in readme:
+        if "## Verify A Consumer" not in readme:
             failures.append(
-                f"{package_name}: README should describe executable-name continuity"
+                f"{package_name}: README should define consumer verification"
             )
         if "## Read Next" not in readme:
             failures.append(

@@ -76,6 +76,26 @@ runtime-alias layout, exact dependency metadata, console targets, README
 routing, and package contents. Those checks establish the tested surfaces;
 they do not promise continuity for arbitrary undocumented deep imports.
 
+## Locate A Bridge Failure
+
+The consumer-visible name identifies the bridge; the failed decision identifies
+the owner:
+
+| Observation | Inspect first | Durable fix belongs in |
+| --- | --- | --- |
+| bridge wheel resolves the wrong canonical version | built metadata and custom metadata hook | compatibility package build contract |
+| preserved root or nested import resolves a different object | facade, alias finder, and representative identity tests | compatibility package alias machinery |
+| preserved command is absent | bridge project scripts and wheel metadata | compatibility package entrypoint declaration |
+| preserved command runs but rejects arguments or emits a different result | canonical CLI and bridge delegation target | canonical package unless delegation itself is wrong |
+| product result, artifact, or schema is incorrect through both names | canonical implementation and contract tests | canonical package |
+| historical artifact cannot be read after a name-only migration | consumer inventory and canonical artifact contract | owning product boundary or an explicit migration tool |
+
+Do not add translation logic to make a bridge conceal a canonical defect. A
+bridge is trustworthy when it preserves identity and exposes canonical behavior
+unchanged—including typed failures and command exit status. If compatibility
+requires transforming data or policy, that transformation needs an explicit
+owner and contract outside the alias package.
+
 ## Choose the Right Route
 
 | Need | Continue with |
