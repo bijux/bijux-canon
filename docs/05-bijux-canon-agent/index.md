@@ -78,6 +78,21 @@ which provider and model were invoked, with which policy and observed result.
 It cannot make a remote model deterministic or prove the provider honored an
 unstated guarantee.
 
+### Runtime handoff status
+
+Runtime's live executor looks for `bijux_canon_agent.run` with a runtime-shaped
+invocation and list-of-artifacts response. The canonical package root exposes
+only `API_VERSION`, while agent's package-native workflow uses validated
+pipeline definitions and returns a `PipelineResult` backed by a `RunTrace`.
+Package installation and release alignment do not bridge those contracts.
+
+A runtime-owned adapter must make pipeline selection, evidence conversion,
+failure handling, canonical content serialization, artifact ancestry, and
+trace linkage explicit. Evidence for that handoff is an installed-package
+execution test that validates both the runtime artifact records and their
+connection to the agent trace. A root-level callable or import check alone
+would not prove the workflow remained auditable.
+
 ## Separate Output, Trace, And Acceptance
 
 Three records answer three different questions:
@@ -103,6 +118,7 @@ copying only the final artifact.
 | a veto affected the outcome | veto record, source role, target, finalization decision | absence from a summary is not absence from the trace |
 | replay reconstructed history | versioned trace, schema validation, causal ordering | reconstruction does not re-execute provider behavior |
 | telemetry is complete | call and lifecycle coverage plus trace-complete status | cannot include events the host or provider never exposed |
+| runtime consumed an agent result | installed adapter execution, artifact projection, trace and parent identities | aligned package versions or successful imports |
 
 The [entrypoint examples](interfaces/entrypoints-and-examples.md) show the
 Python, CLI, replay, and bounded HTTP contracts. The v1 HTTP surface supports

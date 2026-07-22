@@ -161,6 +161,35 @@ Downstream consumers should preserve the run manifest and exact support
 references. Rebuilding a citation from display text loses the byte-level
 contract that verification and replay depend on.
 
+## Runtime Reasoning Adapter Status
+
+The live runtime integration currently asks the `bijux_canon_reason` package
+root for a callable with this contract:
+
+```python
+reason(agent_outputs=artifacts, evidence=retrieved_evidence, seed=seed)
+```
+
+That callable is not exported. The package-native contract instead produces
+reason-owned plans, claims, support references, traces, and verification
+reports. The runtime executor requires its adapter to return the runtime-owned
+`ReasoningBundle` type exactly. Installing both packages therefore proves
+dependency availability, not an executable reasoning handoff.
+
+A durable adapter belongs in runtime or in a separately owned integration
+boundary. Putting a runtime-shaped wrapper in this package would reverse the
+existing dependency direction: runtime already depends on reason. More
+importantly, an adapter must map claim identity, exact evidence support,
+verification status, reasoning steps, producer identity, and trace or manifest
+custody. Returning only generated statements would erase the evidence contract
+this package exists to protect.
+
+Treat live composition as established only when an installed-package test
+resolves the callable, executes a representative handoff, returns the required
+runtime type, and demonstrates that claim and evidence identities remain
+linked across the boundary. Package CLI, HTTP, and Python workflows remain
+independently usable without that runtime adapter.
+
 ## Verification And Failure Semantics
 
 - trace and plan validation reject invalid topology and inconsistent event

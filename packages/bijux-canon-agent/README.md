@@ -164,6 +164,34 @@ Provider adapters remain edge integrations. Their presence does not authorize
 a provider, broaden the v1 HTTP contract, or transfer provider nondeterminism
 into the deterministic orchestration core.
 
+## Runtime Agent Adapter Status
+
+The live runtime integration currently asks the `bijux_canon_agent` package
+root for a `run` callable accepting an agent identifier, deterministic seed,
+input fingerprint, declared output types, and retrieved evidence. It expects a
+list of dictionaries containing `artifact_id`, `artifact_type`, and `content`,
+with optional parent-artifact identifiers.
+
+The package root deliberately exports only `API_VERSION`; it does not export
+`run`. The package-native execution surface accepts a validated pipeline
+definition, configuration, and workflow inputs, and preserves the outcome as a
+`PipelineResult` with a `RunTrace`. Installing agent beside runtime therefore
+does not make this live adapter callable.
+
+The durable adapter belongs at the runtime integration boundary. It must
+define how a runtime agent invocation selects a pipeline, how runtime evidence
+becomes traceable workflow input, and how pipeline results, failure artifacts,
+trace identity, content serialization, and parent relationships become
+runtime artifacts. A broad package-root shortcut that returns untyped content
+would bypass those decisions; runtime currently derives content hashes from
+`str(content)`, so canonical serialization must also be explicit.
+
+Live composition requires an installed-package test that resolves the adapter,
+executes it with representative evidence, validates the runtime artifact
+projection, and binds every projected artifact to its agent trace. The agent
+CLI, HTTP, and Python pipeline remain package-local supported surfaces in the
+meantime.
+
 ## Trace And Failure Guarantees
 
 - traces carry schema version, run fingerprint, ordered entries, and field

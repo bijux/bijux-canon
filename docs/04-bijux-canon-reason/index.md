@@ -92,6 +92,21 @@ capabilities, and replay invariants. A passing report means those checks passed
 over the retained record. It does not certify that every relevant source was
 retrieved or that a scientific conclusion is true.
 
+### Runtime handoff status
+
+Runtime's live executor looks for `bijux_canon_reason.reason` and requires that
+call to return a runtime-owned `ReasoningBundle`. The canonical package root
+does not export that callable, and reason's native models do not silently
+become runtime models when both distributions are installed. Package-local
+reasoning is supported; direct live consumption by runtime is not currently an
+established integration path.
+
+The adapter should be owned above reason's domain boundary so that dependency
+direction remains acyclic. Its evidence must cover more than import success:
+it must execute installed packages and show how reason-owned claim, support,
+trace, verification, and manifest identities become runtime bundle, claim,
+step, evidence, and producer identities without losing custody.
+
 ## From Candidate To Governed Claim
 
 Evidence changes meaning as it crosses package boundaries. Preserve each
@@ -104,6 +119,12 @@ decision instead of collapsing the chain into a citation list:
 | `EvidenceRef` and `SupportRef` | reason can account for the exact bytes cited | that the inference from those bytes is valid |
 | typed claim and verification findings | reason can account for claim status under registered checks | that the surrounding workflow followed policy |
 | agent trace and runtime run record | orchestration and runtime can account for process and acceptance | that the claim is scientifically true beyond its evidence |
+
+The final row describes an intended cross-package custody chain. It is not a
+claim that the current runtime loader can already consume the canonical reason
+package. Until the adapter test described above exists, reviewers should keep
+the package-native reasoning record as the authoritative evidence and should
+not infer a runtime bundle from installation metadata.
 
 A verifier therefore evaluates a retained claim record, not an answer in the
 abstract. When an upstream identity or exact support span is absent, reason
