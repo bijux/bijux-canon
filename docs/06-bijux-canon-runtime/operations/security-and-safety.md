@@ -4,7 +4,7 @@ audience: mixed
 type: how-to
 status: canonical
 owner: bijux-canon-runtime-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Security and Safety
@@ -68,6 +68,57 @@ without executing a flow. Keep them disabled or behind a trusted gateway. If
 they become executable, that gateway must enforce authenticated identity,
 tenant authorization, TLS, body and concurrency limits, deadlines, and audit
 correlation before requests reach the runtime.
+
+## Separate deployment authorities
+
+The runtime does not supply these isolation layers. A defensible host
+arrangement places them around the process:
+
+```mermaid
+flowchart LR
+    caller["authenticated caller"]
+    gateway["TLS + authorization + limits"]
+    worker["trust-domain worker"]
+    egress["approved integrations"]
+    content["tenant-authorized content store"]
+    db["restricted DuckDB execution store"]
+    audit["protected audit export"]
+
+    caller --> gateway --> worker
+    worker --> egress
+    worker --> content
+    worker --> db
+    db --> audit
+    content --> audit
+```
+
+Use separate worker identities and storage roots when tenants do not trust one
+another. Permit egress only to the integrations named by the approved flow,
+and keep payload storage separate from DuckDB metadata while preserving their
+hash-linked custody. Backup, encryption, retention, deletion and access review
+must cover both stores; protecting only the database leaves referenced
+artifact content exposed or unrecoverable.
+
+## Refuse authority loss explicitly
+
+| Lost or conflicting authority | Required disposition |
+| --- | --- |
+| caller selects another tenant or dataset path | deny before read, adapter resolution, artifact lookup or store mutation |
+| manifest, dataset, plan or policy fingerprint changes after admission | refuse execution/resume and require a newly resolved authority record |
+| integration callable is absent, malformed or version-incompatible | composition failure retaining package and loader identity; no seam-injected substitute |
+| declared entropy is absent, exhausted or exceeded | strict refusal with consumed budget and source identity |
+| external effect may have completed before checkpoint persistence | unknown outcome; reconcile through idempotency, deduplication, compensation or refusal |
+| writer lock is live, stale status is ambiguous, or store is corrupt | do not break/repair automatically; isolate and inspect before reopening authority |
+| artifact metadata exists but protected payload bytes are missing | availability failure; a digest does not reconstruct content |
+| required verification is missing, failed or contradictory | non-certifiable or rejected decision under the retained policy |
+| replay dataset, environment, policy or acceptability envelope differs | blocking semantic diff with verdict and reason |
+| HTTP run/replay route returns `501` | unsupported operation, never synthesized success or an executed run record |
+
+For a suspected authority breach, stop new effects, preserve the manifest,
+resolved plan, policy, environment, store, payload references, receipts,
+events, checkpoints and logs under restricted access, and record the last
+known causal event. Restore from copies; do not edit the authoritative DuckDB
+file or replay envelope to make a later comparison pass.
 
 ## Meaning of deterministic
 
