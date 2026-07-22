@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Security and Safety
@@ -76,6 +76,38 @@ not as a durable or globally unique authorization token.
 Avoid returning raw source text, embeddings, or exception causes unless the
 caller is authorized to see them. Citation spans can disclose source content
 even when the final answer appears harmless.
+
+## Abuse cases and response evidence
+
+Exercise the failure path before accepting a deployment that handles
+untrusted material:
+
+| Abuse case | Required control | Evidence to retain |
+| --- | --- | --- |
+| oversized document or decompression/record expansion | byte, record, chunk, elapsed-time, and in-flight bounds before expensive stages | limit, observed size, rejected identity, and typed failure |
+| crafted rule expression | AST whitelist and refusal before evaluation | expression digest, rejected node/operator, and stable error class |
+| index file with invalid dimensions or forged metadata | schema, backend, embedding specification, fingerprint, and size validation before allocation/use | artifact identity and exact failed invariant |
+| cache collision across model or configuration | namespace includes contract, model, parameters, and version identity | cache key inputs and hit/miss decision without source text |
+| model download or cache substitution | controlled source, pinned asset identity, restricted cache, and offline policy where required | package, model, asset digest, source, and load mode |
+| caller-selected output path crosses a trust domain | process isolation, approved root, ownership, and least-privilege permissions | resolved destination and authorization decision |
+| retrieval or HTTP response exposes source bytes | caller authorization and field-level disclosure policy | caller/scope decision and redacted response metadata |
+| repeated transient adapter failures exhaust resources | bounded retry, concurrency limit, breaker state, and final typed failure | attempt count, timings, classification, and breaker transition |
+
+Do not discard rejected inputs from the audit merely because no output was
+produced. Their stable identity, limit decision, and failure class demonstrate
+that the boundary refused them for the intended reason. Store sensitive source
+bytes only when policy requires them; a digest and protected quarantine
+reference are preferable for routine rejection records.
+
+## Deployment acceptance
+
+Before enabling a file, model, cache, or HTTP effect boundary, verify that the
+service identity can read only approved inputs and write only its artifact and
+cache roots; network egress reaches only approved model/services; secrets stay
+outside configuration and traces; logs are disclosure-reviewed; and recovery
+cannot publish a partial index as complete. Run one denial case for each
+granted boundary and confirm that downstream packages never receive an
+artifact from the refused attempt.
 
 ## Safe operating posture
 

@@ -4,7 +4,7 @@ audience: mixed
 type: explanation
 status: canonical
 owner: bijux-canon-ingest-docs
-last_reviewed: 2026-07-21
+last_reviewed: 2026-07-22
 ---
 
 # Dependency Authority
@@ -58,6 +58,37 @@ Record that identity with outputs used for comparison or replay.
 Dependency locks and audit reports establish resolved versions and known
 advisories. They do not establish semantic compatibility. The corresponding
 domain, persistence, interface, or evaluation evidence closes that gap.
+
+## Admit a dependency change
+
+Use the same representative corpus before and after resolution. The review
+record should contain the old and new lock identity, Python and platform
+identity, enabled extras, configuration, source hashes, output artifacts,
+failures, and a classified comparison. Compare at the boundary the dependency
+owns:
+
+| Change | Required comparison | Acceptable outcome |
+| --- | --- | --- |
+| Pydantic | accepted and rejected models, extra fields, defaults, canonical serialization, public errors | intentional contract differences are named; stable inputs keep their meaning |
+| MessagePack | old artifact read, new artifact round trip, corrupt and unsupported envelope | prior supported artifacts remain readable or fail with an explicit compatibility decision |
+| NumPy | shape, dtype, finite values, fingerprints, repeated vector and ranking fixtures | exact or tolerance-bounded change is declared before results are inspected |
+| FastAPI or Uvicorn | checked-in OpenAPI, live request/response matrix, status, body, headers, streaming and exception paths | schema and observed behavior agree at every supported operation |
+| PyYAML | booleans, nulls, numbers, strings, aliases, duplicate/unknown fields, and resolved configuration | ambiguous input is refused or resolves identically under the documented configuration contract |
+| model or caller adapter | model/assets digest, adapter version, parameters, output/failure distribution, cache and network posture | new authority is explicit and downstream identity changes with it |
+
+A checksum change is a signal, not automatically a regression. Classify each
+difference as contract-preserving, intentionally contract-changing,
+tolerance-bounded, or unacceptable. Do not update a golden artifact until the
+classification and its owner are recorded.
+
+## Separate package, asset, and service identity
+
+The Python lock identifies installed distributions; it does not identify a
+downloaded model, mutable cache entry, remote endpoint, or caller-owned
+adapter. When any of those participate in preparation, retain their own
+immutable identity and availability/failure evidence beside the ingest
+artifact. A package upgrade that leaves the lock review clean can still change
+output because a model revision or remote service changed independently.
 
 Use [test strategy](test-strategy.md) to locate the owning suites and
 [risk register](risk-register.md) to assess residual model, codec, and service
