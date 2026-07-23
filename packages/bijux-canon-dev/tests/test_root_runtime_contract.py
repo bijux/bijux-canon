@@ -45,6 +45,15 @@ def test_root_tox_declares_shared_env_families() -> None:
     assert "tox-gh-actions>=3.1" in _tox_config()["tox"]["requires"]
 
 
+def test_root_tox_accepts_current_pip_release_line() -> None:
+    config = _tox_config()
+    pip_requirement = '"pip>=25.3,<27"'
+
+    assert pip_requirement in config["testenv"]["commands_pre"]
+    assert pip_requirement in config["testenv:security"]["commands_pre"]
+    assert pip_requirement in config["testenv:docs"]["commands_pre"]
+
+
 def test_root_make_declares_shared_maintainer_commands() -> None:
     root_make = (REPO_ROOT / "makes" / "root.mk").read_text(encoding="utf-8")
 
