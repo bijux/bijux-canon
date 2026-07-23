@@ -7,12 +7,12 @@
   },
   "type": "commonjs",
   "overrides": {
-    "brace-expansion": "^5.0.6",
+    "brace-expansion": "^5.0.7",
     "form-data": "^4.0.6",
     "postcss": "^8.5.10"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "2.39.1",
-    "@redocly/cli": "^2.37.0"
+    "@redocly/cli": "^2.39.0"
   }
 }
