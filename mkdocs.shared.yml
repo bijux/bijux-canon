@@ -74,7 +74,7 @@ plugins:
         bijux-canon/repository-scope.md: 01-bijux-canon/foundation/repository-scope.md
         bijux-canon/workspace-layout.md: 01-bijux-canon/foundation/workspace-layout.md
         bijux-canon/package-map.md: 01-bijux-canon/foundation/package-map.md
-        bijux-canon/documentation-system.md: 01-bijux-canon/foundation/documentation-system.md
+        bijux-canon/documentation-system.md: 01-bijux-canon/foundation/evidence-map.md
         bijux-canon/api-and-schema-governance.md: 01-bijux-canon/operations/api-and-schema-governance.md
         bijux-canon/local-development.md: 01-bijux-canon/operations/local-development.md
         bijux-canon/testing-and-validation.md: 01-bijux-canon/operations/testing-and-validation.md
